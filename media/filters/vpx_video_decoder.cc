@@ -18,8 +18,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sys_byteorder.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -143,8 +143,9 @@ void VpxVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   CloseDecoder();
 
-  InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
-                                         : std::move(init_cb);
+  InitCB bound_init_cb =
+      bind_callbacks_ ? base::BindPostTaskToCurrentDefault(std::move(init_cb))
+                      : std::move(init_cb);
   if (config.is_encrypted()) {
     std::move(bound_init_cb)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
@@ -172,9 +173,9 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK_NE(state_, DecoderState::kUninitialized)
       << "Called Decode() before successful Initialize()";
 
-  DecodeCB bound_decode_cb = bind_callbacks_
-                                 ? BindToCurrentLoop(std::move(decode_cb))
-                                 : std::move(decode_cb);
+  DecodeCB bound_decode_cb =
+      bind_callbacks_ ? base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+                      : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
     std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
@@ -215,7 +216,7 @@ void VpxVideoDecoder::Reset(base::OnceClosure reset_cb) {
   state_ = DecoderState::kNormal;
 
   if (bind_callbacks_)
-    BindToCurrentLoop(std::move(reset_cb)).Run();
+    base::BindPostTaskToCurrentDefault(std::move(reset_cb)).Run();
   else
     std::move(reset_cb).Run();
 

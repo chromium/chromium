@@ -14,8 +14,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
@@ -84,7 +84,7 @@ void FakeDemuxerStream::Read(uint32_t /*count*/, ReadCB read_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!read_cb_);
 
-  read_cb_ = BindToCurrentLoop(std::move(read_cb));
+  read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb));
 
   if (read_to_hold_ == next_read_num_)
     return;

@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -23,7 +24,6 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
@@ -770,7 +770,7 @@ void VideoCaptureDeviceTest::RunTakePhotoTestCase() {
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   base::RepeatingClosure quit_closure =
-      BindToCurrentLoop(run_loop.QuitClosure());
+      base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectPhotoTaken())
       .Times(1)
       .WillOnce(RunClosure(quit_closure));
@@ -818,7 +818,7 @@ void VideoCaptureDeviceTest::RunGetPhotoStateTestCase() {
   WaitForCapturedFrame();
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   base::RepeatingClosure quit_closure =
-      BindToCurrentLoop(run_loop.QuitClosure());
+      base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectGetPhotoState())
       .Times(1)
       .WillOnce(RunClosure(quit_closure));
@@ -878,7 +878,7 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest,
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   base::RepeatingClosure quit_closure =
-      BindToCurrentLoop(run_loop.QuitClosure());
+      base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectPhotoTaken())
       .WillOnce(RunClosure(quit_closure));
 

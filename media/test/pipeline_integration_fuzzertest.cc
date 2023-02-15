@@ -12,9 +12,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
@@ -155,8 +155,8 @@ class ProgressivePipelineIntegrationFuzzerTest
   ProgressivePipelineIntegrationFuzzerTest() {
     set_encrypted_media_init_data_cb(
         base::BindRepeating(&OnEncryptedMediaInitData, this));
-    set_audio_play_delay_cb(
-        BindToCurrentLoop(base::BindRepeating(&OnAudioPlayDelay, this)));
+    set_audio_play_delay_cb(base::BindPostTaskToCurrentDefault(
+        base::BindRepeating(&OnAudioPlayDelay, this)));
   }
 
   ~ProgressivePipelineIntegrationFuzzerTest() override = default;
@@ -179,8 +179,8 @@ class MediaSourcePipelineIntegrationFuzzerTest
   MediaSourcePipelineIntegrationFuzzerTest() {
     set_encrypted_media_init_data_cb(
         base::BindRepeating(&OnEncryptedMediaInitData, this));
-    set_audio_play_delay_cb(
-        BindToCurrentLoop(base::BindRepeating(&OnAudioPlayDelay, this)));
+    set_audio_play_delay_cb(base::BindPostTaskToCurrentDefault(
+        base::BindRepeating(&OnAudioPlayDelay, this)));
   }
 
   ~MediaSourcePipelineIntegrationFuzzerTest() override = default;

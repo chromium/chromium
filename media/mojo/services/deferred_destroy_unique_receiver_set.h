@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/bind_post_task.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 
 namespace media {
@@ -114,10 +114,10 @@ class DeferredDestroyUniqueReceiverSet {
     // callback could be called synchronously.
     unbound_impls_[id_] = std::move(ptr);
 
-    // Use BindToCurrentLoop() to force post the destroy callback. This is
-    // needed because the callback may be called directly in the same stack
-    // where the implemenation is being destroyed.
-    impl_ptr->OnDestroyPending(BindToCurrentLoop(
+    // Use base::BindPostTaskToCurrentDefault() to force post the destroy
+    // callback. This is needed because the callback may be called directly in
+    // the same stack where the implementation is being destroyed.
+    impl_ptr->OnDestroyPending(base::BindPostTaskToCurrentDefault(
         base::BindOnce(&DeferredDestroyUniqueReceiverSet::OnDestroyable,
                        weak_factory_.GetWeakPtr(), id_)));
   }

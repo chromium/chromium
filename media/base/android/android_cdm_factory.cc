@@ -9,8 +9,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "media/base/android/media_drm_bridge.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_config.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/key_system_names.h"
@@ -52,7 +52,7 @@ void AndroidCdmFactory::Create(
 
   // Bound |cdm_created_cb| so we always fire it asynchronously.
   CdmCreatedCB bound_cdm_created_cb =
-      BindToCurrentLoop(std::move(cdm_created_cb));
+      base::BindPostTaskToCurrentDefault(std::move(cdm_created_cb));
 
   // Create AesDecryptor here to support External Clear Key key system.
   // This is used for testing.

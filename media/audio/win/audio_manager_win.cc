@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/win/windows_version.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_io.h"
@@ -29,7 +30,6 @@
 #include "media/audio/win/device_enumeration_win.h"
 #include "media/audio/win/waveout_output_win.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -141,7 +141,7 @@ void AudioManagerWin::InitializeOnAudioThread() {
 
   // AudioDeviceListenerWin must be initialized on a COM thread.
   output_device_listener_ = std::make_unique<AudioDeviceListenerWin>(
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &AudioManagerWin::NotifyAllOutputDeviceChangeListeners,
           base::Unretained(this))));
 }

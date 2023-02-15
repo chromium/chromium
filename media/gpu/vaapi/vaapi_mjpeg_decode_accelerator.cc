@@ -22,11 +22,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -590,7 +590,7 @@ void VaapiMjpegDecodeAccelerator::InitializeAsync(
       FROM_HERE,
       base::BindOnce(&VaapiMjpegDecodeAccelerator::Decoder::Initialize,
                      base::Unretained(decoder_.get()),
-                     BindToCurrentLoop(std::move(init_cb))));
+                     base::BindPostTaskToCurrentDefault(std::move(init_cb))));
 }
 
 void VaapiMjpegDecodeAccelerator::Decode(

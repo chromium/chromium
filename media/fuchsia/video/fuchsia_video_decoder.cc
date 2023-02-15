@@ -16,13 +16,13 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_aspect_ratio.h"
@@ -160,8 +160,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
     auto frame = VideoFrame::WrapNativeTextures(
         pixel_format, mailboxes,
-        BindToCurrentLoop(base::BindOnce(&OutputMailbox::OnFrameDestroyed,
-                                         base::Unretained(this))),
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
         coded_size, visible_rect, natural_size, timestamp);
 
     // Request a fence we'll wait on before reusing the buffer.
@@ -196,8 +196,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
     raster_context_provider_->ContextSupport()->SignalSyncToken(
         release_sync_token_,
-        BindToCurrentLoop(base::BindOnce(&OutputMailbox::OnSyncTokenSignaled,
-                                         weak_factory_.GetWeakPtr())));
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &OutputMailbox::OnSyncTokenSignaled, weak_factory_.GetWeakPtr())));
   }
 
   void OnSyncTokenSignaled() {
@@ -271,7 +271,7 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(output_cb);
   DCHECK(decode_callbacks_.empty());
 
-  auto done_callback = BindToCurrentLoop(std::move(init_cb));
+  auto done_callback = base::BindPostTaskToCurrentDefault(std::move(init_cb));
 
   // There should be no pending decode request, so DropInputQueue() is not
   // expected to fail.

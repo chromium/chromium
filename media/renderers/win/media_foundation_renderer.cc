@@ -20,12 +20,12 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/wrapped_window_proc.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -226,21 +226,21 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   auto weak_this = weak_factory_.GetWeakPtr();
   RETURN_IF_FAILED(MakeAndInitialize<MediaEngineNotifyImpl>(
       &mf_media_engine_notify_,
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnPlaybackError, weak_this)),
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnPlaybackEnded, weak_this)),
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnFormatChange, weak_this)),
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnLoadedData, weak_this)),
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnCanPlayThrough, weak_this)),
-      BindToCurrentLoop(
+      base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&MediaFoundationRenderer::OnPlaying, weak_this)),
-      BindToCurrentLoop(
+      base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&MediaFoundationRenderer::OnWaiting, weak_this)),
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnTimeUpdate, weak_this))));
 
   ComPtr<IMFAttributes> creation_attributes;

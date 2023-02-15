@@ -12,10 +12,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_log.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
@@ -357,7 +357,7 @@ VideoEncoderClient::CreateBitstreamRef(
   return BitstreamProcessor::BitstreamRef::Create(
       std::move(decoder_buffer), metadata, bitstream_buffer_id,
       source_timestamp_it->second,
-      BindToCurrentLoop(
+      base::BindPostTaskToCurrentDefault(
           base::BindOnce(&VideoEncoderClient::BitstreamBufferProcessed,
                          weak_this_, bitstream_buffer_id)));
 }

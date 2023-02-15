@@ -15,12 +15,12 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_renderer.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
 #include "media/base/media_resource.h"
 #include "media/base/media_switches.h"
@@ -223,7 +223,7 @@ void RendererImpl::Flush(base::OnceClosure flush_cb) {
                                     TRACE_ID_LOCAL(this));
 
   if (state_ == STATE_FLUSHED) {
-    flush_cb_ = BindToCurrentLoop(std::move(flush_cb));
+    flush_cb_ = base::BindPostTaskToCurrentDefault(std::move(flush_cb));
     FinishFlush();
     return;
   }

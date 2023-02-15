@@ -8,10 +8,10 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/va_surface.h"
@@ -126,7 +126,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     }
     // We need to start the creation of this, first part requires getting the
     // hw config data from the daemon.
-    chromeos_cdm_context_->GetHwConfigData(BindToCurrentLoop(
+    chromeos_cdm_context_->GetHwConfigData(base::BindPostTaskToCurrentDefault(
         base::BindOnce(&VaapiVideoDecoderDelegate::OnGetHwConfigData,
                        weak_factory_.GetWeakPtr())));
     protected_session_state_ = ProtectedSessionState::kInProcess;
@@ -189,7 +189,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     DVLOG(1) << "Looking up the key data for: " << decrypt_config_->key_id();
     chromeos_cdm_context_->GetHwKeyData(
         decrypt_config_.get(), hw_identifier_,
-        BindToCurrentLoop(base::BindOnce(
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
             &VaapiVideoDecoderDelegate::OnGetHwKeyData,
             weak_factory_.GetWeakPtr(), decrypt_config_->key_id())));
     // Don't change our state here because we are created, but we just return

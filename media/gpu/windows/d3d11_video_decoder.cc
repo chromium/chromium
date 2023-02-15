@@ -18,10 +18,10 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -451,7 +451,7 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Important but subtle note: base::Bind will copy |config_| since it's a
   // const ref.
   impl_.AsyncCall(&D3D11VideoDecoderImpl::Initialize)
-      .WithArgs(BindToCurrentLoop(std::move(impl_init_cb)));
+      .WithArgs(base::BindPostTaskToCurrentDefault(std::move(impl_init_cb)));
 }
 
 void D3D11VideoDecoder::AddLifetimeProgressionStage(
@@ -818,9 +818,10 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
       // the decoder until picture buffer finished gpu resource initialization
       // in gpu thread.
       picture_buffers_[i]->add_client_use();
-      picture_buffer_gpu_resource_init_done_cb = BindToCurrentLoop(
-          base::BindOnce(&D3D11VideoDecoder::PictureBufferGPUResourceInitDone,
-                         weak_factory_.GetWeakPtr()));
+      picture_buffer_gpu_resource_init_done_cb =
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &D3D11VideoDecoder::PictureBufferGPUResourceInitDone,
+              weak_factory_.GetWeakPtr()));
     }
 
     D3D11Status result = picture_buffers_[i]->Init(
@@ -919,7 +920,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   // Remember that this will likely thread-hop to the GPU main thread.  Note
   // that |picture_buffer| will delete on sequence, so it's okay even if
   // |wait_complete_cb| doesn't ever run.
-  auto wait_complete_cb = BindToCurrentLoop(
+  auto wait_complete_cb = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&D3D11VideoDecoder::ReceivePictureBufferFromClient,
                      weak_factory_.GetWeakPtr(),
                      scoped_refptr<D3D11PictureBuffer>(picture_buffer)));

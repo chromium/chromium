@@ -13,11 +13,11 @@
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/audio_buffer.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
@@ -78,14 +78,15 @@ WaitableMessageLoopEvent::~WaitableMessageLoopEvent() {
 
 base::OnceClosure WaitableMessageLoopEvent::GetClosure() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BindToCurrentLoop(base::BindOnce(&WaitableMessageLoopEvent::OnCallback,
-                                          base::Unretained(this), PIPELINE_OK));
+  return base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&WaitableMessageLoopEvent::OnCallback,
+                     base::Unretained(this), PIPELINE_OK));
 }
 
 PipelineStatusCallback WaitableMessageLoopEvent::GetPipelineStatusCB() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BindToCurrentLoop(base::BindOnce(&WaitableMessageLoopEvent::OnCallback,
-                                          base::Unretained(this)));
+  return base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &WaitableMessageLoopEvent::OnCallback, base::Unretained(this)));
 }
 
 void WaitableMessageLoopEvent::RunAndWait() {

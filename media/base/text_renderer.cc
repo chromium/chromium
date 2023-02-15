@@ -12,8 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer.h"
 #include "media/base/text_cue.h"
@@ -104,7 +104,7 @@ void TextRenderer::AddTextStream(DemuxerStream* text_stream,
   DCHECK(pending_eos_set_.find(text_stream) ==
          pending_eos_set_.end());
 
-  AddTextTrackDoneCB done_cb = BindToCurrentLoop(
+  AddTextTrackDoneCB done_cb = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&TextRenderer::OnAddTextTrackDone,
                      weak_factory_.GetWeakPtr(), text_stream));
 

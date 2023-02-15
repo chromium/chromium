@@ -18,13 +18,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -564,7 +564,7 @@ void VaapiJpegEncodeAccelerator::InitializeAsync(
               io_task_runner_,
               base::BindRepeating(&VaapiJpegEncodeAccelerator::NotifyError,
                                   weak_this_)),
-          BindToCurrentLoop(std::move(init_cb))));
+          base::BindPostTaskToCurrentDefault(std::move(init_cb))));
 }
 
 size_t VaapiJpegEncodeAccelerator::GetMaxCodedBufferSize(

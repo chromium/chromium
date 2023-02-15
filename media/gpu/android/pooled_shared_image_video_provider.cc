@@ -5,9 +5,9 @@
 #include "media/gpu/android/pooled_shared_image_video_provider.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace media {
@@ -126,7 +126,7 @@ void PooledSharedImageVideoProvider::OnImageReturned(
   // to ProcessFreePooledImage to re-use / pool / delete.
   gpu_helper_.AsyncCall(&GpuHelper::OnImageReturned)
       .WithArgs(sync_token, pooled_image->record.codec_image_holder,
-                BindToCurrentLoop(base::BindOnce(
+                base::BindPostTaskToCurrentDefault(base::BindOnce(
                     &PooledSharedImageVideoProvider::ProcessFreePooledImage,
                     weak_factory_.GetWeakPtr(), pooled_image)),
                 GetDrDcLock());

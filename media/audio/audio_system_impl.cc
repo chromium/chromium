@@ -8,10 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager.h"
-#include "media/base/bind_to_current_loop.h"
 
 // Using base::Unretained for |audio_manager_| is safe since AudioManager is
 // deleted after audio thread is stopped.
@@ -88,7 +88,7 @@ AudioSystemImpl::MaybeBindToCurrentLoop(
     base::OnceCallback<void(Args...)> callback) {
   return audio_manager_->GetTaskRunner()->BelongsToCurrentThread()
              ? std::move(callback)
-             : media::BindToCurrentLoop(std::move(callback));
+             : base::BindPostTaskToCurrentDefault(std::move(callback));
 }
 
 // static

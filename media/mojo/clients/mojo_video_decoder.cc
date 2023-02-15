@@ -12,11 +12,11 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
@@ -434,7 +434,7 @@ void MojoVideoDecoder::RequestOverlayInfo(bool restart_for_transitions) {
   overlay_info_requested_ = true;
   request_overlay_info_cb_.Run(
       restart_for_transitions,
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MojoVideoDecoder::OnOverlayInfoChanged, weak_this_)));
 }
 

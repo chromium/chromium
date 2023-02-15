@@ -15,13 +15,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/async_destroy_video_decoder.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -257,7 +257,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     MEDIA_LOG(INFO, media_log_) << "Video configuration is not valid: "
                                 << config.AsHumanReadableString();
     DVLOG(1) << "Invalid configuration.";
-    BindToCurrentLoop(std::move(init_cb))
+    base::BindPostTaskToCurrentDefault(std::move(init_cb))
         .Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
@@ -275,7 +275,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DVLOG(1) << "Unsupported configuration.";
     MEDIA_LOG(INFO, media_log_) << "Video configuration is not valid: "
                                 << config.AsHumanReadableString();
-    BindToCurrentLoop(std::move(init_cb))
+    base::BindPostTaskToCurrentDefault(std::move(init_cb))
         .Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
@@ -286,7 +286,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     MEDIA_LOG(INFO, media_log_) << "Cannot change codec during re-init: "
                                 << decoder_config_.AsHumanReadableString()
                                 << " -> " << config.AsHumanReadableString();
-    BindToCurrentLoop(std::move(init_cb))
+    base::BindPostTaskToCurrentDefault(std::move(init_cb))
         .Run(DecoderStatus::Codes::kCantChangeCodec);
     return;
   }
@@ -317,13 +317,14 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (config.is_encrypted() && media_crypto_.is_null()) {
     DVLOG(1) << "No MediaCrypto to handle encrypted config";
     MEDIA_LOG(INFO, media_log_) << "No MediaCrypto to handle encrypted config";
-    BindToCurrentLoop(std::move(init_cb))
+    base::BindPostTaskToCurrentDefault(std::move(init_cb))
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   // Do the rest of the initialization lazily on the first decode.
-  BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kOk);
+  base::BindPostTaskToCurrentDefault(std::move(init_cb))
+      .Run(DecoderStatus::Codes::kOk);
 
   // On re-init, reallocate the codec if the size has changed too much.
   // Restrict this behavior to Q, where the behavior changed.
@@ -357,10 +358,12 @@ void MediaCodecVideoDecoder::SetCdm(CdmContext* cdm_context, InitCB init_cb) {
   event_cb_registration_ = cdm_context->RegisterEventCB(base::BindRepeating(
       &MediaCodecVideoDecoder::OnCdmContextEvent, weak_factory_.GetWeakPtr()));
 
-  // The callback will be posted back to this thread via BindToCurrentLoop.
-  media_crypto_context_->SetMediaCryptoReadyCB(media::BindToCurrentLoop(
-      base::BindOnce(&MediaCodecVideoDecoder::OnMediaCryptoReady,
-                     weak_factory_.GetWeakPtr(), std::move(init_cb))));
+  // The callback will be posted back to this thread via
+  // base::BindPostTaskToCurrentDefault.
+  media_crypto_context_->SetMediaCryptoReadyCB(
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&MediaCodecVideoDecoder::OnMediaCryptoReady,
+                         weak_factory_.GetWeakPtr(), std::move(init_cb))));
 }
 
 void MediaCodecVideoDecoder::OnMediaCryptoReady(
@@ -592,7 +595,7 @@ void MediaCodecVideoDecoder::CreateCodec() {
   // Use the asynchronous API if we can.
   if (device_info_->IsAsyncApiSupported()) {
     using_async_api_ = true;
-    config->on_buffers_available_cb = BindToCurrentLoop(
+    config->on_buffers_available_cb = base::BindPostTaskToCurrentDefault(
         base::BindRepeating(&MediaCodecVideoDecoder::StartTimerOrPumpCodec,
                             weak_factory_.GetWeakPtr()));
   }
@@ -656,10 +659,11 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   max_input_size_ = codec->GetMaxInputSize();
   codec_ = std::make_unique<CodecWrapper>(
       CodecSurfacePair(std::move(codec), std::move(surface_bundle)),
-      base::BindRepeating(&OutputBufferReleased, using_async_api_,
-                          BindToCurrentLoop(base::BindRepeating(
-                              &MediaCodecVideoDecoder::StartTimerOrPumpCodec,
-                              weak_factory_.GetWeakPtr()))),
+      base::BindRepeating(
+          &OutputBufferReleased, using_async_api_,
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
+              &MediaCodecVideoDecoder::StartTimerOrPumpCodec,
+              weak_factory_.GetWeakPtr()))),
       base::SequencedTaskRunner::GetCurrentDefault(),
       decoder_config_.coded_size());
 
@@ -958,7 +962,7 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   // SurfaceControl overlays, then this isn't needed; there is never a surface
   // transition anyway.
   if (!is_surface_control_enabled_) {
-    output_buffer->set_render_cb(BindToCurrentLoop(
+    output_buffer->set_render_cb(base::BindPostTaskToCurrentDefault(
         base::BindOnce(&MediaCodecVideoDecoder::StartTimerOrPumpCodec,
                        weak_factory_.GetWeakPtr())));
   }
@@ -1177,7 +1181,7 @@ MediaCodecVideoDecoder::CreatePromotionHintCB() {
   // also continues to work even if |this| is destroyed; images might want to
   // move an overlay around even after MCVD has been torn down.  For example
   // inline L1 content will fall into this case.
-  return BindToCurrentLoop(base::BindRepeating(
+  return base::BindPostTaskToCurrentDefault(base::BindRepeating(
       [](base::WeakPtr<MediaCodecVideoDecoder> mcvd,
          CodecSurfaceBundle::ScheduleLayoutCB layout_cb,
          PromotionHintAggregator::Hint hint) {

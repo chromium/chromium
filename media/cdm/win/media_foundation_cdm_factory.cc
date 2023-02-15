@@ -12,8 +12,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_systems.h"
 #include "media/base/win/mf_helpers.h"
@@ -123,7 +123,8 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
       session_expiration_update_cb);
 
   // `cdm_created_cb` should always be run asynchronously.
-  auto bound_cdm_created_cb = BindToCurrentLoop(std::move(cdm_created_cb));
+  auto bound_cdm_created_cb =
+      base::BindPostTaskToCurrentDefault(std::move(cdm_created_cb));
 
   HRESULT hr = cdm->Initialize();
 

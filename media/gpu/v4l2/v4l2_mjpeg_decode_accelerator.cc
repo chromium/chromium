@@ -22,10 +22,10 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -394,7 +394,7 @@ void V4L2MjpegDecodeAccelerator::InitializeAsync(
       FROM_HERE,
       base::BindOnce(&V4L2MjpegDecodeAccelerator::InitializeOnDecoderTaskRunner,
                      weak_ptr_for_decoder_, client,
-                     BindToCurrentLoop(std::move(init_cb))));
+                     base::BindPostTaskToCurrentDefault(std::move(init_cb))));
 }
 
 void V4L2MjpegDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer,

@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/bind_post_task.h"
 #include "media/capabilities/video_decode_stats_db_provider.h"
 
 namespace media {
@@ -49,7 +49,7 @@ void InMemoryVideoDecodeStatsDBImpl::Initialize(InitializeCB init_cb) {
     db_init_ = true;
 
     // Bind to avoid reentrancy.
-    std::move(BindToCurrentLoop(std::move(init_cb))).Run(true);
+    std::move(base::BindPostTaskToCurrentDefault(std::move(init_cb))).Run(true);
   }
 }
 
@@ -103,7 +103,8 @@ void InMemoryVideoDecodeStatsDBImpl::AppendDecodeStats(
   }
 
   // Bind to avoid reentrancy.
-  std::move(BindToCurrentLoop(std::move(append_done_cb))).Run(true);
+  std::move(base::BindPostTaskToCurrentDefault(std::move(append_done_cb)))
+      .Run(true);
 }
 
 void InMemoryVideoDecodeStatsDBImpl::GetDecodeStats(
@@ -125,12 +126,12 @@ void InMemoryVideoDecodeStatsDBImpl::GetDecodeStats(
                               std::move(get_stats_cb)));
     } else {
       // No seed data. Return an empty entry. Bind to avoid reentrancy.
-      std::move(BindToCurrentLoop(std::move(get_stats_cb)))
+      std::move(base::BindPostTaskToCurrentDefault(std::move(get_stats_cb)))
           .Run(true, std::make_unique<DecodeStatsEntry>(0, 0, 0));
     }
   } else {
     // Return whatever what we found. Bind to avoid reentrancy.
-    std::move(BindToCurrentLoop(std::move(get_stats_cb)))
+    std::move(base::BindPostTaskToCurrentDefault(std::move(get_stats_cb)))
         .Run(true, std::make_unique<DecodeStatsEntry>(it->second));
   }
 }
@@ -196,7 +197,8 @@ void InMemoryVideoDecodeStatsDBImpl::ClearStats(
   in_memory_db_.clear();
 
   // Bind to avoid reentrancy.
-  std::move(BindToCurrentLoop(std::move(destroy_done_cb))).Run();
+  std::move(base::BindPostTaskToCurrentDefault(std::move(destroy_done_cb)))
+      .Run();
 }
 
 }  // namespace media

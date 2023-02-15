@@ -14,8 +14,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
@@ -167,8 +167,9 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
 
-  InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
-                                         : std::move(init_cb);
+  InitCB bound_init_cb =
+      bind_callbacks_ ? base::BindPostTaskToCurrentDefault(std::move(init_cb))
+                      : std::move(init_cb);
   if (config.is_encrypted()) {
     std::move(bound_init_cb)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
@@ -231,9 +232,9 @@ void Dav1dVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK_NE(state_, DecoderState::kUninitialized)
       << "Called Decode() before successful Initialize()";
 
-  DecodeCB bound_decode_cb = bind_callbacks_
-                                 ? BindToCurrentLoop(std::move(decode_cb))
-                                 : std::move(decode_cb);
+  DecodeCB bound_decode_cb =
+      bind_callbacks_ ? base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+                      : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
     std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);

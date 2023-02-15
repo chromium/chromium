@@ -14,8 +14,8 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/bind_post_task.h"
 #include "base/thread_annotations.h"
-#include "media/base/bind_to_current_loop.h"
 
 namespace media {
 
@@ -59,10 +59,12 @@ class CallbackRegistry<void(Args...)> {
     uint32_t registration_id = ++next_registration_id_;
     DVLOG(1) << __func__ << ": registration_id = " << registration_id;
 
-    // Use BindToCurrentLoop so that the callbacks are always posted to the
-    // thread where Register() is called. Also, this helps avoid reentrancy
-    // and deadlock issues, e.g. Register() is called in one of the callbacks.
-    callbacks_[registration_id] = BindToCurrentLoop(std::move(cb));
+    // Use base::BindPostTaskToCurrentDefault so that the callbacks are always
+    // posted to the thread where Register() is called. Also, this helps avoid
+    // reentrancy and deadlock issues, e.g. Register() is called in one of the
+    // callbacks.
+    callbacks_[registration_id] =
+        base::BindPostTaskToCurrentDefault(std::move(cb));
 
     return std::make_unique<RegistrationImpl>(this, registration_id);
   }

@@ -14,11 +14,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/timestamp_constants.h"
@@ -57,7 +57,7 @@ void DecryptingAudioDecoder::Initialize(const AudioDecoderConfig& config,
   DCHECK(!decode_cb_);
   DCHECK(!reset_cb_);
 
-  init_cb_ = BindToCurrentLoop(std::move(init_cb));
+  init_cb_ = base::BindPostTaskToCurrentDefault(std::move(init_cb));
   if (!cdm_context) {
     // Once we have a CDM context, one should always be present.
     DCHECK(!support_clear_content_);
@@ -74,7 +74,7 @@ void DecryptingAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // the decryptor for clear content as well.
   support_clear_content_ = true;
 
-  output_cb_ = BindToCurrentLoop(output_cb);
+  output_cb_ = base::BindPostTaskToCurrentDefault(output_cb);
 
   DCHECK(waiting_cb);
   waiting_cb_ = waiting_cb;
@@ -116,7 +116,7 @@ void DecryptingAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK(decode_cb);
   CHECK(!decode_cb_) << "Overlapping decodes are not supported.";
 
-  decode_cb_ = BindToCurrentLoop(std::move(decode_cb));
+  decode_cb_ = base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
   // Return empty (end-of-stream) frames if decoding has finished.
   if (state_ == kDecodeFinished) {
@@ -146,7 +146,7 @@ void DecryptingAudioDecoder::Reset(base::OnceClosure closure) {
   DCHECK(!init_cb_);  // No Reset() during pending initialization.
   DCHECK(!reset_cb_);
 
-  reset_cb_ = BindToCurrentLoop(std::move(closure));
+  reset_cb_ = base::BindPostTaskToCurrentDefault(std::move(closure));
 
   decryptor_->ResetDecoder(Decryptor::kAudio);
 
@@ -192,7 +192,7 @@ DecryptingAudioDecoder::~DecryptingAudioDecoder() {
 void DecryptingAudioDecoder::InitializeDecoder() {
   state_ = kPendingDecoderInit;
   decryptor_->InitializeAudioDecoder(
-      config_, BindToCurrentLoop(
+      config_, base::BindPostTaskToCurrentDefault(
                    base::BindOnce(&DecryptingAudioDecoder::FinishInitialization,
                                   weak_factory_.GetWeakPtr())));
 }
@@ -240,9 +240,10 @@ void DecryptingAudioDecoder::DecodePendingBuffer() {
   }
 
   decryptor_->DecryptAndDecodeAudio(
-      pending_buffer_to_decode_, BindToCurrentLoop(base::BindRepeating(
-                                     &DecryptingAudioDecoder::DeliverFrame,
-                                     weak_factory_.GetWeakPtr(), buffer_size)));
+      pending_buffer_to_decode_,
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&DecryptingAudioDecoder::DeliverFrame,
+                              weak_factory_.GetWeakPtr(), buffer_size)));
 }
 
 void DecryptingAudioDecoder::DeliverFrame(

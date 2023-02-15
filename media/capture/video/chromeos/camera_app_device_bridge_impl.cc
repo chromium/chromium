@@ -8,8 +8,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
@@ -75,7 +75,7 @@ void CameraAppDeviceBridgeImpl::OnVideoCaptureDeviceClosing(
 
 void CameraAppDeviceBridgeImpl::OnDeviceMojoDisconnected(
     const std::string& device_id) {
-  auto remove_device = media::BindToCurrentLoop(
+  auto remove_device = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CameraAppDeviceBridgeImpl::RemoveCameraAppDevice,
                      base::Unretained(this), device_id));
   {

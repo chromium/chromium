@@ -5,7 +5,7 @@
 #include "media/fuchsia/cdm/fuchsia_cdm_factory.h"
 
 #include "base/functional/bind.h"
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/bind_post_task.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_systems.h"
 #include "media/cdm/aes_decryptor.h"
@@ -31,7 +31,7 @@ void FuchsiaCdmFactory::Create(
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb) {
   CdmCreatedCB bound_cdm_created_cb =
-      BindToCurrentLoop(std::move(cdm_created_cb));
+      base::BindPostTaskToCurrentDefault(std::move(cdm_created_cb));
 
   if (CanUseAesDecryptor(cdm_config.key_system)) {
     auto cdm = base::MakeRefCounted<AesDecryptor>(

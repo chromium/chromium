@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -24,7 +25,6 @@
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_output_device_thread_callback.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 
 namespace media {
@@ -172,7 +172,8 @@ void AudioOutputDevice::GetOutputDeviceInfoAsync(OutputDeviceInfoCB info_cb) {
     base::AutoLock auto_lock(device_info_lock_);
     if (!did_receive_auth_.IsSignaled()) {
       DCHECK(!pending_device_info_cb_);
-      pending_device_info_cb_ = BindToCurrentLoop(std::move(info_cb));
+      pending_device_info_cb_ =
+          base::BindPostTaskToCurrentDefault(std::move(info_cb));
       return;
     }
   }
@@ -468,8 +469,8 @@ void AudioOutputDevice::OnAuthSignal() {
   // Signal to unblock any blocked threads waiting for parameters.
   did_receive_auth_.Signal();
 
-  // The callback is always posted by way media::BindToCurrentLoop() usage upon
-  // receipt, so this is safe to run under the lock.
+  // The callback is always posted by way base::BindPostTaskToCurrentDefault()
+  // usage upon receipt, so this is safe to run under the lock.
   if (pending_device_info_cb_)
     std::move(pending_device_info_cb_).Run(GetOutputDeviceInfo_Signaled());
 }

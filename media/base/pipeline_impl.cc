@@ -18,10 +18,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder.h"
 #include "media/base/demuxer.h"
@@ -616,8 +616,9 @@ void PipelineImpl::RendererWrapper::CreateRendererInternal(
   // the |renderer_type|, in which case we shouldn't need to create a new one.
   if (!default_renderer_ || renderer_type) {
     // Create the Renderer asynchronously on the main task runner. Use
-    // BindToCurrentLoop to call OnRendererCreated() on the media task runner.
-    auto renderer_created_cb = BindToCurrentLoop(
+    // base::BindPostTaskToCurrentDefault to call OnRendererCreated() on the
+    // media task runner.
+    auto renderer_created_cb = base::BindPostTaskToCurrentDefault(
         base::BindOnce(&RendererWrapper::OnRendererCreated,
                        weak_factory_.GetWeakPtr(), std::move(done_cb)));
     main_task_runner_->PostTask(
@@ -697,10 +698,10 @@ void PipelineImpl::OnEnabledAudioTracksChanged(
   DCHECK(thread_checker_.CalledOnValidThread());
   media_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&RendererWrapper::OnEnabledAudioTracksChanged,
-                     base::Unretained(renderer_wrapper_.get()),
-                     enabled_track_ids,
-                     BindToCurrentLoop(std::move(change_completed_cb))));
+      base::BindOnce(
+          &RendererWrapper::OnEnabledAudioTracksChanged,
+          base::Unretained(renderer_wrapper_.get()), enabled_track_ids,
+          base::BindPostTaskToCurrentDefault(std::move(change_completed_cb))));
 }
 
 void PipelineImpl::RendererWrapper::OnEnabledAudioTracksChanged(
@@ -738,10 +739,10 @@ void PipelineImpl::OnSelectedVideoTrackChanged(
   DCHECK(thread_checker_.CalledOnValidThread());
   media_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&RendererWrapper::OnSelectedVideoTrackChanged,
-                     base::Unretained(renderer_wrapper_.get()),
-                     selected_track_id,
-                     BindToCurrentLoop(std::move(change_completed_cb))));
+      base::BindOnce(
+          &RendererWrapper::OnSelectedVideoTrackChanged,
+          base::Unretained(renderer_wrapper_.get()), selected_track_id,
+          base::BindPostTaskToCurrentDefault(std::move(change_completed_cb))));
 }
 
 void PipelineImpl::RendererWrapper::OnSelectedVideoTrackChanged(
@@ -1541,9 +1542,10 @@ void PipelineImpl::SetCdm(CdmContext* cdm_context,
 
   media_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&RendererWrapper::SetCdm,
-                     base::Unretained(renderer_wrapper_.get()), cdm_context,
-                     BindToCurrentLoop(std::move(cdm_attached_cb))));
+      base::BindOnce(
+          &RendererWrapper::SetCdm, base::Unretained(renderer_wrapper_.get()),
+          cdm_context,
+          base::BindPostTaskToCurrentDefault(std::move(cdm_attached_cb))));
 }
 
 #define RETURN_STRING(state) \

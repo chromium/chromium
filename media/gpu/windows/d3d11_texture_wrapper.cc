@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -16,7 +17,6 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -148,10 +148,10 @@ D3D11Status DefaultTexture2DWrapper::Init(
   // device for decoding.  Sharing seems not to work very well.  Otherwise, we
   // would create the texture with KEYED_MUTEX and NTHANDLE, then send along
   // a handle that we get from |texture| as an IDXGIResource1.
-  auto on_error_cb = BindToCurrentLoop(base::BindOnce(
+  auto on_error_cb = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &DefaultTexture2DWrapper::OnError, weak_factory_.GetWeakPtr()));
 
-  auto gpu_resource_init_cb = BindToCurrentLoop(
+  auto gpu_resource_init_cb = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&DefaultTexture2DWrapper::OnGPUResourceInitDone,
                      weak_factory_.GetWeakPtr()));
   gpu_resources_ = base::SequenceBound<GpuResources>(

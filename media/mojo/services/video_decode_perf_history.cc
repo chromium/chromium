@@ -11,8 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
@@ -444,8 +444,10 @@ void VideoDecodePerfHistory::GetVideoDecodeStatsDB(GetCB get_db_cb) {
     return;
   }
 
-  // DB is already initialized. BindToCurrentLoop to avoid reentrancy.
-  std::move(BindToCurrentLoop(std::move(get_db_cb))).Run(db_.get());
+  // DB is already initialized. base::BindPostTaskToCurrentDefault to avoid
+  // reentrancy.
+  std::move(base::BindPostTaskToCurrentDefault(std::move(get_db_cb)))
+      .Run(db_.get());
 }
 
 }  // namespace media

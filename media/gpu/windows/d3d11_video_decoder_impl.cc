@@ -5,10 +5,10 @@
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/service/gpu_channel.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 
@@ -47,7 +47,7 @@ void D3D11VideoDecoderImpl::Initialize(InitCB init_cb) {
     return;
   }
 
-  release_mailbox_cb_ = BindToCurrentLoop(base::BindRepeating(
+  release_mailbox_cb_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &D3D11VideoDecoderImpl::OnMailboxReleased, GetWeakPtr()));
 
   std::move(init_cb).Run(true, release_mailbox_cb_);

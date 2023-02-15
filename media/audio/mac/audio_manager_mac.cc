@@ -21,6 +21,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
@@ -32,7 +33,6 @@
 #include "media/audio/mac/scoped_audio_unit.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/mac/audio_latency_mac.h"
@@ -798,12 +798,12 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
   // devices, the listener will never be initialized, and new valid devices
   // will never be detected.
   if (!output_device_listener_) {
-    // NOTE: Use BindToCurrentLoop() to ensure the callback is always PostTask'd
-    // even if OSX calls us on the right thread.  Some CoreAudio drivers will
-    // fire the callbacks during stream creation, leading to re-entrancy issues
-    // otherwise.  See http://crbug.com/349604
+    // NOTE: Use base::BindPostTaskToCurrentDefault() to ensure the callback is
+    // always PostTask'd even if OSX calls us on the right thread.  Some
+    // CoreAudio drivers will fire the callbacks during stream creation, leading
+    // to re-entrancy issues otherwise.  See http://crbug.com/349604
     output_device_listener_ = AudioDeviceListenerMac::Create(
-        BindToCurrentLoop(base::BindRepeating(
+        base::BindPostTaskToCurrentDefault(base::BindRepeating(
             &AudioManagerMac::HandleDeviceChanges, base::Unretained(this))),
         /*monitor_sample_rate_changes=*/
         base::FeatureList::IsEnabled(kMonitorOutputSampleRateChangesMac),

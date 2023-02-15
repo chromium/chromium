@@ -25,6 +25,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -32,7 +33,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -725,9 +725,10 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::CreateEncodeSurface(
   const VASurfaceID id = scoped_va_surface->id();
   const gfx::Size& size = scoped_va_surface->size();
   const unsigned int format = scoped_va_surface->format();
-  VASurface::ReleaseCB release_cb = BindToCurrentLoop(base::BindOnce(
-      &VaapiVideoEncodeAccelerator::RecycleVASurface, encoder_weak_this_,
-      &surfaces, std::move(scoped_va_surface)));
+  VASurface::ReleaseCB release_cb =
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &VaapiVideoEncodeAccelerator::RecycleVASurface, encoder_weak_this_,
+          &surfaces, std::move(scoped_va_surface)));
 
   return base::MakeRefCounted<VASurface>(id, size, format,
                                          std::move(release_cb));

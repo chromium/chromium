@@ -9,11 +9,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/video/video_encoder_info.h"
@@ -71,7 +71,7 @@ class VideoEncoderFallbackTest : public testing::Test {
     };
     auto enforcer = std::make_unique<CallEnforcer>();
     enforcer->location = loc.ToString();
-    return BindToCurrentLoop(base::BindLambdaForTesting(
+    return base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting(
         [code, this, enforcer{std::move(enforcer)}](EncoderStatus s) {
           EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
           EXPECT_EQ(s.code(), code)
@@ -94,12 +94,12 @@ TEST_F(VideoEncoderFallbackTest, NoFallbackEncoding) {
 
   int info_cb_count = 0;
   VideoEncoder::EncoderInfoCB info_cb =
-      BindToCurrentLoop(base::BindLambdaForTesting(
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting(
           [&](const VideoEncoderInfo& info) { info_cb_count++; }));
 
   int outputs = 0;
   VideoEncoder::OutputCB output_cb =
-      BindToCurrentLoop(base::BindLambdaForTesting(
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting(
           [&](VideoEncoderOutput,
               absl::optional<VideoEncoder::CodecDescription>) { outputs++; }));
   VideoEncoder::OutputCB saved_output_cb;
@@ -149,12 +149,12 @@ TEST_F(VideoEncoderFallbackTest, FallbackOnInitialize) {
 
   int info_cb_count = 0;
   VideoEncoder::EncoderInfoCB info_cb =
-      BindToCurrentLoop(base::BindLambdaForTesting(
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting(
           [&](const VideoEncoderInfo& info) { info_cb_count++; }));
 
   int outputs = 0;
   VideoEncoder::OutputCB output_cb =
-      BindToCurrentLoop(base::BindLambdaForTesting(
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting(
           [&](VideoEncoderOutput,
               absl::optional<VideoEncoder::CodecDescription>) { outputs++; }));
   VideoEncoder::OutputCB saved_output_cb;
@@ -218,13 +218,13 @@ TEST_F(VideoEncoderFallbackTest, FallbackOnEncode) {
 
   int info_cb_count = 0;
   VideoEncoder::EncoderInfoCB info_cb =
-      BindToCurrentLoop(base::BindLambdaForTesting(
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting(
           [&](const VideoEncoderInfo& info) { info_cb_count++; }));
   VideoEncoder::EncoderInfoCB saved_info_cb;
 
   int outputs = 0;
   VideoEncoder::OutputCB output_cb =
-      BindToCurrentLoop(base::BindLambdaForTesting(
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting(
           [&](VideoEncoderOutput,
               absl::optional<VideoEncoder::CodecDescription>) { outputs++; }));
   VideoEncoder::OutputCB primary_output_cb;
@@ -371,7 +371,7 @@ TEST_F(VideoEncoderFallbackTest, SecondaryFailureOnEncode) {
   VideoEncoder::Options options;
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoEncoder::OutputCB output_cb =
-      BindToCurrentLoop(base::BindLambdaForTesting(
+      base::BindPostTaskToCurrentDefault(base::BindLambdaForTesting(
           [&](VideoEncoderOutput,
               absl::optional<VideoEncoder::CodecDescription>) { outputs++; }));
   VideoEncoder::OutputCB primary_output_cb;

@@ -9,11 +9,11 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/mojo/common/media_type_converters.h"
@@ -474,8 +474,9 @@ void DemuxerStreamAdapter::OnFatalError(StopTrigger stop_trigger) {
 
 void DemuxerStreamAdapter::RegisterForRpcMessaging() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  auto receive_callback = BindToCurrentLoop(base::BindRepeating(
-      &DemuxerStreamAdapter::OnReceivedRpc, weak_factory_.GetWeakPtr()));
+  auto receive_callback =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerStreamAdapter::OnReceivedRpc, weak_factory_.GetWeakPtr()));
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

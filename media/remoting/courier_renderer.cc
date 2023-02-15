@@ -13,13 +13,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_resource.h"
 #include "media/base/renderer_client.h"
@@ -826,8 +826,9 @@ bool CourierRenderer::IsWaitingForDataFromDemuxers() const {
 
 void CourierRenderer::RegisterForRpcMessaging() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  auto receive_callback = BindToCurrentLoop(base::BindRepeating(
-      &CourierRenderer::OnReceivedRpc, weak_factory_.GetWeakPtr()));
+  auto receive_callback =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &CourierRenderer::OnReceivedRpc, weak_factory_.GetWeakPtr()));
 
   main_task_runner_->PostTask(
       FROM_HERE,

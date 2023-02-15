@@ -13,8 +13,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "build/build_config.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -276,7 +276,7 @@ void ImageProcessorClient::ProcessTask(scoped_refptr<VideoFrame> input_frame,
   // because the callback is executed on |image_processor_client_thread_| which
   // is owned by this class.
   image_processor_->Process(std::move(input_frame), std::move(output_frame),
-                            BindToCurrentLoop(base::BindOnce(
+                            base::BindPostTaskToCurrentDefault(base::BindOnce(
                                 &ImageProcessorClient::FrameReady,
                                 base::Unretained(this), next_frame_index_)));
   next_frame_index_++;

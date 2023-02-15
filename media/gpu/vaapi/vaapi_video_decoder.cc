@@ -16,12 +16,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -622,9 +622,10 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     cdm_context_ref_->GetCdmContext()
         ->GetChromeOsCdmContext()
-        ->GetScreenResolutions(BindToCurrentLoop(base::BindOnce(
-            &VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes,
-            weak_this_)));
+        ->GetScreenResolutions(
+            base::BindPostTaskToCurrentDefault(base::BindOnce(
+                &VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes,
+                weak_this_)));
     return;
 #endif
   }
@@ -1108,7 +1109,7 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
          state_ == State::kExpectingReset);
 
   VaapiVideoDecoderDelegate::ProtectedSessionUpdateCB protected_update_cb =
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &VaapiVideoDecoder::ProtectedSessionUpdate, weak_this_));
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
     auto accelerator = std::make_unique<H264VaapiVideoDecoderDelegate>(

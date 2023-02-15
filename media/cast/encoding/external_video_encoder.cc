@@ -20,11 +20,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
@@ -247,9 +247,10 @@ class ExternalVideoEncoder::VEAClientImpl final
       }
       frame->BackWithSharedMemory(&mapped_region.region);
 
-      frame->AddDestructionObserver(media::BindToCurrentLoop(base::BindOnce(
-          &ExternalVideoEncoder::VEAClientImpl::ReturnInputBufferToPool, this,
-          index)));
+      frame->AddDestructionObserver(
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &ExternalVideoEncoder::VEAClientImpl::ReturnInputBufferToPool,
+              this, index)));
       free_input_buffer_index_.pop_back();
     }
     // BitstreamBufferReady will be called once the encoder is done.

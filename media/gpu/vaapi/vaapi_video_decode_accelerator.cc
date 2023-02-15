@@ -22,13 +22,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/ipc/service/gpu_channel.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/video_util.h"
@@ -165,8 +165,9 @@ VaapiVideoDecodeAccelerator::VaapiVideoDecodeAccelerator(
       bind_image_cb_(bind_image_cb),
       weak_this_factory_(this) {
   weak_this_ = weak_this_factory_.GetWeakPtr();
-  va_surface_recycle_cb_ = BindToCurrentLoop(base::BindRepeating(
-      &VaapiVideoDecodeAccelerator::RecycleVASurface, weak_this_));
+  va_surface_recycle_cb_ =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &VaapiVideoDecodeAccelerator::RecycleVASurface, weak_this_));
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "media::VaapiVideoDecodeAccelerator",
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -344,7 +345,7 @@ void VaapiVideoDecodeAccelerator::QueueInputBuffer(
   } else {
     auto input_buffer = std::make_unique<InputBuffer>(
         bitstream_id, std::move(buffer),
-        BindToCurrentLoop(
+        base::BindPostTaskToCurrentDefault(
             base::BindOnce(&Client::NotifyEndOfBitstreamBuffer, client_)));
     input_buffers_.push(std::move(input_buffer));
   }

@@ -249,8 +249,8 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   std::unique_ptr<GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
   scoped_refptr<base::TestSimpleTaskRunner> media_task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> copy_task_runner_;
-  // GpuMemoryBufferVideoFramePool uses BindToCurrentLoop(), which requires
-  // SingleThreadTaskRunner::CurrentDefaultHandle initialization.
+  // GpuMemoryBufferVideoFramePool uses base::BindPostTaskToCurrentDefault(),
+  // which requires SingleThreadTaskRunner::CurrentDefaultHandle initialization.
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
       media_task_runner_handle_;
   std::unique_ptr<viz::TestSharedImageInterface> sii_;

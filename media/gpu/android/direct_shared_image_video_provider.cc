@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
@@ -22,7 +23,6 @@
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gl/gl_bindings.h"
@@ -86,7 +86,8 @@ void DirectSharedImageVideoProvider::RequestImage(ImageReadyCB cb,
   // Note: `cb` is only run on successful creation, so this does not use
   // `AsyncCall()` + `Then()` to chain the callbacks.
   gpu_factory_.AsyncCall(&GpuSharedImageVideoFactory::CreateImage)
-      .WithArgs(BindToCurrentLoop(std::move(cb)), spec, GetDrDcLock());
+      .WithArgs(base::BindPostTaskToCurrentDefault(std::move(cb)), spec,
+                GetDrDcLock());
 }
 
 GpuSharedImageVideoFactory::GpuSharedImageVideoFactory(
@@ -168,7 +169,8 @@ void GpuSharedImageVideoFactory::CreateImage(
   // Guarantee that the SharedImage is destroyed even if the VideoFrame is
   // dropped. Otherwise we could keep shared images we don't need alive.
   auto release_cb = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      BindToCurrentLoop(std::move(destroy_shared_image)), gpu::SyncToken());
+      base::BindPostTaskToCurrentDefault(std::move(destroy_shared_image)),
+      gpu::SyncToken());
 
   SharedImageVideoProvider::ImageRecord record;
   record.mailbox = mailbox;

@@ -565,7 +565,8 @@ TEST_F(VideoDecoderPipelineTest, TranscryptKeyAddedDuringTranscrypt) {
       .WillOnce([&saved_decrypt_cb](Decryptor::StreamType stream_type,
                                     scoped_refptr<DecoderBuffer> encrypted,
                                     Decryptor::DecryptCB decrypt_cb) {
-        saved_decrypt_cb = BindToCurrentLoop(std::move(decrypt_cb));
+        saved_decrypt_cb =
+            base::BindPostTaskToCurrentDefault(std::move(decrypt_cb));
       });
   decoder_->Decode(encrypted_buffer_,
                    base::BindOnce(&VideoDecoderPipelineTest::OnDecodeDone,

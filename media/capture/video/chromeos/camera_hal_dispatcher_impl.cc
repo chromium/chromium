@@ -30,7 +30,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/components/sensors/sensor_util.h"
 #include "components/device_event_log/device_event_log.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_client.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
@@ -547,7 +546,7 @@ void CameraHalDispatcherImpl::RegisterClientWithToken(
           &CameraHalDispatcherImpl::RegisterClientWithTokenOnProxyThread,
           base::Unretained(this), std::move(client), type,
           std::move(client_auth_token),
-          media::BindToCurrentLoop(std::move(callback))));
+          base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void CameraHalDispatcherImpl::GetMjpegDecodeAccelerator(
@@ -578,7 +577,7 @@ void CameraHalDispatcherImpl::RegisterSensorClientWithToken(
       base::BindOnce(
           &CameraHalDispatcherImpl::RegisterSensorClientWithTokenOnUIThread,
           weak_factory_.GetWeakPtr(), std::move(client), auth_token,
-          BindToCurrentLoop(std::move(callback))));
+          base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void CameraHalDispatcherImpl::CameraDeviceActivityChange(
@@ -1097,10 +1096,11 @@ void CameraHalDispatcherImpl::GetCameraEffects(
   // needed.
   if (!proxy_task_runner_->BelongsToCurrentThread()) {
     proxy_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&CameraHalDispatcherImpl::GetCameraEffects,
-                                  base::Unretained(this),
-                                  media::BindToCurrentLoop(std::move(callback)),
-                                  std::move(photo_state)));
+        FROM_HERE,
+        base::BindOnce(&CameraHalDispatcherImpl::GetCameraEffects,
+                       base::Unretained(this),
+                       base::BindPostTaskToCurrentDefault(std::move(callback)),
+                       std::move(photo_state)));
     return;
   }
 

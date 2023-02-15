@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer.h"
 #include "media/base/video_transformation.h"
@@ -139,7 +138,7 @@ void StreamProvider::MediaStream::ReceiveFrame(uint32_t count,
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(decoder_buffer_reader_);
 
-  auto callback = BindToCurrentLoop(
+  auto callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&MediaStream::AppendBuffer, media_weak_this_, count));
   decoder_buffer_reader_->ReadDecoderBuffer(std::move(buffer),
                                             std::move(callback));
@@ -567,7 +566,7 @@ void StreamProvider::OnAcquireDemuxer(
   DCHECK(has_audio_ || has_video_);
 
   if (has_audio_) {
-    auto callback = BindToCurrentLoop(base::BindOnce(
+    auto callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
         &StreamProvider::OnAudioStreamCreated, media_weak_this_));
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -577,7 +576,7 @@ void StreamProvider::OnAcquireDemuxer(
   }
 
   if (has_video_) {
-    auto callback = BindToCurrentLoop(base::BindOnce(
+    auto callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
         &StreamProvider::OnVideoStreamCreated, media_weak_this_));
     main_task_runner_->PostTask(
         FROM_HERE,

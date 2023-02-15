@@ -5,10 +5,10 @@
 #include "media/gpu/chromeos/oop_video_decoder.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/cdm_factory_daemon/stable_cdm_context_impl.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/gpu/macros.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -656,9 +656,9 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   frame->set_timestamp(it->second);
 
   // The destruction observer will be called after the client releases the
-  // video frame. BindToCurrentLoop() is used to make sure that the WeakPtr
-  // is dereferenced on the correct sequence.
-  frame->AddDestructionObserver(BindToCurrentLoop(
+  // video frame. base::BindPostTaskToCurrentDefault() is used to make sure that
+  // the WeakPtr is dereferenced on the correct sequence.
+  frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
       base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
                      weak_this_factory_.GetWeakPtr(), release_token)));
 

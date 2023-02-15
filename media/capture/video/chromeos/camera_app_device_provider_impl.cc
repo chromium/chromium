@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/bind_post_task.h"
 
 namespace media {
 
@@ -32,7 +32,7 @@ void CameraAppDeviceProviderImpl::GetCameraAppDevice(
     GetCameraAppDeviceCallback callback) {
   mapping_callback_.Run(
       source_id,
-      media::BindToCurrentLoop(base::BindOnce(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
           &CameraAppDeviceProviderImpl::GetCameraAppDeviceWithDeviceId,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
@@ -60,7 +60,7 @@ void CameraAppDeviceProviderImpl::SetVirtualDeviceEnabled(
     SetVirtualDeviceEnabledCallback callback) {
   mapping_callback_.Run(
       source_id,
-      media::BindToCurrentLoop(base::BindOnce(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
           &CameraAppDeviceProviderImpl::SetVirtualDeviceEnabledWithDeviceId,
           weak_ptr_factory_.GetWeakPtr(), enabled, std::move(callback))));
 }

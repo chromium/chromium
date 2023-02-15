@@ -14,12 +14,12 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
@@ -89,7 +89,7 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateClient() {
     return MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
-        BindToCurrentLoop(base::BindRepeating(
+        base::BindPostTaskToCurrentDefault(base::BindRepeating(
             &FakeVideoCaptureDeviceTestBase::OnFrameCaptured,
             base::Unretained(this))));
   }

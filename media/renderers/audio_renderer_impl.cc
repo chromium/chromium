@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -28,7 +29,6 @@
 #include "media/base/audio_buffer_converter.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_mixing_matrix.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_client.h"
@@ -382,7 +382,7 @@ void AudioRendererImpl::Initialize(DemuxerStream* stream,
 
   // Always post |init_cb_| because |this| could be destroyed if initialization
   // failed.
-  init_cb_ = BindToCurrentLoop(std::move(init_cb));
+  init_cb_ = base::BindPostTaskToCurrentDefault(std::move(init_cb));
 
   // Retrieve hardware device parameters asynchronously so we don't block the
   // media thread on synchronous IPC.
@@ -392,9 +392,10 @@ void AudioRendererImpl::Initialize(DemuxerStream* stream,
 
 #if !BUILDFLAG(IS_ANDROID)
   if (speech_recognition_client_) {
-    speech_recognition_client_->SetOnReadyCallback(BindToCurrentLoop(
-        base::BindOnce(&AudioRendererImpl::EnableSpeechRecognition,
-                       weak_factory_.GetWeakPtr())));
+    speech_recognition_client_->SetOnReadyCallback(
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&AudioRendererImpl::EnableSpeechRecognition,
+                           weak_factory_.GetWeakPtr())));
   }
 #endif
 }

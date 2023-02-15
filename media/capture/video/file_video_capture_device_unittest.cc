@@ -10,8 +10,8 @@
 
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/task_environment.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/test_data_util.h"
 #include "media/capture/video/file_video_capture_device.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
@@ -88,7 +88,7 @@ class FileVideoCaptureDeviceTest : public ::testing::Test {
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateClient() {
     return MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
-        BindToCurrentLoop(
+        base::BindPostTaskToCurrentDefault(
             base::BindRepeating(&FileVideoCaptureDeviceTest::OnFrameCaptured,
                                 base::Unretained(this))));
   }
@@ -175,7 +175,7 @@ TEST_F(FileVideoCaptureDeviceTest, TakePhoto) {
 
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure =
-      BindToCurrentLoop(run_loop.QuitClosure());
+      base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
   EXPECT_CALL(image_capture_client_, OnCorrectPhotoTaken())
       .Times(1)
       .WillOnce(InvokeWithoutArgs([quit_closure]() { quit_closure.Run(); }));

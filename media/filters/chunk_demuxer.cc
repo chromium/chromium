@@ -12,9 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_decoder_config.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/demuxer.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mime_util.h"
@@ -301,7 +301,7 @@ void ChunkDemuxerStream::Read(uint32_t count, ReadCB read_cb) {
   DCHECK_NE(state_, UNINITIALIZED);
   DCHECK(!read_cb_);
 
-  read_cb_ = BindToCurrentLoop(std::move(read_cb));
+  read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb));
   requested_buffer_count_ = count;
 
   if (!is_enabled_) {
@@ -524,7 +524,7 @@ void ChunkDemuxer::Initialize(DemuxerHost* host,
     base::AutoLock auto_lock(lock_);
     if (state_ == SHUTDOWN) {
       // Init cb must only be run after this method returns, so post.
-      init_cb_ = BindToCurrentLoop(std::move(init_cb));
+      init_cb_ = base::BindPostTaskToCurrentDefault(std::move(init_cb));
       RunInitCB_Locked(DEMUXER_ERROR_COULD_NOT_OPEN);
       return;
     }
@@ -557,7 +557,7 @@ void ChunkDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback cb) {
   base::AutoLock auto_lock(lock_);
   DCHECK(!seek_cb_);
 
-  seek_cb_ = BindToCurrentLoop(std::move(cb));
+  seek_cb_ = base::BindPostTaskToCurrentDefault(std::move(cb));
   if (state_ != INITIALIZED && state_ != ENDED) {
     RunSeekCB_Locked(PIPELINE_ERROR_INVALID_STATE);
     return;

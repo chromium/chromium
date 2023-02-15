@@ -16,11 +16,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/pipeline_status.h"
@@ -204,7 +204,7 @@ void VideoRendererImpl::Initialize(
 
   // Always post |init_cb_| because |this| could be destroyed if initialization
   // failed.
-  init_cb_ = BindToCurrentLoop(std::move(init_cb));
+  init_cb_ = base::BindPostTaskToCurrentDefault(std::move(init_cb));
 
   client_ = client;
   wall_clock_time_cb_ = wall_clock_time_cb;

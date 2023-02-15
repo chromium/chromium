@@ -230,7 +230,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   OutputCB output_cb_;
 
   // Callback to be used as a release CB for VideoFrames.  Be sure to
-  // BindToCurrentLoop the closure that it takes.
+  // base::BindPostTaskToCurrentDefault the closure that it takes.
   D3D11VideoDecoderImpl::ReleaseMailboxCB release_mailbox_cb_;
 
   // Right now, this is used both for the video decoder and for display.  In

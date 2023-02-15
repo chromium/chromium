@@ -19,9 +19,9 @@
 #include "base/no_destructor.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
 #include "media/capture/video/chromeos/camera_3a_controller.h"
@@ -355,7 +355,7 @@ void CameraDeviceDelegate::AllocateAndStart(
       camera_hal_delegate_->GetCameraIdFromDeviceId(
           device_descriptor_.device_id),
       device_ops_.BindNewPipeAndPassReceiver(),
-      BindToCurrentLoop(
+      base::BindPostTaskToCurrentDefault(
           base::BindOnce(&CameraDeviceDelegate::OnOpenedDevice, GetWeakPtr())));
   device_ops_.set_disconnect_handler(base::BindOnce(
       &CameraDeviceDelegate::OnMojoConnectionError, GetWeakPtr()));
@@ -1250,7 +1250,7 @@ void CameraDeviceDelegate::OnConstructedDefaultStillCaptureRequestSettings(
     if (camera_app_device) {
       camera_app_device->ConsumeReprocessOptions(
           std::move(take_photo_callback),
-          media::BindToCurrentLoop(base::BindOnce(
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
               &RequestManager::TakePhoto, request_manager_->GetWeakPtr(),
               settings.Clone())));
     } else {

@@ -9,9 +9,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
@@ -48,7 +48,7 @@ void DecryptingVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(!reset_cb_);
   DCHECK(config.IsValidConfig());
 
-  init_cb_ = BindToCurrentLoop(std::move(init_cb));
+  init_cb_ = base::BindPostTaskToCurrentDefault(std::move(init_cb));
 
   if (!cdm_context) {
     // Once we have a CDM context, one should always be present.
@@ -66,7 +66,7 @@ void DecryptingVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // the decryptor for clear content as well.
   support_clear_content_ = true;
 
-  output_cb_ = BindToCurrentLoop(output_cb);
+  output_cb_ = base::BindPostTaskToCurrentDefault(output_cb);
   config_ = config;
 
   DCHECK(waiting_cb);
@@ -91,7 +91,7 @@ void DecryptingVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   state_ = kPendingDecoderInit;
   decryptor_->InitializeVideoDecoder(
-      config_, BindToCurrentLoop(
+      config_, base::BindPostTaskToCurrentDefault(
                    base::BindOnce(&DecryptingVideoDecoder::FinishInitialization,
                                   weak_factory_.GetWeakPtr())));
 }
@@ -109,7 +109,7 @@ void DecryptingVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK(decode_cb);
   CHECK(!decode_cb_) << "Overlapping decodes are not supported.";
 
-  decode_cb_ = BindToCurrentLoop(std::move(decode_cb));
+  decode_cb_ = base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
   if (state_ == kError) {
     std::move(decode_cb_).Run(DecoderStatus::Codes::kPlatformDecodeFailure);
@@ -137,7 +137,7 @@ void DecryptingVideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK(!init_cb_);  // No Reset() during pending initialization.
   DCHECK(!reset_cb_);
 
-  reset_cb_ = BindToCurrentLoop(std::move(closure));
+  reset_cb_ = base::BindPostTaskToCurrentDefault(std::move(closure));
 
   decryptor_->ResetDecoder(Decryptor::kVideo);
 
@@ -233,7 +233,7 @@ void DecryptingVideoDecoder::DecodePendingBuffer() {
 
   decryptor_->DecryptAndDecodeVideo(
       pending_buffer_to_decode_,
-      BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &DecryptingVideoDecoder::DeliverFrame, weak_factory_.GetWeakPtr())));
 }
 

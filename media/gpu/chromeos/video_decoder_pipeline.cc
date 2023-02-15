@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -19,7 +20,6 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "media/base/async_destroy_video_decoder.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -964,9 +964,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
         output_size ? *output_size : decoder_visible_rect.size(),
         estimated_num_buffers_for_renderer_, decoder_task_runner_,
         base::BindRepeating(&PickRenderableFourcc, renderable_fourccs_),
-        BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
-                                              decoder_weak_this_,
-                                              "ImageProcessor error")));
+        base::BindPostTaskToCurrentDefault(
+            base::BindRepeating(&VideoDecoderPipeline::OnError,
+                                decoder_weak_this_, "ImageProcessor error")));
   }
 
   if (!image_processor) {

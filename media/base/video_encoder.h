@@ -6,8 +6,8 @@
 #define MEDIA_BASE_VIDEO_ENCODER_H_
 
 #include "base/functional/callback.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
@@ -169,8 +169,9 @@ class MEDIA_EXPORT VideoEncoder {
  protected:
   template <typename Callback>
   Callback BindCallbackToCurrentLoopIfNeeded(Callback callback) {
-    return post_callbacks_ ? BindToCurrentLoop(std::move(callback))
-                           : std::move(callback);
+    return post_callbacks_
+               ? base::BindPostTaskToCurrentDefault(std::move(callback))
+               : std::move(callback);
   }
 
  private:

@@ -10,7 +10,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/bind_post_task.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
@@ -102,7 +102,7 @@ FuchsiaStreamDecryptor::~FuchsiaStreamDecryptor() {
 base::RepeatingClosure FuchsiaStreamDecryptor::GetOnNewKeyClosure() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return BindToCurrentLoop(base::BindRepeating(
+  return base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &FuchsiaStreamDecryptor::OnNewKey, weak_factory_.GetWeakPtr()));
 }
 

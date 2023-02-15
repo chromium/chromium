@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/svc_scalability_mode.h"
@@ -190,8 +189,9 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     auto gmb = std::move(available_gmbs_.back());
     available_gmbs_.pop_back();
 
-    VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB reuse_cb = BindToCurrentLoop(
-        base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this));
+    VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB reuse_cb =
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this));
     const gpu::MailboxHolder kEmptyMailBoxes[media::VideoFrame::kMaxPlanes] =
         {};
     return VideoFrame::WrapExternalGpuMemoryBuffer(
@@ -279,8 +279,9 @@ class VideoEncodeAcceleratorAdapter::ReadOnlyRegionPool
     DCHECK(mapped_region->IsValid());
 
     return std::make_unique<Handle>(
-        std::move(mapped_region), BindToCurrentLoop(base::BindOnce(
-                                      &ReadOnlyRegionPool::ReuseBuffer, this)));
+        std::move(mapped_region),
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&ReadOnlyRegionPool::ReuseBuffer, this)));
   }
 
  private:

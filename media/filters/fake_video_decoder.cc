@@ -5,7 +5,7 @@
 #include "media/filters/fake_video_decoder.h"
 
 #include "base/location.h"
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/bind_post_task.h"
 #include "media/base/test_helpers.h"
 
 namespace media {
@@ -82,10 +82,10 @@ void FakeVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(reset_cb_.IsNull()) << "No reinitialization during pending reset.";
 
   current_config_ = config;
-  init_cb_.SetCallback(BindToCurrentLoop(std::move(init_cb)));
+  init_cb_.SetCallback(base::BindPostTaskToCurrentDefault(std::move(init_cb)));
 
-  // Don't need BindToCurrentLoop() because |output_cb_| is only called from
-  // RunDecodeCallback() which is posted from Decode().
+  // Don't need base::BindPostTaskToCurrentDefault() because |output_cb_| is
+  // only called from RunDecodeCallback() which is posted from Decode().
   output_cb_ = output_cb;
 
   if (!decoded_frames_.empty()) {
@@ -124,7 +124,7 @@ void FakeVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   int buffer_size = buffer->end_of_stream() ? 0 : buffer->data_size();
   DecodeCB wrapped_decode_cb = base::BindOnce(
       &FakeVideoDecoder::OnFrameDecoded, weak_factory_.GetWeakPtr(),
-      buffer_size, BindToCurrentLoop(std::move(decode_cb)));
+      buffer_size, base::BindPostTaskToCurrentDefault(std::move(decode_cb)));
 
   if (state_ == STATE_ERROR) {
     std::move(wrapped_decode_cb).Run(DecoderStatus::Codes::kFailed);
@@ -151,7 +151,7 @@ void FakeVideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(reset_cb_.IsNull());
 
-  reset_cb_.SetCallback(BindToCurrentLoop(std::move(closure)));
+  reset_cb_.SetCallback(base::BindPostTaskToCurrentDefault(std::move(closure)));
   decoded_frames_.clear();
 
   // Defer the reset if a decode is pending.

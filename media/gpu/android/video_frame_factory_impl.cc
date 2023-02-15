@@ -13,13 +13,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/codec_image.h"
@@ -99,9 +99,10 @@ void VideoFrameFactoryImpl::Initialize(OverlayMode overlay_mode,
 
   // On init success, create the TextureOwner and hop it back to this thread to
   // call |init_cb|.
-  auto gpu_init_cb = base::BindOnce(&AllocateTextureOwnerOnGpuThread,
-                                    BindToCurrentLoop(std::move(init_cb)),
-                                    overlay_mode, GetDrDcLock());
+  auto gpu_init_cb =
+      base::BindOnce(&AllocateTextureOwnerOnGpuThread,
+                     base::BindPostTaskToCurrentDefault(std::move(init_cb)),
+                     overlay_mode, GetDrDcLock());
   image_provider_->Initialize(std::move(gpu_init_cb));
 }
 

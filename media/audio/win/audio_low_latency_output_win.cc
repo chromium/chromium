@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_propvariant.h"
@@ -29,7 +30,6 @@
 #include "media/audio/win/avrt_wrapper_win.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/base/audio_sample_types.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 
@@ -324,7 +324,7 @@ bool WASAPIAudioOutputStream::Open() {
   }
 
   session_listener_ = std::make_unique<AudioSessionEventListener>(
-      audio_client_.Get(), BindToCurrentLoop(base::BindOnce(
+      audio_client_.Get(), base::BindPostTaskToCurrentDefault(base::BindOnce(
                                &WASAPIAudioOutputStream::OnDeviceChanged,
                                weak_factory_.GetWeakPtr())));
 

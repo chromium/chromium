@@ -9,10 +9,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
@@ -52,7 +52,7 @@ void DecryptingDemuxerStream::Initialize(DemuxerStream* stream,
   DCHECK(!demuxer_stream_);
 
   demuxer_stream_ = stream;
-  init_cb_ = BindToCurrentLoop(std::move(status_cb));
+  init_cb_ = base::BindPostTaskToCurrentDefault(std::move(status_cb));
 
   InitializeDecoderConfig();
 
@@ -80,7 +80,7 @@ void DecryptingDemuxerStream::Read(uint32_t count, ReadCB read_cb) {
   CHECK(!read_cb_) << "Overlapping reads are not supported.";
   DCHECK_EQ(count, 1u) << "DecryptingDemuxerStream only reads a single-buffer.";
 
-  read_cb_ = BindToCurrentLoop(std::move(read_cb));
+  read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb));
   state_ = kPendingDemuxerRead;
   demuxer_stream_->Read(
       1,
@@ -94,7 +94,7 @@ void DecryptingDemuxerStream::Reset(base::OnceClosure closure) {
   DCHECK(state_ != kUninitialized) << state_;
   DCHECK(!reset_cb_);
 
-  reset_cb_ = BindToCurrentLoop(std::move(closure));
+  reset_cb_ = base::BindPostTaskToCurrentDefault(std::move(closure));
 
   decryptor_->CancelDecrypt(GetDecryptorStreamType());
 
@@ -273,7 +273,7 @@ void DecryptingDemuxerStream::DecryptPendingBuffer() {
   }
 
   decryptor_->Decrypt(GetDecryptorStreamType(), pending_buffer_to_decrypt_,
-                      BindToCurrentLoop(base::BindOnce(
+                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                           &DecryptingDemuxerStream::OnBufferDecrypted,
                           weak_factory_.GetWeakPtr())));
 }
