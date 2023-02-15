@@ -183,6 +183,10 @@ class MEDIA_EXPORT VideoRendererImpl
   // duration is before |start_timestamp_|.
   bool IsBeforeStartTime(const VideoFrame& frame);
 
+  // Helper method for checking if we have the best possible first frame to
+  // paint in the queue.
+  bool HasBestFirstFrame(const VideoFrame& frame);
+
   // Attempts to remove frames which are no longer effective for rendering when
   // |buffering_state_| == BUFFERING_HAVE_NOTHING or |was_background_rendering_|
   // is true.  If the current media time as provided by |wall_clock_time_cb_| is

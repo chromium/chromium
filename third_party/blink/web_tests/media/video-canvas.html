@@ -1,62 +1,48 @@
 <!DOCTYPE html>
 <title>Test "video" as a source for "canvas".</title>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<video></video>
+<video style="display: none"></video>
 <canvas width="160" height="120"></canvas>
+<canvas width="160" height="120"></canvas>
+<canvas width="160" height="120"></canvas><br/>
+
+<canvas width="160" height="120"></canvas>
+<canvas width="160" height="120"></canvas>
+<canvas width="160" height="120"></canvas><br/>
 <script>
-async_test(function(t) {
-    var ctx;
-    var width;
-    var height;
-    var results = {
-        current: 0,
-        values: [
-            // Different platforms may take different RGB conversion paths or
-            // have slight rounding differences, so allow multiple values here.
-            { time: 0, r: [255], g: [255], b: [0] },
-            { time: 2, r: [0], g: [3], b: [240, 242, 243]  },
-            { time: 4, r: [0], g: [31], b: [213, 215, 216] },
-            { time: 6, r: [0], g: [48], b: [182, 183, 184, 185] },
-            { time: 8, r: [0], g: [75, 76], b: [153, 154, 155] },
-            { time: 10, r: [0], g: [96, 97], b: [126, 127, 128] }
-        ]
-    };
+if (window.testRunner)
+  testRunner.waitUntilDone();
 
-    var video = document.querySelector("video");
+window.onload = _ => {
+  var index = 0;
+  var canvii = document.querySelectorAll('canvas');
+  var testTimes = [0, 2, 4, 6, 8, 10];
+  if (testTimes.length != canvii.length) {
+    testRunner.fail('Unpexected number of canvas or test times.');
+    return;
+  }
 
-    video.onloadedmetadata = t.step_func(function() {
-        width = video.videoWidth / 2;
-        height = video.videoHeight / 2;
+  var video = document.querySelector("video");
+  video.requestVideoFrameCallback(_ => {
+    let width = video.videoWidth / 2;
+    let height = video.videoHeight / 2;
 
-        ctx = document.querySelector("canvas").getContext("2d");
-        ctx.fillStyle = "yellow";
-        ctx.fillRect(0, 0, width, height);
-        testFrame();
-    });
+    function drawNext() {
+      let ctx = canvii[index++].getContext("2d");
+      ctx.fillStyle = "yellow";
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(video, 0, 0, width, height);
 
-    video.onseeked = t.step_func(function() {
-        ctx.drawImage(video, 0, 0, width, height);
-        testFrame();
-    });
-
-    function testFrame() {
-        var expected = results.values[results.current];
-        var frame = ctx.getImageData(0, 0, width, height);
-        var r = frame.data[4 * 2 * width + 16 + 0];
-        var g = frame.data[4 * 2 * width + 16 + 1];
-        var b = frame.data[4 * 2 * width + 16 + 2];
-
-        assert_true(expected.r.includes(r), expected.time + " r " + r);
-        assert_true(expected.g.includes(g), expected.time + " g " + g);
-        assert_true(expected.b.includes(b), expected.time + " b " + b);
-
-        if (++results.current == results.values.length)
-            t.done();
-        else
-            video.currentTime = results.values[results.current].time;
+      if (index < testTimes.length) {
+        video.requestVideoFrameCallback(drawNext);
+        video.currentTime = testTimes[index];
+      } else if (window.testRunner) {
+        testRunner.notifyDone();
+      }
     }
 
-    video.src = "content/counting.webm";
-});
+    drawNext();
+  });
+
+  video.src = "content/counting.webm";
+};
 </script>

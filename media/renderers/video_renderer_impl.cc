@@ -606,6 +606,7 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
   const bool is_eos = frame->metadata().end_of_stream;
   const bool is_before_start_time = !is_eos && IsBeforeStartTime(*frame);
   const bool cant_read = !video_decoder_stream_->CanReadWithoutStalling();
+  const bool has_best_first_frame = !is_eos && HasBestFirstFrame(*frame);
 
   if (is_eos) {
     DCHECK(!received_end_of_stream_);
@@ -661,7 +662,7 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
   // frame metadata.
   if (!sink_started_ && !painted_first_frame_ && algorithm_->frames_queued() &&
       (received_end_of_stream_ || cant_read ||
-       (algorithm_->effective_frames_queued() && !is_before_start_time))) {
+       (algorithm_->effective_frames_queued() && has_best_first_frame))) {
     scoped_refptr<VideoFrame> first_frame =
         algorithm_->Render(base::TimeTicks(), base::TimeTicks(), nullptr);
     CheckForMetadataChanges(first_frame->format(), first_frame->natural_size());
@@ -961,6 +962,15 @@ bool VideoRendererImpl::IsBeforeStartTime(const VideoFrame& frame) {
   return frame.timestamp() + frame.metadata().frame_duration.value_or(
                                  last_decoder_stream_avg_duration_) <
          start_timestamp_;
+}
+
+bool VideoRendererImpl::HasBestFirstFrame(const VideoFrame& frame) {
+  // We have the best first frame in the queue if our current frame has a
+  // timestamp after `start_timestamp_` or straddles `start_timestamp_`.
+  return frame.timestamp() >= start_timestamp_ ||
+         frame.timestamp() + frame.metadata().frame_duration.value_or(
+                                 last_decoder_stream_avg_duration_) >
+             start_timestamp_;
 }
 
 void VideoRendererImpl::RemoveFramesForUnderflowOrBackgroundRendering() {
