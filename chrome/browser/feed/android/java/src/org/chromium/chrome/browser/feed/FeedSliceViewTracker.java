@@ -111,7 +111,9 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     public void clear() {
         mContentKeysVisible.clear();
         mFeedContentVisible = false;
-        mWatchedSliceMap.clear();
+        if (mWatchedSliceMap != null) {
+            mWatchedSliceMap.clear();
+        }
     }
 
     /**
@@ -122,6 +124,9 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
      * @param callback The callback to get notified.
      */
     public void watchForFirstVisible(String contentKey, float viewedThreshold, Runnable callback) {
+        if (mWatchedSliceMap == null) { // avoid crbug.com/1416344
+            return;
+        }
         ArrayList<VisibilityObserver> watchers = mWatchedSliceMap.get(contentKey);
         if (watchers == null) {
             watchers = new ArrayList<>();
@@ -136,6 +141,9 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
      * @param callback The callback to stop from getting the notification.
      */
     public void stopWatchingForFirstVisible(String contentKey, Runnable callback) {
+        if (mWatchedSliceMap == null) { // avoid crbug.com/1416344
+            return;
+        }
         ArrayList<VisibilityObserver> watchers = mWatchedSliceMap.get(contentKey);
         if (watchers == null) {
             return;

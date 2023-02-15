@@ -304,7 +304,11 @@ public class FeedSliceViewTrackerTest {
         mTracker.destroy();
         verify(mViewTreeObserver).removeOnPreDrawListener(any());
 
-        mTracker.destroy(); // A second destroy() does nothing.
+        // These calls shouldn't do anything.
+        mTracker.destroy();
+        mTracker.clear();
+        mTracker.watchForFirstVisible("c/key1", 0.5f, () -> {});
+        mTracker.stopWatchingForFirstVisible("c/key1", () -> {});
     }
 
     @Test

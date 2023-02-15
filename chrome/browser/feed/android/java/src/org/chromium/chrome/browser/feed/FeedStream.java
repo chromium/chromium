@@ -543,8 +543,10 @@ public class FeedStream implements Stream {
         @Override
         public void watchForViewFirstVisible(View view, float viewedThreshold, Runnable runnable) {
             assert ThreadUtils.runningOnUiThread();
-            mSliceViewTracker.watchForFirstVisible(
-                    getSliceIdFromView(view), viewedThreshold, runnable);
+            if (mSliceViewTracker != null) {
+                mSliceViewTracker.watchForFirstVisible(
+                        getSliceIdFromView(view), viewedThreshold, runnable);
+            }
         }
 
         @Override
