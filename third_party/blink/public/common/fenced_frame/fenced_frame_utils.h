@@ -69,6 +69,10 @@ BLINK_COMMON_EXPORT void RecordFencedFrameUnsandboxedFlags(
 BLINK_COMMON_EXPORT void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
     bool is_main_frame);
 
+// Automatic beacon type definitions
+inline constexpr char kFencedFrameTopNavigationBeaconType[] =
+    "reserved.top_navigation";
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_FENCED_FRAME_UTILS_H_

@@ -134,7 +134,7 @@ void Fence::setReportEventDataForAutomaticBeacons(
   if (!fenced_frame) {
     return;
   }
-  if (event->eventType() != "reserved.top_navigation") {
+  if (event->eventType() != blink::kFencedFrameTopNavigationBeaconType) {
     AddConsoleMessage(event->eventType() +
                       " is not a valid automatic beacon event type.");
     return;

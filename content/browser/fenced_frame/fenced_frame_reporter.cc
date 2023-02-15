@@ -100,6 +100,23 @@ base::StringPiece ReportingDestinationAsString(
 
 }  // namespace
 
+AutomaticBeaconInfo::AutomaticBeaconInfo(
+    const std::string& data,
+    const std::vector<blink::FencedFrame::ReportingDestination>& destination)
+    : data(data), destination(destination) {}
+
+AutomaticBeaconInfo::AutomaticBeaconInfo(const AutomaticBeaconInfo&) = default;
+
+AutomaticBeaconInfo::AutomaticBeaconInfo(AutomaticBeaconInfo&&) = default;
+
+AutomaticBeaconInfo& AutomaticBeaconInfo::operator=(
+    const AutomaticBeaconInfo&) = default;
+
+AutomaticBeaconInfo& AutomaticBeaconInfo::operator=(AutomaticBeaconInfo&&) =
+    default;
+
+AutomaticBeaconInfo::~AutomaticBeaconInfo() = default;
+
 FencedFrameReporter::PendingEvent::PendingEvent(
     const std::string& type,
     const std::string& data,
@@ -358,8 +375,7 @@ bool FencedFrameReporter::SendReportInternal(
 void FencedFrameReporter::UpdateAutomaticBeaconData(
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
-  automatic_beacon_data_ = event_data;
-  automatic_beacon_destination_ = destination;
+  automatic_beacon_info_.emplace(event_data, destination);
 }
 
 base::flat_map<blink::FencedFrame::ReportingDestination,

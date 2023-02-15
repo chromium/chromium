@@ -3759,6 +3759,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // timer for running unload events has expired.
   void ClosePageTimeout();
 
+  // Send an automatic `reserved.top_navigation` beacon if one was registered
+  // with the NavigationRequest's initiator frame using the
+  // `window.fence.setReportEventDataForAutomaticBeacons` API.
+  void MaybeSendFencedFrameReportingBeacon(
+      NavigationRequest& navigation_request);
+
+  // Helper function that handles creating and sending a fenced frame beacon.
+  // This also handles sending console messages if the call to send the beacon
+  // originated from the renderer.
+  // Calls to this function for automatic beacons (i.e. the
+  // "reserved.top_navigation" beacon) will originate from the browser. All
+  // other fenced frame beacon calls happen through a `fence.sendBeacon()`
+  // JavaScript call which will originate from the renderer.
+  void SendFencedFrameReportingBeaconInternal(
+      const std::string& event_data,
+      const std::string& event_type,
+      blink::FencedFrame::ReportingDestination destination,
+      bool from_renderer);
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts

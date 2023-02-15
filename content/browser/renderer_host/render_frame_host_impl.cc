@@ -7753,79 +7753,6 @@ void RenderFrameHostImpl::CreateNewWindow(
   new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);
 }
 
-// TODO(crbug.com/1400992): Move SendFencedFrameReportingBeacon into a separate
-// refcounted class.
-void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
-    const std::string& event_data,
-    const std::string& event_type,
-    blink::FencedFrame::ReportingDestination destination) {
-  // Get the reporting metadata associated with the fenced frame.
-  const absl::optional<FencedFrameProperties>& fenced_frame_properties =
-      frame_tree_node_->GetFencedFrameProperties();
-  if (!fenced_frame_properties.has_value() ||
-      !fenced_frame_properties->fenced_frame_reporter_) {
-    // No associated fenced frame reporter. This should have been captured
-    // in the renderer process at `Fence::reportEvent`.
-    // This implies there is an inconsistency between the browser and the
-    // renderer.
-    mojo::ReportBadMessage(
-        "This frame had reporting metadata registered in its renderer process "
-        "but not in its browser process. The reporting metadata should be "
-        "consistent between the two.");
-    return;
-  }
-  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
-    mojo::ReportBadMessage(
-        "The data provided to SendFencedFrameReportingBeacon() exceeds the "
-        "maximum length, which is 64KB.");
-    return;
-  }
-
-  if (destination ==
-          blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl &&
-      !GetOutermostMainFrame()
-           ->GetPage()
-           .CheckAndMaybeDebitReportEventForSelectURLBudget(*this)) {
-    AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
-                        "The call to fence.reportEvent was blocked due to "
-                        "insufficient budget.");
-    return;
-  }
-
-  std::string error_message;
-  if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
-          event_type, event_data, destination,
-          /*request_initiator_frame=*/this, error_message)) {
-    AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
-                        error_message);
-  }
-}
-
-void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
-    const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
-  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
-    mojo::ReportBadMessage(
-        "The data provided to SetFencedFrameAutomaticBeaconReportEventData() "
-        "exceeds the maximum length, which is 64KB.");
-    return;
-  }
-
-  // The call is ignored if the RenderFrameHost is not the currently active one
-  // in the FrameTreeNode. For instance, this is ignored when it is pending
-  // deletion or if it entered the BackForwardCache.
-  //
-  // Note: The renderer process already tests the document is not detached from
-  // the frame tree before sending the IPC, but this might race with frame
-  // deletion IPC sent from other processes.
-  if (!IsActive()) {
-    return;
-  }
-  CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
-
-  owner_->SetFencedFrameAutomaticBeaconReportEventData(event_data, destination);
-}
-
 void RenderFrameHostImpl::CreatePortal(
     mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
     mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,
@@ -8027,6 +7954,134 @@ void RenderFrameHostImpl::CreateFencedFrame(
   // Fenced frames (after their first navigation) do not have opaque origins,
   // and this default-constructed FRS does not impact that.
   DCHECK(initial_replicated_state.origin.opaque());
+}
+
+// TODO(crbug.com/1400992): Move SendFencedFrameReportingBeacon into a separate
+// refcounted class.
+void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
+    const std::string& event_data,
+    const std::string& event_type,
+    blink::FencedFrame::ReportingDestination destination) {
+  SendFencedFrameReportingBeaconInternal(event_data, event_type, destination,
+                                         /*from_renderer=*/true);
+}
+
+void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
+    NavigationRequest& navigation_request) {
+  // The fenced frame "reserved.top_navigation" automatic beacon only cares
+  // about top-frame navigations.
+  if (!IsOutermostMainFrame()) {
+    return;
+  }
+
+  if (!navigation_request.GetInitiatorFrameToken().has_value()) {
+    return;
+  }
+
+  RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+      navigation_request.GetInitiatorProcessID(),
+      navigation_request.GetInitiatorFrameToken().value());
+  if (!initiator_rfh) {
+    return;
+  }
+
+  RenderFrameHostImpl* initiator_main_rfh = initiator_rfh->GetMainFrame();
+
+  const absl::optional<FencedFrameProperties>& properties =
+      initiator_main_rfh->frame_tree_node()->GetFencedFrameProperties();
+  // Navigations that initiate from a fenced frame or iframe loaded with a urn
+  // and target either a new window or `_unfencedTop` should send an automatic
+  // beacon.
+  if (!properties.has_value() || !properties->fenced_frame_reporter_) {
+    return;
+  }
+
+  absl::optional<AutomaticBeaconInfo> info =
+      properties->fenced_frame_reporter_->automatic_beacon_info();
+  if (!info) {
+    return;
+  }
+
+  for (blink::FencedFrame::ReportingDestination destination :
+       info->destination) {
+    initiator_main_rfh->SendFencedFrameReportingBeaconInternal(
+        info->data, blink::kFencedFrameTopNavigationBeaconType, destination,
+        /*from_renderer=*/false);
+  }
+}
+
+void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
+    const std::string& event_data,
+    const std::string& event_type,
+    blink::FencedFrame::ReportingDestination destination,
+    bool from_renderer) {
+  // Get the reporting metadata associated with the fenced frame.
+  const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+      frame_tree_node_->GetFencedFrameProperties();
+  if (!fenced_frame_properties.has_value() ||
+      !fenced_frame_properties->fenced_frame_reporter_) {
+    // No associated fenced frame reporter. This should have been captured
+    // in the renderer process at `Fence::reportEvent`.
+    // This implies there is an inconsistency between the browser and the
+    // renderer.
+    mojo::ReportBadMessage(
+        "This frame had reporting metadata registered in its renderer process "
+        "but not in its browser process. The reporting metadata should be "
+        "consistent between the two.");
+    return;
+  }
+  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
+    mojo::ReportBadMessage(
+        "The data provided to SendFencedFrameReportingBeacon() exceeds the "
+        "maximum length, which is 64KB.");
+    return;
+  }
+
+  if (destination ==
+          blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl &&
+      !GetOutermostMainFrame()
+           ->GetPage()
+           .CheckAndMaybeDebitReportEventForSelectURLBudget(*this)) {
+    if (from_renderer) {
+      AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                          "The call to fence.reportEvent was blocked due to "
+                          "insufficient budget.");
+    }
+    return;
+  }
+
+  std::string error_message;
+  if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
+          event_type, event_data, destination,
+          /*request_initiator_frame=*/this, error_message)) {
+    AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                        error_message);
+  }
+}
+
+void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
+    const std::string& event_data,
+    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
+  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
+    mojo::ReportBadMessage(
+        "The data provided to SetFencedFrameAutomaticBeaconReportEventData() "
+        "exceeds the maximum length, which is 64KB.");
+    return;
+  }
+
+  // The call is ignored if the RenderFrameHost is not the currently active one
+  // in the FrameTreeNode. For instance, this is ignored when it is pending
+  // deletion or if it entered the BackForwardCache.
+  //
+  // Note: The renderer process already tests the document is not detached from
+  // the frame tree before sending the IPC, but this might race with frame
+  // deletion IPC sent from other processes.
+  if (!IsActive()) {
+    return;
+  }
+  CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
+
+  owner_->SetFencedFrameAutomaticBeaconReportEventData(event_data, destination);
 }
 
 void RenderFrameHostImpl::OnViewTransitionOptInChanged(
@@ -12603,6 +12658,16 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // initiated by Blink. In all other cases it should be non-null and present in
   // the map of NavigationRequests.
   if (committing_navigation_request) {
+    // If an automatic "top_navigation" beacon is registered in the FencedFrame
+    // of the document initiator of the navigation, and the navigation
+    // destination is an outermost main frame, send the beacon. We do this at
+    // this point because:
+    // 1. We need a handle to the initiator.
+    // 2. The initiator hasn't been unloaded yet due to this navigation, and
+    //    still exists at this point (unless explicitly removed from the DOM
+    //    otherwise).
+    MaybeSendFencedFrameReportingBeacon(*committing_navigation_request);
+
     committing_navigation_request->IgnoreCommitInterfaceDisconnection();
     if (!MaybeInterceptCommitCallback(committing_navigation_request, &params,
                                       &interface_params)) {
