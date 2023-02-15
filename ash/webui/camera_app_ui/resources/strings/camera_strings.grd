@@ -189,17 +189,11 @@
       <message desc="Label for the dismissing button in the dialog." name="IDS_DIALOG_CANCEL_BUTTON">
         Cancel
       </message>
-      <message desc="Label for the printing button." name="IDS_PRINT_BUTTON">
-        Print
-      </message>
       <message desc="Label for the gallery button." name="IDS_GALLERY_BUTTON">
         Go to Gallery
       </message>
       <message desc="Error message shown when saving/adding a image or video to the file system failed." name="IDS_ERROR_MSG_SAVE_FILE_FAILED">
         Unable to save the file
-      </message>
-      <message desc="Label for the exporting button." name="IDS_EXPORT_BUTTON">
-        Export to disk
       </message>
       <message desc="Label for the button to open pan tilt zoom control panel" name="IDS_OPEN_PTZ_PANEL_BUTTON">
         Pan tilt zoom
@@ -221,11 +215,6 @@
       </message>
       <message desc="Label for the radio button to turn off the timer." name="IDS_ARIA_TIMER_OFF">
         Timer off
-      </message>
-      <message desc="Message shown before moving all photos and videos stored in the Camera App to the Downloads folder." name="IDS_MIGRATE_PICTURES_MSG">
-        Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
-
-        Apps with storage permissions will have access to your photos and videos.
       </message>
       <message desc="Label for spoken feedback to read out grid-type: 3x3." name="IDS_ARIA_GRID_3X3">
         3 by 3
@@ -263,9 +252,6 @@
       <message desc="Label for for grid-type: 4x4." name="IDS_LABEL_GRID_4X4">
         4 x 4
       </message>
-      <message desc="Label for the button of camera-resolution options." name="IDS_CAMERA_RESOLUTION_BUTTON">
-        Camera resolution
-      </message>
       <message desc="Label for the button of photo-resolution options." name="IDS_PHOTO_RESOLUTION_BUTTON">
         Photo resolution
       </message>
@@ -280,18 +266,6 @@
       </message>
       <message desc="Label for external camera." name="IDS_LABEL_EXTERNAL_CAMERA">
         External camera
-      </message>
-      <message desc="Label for photo resolution options of specific resolution." name="IDS_LABEL_PHOTO_RESOLUTION">
-        (<ph name="aspect_ratio_width">$1<ex>16</ex></ph>:<ph name="aspect_ratio_height">$2<ex>9</ex></ph>) <ph name="megapixel">$3<ex>0.9</ex></ph> mega pixel
-      </message>
-      <message desc="Label for detail photo resolution options of specific resolution." name="IDS_LABEL_DETAIL_PHOTO_RESOLUTION">
-        (<ph name="aspect_ratio_width">$1<ex>16</ex></ph>:<ph name="aspect_ratio_height">$2<ex>9</ex></ph> - <ph name="width">$3<ex>1920</ex></ph>x<ph name="height">$4<ex>1080</ex></ph>) <ph name="megapixel">$5<ex>0.9</ex></ph> mega pixel
-      </message>
-      <message desc="Label for video resolution options of specific resolution." name="IDS_LABEL_VIDEO_RESOLUTION">
-        HD <ph name="height">$1<ex>720</ex></ph>p (<ph name="width">$2<ex>1280</ex></ph>:<ph name="height">$1<ex>720</ex></ph>)
-      </message>
-      <message desc="Confirmation message before removing a selected item from the gallery. Expects a file name to be passed in." name="IDS_DELETE_CONFIRMATION_MSG">
-        Do you really want to remove <ph name="file">$1<ex>IMG_20160520_000000.jpg</ex></ph>?
       </message>
       <message desc="Label for spoken feedback to read out switch to take photo mode button." name="IDS_SWITCH_TAKE_PHOTO_BUTTON">
         Switch to take photo
@@ -318,9 +292,6 @@
       <message desc="Label for the checkbox to toggle the microphone for recording video." name="IDS_TOGGLE_MIC_BUTTON">
         Microphone
       </message>
-      <message desc="Label for the checkbox to toggle barcode (QR code) scanning in photo mode." name="IDS_TOGGLE_BARCODE_BUTTON">
-        QR code
-      </message>
       <message desc="Label for the copy button of the barcode url chip." name="IDS_BARCODE_COPY_LINK_BUTTON">
         Copy link address
       </message>
@@ -344,9 +315,6 @@
       </message>
       <message desc="Label for expert mode option: print performance logs." name="IDS_EXPERT_PRINT_PERFORMANCE_LOGS">
         Print performance logs
-      </message>
-      <message desc="Label for expert mode option: scan barcode." name="IDS_EXPERT_SCAN_BARCODE">
-        Scan barcode
       </message>
       <message desc="Label for expert mode option: custom video parameters." name="IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS">
         Custom video parameters
@@ -402,29 +370,14 @@
       <message desc="Error message shown when failing to take portrait (bokeh effect, background blur) photo." name="IDS_ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED">
         Unable to take portrait photo
       </message>
-      <message desc="Short description of the Camera App." name="IDS_DESCRIPTION">
-        Take photos and record videos with your camera.
-      </message>
       <message desc="Label for for grid-type: 3x3." name="IDS_LABEL_GRID_3X3">
         3 x 3
       </message>
       <message desc="Label for the shutter button to cancel countdown timer and stop taking photo." name="IDS_TAKE_PHOTO_CANCEL_BUTTON">
         Stop taking photo
       </message>
-      <message desc="Label for the delete button." name="IDS_DELETE_BUTTON">
-        Delete
-      </message>
       <message desc="Error message shown when no data is recorded for a recording and it won't be added to the gallery." name="IDS_ERROR_MSG_EMPTY_RECORDING">
         Nothing recorded
-      </message>
-      <message desc="Confirmation message before removing multiple selected items from the gallery. Expects a file count to be passed in." name="IDS_DELETE_MULTI_CONFIRMATION_MSG">
-        Do you really want to remove <ph name="count">$1<ex>20</ex></ph> items?
-      </message>
-      <message desc="Text to speech label for the gallery list." name="IDS_GALLERY_IMAGES">
-        Gallery images
-      </message>
-      <message desc="Error message shown when exporting to an external directory failed. Expects a file name to be passed in." name="IDS_ERROR_MSG_GALLERY_EXPORT_FAILED">
-        Unable to export <ph name="file">$1<ex>IMG_20160520_000000.jpg</ex></ph>
       </message>
       <message desc="Status message for spoken feedback when switching over to another camera." name="IDS_STATUS_MSG_CAMERA_SWITCHED">
         <ph name="camera">$1<ex>USB WebCam (12ab:5678) User-facing</ex></ph> active
@@ -459,23 +412,14 @@
       <message desc="Label for the button to open mirror control panel. Eg. if mirroring is toggled on, preview will be flipped horizontally." name="IDS_OPEN_MIRROR_PANEL_BUTTON">
         Mirror preview
       </message>
-      <message desc="Label for the button of grid-type options." name="IDS_GRID_TYPE_BUTTON">
-        Grid type
-      </message>
       <message desc="Label showing current state of 30 FPS on tooltip of toggle 60 FPS recording checkbox." name="IDS_LABEL_30FPS">
         30 FPS
       </message>
       <message desc="Label showing current state of 60 FPS on tooltip of toggle 60 FPS recording checkbox." name="IDS_LABEL_60FPS">
         60 FPS
       </message>
-      <message desc="Label for the checkbox to toggle 60 FPS recording." name="IDS_TOGGLE_60FPS_BUTTON">
-        60 FPS
-      </message>
       <message desc="Label for the back button." name="IDS_BACK_BUTTON">
         Go back
-      </message>
-      <message desc="Label for spoken feedback to read out switch to take square photo mode button." name="IDS_SWITCH_TAKE_SQUARE_PHOTO_BUTTON">
-        Switch to take square photo
       </message>
       <message desc="Label for switch to take square photo mode button." name="IDS_LABEL_SWITCH_TAKE_SQUARE_PHOTO_BUTTON">
         Square
@@ -562,9 +506,6 @@ If your feedback is about image or video quality, please attach a sample photo o
       </message>
       <message desc="Label for button for dropping current photo result and to retake another photo." name="IDS_LABEL_RETAKE">
         Retake
-      </message>
-      <message desc="Label for button for opening fixing document area window." name="IDS_LABEL_FIX_DOCUMENT">
-        Fix
       </message>
       <message desc="Label for current record time and the maximal record time in seconds separated by '/' sign." name="IDS_LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME">
         <ph name="current">$1<ex>4.3</ex></ph> / <ph name="maximal">$2<ex>5.0</ex></ph>s
