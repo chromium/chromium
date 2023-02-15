@@ -108,4 +108,8 @@ BASE_FEATURE(kReclaimResourcesFlushInBackground,
              "ReclaimResourcesFlushInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMoreAggressiveSolidColorDetection,
+             "MoreAggressiveSolidColorDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

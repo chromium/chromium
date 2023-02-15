@@ -57,6 +57,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
     raw_ptr<ImageProvider> image_provider = nullptr;
   };
+  constexpr static int kDefault = 1;
 
   RasterSource(const RasterSource&) = delete;
   RasterSource& operator=(const RasterSource&) = delete;
@@ -80,8 +81,12 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   // Returns whether the given rect at given scale is of solid color in
   // this raster source, as well as the solid color value.
+  //
+  // If max_ops_to_analyze is set, changes the default maximum number of
+  // operations to analyze before giving up.
   bool PerformSolidColorAnalysis(gfx::Rect content_rect,
-                                 SkColor4f* color) const;
+                                 SkColor4f* color,
+                                 int max_ops_to_analyze = kDefault) const;
 
   // Returns true iff the whole raster source is of solid color.
   bool IsSolidColor() const;
