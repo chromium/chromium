@@ -12,3 +12,10 @@ dictionary SocketOpenInfo {
 dictionary TCPSocketOpenInfo : SocketOpenInfo {};
 
 dictionary UDPSocketOpenInfo : SocketOpenInfo {};
+
+dictionary TCPServerSocketOpenInfo {
+  ReadableStream readable;
+
+  DOMString localAddress;
+  unsigned short localPort;
+};

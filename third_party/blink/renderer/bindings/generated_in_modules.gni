@@ -2825,6 +2825,10 @@ if (target_os != "android") {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_open_info.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket_open_info.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket_open_info.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket_options.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_open_info.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.h",
@@ -2838,6 +2842,8 @@ if (target_os != "android") {
   generated_interface_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.h",
   ]

@@ -1200,6 +1200,7 @@ if (target_os != "android") {
           [
             "//third_party/blink/renderer/modules/direct_sockets/socket_connection.idl",
             "//third_party/blink/renderer/modules/direct_sockets/socket_options.idl",
+            "//third_party/blink/renderer/modules/direct_sockets/tcp_server_socket.idl",
             "//third_party/blink/renderer/modules/direct_sockets/tcp_socket.idl",
             "//third_party/blink/renderer/modules/direct_sockets/udp_message.idl",
             "//third_party/blink/renderer/modules/direct_sockets/udp_socket.idl",

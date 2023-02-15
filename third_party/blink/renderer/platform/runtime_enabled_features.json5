@@ -1080,6 +1080,11 @@
       status: "experimental",
     },
     {
+      name: "DirectSocketsExperimental",
+      status: "test",
+      depends_on: ["DirectSockets"],
+    },
+    {
       name: "DisableDifferentOriginSubframeDialogSuppression",
       origin_trial_feature_name: "DisableDifferentOriginSubframeDialogSuppression",
       origin_trial_type: "deprecation",

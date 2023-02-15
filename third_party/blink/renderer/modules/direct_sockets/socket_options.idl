@@ -20,4 +20,16 @@ dictionary UDPSocketOptions : SocketOptions {
 
   DOMString localAddress;
   [EnforceRange] unsigned short localPort;
+
+  // TODO(crbug.com/1413161): Implement ipv6Only support.
+  boolean ipv6Only;
+};
+
+dictionary TCPServerSocketOptions {
+  [EnforceRange] unsigned short localPort;
+
+  [EnforceRange] unsigned long backlog;
+
+  // TODO(crbug.com/1413161): Implement ipv6Only support.
+  boolean ipv6Only;
 };
