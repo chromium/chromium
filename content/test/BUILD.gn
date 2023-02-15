@@ -2073,7 +2073,6 @@ test("content_browsertests") {
     sources -= [ "../browser/keyboard_lock_browsertest.cc" ]
   }
 
-
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -2161,6 +2160,7 @@ test("content_unittests") {
     "../browser/attribution_reporting/attribution_interop_unittest.cc",
     "../browser/attribution_reporting/attribution_manager_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_report_network_sender_unittest.cc",
+    "../browser/attribution_reporting/attribution_report_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_delegate_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_sql_migrations_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_sql_unittest.cc",
