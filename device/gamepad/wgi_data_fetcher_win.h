@@ -36,7 +36,6 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
     kAddGamepadAddedFailed,
     kAddGamepadRemovedFailed,
     kRoGetActivationFactoryFailed,
-    kCoreWinrtStringDelayLoadFailed,
   };
 
   using Factory =

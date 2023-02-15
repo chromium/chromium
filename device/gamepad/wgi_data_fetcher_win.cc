@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
@@ -209,12 +210,6 @@ GamepadSource WgiDataFetcherWin::source() {
 
 void WgiDataFetcherWin::OnAddedToProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::win::HStringReference::ResolveCoreWinRTStringDelayload()) {
-    initialization_state_ =
-        InitializationState::kCoreWinrtStringDelayLoadFailed;
-    return;
-  }
-
   HRESULT hr = get_activation_factory_function_(
       base::win::HStringReference(RuntimeClass_Windows_Gaming_Input_Gamepad)
           .Get(),

@@ -9,8 +9,7 @@
 
 #include "base/base_export.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 // HStringReference is an HSTRING representation of a null terminated
 // string backed by memory that outlives the HStringReference instance.
@@ -18,31 +17,12 @@ namespace win {
 // If you need an HSTRING class that manages its own memory, you should
 // use ScopedHString instead.
 //
-// Note that HStringReference requires certain functions that are only
-// available on Windows 8 and later, and that these functions need to be
-// delayloaded to avoid breaking Chrome on Windows 7.
-//
-// Callers MUST check the return value of ResolveCoreWinRTStringDelayLoad()
-// *before* using HStringReference.
-//
-// One-time Initialization for HStringReference:
-//
-//   const bool success = HStringReference::ResolveCoreWinRTStringDelayload();
-//   if (success) {
-//     // HStringReference can be used.
-//   } else {
-//     // Handle error.
-//   }
-//
 // Example use:
 //
 //   HStringReference string(L"abc");
 //
 class BASE_EXPORT HStringReference {
  public:
-  // Loads all required HSTRING functions, available from Win8 and onwards.
-  static bool ResolveCoreWinRTStringDelayload();
-
   HStringReference(const wchar_t* str, size_t len);
   explicit HStringReference(const wchar_t* str);
 
@@ -67,7 +47,6 @@ class BASE_EXPORT HStringReference {
   HSTRING_HEADER hstring_header_;
 };
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win
 
 #endif  // BASE_WIN_HSTRING_REFERENCE_H_

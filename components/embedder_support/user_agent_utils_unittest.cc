@@ -249,8 +249,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
 #if BUILDFLAG(IS_WIN)
 bool ResolveCoreWinRT() {
   return base::win::ResolveCoreWinRTDelayload() &&
-         base::win::ScopedHString::ResolveCoreWinRTStringDelayload() &&
-         base::win::HStringReference::ResolveCoreWinRTStringDelayload();
+         base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
 }
 
 // On Windows, the client hint sec-ch-ua-platform-version should be

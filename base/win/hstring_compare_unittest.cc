@@ -18,8 +18,6 @@ constexpr wchar_t kTestString1234[] = L"1234";
 }  // namespace
 
 TEST(HStringCompareTest, FirstStringBeforeSecondString) {
-  ASSERT_TRUE(HStringReference::ResolveCoreWinRTStringDelayload());
-
   const HStringReference string12(kTestString12);
   const HStringReference string123(kTestString123);
   INT32 result;
@@ -29,8 +27,6 @@ TEST(HStringCompareTest, FirstStringBeforeSecondString) {
 }
 
 TEST(HStringCompareTest, StringsEqual) {
-  ASSERT_TRUE(HStringReference::ResolveCoreWinRTStringDelayload());
-
   const HStringReference string123(kTestString123);
   INT32 result;
   HRESULT hr = HStringCompare(string123.Get(), string123.Get(), &result);
@@ -39,8 +35,6 @@ TEST(HStringCompareTest, StringsEqual) {
 }
 
 TEST(HStringCompareTest, FirstStringAfterSecondString) {
-  ASSERT_TRUE(HStringReference::ResolveCoreWinRTStringDelayload());
-
   const HStringReference string123(kTestString123);
   const HStringReference string1234(kTestString1234);
   INT32 result;
