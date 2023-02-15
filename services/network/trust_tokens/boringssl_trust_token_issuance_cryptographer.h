@@ -5,13 +5,18 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_BORINGSSL_TRUST_TOKEN_ISSUANCE_CRYPTOGRAPHER_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_BORINGSSL_TRUST_TOKEN_ISSUANCE_CRYPTOGRAPHER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/strings/string_piece.h"
+#include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_request_issuance_helper.h"
-#include "third_party/boringssl/src/include/openssl/base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
+
+class BoringsslTrustTokenState;
 
 // Executes one instance of the Trust Tokens protocol's issuance operation by
 // calling the appropriate BoringSSL methods.
@@ -31,7 +36,7 @@ class BoringsslTrustTokenIssuanceCryptographer
 
  private:
   // Maintains Trust Tokens protocol state.
-  bssl::UniquePtr<TRUST_TOKEN_CLIENT> ctx_;
+  std::unique_ptr<BoringsslTrustTokenState> state_;
 
   // Maps key indices, which are arbitrary but unique values provided by Boring
   // when we call AddKey, to the corresponding key material. When concluding

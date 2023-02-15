@@ -23,6 +23,8 @@ source_set("trust_tokens") {
     "boringssl_trust_token_issuance_cryptographer.h",
     "boringssl_trust_token_redemption_cryptographer.cc",
     "boringssl_trust_token_redemption_cryptographer.h",
+    "boringssl_trust_token_state.cc",
+    "boringssl_trust_token_state.h",
     "expiry_inspecting_record_expiry_delegate.cc",
     "expiry_inspecting_record_expiry_delegate.h",
     "in_memory_trust_token_persister.cc",
@@ -91,6 +93,11 @@ source_set("test_support") {
   testonly = true
 
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [
+    "boringssl_trust_token_test_utils.cc",
+    "boringssl_trust_token_test_utils.h",
+  ]
 
   deps = [
     ":trust_tokens",

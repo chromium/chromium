@@ -38,6 +38,7 @@ source_set("tests") {
     "attribution_request_helper_unittest.cc",
     "attribution_test_utils.cc",
     "attribution_test_utils.h",
+    "boringssl_attestation_cryptographer_unittest.cc",
   ]
 
   deps = [
@@ -48,6 +49,7 @@ source_set("tests") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/network/trust_tokens",
+    "//services/network/trust_tokens:test_support",
     "//testing/gtest",
     "//url",
   ]
