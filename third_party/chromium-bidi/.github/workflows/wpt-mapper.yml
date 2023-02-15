@@ -23,6 +23,8 @@ jobs:
           cache: npm
       - name: Install and build npm dependencies
         run: npm ci
+      - name: Setup dirs
+        run: mkdir -p out
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -45,36 +47,45 @@ jobs:
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
-          ./wpt run
-          --webdriver-binary ../runBiDiServer.sh
+          ./wpt/wpt run
+          --webdriver-binary ./runBiDiServer.sh
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
-          --metadata ../wpt-metadata/mapper
-          --log-wptreport wptreport.json
+          --metadata ./wpt-metadata/mapper
+          --log-wptreport out/wptreport-mapper.json
           chromium
           webdriver/tests/bidi/
-        working-directory: wpt
-      - name: Update expectations
+      - name: Generate HTML test report
+        # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         run: >
-          ./wpt update-expectations
+          node test-report/htmlWptReport.mjs
+          out/wptreport-mapper.json
+          out/wptreport-mapper.html
+      - name: Update expectations
+        # Force run task even if the previous tasks failed.
+        if: ${{ always() }}
+        run: >
+          ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ../wpt-metadata/mapper wptreport.json
-        working-directory: wpt
+          --metadata ./wpt-metadata/mapper
+          out/wptreport-mapper.json
       - name: Upload expectations
+        # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: wpt-metadata-mapper
           path: wpt-metadata/mapper
-      - name: Upload logs
+      - name: Upload artifacts
+        # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: logs
-          # Note: runBiDiServer.sh will be run multiple times and log.txt will be
-          # overwritten. The problem might not be in the log.txt written last.
-          path: logs
+          name: wpt-mapper-artifacts
+          path: |
+            out
+            logs
 env:
   FORCE_COLOR: 3
