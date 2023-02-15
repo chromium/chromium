@@ -1713,11 +1713,13 @@ testing::AssertionResult ExtensionTabsZoomTest::RunGetDefaultZoom(
           get_zoom_settings_function.get(), base::StringPrintf("[%u]", tab_id),
           browser()));
 
-  if (!get_zoom_settings_result)
-    return testing::AssertionFailure() << "no result";
+  if (!get_zoom_settings_result && get_zoom_settings_result->is_dict()) {
+    return testing::AssertionFailure()
+           << "no result or result is not a dictionary";
+  }
 
   absl::optional<double> default_zoom_factor_setting =
-      get_zoom_settings_result->FindDoubleKey("defaultZoomFactor");
+      get_zoom_settings_result->GetDict().FindDouble("defaultZoomFactor");
   if (!default_zoom_factor_setting) {
     return testing::AssertionFailure()
            << "default zoom factor not found in result";

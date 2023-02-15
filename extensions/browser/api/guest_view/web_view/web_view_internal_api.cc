@@ -1090,7 +1090,7 @@ ExtensionFunction::ResponseAction WebViewInternalClearDataFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(options.is_dict());
 
   // If |ms_since_epoch| isn't set, default it to 0.
-  double ms_since_epoch = options.FindDoubleKey(kSinceKey).value_or(0);
+  double ms_since_epoch = options.GetDict().FindDouble(kSinceKey).value_or(0);
 
   // base::Time takes a double that represents seconds since epoch. JavaScript
   // gives developers milliseconds, so do a quick conversion before populating
