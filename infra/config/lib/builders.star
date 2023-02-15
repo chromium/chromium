@@ -760,6 +760,12 @@ def builder(
     if triggered_by != args.COMPUTE:
         kwargs["triggered_by"] = triggered_by
 
+    experiments = kwargs.pop("experiments", None) or {}
+
+    # TODO: remove this after this experiment is removed from
+    # cr-buildbucket/settings.cfg (http://shortn/_cz2s9ql61X).
+    experiments["luci.buildbucket.omit_python2"] = 0
+
     builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
@@ -773,6 +779,7 @@ def builder(
             ),
             history_options = history_options,
         ),
+        experiments = experiments,
         **kwargs
     )
 
