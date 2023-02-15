@@ -12,11 +12,10 @@ namespace promos_manager {
 const std::string kImpressionPromoKey = "promo";
 const std::string kImpressionDayKey = "day";
 const int kNumDaysImpressionHistoryStored = 365;
-const std::string kPromoStringifyPrefix = "promos_manager::Promo::";
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
-absl::optional<Promo> PromoForName(std::string promo) {
+absl::optional<Promo> PromoForName(base::StringPiece promo) {
   if (promo == "promos_manager::Promo::Test")
     return promos_manager::Promo::Test;
 
@@ -41,27 +40,23 @@ absl::optional<Promo> PromoForName(std::string promo) {
   return absl::nullopt;
 }
 
-std::string ShortNameForPromo(Promo promo) {
+base::StringPiece NameForPromo(Promo promo) {
   switch (promo) {
     case promos_manager::Promo::Test:
-      return "Test";
+      return "promos_manager::Promo::Test";
     case promos_manager::Promo::DefaultBrowser:
-      return "DefaultBrowser";
+      return "promos_manager::Promo::DefaultBrowser";
     case promos_manager::Promo::AppStoreRating:
-      return "AppStoreRating";
+      return "promos_manager::Promo::AppStoreRating";
     case promos_manager::Promo::CredentialProviderExtension:
-      return "CredentialProviderExtension";
+      return "promos_manager::Promo::CredentialProviderExtension";
     case promos_manager::Promo::PostRestoreSignInFullscreen:
-      return "PostRestoreSignInFullscreen";
+      return "promos_manager::Promo::PostRestoreSignInFullscreen";
     case promos_manager::Promo::PostRestoreSignInAlert:
-      return "PostRestoreSignInAlert";
+      return "promos_manager::Promo::PostRestoreSignInAlert";
     case promos_manager::Promo::WhatsNew:
-      return "WhatsNew";
+      return "promos_manager::Promo::WhatsNew";
   }
-}
-
-std::string NameForPromo(Promo promo) {
-  return kPromoStringifyPrefix + ShortNameForPromo(promo);
 }
 
 }  // namespace promos_manager
