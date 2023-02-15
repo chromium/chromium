@@ -81,4 +81,5 @@ TEST_F(ChurnObservationUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
   EXPECT_EQ(static_cast<int>(window_id.size()), 6);
   EXPECT_EQ(window_id, "202201");
 }
+
 }  // namespace ash::device_activity

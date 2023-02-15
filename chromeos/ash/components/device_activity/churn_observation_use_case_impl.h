@@ -43,6 +43,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   private_computing::ActiveStatus GenerateActiveStatus() override;
 
  private:
+  // The observation use case generates 3 observation window identifiers
+  // for the 3 periods that it will need to ping for.
+  // Sets the |observation_period_minus_0_id_|,
+  // |observation_period_minus_1_id_|, and |observation_period_minus_2_id_|
+  // based on the current ts month.
+  //
+  // For example, for the ts representing the date 03/01/2022, this method will
+  // set the observation period strings to:
+  // 202203-202205 ,202202-202204, and 202201-202203 respectively.
+  void SetObservationPeriodWindowIds(base::Time ts);
+
+  // Generates FresnelImportData message given the window identifier.
+  // The churn observation use case will call this method 3 times for each of
+  // it's observation windows.
+  FresnelImportData GenerateObservationFresnelImportData(
+      const std::string& observation_window_id) const;
+
   // TODO(hirthanan): Implement following three methods in new CL.
   bool IsPreviousMonthlyActive() const;
 
@@ -50,6 +67,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   ChurnObservationMetadata::FirstActiveDuringCohort GetFirstActiveDuringCohort()
       const;
+
+  std::string observation_period_minus_0_id_;
+  std::string observation_period_minus_1_id_;
+  std::string observation_period_minus_2_id_;
 };
 
 }  // namespace ash::device_activity
