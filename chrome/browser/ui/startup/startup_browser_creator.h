@@ -36,13 +36,17 @@ FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineWindowByAppId);
 }  // namespace web_app
 
 // Indicates how Chrome should start up the first profile.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class StartupProfileMode {
   // Regular startup with a browser window.
-  kBrowserWindow,
+  kBrowserWindow = 0,
   // Profile picker window should be shown on startup.
-  kProfilePicker,
+  kProfilePicker = 1,
   // Chrome cannot start because no profiles are available.
-  kError
+  kError = 2,
+
+  kMaxValue = kError,
 };
 
 // Bundles the startup profile path together with a StartupProfileMode.

@@ -1585,6 +1585,8 @@ StartupProfileInfo GetStartupProfile(const base::FilePath& cur_dir,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   StartupProfilePathInfo path_info = GetStartupProfilePath(
       cur_dir, command_line, /*ignore_profile_picker=*/false);
+  base::UmaHistogramEnumeration("ProfilePicker.StartupMode.GetStartupProfile",
+                                path_info.mode);
 
   switch (path_info.mode) {
     case StartupProfileMode::kProfilePicker:
