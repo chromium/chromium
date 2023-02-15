@@ -2,6 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("inactive_tabs") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [
+    ":features",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public",
+  ]
+}
+
 source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -10,4 +24,20 @@ source_set("features") {
   ]
   public_deps = [ "//base" ]
   deps = [ "//ui/base" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "utils_unittest.mm" ]
+  deps = [
+    ":features",
+    ":inactive_tabs",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+  ]
 }
