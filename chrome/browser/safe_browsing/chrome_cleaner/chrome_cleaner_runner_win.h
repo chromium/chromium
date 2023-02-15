@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
+#include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
 
 namespace base {
 class FilePath;
@@ -23,7 +24,6 @@ struct LaunchOptions;
 namespace safe_browsing {
 
 class ChromeCleanerScannerResults;
-class SwReporterInvocation;
 
 // Class responsible for launching the cleaner process and waiting for its
 // completion. This object is also responsible for managing the
@@ -141,9 +141,16 @@ class ChromeCleanerRunner
   // is called with the result of LaunchAndWaitForExitOnBackgroundThread.
   void OnProcessDone(ProcessStatus launch_status);
 
+  // Constructs a command line based on the parameters to the
+  // ChromeCleanerRunner passed previously in the constructor. This is done on
+  // the background thread.
+  base::CommandLine ConstructCommandLineOnBackgroundThread();
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::CommandLine cleaner_command_line_;
+  SwReporterInvocation reporter_invocation_;
+  ChromeMetricsStatus metrics_status_;
+  base::FilePath cleaner_executable_path_;
   ChromePromptActions::PromptUserCallback on_prompt_user_;
   ConnectionClosedCallback on_connection_closed_;
   ProcessDoneCallback on_process_done_;
