@@ -128,6 +128,8 @@ SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
     return nullptr;
   }
 
+  UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.BackingType", backing->GetType());
+
   // TODO(jonross): Determine how the direct destruction of a
   // SharedImageRepresentationFactoryRef leads to ref-counting issues as
   // well as thread-checking failures in tests.

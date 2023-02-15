@@ -93452,6 +93452,28 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SharedImageBackingType">
+  <summary>Corresponds to SharedImageBacking implementations.</summary>
+  <int value="0" label="TestImageBacking"/>
+  <int value="1" label="ExternalVkImageBacking"/>
+  <int value="2" label="D3DImageBacking"/>
+  <int value="3" label="EGLImageBacking"/>
+  <int value="4" label="AHardwareBufferImageBacking"/>
+  <int value="5" label="AngleVulkanImageBacking"/>
+  <int value="6" label="GLImageBacking"/>
+  <int value="7" label="GLTextureImageBacking"/>
+  <int value="8" label="OzoneImageBacking"/>
+  <int value="9" label="RawDrawImageBacking"/>
+  <int value="10" label="SharedMemoryImageBacking"/>
+  <int value="11" label="VideoImageBacking"/>
+  <int value="12" label="WrappedSkImageBacking"/>
+  <int value="13" label="CompoundImageBacking"/>
+  <int value="14" label="DCOMPTextureBacking"/>
+  <int value="15" label="IOSurfaceImageBacking"/>
+  <int value="16" label="DCompSurfaceImageBacking"/>
+  <int value="17" label="DXGISwapChainImageBacking"/>
+</enum>
+
 <enum name="SharedMemoryCreateError">
   <int value="0" label="SUCCESS">
     The shared memory region was successfully created.

@@ -660,6 +660,10 @@ void CompoundImageBacking::LazyCreateBacking(
     return;
   }
 
+  // Since the owned GPU backing is never registered with SharedImageManager
+  // it's not recorded in UMA histogram there.
+  UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.BackingType", backing->GetType());
+
   backing->SetNotRefCounted();
   backing->SetCleared();
 

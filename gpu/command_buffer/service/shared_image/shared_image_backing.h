@@ -63,6 +63,8 @@ class MemoryTypeTracker;
 class SharedImageFactory;
 class VaapiDependenciesFactory;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SharedImageBackingType {
   kTest = 0,
   kExternalVkImage = 1,
@@ -82,6 +84,7 @@ enum class SharedImageBackingType {
   kIOSurface = 15,
   kDCompSurface = 16,
   kDXGISwapChain = 17,
+  kMaxValue = kDXGISwapChain
 };
 
 #if BUILDFLAG(IS_WIN)

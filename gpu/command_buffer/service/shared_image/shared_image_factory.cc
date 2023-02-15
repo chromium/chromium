@@ -324,10 +324,13 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   auto backing = factory->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, IsSharedBetweenThreads(usage));
-  DVLOG(1) << "CreateSharedImage[" << backing->GetName()
-           << "] size=" << size.ToString()
-           << " usage=" << CreateLabelForSharedImageUsage(usage)
-           << " resource_format=" << format.ToString();
+
+  if (backing) {
+    DVLOG(1) << "CreateSharedImage[" << backing->GetName()
+             << "] size=" << size.ToString()
+             << " usage=" << CreateLabelForSharedImageUsage(usage)
+             << " resource_format=" << format.ToString();
+  }
   return RegisterBacking(std::move(backing));
 }
 
