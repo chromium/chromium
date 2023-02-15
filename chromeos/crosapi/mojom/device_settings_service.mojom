@@ -31,7 +31,7 @@ struct UsbDeviceId {
 
 // All the device settings data that are needed in Lacros should be here.
 //
-// Next MinVersion: 4
+// Next MinVersion: 5
 [Stable]
 struct DeviceSettings {
   // The value of AttestationForContentProtectionEnabled device setting.
@@ -61,6 +61,10 @@ struct DeviceSettings {
   // The value of ReportDeviceNetworkTelemetryCollectionRateMs device policy.
   [MinVersion=3]
   NullableInt64? report_device_network_telemetry_collection_rate_ms@7;
+
+  // The value of DeviceVariationsRestrictParameter device policy.
+  [MinVersion=4]
+  string? device_variations_restrict_parameter@8;
 
   [Stable]
   enum OptionalBool {

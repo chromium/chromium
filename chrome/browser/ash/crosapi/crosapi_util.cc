@@ -804,6 +804,13 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
             crosapi::mojom::NullableInt64::New(
                 report_device_network_telemetry_collection_rate_ms);
       }
+
+      std::string device_variations_restrict_parameter;
+      if (cros_settings->GetString(ash::kVariationsRestrictParameter,
+                                   &device_variations_restrict_parameter)) {
+        result->device_variations_restrict_parameter =
+            device_variations_restrict_parameter;
+      }
     } else {
       LOG(WARNING) << "Unexpected crossettings trusted values status: "
                    << trusted_result;

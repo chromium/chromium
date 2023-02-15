@@ -29,6 +29,11 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
 #endif
@@ -65,6 +70,17 @@ bool ChromeVariationsServiceClient::OverridesRestrictParameter(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::CrosSettings::Get()->GetString(ash::kVariationsRestrictParameter,
                                       parameter);
+  return true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const absl::optional<std::string>& policy_value =
+      g_browser_process->browser_policy_connector()
+          ->GetDeviceSettings()
+          ->device_variations_restrict_parameter;
+  if (!policy_value) {
+    return false;
+  }
+
+  *parameter = *policy_value;
   return true;
 #else
   return false;
