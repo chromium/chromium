@@ -22,6 +22,7 @@ export interface BookmarksApiProxy {
   contextMenuDelete(id: string, source: ActionSource): void;
   copyBookmark(id: string): Promise<void>;
   createFolder(parentId: string, title: string): void;
+  editBookmarks(ids: string[], newParentId: string|undefined): void;
   deleteBookmarks(ids: string[]): Promise<void>;
   getActiveUrl(): Promise<string|undefined>;
   getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
@@ -98,6 +99,14 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   createFolder(parentId: string, title: string) {
     chrome.bookmarks.create({parentId: parentId, title: title, index: 0});
+  }
+
+  editBookmarks(ids: string[], newParentId: string|undefined) {
+    if (newParentId) {
+      ids.forEach(id => {
+        chrome.bookmarks.move(id, {parentId: newParentId});
+      });
+    }
   }
 
   deleteBookmarks(ids: string[]) {

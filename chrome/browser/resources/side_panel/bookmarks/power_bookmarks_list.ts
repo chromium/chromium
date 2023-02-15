@@ -468,6 +468,16 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
+  private onBookmarksEdited_(event: CustomEvent<{folderId: string}>) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.bookmarksApi_.editBookmarks(
+        this.selectedBookmarks_.map(bookmark => bookmark.id),
+        event.detail.folderId);
+    this.selectedBookmarks_ = [];
+    this.editing_ = false;
+  }
+
   private setRenamingId_(event: CustomEvent<{id: string}>) {
     this.renamingId_ = event.detail.id;
   }
@@ -604,7 +614,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     this.$.editDialog.showDialog(
-        this.getActiveFolder_(), this.bookmarksService_.getTopLevelBookmarks(),
+        this.activeFolderPath_, this.bookmarksService_.getTopLevelBookmarks(),
         this.selectedBookmarks_);
   }
 

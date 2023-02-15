@@ -241,7 +241,9 @@
   </button>
 </cr-action-menu>
 
-<power-bookmarks-edit-dialog id="editDialog"></power-bookmarks-edit-dialog>
+<power-bookmarks-edit-dialog id="editDialog"
+    on-save="onBookmarksEdited_">
+</power-bookmarks-edit-dialog>
 
 <cr-lazy-render id="contextMenu">
   <template>

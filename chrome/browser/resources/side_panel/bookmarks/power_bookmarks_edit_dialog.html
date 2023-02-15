@@ -1,8 +1,9 @@
-<style include="cr-shared-style">
+<style include="cr-icons cr-shared-style">
   :host {
     --cr-dialog-body-padding-horizontal: 16px;
     --cr-dialog-title-slot-padding-start: 16px;
     --cr-dialog-width: 300px;
+    --cr-icon-button-margin-start: 0;
   }
 
   .body {
@@ -16,15 +17,20 @@
     justify-content: space-between;
   }
 
-  .folder-header {
-    color: var(--cr-primary-text-color);
-    font-size: 14px;
-    font-weight: 500;
+  .folder-row {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    padding-inline-end: 8px;
+    width: 100%;
   }
 
-  .folder-row {
-    display: flex;
-    width: auto;
+  .folder-row:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  .folder-row[selected] {
+    background-color: var(--cr-active-background-color);
   }
 
   .folder-selector {
@@ -32,22 +38,39 @@
     border-radius: 2px;
     height: 160px;
   }
+
+  .folder-title {
+    width: 100%;
+  }
 </style>
 
 <cr-dialog id="dialog">
   <div slot="title">$i18n{editMoveFolderTo}</div>
   <div slot="body" class="body">
-    <div class="folder-header">
-      <template is="dom-if" if="[[activeFolder_]]" restamp>
-        TODO: Back Button
-      </template>
-      [[getActiveFolderTitle_(activeFolder_)]]
-    </div>
+    <sp-heading hide-back-button="[[!activeFolderPath_.length]]"
+        back-button-label="TODO"
+        on-back-button-click="onBack_">
+      <h2 slot="heading">[[getActiveFolderTitle_(activeFolderPath_.*)]]</h2>
+    </sp-heading>
     <div id="folder-selector" class="folder-selector">
       <iron-list scroll-target="folder-selector"
-          items="[[getShownFolders_(activeFolder_, topLevelBookmarks_)]]">
+          items="[[getShownFolders_(activeFolderPath_.*, topLevelBookmarks_)]]">
         <template>
-          <div class="folder-row">TODO: Folder row</div>
+          <div class="folder-row"
+              selected$="[[isSelected_(item, selectedFolder_)]]"
+              on-click="onFolderSelected_"
+              tabindex="0">
+            <div class="cr-icon icon-folder-open"></div>
+            <div class="folder-title">
+              [[item.title]]
+            </div>
+            <template is="dom-if" if="[[hasChildFolders_(item)]]" restamp>
+              <cr-icon-button class="subpage-arrow"
+                  aria-label="TODO"
+                  on-click="onForward_">
+              </cr-icon-button>
+            </template>
+          </div>
         </template>
       </iron-list>
     </div>
