@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -64,6 +65,7 @@ class DeviceCommandGetAvailableRoutinesJobTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
   base::TimeTicks test_start_time_;
 };

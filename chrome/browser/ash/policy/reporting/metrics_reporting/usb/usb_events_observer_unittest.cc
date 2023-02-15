@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -53,6 +54,7 @@ class UsbEventsObserverTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
 TEST_F(UsbEventsObserverTest, UsbOnRemove) {

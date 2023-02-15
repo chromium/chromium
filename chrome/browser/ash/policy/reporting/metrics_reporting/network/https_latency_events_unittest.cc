@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -167,6 +168,7 @@ class HttpsLatencyEventsTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;

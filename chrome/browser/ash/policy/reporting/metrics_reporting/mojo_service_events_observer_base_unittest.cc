@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
@@ -70,6 +71,7 @@ class MojoServiceEventsObserverBaseTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
 TEST_F(MojoServiceEventsObserverBaseTest, Default) {

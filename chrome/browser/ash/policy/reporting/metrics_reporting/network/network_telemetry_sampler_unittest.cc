@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -158,6 +159,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 

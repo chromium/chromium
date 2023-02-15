@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_input_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_memory_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -117,6 +118,7 @@ class CrosHealthdMetricSamplerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
 class CrosHealthdMetricSamplerTbtTest

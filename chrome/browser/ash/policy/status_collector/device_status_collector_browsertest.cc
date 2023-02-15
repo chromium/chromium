@@ -78,6 +78,7 @@
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -839,6 +840,8 @@ class DeviceStatusCollectorTest : public testing::Test {
     // Ensure mojo is started, otherwise browser context keyed services that
     // rely on mojo will explode.
     mojo::core::Init();
+    fake_service_manager_ =
+        std::make_unique<::ash::mojo_service_manager::FakeMojoServiceManager>();
 
     // Although this is really a unit test which runs in the browser_tests
     // binary, it doesn't get the unit setup which normally happens in the unit
@@ -1218,6 +1221,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.
   session_manager::SessionManager session_manager_;
+  std::unique_ptr<::ash::mojo_service_manager::FakeMojoServiceManager>
+      fake_service_manager_;
 };
 
 TEST_F(DeviceStatusCollectorTest, AllIdle) {

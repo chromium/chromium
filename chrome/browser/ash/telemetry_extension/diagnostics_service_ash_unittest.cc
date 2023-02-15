@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
@@ -53,6 +54,7 @@ class DiagnosticsServiceAshTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
   mojo::Remote<crosapi::mojom::DiagnosticsService> remote_diagnostics_service_;
   std::unique_ptr<crosapi::mojom::DiagnosticsService> diagnostics_service_{
