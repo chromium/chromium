@@ -11,6 +11,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -242,14 +243,7 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, MAYBE_VerifyModuleModified) {
             (uint8_t)state.modification(1).modified_bytes()[0]);
 }
 
-// TODO(crbug.com/838124) The test is flaky on Win7 debug.
-#if !defined(NDEBUG)
-#define MAYBE_VerifyModuleLongModification DISABLED_VerifyModuleLongModification
-#else
-#define MAYBE_VerifyModuleLongModification VerifyModuleLongModification
-#endif
-
-TEST_F(SafeBrowsingModuleVerifierWinTest, MAYBE_VerifyModuleLongModification) {
+TEST_F(SafeBrowsingModuleVerifierWinTest, VerifyModuleLongModification) {
   ModuleState state;
   int num_bytes_different = 0;
 
