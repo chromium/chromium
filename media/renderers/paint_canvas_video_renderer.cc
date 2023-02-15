@@ -25,7 +25,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -60,7 +60,7 @@
 #define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
   (v), (v_stride), (y), (y_stride), (u), (u_stride)
 #define LIBYUV_NV12_TO_ARGB_MATRIX libyuv::NV12ToARGBMatrix
-#define RESOURCE_FORMAT viz::ResourceFormat::BGRA_8888
+#define SHARED_IMAGE_FORMAT viz::SinglePlaneFormat::kBGRA_8888
 #elif SK_R32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_B32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
 #define OUTPUT_ARGB 0
@@ -71,7 +71,7 @@
 #define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
   (u), (u_stride), (y), (y_stride), (v), (v_stride)
 #define LIBYUV_NV12_TO_ARGB_MATRIX libyuv::NV21ToARGBMatrix
-#define RESOURCE_FORMAT viz::ResourceFormat::RGBA_8888
+#define SHARED_IMAGE_FORMAT viz::SinglePlaneFormat::kRGBA_8888
 #else
 #error Unexpected Skia ARGB_8888 layout!
 #endif
@@ -1408,8 +1408,8 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
 }
 
 // static
-viz::ResourceFormat PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat() {
-  return RESOURCE_FORMAT;
+viz::SharedImageFormat PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat() {
+  return SHARED_IMAGE_FORMAT;
 }
 
 bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
@@ -1737,7 +1737,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     }
 
     yuv_cache_.mailbox = sii->CreateSharedImage(
-        RESOURCE_FORMAT, video_frame->coded_size(),
+        SHARED_IMAGE_FORMAT, video_frame->coded_size(),
         GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         gpu::kNullSurfaceHandle);
@@ -1948,7 +1948,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
         }
         mailbox = sii->CreateSharedImage(
-            RESOURCE_FORMAT, video_frame->coded_size(),
+            SHARED_IMAGE_FORMAT, video_frame->coded_size(),
             GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
             gpu::kNullSurfaceHandle);

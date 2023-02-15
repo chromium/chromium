@@ -289,8 +289,7 @@ gfx::Size SoftwarePlaneDimension(VideoFrame* input_frame,
 viz::SharedImageFormat GetRGBSharedImageFormat(VideoPixelFormat format) {
 #if BUILDFLAG(IS_MAC)
   // macOS IOSurfaces are always BGRA_8888.
-  return viz::SharedImageFormat::SinglePlane(
-      PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat());
+  return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
 #else
   // viz::SinglePlaneFormat::kRGBX_8888 and viz::SinglePlaneFormat::kBGRX_8888
   // require upload as GL_RGB (3 bytes), while VideoFrame is always four bytes,
@@ -785,8 +784,7 @@ viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
                          ? raster_context_provider_->ContextCapabilities()
                          : context_provider_->ContextCapabilities();
   if (caps.disable_one_component_textures)
-    return viz::SharedImageFormat::SinglePlane(
-        PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat());
+    return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   if (bits_per_channel <= 8)
     return caps.texture_rg ? viz::SinglePlaneFormat::kR_8
                            : viz::SinglePlaneFormat::kLUMINANCE_8;
@@ -1105,8 +1103,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     output_si_format =
         software_compositor()
             ? viz::SinglePlaneFormat::kRGBA_8888
-            : viz::SharedImageFormat::SinglePlane(
-                  PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat());
+            : PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
     output_plane_count = 1;
     bits_per_channel = 8;
 
