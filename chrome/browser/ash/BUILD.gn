@@ -1559,8 +1559,6 @@ source_set("ash") {
     "login/easy_unlock/easy_unlock_auth_attempt.h",
     "login/easy_unlock/easy_unlock_challenge_wrapper.cc",
     "login/easy_unlock/easy_unlock_challenge_wrapper.h",
-    "login/easy_unlock/easy_unlock_create_keys_operation.cc",
-    "login/easy_unlock/easy_unlock_create_keys_operation.h",
     "login/easy_unlock/easy_unlock_get_keys_operation.cc",
     "login/easy_unlock/easy_unlock_get_keys_operation.h",
     "login/easy_unlock/easy_unlock_key_manager.cc",
