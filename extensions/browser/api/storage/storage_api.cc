@@ -39,24 +39,23 @@ constexpr PrefMap kPrefSessionStorageAccessLevel = {
     PrefScope::kExtensionSpecific};
 
 // Returns a vector of any strings within the given list.
-std::vector<std::string> GetKeysFromList(const base::Value& list) {
-  DCHECK(list.is_list());
+std::vector<std::string> GetKeysFromList(const base::Value::List& list) {
   std::vector<std::string> keys;
-  keys.reserve(list.GetList().size());
-  for (const auto& value : list.GetList()) {
+  keys.reserve(list.size());
+  for (const auto& value : list) {
     auto* as_string = value.GetIfString();
-    if (as_string)
+    if (as_string) {
       keys.push_back(*as_string);
+    }
   }
   return keys;
 }
 
 // Returns a vector of keys within the given dict.
-std::vector<std::string> GetKeysFromDict(const base::Value& dict) {
-  DCHECK(dict.is_dict());
+std::vector<std::string> GetKeysFromDict(const base::Value::Dict& dict) {
   std::vector<std::string> keys;
-  keys.reserve(dict.GetDict().size());
-  for (auto value : dict.GetDict()) {
+  keys.reserve(dict.size());
+  for (auto value : dict) {
     keys.push_back(value.first);
   }
   return keys;
@@ -257,10 +256,11 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
       return UseReadResult(storage->Get(input.GetString()));
 
     case base::Value::Type::LIST:
-      return UseReadResult(storage->Get(GetKeysFromList(input)));
+      return UseReadResult(storage->Get(GetKeysFromList(input.GetList())));
 
     case base::Value::Type::DICT: {
-      ValueStore::ReadResult result = storage->Get(GetKeysFromDict(input));
+      ValueStore::ReadResult result =
+          storage->Get(GetKeysFromDict(input.GetDict()));
       if (!result.status().ok()) {
         return UseReadResult(std::move(result));
       }
@@ -295,13 +295,13 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunInSession() {
       break;
 
     case base::Value::Type::LIST:
-      value_dict = MapAsValueDict(
-          session_manager->Get(extension_id(), GetKeysFromList(input)));
+      value_dict = MapAsValueDict(session_manager->Get(
+          extension_id(), GetKeysFromList(input.GetList())));
       break;
 
     case base::Value::Type::DICT: {
-      std::map<std::string, const base::Value*> values =
-          session_manager->Get(extension_id(), GetKeysFromDict(input));
+      std::map<std::string, const base::Value*> values = session_manager->Get(
+          extension_id(), GetKeysFromDict(input.GetDict()));
 
       for (auto default_value : input.GetDict()) {
         auto value_it = values.find(default_value.first);
@@ -341,7 +341,7 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
       break;
 
     case base::Value::Type::LIST:
-      bytes_in_use = storage->GetBytesInUse(GetKeysFromList(input));
+      bytes_in_use = storage->GetBytesInUse(GetKeysFromList(input.GetList()));
       break;
 
     default:
@@ -372,8 +372,8 @@ StorageStorageAreaGetBytesInUseFunction::RunInSession() {
       break;
 
     case base::Value::Type::LIST:
-      bytes_in_use = session_manager->GetBytesInUse(extension_id(),
-                                                    GetKeysFromList(input));
+      bytes_in_use = session_manager->GetBytesInUse(
+          extension_id(), GetKeysFromList(input.GetList()));
       break;
 
     default:
@@ -440,7 +440,7 @@ StorageStorageAreaRemoveFunction::RunWithStorage(ValueStore* storage) {
       return UseWriteResult(storage->Remove(input.GetString()));
 
     case base::Value::Type::LIST:
-      return UseWriteResult(storage->Remove(GetKeysFromList(input)));
+      return UseWriteResult(storage->Remove(GetKeysFromList(input.GetList())));
 
     default:
       return BadMessage();
@@ -463,7 +463,8 @@ StorageStorageAreaRemoveFunction::RunInSession() {
       break;
 
     case base::Value::Type::LIST:
-      session_manager->Remove(extension_id(), GetKeysFromList(input), changes);
+      session_manager->Remove(extension_id(), GetKeysFromList(input.GetList()),
+                              changes);
       break;
 
     default:
