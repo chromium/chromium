@@ -1,0 +1,2 @@
+# Anyone can update the test bundle data filelists.
+per-file *.filelist=*

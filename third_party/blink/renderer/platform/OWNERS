@@ -27,3 +27,6 @@ wangxianzhu@chromium.org
 # you are changing.
 per-file runtime_enabled_features.json5=file://third_party/blink/API_OWNERS
 per-file runtime_enabled_features.json5=file://third_party/blink/renderer/core/OWNERS
+
+# Anyone can update the unit test bundle data filelist.
+per-file blink_platform_unittests_bundle_data.filelist=*

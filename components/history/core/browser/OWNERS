@@ -1,3 +1,6 @@
 # This is for the common case of adding or renaming files. If you're doing
 # structural changes, use usual OWNERS rules.
 per-file BUILD.gn=*
+
+# Anyone can update the unit test bundle data filelist.
+per-file unit_tests_bundle_data.filelist=*
