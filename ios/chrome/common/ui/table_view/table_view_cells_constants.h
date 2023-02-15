@@ -7,9 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// The font text style of the sublabel.
-extern const UIFontTextStyle kTableViewSublabelFontStyle;
-
 // The minimum height for a TableViewHeaderFooterView.
 extern const CGFloat kTableViewHeaderFooterViewHeight;
 

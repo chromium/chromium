@@ -88,8 +88,7 @@ const CGFloat kSafeBrowsingHeaderIconImageSize = 24;
   _textLabel = [[UILabel alloc] init];
   _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _textLabel.numberOfLines = 0;
-  _textLabel.font =
-      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+  _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   _textLabel.adjustsFontForContentSizeCategory = YES;
 
   [contentView addSubview:_textLabel];

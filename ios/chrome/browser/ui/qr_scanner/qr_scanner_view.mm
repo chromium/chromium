@@ -16,8 +16,8 @@
 namespace {
 
 // Width and height of the QR scanner viewport.
-const CGSize kViewportSizeIPhone = CGSizeMake(250, 250);
-const CGSize kViewportSizeIPad = CGSizeMake(300, 300);
+constexpr CGSize kViewportSizeIPhone = CGSize{.width = 250, .height = 250};
+constexpr CGSize kViewportSizeIPad = CGSize{.width = 300, .height = 300};
 
 }  // namespace
 

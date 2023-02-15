@@ -57,8 +57,7 @@
     _textView.editable = NO;
     _textView.delegate = self;
     _textView.backgroundColor = UIColor.clearColor;
-    _textView.font =
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+    _textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _textView.adjustsFontForContentSizeCategory = YES;
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
     _textView.linkTextAttributes =

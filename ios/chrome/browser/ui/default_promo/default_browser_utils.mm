@@ -22,10 +22,6 @@
 
 #import <UIKit/UIKit.h>
 
-// List of all key used to store data in NSUserDefaults. Still used as key
-// in the NSDictionary stored under `kBrowserDefaultsKey`.
-extern NSArray<NSString*>* const kDefaultBrowserUtilsLegacyKeysForTesting;
-
 // Key in NSUserDefaults containing an NSDictionary used to store all the
 // information.
 extern NSString* const kDefaultBrowserUtilsKey;
@@ -151,7 +147,7 @@ NSMutableDictionary<NSString*, NSObject*>* CreateStorageObjectFromLegacyKeys() {
       [[NSMutableDictionary alloc] init];
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  for (NSString* key in kDefaultBrowserUtilsLegacyKeysForTesting) {
+  for (NSString* key in DefaultBrowserUtilsLegacyKeysForTesting()) {
     NSObject* object = [defaults objectForKey:key];
     if (object) {
       dictionary[key] = object;
@@ -595,20 +591,24 @@ bool UserInPromoCooldown() {
 NSString* const kDefaultBrowserUtilsKey = @"DefaultBrowserUtils";
 
 // Visible for testing.
-NSArray<NSString*>* const kDefaultBrowserUtilsLegacyKeysForTesting = @[
-  // clang-format off
-  kLastHTTPURLOpenTime,
-  kLastSignificantUserEventGeneral,
-  kLastSignificantUserEventStaySafe,
-  kLastSignificantUserEventMadeForIOS,
-  kLastSignificantUserEventAllTabs,
-  kLastTimeUserInteractedWithPromo,
-  kUserHasInteractedWithFullscreenPromo,
-  kUserHasInteractedWithTailoredFullscreenPromo,
-  kUserHasInteractedWithFirstRunPromo,
-  kUserInteractedWithNonModalPromoCount,
-  kDisplayedPromoCount,
-  kRemindMeLaterPromoActionInteraction,
-  kOpenSettingsActionInteraction,
-  // clang-format on
-];
+const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
+  NSArray<NSString*>* const keysForTesting = @[
+    // clang-format off
+    kLastHTTPURLOpenTime,
+    kLastSignificantUserEventGeneral,
+    kLastSignificantUserEventStaySafe,
+    kLastSignificantUserEventMadeForIOS,
+    kLastSignificantUserEventAllTabs,
+    kLastTimeUserInteractedWithPromo,
+    kUserHasInteractedWithFullscreenPromo,
+    kUserHasInteractedWithTailoredFullscreenPromo,
+    kUserHasInteractedWithFirstRunPromo,
+    kUserInteractedWithNonModalPromoCount,
+    kDisplayedPromoCount,
+    kRemindMeLaterPromoActionInteraction,
+    kOpenSettingsActionInteraction,
+    // clang-format on
+  ];
+
+  return keysForTesting;
+}

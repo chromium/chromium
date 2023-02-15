@@ -144,7 +144,7 @@ NSMutableAttributedString* AddIndentAttributes(NSString* string,
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION);
   NSMutableDictionary* regularAttributes = [NSMutableDictionary dictionary];
   [regularAttributes
-      setObject:[UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle]
+      setObject:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
          forKey:NSFontAttributeName];
   [regularAttributes setObject:[UIColor colorNamed:kTextSecondaryColor]
                         forKey:NSForegroundColorAttributeName];

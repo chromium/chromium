@@ -416,7 +416,7 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
   }
   UIFontTextStyle preferredFont =
       _textStackView.axis == UILayoutConstraintAxisVertical
-          ? kTableViewSublabelFontStyle
+          ? UIFontTextStyleFootnote
           : UIFontTextStyleBody;
   _detailTextLabel.font = [UIFont preferredFontForTextStyle:preferredFont];
 }

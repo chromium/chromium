@@ -444,7 +444,7 @@ const CGFloat kSymbolSize = 16;
       [[TableViewTextItem alloc] initWithType:ItemTypeUpdateModalDescription];
   descriptionItem.text = self.updateModalDescription;
   descriptionItem.textFont =
-      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   descriptionItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return descriptionItem;
 }

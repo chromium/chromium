@@ -168,7 +168,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[NSMutableAttributedString alloc]
           initWithAttributedString:PutBoldPartInString(
                                        self.permissionsDescription,
-                                       kTableViewSublabelFontStyle)];
+                                       UIFontTextStyleFootnote)];
 
   NSDictionary* attrs = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]

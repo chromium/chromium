@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 
+#import "base/containers/fixed_flat_map.h"
 #import "base/values.h"
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
@@ -22,8 +23,8 @@
 namespace {
 
 // Map of all synceable types to the corresponding pref name.
-const std::map<SyncSetupService::SyncableDatatype, const char*>
-    kSyncableItemTypes = {
+constexpr auto kSyncableItemTypes =
+    base::MakeFixedFlatMap<SyncSetupService::SyncableDatatype, const char*>({
         {SyncSetupService::kSyncAutofill, syncer::prefs::kSyncAutofill},
         {SyncSetupService::kSyncBookmarks, syncer::prefs::kSyncBookmarks},
         {SyncSetupService::kSyncOmniboxHistory, syncer::prefs::kSyncTypedUrls},
@@ -31,7 +32,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
         {SyncSetupService::kSyncPasswords, syncer::prefs::kSyncPasswords},
         {SyncSetupService::kSyncReadingList, syncer::prefs::kSyncReadingList},
         {SyncSetupService::kSyncPreferences, syncer::prefs::kSyncPreferences},
-};
+    });
 
 }  // namespace
 

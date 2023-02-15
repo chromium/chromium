@@ -94,7 +94,7 @@ const CGFloat kInfoSymbolSize = 22;
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _detailTextLabel.font =
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _detailTextLabel.numberOfLines = 0;

@@ -87,7 +87,7 @@ const CGFloat kImageXCenterAlignmentOffset = 14;
   _detailTextLabel = [[UILabel alloc] init];
   _detailTextLabel.numberOfLines = 0;
   _detailTextLabel.font =
-      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   _detailTextLabel.adjustsFontForContentSizeCategory = YES;
 }
 

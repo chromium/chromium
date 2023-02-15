@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/signin_util.h"
 
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -22,7 +23,11 @@
 #endif
 
 namespace {
-absl::optional<AccountInfo> g_pre_restore_identity;
+
+absl::optional<AccountInfo>& GetPreRestoreIdentity() {
+  static base::NoDestructor<absl::optional<AccountInfo>> pre_restore_identity;
+  return *pre_restore_identity;
+}
 
 const char kAccountInfoKeyAccountId[] = "account_id";
 const char kAccountInfoKeyGaia[] = "gaia";
@@ -103,7 +108,8 @@ signin::Tribool IsFirstSessionAfterDeviceRestore() {
 }
 
 void StorePreRestoreIdentity(PrefService* local_state, AccountInfo account) {
-  g_pre_restore_identity = account;
+  absl::optional<AccountInfo>& pre_restore_identity = GetPreRestoreIdentity();
+  pre_restore_identity = account;
   ScopedDictPrefUpdate update(local_state, prefs::kIosPreRestoreAccountInfo);
   update->Set(kAccountInfoKeyAccountId, account.account_id.ToString());
   update->Set(kAccountInfoKeyGaia, account.gaia);
@@ -114,17 +120,19 @@ void StorePreRestoreIdentity(PrefService* local_state, AccountInfo account) {
 }
 
 void ClearPreRestoreIdentity(PrefService* local_state) {
-  g_pre_restore_identity.reset();
+  absl::optional<AccountInfo>& pre_restore_identity = GetPreRestoreIdentity();
+  pre_restore_identity.reset();
   local_state->ClearPref(prefs::kIosPreRestoreAccountInfo);
 }
 
 absl::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state) {
-  if (!g_pre_restore_identity.has_value()) {
+  absl::optional<AccountInfo>& pre_restore_identity = GetPreRestoreIdentity();
+  if (!pre_restore_identity.has_value()) {
     const base::Value::Dict& dict =
         local_state->GetDict(prefs::kIosPreRestoreAccountInfo);
     if (!dict.empty()) {
-      g_pre_restore_identity = DictToAccountInfo(dict);
+      pre_restore_identity = DictToAccountInfo(dict);
     }
   }
-  return g_pre_restore_identity;
+  return pre_restore_identity;
 }

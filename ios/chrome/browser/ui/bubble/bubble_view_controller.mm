@@ -13,7 +13,6 @@
 #endif
 
 namespace {
-const CGFloat kAnimationDuration = kMaterialDuration3;
 // The vertical offset distance used in the sink-down animation.
 const CGFloat kVerticalOffset = 8.0f;
 
@@ -120,7 +119,7 @@ BubbleView* BubbleViewWithType(BubbleViewType bubbleViewType,
 
   // Set the y-coordinate of `frame.origin` to its final value.
   frame.origin.y = frame.origin.y + kVerticalOffset;
-  [UIView animateWithDuration:kAnimationDuration
+  [UIView animateWithDuration:kMaterialDuration3
                         delay:0.0
                       options:UIViewAnimationOptionCurveEaseOut
                    animations:^{
@@ -131,7 +130,7 @@ BubbleView* BubbleViewWithType(BubbleViewType bubbleViewType,
 }
 
 - (void)dismissAnimated:(BOOL)animated {
-  NSTimeInterval duration = (animated ? kAnimationDuration : 0.0);
+  NSTimeInterval duration = (animated ? kMaterialDuration3 : 0.0);
   [UIView animateWithDuration:duration
       animations:^{
         [self.view setAlpha:0.0f];

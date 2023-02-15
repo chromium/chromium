@@ -9,8 +9,8 @@
 
 namespace promos_manager {
 
-const std::string kImpressionPromoKey = "promo";
-const std::string kImpressionDayKey = "day";
+const char kImpressionPromoKey[] = "promo";
+const char kImpressionDayKey[] = "day";
 const int kNumDaysImpressionHistoryStored = 365;
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be

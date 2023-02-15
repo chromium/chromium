@@ -156,4 +156,8 @@ DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromo);
 // see another one.
 bool UserInPromoCooldown();
 
+// List of all key used to store data in NSUserDefaults. Still used as key
+// in the NSDictionary stored under `kBrowserDefaultsKey`.
+const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
+
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_

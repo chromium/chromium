@@ -77,16 +77,6 @@ const int kMaxTimesHistoryNoticeShown = 1;
 // TableViewClearBrowsingDataItem's selectedBackgroundViewBackgroundColorAlpha.
 const CGFloat kSelectedBackgroundColorAlpha = 0.05;
 
-// List of flags that have corresponding counters.
-const std::vector<BrowsingDataRemoveMask> _browsingDataRemoveFlags = {
-    // BrowsingDataRemoveMask::REMOVE_COOKIES not included; we don't have cookie
-    // counters yet.
-    BrowsingDataRemoveMask::REMOVE_HISTORY,
-    BrowsingDataRemoveMask::REMOVE_CACHE,
-    BrowsingDataRemoveMask::REMOVE_PASSWORDS,
-    BrowsingDataRemoveMask::REMOVE_FORM_DATA,
-};
-
 // The size of the symbol image used in the 'Clear Browsing Data' view.
 const CGFloat kSymbolPointSize = 22;
 
@@ -120,18 +110,6 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   }
   return symbol;
 }
-
-static NSDictionary* imageNamesByItemTypes = @{
-  [NSNumber numberWithInteger:ItemTypeDataTypeBrowsingHistory] :
-      @"clear_browsing_data_history",
-  [NSNumber numberWithInteger:ItemTypeDataTypeCookiesSiteData] :
-      @"clear_browsing_data_cookies",
-  [NSNumber numberWithInteger:ItemTypeDataTypeCache] :
-      @"clear_browsing_data_cached_images",
-  [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] : @"password_key",
-  [NSNumber numberWithInteger:ItemTypeDataTypeAutofill] :
-      @"clear_browsing_data_autofill",
-};
 
 }  // namespace
 
@@ -447,7 +425,17 @@ static NSDictionary* imageNamesByItemTypes = @{
 }
 
 - (void)restartCounters:(BrowsingDataRemoveMask)mask {
-  for (auto flag : _browsingDataRemoveFlags) {
+  // List of flags that have corresponding counters.
+  static const BrowsingDataRemoveMask browsingDataRemoveFlags[] = {
+      // BrowsingDataRemoveMask::REMOVE_COOKIES not included; we don't have
+      // cookie counters yet.
+      BrowsingDataRemoveMask::REMOVE_HISTORY,
+      BrowsingDataRemoveMask::REMOVE_CACHE,
+      BrowsingDataRemoveMask::REMOVE_PASSWORDS,
+      BrowsingDataRemoveMask::REMOVE_FORM_DATA,
+  };
+
+  for (auto flag : browsingDataRemoveFlags) {
     if (IsRemoveDataMaskSet(mask, flag)) {
       const auto it = _countersByMasks.find(flag);
       if (it != _countersByMasks.end()) {
@@ -481,6 +469,19 @@ static NSDictionary* imageNamesByItemTypes = @{
   if (UseSymbols()) {
     clearDataItem.image = SymbolForItemType(itemType);
   } else {
+    static NSDictionary* const imageNamesByItemTypes = @{
+      [NSNumber numberWithInteger:ItemTypeDataTypeBrowsingHistory] :
+          @"clear_browsing_data_history",
+      [NSNumber numberWithInteger:ItemTypeDataTypeCookiesSiteData] :
+          @"clear_browsing_data_cookies",
+      [NSNumber numberWithInteger:ItemTypeDataTypeCache] :
+          @"clear_browsing_data_cached_images",
+      [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] :
+          @"password_key",
+      [NSNumber numberWithInteger:ItemTypeDataTypeAutofill] :
+          @"clear_browsing_data_autofill",
+    };
+
     clearDataItem.image = [UIImage
         imageNamed:[imageNamesByItemTypes
                        objectForKey:[NSNumber numberWithInteger:itemType]]];

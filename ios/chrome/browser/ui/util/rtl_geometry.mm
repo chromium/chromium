@@ -24,7 +24,7 @@ base::i18n::TextDirection LayoutDirection() {
 
 #pragma mark - LayoutRects.
 
-const LayoutRectPosition LayoutRectPositionZero = {0.0, 0.0};
+constexpr const LayoutRectPosition LayoutRectPositionZero = {0.0, 0.0};
 
 LayoutRectPosition LayoutRectPositionMake(CGFloat leading, CGFloat originY) {
   return {leading, originY};
@@ -42,8 +42,7 @@ LayoutRectPosition AlignLayoutRectPositionToPixel(LayoutRectPosition position) {
                                 AlignValueToPixel(position.originY));
 }
 
-const LayoutRect LayoutRectZero = {0.0, LayoutRectPositionZero,
-                                   CGSizeMake(0.0, 0.0)};
+const LayoutRect LayoutRectZero = {0.0, {0.0, 0.0}, {0.0, 0.0}};
 
 LayoutRect LayoutRectMake(CGFloat leading,
                           CGFloat boundingWidth,

@@ -68,17 +68,6 @@ base::TimeTicks g_load_time;
 // The amount of time (in seconds) to wait for the user to start a new task.
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
 
-// Histograms fired in extensions that need to be re-fired from the main app.
-const metrics_mediator::HistogramNameCountPair kHistogramsFromExtension[] = {
-    {
-        @"IOS.CredentialExtension.PasswordCreated",
-        static_cast<int>(CPEPasswordCreated::kMaxValue) + 1,
-    },
-    {
-        @"IOS.CredentialExtension.NewCredentialUsername",
-        static_cast<int>(CPENewCredentialUsername::kMaxValue) + 1,
-    }};
-
 // Enum values for Startup.IOSColdStartType histogram.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class ColdStartType : int {
@@ -603,7 +592,18 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   } else {
     app_group::main_app::DisableMetrics();
   }
-  metrics_mediator::RecordWidgetUsage(kHistogramsFromExtension);
+
+  // Histograms fired in extensions that need to be re-fired from the main app.
+  const metrics_mediator::HistogramNameCountPair histogramsFromExtension[] = {
+      {
+          @"IOS.CredentialExtension.PasswordCreated",
+          static_cast<int>(CPEPasswordCreated::kMaxValue) + 1,
+      },
+      {
+          @"IOS.CredentialExtension.NewCredentialUsername",
+          static_cast<int>(CPENewCredentialUsername::kMaxValue) + 1,
+      }};
+  metrics_mediator::RecordWidgetUsage(histogramsFromExtension);
 }
 
 - (void)updateMetricsPrefsOnPermissionChange:(BOOL)enabled {

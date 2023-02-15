@@ -13,10 +13,6 @@ extern const CGFloat kAuthenticationHeaderImageHeight;
 // Height/Width of the avatar in authentication context.
 extern const CGFloat kAccountProfilePhotoDimension;
 
-// Font sizes
-extern const UIFontTextStyle kAuthenticationTitleFontStyle;
-extern const UIFontTextStyle kAuthenticationTextFontStyle;
-
 // Horizontal margin between the container view and any elements inside.
 extern const CGFloat kAuthenticationHorizontalMargin;
 // Vertical margin between the header image and the main title.

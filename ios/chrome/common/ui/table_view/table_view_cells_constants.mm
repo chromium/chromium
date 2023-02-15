@@ -9,7 +9,6 @@
 #error "This file requires ARC support."
 #endif
 
-const UIFontTextStyle kTableViewSublabelFontStyle = UIFontTextStyleFootnote;
 const CGFloat kTableViewHeaderFooterViewHeight = 48.0;
 const CGFloat kChromeTableViewCellHeight = 48.0;
 const CGFloat kTableViewHorizontalSpacing = 16.0;

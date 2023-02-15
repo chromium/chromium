@@ -60,7 +60,7 @@ const CGFloat kAvatarSize = 24;
   _linkAndEmailTextView.scrollEnabled = NO;
   _linkAndEmailTextView.editable = NO;
   _linkAndEmailTextView.font =
-      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   _linkAndEmailTextView.textColor = [UIColor colorNamed:kTextSecondaryColor];
   _linkAndEmailTextView.backgroundColor = [UIColor clearColor];
   // Remove built-in padding.

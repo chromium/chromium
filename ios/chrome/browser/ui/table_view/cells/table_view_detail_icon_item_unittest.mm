@@ -64,7 +64,7 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
   EXPECT_NSEQ(detail_text, detail_cell.detailTextLabel.text);
   EXPECT_EQ(UILayoutConstraintAxisVertical,
             detail_cell.textLayoutConstraintAxis);
-  EXPECT_EQ([UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+  EXPECT_EQ([UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
             detail_cell.detailTextLabel.font);
 
   // Check image-based property.
@@ -182,6 +182,6 @@ TEST_F(TableViewDetailIconItemTest, ItemUpdateUILayoutConstraintAxisVertical) {
 
   EXPECT_EQ(UILayoutConstraintAxisVertical,
             detail_cell.textLayoutConstraintAxis);
-  EXPECT_EQ([UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+  EXPECT_EQ([UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
             detail_cell.detailTextLabel.font);
 }

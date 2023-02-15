@@ -12,9 +12,6 @@ const CGFloat kAuthenticationHeaderImageHeight = 180.;
 
 const CGFloat kAccountProfilePhotoDimension = 40.;
 
-const UIFontTextStyle kAuthenticationTitleFontStyle = UIFontTextStyleTitle1;
-const UIFontTextStyle kAuthenticationTextFontStyle = UIFontTextStyleSubheadline;
-
 const CGFloat kAuthenticationHorizontalMargin = 16.;
 const CGFloat kAuthenticationHeaderTitleMargin = 19.;
 

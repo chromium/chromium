@@ -11,6 +11,7 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
+#import "components/version_info/channel.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/ui/app_store_rating/constants.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -95,14 +97,27 @@
   NSArray* activeDaysInPastWeek =
       base::mac::ObjCCastStrict<NSArray>([[NSUserDefaults standardUserDefaults]
           objectForKey:kAppStoreRatingActiveDaysInPastWeekKey]);
+  const NSUInteger appStoreRatingTotalDaysOnChromeRequirement =
+      (GetChannel() == version_info::Channel::DEV ||
+       GetChannel() == version_info::Channel::CANARY)
+          ? 1
+          : 3;
   return [activeDaysInPastWeek count] >=
-         kAppStoreRatingDaysOnChromeInPastWeekRequirement;
+         appStoreRatingTotalDaysOnChromeRequirement;
+
+  ;
 }
 
 - (BOOL)isTotalDaysRequirementMet {
+  NSInteger appStoreRatingDaysOnChromeInPastWeekRequirement =
+      (GetChannel() == version_info::Channel::DEV ||
+       GetChannel() == version_info::Channel::CANARY)
+          ? 1
+          : 15;
+
   return [[NSUserDefaults standardUserDefaults]
              integerForKey:kAppStoreRatingTotalDaysOnChromeKey] >=
-         kAppStoreRatingTotalDaysOnChromeRequirement;
+         appStoreRatingDaysOnChromeInPastWeekRequirement;
 }
 
 - (BOOL)isCPEEnabled {

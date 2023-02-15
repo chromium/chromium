@@ -5,18 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_CONSTANTS_H_
 
-#include <string>
-
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace promos_manager {
 
 // Dictionary key for `promo` identifier in stored impression (base::Value).
-extern const std::string kImpressionPromoKey;
+extern const char kImpressionPromoKey[];
 
 // Dictionary key for `day` in stored impression (base::Value).
-extern const std::string kImpressionDayKey;
+extern const char kImpressionDayKey[];
 
 // The max number of days for impression history to be stored & maintained.
 extern const int kNumDaysImpressionHistoryStored;

@@ -95,7 +95,7 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
   _leadingDetailTextLabel.numberOfLines = 0;
   _leadingDetailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
   _leadingDetailTextLabel.font =
-      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   _leadingDetailTextLabel.adjustsFontForContentSizeCategory = YES;
   _leadingDetailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 

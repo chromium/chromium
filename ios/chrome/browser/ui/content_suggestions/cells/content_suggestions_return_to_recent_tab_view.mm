@@ -47,7 +47,7 @@ const CGFloat kIconWidth = 32.0f;
 
     _subtitleLabel = [[UILabel alloc] init];
     _subtitleLabel.font =
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _subtitleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     _subtitleLabel.adjustsFontForContentSizeCategory = YES;
     _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];

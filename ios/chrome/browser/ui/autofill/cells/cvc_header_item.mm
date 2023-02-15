@@ -112,7 +112,7 @@ const CGFloat kGooglePayBadgeHeight = 16;
 // Returns a new UILabel to be used as the view's instruction label.
 - (UILabel*)createInstructionsLabel {
   UILabel* label = [[UILabel alloc] init];
-  label.font = [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;

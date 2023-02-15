@@ -140,7 +140,7 @@ const UIControlContentHorizontalAlignment kDefaultContentHorizontalAlignment =
     self.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.textLabel.textAlignment = NSTextAlignmentCenter;
     self.textLabel.font =
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     self.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
     // Create button.

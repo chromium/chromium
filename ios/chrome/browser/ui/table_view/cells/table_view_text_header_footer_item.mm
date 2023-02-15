@@ -76,7 +76,7 @@
     _subtitleView.delegate = self;
     _subtitleView.backgroundColor = UIColor.clearColor;
     _subtitleView.font =
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _subtitleView.adjustsFontForContentSizeCategory = YES;
     _subtitleView.translatesAutoresizingMaskIntoConstraints = NO;
     _subtitleView.linkTextAttributes =
@@ -172,7 +172,7 @@
 
   NSDictionary* textAttributes = @{
     NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
 

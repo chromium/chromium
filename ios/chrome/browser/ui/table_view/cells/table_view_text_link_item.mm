@@ -66,8 +66,7 @@
     _textView.editable = NO;
     _textView.delegate = self;
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
-    _textView.font =
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+    _textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _textView.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _textView.backgroundColor = UIColor.clearColor;
 

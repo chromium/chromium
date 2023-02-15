@@ -178,8 +178,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   NSMutableAttributedString* descriptionAttributedString =
       [[NSMutableAttributedString alloc]
           initWithAttributedString:PutBoldPartInString(
-                                       description,
-                                       kTableViewSublabelFontStyle)];
+                                       description, UIFontTextStyleFootnote)];
   [descriptionAttributedString
       addAttributes:@{
         NSForegroundColorAttributeName :

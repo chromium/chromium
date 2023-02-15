@@ -6,6 +6,7 @@
 
 #import "base/auto_reset.h"
 #import "base/check_op.h"
+#import "base/containers/fixed_flat_map.h"
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -48,6 +49,26 @@ using l10n_util::GetNSString;
 
 namespace {
 
+// Ordered list of all sync switches. If a new switch is added, a new entry
+// must be added in `kSyncableItemTypes`.
+static const SyncSetupService::SyncableDatatype kSyncSwitchItems[] = {
+    SyncSetupService::kSyncAutofill,       SyncSetupService::kSyncBookmarks,
+    SyncSetupService::kSyncOmniboxHistory, SyncSetupService::kSyncOpenTabs,
+    SyncSetupService::kSyncPasswords,      SyncSetupService::kSyncReadingList,
+    SyncSetupService::kSyncPreferences};
+
+// Map of all synceable types to the corresponding pref name.
+constexpr auto kSyncableItemTypes =
+    base::MakeFixedFlatMap<SyncSetupService::SyncableDatatype, const char*>({
+        {SyncSetupService::kSyncAutofill, syncer::prefs::kSyncAutofill},
+        {SyncSetupService::kSyncBookmarks, syncer::prefs::kSyncBookmarks},
+        {SyncSetupService::kSyncOmniboxHistory, syncer::prefs::kSyncTypedUrls},
+        {SyncSetupService::kSyncOpenTabs, syncer::prefs::kSyncTabs},
+        {SyncSetupService::kSyncPasswords, syncer::prefs::kSyncPasswords},
+        {SyncSetupService::kSyncReadingList, syncer::prefs::kSyncReadingList},
+        {SyncSetupService::kSyncPreferences, syncer::prefs::kSyncPreferences},
+    });
+
 // Returns the configuration to be used for the accessory.
 UIImageConfiguration* AccessoryConfiguration() {
   return [UIImageSymbolConfiguration
@@ -61,24 +82,6 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Sync error icon.
 NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
-// Ordered list of all sync switches. If a new switch is added, a new entry
-// must be added in `kSyncableItemTypes` below.
-const std::vector<SyncSetupService::SyncableDatatype> kSyncSwitchItems = {
-    SyncSetupService::kSyncAutofill,       SyncSetupService::kSyncBookmarks,
-    SyncSetupService::kSyncOmniboxHistory, SyncSetupService::kSyncOpenTabs,
-    SyncSetupService::kSyncPasswords,      SyncSetupService::kSyncReadingList,
-    SyncSetupService::kSyncPreferences};
-// Map of all synceable types to the corresponding pref name.
-const std::map<SyncSetupService::SyncableDatatype, const char*>
-    kSyncableItemTypes = {
-        {SyncSetupService::kSyncAutofill, syncer::prefs::kSyncAutofill},
-        {SyncSetupService::kSyncBookmarks, syncer::prefs::kSyncBookmarks},
-        {SyncSetupService::kSyncOmniboxHistory, syncer::prefs::kSyncTypedUrls},
-        {SyncSetupService::kSyncOpenTabs, syncer::prefs::kSyncTabs},
-        {SyncSetupService::kSyncPasswords, syncer::prefs::kSyncPasswords},
-        {SyncSetupService::kSyncReadingList, syncer::prefs::kSyncReadingList},
-        {SyncSetupService::kSyncPreferences, syncer::prefs::kSyncPreferences},
-};
 }  // namespace
 
 @interface ManageSyncSettingsMediator () <
@@ -162,6 +165,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   [model addItem:self.syncEverythingItem
       toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   NSMutableArray* syncSwitchItems = [[NSMutableArray alloc] init];
+
   for (SyncSetupService::SyncableDatatype dataType : kSyncSwitchItems) {
     TableViewItem* switchItem = [self tableViewItemWithDataType:dataType];
     [syncSwitchItems addObject:switchItem];
@@ -911,10 +915,10 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 
 // Returns NO if any syncable item is managed, YES otherwise.
 - (BOOL)allItemsAreSynceable {
-  for (auto iter = kSyncableItemTypes.begin(); iter != kSyncableItemTypes.end();
-       ++iter) {
-    if ([self isManagedSyncSettingsDataType:iter->first])
+  for (const auto& [type, pref_name] : kSyncableItemTypes) {
+    if ([self isManagedSyncSettingsDataType:type]) {
       return NO;
+    }
   }
   return YES;
 }

@@ -69,8 +69,7 @@ const CGFloat kAccountCellSpacing = 7;
 
   _emailLabel = [[UILabel alloc] init];
   _emailLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _emailLabel.font =
-      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+  _emailLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   _emailLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [self.contentView addSubview:_emailLabel];
 
