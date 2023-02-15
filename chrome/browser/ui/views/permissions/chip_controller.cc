@@ -104,9 +104,15 @@ void ChipController::OnWebContentsChanged() {
 
 void ChipController::OnNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsSameDocument()) {
-    ResetPermissionPromptChip();
+  // TODO(crbug.com/1416493): Refactor this so that this observer method is only
+  // called when a non-same-document navigation starts in the primary main
+  // frame.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
   }
+
+  ResetPermissionPromptChip();
 }
 
 void ChipController::OnPromptRemoved() {

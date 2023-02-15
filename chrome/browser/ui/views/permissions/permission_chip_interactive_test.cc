@@ -42,6 +42,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/permissions_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "permission_prompt_chip.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -240,6 +241,33 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     return **base::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
         &ContentSettingImageView::GetTypeForTesting);
+  }
+
+  // Create an <iframe> inside |parent_rfh|, and navigate it toward |url|.
+  // |permission_policy| can be used to set permission policy to the iframe.
+  // For instance:
+  // ```
+  // child = CreateIframe(parent, url, "geolocation *; camera *");
+  // ```
+  // This returns the new RenderFrameHost associated with new document created
+  // in the iframe.
+  content::RenderFrameHost* CreateIframe(
+      content::RenderFrameHost* parent_rfh,
+      const GURL& url,
+      const std::string& permission_policy = "") {
+    std::string script = content::JsReplace(R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = $1;
+      iframe.allow = $2;
+      iframe.onload = _ => { resolve("iframe loaded"); };
+      document.body.appendChild(iframe);
+    }))",
+                                            url, permission_policy);
+
+    EXPECT_EQ("iframe loaded", content::EvalJs(parent_rfh, script));
+
+    return ChildFrameAt(parent_rfh, 0);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2073,4 +2101,81 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
                   LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE,
               disposition.value());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
+                       PermissionRequestWithSameDocumentNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL top_url = embedded_test_server()->GetURL("/empty.html");
+  GURL embedded_url = embedded_test_server()->GetURL("/empty.html");
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                                top_url, 1);
+  ASSERT_TRUE(main_rfh);
+
+  content::RenderFrameHost* subframe = CreateIframe(main_rfh, embedded_url);
+  ASSERT_TRUE(subframe);
+
+  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  permissions::PermissionRequestObserver observer(web_contents);
+
+  EXPECT_FALSE(manager->IsRequestInProgress());
+
+  EXPECT_TRUE(content::ExecJs(
+      main_rfh, kRequestNotifications,
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait until a permission request is shown.
+  observer.Wait();
+
+  EXPECT_TRUE(manager->IsRequestInProgress());
+  EXPECT_TRUE(observer.request_shown());
+  EXPECT_TRUE(manager->view_for_testing());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  LocationBarView* location_bar = browser_view->GetLocationBarView();
+  ASSERT_TRUE(location_bar);
+
+  ChipController* chip = location_bar->chip_controller();
+  EXPECT_TRUE(chip->IsPermissionPromptChipVisible());
+
+  // At first, we verify that the same document navigation on both, top level
+  // and embedded frames will not end up resolving or hiding the current active
+  // permission request chip.
+
+  // Same document navigation on the main frame.
+  content::TestNavigationObserver main_frame_navigation_observer(web_contents,
+                                                                 1);
+  ASSERT_TRUE(content::ExecJs(main_rfh, "window.location = '#navigateHere'"));
+  main_frame_navigation_observer.Wait();
+
+  EXPECT_TRUE(manager->IsRequestInProgress());
+  EXPECT_TRUE(chip->IsPermissionPromptChipVisible());
+
+  // Same document navigation on the child frame.
+  content::TestNavigationObserver embedded_frame_navigation_observer(
+      web_contents, 1);
+  ASSERT_TRUE(content::ExecJs(subframe, "window.location = '#navigateHere'"));
+  embedded_frame_navigation_observer.Wait();
+
+  EXPECT_TRUE(manager->IsRequestInProgress());
+  EXPECT_TRUE(chip->IsPermissionPromptChipVisible());
+
+  // Second, we verify that cross-origin navigation of the embedded iframe will
+  // not end up resolving or hiding the current active permission request chip.
+  ASSERT_TRUE(NavigateToURLFromRenderer(subframe, embedded_url));
+  EXPECT_TRUE(manager->IsRequestInProgress());
+  EXPECT_TRUE(chip->IsPermissionPromptChipVisible());
+
+  manager->Accept();
+
+  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
 }
