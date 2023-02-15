@@ -18,16 +18,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace update_client {
 
@@ -126,10 +123,10 @@ class Component {
 
   std::string session_id() const;
 
-  const std::vector<base::Value>& events() const { return events_; }
+  const std::vector<base::Value::Dict>& events() const { return events_; }
 
   // Returns a clone of the component events.
-  std::vector<base::Value> GetEvents() const;
+  std::vector<base::Value::Dict> GetEvents() const;
 
  private:
   friend class MockPingManagerImpl;
@@ -384,7 +381,7 @@ class Component {
   // by a downloader which can do bandwidth throttling on the client side.
   bool CanDoBackgroundDownload() const;
 
-  void AppendEvent(base::Value event);
+  void AppendEvent(base::Value::Dict event);
 
   // Changes the component state and notifies the caller of the |Handle|
   // function that the handling of this component state is complete.
@@ -400,14 +397,14 @@ class Component {
 
   // These functions return a specific event. Each data member of the event is
   // represented as a key-value pair in a dictionary value.
-  base::Value MakeEventUpdateComplete() const;
-  base::Value MakeEventDownloadMetrics(
+  base::Value::Dict MakeEventUpdateComplete() const;
+  base::Value::Dict MakeEventDownloadMetrics(
       const CrxDownloader::DownloadMetrics& download_metrics) const;
-  base::Value MakeEventUninstalled() const;
-  base::Value MakeEventRegistration() const;
-  base::Value MakeEventActionRun(bool succeeded,
-                                 int error_code,
-                                 int extra_code1) const;
+  base::Value::Dict MakeEventUninstalled() const;
+  base::Value::Dict MakeEventRegistration() const;
+  base::Value::Dict MakeEventActionRun(bool succeeded,
+                                       int error_code,
+                                       int extra_code1) const;
 
   std::unique_ptr<CrxInstaller::InstallParams> install_params() const;
 
@@ -483,7 +480,7 @@ class Component {
   absl::optional<CrxInstaller::InstallParams> install_params_;
 
   // Contains the events which are therefore serialized in the requests.
-  std::vector<base::Value> events_;
+  std::vector<base::Value::Dict> events_;
 
   CallbackHandleComplete callback_handle_complete_;
   std::unique_ptr<State> state_;

@@ -154,7 +154,7 @@ base::CommandLine BuildRecoveryInstallCommandLine(
 base::Value::Dict ReadManifest(const base::FilePath& manifest) {
   JSONFileValueDeserializer deserializer(manifest);
   std::string error;
-  return std::move(*deserializer.Deserialize(NULL, &error)).TakeDict();
+  return std::move(*deserializer.Deserialize(nullptr, &error)).TakeDict();
 }
 
 void WaitForElevatedInstallToComplete(base::Process process) {
@@ -420,40 +420,49 @@ void RecoveryComponentInstaller::Install(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-bool RecoveryComponentInstaller::DoInstall(
-    const base::FilePath& unpack_path) {
-  const base::Value manifest = update_client::ReadManifest(unpack_path);
-  if (!manifest.is_dict())
+bool RecoveryComponentInstaller::DoInstall(const base::FilePath& unpack_path) {
+  absl::optional<base::Value::Dict> manifest =
+      update_client::ReadManifest(unpack_path);
+  if (!manifest.has_value()) {
     return false;
-  const std::string* name = manifest.FindStringKey("name");
-  if (!name || *name != kRecoveryManifestName)
+  }
+  const std::string* name = manifest->FindString("name");
+  if (!name || *name != kRecoveryManifestName) {
     return false;
-  const std::string* proposed_version = manifest.FindStringKey("version");
-  if (!proposed_version || !base::IsStringASCII(*proposed_version))
+  }
+  const std::string* proposed_version = manifest->FindString("version");
+  if (!proposed_version || !base::IsStringASCII(*proposed_version)) {
     return false;
+  }
   base::Version version(*proposed_version);
-  if (!version.IsValid())
+  if (!version.IsValid()) {
     return false;
-  if (current_version_.CompareTo(version) >= 0)
+  }
+  if (current_version_.CompareTo(version) >= 0) {
     return false;
+  }
 
   // Passed the basic tests. Copy the installation to a permanent directory.
   base::FilePath path;
-  if (!base::PathService::Get(DIR_RECOVERY_BASE, &path))
+  if (!base::PathService::Get(DIR_RECOVERY_BASE, &path)) {
     return false;
-  if (!base::PathExists(path) && !base::CreateDirectory(path))
+  }
+  if (!base::PathExists(path) && !base::CreateDirectory(path)) {
     return false;
+  }
   path = path.AppendASCII(version.GetString());
-  if (base::PathExists(path) && !base::DeletePathRecursively(path))
+  if (base::PathExists(path) && !base::DeletePathRecursively(path)) {
     return false;
+  }
   if (!base::Move(unpack_path, path)) {
     DVLOG(1) << "Recovery component move failed.";
     return false;
   }
 
   base::FilePath main_file = path.Append(kRecoveryFileName);
-  if (!base::PathExists(main_file))
+  if (!base::PathExists(main_file)) {
     return false;
+  }
 
 #if BUILDFLAG(IS_POSIX)
   // The current version of the CRX unzipping does not restore
@@ -469,7 +478,7 @@ bool RecoveryComponentInstaller::DoInstall(
   // Run the recovery component.
   const bool is_deferred_run = false;
   const auto cmdline = BuildRecoveryInstallCommandLine(
-      main_file, manifest.GetDict(), is_deferred_run, current_version_);
+      main_file, manifest.value(), is_deferred_run, current_version_);
 
   if (!RunInstallCommand(cmdline, path)) {
     return false;

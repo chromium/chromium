@@ -22,9 +22,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
-using base::Value;
-using std::string;
-
 namespace update_client {
 
 TEST(SerializeRequestJSON, Serialize) {
@@ -40,12 +37,10 @@ TEST(SerializeRequestJSON, Serialize) {
     std::vector<std::string> items = {"id1"};
     test::SetDateLastData(metadata.get(), items, 1234);
 
-    std::vector<base::Value> events;
-    events.emplace_back(Value::Type::DICT);
-    events.emplace_back(Value::Type::DICT);
-    events[0].SetKey("a", Value(1));
-    events[0].SetKey("b", Value("2"));
-    events[1].SetKey("error", Value(0));
+    std::vector<base::Value::Dict> events(2);
+    events[0].Set("a", 1);
+    events[0].Set("b", "2");
+    events[1].Set("error", 0);
 
     std::vector<protocol_request::App> apps;
     apps.push_back(MakeProtocolApp(

@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/values.h"
 #include "components/update_client/protocol_definition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class Value;
 class Version;
 }
 
@@ -64,7 +64,7 @@ protocol_request::App MakeProtocolApp(
     absl::optional<protocol_request::UpdateCheck> update_check,
     const std::vector<protocol_request::Data>& data,
     absl::optional<protocol_request::Ping> ping,
-    absl::optional<std::vector<base::Value>> events);
+    absl::optional<std::vector<base::Value::Dict>> events);
 
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(
     bool is_update_disabled,

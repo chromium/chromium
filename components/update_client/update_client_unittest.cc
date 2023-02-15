@@ -171,14 +171,14 @@ class MockPingManagerImpl : public PingManager {
 
   const std::vector<PingData>& ping_data() const;
 
-  const std::vector<base::Value>& events() const;
+  const std::vector<base::Value::Dict>& events() const;
 
  protected:
   ~MockPingManagerImpl() override;
 
  private:
   std::vector<PingData> ping_data_;
-  std::vector<base::Value> events_;
+  std::vector<base::Value::Dict> events_;
 };
 
 MockPingManagerImpl::MockPingManagerImpl(scoped_refptr<Configurator> config)
@@ -211,7 +211,7 @@ MockPingManagerImpl::ping_data() const {
   return ping_data_;
 }
 
-const std::vector<base::Value>& MockPingManagerImpl::events() const {
+const std::vector<base::Value::Dict>& MockPingManagerImpl::events() const {
   return events_;
 }
 
@@ -4200,7 +4200,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
       "total=1843 download_time_ms="1000" previousversion="0.0" "
       "nextversion="1.0"/>"
       */
-      const base::Value::Dict& event0 = events()[0].GetDict();
+      const base::Value::Dict& event0 = events()[0];
       EXPECT_EQ(14, event0.FindInt("eventtype"));
       EXPECT_EQ(1, event0.FindInt("eventresult"));
       EXPECT_EQ("unknown", CHECK_DEREF(event0.FindString("downloader")));
@@ -4213,14 +4213,14 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
       EXPECT_EQ("1.0", CHECK_DEREF(event0.FindString("nextversion")));
 
       // "<event eventtype="42" eventresult="1" errorcode="1877345072"/>"
-      const base::Value::Dict& event1 = events()[1].GetDict();
+      const base::Value::Dict& event1 = events()[1];
       EXPECT_EQ(42, event1.FindInt("eventtype"));
       EXPECT_EQ(1, event1.FindInt("eventresult"));
       EXPECT_EQ(1877345072, event1.FindInt("errorcode"));
 
       // "<event eventtype=\"2\" eventresult=\"1\" previousversion=\"0.0\" "
       // "nextversion=\"1.0\"/>",
-      const base::Value::Dict& event2 = events()[2].GetDict();
+      const base::Value::Dict& event2 = events()[2];
       EXPECT_EQ(2, event2.FindInt("eventtype"));
       EXPECT_EQ(1, event1.FindInt("eventresult"));
       EXPECT_EQ("0.0", CHECK_DEREF(event0.FindString("previousversion")));
@@ -4338,7 +4338,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
       EXPECT_EQ(1u, events().size());
 
       // "<event eventtype="42" eventresult="1" errorcode="1877345072"/>"
-      const base::Value::Dict& event = events()[0].GetDict();
+      const base::Value::Dict& event = events()[0];
       EXPECT_EQ(42, event.FindInt("eventtype"));
       EXPECT_EQ(1, event.FindInt("eventresult"));
       EXPECT_EQ(1877345072, event.FindInt("errorcode"));

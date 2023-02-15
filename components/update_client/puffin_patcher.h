@@ -22,7 +22,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "components/update_client/component_unpacker.h"
 
 namespace base {

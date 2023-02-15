@@ -16,12 +16,10 @@
 
 namespace update_client {
 
-using Value = base::Value;
-
 std::string ProtocolSerializerJSON::Serialize(
     const protocol_request::Request& request) const {
-  Value::Dict root_node;
-  Value::Dict request_node;
+  base::Value::Dict root_node;
+  base::Value::Dict request_node;
   request_node.Set("protocol", request.protocol_version);
   request_node.Set("ismachine", request.is_machine);
   request_node.Set("dedup", "cr");
@@ -52,7 +50,7 @@ std::string ProtocolSerializerJSON::Serialize(
     request_node.Set("domainjoined", *request.domain_joined);
 
   // HW platform information.
-  Value::Dict hw_node;
+  base::Value::Dict hw_node;
   hw_node.Set("physmemory", static_cast<int>(request.hw.physmemory));
   hw_node.Set("sse", request.hw.sse);
   hw_node.Set("sse2", request.hw.sse2);
@@ -64,7 +62,7 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("hw", std::move(hw_node));
 
   // OS version and platform information.
-  Value::Dict os_node;
+  base::Value::Dict os_node;
   os_node.Set("platform", request.os.platform);
   os_node.Set("arch", request.os.arch);
   if (!request.os.version.empty())
@@ -76,7 +74,7 @@ std::string ProtocolSerializerJSON::Serialize(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (request.updater) {
     const auto& updater = *request.updater;
-    Value::Dict updater_node;
+    base::Value::Dict updater_node;
     updater_node.Set("name", updater.name);
     updater_node.Set("ismachine", updater.is_machine);
     updater_node.Set("autoupdatecheckenabled",
@@ -92,9 +90,9 @@ std::string ProtocolSerializerJSON::Serialize(
   }
 #endif
 
-  Value::List app_nodes;
+  base::Value::List app_nodes;
   for (const auto& app : request.apps) {
-    Value::Dict app_node;
+    base::Value::Dict app_node;
     app_node.Set("appid", app.app_id);
     app_node.Set("version", app.version);
     if (!app.ap.empty())
@@ -123,9 +121,9 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set("enabled", *app.enabled);
 
     if (app.disabled_reasons && !app.disabled_reasons->empty()) {
-      Value::List disabled_nodes;
+      base::Value::List disabled_nodes;
       for (const int disabled_reason : *app.disabled_reasons) {
-        Value::Dict disabled_node;
+        base::Value::Dict disabled_node;
         disabled_node.Set("reason", disabled_reason);
         disabled_nodes.Append(std::move(disabled_node));
       }
@@ -136,7 +134,7 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set(attr.first, attr.second);
 
     if (app.update_check) {
-      Value::Dict update_check_node;
+      base::Value::Dict update_check_node;
       if (app.update_check->is_update_disabled)
         update_check_node.Set("updatedisabled", true);
       if (app.update_check->rollback_allowed)
@@ -151,9 +149,9 @@ std::string ProtocolSerializerJSON::Serialize(
     }
 
     if (!app.data.empty()) {
-      Value::List data_nodes;
+      base::Value::List data_nodes;
       for (const auto& data : app.data) {
-        Value::Dict data_node;
+        base::Value::Dict data_node;
 
         data_node.Set("name", data.name);
         if (data.name == "install")
@@ -170,7 +168,7 @@ std::string ProtocolSerializerJSON::Serialize(
 
     if (app.ping) {
       const auto& ping = *app.ping;
-      Value::Dict ping_node;
+      base::Value::Dict ping_node;
       if (!ping.ping_freshness.empty())
         ping_node.Set("ping_freshness", ping.ping_freshness);
 
@@ -190,20 +188,19 @@ std::string ProtocolSerializerJSON::Serialize(
     }
 
     if (!app.fingerprint.empty()) {
-      Value::List package_nodes;
-      Value::Dict package;
+      base::Value::List package_nodes;
+      base::Value::Dict package;
       package.Set("fp", app.fingerprint);
       package_nodes.Append(std::move(package));
-      Value::Dict packages_node;
+      base::Value::Dict packages_node;
       packages_node.Set("package", std::move(package_nodes));
       app_node.Set("packages", std::move(packages_node));
     }
 
     if (app.events) {
-      Value::List event_nodes;
+      base::Value::List event_nodes;
       for (const auto& event : *app.events) {
-        DCHECK(event.is_dict());
-        DCHECK(!event.GetDict().empty());
+        DCHECK(!event.empty());
         event_nodes.Append(event.Clone());
       }
       app_node.Set("event", std::move(event_nodes));

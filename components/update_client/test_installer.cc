@@ -96,10 +96,15 @@ void VersionedTestInstaller::Install(
     std::unique_ptr<InstallParams> /*install_params*/,
     ProgressCallback progress_callback,
     Callback callback) {
-  const base::Value manifest = update_client::ReadManifest(unpack_path);
-  const std::string* version_string = manifest.FindStringKey("version");
-  if (!version_string || !base::IsStringASCII(*version_string))
+  absl::optional<base::Value::Dict> manifest =
+      update_client::ReadManifest(unpack_path);
+  if (!manifest) {
     return;
+  }
+  const std::string* version_string = manifest->FindString("version");
+  if (!version_string || !base::IsStringASCII(*version_string)) {
+    return;
+  }
 
   const base::Version version(*version_string);
   const base::FilePath path =
