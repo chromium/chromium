@@ -55,6 +55,8 @@ source_set("app_service") {
     "web_contents_app_id_utils.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ ":constants" ]
 
   deps = [
@@ -296,6 +298,8 @@ source_set("constants") {
     "app_launch_params.cc",
     "app_launch_params.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",
