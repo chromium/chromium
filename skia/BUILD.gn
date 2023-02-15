@@ -524,7 +524,10 @@ component("skia") {
       frameworks += [ "AppKit.framework" ]
     }
     if (is_ios) {
-      frameworks += [ "ImageIO.framework" ]
+      frameworks += [
+        "ImageIO.framework",
+        "IOSurface.framework",
+      ]
     }
   } else if (is_ios) {
     frameworks = [ "ImageIO.framework" ]
