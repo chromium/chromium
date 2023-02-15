@@ -6,6 +6,7 @@
 #define BASE_ANDROID_MEMINFO_DUMP_PROVIDER_H_
 
 #include "base/base_export.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 
