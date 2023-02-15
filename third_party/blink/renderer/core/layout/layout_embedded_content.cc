@@ -106,7 +106,7 @@ const absl::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
 
 AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
   auto frozen_size = FrozenFrameSize();
-  if (!frozen_size) {
+  if (!frozen_size || frozen_size->IsEmpty()) {
     const PhysicalOffset content_box_offset = PhysicalContentBoxOffset();
     return AffineTransform().Translate(content_box_offset.left,
                                        content_box_offset.top);

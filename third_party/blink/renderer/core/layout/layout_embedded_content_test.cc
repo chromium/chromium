@@ -76,4 +76,25 @@ TEST_F(LayoutEmbeddedContentTest, FreozenSizeReplacedContentRect) {
             PhysicalRect(32, 2, 240, 150));
 }
 
+TEST_F(LayoutEmbeddedContentTest, FreozenSizeEmpty) {
+  Document& document = GetDocument();
+  auto* element = MakeGarbageCollected<HTMLFreezableIFrameElement>(document);
+  element->setAttribute(html_names::kSrcAttr, "http://example.com/");
+  element->SetInlineStyleProperty(CSSPropertyID::kObjectFit,
+                                  CSSValueID::kContain);
+  document.body()->AppendChild(element);
+  UpdateAllLifecyclePhasesForTest();
+  auto* layout_object = element->GetLayoutFreezableIFrame();
+  ASSERT_TRUE(layout_object);
+  EXPECT_EQ(layout_object->ReplacedContentRect(), PhysicalRect(2, 2, 300, 150));
+
+  layout_object->FreezeSizeForTesting(PhysicalSize(0, 10));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(layout_object->ReplacedContentRect(), PhysicalRect(2, 2, 300, 150));
+
+  layout_object->FreezeSizeForTesting(PhysicalSize(10, 0));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(layout_object->ReplacedContentRect(), PhysicalRect(2, 2, 300, 150));
+}
+
 }  // namespace blink
