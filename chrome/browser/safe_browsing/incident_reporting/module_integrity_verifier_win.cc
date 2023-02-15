@@ -80,11 +80,11 @@ struct ModuleVerificationState {
 
   // The location in the in-memory binary of the latest reloc encountered by
   // |EnumRelocsCallback|.
-  raw_ptr<uint8_t> last_mem_reloc_position;
+  raw_ptr<uint8_t, AllowPtrArithmetic> last_mem_reloc_position;
 
   // The location in the on-disk binary of the latest reloc encountered by
   // |EnumRelocsCallback|.
-  raw_ptr<uint8_t> last_disk_reloc_position;
+  raw_ptr<uint8_t, AllowPtrArithmetic> last_disk_reloc_position;
 
   // The number of bytes with a different value on disk and in memory, as
   // computed by |VerifyModule|.

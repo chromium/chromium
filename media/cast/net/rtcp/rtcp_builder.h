@@ -53,7 +53,7 @@ class RtcpBuilder {
       size_t* total_number_of_messages_to_send);
 
   const uint32_t local_ssrc_;
-  raw_ptr<char> ptr_of_length_;
+  raw_ptr<char, AllowPtrArithmetic> ptr_of_length_;
   PacketRef packet_;
   base::BigEndianWriter writer_;
 };

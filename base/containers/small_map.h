@@ -250,7 +250,7 @@ class small_map {
     inline explicit iterator(const typename NormalMap::iterator& init)
         : array_iter_(nullptr), map_iter_(init) {}
 
-    raw_ptr<value_type> array_iter_;
+    raw_ptr<value_type, AllowPtrArithmetic> array_iter_;
     typename NormalMap::iterator map_iter_;
   };
 
@@ -327,7 +327,7 @@ class small_map {
         const typename NormalMap::const_iterator& init)
         : array_iter_(nullptr), map_iter_(init) {}
 
-    raw_ptr<const value_type> array_iter_;
+    raw_ptr<const value_type, AllowPtrArithmetic> array_iter_;
     typename NormalMap::const_iterator map_iter_;
   };
 

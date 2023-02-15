@@ -51,7 +51,7 @@ class MojoDataPipeReader {
 
   // The current buffer to be read. It is provided by Read() and should be
   // guaranteed to be valid until the current read completes.
-  raw_ptr<uint8_t> current_buffer_ = nullptr;
+  raw_ptr<uint8_t, AllowPtrArithmetic> current_buffer_ = nullptr;
 
   // The number of bytes to be read for the current read request.
   uint32_t current_buffer_size_ = 0;

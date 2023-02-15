@@ -94,7 +94,7 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   virtual ~IOBuffer();
 
-  raw_ptr<char, DanglingUntriaged> data_;
+  raw_ptr<char, DanglingUntriaged | AllowPtrArithmetic> data_;
 };
 
 // This version stores the size of the buffer so that the creator of the object

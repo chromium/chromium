@@ -37,7 +37,7 @@ class TestDataStream {
   int index_;
   int bytes_remaining_;
   char buffer_[16];
-  raw_ptr<char> buffer_ptr_;
+  raw_ptr<char, AllowPtrArithmetic> buffer_ptr_;
 };
 
 }  // namespace net

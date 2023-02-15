@@ -123,12 +123,17 @@ enum class RawPtrTraits : unsigned {
   kDisableHooks = kEmpty,
 #endif
 
+  // Pointer arithmetic is discouraged and disabled by default.
+  //
+  // Don't use directly, use AllowPtrArithmetic instead.
+  kAllowPtrArithmetic = (1 << 3),
+
   // Adds accounting, on top of the chosen implementation, for test purposes.
   // raw_ptr/raw_ref with this trait perform extra bookkeeping, e.g. to track
   // the number of times the raw_ptr is wrapped, unwrapped, etc.
   //
   // Test only.
-  kUseCountingWrapperForTest = (1 << 3),
+  kUseCountingWrapperForTest = (1 << 4),
 };
 
 // Used to combine RawPtrTraits:
@@ -158,6 +163,7 @@ constexpr bool AreValid(RawPtrTraits traits) {
   return Remove(traits, RawPtrTraits::kMayDangle |
                             RawPtrTraits::kDisableMTECheckedPtr |
                             RawPtrTraits::kDisableHooks |
+                            RawPtrTraits::kAllowPtrArithmetic |
                             RawPtrTraits::kUseCountingWrapperForTest) ==
          RawPtrTraits::kEmpty;
 }
@@ -1327,6 +1333,11 @@ using MayBeDangling = base::raw_ptr<T, base::RawPtrTraits::kMayDangle>;
 
 // Direct pass-through to no-op implementation.
 constexpr auto DegradeToNoOpWhenMTE = base::RawPtrTraits::kDisableMTECheckedPtr;
+
+// The use of pointer arithmetic with raw_ptr is strongly discouraged and
+// disabled by default. Usually a container like span<> should be used
+// instead of the raw_ptr.
+constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 
 namespace std {
 

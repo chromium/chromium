@@ -497,7 +497,7 @@ class NoThrowBuffer {
   }
 
  protected:
-  raw_ptr<T, DanglingUntriaged> buffer_;
+  raw_ptr<T, DanglingUntriaged | AllowPtrArithmetic> buffer_;
   size_t size_;  // how much of the buffer we're using.
   size_t alloc_size_;  // how much space we have allocated.
   Allocator alloc_;

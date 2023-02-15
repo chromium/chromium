@@ -201,7 +201,7 @@ class D3D11H265Accelerator : public H265Decoder::H265Accelerator {
   std::vector<DXVA_Slice_HEVC_Short> slice_info_;
   size_t current_offset_ = 0;
   size_t bitstream_buffer_size_ = 0;
-  raw_ptr<uint8_t> bitstream_buffer_bytes_ = nullptr;
+  raw_ptr<uint8_t, AllowPtrArithmetic> bitstream_buffer_bytes_ = nullptr;
 
   // For HEVC this number needs to be larger than 1 and different
   // in each call to Execute().

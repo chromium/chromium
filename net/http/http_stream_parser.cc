@@ -166,7 +166,7 @@ class HttpStreamParser::SeekableIOBuffer : public IOBuffer {
     data_ = real_data_;
   }
 
-  raw_ptr<char> real_data_;
+  raw_ptr<char, AllowPtrArithmetic> real_data_;
   const int capacity_;
   int size_ = 0;
   int used_ = 0;

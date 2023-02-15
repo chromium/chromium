@@ -197,7 +197,7 @@ class POLICY_EXPORT Schema {
 
    private:
     scoped_refptr<const InternalStorage> storage_;
-    raw_ptr<const internal::PropertyNode> it_;
+    raw_ptr<const internal::PropertyNode, AllowPtrArithmetic> it_;
     raw_ptr<const internal::PropertyNode> end_;
   };
 

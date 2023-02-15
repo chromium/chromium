@@ -271,7 +271,8 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
   std::unique_ptr<FileMetricsProvider> provider_;
   base::HistogramBase* created_histograms_[kMaxCreateHistograms];
 
-  raw_ptr<const FileMetricsProvider::FilterAction> filter_actions_ = nullptr;
+  raw_ptr<const FileMetricsProvider::FilterAction, AllowPtrArithmetic>
+      filter_actions_ = nullptr;
   size_t filter_actions_remaining_ = 0;
 };
 

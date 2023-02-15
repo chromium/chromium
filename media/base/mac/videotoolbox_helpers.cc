@@ -92,7 +92,7 @@ class RawAnnexBBuffer : public AnnexBBuffer {
   size_t GetReservedSize() const override { return reserved_size_; }
 
  private:
-  raw_ptr<char> annexb_buffer_;
+  raw_ptr<char, AllowPtrArithmetic> annexb_buffer_;
   size_t annexb_buffer_size_;
   size_t annexb_buffer_offset_;
   size_t reserved_size_;

@@ -115,7 +115,7 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   std::vector<DXVA_Slice_H264_Short> slice_info_;
   size_t current_offset_ = 0;
   size_t bitstream_buffer_size_ = 0;
-  raw_ptr<uint8_t> bitstream_buffer_bytes_ = nullptr;
+  raw_ptr<uint8_t, AllowPtrArithmetic> bitstream_buffer_bytes_ = nullptr;
 
   // This contains the subsamples (clear and encrypted) of the slice data
   // in D3D11_VIDEO_DECODER_BUFFER_BITSTREAM buffer.

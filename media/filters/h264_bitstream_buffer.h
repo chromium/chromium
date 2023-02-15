@@ -140,7 +140,7 @@ class MEDIA_EXPORT H264BitstreamBuffer
   size_t bits_in_buffer_;
 
   // Buffer for stream data.
-  raw_ptr<uint8_t> data_;
+  raw_ptr<uint8_t, AllowPtrArithmetic> data_;
 };
 
 }  // namespace media

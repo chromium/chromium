@@ -50,7 +50,7 @@ class Serializer {
     bytes_written_ += padding;
   }
 
-  raw_ptr<char> memory_ = nullptr;
+  raw_ptr<char, AllowPtrArithmetic> memory_ = nullptr;
   uint32_t memory_size_ = 0u;
   uint32_t bytes_written_ = 0u;
 };

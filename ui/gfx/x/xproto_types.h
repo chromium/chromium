@@ -50,7 +50,7 @@ struct COMPONENT_EXPORT(X11) ReadBuffer {
 
   scoped_refptr<base::RefCountedMemory> data;
   size_t offset = 0;
-  raw_ptr<const int> fds = nullptr;
+  raw_ptr<const int, AllowPtrArithmetic> fds = nullptr;
 };
 
 // Wraps data to write to the connection.

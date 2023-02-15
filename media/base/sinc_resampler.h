@@ -191,11 +191,11 @@ class MEDIA_EXPORT SincResampler {
 
   // Pointers to the various regions inside |input_buffer_|.  See the diagram at
   // the top of the .cc file for more information.
-  raw_ptr<float> r0_;
-  const raw_ptr<float> r1_;
-  const raw_ptr<float> r2_;
-  raw_ptr<float> r3_;
-  raw_ptr<float> r4_;
+  raw_ptr<float, AllowPtrArithmetic> r0_;
+  const raw_ptr<float, AllowPtrArithmetic> r1_;
+  const raw_ptr<float, AllowPtrArithmetic> r2_;
+  raw_ptr<float, AllowPtrArithmetic> r3_;
+  raw_ptr<float, AllowPtrArithmetic> r4_;
 };
 
 }  // namespace media

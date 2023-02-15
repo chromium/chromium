@@ -40,7 +40,7 @@ class ExpiredHistogramsChecker final : public base::RecordHistogramChecker {
   void InitAllowlist(const std::string& allowlist_str);
 
   // Array of expired histogram hashes.
-  const raw_ptr<const uint32_t> expired_histogram_hashes_;
+  const raw_ptr<const uint32_t, AllowPtrArithmetic> expired_histogram_hashes_;
 
   // Size of the |expired_histogram_hashes_|.
   const size_t size_;

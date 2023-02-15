@@ -140,7 +140,7 @@ class BASE_EXPORT MemoryMappedFile {
 
   File file_;
 
-  raw_ptr<uint8_t, DanglingUntriaged> data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> data_ = nullptr;
   size_t length_ = 0;
 
 #if BUILDFLAG(IS_WIN)

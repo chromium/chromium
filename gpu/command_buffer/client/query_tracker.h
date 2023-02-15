@@ -41,7 +41,7 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
 
     void FreePendingSyncs();
 
-    raw_ptr<QuerySync> syncs;
+    raw_ptr<QuerySync, AllowPtrArithmetic> syncs;
     int32_t shm_id;
     uint32_t base_shm_offset;
     std::bitset<kSyncsPerBucket> in_use_query_syncs;

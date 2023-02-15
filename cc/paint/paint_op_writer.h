@@ -325,7 +325,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
       bool* paint_image_needs_mips,
       gpu::Mailbox* mailbox_out);
 
-  raw_ptr<char> memory_ = nullptr;
+  raw_ptr<char, AllowPtrArithmetic> memory_ = nullptr;
   size_t size_ = 0u;
   size_t remaining_bytes_ = 0u;
   const raw_ref<const PaintOp::SerializeOptions> options_;

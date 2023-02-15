@@ -1311,7 +1311,7 @@ class SimpleSerializer {
   TestOptionsProvider* options_provider() { return &options_provider_; }
 
  private:
-  raw_ptr<char> current_ = nullptr;
+  raw_ptr<char, AllowPtrArithmetic> current_ = nullptr;
   size_t output_size_ = 0u;
   size_t remaining_ = 0u;
   std::vector<size_t> bytes_written_;

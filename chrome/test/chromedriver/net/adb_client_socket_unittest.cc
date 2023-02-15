@@ -16,8 +16,6 @@
 
 class MockSocket : public net::MockClientSocket {
  public:
-  int return_values_length;
-  raw_ptr<std::string> return_values_array;
   MockSocket(std::string* return_values_array, int return_values_length)
       : MockClientSocket(net::NetLogWithSource()),
         return_values_length(return_values_length),
@@ -78,6 +76,9 @@ class MockSocket : public net::MockClientSocket {
   }
   bool GetSSLInfo(net::SSLInfo* ssl_info) override { return false; }
   bool WasEverUsed() const override { return false; }
+
+  int return_values_length;
+  raw_ptr<std::string, AllowPtrArithmetic> return_values_array;
 };
 
 class AdbClientSocketTest : public testing::Test {

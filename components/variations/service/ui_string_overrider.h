@@ -45,7 +45,7 @@ class UIStringOverrider {
   int GetResourceIndex(uint32_t hash);
 
  private:
-  const raw_ptr<const uint32_t> resource_hashes_;
+  const raw_ptr<const uint32_t, AllowPtrArithmetic> resource_hashes_;
   const raw_ptr<const int, DanglingUntriaged> resource_indices_;
   size_t const num_resources_;
 };

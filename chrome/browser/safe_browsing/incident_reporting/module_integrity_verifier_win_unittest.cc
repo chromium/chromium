@@ -64,7 +64,7 @@ class ScopedModuleModifier {
   }
 
  private:
-  raw_ptr<uint8_t> address_;
+  raw_ptr<uint8_t, AllowPtrArithmetic> address_;
 };
 
 }  // namespace

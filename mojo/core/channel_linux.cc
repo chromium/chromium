@@ -607,7 +607,7 @@ class ChannelLinux::SharedBuffer {
 
   SharedBuffer(uint8_t* ptr, size_t len) : base_ptr_(ptr), len_(len) {}
 
-  raw_ptr<uint8_t> base_ptr_ = nullptr;
+  raw_ptr<uint8_t, AllowPtrArithmetic> base_ptr_ = nullptr;
   size_t len_ = 0;
 };
 

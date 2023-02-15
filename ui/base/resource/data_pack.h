@@ -105,7 +105,7 @@ class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
 
     const uint8_t* data_source_;
     raw_ptr<ResourceData> resource_data_;
-    raw_ptr<const Entry> entry_;
+    raw_ptr<const Entry, AllowPtrArithmetic> entry_;
   };
 
   Iterator begin() const;
