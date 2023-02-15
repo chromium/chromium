@@ -771,7 +771,7 @@ deps = {
 
   'src/clank': {
     'url': 'https://chrome-internal.googlesource.com/clank/internal/apps.git' + '@' +
-    '3519ecde7000d02d2d9aa7c9b9cd8876f20b8fba',
+    '4b041e6fb767f390bedcb0a572ac238c2b0c9304',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1211,7 +1211,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + 'b8a0994d94e45cfd3e688be69eac7064508a0616',
+      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + 'bc811425e7f10b72cd8f0e8213126404425841ec',
     'condition': 'checkout_src_internal',
   },
 
@@ -1825,7 +1825,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'e583fa45095a98e12cc28748b30c2b1a9e5babcf',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '1e675c7835f188cd8be228f5da6d3467690355b8',
+    Var('webrtc_git') + '/src.git' + '@' + '218b56e516386cd57c7513197528c3124bcd7ef3',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -1895,7 +1895,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@53b63d63fc7aac53073233b7f30fc7fe1ff8c20b',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@877f11c14c9907aea90c41821a938c97425e8b2e',
     'condition': 'checkout_src_internal',
   },
 
