@@ -336,8 +336,10 @@ was filed using the Security template):
 
 * **Restrict-View-SecurityTeam**
 * **Type-Bug-Security**
-* **If the reporter wants to remain anonymous or if the bug description or
-  comments contain PII**, add **Restrict-View-SecurityEmbargo**.
+* If you want to prevent the bug from becoming unrestricted after it has been
+  closed, add **Restrict-View-SecurityEmbargo**. This should be done if the
+  reporter wishes to remain anonymous, if the description or comments contain
+  PII, or if the bug contains malware samples.
 * **Security_Severity** - your responsibility as Sheriff.
 * **FoundIn** - your responsibility as Sheriff.
 * **reward_to** - if the bug was filed internally on behalf of somebody
