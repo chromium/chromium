@@ -82,6 +82,8 @@ GRDP_END_TEMPLATE = '</grit-part>\n'
 # Generates an <include .... /> row for the given file.
 def _generate_include_row(grd_prefix, filename, pathname, \
                           resource_path_rewrites, resource_path_prefix):
+  assert '\\' not in filename
+  assert '\\' not in pathname
   name_suffix = filename.upper().replace('/', '_').replace('.', '_'). \
           replace('-', '_').replace('@', '_AT_')
   name = 'IDR_%s_%s' % (grd_prefix.upper(), name_suffix)
@@ -94,6 +96,7 @@ def _generate_include_row(grd_prefix, filename, pathname, \
 
   if resource_path_prefix != None:
     resource_path = resource_path_prefix + '/' + resource_path
+  assert '\\' not in resource_path
 
   # This is a temporary workaround, since Polymer 2 shared resource files are
   # not preprocessed.

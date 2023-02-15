@@ -139,7 +139,8 @@ def _generate_manifest_file(out_dir, in_path, bundle_path, manifest_out_path):
         else:
           replaced_sources.append(source)
       filename = sourcemap_file[:-len('.map')]
-      filepath = os.path.join(bundle_path, os.path.basename(filename))
+      filepath = os.path.join(bundle_path, os.path.basename(filename)). \
+              replace('\\', '/')
       manifest[filepath] = replaced_sources
       output_filenames.append(filename)
 
@@ -301,7 +302,7 @@ def main(argv):
     # later.
     if args.out_manifest:
       manifest_data = {
-          'base_dir': args.out_folder,
+          'base_dir': args.out_folder.replace('\\', '/'),
           'files': list(manifest.keys()),
       }
       with open(os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w') \

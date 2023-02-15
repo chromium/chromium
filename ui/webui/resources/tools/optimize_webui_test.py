@@ -259,7 +259,7 @@ import './element_in_dir/element_in_dir.js';
 
     self.assertEqual(
         os.path.relpath(self._out_folder, _CWD).replace('\\', '/'),
-        os.path.relpath(manifest['base_dir'], _CWD).replace('\\', '/'))
+        os.path.relpath(manifest['base_dir'], _CWD))
 
   def testV3OptimizeWithCustomPaths(self):
     custom_dir = os.path.join(self._create_tmp_dir(), 'foo_root')
