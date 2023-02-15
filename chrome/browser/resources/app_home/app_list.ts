@@ -68,7 +68,7 @@ export class AppListElement extends PolymerElement {
       this.apps_ = result.appList;
     });
 
-    this.boundKeydownListener_ = this.handleNavigateWithArrows.bind(this);
+    this.boundKeydownListener_ = this.handleKeyDown.bind(this);
     this.boundContextMenuListener_ = this.closeCurrentAppMenu.bind(this);
   }
 
@@ -98,6 +98,23 @@ export class AppListElement extends PolymerElement {
     this.listenerIds_ = [];
     document.removeEventListener('contextmenu', this.boundContextMenuListener_);
     document.removeEventListener('keydown', this.boundKeydownListener_);
+  }
+
+  private handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.launchFocusedApp();
+    } else if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(
+                   e.key)) {
+      this.handleNavigateWithArrows(e);
+    }
+  }
+
+  private launchFocusedApp() {
+    const activeElementId = this.shadowRoot!.activeElement?.id;
+    if (activeElementId !== undefined &&
+        this.apps_.some(app => activeElementId === app.id)) {
+      BrowserProxy.getInstance().handler.launchApp(activeElementId!, null);
+    }
   }
 
   // Capture arrow key events to focus on apps and navigate the apps as a grid.

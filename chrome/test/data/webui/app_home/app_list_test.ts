@@ -617,4 +617,16 @@ suite('AppListTest', () => {
     assertEquals(
         apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
   });
+
+  test('enter when focused on app launches app', async () => {
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+    assertEquals(
+        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    const [appId, clickEvent] =
+        await testBrowserProxy.fakeHandler.whenCalled('launchApp');
+    assertEquals(appId, apps.appList[0]!.id);
+    assertEquals(clickEvent, null);
+  });
 });
