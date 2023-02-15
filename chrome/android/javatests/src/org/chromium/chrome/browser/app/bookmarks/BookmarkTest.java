@@ -43,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -378,7 +379,44 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    public void testopenBookmarkManager() throws InterruptedException {
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testShowBookmarkManager_Phone() throws InterruptedException {
+        loadEmptyPartnerBookmarksForTesting();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BookmarkUtils.showBookmarkManager(mActivityTestRule.getActivity(),
+                    mBookmarkModel.getMobileFolderId(), /*isIncognito=*/false);
+        });
+
+        BookmarkTestUtil.waitForBookmarkActivity();
+
+        // Assign so it's cleaned up after the test.
+        mBookmarkActivity = (BookmarkActivity) ApplicationStatus.getLastTrackedFocusedActivity();
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    public void testShowBookmarkManager_Tablet() throws InterruptedException {
+        loadEmptyPartnerBookmarksForTesting();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BookmarkUtils.showBookmarkManager(mActivityTestRule.getActivity(),
+                    mBookmarkModel.getMobileFolderId(), /*isIncognito=*/false);
+        });
+
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> mActivityTestRule.getActivity().getActivityTab().getNativePage() != null
+                        && mActivityTestRule.getActivity().getActivityTab().getNativePage()
+                                        instanceof BookmarkPage);
+    }
+
+    @Test
+    @SmallTest
+    public void testopenBookmarkManagerFolder() throws InterruptedException {
         openBookmarkManager();
         openMobileBookmarks();
 

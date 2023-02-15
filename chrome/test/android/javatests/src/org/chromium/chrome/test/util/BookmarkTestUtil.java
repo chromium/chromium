@@ -12,6 +12,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -55,6 +56,15 @@ public class BookmarkTestUtil {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         return (ChromeTabbedActivity) ApplicationStatus.getLastTrackedFocusedActivity();
+    }
+
+    public static BookmarkActivity waitForBookmarkActivity() {
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ApplicationStatus.getLastTrackedFocusedActivity(),
+                    IsInstanceOf.instanceOf(BookmarkActivity.class));
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        return (BookmarkActivity) ApplicationStatus.getLastTrackedFocusedActivity();
     }
 
     public static BookmarkEditActivity waitForEditActivity() {

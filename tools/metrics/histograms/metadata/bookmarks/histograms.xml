@@ -753,6 +753,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Bookmarks.MultipleOpened.OpenBookmarkTimeInterval2.{BookmarkType}"
+    units="ms" expires_after="2023-06-25">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records the time interval between the time the bookmark was added/opened.
+
+    Recorded when multi-selection is opened from the bookmark manager. Possible
+    that the selection is only 1 bookmark.
+  </summary>
+  <token key="BookmarkType">
+    <variant name="Normal" summary="a normal bookmark."/>
+    <variant name="Partner" summary="a partner bookmark."/>
+    <variant name="ReadingList" summary="a reading list article."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.MultipleOpened.OpenBookmarkType" enum="BookmarkType"
+    expires_after="2023-06-25">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs whether the bookmark entry is a user bookmark or a partner bookmark
+    when it is opened.
+
+    Recorded when multi-selection is opened from the bookmark manager. Possible
+    that the selection is only 1 bookmark.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.OnFaviconsChangedIconURL" enum="BooleanHit"
     expires_after="M77">
   <owner>pkotwicz@chromium.org</owner>
@@ -781,8 +814,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkTimeInterval2.{BookmarkType}" units="ms"
-    expires_after="2022-02-15">
-  <owner>dtrainor@chromium.org</owner>
+    expires_after="2023-06-25">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     A new version of Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}, to rule
@@ -797,7 +831,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
     expires_after="2023-06-25">
-  <owner>wychen@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Logs whether the bookmark entry is a user bookmark or a partner bookmark
