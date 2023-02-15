@@ -104,7 +104,13 @@ class FederatedMetricsManagerTest : public testing::Test {
   TestFederatedServiceController federated_service_controller_;
 };
 
-TEST_F(FederatedMetricsManagerTest, OnAbandon) {
+// TODO(crbug.com/1416382): Test is flaky on sanitizers.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnAbandon DISABLED_OnAbandon
+#else
+#define MAYBE_OnAbandon OnAbandon
+#endif
+TEST_F(FederatedMetricsManagerTest, MAYBE_OnAbandon) {
   Location location = Location::kList;
   std::vector<Result> shown_results;
   metrics_manager_->OnAbandon(location, shown_results, u"fake_query");
@@ -126,7 +132,13 @@ TEST_F(FederatedMetricsManagerTest, OnAbandon) {
   // functionality is available.
 }
 
-TEST_F(FederatedMetricsManagerTest, OnLaunch) {
+// TODO(crbug.com/1416382): Test is flaky on sanitizers.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnLaunch DISABLED_OnLaunch
+#else
+#define MAYBE_OnLaunch OnLaunch
+#endif
+TEST_F(FederatedMetricsManagerTest, MAYBE_OnLaunch) {
   Location location = Location::kList;
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
@@ -149,7 +161,13 @@ TEST_F(FederatedMetricsManagerTest, OnLaunch) {
   // functionality is available.
 }
 
-TEST_F(FederatedMetricsManagerTest, ZeroState) {
+// TODO(crbug.com/1416382): Test is flaky on sanitizers.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ZeroState DISABLED_ZeroState
+#else
+#define MAYBE_ZeroState ZeroState
+#endif
+TEST_F(FederatedMetricsManagerTest, MAYBE_ZeroState) {
   Location location = Location::kList;
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
