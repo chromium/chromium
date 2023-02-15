@@ -60,29 +60,26 @@ class UIControlsAsh : public UIControlsAura {
   ~UIControlsAsh() override = default;
 
   // UIControslAura overrides:
-  bool SendKeyPress(gfx::NativeWindow window,
-                    ui::KeyboardCode key,
-                    bool control,
-                    bool shift,
-                    bool alt,
-                    bool command) override {
-    return SendKeyPressNotifyWhenDone(window, key, control, shift, alt, command,
-                                      base::OnceClosure());
+  bool SendKeyEvents(gfx::NativeWindow window,
+                     ui::KeyboardCode key,
+                     int key_event_types,
+                     int accelerator_state) override {
+    return SendKeyEventsNotifyWhenDone(window, key, key_event_types,
+                                       base::OnceClosure(), accelerator_state);
   }
 
-  bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
-                                  ui::KeyboardCode key,
-                                  bool control,
-                                  bool shift,
-                                  bool alt,
-                                  bool command,
-                                  base::OnceClosure closure) override {
+  bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
+                                   ui::KeyboardCode key,
+                                   int key_event_types,
+                                   base::OnceClosure closure,
+                                   int accelerator_state) override {
     aura::Window* root = window ? window->GetRootWindow()
                                 : ash::Shell::GetRootWindowForNewWindows();
     UIControlsAura* ui_controls = GetUIControlsForRootWindow(root);
-    return ui_controls &&
-           ui_controls->SendKeyPressNotifyWhenDone(
-               window, key, control, shift, alt, command, std::move(closure));
+
+    return ui_controls && ui_controls->SendKeyEventsNotifyWhenDone(
+                              window, key, key_event_types, std::move(closure),
+                              accelerator_state);
   }
 
   bool SendMouseMove(int x, int y) override {

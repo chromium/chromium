@@ -68,68 +68,71 @@ bool g_ui_controls_enabled = false;
 // Creates the proper sequence of autoreleased key events for a key down + up.
 void SynthesizeKeyEventsSequence(NSWindow* window,
                                  ui::KeyboardCode keycode,
-                                 bool control,
-                                 bool shift,
-                                 bool alt,
-                                 bool command,
+                                 int key_event_types,
+                                 int accelerator_state,
                                  std::vector<NSEvent*>* events) {
   NSEvent* event = nil;
   NSUInteger flags = 0;
-  if (control) {
-    flags |= NSEventModifierFlagControl;
-    event = SynthesizeKeyEvent(window, true, ui::VKEY_CONTROL, flags);
-    DCHECK(event);
-    events->push_back(event);
-  }
-  if (shift) {
-    flags |= NSEventModifierFlagShift;
-    event = SynthesizeKeyEvent(window, true, ui::VKEY_SHIFT, flags);
-    DCHECK(event);
-    events->push_back(event);
-  }
-  if (alt) {
-    flags |= NSEventModifierFlagOption;
-    event = SynthesizeKeyEvent(window, true, ui::VKEY_MENU, flags);
-    DCHECK(event);
-    events->push_back(event);
-  }
-  if (command) {
-    flags |= NSEventModifierFlagCommand;
-    event = SynthesizeKeyEvent(window, true, ui::VKEY_COMMAND, flags);
+  if (key_event_types & ui_controls::kKeyPress) {
+    if (accelerator_state & ui_controls::kControl) {
+      flags |= NSEventModifierFlagControl;
+      event = SynthesizeKeyEvent(window, true, ui::VKEY_CONTROL, flags);
+      DCHECK(event);
+      events->push_back(event);
+    }
+    if (accelerator_state & ui_controls::kShift) {
+      flags |= NSEventModifierFlagShift;
+      event = SynthesizeKeyEvent(window, true, ui::VKEY_SHIFT, flags);
+      DCHECK(event);
+      events->push_back(event);
+    }
+    if (accelerator_state & ui_controls::kAlt) {
+      flags |= NSEventModifierFlagOption;
+      event = SynthesizeKeyEvent(window, true, ui::VKEY_MENU, flags);
+      DCHECK(event);
+      events->push_back(event);
+    }
+    if (accelerator_state & ui_controls::kCommand) {
+      flags |= NSEventModifierFlagCommand;
+      event = SynthesizeKeyEvent(window, true, ui::VKEY_COMMAND, flags);
+      DCHECK(event);
+      events->push_back(event);
+    }
+
+    event = SynthesizeKeyEvent(window, true, keycode, flags);
     DCHECK(event);
     events->push_back(event);
   }
 
-  event = SynthesizeKeyEvent(window, true, keycode, flags);
-  DCHECK(event);
-  events->push_back(event);
-  event = SynthesizeKeyEvent(window, false, keycode, flags);
-  DCHECK(event);
-  events->push_back(event);
+  if (key_event_types & ui_controls::kKeyRelease) {
+    event = SynthesizeKeyEvent(window, false, keycode, flags);
+    DCHECK(event);
+    events->push_back(event);
 
-  if (command) {
-    flags &= ~NSEventModifierFlagCommand;
-    event = SynthesizeKeyEvent(window, false, ui::VKEY_COMMAND, flags);
-    DCHECK(event);
-    events->push_back(event);
-  }
-  if (alt) {
-    flags &= ~NSEventModifierFlagOption;
-    event = SynthesizeKeyEvent(window, false, ui::VKEY_MENU, flags);
-    DCHECK(event);
-    events->push_back(event);
-  }
-  if (shift) {
-    flags &= ~NSEventModifierFlagShift;
-    event = SynthesizeKeyEvent(window, false, ui::VKEY_SHIFT, flags);
-    DCHECK(event);
-    events->push_back(event);
-  }
-  if (control) {
-    flags &= ~NSEventModifierFlagControl;
-    event = SynthesizeKeyEvent(window, false, ui::VKEY_CONTROL, flags);
-    DCHECK(event);
-    events->push_back(event);
+    if (accelerator_state & ui_controls::kCommand) {
+      flags &= ~NSEventModifierFlagCommand;
+      event = SynthesizeKeyEvent(window, false, ui::VKEY_COMMAND, flags);
+      DCHECK(event);
+      events->push_back(event);
+    }
+    if (accelerator_state & ui_controls::kAlt) {
+      flags &= ~NSEventModifierFlagOption;
+      event = SynthesizeKeyEvent(window, false, ui::VKEY_MENU, flags);
+      DCHECK(event);
+      events->push_back(event);
+    }
+    if (accelerator_state & ui_controls::kShift) {
+      flags &= ~NSEventModifierFlagShift;
+      event = SynthesizeKeyEvent(window, false, ui::VKEY_SHIFT, flags);
+      DCHECK(event);
+      events->push_back(event);
+    }
+    if (accelerator_state & ui_controls::kControl) {
+      flags &= ~NSEventModifierFlagControl;
+      event = SynthesizeKeyEvent(window, false, ui::VKEY_CONTROL, flags);
+      DCHECK(event);
+      events->push_back(event);
+    }
   }
 }
 
@@ -269,11 +272,31 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 bool command,
                                 base::OnceClosure task) {
   CHECK(g_ui_controls_enabled);
+  return SendKeyEventsNotifyWhenDone(
+      window, key, kKeyPress | kKeyRelease, std::move(task),
+      GenerateAcceleratorState(control, shift, alt, command));
+}
+
+bool SendKeyEvents(gfx::NativeWindow window,
+                   ui::KeyboardCode key,
+                   int key_event_types,
+                   int accelerator_state) {
+  CHECK(g_ui_controls_enabled);
+  return SendKeyEventsNotifyWhenDone(window, key, key_event_types,
+                                     base::OnceClosure(), accelerator_state);
+}
+
+bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
+                                 ui::KeyboardCode key,
+                                 int key_event_types,
+                                 base::OnceClosure task,
+                                 int accelerator_state) {
+  CHECK(g_ui_controls_enabled);
   DCHECK(base::CurrentUIThread::IsSet());
 
   std::vector<NSEvent*> events;
-  SynthesizeKeyEventsSequence(window.GetNativeNSWindow(), key, control, shift,
-                              alt, command, &events);
+  SynthesizeKeyEventsSequence(window.GetNativeNSWindow(), key, key_event_types,
+                              accelerator_state, &events);
 
   // TODO(suzhe): Using [NSApplication postEvent:atStart:] here causes
   // BrowserKeyEventsTest.CommandKeyEvents to fail. See http://crbug.com/49270

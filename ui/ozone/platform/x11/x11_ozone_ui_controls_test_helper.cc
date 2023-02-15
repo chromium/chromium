@@ -17,16 +17,13 @@ unsigned X11OzoneUIControlsTestHelper::ButtonDownMask() const {
   return x11_ui_controls_test_helper_.ButtonDownMask();
 }
 
-void X11OzoneUIControlsTestHelper::SendKeyPressEvent(
-    gfx::AcceleratedWidget widget,
-    ui::KeyboardCode key,
-    bool control,
-    bool shift,
-    bool alt,
-    bool command,
-    base::OnceClosure closure) {
-  x11_ui_controls_test_helper_.SendKeyPressEvent(
-      widget, key, control, shift, alt, command, std::move(closure));
+void X11OzoneUIControlsTestHelper::SendKeyEvents(gfx::AcceleratedWidget widget,
+                                                 ui::KeyboardCode key,
+                                                 int key_event_types,
+                                                 int accelerator_state,
+                                                 base::OnceClosure closure) {
+  x11_ui_controls_test_helper_.SendKeyEvents(
+      widget, key, key_event_types, accelerator_state, std::move(closure));
 }
 
 void X11OzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(

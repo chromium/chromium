@@ -32,31 +32,40 @@ class UIControlsWin : public UIControlsAura {
   UIControlsWin& operator=(const UIControlsWin&) = delete;
 
   // UIControlsAura overrides:
-  bool SendKeyPress(gfx::NativeWindow native_window,
-                    ui::KeyboardCode key,
-                    bool control,
-                    bool shift,
-                    bool alt,
-                    bool command) override {
-    DCHECK(!command);  // No command key on Aura
-    HWND window =
-        native_window->GetHost()->GetAcceleratedWidget();
-    return ui_controls::internal::SendKeyPressImpl(window, key, control, shift,
-                                                   alt, base::OnceClosure());
+  bool SendKeyEvents(gfx::NativeWindow native_window,
+                     ui::KeyboardCode key,
+                     int key_event_types,
+                     int accelerator_state) override {
+    // UIControlsWin only supports key events with both press and release.
+    // TODO(crbug.com/1414800): Support any `key_event_types` on win.
+    DCHECK_EQ(key_event_types,
+              ui_controls::kKeyPress | ui_controls::kKeyRelease);
+
+    // No command key on Aura.
+    DCHECK(!(accelerator_state & ui_controls::kCommand));
+
+    HWND window = native_window->GetHost()->GetAcceleratedWidget();
+    return ui_controls::internal::SendKeyPressImpl(
+        window, key, accelerator_state, base::OnceClosure());
   }
-  bool SendKeyPressNotifyWhenDone(gfx::NativeWindow native_window,
-                                  ui::KeyboardCode key,
-                                  bool control,
-                                  bool shift,
-                                  bool alt,
-                                  bool command,
-                                  base::OnceClosure task) override {
-    DCHECK(!command);  // No command key on Aura
-    HWND window =
-        native_window->GetHost()->GetAcceleratedWidget();
-    return ui_controls::internal::SendKeyPressImpl(window, key, control, shift,
-                                                   alt, std::move(task));
+  bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow native_window,
+                                   ui::KeyboardCode key,
+                                   int key_event_types,
+                                   base::OnceClosure task,
+                                   int accelerator_state) override {
+    // UIControlsWin only supports key events with both press and release.
+    // TODO(crbug.com/1414800): Support any `key_event_types` on win.
+    DCHECK_EQ(key_event_types,
+              ui_controls::kKeyPress | ui_controls::kKeyRelease);
+
+    // No command key on Aura.
+    DCHECK(!(accelerator_state & ui_controls::kCommand));
+
+    HWND window = native_window->GetHost()->GetAcceleratedWidget();
+    return ui_controls::internal::SendKeyPressImpl(
+        window, key, accelerator_state, std::move(task));
   }
+
   bool SendMouseMove(int screen_x, int screen_y) override {
     return ui_controls::internal::SendMouseMoveImpl(screen_x, screen_y,
                                                     base::OnceClosure());

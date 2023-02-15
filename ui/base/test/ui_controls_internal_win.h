@@ -16,9 +16,7 @@ namespace internal {
 // aura implementation can use these utility functions.
 bool SendKeyPressImpl(HWND hwnd,
                       ui::KeyboardCode key,
-                      bool control,
-                      bool shift,
-                      bool alt,
+                      int accelerator_state,
                       base::OnceClosure task);
 bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task);
 bool SendMouseEventsImpl(MouseButton type,

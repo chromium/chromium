@@ -26,13 +26,11 @@ class WestonTestOzoneUIControlsTestHelper
   // OzoneUIControlsTestHelper:
   bool SupportsScreenCoordinates() const override;
   unsigned ButtonDownMask() const override;
-  void SendKeyPressEvent(gfx::AcceleratedWidget widget,
-                         ui::KeyboardCode key,
-                         bool control,
-                         bool shift,
-                         bool alt,
-                         bool command,
-                         base::OnceClosure closure) override;
+  void SendKeyEvents(gfx::AcceleratedWidget widget,
+                     ui::KeyboardCode key,
+                     int key_event_types,
+                     int accelerator_state,
+                     base::OnceClosure closure) override;
   void SendMouseMotionNotifyEvent(gfx::AcceleratedWidget widget,
                                   const gfx::Point& mouse_loc,
                                   const gfx::Point& mouse_root_loc,
@@ -58,10 +56,7 @@ class WestonTestOzoneUIControlsTestHelper
   // Sends either press or release key based |press_key| value.
   void SendKeyPressInternal(gfx::AcceleratedWidget widget,
                             ui::KeyboardCode key,
-                            bool control,
-                            bool shift,
-                            bool alt,
-                            bool command,
+                            int accelerator_state,
                             base::OnceClosure closure,
                             bool press_key);
   void DispatchKeyPress(gfx::AcceleratedWidget widget,

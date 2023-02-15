@@ -88,6 +88,7 @@ void EnableUIControls() {
 }
 
 // An interface to provide Aura implementation of UI control.
+// static
 bool SendKeyPress(gfx::NativeWindow window,
                   ui::KeyboardCode key,
                   bool control,
@@ -106,13 +107,35 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 bool shift,
                                 bool alt,
                                 bool command,
-                                base::OnceClosure task) {
-  DCHECK(g_ozone_ui_controls_test_helper);
+                                base::OnceClosure closure) {
   DCHECK(!command);  // No command key on Aura
+  return SendKeyEventsNotifyWhenDone(
+      window, key, kKeyPress | kKeyRelease, std::move(closure),
+      GenerateAcceleratorState(control, shift, alt, command));
+}
+
+// static
+bool SendKeyEvents(gfx::NativeWindow window,
+                   ui::KeyboardCode key,
+                   int key_event_types,
+                   int accelerator_state) {
+  DCHECK(!(accelerator_state & kCommand));  // No command key on Aura
+  return SendKeyEventsNotifyWhenDone(window, key, key_event_types,
+                                     base::OnceClosure(), accelerator_state);
+}
+
+// static
+bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
+                                 ui::KeyboardCode key,
+                                 int key_event_types,
+                                 base::OnceClosure closure,
+                                 int accelerator_state) {
+  DCHECK(g_ozone_ui_controls_test_helper);
+  DCHECK(!(accelerator_state & kCommand));  // No command key on Aura
   aura::WindowTreeHost* host = window->GetHost();
-  g_ozone_ui_controls_test_helper->SendKeyPressEvent(
-      host->GetAcceleratedWidget(), key, control, shift, alt, command,
-      std::move(task));
+  g_ozone_ui_controls_test_helper->SendKeyEvents(
+      host->GetAcceleratedWidget(), key, key_event_types, accelerator_state,
+      std::move(closure));
   return true;
 }
 

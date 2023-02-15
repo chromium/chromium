@@ -58,41 +58,58 @@ unsigned X11UIControlsTestHelper::ButtonDownMask() const {
   return button_down_mask;
 }
 
-void X11UIControlsTestHelper::SendKeyPressEvent(gfx::AcceleratedWidget widget,
-                                                ui::KeyboardCode key,
-                                                bool control,
-                                                bool shift,
-                                                bool alt,
-                                                bool command,
-                                                base::OnceClosure closure) {
+void X11UIControlsTestHelper::SendKeyEvents(gfx::AcceleratedWidget widget,
+                                            ui::KeyboardCode key,
+                                            int key_event_types,
+                                            int accelerator_state,
+                                            base::OnceClosure closure) {
+  bool press = key_event_types & ui_controls::kKeyPress;
+  bool release = key_event_types & ui_controls::kKeyRelease;
+
+  bool control = accelerator_state & ui_controls::kControl;
+  bool shift = accelerator_state & ui_controls::kShift;
+  bool alt = accelerator_state & ui_controls::kAlt;
+
   x11::KeyEvent xevent;
-  xevent.opcode = x11::KeyEvent::Press;
-  if (control) {
-    SetKeycodeAndSendThenMask(widget, &xevent, XK_Control_L,
-                              x11::KeyButMask::Control);
+
+  // Send key press events.
+  if (press) {
+    xevent.opcode = x11::KeyEvent::Press;
+    if (control) {
+      SetKeycodeAndSendThenMask(widget, &xevent, XK_Control_L,
+                                x11::KeyButMask::Control);
+    }
+    if (shift) {
+      SetKeycodeAndSendThenMask(widget, &xevent, XK_Shift_L,
+                                x11::KeyButMask::Shift);
+    }
+    if (alt) {
+      SetKeycodeAndSendThenMask(widget, &xevent, XK_Alt_L,
+                                x11::KeyButMask::Mod1);
+    }
+    xevent.detail = x11::Connection::Get()->KeysymToKeycode(
+        ui::XKeysymForWindowsKeyCode(key, shift));
+    PostEventToWindowTreeHost(widget, &xevent);
   }
-  if (shift)
-    SetKeycodeAndSendThenMask(widget, &xevent, XK_Shift_L,
-                              x11::KeyButMask::Shift);
-  if (alt)
-    SetKeycodeAndSendThenMask(widget, &xevent, XK_Alt_L, x11::KeyButMask::Mod1);
-  xevent.detail = x11::Connection::Get()->KeysymToKeycode(
-      ui::XKeysymForWindowsKeyCode(key, shift));
-  PostEventToWindowTreeHost(widget, &xevent);
 
   // Send key release events.
-  xevent.opcode = x11::KeyEvent::Release;
-  PostEventToWindowTreeHost(widget, &xevent);
-  if (alt)
-    UnmaskAndSetKeycodeThenSend(widget, &xevent, x11::KeyButMask::Mod1,
-                                XK_Alt_L);
-  if (shift)
-    UnmaskAndSetKeycodeThenSend(widget, &xevent, x11::KeyButMask::Shift,
-                                XK_Shift_L);
-  if (control)
-    UnmaskAndSetKeycodeThenSend(widget, &xevent, x11::KeyButMask::Control,
-                                XK_Control_L);
-  DCHECK_EQ(xevent.state, x11::KeyButMask{});
+  if (release) {
+    xevent.opcode = x11::KeyEvent::Release;
+    PostEventToWindowTreeHost(widget, &xevent);
+    if (alt) {
+      UnmaskAndSetKeycodeThenSend(widget, &xevent, x11::KeyButMask::Mod1,
+                                  XK_Alt_L);
+    }
+    if (shift) {
+      UnmaskAndSetKeycodeThenSend(widget, &xevent, x11::KeyButMask::Shift,
+                                  XK_Shift_L);
+    }
+    if (control) {
+      UnmaskAndSetKeycodeThenSend(widget, &xevent, x11::KeyButMask::Control,
+                                  XK_Control_L);
+    }
+  }
+
   RunClosureAfterAllPendingUIEvents(std::move(closure));
   return;
 }

@@ -20,19 +20,16 @@ class UIControlsAura {
   UIControlsAura();
   virtual ~UIControlsAura();
 
-  virtual bool SendKeyPress(gfx::NativeWindow window,
-                            ui::KeyboardCode key,
-                            bool control,
-                            bool shift,
-                            bool alt,
-                            bool command) = 0;
-  virtual bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
-                                          ui::KeyboardCode key,
-                                          bool control,
-                                          bool shift,
-                                          bool alt,
-                                          bool command,
-                                          base::OnceClosure task) = 0;
+  // Sends a key press and/or release message.
+  virtual bool SendKeyEvents(gfx::NativeWindow window,
+                             ui::KeyboardCode key,
+                             int key_event_types,
+                             int accerelator_state) = 0;
+  virtual bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
+                                           ui::KeyboardCode key,
+                                           int key_event_types,
+                                           base::OnceClosure task,
+                                           int accelerator_state) = 0;
 
   // Simulate a mouse move. (x,y) are absolute screen coordinates.
   virtual bool SendMouseMove(int x, int y) = 0;

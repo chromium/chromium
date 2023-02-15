@@ -27,14 +27,12 @@ class COMPONENT_EXPORT(UI_BASE_X) X11UIControlsTestHelper {
 
   unsigned ButtonDownMask() const;
 
-  // Sends key press event and executes |closure| when done.
-  void SendKeyPressEvent(gfx::AcceleratedWidget widget,
-                         ui::KeyboardCode key,
-                         bool control,
-                         bool shift,
-                         bool alt,
-                         bool command,
-                         base::OnceClosure closure);
+  // Sends key events and executes |closure| when done.
+  void SendKeyEvents(gfx::AcceleratedWidget widget,
+                     ui::KeyboardCode key,
+                     int key_event_types,
+                     int accelerator_state,
+                     base::OnceClosure closure);
 
   // Sends mouse motion notify event and executes |closure| when done.
   void SendMouseMotionNotifyEvent(gfx::AcceleratedWidget widget,

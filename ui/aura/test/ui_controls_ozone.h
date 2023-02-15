@@ -34,19 +34,15 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
 
  private:
   // ui_controls::UIControlsAura:
-  bool SendKeyPress(gfx::NativeWindow window,
-                    ui::KeyboardCode key,
-                    bool control,
-                    bool shift,
-                    bool alt,
-                    bool command) override;
-  bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
-                                  ui::KeyboardCode key,
-                                  bool control,
-                                  bool shift,
-                                  bool alt,
-                                  bool command,
-                                  base::OnceClosure closure) override;
+  bool SendKeyEvents(gfx::NativeWindow window,
+                     ui::KeyboardCode key,
+                     int key_event_types,
+                     int accelerator_state) override;
+  bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
+                                   ui::KeyboardCode key,
+                                   int key_event_types,
+                                   base::OnceClosure closure,
+                                   int accelerator_state) override;
   bool SendMouseMove(int screen_x, int screen_y) override;
   bool SendMouseMoveNotifyWhenDone(int screen_x,
                                    int screen_y,

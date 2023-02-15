@@ -434,17 +434,18 @@ void AppendMouseInput(DWORD flags, std::vector<INPUT>* input) {
 
 // Append an INPUT array with optional accelerator keys that may be pressed
 // with a keyboard or mouse event. This array will be sent by SendInput.
-void AppendAcceleratorInputs(bool control,
-                             bool shift,
-                             bool alt,
+void AppendAcceleratorInputs(int accelerator_state,
                              bool key_up,
                              std::vector<INPUT>* input) {
-  if (control)
+  if (accelerator_state & ui_controls::kControl) {
     AppendKeyboardInput(ui::VKEY_CONTROL, key_up, input);
-  if (alt)
+  }
+  if (accelerator_state & ui_controls::kAlt) {
     AppendKeyboardInput(ui::VKEY_LMENU, key_up, input);
-  if (shift)
+  }
+  if (accelerator_state & ui_controls::kShift) {
     AppendKeyboardInput(ui::VKEY_SHIFT, key_up, input);
+  }
 }
 
 }  // namespace
@@ -454,9 +455,7 @@ namespace internal {
 
 bool SendKeyPressImpl(HWND window,
                       ui::KeyboardCode key,
-                      bool control,
-                      bool shift,
-                      bool alt,
+                      int accelerator_state,
                       base::OnceClosure task) {
   // SendInput only works as we expect it if one of our windows is the
   // foreground window already.
@@ -483,11 +482,11 @@ bool SendKeyPressImpl(HWND window,
   }
 
   std::vector<INPUT> input;
-  AppendAcceleratorInputs(control, shift, alt, false, &input);
+  AppendAcceleratorInputs(accelerator_state, false, &input);
   AppendKeyboardInput(key, false, &input);
 
   AppendKeyboardInput(key, true, &input);
-  AppendAcceleratorInputs(control, shift, alt, true, &input);
+  AppendAcceleratorInputs(accelerator_state, true, &input);
 
   if (input.size() > std::numeric_limits<UINT>::max())
     return false;
@@ -561,17 +560,13 @@ bool SendMouseEventsImpl(MouseButton type,
 
   std::vector<INPUT> input;
   if (button_state & DOWN) {
-    AppendAcceleratorInputs(accelerator_state & kControl,
-                            accelerator_state & kShift,
-                            accelerator_state & kAlt, false, &input);
+    AppendAcceleratorInputs(accelerator_state, false, &input);
     AppendMouseInput(down_flags, &input);
   }
 
   if (button_state & UP) {
     AppendMouseInput(up_flags, &input);
-    AppendAcceleratorInputs(accelerator_state & kControl,
-                            accelerator_state & kShift,
-                            accelerator_state & kAlt, true, &input);
+    AppendAcceleratorInputs(accelerator_state, true, &input);
   }
 
   if (input.size() > std::numeric_limits<UINT>::max())
