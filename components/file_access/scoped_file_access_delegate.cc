@@ -45,6 +45,14 @@ ScopedFileAccessDelegate::SetRequestFilesAccessForSystemIOCallbackForTesting(
   return old_ptr;
 }
 
+void ScopedFileAccessDelegate::
+    ResetRequestFilesAccessForSystemIOCallbackForTesting() {
+  if (request_files_access_for_system_io_callback_) {
+    delete request_files_access_for_system_io_callback_;
+  }
+  request_files_access_for_system_io_callback_ = nullptr;
+}
+
 ScopedFileAccessDelegate::ScopedFileAccessDelegate() {
   if (scoped_file_access_delegate_) {
     delete scoped_file_access_delegate_;

@@ -148,6 +148,8 @@ TEST_F(LocalFileStreamReaderTest, ReadAllowedByDataLeakPrevention) {
   ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
   ASSERT_EQ(net::OK, result);
   ASSERT_EQ(this->kTestData, data);
+  file_access::ScopedFileAccessDelegate::
+      ResetRequestFilesAccessForSystemIOCallbackForTesting();
 }
 
 // TODO(b/262199707 b/265908846): Replace direct call to
@@ -174,6 +176,8 @@ TEST_F(LocalFileStreamReaderTest, ReadBlockedByDataLeakPrevention) {
   ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
   ASSERT_EQ(net::ERR_ACCESS_DENIED, result);
   ASSERT_EQ("", data);
+  file_access::ScopedFileAccessDelegate::
+      ResetRequestFilesAccessForSystemIOCallbackForTesting();
 }
 
 }  // namespace storage

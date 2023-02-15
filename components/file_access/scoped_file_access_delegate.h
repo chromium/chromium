@@ -102,6 +102,7 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
   static RequestFilesAccessForSystemIOCallback*
   SetRequestFilesAccessForSystemIOCallbackForTesting(
       RequestFilesAccessForSystemIOCallback callback);
+  static void ResetRequestFilesAccessForSystemIOCallbackForTesting();
 
  protected:
   ScopedFileAccessDelegate();
