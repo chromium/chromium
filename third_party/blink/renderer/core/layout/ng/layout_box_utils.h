@@ -11,11 +11,16 @@ namespace blink {
 
 class LayoutBox;
 class LayoutBlock;
+class LayoutPoint;
+class NGBlockBreakToken;
 class NGBoxFragmentBuilder;
+class NGPhysicalBoxFragment;
 struct NGBoxStrut;
 struct NGLogicalStaticPosition;
+struct PhysicalOffset;
 
-// This static class should be used for querying information from a |LayoutBox|.
+// This static class should be used for querying information from a |LayoutBox|,
+// or providing information to it.
 class LayoutBoxUtils {
   STATIC_ONLY(LayoutBoxUtils);
 
@@ -43,6 +48,16 @@ class LayoutBoxUtils {
 
   // The total block size of all fragments.
   static LayoutUnit TotalBlockSize(const LayoutBox& box);
+
+  // Convert a physical offset for a physical fragment to a physical legacy
+  // LayoutPoint, to be used in LayoutBox. There are special considerations for
+  // vertical-rl writing-mode, and also for block fragmentation (the
+  // block-offset should include consumed space in previous fragments).
+  static LayoutPoint ComputeLocation(
+      const NGPhysicalBoxFragment& child_fragment,
+      PhysicalOffset offset,
+      const NGPhysicalBoxFragment& container_fragment,
+      const NGBlockBreakToken* previous_container_break_token);
 };
 
 }  // namespace blink
