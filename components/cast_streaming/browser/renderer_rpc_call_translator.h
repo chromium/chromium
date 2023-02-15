@@ -72,14 +72,16 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
   void OnRpcSetPlaybackRate(double playback_rate) override;
   void OnRpcSetVolume(double volume) override;
 
-  // Callbacks for mojo calls. |handle_at_time_of_sending| is included as an
-  // input so that if |handle_| changes before the response to this message is
-  // returned, it will send with the old |handle_| value.
+  // Callback for the Initialize() mojo call. |handle_at_time_of_sending| is
+  // included as an input so that if |handle_| changes before the response to
+  // this message is returned, it will send with the old |handle_| value.
   void OnInitializeCompleted(
       openscreen::cast::RpcMessenger::Handle handle_at_time_of_sending,
       bool succeeded);
-  void OnFlushCompleted(
-      openscreen::cast::RpcMessenger::Handle handle_at_time_of_sending);
+
+  // Callback to Flush() mojo call. Sends an ack message for the completion of
+  // the flush command for each handle in |flush_handles_|.
+  void OnFlushCompleted();
 
   // Signifies whether the Initialize() command has been sent to the Renderer,
   // which will only be done once over the duration of this instance's lifetime.
@@ -88,6 +90,8 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
   // Called as part of responding to an OnRpcFlush() call, to inform the owning
   // class that in-flight frames should be flushed.
   FlushUntilCallback flush_until_cb_;
+
+  std::vector<openscreen::cast::RpcMessenger::Handle> flush_handles_;
 
   RpcMessageProcessor message_processor_;
 
