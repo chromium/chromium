@@ -52,7 +52,7 @@ class LinkToTextJavaScriptFeature : public web::JavaScriptFeature {
   FRIEND_TEST_ALL_PREFIXES(LinkToTextJavaScriptFeatureTest,
                            ShouldAttemptIframeGeneration);
 
-  void HandleResponse(web::WebState* state,
+  void HandleResponse(base::WeakPtr<web::WebState> web_state,
                       base::ElapsedTimer link_generation_timer,
                       base::OnceCallback<void(LinkToTextResponse*)> callback,
                       const base::Value* value);
