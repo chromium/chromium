@@ -17,6 +17,16 @@
 #include "net/base/io_buffer.h"
 
 namespace bluetooth {
+namespace {
+// TODO(b/269348144) - BluetoothSocket is constructed in UI thread and must also
+// be destructed in UI thread. We must keep this reference until disconnect
+// completes so that the destructor does not run in the socket thread.
+void HoldReferenceUntilDisconnected(
+    scoped_refptr<device::BluetoothSocket> socket,
+    mojom::Socket::DisconnectCallback callback) {
+  std::move(callback).Run();
+}
+}  // namespace
 
 Socket::Socket(scoped_refptr<device::BluetoothSocket> bluetooth_socket,
                mojo::ScopedDataPipeProducerHandle receive_stream,
@@ -45,11 +55,13 @@ Socket::Socket(scoped_refptr<device::BluetoothSocket> bluetooth_socket,
 Socket::~Socket() {
   ShutdownReceive();
   ShutdownSend();
-  bluetooth_socket_->Disconnect(base::DoNothing());
+  bluetooth_socket_->Disconnect(base::BindOnce(
+      &HoldReferenceUntilDisconnected, bluetooth_socket_, base::DoNothing()));
 }
 
 void Socket::Disconnect(DisconnectCallback callback) {
-  bluetooth_socket_->Disconnect(std::move(callback));
+  bluetooth_socket_->Disconnect(base::BindOnce(
+      &HoldReferenceUntilDisconnected, bluetooth_socket_, std::move(callback)));
 }
 
 void Socket::OnReceiveStreamWritable(MojoResult result) {
