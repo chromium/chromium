@@ -142,6 +142,12 @@ std::vector<uint8_t> GetSignatureBin() {
   return std::vector<uint8_t>({1, 2, 3, 4, 5});
 }
 
+std::vector<uint8_t> GetCertProfileIdBin() {
+  // -1 because of '\0'.
+  return std::vector<uint8_t>(kCertProfileId,
+                              kCertProfileId + sizeof(kCertProfileId) - 1);
+}
+
 void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
   const std::vector<::attestation::DeleteKeysRequest> delete_keys_history =
       AttestationClient::Get()->GetTestInterface()->delete_keys_history();
@@ -549,9 +555,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
     // kKeypairMarked
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
@@ -716,9 +723,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
     // kKeypairMarked
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
@@ -867,9 +875,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoProofOfPossession) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_AUTHORIZE(Authorize(Eq(std::ref(provisioning_process)),
                                kChallengeResponse, /*callback=*/_),
@@ -921,9 +930,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaSuccess) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -993,9 +1003,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaTooManyTwoProofsOfPossession) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_AUTHORIZE(Authorize(Eq(std::ref(provisioning_process)),
                                kChallengeResponse, /*callback=*/_),
@@ -1057,9 +1068,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaTooManyTwoProofsOfPossession) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -1147,9 +1159,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kSystem, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kSystem, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_AUTHORIZE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
@@ -1273,9 +1286,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_AUTHORIZE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
@@ -1600,9 +1614,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryAuthorize) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_AUTHORIZE_TEMPORARY_UNAVAILABLE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
@@ -1661,9 +1676,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossession) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -1806,9 +1822,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, RemoveRegisteredKey) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_FAIL(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_FAIL(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
 
@@ -1975,9 +1992,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
                 AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
                                  GetPublicKeyBin()));
 
-    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
-        TokenId::kUser, GetPublicKey(),
-        KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKey(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
 
     EXPECT_AUTHORIZE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,

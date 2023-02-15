@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions.pb.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_pref_util.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_util.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
@@ -225,7 +225,8 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
                              public_key_spki_der.end());
   key_permissions_manager_->platform_keys_service_->SetAttributeForKey(
       key_permissions_manager_->token_id_, std::move(public_key_str),
-      KeyAttributeType::kKeyPermissions, key_permissions.SerializeAsString(),
+      KeyAttributeType::kKeyPermissions,
+      internal::KeyPermissionsProtoToBytes(key_permissions),
       base::BindOnce(&KeyPermissionsInChapsUpdater::OnKeyPermissionsUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -420,13 +421,14 @@ void KeyPermissionsManagerImpl::AllowKeyForCorporateUsage(
                              public_key_spki_der.end());
   platform_keys_service_->SetAttributeForKey(
       token_id_, std::move(public_key_str), KeyAttributeType::kKeyPermissions,
-      key_permissions.SerializeAsString(), std::move(callback));
+      internal::KeyPermissionsProtoToBytes(key_permissions),
+      std::move(callback));
 }
 
 void KeyPermissionsManagerImpl::IsKeyAllowedForUsageWithPermissions(
     IsKeyAllowedForUsageCallback callback,
     KeyUsage usage,
-    const absl::optional<std::string>& serialized_key_permissions,
+    absl::optional<std::vector<uint8_t>> serialized_key_permissions,
     Status key_attribute_retrieval_status) {
   if (key_attribute_retrieval_status != Status::kSuccess) {
     LOG(ERROR) << "Error while retrieving key permissions: "
@@ -441,7 +443,8 @@ void KeyPermissionsManagerImpl::IsKeyAllowedForUsageWithPermissions(
   }
 
   chaps::KeyPermissions key_permissions;
-  if (!key_permissions.ParseFromString(serialized_key_permissions.value())) {
+  if (!internal::KeyPermissionsProtoFromBytes(
+          serialized_key_permissions.value(), key_permissions)) {
     LOG(ERROR) << "Couldn't deserialize key permissions proto message.";
     std::move(callback).Run(/*allowed=*/false, Status::kErrorInternal);
     return;

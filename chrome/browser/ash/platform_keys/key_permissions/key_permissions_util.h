@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_PREF_UTIL_H_
-#define CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_PREF_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_UTIL_H_
+#define CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_UTIL_H_
 
 #include <stdint.h>
 
@@ -11,6 +11,10 @@
 #include <vector>
 
 class PrefService;
+
+namespace chaps {
+class KeyPermissions;
+}
 
 namespace ash::platform_keys::internal {
 
@@ -28,6 +32,16 @@ bool IsUserKeyMarkedCorporateInPref(
 void MarkUserKeyCorporateInPref(const std::vector<uint8_t>& public_key_spki_der,
                                 PrefService* profile_prefs);
 
+// Serializes the KeyPermissions `message` as bytes.
+std::vector<uint8_t> KeyPermissionsProtoToBytes(
+    const chaps::KeyPermissions& message);
+
+// Deserializes the KeyPermissions `message` from `bytes`. Returns true on
+// success, false on failure.
+[[nodiscard]] bool KeyPermissionsProtoFromBytes(
+    const std::vector<uint8_t>& bytes,
+    chaps::KeyPermissions& message);
+
 }  // namespace ash::platform_keys::internal
 
-#endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_PREF_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_UTIL_H_

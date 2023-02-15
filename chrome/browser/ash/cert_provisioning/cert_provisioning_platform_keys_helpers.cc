@@ -15,8 +15,13 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace cert_provisioning {
+namespace ash::cert_provisioning {
+
+namespace {
+std::string BytesToStr(const std::vector<uint8_t>& val) {
+  return std::string(val.begin(), val.end());
+}
+}  // namespace
 
 // ========= CertIterator ======================================================
 
@@ -79,7 +84,7 @@ void CertIterator::OnGetCertificatesDone(
 
 void CertIterator::OnGetAttributeForKeyDone(
     scoped_refptr<net::X509Certificate> cert,
-    const absl::optional<std::string>& attr_value,
+    absl::optional<std::vector<uint8_t>> attr_value,
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(wait_counter_ > 0);
@@ -95,7 +100,7 @@ void CertIterator::OnGetAttributeForKeyDone(
   }
 
   if (attr_value) {
-    for_each_callback_.Run(cert, attr_value.value(),
+    for_each_callback_.Run(cert, BytesToStr(attr_value.value()),
                            chromeos::platform_keys::Status::kSuccess);
   }
 
@@ -307,5 +312,4 @@ void CertDeleter::ReturnStatus(chromeos::platform_keys::Status status) {
   std::move(callback_).Run(status);
 }
 
-}  // namespace cert_provisioning
-}  // namespace ash
+}  // namespace ash::cert_provisioning

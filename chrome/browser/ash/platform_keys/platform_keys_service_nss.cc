@@ -576,12 +576,12 @@ class SetAttributeForKeyState : public NSSOperationState {
   SetAttributeForKeyState(ServiceWeakPtr weak_ptr,
                           const std::string& public_key_spki_der,
                           CK_ATTRIBUTE_TYPE attribute_type,
-                          const std::string& attribute_value,
+                          std::vector<uint8_t> attribute_value,
                           SetAttributeForKeyCallback callback)
       : NSSOperationState(weak_ptr),
         public_key_spki_der_(public_key_spki_der),
         attribute_type_(attribute_type),
-        attribute_value_(attribute_value),
+        attribute_value_(std::move(attribute_value)),
         callback_(std::move(callback)) {}
 
   ~SetAttributeForKeyState() override = default;
@@ -597,7 +597,7 @@ class SetAttributeForKeyState : public NSSOperationState {
   // Must be a DER encoding of a SubjectPublicKeyInfo.
   const std::string public_key_spki_der_;
   const CK_ATTRIBUTE_TYPE attribute_type_;
-  const std::string attribute_value_;
+  const std::vector<uint8_t> attribute_value_;
 
  private:
   void CallBack(const base::Location& from, Status status) {
@@ -629,8 +629,8 @@ class GetAttributeForKeyState : public NSSOperationState {
   }
 
   void OnSuccess(const base::Location& from,
-                 const absl::optional<std::string>& attribute_value) {
-    CallBack(from, attribute_value, Status::kSuccess);
+                 absl::optional<std::vector<uint8_t>> attribute_value) {
+    CallBack(from, std::move(attribute_value), Status::kSuccess);
   }
 
   // Must be a DER encoding of a SubjectPublicKeyInfo.
@@ -639,10 +639,10 @@ class GetAttributeForKeyState : public NSSOperationState {
 
  private:
   void CallBack(const base::Location& from,
-                const absl::optional<std::string>& attribute_value,
+                absl::optional<std::vector<uint8_t>> attribute_value,
                 Status status) {
-    auto bound_callback =
-        base::BindOnce(std::move(callback_), attribute_value, status);
+    auto bound_callback = base::BindOnce(std::move(callback_),
+                                         std::move(attribute_value), status);
     content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
@@ -1401,8 +1401,7 @@ void SetAttributeForKeyWithDbOnWorkerThread(
   // This SECItem will point to data owned by |state| so it is not necessary to
   // use ScopedSECItem.
   SECItem attribute_value;
-  attribute_value.data = reinterpret_cast<unsigned char*>(
-      const_cast<char*>(state->attribute_value_.data()));
+  attribute_value.data = const_cast<uint8_t*>(state->attribute_value_.data());
   attribute_value.len = state->attribute_value_.size();
   if (PK11_WriteRawAttribute(
           /*objType=*/PK11_TypePrivKey, private_key.get(),
@@ -1473,7 +1472,7 @@ void GetAttributeForKeyWithDbOnWorkerThread(
                                attribute_value->data + attribute_value->len);
   }
 
-  state->OnSuccess(FROM_HERE, attribute_value_str);
+  state->OnSuccess(FROM_HERE, ScopedSECItemToBytes(attribute_value));
 }
 
 // Continues retrieving the attribute with the obtained NSSCertDatabase.
@@ -1802,7 +1801,7 @@ void PlatformKeysServiceImpl::SetAttributeForKey(
     TokenId token_id,
     const std::string& public_key_spki_der,
     KeyAttributeType attribute_type,
-    const std::string& attribute_value,
+    std::vector<uint8_t> attribute_value,
     SetAttributeForKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1812,7 +1811,7 @@ void PlatformKeysServiceImpl::SetAttributeForKey(
 
   auto state = std::make_unique<SetAttributeForKeyState>(
       weak_factory_.GetWeakPtr(), public_key_spki_der, ck_attribute_type,
-      attribute_value, std::move(callback));
+      std::move(attribute_value), std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;

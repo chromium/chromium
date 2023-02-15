@@ -128,7 +128,7 @@ class MockPlatformKeysService : public PlatformKeysService {
               (chromeos::platform_keys::TokenId token_id,
                const std::string& public_key_spki_der,
                chromeos::platform_keys::KeyAttributeType attribute_type,
-               const std::string& attribute_value,
+               std::vector<uint8_t> attribute_value,
                SetAttributeForKeyCallback callback),
               (override));
 

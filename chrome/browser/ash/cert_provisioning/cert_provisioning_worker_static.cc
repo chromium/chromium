@@ -567,7 +567,7 @@ void CertProvisioningWorkerStatic::MarkKey() {
   platform_keys_service_->SetAttributeForKey(
       GetPlatformKeysTokenId(cert_scope_), BytesToStr(public_key_),
       chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
-      cert_profile_.profile_id,
+      StrToBytes(cert_profile_.profile_id),
       base::BindOnce(&CertProvisioningWorkerStatic::OnMarkKeyDone,
                      weak_factory_.GetWeakPtr()));
 }

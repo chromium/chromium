@@ -54,7 +54,7 @@ class CertIterator {
       std::unique_ptr<net::CertificateList> existing_certs,
       chromeos::platform_keys::Status status);
   void OnGetAttributeForKeyDone(scoped_refptr<net::X509Certificate> cert,
-                                const absl::optional<std::string>& attr_value,
+                                absl::optional<std::vector<uint8_t>> attr_value,
                                 chromeos::platform_keys::Status status);
   void StopIteration(chromeos::platform_keys::Status status);
 

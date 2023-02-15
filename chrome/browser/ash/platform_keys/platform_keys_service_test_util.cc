@@ -33,20 +33,6 @@ Status GetCertificatesExecutionWaiter::status() {
   return Get<1>();
 }
 
-const absl::optional<std::string>&
-GetAttributeForKeyExecutionWaiter::attribute_value() {
-  return Get<0>();
-}
-
-Status GetAttributeForKeyExecutionWaiter::status() {
-  return Get<1>();
-}
-
-base::OnceCallback<void(const absl::optional<std::string>&, Status)>
-GetAttributeForKeyExecutionWaiter::GetCallback() {
-  return TestFuture::GetCallback<const absl::optional<std::string>&, Status>();
-}
-
 absl::optional<bool> IsKeyOnTokenExecutionWaiter::on_slot() {
   return Get<0>();
 }

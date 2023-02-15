@@ -50,24 +50,6 @@ class GetCertificatesExecutionWaiter
   chromeos::platform_keys::Status status();
 };
 
-// Supports waiting for the result of the
-// PlatformKeysService::SetAttributeForKey.
-using SetAttributeForKeyExecutionWaiter = StatusWaiter;
-
-// Supports waiting for the result of the
-// PlatformKeysService::GetAttributeForKey.
-class GetAttributeForKeyExecutionWaiter
-    : public base::test::TestFuture<absl::optional<std::string>,
-                                    chromeos::platform_keys::Status> {
- public:
-  const absl::optional<std::string>& attribute_value();
-  chromeos::platform_keys::Status status();
-
-  base::OnceCallback<void(const absl::optional<std::string>&,
-                          chromeos::platform_keys::Status)>
-  GetCallback();
-};
-
 // Supports waiting for the result of the PlatformKeysService::RemoveKey.
 using RemoveKeyExecutionWaiter = StatusWaiter;
 

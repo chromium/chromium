@@ -90,9 +90,9 @@ using SetAttributeForKeyCallback =
 
 // If the attribute value has been successfully retrieved, |attribute_value|
 // will contain the result. If an error occurs, |attribute_value| will be empty.
-using GetAttributeForKeyCallback =
-    base::OnceCallback<void(const absl::optional<std::string>& attribute_value,
-                            chromeos::platform_keys::Status status)>;
+using GetAttributeForKeyCallback = base::OnceCallback<void(
+    absl::optional<std::vector<uint8_t>> attribute_value,
+    chromeos::platform_keys::Status status)>;
 
 // If the availability of the key on the provided token has been successfully
 // determined, |on_token| will contain the result. If an error occurs,
@@ -257,7 +257,7 @@ class PlatformKeysService : public KeyedService {
       chromeos::platform_keys::TokenId token_id,
       const std::string& public_key_spki_der,
       chromeos::platform_keys::KeyAttributeType attribute_type,
-      const std::string& attribute_value,
+      std::vector<uint8_t> attribute_value,
       SetAttributeForKeyCallback callback) = 0;
 
   // Gets |attribute_type| for the private key corresponding to
@@ -386,7 +386,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
       chromeos::platform_keys::TokenId token_id,
       const std::string& public_key_spki_der,
       chromeos::platform_keys::KeyAttributeType attribute_type,
-      const std::string& attribute_value,
+      std::vector<uint8_t> attribute_value,
       SetAttributeForKeyCallback callback) override;
   void GetAttributeForKey(
       chromeos::platform_keys::TokenId token_id,

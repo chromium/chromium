@@ -357,32 +357,32 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
   // Set an attribute for the key on each token.
   const KeyAttributeType kAttributeType =
       KeyAttributeType::kCertificateProvisioningId;
-  std::map<TokenId, std::string> token_to_value;
+  std::map<TokenId, std::vector<uint8_t>> token_to_value;
   for (TokenId token_id : GetParam().token_ids) {
-    token_to_value[token_id] =
-        base::StringPrintf("test_value_%d", static_cast<int>(token_id));
+    token_to_value[token_id] = {1, 2, 3, 4, 5, static_cast<uint8_t>(token_id)};
 
     // Set key attribute.
-    test_util::SetAttributeForKeyExecutionWaiter set_attr_waiter;
+    base::test::TestFuture<Status> set_attr_waiter;
     platform_keys_service()->SetAttributeForKey(
         token_id, spki_der, kAttributeType, token_to_value[token_id],
         set_attr_waiter.GetCallback());
     ASSERT_TRUE(set_attr_waiter.Wait());
-    EXPECT_EQ(set_attr_waiter.status(), Status::kSuccess);
+    EXPECT_EQ(set_attr_waiter.Get<Status>(), Status::kSuccess);
   }
 
   // Verify the token-specific attribute value for the key on each token.
   for (TokenId token_id : GetParam().token_ids) {
     // Get key attribute.
-    test_util::GetAttributeForKeyExecutionWaiter get_attr_waiter;
+    base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
+        get_attr_waiter;
     platform_keys_service()->GetAttributeForKey(
         token_id, spki_der, kAttributeType, get_attr_waiter.GetCallback());
     ASSERT_TRUE(get_attr_waiter.Wait());
 
-    EXPECT_EQ(get_attr_waiter.status(), Status::kSuccess);
-    ASSERT_TRUE(get_attr_waiter.attribute_value());
-    EXPECT_EQ(get_attr_waiter.attribute_value().value(),
-              token_to_value[token_id]);
+    EXPECT_EQ(get_attr_waiter.Get<Status>(), Status::kSuccess);
+    const absl::optional<std::vector<uint8_t>>& attr = get_attr_waiter.Get<0>();
+    ASSERT_TRUE(attr.has_value());
+    EXPECT_EQ(attr.value(), token_to_value[token_id]);
   }
 }
 
@@ -582,32 +582,31 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const KeyAttributeType kAttributeType =
       KeyAttributeType::kCertificateProvisioningId;
   const TokenId token_id = GetParam().token_id;
-  const std::string kAttributeValue = "test_attr_value";
+  const std::vector<uint8_t> kAttributeValue = {20, 21, 22, 23, 24};
 
   // Generate key pair.
   const std::vector<uint8_t> public_key_spki_der = GenerateKeyPair(token_id);
   ASSERT_FALSE(public_key_spki_der.empty());
 
   // Set key attribute.
-  test_util::SetAttributeForKeyExecutionWaiter
-      set_attribute_for_key_execution_waiter;
+  base::test::TestFuture<Status> set_attr_waiter;
   platform_keys_service()->SetAttributeForKey(
       token_id, BytesToStr(public_key_spki_der), kAttributeType,
-      kAttributeValue, set_attribute_for_key_execution_waiter.GetCallback());
-  ASSERT_TRUE(set_attribute_for_key_execution_waiter.Wait());
+      kAttributeValue, set_attr_waiter.GetCallback());
+  ASSERT_EQ(set_attr_waiter.Get<Status>(), Status::kSuccess);
 
   // Get key attribute.
-  test_util::GetAttributeForKeyExecutionWaiter
-      get_attribute_for_key_execution_waiter;
+  base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
+      get_attr_waiter;
   platform_keys_service()->GetAttributeForKey(
       token_id, BytesToStr(public_key_spki_der), kAttributeType,
-      get_attribute_for_key_execution_waiter.GetCallback());
-  ASSERT_TRUE(get_attribute_for_key_execution_waiter.Wait());
+      get_attr_waiter.GetCallback());
+  ASSERT_TRUE(get_attr_waiter.Wait());
 
-  EXPECT_EQ(get_attribute_for_key_execution_waiter.status(), Status::kSuccess);
-  ASSERT_TRUE(get_attribute_for_key_execution_waiter.attribute_value());
-  EXPECT_EQ(get_attribute_for_key_execution_waiter.attribute_value().value(),
-            kAttributeValue);
+  EXPECT_EQ(get_attr_waiter.Get<Status>(), Status::kSuccess);
+  absl::optional<std::vector<uint8_t>> attr = get_attr_waiter.Get<0>();
+  ASSERT_TRUE(attr.has_value());
+  EXPECT_EQ(attr.value(), kAttributeValue);
 }
 
 // TODO(https://crbug.com/1073515): Add a test for an unset key attribute when
@@ -621,15 +620,14 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const std::string kPublicKey = "Non Existing public key";
 
   // Get key attribute.
-  test_util::GetAttributeForKeyExecutionWaiter
-      get_attribute_for_key_execution_waiter;
+  base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
+      get_attr_waiter;
   platform_keys_service()->GetAttributeForKey(
-      token_id, kPublicKey, kAttributeType,
-      get_attribute_for_key_execution_waiter.GetCallback());
-  ASSERT_TRUE(get_attribute_for_key_execution_waiter.Wait());
+      token_id, kPublicKey, kAttributeType, get_attr_waiter.GetCallback());
+  ASSERT_TRUE(get_attr_waiter.Wait());
 
-  EXPECT_NE(get_attribute_for_key_execution_waiter.status(), Status::kSuccess);
-  EXPECT_FALSE(get_attribute_for_key_execution_waiter.attribute_value());
+  EXPECT_NE(get_attr_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_FALSE(get_attr_waiter.Get<absl::optional<std::vector<uint8_t>>>());
 }
 
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
@@ -637,18 +635,17 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const KeyAttributeType kAttributeType =
       KeyAttributeType::kCertificateProvisioningId;
   const TokenId token_id = GetParam().token_id;
-  const std::string kAttributeValue = "test";
+  const std::vector<uint8_t> kAttributeValue = {20, 21, 22, 23, 24};
   const std::string kPublicKey = "Non Existing public key";
 
   // Set key attribute.
-  test_util::SetAttributeForKeyExecutionWaiter
-      set_attribute_for_key_execution_waiter;
-  platform_keys_service()->SetAttributeForKey(
-      token_id, kPublicKey, kAttributeType, kAttributeValue,
-      set_attribute_for_key_execution_waiter.GetCallback());
-  ASSERT_TRUE(set_attribute_for_key_execution_waiter.Wait());
+  base::test::TestFuture<Status> set_attr_waiter;
+  platform_keys_service()->SetAttributeForKey(token_id, kPublicKey,
+                                              kAttributeType, kAttributeValue,
+                                              set_attr_waiter.GetCallback());
+  ASSERT_TRUE(set_attr_waiter.Wait());
 
-  EXPECT_NE(set_attribute_for_key_execution_waiter.status(), Status::kSuccess);
+  EXPECT_NE(set_attr_waiter.Get<Status>(), Status::kSuccess);
 }
 
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_util.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -11,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/values.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions.pb.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -37,8 +40,9 @@ const char kPrefKeyUsageCorporate[] = "corporate";
 
 const base::Value* GetPrefsEntry(const std::string& public_key_spki_der_b64,
                                  const PrefService* const profile_prefs) {
-  if (!profile_prefs)
+  if (!profile_prefs) {
     return nullptr;
+  }
 
   const base::Value::Dict& platform_keys =
       profile_prefs->GetDict(prefs::kPlatformKeys);
@@ -74,6 +78,23 @@ void MarkUserKeyCorporateInPref(const std::vector<uint8_t>& public_key_spki_der,
 
   update->Set(base::Base64Encode(public_key_spki_der),
               std::move(new_pref_entry));
+}
+
+// Serializes the KeyPermissions `message` as bytes.
+std::vector<uint8_t> KeyPermissionsProtoToBytes(
+    const chaps::KeyPermissions& message) {
+  std::vector<uint8_t> result;
+  result.resize(message.ByteSizeLong());
+  message.SerializeToArray(result.data(), result.size());
+  return result;
+}
+
+// Deserializes the KeyPermissions `message` from `bytes`. Returns true on
+// success, false on failure.
+[[nodiscard]] bool KeyPermissionsProtoFromBytes(
+    const std::vector<uint8_t>& bytes,
+    chaps::KeyPermissions& message) {
+  return message.ParseFromArray(bytes.data(), bytes.size());
 }
 
 }  // namespace ash::platform_keys::internal

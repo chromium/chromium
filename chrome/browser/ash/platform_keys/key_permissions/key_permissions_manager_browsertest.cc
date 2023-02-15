@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions.pb.h"
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_pref_util.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_util.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_test_util.h"
@@ -138,18 +138,16 @@ class KeyPermissionsManagerBrowserTestBase
         break;
     }
 
-    const std::string serialized_key_permissions =
-        key_permissions.SerializeAsString();
-
     std::string public_key_str(public_key.begin(), public_key.end());
 
-    test_util::SetAttributeForKeyExecutionWaiter set_attr_waiter;
+    base::test::TestFuture<Status> set_attr_waiter;
     GetPlatformKeysService()->SetAttributeForKey(
         GetToken(), public_key_str, KeyAttributeType::kKeyPermissions,
-        serialized_key_permissions, set_attr_waiter.GetCallback());
+        internal::KeyPermissionsProtoToBytes(key_permissions),
+        set_attr_waiter.GetCallback());
     ASSERT_TRUE(set_attr_waiter.Wait());
 
-    ASSERT_EQ(set_attr_waiter.status(), Status::kSuccess);
+    ASSERT_EQ(set_attr_waiter.Get<Status>(), Status::kSuccess);
   }
 
   // Checks if |public_key| is allowed for |usage| by checking kKeyPermissions
@@ -160,21 +158,21 @@ class KeyPermissionsManagerBrowserTestBase
                                    const std::vector<uint8_t>& public_key) {
     std::string public_key_str(public_key.begin(), public_key.end());
 
-    test_util::GetAttributeForKeyExecutionWaiter get_attr_waiter;
+    base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
+        get_attr_waiter;
     GetPlatformKeysService()->GetAttributeForKey(
         GetToken(), public_key_str, KeyAttributeType::kKeyPermissions,
         get_attr_waiter.GetCallback());
     EXPECT_TRUE(get_attr_waiter.Wait());
 
-    if (!get_attr_waiter.attribute_value().has_value()) {
+    absl::optional<std::vector<uint8_t>> attr = get_attr_waiter.Get<0>();
+    if (!attr.has_value()) {
       return false;
     }
 
-    std::string serialized_key_permissions =
-        get_attr_waiter.attribute_value().value();
-
     chaps::KeyPermissions key_permissions;
-    EXPECT_TRUE(key_permissions.ParseFromString(serialized_key_permissions));
+    EXPECT_TRUE(
+        internal::KeyPermissionsProtoFromBytes(attr.value(), key_permissions));
 
     switch (usage) {
       case KeyUsage::kArc:

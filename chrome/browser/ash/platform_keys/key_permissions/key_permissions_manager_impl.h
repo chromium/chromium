@@ -187,7 +187,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   void IsKeyAllowedForUsageWithPermissions(
       IsKeyAllowedForUsageCallback callback,
       KeyUsage usage,
-      const absl::optional<std::string>& serialized_key_permissions,
+      absl::optional<std::vector<uint8_t>> serialized_key_permissions,
       chromeos::platform_keys::Status key_attribute_retrieval_status);
 
   // Called when the token is ready and the one-time migration is done.
