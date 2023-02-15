@@ -22,6 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AdaptiveChargingType">
+<!-- 
+    Variants describing the type of charging used to charge to full once the hold percent is reached in Adaptive Charging.
+  -->
+
+  <variant name=""
+      summary="This histogram holds historical data. More recent data can be
+               found in the histogram for the `NormalCharging` variant."/>
+  <variant name=".MixedCharging"/>
+  <variant name=".NormalCharging"/>
+  <variant name=".SlowCharging"/>
+</variants>
+
 <variants name="BatteryCapacityType">
 <!--
     Variants describing the type of battery capacity.
@@ -552,8 +565,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.AdaptiveChargingBatteryPercentageOnUnplug" units="%"
-    expires_after="2023-07-30">
+<histogram
+    name="Power.AdaptiveChargingBatteryPercentageOnUnplug{AdaptiveChargingType}"
+    units="%" expires_after="2023-07-30">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -562,7 +576,19 @@ chromium-metrics-reviews@google.com.
     shutdown. Since this metric is only reported when the battery percentage has
     reached the hold percent (the battery charge % that charging is delayed at,
     which is 80%) for Adaptive Charging, most values should be high.
+
+    We record this under several variants, which split this result by the type
+    of charging that is used to charge to full once the hold percent is reached.
+    Normal charging uses the default rate of charging, slow charging uses a
+    battery charge current limit of 0.1C (10% of battery design capacity) and
+    mixed charging is a combination of both normal and slow charging which can
+    occur when the unplug time prediction moves sooner, resulting in the switch
+    from slow charging to normal charging in order to finish charging by the
+    unplug time predicted.
+
+    {AdaptiveChargingType}
   </summary>
+  <token key="AdaptiveChargingType" variants="AdaptiveChargingType"/>
 </histogram>
 
 <histogram
@@ -574,10 +600,11 @@ chromium-metrics-reviews@google.com.
     The difference between the correct delay time and the actual delay time for
     Adaptive Charging, as computed by (correct delay - actual delay) in minutes.
     Adaptive Charging delays charging from a hold charge percentage, 80%, to
-    full if it predicts the charger will be unplugged more than 2 hours in the
-    future. The correct delay time ends exactly 2 hours before the user unplugs
-    the charger. This metric is recorded upon unplug of an AC charger, if the
-    hold percent was reached.
+    full if it predicts the charger will be unplugged more than 3 hours in the
+    future. The correct delay time ends exactly 3 hours before the user unplugs
+    the charger, or 2 hours before the user unplugs if the available time is
+    less than 3 hours. This metric is recorded upon unplug of an AC charger, if
+    the hold percent was reached.
 
     We record this under several variants, which split this result by whether
     Adaptive Charging is enabled and active, a heuristic disabled the feature,
@@ -685,8 +712,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.AdaptiveChargingMinutesToFull" units="minutes"
-    expires_after="2023-07-30">
+<histogram name="Power.AdaptiveChargingMinutesToFull{AdaptiveChargingType}"
+    units="minutes" expires_after="2023-07-30">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -694,7 +721,19 @@ chromium-metrics-reviews@google.com.
     (the battery charge % that we delay charging at). This is recorded to make
     sure that we leave enough time for systems to fully charge to full from the
     hold percent.
+
+    We record this under several variants, which split this result by the type
+    of charging that is used to charge to full once the hold percent is reached.
+    Normal charging uses the default rate of charging, slow charging uses a
+    battery charge current limit of 0.1C (10% of battery design capacity) and
+    mixed charging is a combination of both normal and slow charging which can
+    occur when the unplug time prediction moves sooner, resulting in the switch
+    from slow charging to normal charging in order to finish charging by the
+    unplug time predicted.
+
+    {AdaptiveChargingType}
   </summary>
+  <token key="AdaptiveChargingType" variants="AdaptiveChargingType"/>
 </histogram>
 
 <histogram
