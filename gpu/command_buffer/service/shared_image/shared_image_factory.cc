@@ -137,7 +137,7 @@ SharedImageFactory::SharedImageFactory(
       is_for_display_compositor_(is_for_display_compositor),
       gr_context_type_(context_state ? context_state->gr_context_type()
                                      : GrContextType::kGL) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
   // OSX
   DCHECK(gr_context_type_ == GrContextType::kGL ||
          gr_context_type_ == GrContextType::kMetal ||

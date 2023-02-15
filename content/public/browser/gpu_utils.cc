@@ -119,10 +119,8 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.disable_vulkan_fallback_to_gl_for_testing =
       command_line->HasSwitch(switches::kDisableVulkanFallbackToGLForTesting);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
   gpu_preferences.enable_metal = base::FeatureList::IsEnabled(features::kMetal);
-#elif BUILDFLAG(IS_IOS)
-  gpu_preferences.enable_metal = true;
 #endif
 
   gpu_preferences.enable_gpu_benchmarking_extension =

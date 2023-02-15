@@ -500,7 +500,7 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
 }
 #endif  // defined(CAST_AUDIO_ONLY)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalToGL) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kMetal);
@@ -525,7 +525,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalWithGLDisabled) {
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_VULKAN)
 // TODO(crbug.com/1155622): enable tests when Vulkan is supported on LaCrOS.

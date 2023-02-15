@@ -185,7 +185,7 @@ BASE_FEATURE(kNoUndamagedOverlayPromotion,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 // Enable use of Metal for OOP rasterization.
 BASE_FEATURE(kMetal, "Metal", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
