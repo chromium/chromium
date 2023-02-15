@@ -63,12 +63,14 @@ def fyi_ios_builder(*, name, **kwargs):
     kwargs.setdefault("cores", None)
     if kwargs.get("builderless", False):
         kwargs.setdefault("os", os.MAC_DEFAULT)
+    kwargs.setdefault("reclient_scandeps_server", True)
     kwargs.setdefault("xcode", xcode.x14main)
     return ci.builder(name = name, **kwargs)
 
 def fyi_mac_builder(*, name, **kwargs):
     kwargs.setdefault("cores", 4)
     kwargs.setdefault("os", os.MAC_DEFAULT)
+    kwargs.setdefault("reclient_scandeps_server", True)
     return ci.builder(name = name, **kwargs)
 
 ci.builder(

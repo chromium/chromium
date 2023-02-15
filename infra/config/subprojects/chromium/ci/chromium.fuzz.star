@@ -364,6 +364,7 @@ ci.builder(
         category = "mac asan",
         short_name = "rel",
     ),
+    reclient_scandeps_server = True,
 )
 
 ci.builder(
@@ -395,6 +396,7 @@ ci.builder(
         category = "mac asan",
         short_name = "med",
     ),
+    reclient_scandeps_server = True,
 )
 
 ci.builder(
@@ -596,6 +598,7 @@ ci.builder(
         short_name = "ios",
     ),
     execution_timeout = 4 * time.hour,
+    reclient_scandeps_server = True,
     xcode = xcode.x14main,
 )
 
@@ -742,6 +745,7 @@ ci.builder(
         short_name = "mac-asan",
     ),
     execution_timeout = 4 * time.hour,
+    reclient_scandeps_server = True,
 )
 
 ci.builder(

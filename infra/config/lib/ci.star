@@ -219,6 +219,7 @@ def _gpu_mac_builder(*, name, **kwargs):
     """
     kwargs.setdefault("builderless", True)
     kwargs.setdefault("os", os.MAC_ANY)
+    kwargs.setdefault("reclient_scandeps_server", True)
     return ci.builder(name = name, **kwargs)
 
 def _gpu_windows_builder(*, name, **kwargs):
