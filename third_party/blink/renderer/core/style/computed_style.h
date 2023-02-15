@@ -1848,6 +1848,14 @@ class ComputedStyle : public ComputedStyleBase,
     return AppliedTextDecorationsInternal().get() != nullptr;
   }
 
+  // Returns (by value) the last text decoration, if any.
+  absl::optional<AppliedTextDecoration> LastAppliedTextDecoration() const {
+    if (HasAppliedTextDecorations()) {
+      return AppliedTextDecorations().back();
+    }
+    return absl::nullopt;
+  }
+
   // Overflow utility functions.
 
   EOverflow OverflowInlineDirection() const {
