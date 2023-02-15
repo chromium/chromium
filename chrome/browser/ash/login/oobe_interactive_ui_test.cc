@@ -86,12 +86,7 @@ using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
 
-constexpr char kArcTosID[] = "arc-tos";
-enum class ArcState {
-  kNotAvailable,
-  kAcceptTerms,
-  kAcceptTermsRecommendAppsNewLayout
-};
+enum class ArcState { kNotAvailable, kAcceptTerms };
 
 std::string ArcStateToString(ArcState arc_state) {
   switch (arc_state) {
@@ -99,11 +94,7 @@ std::string ArcStateToString(ArcState arc_state) {
       return "not-available";
     case ArcState::kAcceptTerms:
       return "accept-terms";
-    case ArcState::kAcceptTermsRecommendAppsNewLayout:
-      return "accept-terms-recommend-apps-new-layout";
   }
-  NOTREACHED();
-  return "unknown";
 }
 
 void RunWelcomeScreenChecks() {
@@ -136,25 +127,11 @@ void RunNetworkSelectionScreenChecks() {
   EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
 }
 
-void WaitForGaiaSignInScreen(bool wait_for_arc_preloading) {
+void WaitForGaiaSignInScreen() {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"gaia-signin", "signin-frame-dialog"})
       ->Wait();
-
-  // Arc terms of service content gets preloaded when GAIA screen is shown,
-  // wait for the preload to finish before proceeding - requesting reload
-  // (which may happen when ARC terms of service screen is show) before the
-  // preload is done may cause flaky load failures.
-  // TODO(https://crbug/com/959902): Fix ARC terms of service screen to better
-  //     handle this case.
-  if (wait_for_arc_preloading) {
-    test::OobeJS()
-        .CreateWaiterWithDescription(
-            test::GetOobeElementPath({kArcTosID}) + ".uiStep === 'loaded'",
-            "Waiting for ARC TOS to load")
-        ->Wait();
-  }
 
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'gaia-signin' screen.";
 }
@@ -214,39 +191,10 @@ void RunPinSetupScreenChecks() {
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 }
 
-// Waits for the ARC terms of service screen to be shown, it accepts
-// the terms, and waits for the flow to leave the ARC terms of service screen.
-void HandleArcTermsOfServiceScreen() {
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: Switched to 'arc-tos' screen.";
-
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
-
-  test::OobeJS()
-      .CreateEnabledWaiter(true, {"arc-tos", "arcTosNextButton"})
-      ->Wait();
-  test::OobeJS().TapOnPath({"arc-tos", "arcTosNextButton"});
-  test::OobeJS()
-      .CreateVisibilityWaiter(true, {"arc-tos", "arcLocationService"})
-      ->Wait();
-  test::OobeJS()
-      .CreateVisibilityWaiter(true, {"arc-tos", "arcTosAcceptButton"})
-      ->Wait();
-
-  test::OobeJS().TapOnPath({"arc-tos", "arcTosAcceptButton"});
-
-  OobeScreenExitWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: 'arc-tos' screen done.";
-}
-
 // Waits for the recommend apps screen to be shown, selects the single app
 // reported by FakeRecommendAppsFetcher, and requests the apps install. It
 // will wait for the flow to progress away from the RecommendAppsScreen before
 // returning.
-// This assumes that ARC terms of service have bee accepted in
-// HandleArcTermsOfServiceScreen.
 void HandleRecommendAppsScreen() {
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'recommend-apps' screen.";
@@ -506,9 +454,8 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
 
   explicit OobeEndToEndTestSetupMixin(
       InProcessBrowserTestMixinHost* mixin_host,
-      net::EmbeddedTestServer* arc_tos_server,
       const std::tuple<bool, bool, bool, ArcState>& parameters)
-      : InProcessBrowserTestMixin(mixin_host), arc_tos_server_(arc_tos_server) {
+      : InProcessBrowserTestMixin(mixin_host) {
     std::tie(params_.is_tablet, params_.is_quick_unlock_enabled,
              params_.hide_shelf_controls_in_tablet_mode, params_.arc_state) =
         parameters;
@@ -545,9 +492,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
 
     if (params_.arc_state != ArcState::kNotAvailable) {
       arc::SetArcAvailableCommandLineForTesting(command_line);
-      command_line->AppendSwitchASCII(
-          switches::kArcTosHostForTests,
-          arc_tos_server_->GetURL("/arc-tos").spec());
     }
   }
 
@@ -563,11 +507,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
       recommend_apps_fetcher_factory_ =
           std::make_unique<ScopedTestRecommendAppsFetcherFactory>(
               base::BindRepeating(&CreateRecommendAppsFetcher));
-      if (arc_tos_server_) {
-        arc_tos_server_->RegisterRequestHandler(
-            base::BindRepeating(&OobeEndToEndTestSetupMixin::HandleRequest,
-                                base::Unretained(this)));
-      }
     }
   }
 
@@ -588,18 +527,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
     recommend_apps_fetcher_factory_.reset();
   }
 
-  std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
-    auto response = std::make_unique<BasicHttpResponse>();
-    if (request.relative_url != "/arc-tos/about/play-terms.html") {
-      response->set_code(net::HTTP_NOT_FOUND);
-    } else {
-      response->set_code(net::HTTP_OK);
-      response->set_content("<html><body>Test Terms of Service</body></html>");
-      response->set_content_type("text/html");
-    }
-    return response;
-  }
-
   bool is_tablet() const { return params_.is_tablet; }
 
   bool is_quick_unlock_enabled() const {
@@ -618,7 +545,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ScopedTestRecommendAppsFetcherFactory>
       recommend_apps_fetcher_factory_;
-  net::EmbeddedTestServer* arc_tos_server_;
   std::unique_ptr<quick_unlock::TestApi> test_api_;
 };
 
@@ -658,7 +584,7 @@ class OobeInteractiveUITest : public OobeBaseTest,
   }
 
   void PerformStepsBeforeEnrollmentCheck();
-  void PerformSessionSignInSteps(bool is_managed);
+  void PerformSessionSignInSteps();
 
   void SimpleEndToEnd();
 
@@ -670,10 +596,7 @@ class OobeInteractiveUITest : public OobeBaseTest,
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
   FakeArcTosMixin fake_arc_tos_{&mixin_host_, embedded_test_server()};
 
-  net::EmbeddedTestServer arc_tos_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  EmbeddedTestServerSetupMixin arc_tos_server_setup_{&mixin_host_,
-                                                     &arc_tos_server_};
-  OobeEndToEndTestSetupMixin setup_{&mixin_host_, &arc_tos_server_, GetParam()};
+  OobeEndToEndTestSetupMixin setup_{&mixin_host_, GetParam()};
 };
 
 void OobeInteractiveUITest::ForceBrandedBuild() const {
@@ -694,31 +617,18 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
   test::ExitUpdateScreenNoUpdate();
 }
 
-void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
+void OobeInteractiveUITest::PerformSessionSignInSteps() {
   ForceBrandedBuild();
   if (GetFirstSigninScreen() == UserCreationView::kScreenId) {
     test::WaitForUserCreationScreen();
     test::TapUserCreationNext();
   }
-  WaitForGaiaSignInScreen(!is_managed &&
-                          test_setup()->arc_state() != ArcState::kNotAvailable);
+  WaitForGaiaSignInScreen();
   LogInAsRegularUser();
 
-  // For managed devices, preloading the ARC ToS is delayed until the profile is
-  // loaded.
-  if (is_managed && test_setup()->arc_state() != ArcState::kNotAvailable) {
-    test::OobeJS()
-        .CreateWaiterWithDescription(
-            test::GetOobeElementPath({kArcTosID}) + ".uiStep === 'loaded'",
-            "Waiting for ARC TOS to load")
-        ->Wait();
-  }
-
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    test::WaitForConsolidatedConsentScreen();
-    RunConsolidatedConsentScreenChecks();
-    test::TapConsolidatedConsentAccept();
-  }
+  test::WaitForConsolidatedConsentScreen();
+  RunConsolidatedConsentScreenChecks();
+  test::TapConsolidatedConsentAccept();
 
   test::WaitForSyncConsentScreen();
   RunSyncConsentScreenChecks();
@@ -734,11 +644,6 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
     test::WaitForPinSetupScreen();
     RunPinSetupScreenChecks();
     test::ExitPinSetupScreen();
-  }
-
-  if (!features::IsOobeConsolidatedConsentEnabled() &&
-      test_setup()->arc_state() != ArcState::kNotAvailable) {
-    HandleArcTermsOfServiceScreen();
   }
 
   if (test_setup()->arc_state() != ArcState::kNotAvailable) {
@@ -762,7 +667,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
 
 void OobeInteractiveUITest::SimpleEndToEnd() {
   PerformStepsBeforeEnrollmentCheck();
-  PerformSessionSignInSteps(/*is_managed=*/false);
+  PerformSessionSignInSteps();
 
   WaitForLoginDisplayHostShutdown();
 }
@@ -789,13 +694,11 @@ IN_PROC_BROWSER_TEST_P(OobeInteractiveUITest, MAYBE_SimpleEndToEnd) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     OobeInteractiveUITest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Bool(),
-        testing::Bool(),
-        testing::Values(ArcState::kNotAvailable,
-                        ArcState::kAcceptTerms,
-                        ArcState::kAcceptTermsRecommendAppsNewLayout)));
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Values(ArcState::kNotAvailable,
+                                     ArcState::kAcceptTerms)));
 
 class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
  public:
@@ -850,7 +753,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
   enrollment_ui_.LeaveSuccessScreen();
   login_screen_waiter->WaitEvenIfShown();
 
-  PerformSessionSignInSteps(/*is_managed=*/true);
+  PerformSessionSignInSteps();
 
   WaitForLoginDisplayHostShutdown();
 }
@@ -877,13 +780,11 @@ IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, MAYBE_EndToEnd) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     OobeZeroTouchInteractiveUITest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Bool(),
-        testing::Bool(),
-        testing::Values(ArcState::kNotAvailable,
-                        ArcState::kAcceptTerms,
-                        ArcState::kAcceptTermsRecommendAppsNewLayout)));
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Values(ArcState::kNotAvailable,
+                                     ArcState::kAcceptTerms)));
 
 class PublicSessionOobeTest : public MixinBasedInProcessBrowserTest,
                               public ::testing::WithParamInterface<
@@ -959,7 +860,7 @@ class PublicSessionOobeTest : public MixinBasedInProcessBrowserTest,
 
   std::unique_ptr<NativeWindowVisibilityObserver> observer_;
 
-  OobeEndToEndTestSetupMixin setup_{&mixin_host_, nullptr, GetParam()};
+  OobeEndToEndTestSetupMixin setup_{&mixin_host_, GetParam()};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
@@ -1012,14 +913,14 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool(),
                      testing::Values(ArcState::kNotAvailable)));
 
-class EphemeralUserOobeTest : public MixinBasedInProcessBrowserTest,
+class EphemeralUserOobeTest : public OobeBaseTest,
                               public ::testing::WithParamInterface<
                                   std::tuple<bool, bool, bool, ArcState>> {
  public:
   EphemeralUserOobeTest() { login_manager_.set_should_launch_browser(true); }
   ~EphemeralUserOobeTest() override = default;
 
-  // MixinBaseInProcessBrowserTest:
+  // OobeBaseTest:
   void SetUpInProcessBrowserTestFixture() override {
     std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
         device_state_.RequestDevicePolicyUpdate();
@@ -1028,19 +929,7 @@ class EphemeralUserOobeTest : public MixinBasedInProcessBrowserTest,
         ->set_ephemeral_users_enabled(true);
     device_policy_update.reset();
 
-    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-
-    base::RunLoop run_loop;
-    if (!LoginDisplayHost::default_host()->GetOobeUI()->IsJSReady(
-            run_loop.QuitClosure())) {
-      run_loop.Run();
-    }
-
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    OobeBaseTest::SetUpInProcessBrowserTestFixture();
   }
 
   void WaitForActiveSession() { login_manager_.WaitForActiveSession(); }
@@ -1048,61 +937,43 @@ class EphemeralUserOobeTest : public MixinBasedInProcessBrowserTest,
   const OobeEndToEndTestSetupMixin* test_setup() const { return &setup_; }
 
  private:
-  EmbeddedTestServerSetupMixin gaia_server_setup_{&mixin_host_,
-                                                  embedded_test_server()};
+  // Fake GAIA setup.
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 
-  net::EmbeddedTestServer arc_tos_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  EmbeddedTestServerSetupMixin arc_tos_server_setup_{&mixin_host_,
-                                                     &arc_tos_server_};
-  OobeEndToEndTestSetupMixin setup_{&mixin_host_, &arc_tos_server_, GetParam()};
-
   LoginManagerMixin login_manager_{&mixin_host_, {}};
+
+  // Fake Arc server and EULA server.
+  FakeArcTosMixin fake_arc_tos_{&mixin_host_, embedded_test_server()};
+  FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
+  OobeEndToEndTestSetupMixin setup_{&mixin_host_, GetParam()};
+
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
-// TODO(crbug.com/1004561) Disabled due to flake.
-IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
-  WaitForGaiaSignInScreen(test_setup()->arc_state() != ArcState::kNotAvailable);
+// In this test we login as a regular user, which means it is not affilated
+// with the domain of the device. Thus we still need a consent from user.
+IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, RegularEphemeralUser) {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+
+  WaitForGaiaSignInScreen();
   LogInAsRegularUser();
+
+  test::WaitForConsolidatedConsentScreen();
+  RunConsolidatedConsentScreenChecks();
+  test::TapConsolidatedConsentAccept();
 
   test::WaitForSyncConsentScreen();
   RunSyncConsentScreenChecks();
   test::ExitScreenSyncConsent();
-
-  if (test_setup()->is_quick_unlock_enabled()) {
-    test::WaitForFingerprintScreen();
-    RunFingerprintScreenChecks();
-    test::ExitFingerprintPinSetupScreen();
-  }
-
-  if (test_setup()->is_tablet()) {
-    test::WaitForPinSetupScreen();
-    RunPinSetupScreenChecks();
-    test::ExitPinSetupScreen();
-  }
-
-  if (test_setup()->arc_state() != ArcState::kNotAvailable) {
-    HandleArcTermsOfServiceScreen();
-  }
 
   if (test_setup()->arc_state() != ArcState::kNotAvailable) {
     HandleRecommendAppsScreen();
     HandleAppDownloadingScreen();
   }
 
-  HandleAssistantOptInScreen();
-
-  if (test_setup()->is_tablet() &&
-      test_setup()->hide_shelf_controls_in_tablet_mode()) {
-    HandleGestureNavigationScreen();
-
-    if (features::IsDarkLightModeEnabled()) {
-      HandleThemeSelectionScreen();
-    }
-
-    HandleMarketingOptInScreen();
+  if (features::IsDarkLightModeEnabled()) {
+    HandleThemeSelectionScreen();
   }
 
   WaitForActiveSession();
@@ -1111,11 +982,10 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     EphemeralUserOobeTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Bool(),
-        testing::Bool(),
-        testing::Values(ArcState::kNotAvailable,
-                        ArcState::kAcceptTerms,
-                        ArcState::kAcceptTermsRecommendAppsNewLayout)));
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Values(ArcState::kNotAvailable,
+                                     ArcState::kAcceptTerms)));
+
 }  //  namespace ash
