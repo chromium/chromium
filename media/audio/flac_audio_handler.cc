@@ -67,8 +67,10 @@ base::TimeDelta FlacAudioHandler::GetDuration() const {
 }
 
 bool FlacAudioHandler::AtEnd() const {
-  return FLAC__StreamDecoderState::FLAC__STREAM_DECODER_END_OF_STREAM ==
-         FLAC__stream_decoder_get_state(decoder_.get());
+  auto state = FLAC__stream_decoder_get_state(decoder_.get());
+  return state ==
+             FLAC__StreamDecoderState::FLAC__STREAM_DECODER_END_OF_STREAM ||
+         state == FLAC__StreamDecoderState::FLAC__STREAM_DECODER_ABORTED;
 }
 
 bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
@@ -170,10 +172,14 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
   const int num_channels = frame->header.channels;
   const int num_samples = frame->header.blocksize;
 
+  // Avoid the crash happened in `fifo_`.
+  if (num_channels != num_channels_) {
+    return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+  }
+
   if (!bus_) {
     bus_ = AudioBus::Create(num_channels, num_samples);
   }
-  DCHECK_EQ(num_channels, bus_->channels());
 
   // During the last time calling this callback, it may not have
   // `bus_->frames()` frames.
@@ -199,6 +205,11 @@ void FlacAudioHandler::MetaCallbackInternal(
     return;
   }
 
+  // Avoid re-initialize the metadata variables due to some bad data.
+  if (is_initialized()) {
+    return;
+  }
+
   // Stores the metadata for the audio.
   num_channels_ = static_cast<int>(metadata->data.stream_info.channels);
   sample_rate_ = static_cast<int>(metadata->data.stream_info.sample_rate);
@@ -213,10 +224,6 @@ void FlacAudioHandler::MetaCallbackInternal(
                << "sample_rate: " << sample_rate_ << " "
                << "bits_per_sample: " << bits_per_sample_ << " "
                << "total_frames_: " << total_frames_;
-    return;
-  }
-
-  if (is_initialized()) {
     return;
   }
 
