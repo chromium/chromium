@@ -43,12 +43,11 @@ AtomicString CreateVisionDeficiencyFilterUrl(
       return CreateFilterDataUrl("<feGaussianBlur stdDeviation=\"2\"/>");
     case VisionDeficiency::kReducedContrast:
       return CreateFilterDataUrl(
-          "<feColorMatrix values=\""
-          "0.500  0.000  0.000  0.000  0.000 "
-          "0.500  0.000  0.000  0.000  0.000 "
-          "0.500  0.000  0.000  0.000  0.000 "
-          "0.500  0.250  0.250  0.250  0.000 "
-          "\"/>");
+          "<feComponentTransfer>"
+          "  <feFuncR type=\"gamma\" offset=\"0.5\"/>"
+          "  <feFuncG type=\"gamma\" offset=\"0.5\"/>"
+          "  <feFuncB type=\"gamma\" offset=\"0.5\"/>"
+          "</feComponentTransfer>");
     case VisionDeficiency::kAchromatopsia:
       return CreateFilterDataUrl(
           "<feColorMatrix values=\""
