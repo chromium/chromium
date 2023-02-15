@@ -4,6 +4,8 @@
 
 package org.chromium.components.commerce.core;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 /** Represents the information for one commerce subscription entry. */
@@ -38,5 +40,31 @@ public class CommerceSubscription {
         this.id = id;
         this.managementType = managementType;
         this.userSeenOffer = userSeenOffer;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof CommerceSubscription)) return false;
+
+        CommerceSubscription sub = (CommerceSubscription) other;
+
+        // We intentionally don't check userSeenOffer since it's not considered important in
+        // uniquely identifying a subscription.
+        return sub.type == type && sub.idType == idType && TextUtils.equals(sub.id, id)
+                && sub.managementType == managementType;
+    }
+
+    @Override
+    public int hashCode() {
+        // Use arbitrary primes to seed each step.
+        int hash = 37;
+        hash = 43 * hash + type;
+        hash = 47 * hash + idType;
+        hash = 53 * hash + (id == null ? 0 : id.hashCode());
+        hash = 59 * hash + managementType;
+
+        // We intentionally don't check userSeenOffer since it's not considered important in
+        // uniquely identifying a subscription.
+        return hash;
     }
 }

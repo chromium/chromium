@@ -26,3 +26,15 @@ java_cpp_enum("java_enum_srcjar") {
   sources =
       [ "//components/commerce/core/subscriptions/commerce_subscription.h" ]
 }
+
+robolectric_library("junit_tests") {
+  sources = [ "junit/src/org/chromium/components/commerce/core/CommerceSubscriptionTest.java" ]
+  deps = [
+    ":core_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//build/android:build_java",
+    "//third_party/junit",
+  ]
+}
