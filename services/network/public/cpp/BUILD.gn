@@ -212,6 +212,21 @@ component("ip_address_mojom_support") {
   defines = [ "IS_NETWORK_CPP_IP_ADDRESS_IMPL" ]
 }
 
+component("host_resolver_mojom_support") {
+  sources = [
+    "host_resolver_mojom_traits.cc",
+    "host_resolver_mojom_traits.h",
+  ]
+  deps = [
+    ":ip_address_mojom_support",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//mojo/public/mojom/base",
+    "//net",
+    "//services/network/public/mojom:mojom_host_resolver_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_HOST_RESOLVER_IMPL" ]
+}
+
 component("cookies_mojom_support") {
   sources = [
     "cookie_manager_shared_mojom_traits.cc",

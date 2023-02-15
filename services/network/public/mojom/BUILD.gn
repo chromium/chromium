@@ -1154,6 +1154,82 @@ mojom("cookies_mojom") {
   blink_cpp_typemaps += shared_cpp_typemaps
 }
 
+mojom("mojom_host_resolver") {
+  generate_java = true
+  sources = [ "host_resolver.mojom" ]
+
+  public_deps = [
+    ":mojom_ip_address",
+    ":mojom_network_anonymization_key",
+    ":mojom_network_param",
+    ":url_loader_base",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_scheme_host_port",
+  ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  shared_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.DnsQueryType"
+          cpp = "::net::DnsQueryType"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/host_resolver_mojom_traits.h" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:host_resolver_mojom_support",
+      ]
+    },
+  ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.DnsConfigOverrides"
+          cpp = "::net::DnsConfigOverrides"
+        },
+        {
+          mojom = "network.mojom.DnsOverHttpsServerConfig"
+          cpp = "::net::DnsOverHttpsServerConfig"
+        },
+        {
+          mojom = "network.mojom.DnsOverHttpsConfig"
+          cpp = "::net::DnsOverHttpsConfig"
+        },
+        {
+          mojom = "network.mojom.ResolveHostParameters.Source"
+          cpp = "::net::HostResolverSource"
+        },
+        {
+          mojom = "network.mojom.MdnsListenClient.UpdateType"
+          cpp = "::net::MdnsListenerUpdateType"
+        },
+        {
+          mojom = "network.mojom.SecureDnsMode"
+          cpp = "::net::SecureDnsMode"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/host_resolver_mojom_traits.h" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:host_resolver_mojom_support",
+      ]
+    },
+  ]
+
+  cpp_typemaps += shared_cpp_typemaps
+  blink_cpp_typemaps = shared_cpp_typemaps
+}
+
 mojom("mojom") {
   generate_java = true
   sources = [
@@ -1163,7 +1239,6 @@ mojom("mojom") {
     "dhcp_wpad_url_client.mojom",
     "digitally_signed.mojom",
     "first_party_sets_access_delegate.mojom",
-    "host_resolver.mojom",
     "http_cache_backend_file_operations.mojom",
     "key_pinning.mojom",
     "mdns_responder.mojom",
@@ -1191,6 +1266,7 @@ mojom("mojom") {
   public_deps = [
     ":cookies_mojom",
     ":mojom_first_party_sets",
+    ":mojom_host_resolver",
     ":mojom_ip_address",
     ":mojom_network_anonymization_key",
     ":mojom_network_isolation_key",
@@ -1250,46 +1326,6 @@ mojom("mojom") {
 
   # Typemaps applied only to non-Blink bindings
   cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "network.mojom.DnsConfigOverrides"
-          cpp = "::net::DnsConfigOverrides"
-        },
-        {
-          mojom = "network.mojom.DnsOverHttpsServerConfig"
-          cpp = "::net::DnsOverHttpsServerConfig"
-        },
-        {
-          mojom = "network.mojom.DnsOverHttpsConfig"
-          cpp = "::net::DnsOverHttpsConfig"
-        },
-        {
-          mojom = "network.mojom.DnsQueryType"
-          cpp = "::net::DnsQueryType"
-        },
-        {
-          mojom = "network.mojom.ResolveHostParameters.Source"
-          cpp = "::net::HostResolverSource"
-        },
-        {
-          mojom = "network.mojom.MdnsListenClient.UpdateType"
-          cpp = "::net::MdnsListenerUpdateType"
-        },
-        {
-          mojom = "network.mojom.SecureDnsMode"
-          cpp = "::net::SecureDnsMode"
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/host_resolver_mojom_traits.h" ]
-      traits_sources =
-          [ "//services/network/public/cpp/host_resolver_mojom_traits.cc" ]
-      traits_public_deps = [
-        "//net",
-        "//services/network/public/cpp:cpp_base",
-      ]
-    },
     {
       types = [
         {

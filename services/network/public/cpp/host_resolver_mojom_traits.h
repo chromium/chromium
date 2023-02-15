@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -25,20 +26,15 @@
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "services/network/public/mojom/host_resolver.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
-// This is made visible for use by network::HostResolver. Not intended to be
-// used elsewhere.
-absl::optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
-    network::mojom::OptionalSecureDnsMode mode);
-
 template <>
-class StructTraits<network::mojom::DnsOverHttpsServerConfigDataView,
-                   net::DnsOverHttpsServerConfig> {
+class COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    StructTraits<network::mojom::DnsOverHttpsServerConfigDataView,
+                 net::DnsOverHttpsServerConfig> {
  public:
   static base::StringPiece server_template(
       const net::DnsOverHttpsServerConfig& server) {
@@ -53,8 +49,9 @@ class StructTraits<network::mojom::DnsOverHttpsServerConfigDataView,
 };
 
 template <>
-class StructTraits<network::mojom::DnsOverHttpsConfigDataView,
-                   net::DnsOverHttpsConfig> {
+class COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    StructTraits<network::mojom::DnsOverHttpsConfigDataView,
+                 net::DnsOverHttpsConfig> {
  public:
   static const std::vector<net::DnsOverHttpsServerConfig>& servers(
       const net::DnsOverHttpsConfig& doh_config) {
@@ -65,8 +62,9 @@ class StructTraits<network::mojom::DnsOverHttpsConfigDataView,
 };
 
 template <>
-struct StructTraits<network::mojom::DnsConfigOverridesDataView,
-                    net::DnsConfigOverrides> {
+struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    StructTraits<network::mojom::DnsConfigOverridesDataView,
+                 net::DnsConfigOverrides> {
   static const absl::optional<std::vector<net::IPEndPoint>>& nameservers(
       const net::DnsConfigOverrides& overrides) {
     return overrides.nameservers;
@@ -118,15 +116,17 @@ struct StructTraits<network::mojom::DnsConfigOverridesDataView,
 };
 
 template <>
-struct EnumTraits<network::mojom::DnsQueryType, net::DnsQueryType> {
+struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    EnumTraits<network::mojom::DnsQueryType, net::DnsQueryType> {
   static network::mojom::DnsQueryType ToMojom(net::DnsQueryType input);
   static bool FromMojom(network::mojom::DnsQueryType input,
                         net::DnsQueryType* output);
 };
 
 template <>
-struct EnumTraits<network::mojom::ResolveHostParameters_Source,
-                  net::HostResolverSource> {
+struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    EnumTraits<network::mojom::ResolveHostParameters_Source,
+               net::HostResolverSource> {
   static network::mojom::ResolveHostParameters_Source ToMojom(
       net::HostResolverSource input);
   static bool FromMojom(network::mojom::ResolveHostParameters_Source input,
@@ -134,8 +134,9 @@ struct EnumTraits<network::mojom::ResolveHostParameters_Source,
 };
 
 template <>
-struct EnumTraits<network::mojom::MdnsListenClient_UpdateType,
-                  net::MdnsListenerUpdateType> {
+struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    EnumTraits<network::mojom::MdnsListenClient_UpdateType,
+               net::MdnsListenerUpdateType> {
   static network::mojom::MdnsListenClient_UpdateType ToMojom(
       net::MdnsListenerUpdateType input);
   static bool FromMojom(network::mojom::MdnsListenClient_UpdateType input,
@@ -143,7 +144,8 @@ struct EnumTraits<network::mojom::MdnsListenClient_UpdateType,
 };
 
 template <>
-struct EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode> {
+struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode> {
   static network::mojom::SecureDnsMode ToMojom(
       net::SecureDnsMode secure_dns_mode);
   static bool FromMojom(network::mojom::SecureDnsMode in,
@@ -151,7 +153,8 @@ struct EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode> {
 };
 
 template <>
-struct EnumTraits<network::mojom::SecureDnsPolicy, net::SecureDnsPolicy> {
+struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    EnumTraits<network::mojom::SecureDnsPolicy, net::SecureDnsPolicy> {
   static network::mojom::SecureDnsPolicy ToMojom(
       net::SecureDnsPolicy secure_dns_mode);
   static bool FromMojom(network::mojom::SecureDnsPolicy in,
