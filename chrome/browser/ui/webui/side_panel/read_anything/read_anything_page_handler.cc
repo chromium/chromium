@@ -86,6 +86,7 @@ void ReadAnythingPageHandler::OnReadAnythingThemeChanged(
     double font_scale,
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
+    ui::ColorId separator_color_id,
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing) {
   content::WebContents* web_contents = web_ui_->GetWebContents();

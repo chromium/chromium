@@ -484,7 +484,23 @@
   E_CPONLY(kColorWebUiTabStripTabWaitingSpinning) \
   /* Window control button background colors. */ \
   E_CPONLY(kColorWindowControlButtonBackgroundActive) \
-  E_CPONLY(kColorWindowControlButtonBackgroundInactive)
+  E_CPONLY(kColorWindowControlButtonBackgroundInactive) \
+  /* Read Anything colors. */ \
+  E_CPONLY(kColorReadAnythingBackground) \
+  E_CPONLY(kColorReadAnythingBackgroundBlue) \
+  E_CPONLY(kColorReadAnythingBackgroundDark) \
+  E_CPONLY(kColorReadAnythingBackgroundLight) \
+  E_CPONLY(kColorReadAnythingBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingForeground) \
+  E_CPONLY(kColorReadAnythingForegroundBlue) \
+  E_CPONLY(kColorReadAnythingForegroundDark) \
+  E_CPONLY(kColorReadAnythingForegroundLight) \
+  E_CPONLY(kColorReadAnythingForegroundYellow) \
+  E_CPONLY(kColorReadAnythingSeparator) \
+  E_CPONLY(kColorReadAnythingSeparatorBlue) \
+  E_CPONLY(kColorReadAnythingSeparatorDark) \
+  E_CPONLY(kColorReadAnythingSeparatorLight) \
+  E_CPONLY(kColorReadAnythingSeparatorYellow) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS \

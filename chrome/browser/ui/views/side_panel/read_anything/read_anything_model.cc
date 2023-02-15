@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,6 +75,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
   auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
   foreground_color_id_ = initial_colors.foreground_color_id;
   background_color_id_ = initial_colors.background_color_id;
+  separator_color_id_ = initial_colors.separator_color_id;
 
   line_spacing_ = line_spacing_model_->GetLineSpacingAt(
       line_spacing_model_->GetSelectedIndex().value());
@@ -107,6 +109,7 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   auto& new_colors = colors_model_->GetColorsAt(new_index);
   foreground_color_id_ = new_colors.foreground_color_id;
   background_color_id_ = new_colors.background_color_id;
+  separator_color_id_ = new_colors.separator_color_id;
 
   NotifyThemeChanged();
 }
@@ -175,9 +178,9 @@ void ReadAnythingModel::IncreaseTextSize() {
 
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnReadAnythingThemeChanged(font_name_, font_scale_,
-                                   foreground_color_id_, background_color_id_,
-                                   line_spacing_, letter_spacing_);
+    obs.OnReadAnythingThemeChanged(
+        font_name_, font_scale_, foreground_color_id_, background_color_id_,
+        separator_color_id_, line_spacing_, letter_spacing_);
   }
 }
 
@@ -254,25 +257,26 @@ ReadAnythingFontModel::~ReadAnythingFontModel() = default;
 
 ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
-  ColorInfo kDefaultColors = {u"Default", IDS_READ_ANYTHING_DEFAULT_PNG,
-                              ui::kColorReadAnythingForeground,
-                              ui::kColorReadAnythingBackground};
+  ColorInfo kDefaultColors = {
+      u"Default", IDS_READ_ANYTHING_DEFAULT_PNG, kColorReadAnythingForeground,
+      kColorReadAnythingBackground, kColorReadAnythingSeparator};
 
-  ColorInfo kLightColors = {u"Light", IDS_READ_ANYTHING_LIGHT_PNG,
-                            ui::kColorReadAnythingForegroundLight,
-                            ui::kColorReadAnythingBackgroundLight};
+  ColorInfo kLightColors = {
+      u"Light", IDS_READ_ANYTHING_LIGHT_PNG, kColorReadAnythingForegroundLight,
+      kColorReadAnythingBackgroundLight, kColorReadAnythingSeparatorLight};
 
-  ColorInfo kDarkColors = {u"Dark", IDS_READ_ANYTHING_DARK_PNG,
-                           ui::kColorReadAnythingForegroundDark,
-                           ui::kColorReadAnythingBackgroundDark};
+  ColorInfo kDarkColors = {
+      u"Dark", IDS_READ_ANYTHING_DARK_PNG, kColorReadAnythingForegroundDark,
+      kColorReadAnythingBackgroundDark, kColorReadAnythingSeparatorDark};
 
   ColorInfo kYellowColors = {u"Yellow", IDS_READ_ANYTHING_YELLOW_PNG,
-                             ui::kColorReadAnythingForegroundYellow,
-                             ui::kColorReadAnythingBackgroundYellow};
+                             kColorReadAnythingForegroundYellow,
+                             kColorReadAnythingBackgroundYellow,
+                             kColorReadAnythingSeparatorYellow};
 
-  ColorInfo kBlueColors = {u"Blue", IDS_READ_ANYTHING_BLUE_PNG,
-                           ui::kColorReadAnythingForegroundBlue,
-                           ui::kColorReadAnythingBackgroundBlue};
+  ColorInfo kBlueColors = {
+      u"Blue", IDS_READ_ANYTHING_BLUE_PNG, kColorReadAnythingForegroundBlue,
+      kColorReadAnythingBackgroundBlue, kColorReadAnythingSeparatorBlue};
 
   colors_choices_.emplace_back(kDefaultColors);
   colors_choices_.emplace_back(kLightColors);

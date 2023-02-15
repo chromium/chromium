@@ -154,6 +154,7 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
     double font_scale,
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
+    ui::ColorId separator_color_id,
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing) {
   if (!GetColorProvider())
@@ -188,7 +189,7 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
                                   foreground_skcolor);
 
   for (views::Separator* separator : separators_) {
-    separator->SetColorId(foreground_color_id);
+    separator->SetColorId(separator_color_id);
   }
 
   font_combobox_->SetForegroundColorId(foreground_color_id);

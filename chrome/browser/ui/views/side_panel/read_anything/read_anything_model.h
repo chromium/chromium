@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
@@ -85,6 +86,10 @@ class ReadAnythingColorsModel : public ReadAnythingMenuModel {
 
     // The background color, used for text background.
     ui::ColorId background_color_id;
+
+    // The separator color, used for visual separators between elements in the
+    // toolbar.
+    ui::ColorId separator_color_id;
   };
 
   bool IsValidIndex(size_t index) override;
@@ -176,6 +181,7 @@ class ReadAnythingModel {
         double font_scale,
         ui::ColorId foreground_color_id,
         ui::ColorId background_color_id,
+        ui::ColorId separator_color_id,
         read_anything::mojom::LineSpacing line_spacing,
         read_anything::mojom::LetterSpacing letter_spacing) = 0;
   };
@@ -225,8 +231,9 @@ class ReadAnythingModel {
 
   // Members of read_anything::mojom::ReadAnythingTheme:
   std::string font_name_ = kReadAnythingDefaultFontName;
-  ui::ColorId foreground_color_id_ = ui::kColorReadAnythingForeground;
-  ui::ColorId background_color_id_ = ui::kColorReadAnythingBackground;
+  ui::ColorId foreground_color_id_ = kColorReadAnythingForeground;
+  ui::ColorId background_color_id_ = kColorReadAnythingBackground;
+  ui::ColorId separator_color_id_ = kColorReadAnythingSeparator;
 
   // A scale multiplier for font size (internal use only, not shown to user).
   float font_scale_ = kReadAnythingDefaultFontScale;

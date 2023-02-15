@@ -20,8 +20,10 @@
 #include "ui/views/layout/flex_layout.h"
 
 ReadAnythingContainerView::ReadAnythingContainerView(
+    ReadAnythingCoordinator* coordinator,
     std::unique_ptr<ReadAnythingToolbarView> toolbar,
-    std::unique_ptr<SidePanelWebUIViewT<ReadAnythingUI>> content) {
+    std::unique_ptr<SidePanelWebUIViewT<ReadAnythingUI>> content)
+    : coordinator_(std::move(coordinator)) {
   // Create and set a FlexLayout LayoutManager for this view, set background.
   auto layout = std::make_unique<views::FlexLayout>();
   layout->SetOrientation(views::LayoutOrientation::kVertical)
@@ -53,8 +55,34 @@ ReadAnythingContainerView::ReadAnythingContainerView(
 
   // Add all views as children.
   AddChildView(std::move(toolbar));
-  AddChildView(std::move(separator));
+  separator_ = AddChildView(std::move(separator));
   AddChildView(std::move(content));
+
+  coordinator_->AddObserver(this);
+  coordinator_->AddModelObserver(this);
 }
 
-ReadAnythingContainerView::~ReadAnythingContainerView() = default;
+void ReadAnythingContainerView::OnReadAnythingThemeChanged(
+    const std::string& font_name,
+    double font_scale,
+    ui::ColorId foreground_color_id,
+    ui::ColorId background_color_id,
+    ui::ColorId separator_color_id,
+    read_anything::mojom::LineSpacing line_spacing,
+    read_anything::mojom::LetterSpacing letter_spacing) {
+  separator_->SetColorId(separator_color_id);
+}
+
+void ReadAnythingContainerView::OnCoordinatorDestroyed() {
+  // When the coordinator that created |this| is destroyed, clean up pointers.
+  coordinator_ = nullptr;
+}
+
+ReadAnythingContainerView::~ReadAnythingContainerView() {
+  // If |this| is being destroyed before the associated coordinator, then
+  // remove |this| as an observer.
+  if (coordinator_) {
+    coordinator_->RemoveObserver(this);
+    coordinator_->RemoveModelObserver(this);
+  }
+}
