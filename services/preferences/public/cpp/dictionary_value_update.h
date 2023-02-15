@@ -22,7 +22,7 @@ namespace prefs {
 class DictionaryValueUpdate {
  public:
   using UpdateCallback =
-      base::RepeatingCallback<void(const std::vector<std::string>&)>;
+      base::RepeatingCallback<void(std::vector<std::string>)>;
 
   DictionaryValueUpdate(UpdateCallback report_update,
                         base::Value::Dict* value,
@@ -66,8 +66,7 @@ class DictionaryValueUpdate {
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
   // be used as paths. Returns a pointer to the set `value`.
   base::Value* SetKey(base::StringPiece key, base::Value value);
-  void SetWithoutPathExpansion(base::StringPiece key,
-                               std::unique_ptr<base::Value> in_value);
+  void SetWithoutPathExpansion(base::StringPiece key, base::Value in_value);
 
   // Convenience forms of SetWithoutPathExpansion().
   std::unique_ptr<DictionaryValueUpdate> SetDictionaryWithoutPathExpansion(
@@ -89,26 +88,9 @@ class DictionaryValueUpdate {
   bool GetDictionary(base::StringPiece path,
                      std::unique_ptr<DictionaryValueUpdate>* out_value);
 
-  // Like Get(), but without special treatment of '.'.  This allows e.g. URLs to
-  // be used as paths.
-  bool GetBooleanWithoutPathExpansion(base::StringPiece key,
-                                      bool* out_value) const;
-  bool GetIntegerWithoutPathExpansion(base::StringPiece key,
-                                      int* out_value) const;
-  bool GetDoubleWithoutPathExpansion(base::StringPiece key,
-                                     double* out_value) const;
-  bool GetStringWithoutPathExpansion(base::StringPiece key,
-                                     std::string* out_value) const;
-  bool GetStringWithoutPathExpansion(base::StringPiece key,
-                                     std::u16string* out_value) const;
-  bool GetDictionaryWithoutPathExpansion(
-      base::StringPiece key,
-      const base::Value::Dict** out_value) const;
   bool GetDictionaryWithoutPathExpansion(
       base::StringPiece key,
       std::unique_ptr<DictionaryValueUpdate>* out_value);
-  bool GetListWithoutPathExpansion(base::StringPiece key,
-                                   const base::Value::List** out_value) const;
   bool GetListWithoutPathExpansion(base::StringPiece key,
                                    base::Value::List** out_value);
 
@@ -121,12 +103,7 @@ class DictionaryValueUpdate {
   // Like Remove(), but without special treatment of '.'.  This allows e.g. URLs
   // to be used as paths.
   bool RemoveWithoutPathExpansion(base::StringPiece key,
-                                  std::unique_ptr<base::Value>* out_value);
-
-  // Removes a path, clearing out all dictionaries on |path| that remain empty
-  // after removing the value at |path|.
-  bool RemovePath(base::StringPiece path,
-                  std::unique_ptr<base::Value>* out_value);
+                                  base::Value* out_value);
 
   base::Value::Dict* AsDict();
   const base::Value::Dict* AsConstDict() const;

@@ -36,8 +36,7 @@ operator->() {
   return Get();
 }
 
-void ScopedDictionaryPrefUpdate::RecordPath(
-    const std::vector<std::string>& path) {
+void ScopedDictionaryPrefUpdate::RecordPath(std::vector<std::string> path) {
   updated_paths_.insert(std::move(path));
 }
 

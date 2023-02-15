@@ -48,8 +48,7 @@ void ExtensionPrefsHelper::SetExtensionControlledPref(
     ExtensionPrefs::ScopedDictionaryUpdate update(prefs_, extension_id,
                                                   scope_string);
     auto preference = update.Create();
-    preference->SetWithoutPathExpansion(
-        pref_key, base::Value::ToUniquePtrValue(value.Clone()));
+    preference->SetWithoutPathExpansion(pref_key, value.Clone());
   }
   value_map_->SetExtensionPref(extension_id, pref_key, scope, std::move(value));
 }

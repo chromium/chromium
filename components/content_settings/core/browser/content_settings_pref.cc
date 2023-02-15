@@ -351,7 +351,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 
     for (const auto& old_to_new_pattern :
          non_canonical_patterns_to_canonical_pattern) {
-      std::unique_ptr<base::Value> pattern_settings_dictionary;
+      base::Value pattern_settings_dictionary;
       mutable_settings.get()->RemoveWithoutPathExpansion(
           old_to_new_pattern.first, &pattern_settings_dictionary);
       mutable_settings.get()->SetWithoutPathExpansion(

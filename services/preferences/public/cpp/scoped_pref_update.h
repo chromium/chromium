@@ -59,7 +59,7 @@ class ScopedDictionaryPrefUpdate {
   std::unique_ptr<DictionaryValueUpdate> operator->();
 
  private:
-  void RecordPath(const std::vector<std::string>& path);
+  void RecordPath(std::vector<std::string> path);
 
   // Weak pointer.
   // `service_` is not a raw_ptr<...> for performance reasons (based on analysis
