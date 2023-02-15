@@ -6942,5 +6942,9 @@ crbug.com/1409804 [ Mac ] fast/backgrounds/repeat/negative-offset-repeat-transfo
 crbug.com/1409804 [ Mac ] fast/borders/border-image-rotate-transform.html [ Failure ]
 
 # Flaky tests. Disabling while investigating a deflake solution.
-crbug.com/1413838 http/tests/inspector-protocol/tracing/cpu-profiling.js [ Failure Pass ]
 crbug.com/1412866 http/tests/inspector-protocol/tracing/advanced-painting-instrumentation.js [ Failure Pass ]
+
+# Marking this test as Timeout in addition to flaky because it depends
+# on runtime call stats, which do not exist on release branches.
+# See https://crbug.com/1410693#c40.
+crbug.com/1413838 http/tests/inspector-protocol/tracing/cpu-profiling.js [ Failure Timeout Pass ]
