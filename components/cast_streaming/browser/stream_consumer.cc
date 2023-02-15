@@ -102,6 +102,11 @@ void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
 
 void StreamConsumer::FlushUntil(uint32_t frame_id) {
   skip_until_frame_id_ = frame_id;
+  if (is_read_pending_) {
+    is_read_pending_ = false;
+    no_frames_available_cb_.Reset();
+    frame_received_cb_.Run(nullptr);
+  }
 }
 
 void StreamConsumer::MaybeSendNextFrame() {

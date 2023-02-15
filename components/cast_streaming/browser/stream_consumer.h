@@ -53,7 +53,8 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   // available when this callback first tries to read them.
   void ReadFrame(base::OnceClosure no_frames_available_cb);
 
-  // Skips frames until one with id |frame_id| or later arrives.
+  // Cancels any ongoing read call, then skips reading of all future frames with
+  // an id less than |frame_id|.
   void FlushUntil(uint32_t frame_id);
 
  private:
