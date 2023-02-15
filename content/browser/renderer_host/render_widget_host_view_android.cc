@@ -1964,6 +1964,14 @@ void RenderWidgetHostViewAndroid::HideInternal() {
   // used.
   fullscreen_rotation_ = false;
 
+  // If a RWHVA gets hidden and swapped out then gets swapped back in and shown,
+  // the last known controls offsets may be the same as the latest values we get
+  // from the renderer. In this case, we would skip pushing the offset to
+  // `ViewAndroid` assuming there was no change. To prevent this, we should
+  // reset `controls_initialized_` to make sure the offsets are pushed once the
+  // RWHVA is shown again.
+  controls_initialized_ = false;
+
   // Only preserve the frontbuffer if the activity was stopped while the
   // window is still visible. This avoids visual artifacts when transitioning
   // between activities.
