@@ -308,6 +308,10 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.ResizeRestart.bullseye_stable",
   "crostini.ResizeRestart.buster_stable",
 
+  # https://crbug.com/1416610
+  "enterprise.ARCBlockedAppInstall",
+  "enterprise.ARCPlayStoreModeBlocklist",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
