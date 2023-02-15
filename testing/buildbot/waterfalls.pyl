@@ -5975,7 +5975,8 @@
           'mac_12_x64',
         ],
         'test_suites': {
-          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
+          # TODO(crbug.com/1409418): Reenable baremetal_tests.
+          'gtest_tests': 'webrtc_chromium_gtests',
         },
       },
       'WebRTC Chromium Win Builder': {
