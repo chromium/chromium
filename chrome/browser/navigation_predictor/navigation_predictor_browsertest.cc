@@ -686,10 +686,11 @@ class NavigationPredictorPrerenderBrowserTest
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
+// TODO(crbug.com/1416494): Re-enable this test. Test is flaky.
 // Test that prerendering doesn't create a predictor object and doesn't affect
 // the primary page's behavior.
 IN_PROC_BROWSER_TEST_F(NavigationPredictorPrerenderBrowserTest,
-                       PrerenderingDontCreatePredictor) {
+                       DISABLED_PrerenderingDontCreatePredictor) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
