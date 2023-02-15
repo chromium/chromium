@@ -77,7 +77,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
     coordinator_ = browser_view()->side_panel_coordinator();
-    coordinator_->SetNoDelaysForTesting();
+    coordinator_->SetNoDelaysForTesting(true);
     global_registry_ = coordinator_->global_registry_;
 
     // Verify the first tab has one entry, kSideSearch.
@@ -1010,6 +1010,18 @@ TEST_F(SidePanelCoordinatorTest, ComboboxAdditionsDoNotChangeSelection) {
                 ->GetKeyAt(selected_index.value())
                 .id(),
             later_sorted_entry);
+}
+
+// Test that a crash does not occur when the browser is closed when the side
+// panel view is shown but before the entry to be displayed has finished
+// loading. Regression for crbug.com/1408947.
+TEST_F(SidePanelCoordinatorTest, BrowserClosedBeforeEntryLoaded) {
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+
+  // Allow content delays to more closely mimic real behavior.
+  coordinator_->SetNoDelaysForTesting(false);
+  coordinator_->Toggle();
+  browser_view()->Close();
 }
 
 // Test that Show() shows the contextual extension entry if available for the
