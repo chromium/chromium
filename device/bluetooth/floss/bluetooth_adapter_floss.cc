@@ -491,8 +491,10 @@ void BluetoothAdapterFloss::OnGetConnectionState(const FlossDeviceId& device_id,
   // If the state is different than what is currently stored, update it.
   if ((*ret >= 1) != device->IsConnected()) {
     device->SetIsConnected(*ret >= 1);
-    NotifyDeviceChanged(device);
-    NotifyDeviceConnectedStateChanged(device, device->IsConnected());
+    if (device->HasReadProperties()) {
+      NotifyDeviceChanged(device);
+      NotifyDeviceConnectedStateChanged(device, device->IsConnected());
+    }
   }
 }
 
@@ -514,7 +516,9 @@ void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
   }
 
   device->SetBondState(static_cast<FlossAdapterClient::BondState>(*ret));
-  NotifyDevicePairedChanged(device, device->IsPaired());
+  if (device->HasReadProperties()) {
+    NotifyDevicePairedChanged(device, device->IsPaired());
+  }
 }
 
 // Announce to observers a change in the adapter state.
@@ -851,8 +855,10 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
       device_id);
 
   device->SetIsConnected(true);
-  NotifyDeviceChanged(device);
-  NotifyDeviceConnectedStateChanged(device, true);
+  if (device->HasReadProperties()) {
+    NotifyDeviceChanged(device);
+    NotifyDeviceConnectedStateChanged(device, true);
+  }
 }
 
 absl::optional<device::BluetoothDevice::BatteryType> variant_to_battery_type(
@@ -909,8 +915,10 @@ void BluetoothAdapterFloss::AdapterDeviceDisconnected(
   }
 
   device->SetIsConnected(false);
-  NotifyDeviceChanged(device);
-  NotifyDeviceConnectedStateChanged(device, false);
+  if (device->HasReadProperties()) {
+    NotifyDeviceChanged(device);
+    NotifyDeviceConnectedStateChanged(device, false);
+  }
 }
 
 std::unordered_map<device::BluetoothDevice*, device::BluetoothDevice::UUIDSet>
