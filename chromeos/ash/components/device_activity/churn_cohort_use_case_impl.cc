@@ -18,6 +18,7 @@ namespace ash::device_activity {
 namespace psm_rlwe = private_membership::rlwe;
 
 ChurnCohortUseCaseImpl::ChurnCohortUseCaseImpl(
+    ChurnActiveStatus* churn_active_status_ptr,
     const std::string& psm_device_active_secret,
     const ChromeDeviceMetadataParameters& chrome_passed_device_params,
     PrefService* local_state,
@@ -28,7 +29,10 @@ ChurnCohortUseCaseImpl::ChurnCohortUseCaseImpl(
           prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp,
           psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_COHORT,
           local_state,
-          std::move(psm_delegate)) {}
+          std::move(psm_delegate)),
+      churn_active_status_ptr_(churn_active_status_ptr) {
+  DCHECK(churn_active_status_ptr_);
+}
 
 ChurnCohortUseCaseImpl::~ChurnCohortUseCaseImpl() = default;
 

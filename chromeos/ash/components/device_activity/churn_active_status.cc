@@ -151,6 +151,11 @@ ChurnActiveStatus::UpdateValue(base::Time ts) {
   return updated_value;
 }
 
+void ChurnActiveStatus::InitializeValue(int value) {
+  DCHECK_EQ(value_, 0);
+  value_ = value;
+}
+
 int ChurnActiveStatus::GetMonthsSinceInception() {
   // Get first 10 bits of |value_| which represent the total months since
   // inception.
@@ -178,7 +183,7 @@ void ChurnActiveStatus::SetValueForTesting(
 }
 
 const base::Time ChurnActiveStatus::GetFirstActiveWeek() const {
-  DCHECK(first_active_week_ != base::Time());
+  DCHECK_NE(first_active_week_, base::Time());
   return first_active_week_;
 }
 

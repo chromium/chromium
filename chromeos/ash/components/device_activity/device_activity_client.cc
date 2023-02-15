@@ -301,6 +301,7 @@ void DeviceActivityClient::RecordDeviceActivityMethodCalled(
 }
 
 DeviceActivityClient::DeviceActivityClient(
+    ChurnActiveStatus* churn_active_status_ptr,
     PrefService* local_state,
     NetworkStateHandler* handler,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -309,7 +310,8 @@ DeviceActivityClient::DeviceActivityClient(
     const std::string& api_key,
     base::Time chrome_first_run_time,
     std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases)
-    : local_state_(local_state),
+    : churn_active_status_ptr_(churn_active_status_ptr),
+      local_state_(local_state),
       network_state_handler_(handler),
       url_loader_factory_(url_loader_factory),
       report_timer_(std::move(report_timer)),
@@ -329,21 +331,6 @@ DeviceActivityClient::DeviceActivityClient(
                        &DeviceActivityClient::ReportingTriggeredByTimer);
 
   network_state_handler_observer_.Observe(network_state_handler_);
-
-  // Check if active status is set in local state. If not set, we attempt to
-  // restore from preserved file.  If set, we initialize the
-  // |churn_active_status_| object. If both layers of caching is empty, we
-  // perform check membership requests on the cohort requests (contains active
-  // status objects) to determine the last known churn_active_status.
-  int churn_active_status =
-      local_state_->GetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus);
-  if (churn_active_status == 0) {
-    LOG(ERROR) << "Active status is not set in the local state.";
-    LOG(ERROR) << "Initializing |churn_active_status_| as new object.";
-    SetChurnActiveStatus(0);
-  } else {
-    SetChurnActiveStatus(churn_active_status);
-  }
 
   // Send DBus method to read preserved files for last ping timestamps.
   GetLastPingDatesStatus();
@@ -478,6 +465,12 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
         }
       }
 
+      // TODO(hirthanan): Get/Set active_status from the churn cohort use case
+      // in a future CL. We will also update the local state with the retrieved
+      // preserved file value.
+      (void)churn_active_status_ptr_;
+      (void)local_state_;
+
       // TODO(hirthanan): Get/Set period status for churn observation status in
       // future CL.
       private_computing::ChurnObservationStatus period_status;
@@ -568,21 +561,6 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
   // Always trigger step to check for network status changing after reading the
   // preserved file.
   DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
-}
-
-ChurnActiveStatus* DeviceActivityClient::GetChurnActiveStatus() {
-  DCHECK(churn_active_status_);
-  return churn_active_status_.get();
-}
-
-void DeviceActivityClient::SetChurnActiveStatus(int value) {
-  DCHECK(!churn_active_status_);
-
-  if (churn_active_status_ == nullptr) {
-    churn_active_status_ = std::make_unique<ChurnActiveStatus>(value);
-  } else {
-    LOG(ERROR) << "Churn Active Status object is already set.";
-  }
 }
 
 void DeviceActivityClient::ReportingTriggeredByTimer() {

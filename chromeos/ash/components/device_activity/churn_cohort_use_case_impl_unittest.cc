@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
 #include "chromeos/ash/components/device_activity/fake_psm_delegate.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
@@ -49,17 +50,29 @@ class ChurnCohortUseCaseImplTest : public testing::Test {
 
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
+    // Initialize the churn active status to a default value of 0.
+    churn_active_status_ = std::make_unique<ChurnActiveStatus>(0);
+
     const std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids;
     churn_cohort_use_case_impl_ = std::make_unique<ChurnCohortUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
+        churn_active_status_.get(), kFakePsmDeviceActiveSecret,
+        kFakeChromeParameters, &local_state_,
         // |FakePsmDelegate| can use any test case parameters.
         std::make_unique<FakePsmDelegate>(std::string() /* ec_cipher_key */,
                                           std::string() /* seed */,
                                           std::move(plaintext_ids)));
   }
 
-  void TearDown() override { churn_cohort_use_case_impl_.reset(); }
+  void TearDown() override {
+    DCHECK(churn_cohort_use_case_impl_);
+    DCHECK(churn_active_status_);
 
+    // Safely destruct unique pointers.
+    churn_cohort_use_case_impl_.reset();
+    churn_active_status_.reset();
+  }
+
+  std::unique_ptr<ChurnActiveStatus> churn_active_status_;
   std::unique_ptr<ChurnCohortUseCaseImpl> churn_cohort_use_case_impl_;
 
   // Fake pref service for unit testing the local state.

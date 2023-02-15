@@ -78,6 +78,7 @@ namespace ash::device_activity {
 namespace psm_rlwe = private_membership::rlwe;
 
 ChurnObservationUseCaseImpl::ChurnObservationUseCaseImpl(
+    ChurnActiveStatus* churn_active_status_ptr,
     const std::string& psm_device_active_secret,
     const ChromeDeviceMetadataParameters& chrome_passed_device_params,
     PrefService* local_state,
@@ -88,7 +89,8 @@ ChurnObservationUseCaseImpl::ChurnObservationUseCaseImpl(
           prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp,
           psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION,
           local_state,
-          std::move(psm_delegate)) {}
+          std::move(psm_delegate)),
+      churn_active_status_ptr_(churn_active_status_ptr) {}
 
 ChurnObservationUseCaseImpl::~ChurnObservationUseCaseImpl() = default;
 
@@ -198,19 +200,28 @@ ChurnObservationUseCaseImpl::GenerateObservationFresnelImportData(
   return import_data;
 }
 
-// TODO(hirthanan): Implement following three methods in new CL.
+// TODO(hirthanan): Implement method to calculate previous monthly active.
+// We will need the active status object pointer in the following three methods
+// to proceed with implementation.
 bool ChurnObservationUseCaseImpl::IsPreviousMonthlyActive() const {
+  (void)churn_active_status_ptr_;
   return true;
 }
 
-// TODO(hirthanan): Implement following three methods in new CL.
+// TODO(hirthanan): Implement method to calculate previous yearly active.
+// We will need the active status object pointer in the following three methods
+// to proceed with implementation.
 bool ChurnObservationUseCaseImpl::IsPreviousYearlyActive() const {
+  (void)churn_active_status_ptr_;
   return true;
 }
 
-// TODO(hirthanan): Implement following three methods in new CL.
+// TODO(hirthanan): Implement method to calculate first active during cohort.
+// We will need the active status object pointer in the following three methods
+// to proceed with implementation.
 ChurnObservationMetadata::FirstActiveDuringCohort
 ChurnObservationUseCaseImpl::GetFirstActiveDuringCohort() const {
+  (void)churn_active_status_ptr_;
   return ChurnObservationMetadata_FirstActiveDuringCohort_EXISTED_OR_NOT_ACTIVE_YET;
 }
 

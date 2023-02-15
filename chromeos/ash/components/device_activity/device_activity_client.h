@@ -156,6 +156,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Fires device active pings while the device network is connected.
   DeviceActivityClient(
+      ChurnActiveStatus* churn_active_status_ptr,
       PrefService* local_state,
       NetworkStateHandler* handler,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -200,13 +201,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // After the dbus call is complete, return response via this method.
   void OnGetLastPingDatesStatusFetched(
       private_computing::GetStatusResponse response);
-
-  // Get the |churn_active_status_| object.
-  ChurnActiveStatus* GetChurnActiveStatus();
-
-  // Set the |churn_active_status_| object with the newest value from either
-  // local state or the preserved files.
-  void SetChurnActiveStatus(int value);
 
  private:
   // |report_timer_| triggers method to retry reporting device actives if
@@ -288,8 +282,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Tracks the current state of the DeviceActivityClient.
   State state_ = State::kIdle;
 
-  // Used by client to store and retrieve the |churn_active_status_| object.
-  // |local_state_| outlives the lifetime of this class.
+  // Used by the client to recover and maintain an updated value of churn active
+  // status for the device active churn use cases.
+  // |churn_active_status_ptr_| outlives the lifetime of this class and is owned
+  // by the DeviceActivityController class.
+  ChurnActiveStatus* const churn_active_status_ptr_;
+
+  // Used by client to store and retrieve values stored in local state prefs.
+  // |local_state_| outlives the lifetime of this class and interacts with the
+  // churn active status, and churn observation period statuses.
   PrefService* const local_state_;
 
   // Keep track of whether the device is connected to the network.
@@ -334,11 +335,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Vector of supported use cases containing the methods and metadata required
   // to counting device actives.
-  const std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases_;
-
-  // ChurnActiveStatus object stores the active history for the device.
-  // This bit value will be persisted in local state and preserved files.
-  std::unique_ptr<ChurnActiveStatus> churn_active_status_;
+  std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases_;
 
   // Contains the use cases to report active for.
   // The front of the queue represents the use case trying to be reported.

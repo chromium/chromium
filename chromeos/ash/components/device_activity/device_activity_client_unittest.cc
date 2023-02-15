@@ -257,10 +257,12 @@ class TwentyEightDayActiveUseCaseImplUnderTest
 class ChurnCohortUseCaseImplUnderTest : public ChurnCohortUseCaseImpl {
  public:
   ChurnCohortUseCaseImplUnderTest(
+      ChurnActiveStatus* churn_active_status_ptr,
       PrefService* local_state,
       const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
           test_case)
       : ChurnCohortUseCaseImpl(
+            churn_active_status_ptr,
             kFakePsmDeviceActiveSecret,
             kFakeChromeParameters,
             local_state,
@@ -278,10 +280,12 @@ class ChurnObservationUseCaseImplUnderTest
     : public ChurnObservationUseCaseImpl {
  public:
   ChurnObservationUseCaseImplUnderTest(
+      ChurnActiveStatus* churn_active_status_ptr,
       PrefService* local_state,
       const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
           test_case)
       : ChurnObservationUseCaseImpl(
+            churn_active_status_ptr,
             kFakePsmDeviceActiveSecret,
             kFakeChromeParameters,
             local_state,
@@ -470,7 +474,12 @@ class DeviceActivityClientTest : public testing::Test {
 
   void TearDown() override {
     DCHECK(device_activity_client_);
+    DCHECK(churn_active_status_);
+
     device_activity_client_.reset();
+
+    // Initialized in the SetUp method and safely destructed here.
+    churn_active_status_.reset();
 
     // The system clock must be shutdown after the |device_activity_client_| is
     // destroyed.
@@ -508,6 +517,9 @@ class DeviceActivityClientTest : public testing::Test {
     client_test_interface()->SetSaveLastPingDatesStatusResponse(
         pc_test_case.save_response());
 
+    // Initialize the churn active status to a default value of 0.
+    churn_active_status_ = std::make_unique<ChurnActiveStatus>(0);
+
     // Create vector of device active use cases, which device activity client
     // should maintain ownership of.
     std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
@@ -531,7 +543,7 @@ class DeviceActivityClientTest : public testing::Test {
         base::FeatureList::IsEnabled(
             features::kDeviceActiveClientChurnCohortCheckMembership)) {
       use_cases.push_back(std::make_unique<ChurnCohortUseCaseImplUnderTest>(
-          &local_state_, psm_test_case));
+          churn_active_status_.get(), &local_state_, psm_test_case));
     }
     if (base::FeatureList::IsEnabled(
             features::kDeviceActiveClientChurnObservationCheckIn) ||
@@ -539,11 +551,12 @@ class DeviceActivityClientTest : public testing::Test {
             features::kDeviceActiveClientChurnObservationCheckMembership)) {
       use_cases.push_back(
           std::make_unique<ChurnObservationUseCaseImplUnderTest>(
-              &local_state_, psm_test_case));
+              churn_active_status_.get(), &local_state_, psm_test_case));
     }
 
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
-        &local_state_, network_state_test_helper_->network_state_handler(),
+        churn_active_status_.get(), &local_state_,
+        network_state_test_helper_->network_state_handler(),
         test_shared_loader_factory_,
         std::make_unique<base::MockRepeatingTimer>(), kTestFresnelBaseUrl,
         kFakeFresnelApiKey, base::Time(), std::move(use_cases));
@@ -623,10 +636,11 @@ class DeviceActivityClientTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
+  std::unique_ptr<ChurnActiveStatus> churn_active_status_;
   TestingPrefServiceSimple local_state_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
   std::unique_ptr<DeviceActivityClient> device_activity_client_;
   std::string wifi_network_service_path_;
   base::HistogramTester histogram_tester_;

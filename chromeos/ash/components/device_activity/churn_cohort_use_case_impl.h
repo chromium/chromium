@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 
 class PrefService;
@@ -25,6 +26,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
     ChurnCohortUseCaseImpl : public DeviceActiveUseCase {
  public:
   ChurnCohortUseCaseImpl(
+      ChurnActiveStatus* churn_active_status_ptr,
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       PrefService* local_state,
@@ -39,6 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   bool IsEnabledCheckIn() override;
   bool IsEnabledCheckMembership() override;
   private_computing::ActiveStatus GenerateActiveStatus() override;
+
+ private:
+  ChurnActiveStatus* const churn_active_status_ptr_;
 };
 
 }  // namespace ash::device_activity

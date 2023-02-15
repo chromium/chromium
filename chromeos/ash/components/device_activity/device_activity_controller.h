@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -73,7 +74,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& psm_device_active_secret);
 
-  std::unique_ptr<DeviceActivityClient> da_client_network_;
+  // ChurnActiveStatus object stores the active history for the device.
+  // This bit value will be persisted in local state and preserved files.
+  ChurnActiveStatus churn_active_status_;
 
   // Reads the creation time of the first run sentinel file. If the first run
   // sentinel file does not exist, it will return base::Time().
@@ -85,6 +88,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Singleton lives throughout class lifetime.
   system::StatisticsProvider* const statistics_provider_;
+
+  std::unique_ptr<DeviceActivityClient> da_client_network_;
 
   // Automatically cancels callbacks when the referent of weakptr gets
   // destroyed.

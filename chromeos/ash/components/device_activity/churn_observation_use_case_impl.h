@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "fresnel_service.pb.h"
 
@@ -26,6 +27,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
     ChurnObservationUseCaseImpl : public DeviceActiveUseCase {
  public:
   ChurnObservationUseCaseImpl(
+      ChurnActiveStatus* churn_active_status_ptr,
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       PrefService* local_state,
@@ -67,6 +69,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   ChurnObservationMetadata::FirstActiveDuringCohort GetFirstActiveDuringCohort()
       const;
+
+  ChurnActiveStatus* const churn_active_status_ptr_;
 
   std::string observation_period_minus_0_id_;
   std::string observation_period_minus_1_id_;

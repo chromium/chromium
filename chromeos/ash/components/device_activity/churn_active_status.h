@@ -47,6 +47,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Updates the |value_| to reflect current month is active.
   absl::optional<std::bitset<kChurnBitSize>> UpdateValue(base::Time ts);
 
+  // Initialize the underlying |value_| field.
+  // This method should be called if the device loses the |value_| over restarts
+  // and powerwash. Value can be initialized after being recovered from the
+  // local_state or preserved file active status value.
+  void InitializeValue(int value);
+
   // Returns the int representation of the known months since inception.
   int GetMonthsSinceInception();
 

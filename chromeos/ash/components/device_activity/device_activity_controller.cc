@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "google_apis/google_api_keys.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
@@ -196,6 +197,20 @@ DeviceActivityController::DeviceActivityController(
     RecordIsTestImageDevice(false);
   }
 
+  // Check if active status value is set in local state. If not set, we will
+  // attempt to restore from preserved file in the device activity client.
+  // If set, override the |churn_active_status_|. If both layers of caching
+  // is empty, we will perform check membership requests on the cohort requests
+  // (contains active status objects) to determine the last known value.
+  int churn_active_value =
+      local_state->GetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus);
+  if (churn_active_value == 0) {
+    LOG(ERROR) << "Active status is not set in the local state.";
+    LOG(ERROR) << "Setting value for |churn_active_status_ptr_| to 0.";
+  }
+
+  churn_active_status_.InitializeValue(churn_active_value);
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&device_activity::DeviceActivityController::Start,
@@ -227,6 +242,12 @@ void DeviceActivityController::Start(
       &device_activity::DeviceActivityController::
           OnPsmDeviceActiveSecretFetched,
       weak_factory_.GetWeakPtr(), local_state, url_loader_factory));
+}
+
+void DeviceActivityController::Stop() {
+  if (da_client_network_) {
+    da_client_network_.reset();
+  }
 }
 
 void DeviceActivityController::OnPsmDeviceActiveSecretFetched(
@@ -271,23 +292,20 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<ChurnCohortUseCaseImpl>(
-      psm_device_active_secret, chrome_passed_device_params_, local_state,
+      &churn_active_status_, psm_device_active_secret,
+      chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<ChurnObservationUseCaseImpl>(
-      psm_device_active_secret, chrome_passed_device_params_, local_state,
+      &churn_active_status_, psm_device_active_secret,
+      chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
 
   da_client_network_ = std::make_unique<DeviceActivityClient>(
-      local_state, NetworkHandler::Get()->network_state_handler(),
-      url_loader_factory, std::make_unique<base::RepeatingTimer>(),
-      kFresnelBaseUrl, google_apis::GetFresnelAPIKey(), chrome_first_run_time_,
+      &churn_active_status_, local_state,
+      NetworkHandler::Get()->network_state_handler(), url_loader_factory,
+      std::make_unique<base::RepeatingTimer>(), kFresnelBaseUrl,
+      google_apis::GetFresnelAPIKey(), chrome_first_run_time_,
       std::move(use_cases));
-}
-
-void DeviceActivityController::Stop() {
-  if (da_client_network_) {
-    da_client_network_.reset();
-  }
 }
 
 }  // namespace ash::device_activity
