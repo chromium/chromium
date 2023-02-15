@@ -74,7 +74,7 @@ TEST_F(SearchSessionMetricsManagerTest, AnswerCardImpression) {
 
   // One answer card impression should be recorded for the kSearchKey show
   // source.
-  metrics_manager()->OnSearchSessionEnded();
+  metrics_manager()->OnSearchSessionEnded(query);
   histogram_tester()->ExpectTotalCount(HomeButtonHistogram, 0);
   histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 1);
   histogram_tester()->ExpectUniqueSample(
@@ -110,7 +110,7 @@ TEST_F(SearchSessionMetricsManagerTest, LaunchResult) {
   histogram_tester()->ExpectTotalCount(HomeButtonHistogram, 0);
   histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 0);
 
-  metrics_manager()->OnSearchSessionEnded();
+  metrics_manager()->OnSearchSessionEnded(query);
   histogram_tester()->ExpectTotalCount(HomeButtonHistogram, 0);
   histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 1);
   histogram_tester()->ExpectUniqueSample(
@@ -128,8 +128,10 @@ TEST_F(SearchSessionMetricsManagerTest, AbandonResult) {
   results.emplace_back(CreateFakeResult(Type::ANSWER_CARD, "result_id"));
   results.emplace_back(CreateFakeResult(Type::KEYBOARD_SHORTCUT, "result_id"));
 
+  const std::u16string query = u"query";
+
   metrics_manager()->OnSearchSessionStarted();
-  metrics_manager()->OnSearchSessionEnded();
+  metrics_manager()->OnSearchSessionEnded(query);
 
   histogram_tester()->ExpectTotalCount(HomeButtonHistogram, 0);
   histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 1);

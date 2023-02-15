@@ -7,6 +7,7 @@
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_util.h"
 
 namespace app_list {
@@ -29,12 +30,16 @@ SearchSessionMetricsManager::SearchSessionMetricsManager(
 
 SearchSessionMetricsManager::~SearchSessionMetricsManager() = default;
 
-void SearchSessionMetricsManager::EndSearchSession() {
+void SearchSessionMetricsManager::EndSearchSession(
+    const std::u16string& query) {
   std::string show_source = GetAppListOpenMethod(
       ash::AppListController::Get()->LastAppListShowSource());
 
   base::UmaHistogramEnumeration(
       base::StrCat({kSessionHistogramPrefix, show_source}), session_result_);
+
+  base::UmaHistogramExactLinear("Apps.AppList.Keyword.NumberOfKeywordsInQuery",
+                                ExtractKeywords(query).size(), 100);
 
   session_result_ = ash::SearchSessionConclusion::kQuit;
   session_active_ = false;
@@ -44,8 +49,9 @@ void SearchSessionMetricsManager::OnSearchSessionStarted() {
   session_active_ = true;
 }
 
-void SearchSessionMetricsManager::OnSearchSessionEnded() {
-  EndSearchSession();
+void SearchSessionMetricsManager::OnSearchSessionEnded(
+    const std::u16string& query) {
+  EndSearchSession(query);
 }
 
 void SearchSessionMetricsManager::OnSeen(Location location,

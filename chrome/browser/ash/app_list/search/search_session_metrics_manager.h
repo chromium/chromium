@@ -30,11 +30,11 @@ class SearchSessionMetricsManager : ash::AppListNotifier::Observer {
   SearchSessionMetricsManager& operator=(const SearchSessionMetricsManager&) =
       delete;
 
-  void EndSearchSession();
+  void EndSearchSession(const std::u16string& query);
 
   // ash::AppListNotifier::Observer:
   void OnSearchSessionStarted() override;
-  void OnSearchSessionEnded() override;
+  void OnSearchSessionEnded(const std::u16string& query) override;
   void OnSeen(Location location,
               const std::vector<Result>& results,
               const std::u16string& query) override;

@@ -157,7 +157,7 @@ void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
   } else {
     search_session_in_progress_ = false;
     for (auto& observer : observers_) {
-      observer.OnSearchSessionEnded();
+      observer.OnSearchSessionEnded(query_);
     }
 
     DoStateTransition(Location::kList, State::kNone);
@@ -176,7 +176,7 @@ void AppListNotifierImpl::OnViewStateChanged(ash::AppListViewState state) {
   } else {
     search_session_in_progress_ = false;
     for (auto& observer : observers_) {
-      observer.OnSearchSessionEnded();
+      observer.OnSearchSessionEnded(query_);
     }
   }
 }
