@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CrInputElement, EditPasswordDialogElement, Page, PasswordDetailsCardElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {EditPasswordDialogElement, Page, PasswordDetailsCardElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -36,10 +36,10 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(password.username, card.$.usernameValue.value);
     assertEquals(password.password, card.$.passwordValue.value);
     assertEquals('password', card.$.passwordValue.type);
-    const note: CrInputElement|null =
-        card.shadowRoot!.querySelector('#noteValue');
-    assertTrue(!!note);
-    assertEquals(loadTimeData.getString('emptyNote'), note.value);
+    assertTrue(isVisible(card.$.noteValue));
+    assertEquals(
+        loadTimeData.getString('emptyNote'),
+        card.$.noteValue.textContent!.trim());
     assertTrue(isVisible(card.$.copyUsernameButton));
     assertTrue(isVisible(card.$.showPasswordButton));
     assertTrue(isVisible(card.$.copyPasswordButton));
@@ -60,9 +60,7 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(password.username, card.$.usernameValue.value);
     assertEquals(password.federationText, card.$.passwordValue.value);
     assertEquals('text', card.$.passwordValue.type);
-    const note: CrInputElement|null =
-        card.shadowRoot!.querySelector('#noteValue');
-    assertFalse(!!note);
+    assertFalse(isVisible(card.$.noteValue));
     assertTrue(isVisible(card.$.copyUsernameButton));
     assertFalse(isVisible(card.$.showPasswordButton));
     assertFalse(isVisible(card.$.copyPasswordButton));
@@ -189,7 +187,6 @@ suite('PasswordDetailsCardTest', function() {
     assertTrue(editDialog.$.dialog.open);
   });
 
-
   test('delete password', async function() {
     const password = createPasswordEntry({
       url: 'test.com',
@@ -209,5 +206,49 @@ suite('PasswordDetailsCardTest', function() {
     const params = await passwordManager.whenCalled('removeSavedPassword');
     assertEquals(params.id, password.id);
     assertEquals(params.fromStores, password.storedIn);
+  });
+
+  test('short note is shown fully', async function() {
+    const password = createPasswordEntry({
+      id: 1,
+      url: 'test.com',
+      username: 'vik',
+      note: 'This is just a short note. It is cold out there.',
+    });
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertEquals(password.note, card.$.noteValue.textContent!.trim());
+    assertTrue(card.$.showMore.hidden);
+  });
+
+  test('long note is shown fully', async function() {
+    const password = createPasswordEntry({
+      id: 1,
+      url: 'test.com',
+      username: 'vik',
+      note:
+          'It is a long established fact that a reader will be distracted by ' +
+          'the readable content of a page when looking at its layout. The ' +
+          'point of using Lorem Ipsum is that it has a more-or-less normal ' +
+          'distribution of letters, as opposed to using \'Content here, ' +
+          'content here\', making it look like readable English.',
+    });
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertEquals(password.note, card.$.noteValue.textContent!.trim());
+    assertTrue(card.$.noteValue.hasAttribute('limit-note'));
+    assertFalse(card.$.showMore.hidden);
+
+    // Open note fully
+    card.$.showMore.click();
+    assertFalse(card.$.noteValue.hasAttribute('limit-note'));
   });
 });

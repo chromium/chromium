@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -36,7 +37,9 @@ export interface PasswordDetailsCardElement {
     copyUsernameButton: CrIconButtonElement,
     deleteButton: CrButtonElement,
     editButton: CrButtonElement,
+    noteValue: HTMLElement,
     passwordValue: CrInputElement,
+    showMore: HTMLAnchorElement,
     showPasswordButton: CrIconButtonElement,
     toast: CrToastElement,
     usernameValue: CrInputElement,
@@ -59,13 +62,27 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return {
       password: Object,
       toastMessage_: String,
+
+      showNoteFully_: Boolean,
+
       showEditPasswordDialog_: Boolean,
     };
   }
 
   password: chrome.passwordsPrivate.PasswordUiEntry;
   private toastMessage_: string;
+  private noteRows_: number;
+  private showNoteFully_: boolean;
   private showEditPasswordDialog_: boolean;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (this.isFederated_()) {
+      return;
+    }
+    // Set default value here so listeners can be updated properly.
+    this.showNoteFully_ = false;
+  }
 
   private isFederated_(): boolean {
     return !!this.password.federationText;
@@ -123,6 +140,20 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   private onEditPasswordDialogClosed_() {
     this.showEditPasswordDialog_ = false;
+  }
+
+  private getNoteValue_(): string {
+    return !this.password.note ? this.i18n('emptyNote') : this.password.note!;
+  }
+
+  private isNoteFullyVisible_(): boolean {
+    return this.showNoteFully_ ||
+        this.$.noteValue.scrollHeight === this.$.noteValue.offsetHeight;
+  }
+
+  private onshowMoreClick_(e: Event) {
+    e.preventDefault();
+    this.showNoteFully_ = true;
   }
 }
 

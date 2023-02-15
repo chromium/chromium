@@ -157,6 +157,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
     {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
     {"settings", IDS_PASSWORD_MANAGER_UI_SETTINGS},
+    {"showMore", IDS_PASSWORD_MANAGER_UI_SHOW_MORE},
     {"showPassword", IDS_PASSWORD_MANAGER_UI_SHOW_PASSWORD},
     {"sitesLabel", IDS_PASSWORD_MANAGER_UI_SITES_LABEL},
     {"title", IDS_PASSWORD_MANAGER_UI_TITLE},
