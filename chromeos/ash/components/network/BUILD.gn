@@ -190,6 +190,8 @@ component("network") {
     "stub_cellular_networks_provider.h",
     "system_token_cert_db_storage.cc",
     "system_token_cert_db_storage.h",
+    "technology_state_controller.cc",
+    "technology_state_controller.h",
     "tether_constants.cc",
     "tether_constants.h",
   ]
@@ -331,5 +333,6 @@ source_set("unit_tests") {
     "shill_property_util_unittest.cc",
     "stub_cellular_networks_provider_unittest.cc",
     "system_token_cert_db_storage_unittest.cc",
+    "technology_state_controller_unittest.cc",
   ]
 }
