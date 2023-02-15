@@ -77,10 +77,11 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   }
 #endif
 
-  bool updates_executed = root_frame_view.ExecuteAllPendingUpdates();
-  if (updates_executed) {
+  bool was_opacity_updated = root_frame_view.UpdateAllPendingOpacityUpdates();
+  bool was_transform_updated = root_frame_view.UpdateAllPendingTransforms();
+
+  if (was_opacity_updated || was_transform_updated)
     needs_invalidate_chrome_client_ = true;
-  }
 
   // If the page has anything changed, we need to inform the chrome client
   // so that the client will initiate repaint of the contents if needed (e.g.

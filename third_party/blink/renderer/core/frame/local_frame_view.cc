@@ -4948,6 +4948,26 @@ bool LocalFrameView::RemovePendingTransformUpdate(const LayoutObject& object) {
   return true;
 }
 
+bool LocalFrameView::UpdateAllPendingTransforms() {
+  DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
+  bool updated = false;
+  ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
+    HeapHashSet<Member<LayoutObject>> blocked_updates;
+    if (frame_view.pending_transform_updates_) {
+      for (LayoutObject* object : *frame_view.pending_transform_updates_) {
+        if (!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object)) {
+          PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
+          updated = true;
+        } else {
+          blocked_updates.insert(object);
+        }
+      }
+      frame_view.pending_transform_updates_->swap(blocked_updates);
+    }
+  });
+  return updated;
+}
+
 void LocalFrameView::AddPendingOpacityUpdate(LayoutObject& object) {
   if (!pending_opacity_updates_) {
     pending_opacity_updates_ =
@@ -4966,44 +4986,23 @@ bool LocalFrameView::RemovePendingOpacityUpdate(const LayoutObject& object) {
   return true;
 }
 
-bool LocalFrameView::ExecuteAllPendingUpdates() {
+bool LocalFrameView::UpdateAllPendingOpacityUpdates() {
   DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
   bool updated = false;
   ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
+    HeapHashSet<Member<LayoutObject>> blocked_updates;
     if (frame_view.pending_opacity_updates_) {
       for (LayoutObject* object : *frame_view.pending_opacity_updates_) {
-        DCHECK(
-            !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object));
-        PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
-        updated = true;
+        if (!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object)) {
+          PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
+          updated = true;
+        } else {
+          blocked_updates.insert(object);
+        }
       }
-      frame_view.pending_opacity_updates_->clear();
-    }
-    if (frame_view.pending_transform_updates_) {
-      for (LayoutObject* object : *frame_view.pending_transform_updates_) {
-        DCHECK(
-            !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object));
-        PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
-        updated = true;
-      }
-      frame_view.pending_transform_updates_->clear();
+      frame_view.pending_opacity_updates_->swap(blocked_updates);
     }
   });
   return updated;
-}
-
-void LocalFrameView::RemoveAllPendingUpdates() {
-  if (pending_opacity_updates_) {
-    for (LayoutObject* object : *pending_opacity_updates_) {
-      object->GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
-    }
-    pending_opacity_updates_->clear();
-  }
-  if (pending_transform_updates_) {
-    for (LayoutObject* object : *pending_transform_updates_) {
-      object->GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
-    }
-    pending_transform_updates_->clear();
-  }
 }
 }  // namespace blink
