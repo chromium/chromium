@@ -465,6 +465,13 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   if (seat_->was_shutdown() || event->handled())
     return;
 
+  WMHelper* helper = WMHelper::GetInstance();
+  auto* drag_drop_client = helper->GetDragDropClient();
+  if (!static_cast<ash::DragDropController*>(drag_drop_client)
+           ->IsDragDropCompleted()) {
+    return;
+  }
+
   // Nothing to report to a client nor have to update the pointer when capture
   // changes.
   if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
