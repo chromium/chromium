@@ -25,7 +25,7 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium.chromiumos",
-    branch_selector = branches.CROS_LTS_MILESTONE,
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
 )
 
 try_.builder(
@@ -34,7 +34,7 @@ try_.builder(
 
 try_.builder(
     name = "chromeos-amd64-generic-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
         "ci/chromeos-amd64-generic-dbg",
     ],
@@ -49,7 +49,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "chromeos-amd64-generic-rel",
-    branch_selector = branches.CROS_LTS_MILESTONE,
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-amd64-generic-rel"],
     compilator = "chromeos-amd64-generic-rel-compilator",
     experiments = {
@@ -61,7 +61,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
-    branch_selector = branches.CROS_LTS_MILESTONE,
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     cores = 16,
     main_list_view = "try",
 )
@@ -72,7 +72,7 @@ try_.builder(
 
 try_.builder(
     name = "chromeos-arm-generic-rel",
-    branch_selector = branches.CROS_LTS_MILESTONE,
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-arm-generic-rel"],
     builderless = not settings.is_main,
     main_list_view = "try",
@@ -81,13 +81,13 @@ try_.builder(
 
 try_.builder(
     name = "chromeos-arm64-generic-rel",
-    branch_selector = branches.CROS_LTS_MILESTONE,
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-arm64-generic-rel"],
 )
 
 try_.builder(
     name = "lacros-amd64-generic-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
         "ci/lacros-amd64-generic-rel",
     ],
@@ -98,12 +98,12 @@ try_.builder(
 
 try_.builder(
     name = "chromeos-amd64-generic-lacros-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.CROS_BRANCHES,
 )
 
 try_.builder(
     name = "lacros-arm-generic-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
         "ci/lacros-arm-generic-rel",
     ],
@@ -114,7 +114,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-chromeos-compile-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
         "ci/linux-chromeos-dbg",
     ],
@@ -134,7 +134,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux-chromeos-rel",
-    branch_selector = branches.CROS_LTS_MILESTONE,
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = [
         "ci/linux-chromeos-rel",
     ],
@@ -150,7 +150,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "linux-chromeos-rel-compilator",
-    branch_selector = branches.CROS_LTS_MILESTONE,
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
 )
@@ -171,7 +171,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-lacros-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
         "ci/linux-lacros-builder-rel",
         "ci/linux-lacros-tester-rel",
@@ -205,7 +205,7 @@ try_.builder(
     name = "linux-chromeos-dbg",
     # The CI builder that this mirrors is enabled on branches, so this will
     # allow testing changes that would break it before submitting
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
         "ci/linux-chromeos-dbg",
     ],

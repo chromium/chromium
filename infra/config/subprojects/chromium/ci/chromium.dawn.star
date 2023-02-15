@@ -21,7 +21,10 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.dawn",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = [
+        branches.selector.ANDROID_BRANCHES,
+        branches.selector.DESKTOP_BRANCHES,
+    ],
     ordering = {
         None: ["ToT"],
         "*builder*": ["Builder"],
@@ -50,7 +53,7 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "Dawn Linux x64 DEPS Builder",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -82,7 +85,7 @@ ci.gpu.linux_builder(
 
 ci.thin_tester(
     name = "Dawn Linux x64 DEPS Release (Intel UHD 630)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -110,7 +113,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Linux x64 DEPS Release (NVIDIA)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -181,7 +184,7 @@ ci.gpu.mac_builder(
 
 ci.gpu.mac_builder(
     name = "Dawn Mac x64 DEPS Builder",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -209,7 +212,7 @@ ci.gpu.mac_builder(
 # physical Mac hardware in the Swarming pool which is why they run on linux
 ci.thin_tester(
     name = "Dawn Mac x64 DEPS Release (AMD)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -237,7 +240,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Mac x64 DEPS Release (Intel)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -326,7 +329,7 @@ ci.gpu.windows_builder(
 
 ci.gpu.windows_builder(
     name = "Dawn Win10 x64 DEPS Builder",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -357,7 +360,7 @@ ci.gpu.windows_builder(
 # physical Win hardware in the Swarming pool, which is why they run on linux
 ci.thin_tester(
     name = "Dawn Win10 x64 DEPS Release (Intel HD 630)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -385,7 +388,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x64 DEPS Release (NVIDIA)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -442,7 +445,7 @@ ci.gpu.windows_builder(
 
 ci.gpu.windows_builder(
     name = "Dawn Win10 x86 DEPS Builder",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -473,7 +476,7 @@ ci.gpu.windows_builder(
 # physical Win hardware in the Swarming pool, which is why they run on linux
 ci.thin_tester(
     name = "Dawn Win10 x86 DEPS Release (Intel HD 630)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -501,7 +504,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x86 DEPS Release (NVIDIA)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

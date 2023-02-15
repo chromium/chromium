@@ -24,7 +24,7 @@ def oncall(
         name,
         url,
         show_primary_secondary_labels = None,
-        branch_selector = branches.MAIN):
+        branch_selector = branches.selector.MAIN):
     """Define an oncall rotation to appear in a console header.
 
     Args:
@@ -44,7 +44,7 @@ def oncall(
         show_primary_secondary_labels = show_primary_secondary_labels,
     ))
 
-def link_group(*, name, links, branch_selector = branches.MAIN):
+def link_group(*, name, links, branch_selector = branches.selector.MAIN):
     """Define a link group to appear in a console header.
 
     A link group is a set of links that are displayed together under a common
@@ -68,7 +68,7 @@ def link_group(*, name, links, branch_selector = branches.MAIN):
         links = links,
     ))
 
-def link(*, url, text, alt = None, branch_selector = branches.MAIN):
+def link(*, url, text, alt = None, branch_selector = branches.selector.MAIN):
     """Define a link to appear in a console header.
 
     Args:
@@ -93,7 +93,7 @@ def console_group(
         *,
         console_ids,
         title = None,
-        branch_selector = branches.MAIN):
+        branch_selector = branches.selector.MAIN):
     """Define a console group.
 
     A console group is a set of consoles that will be displayed in the header.

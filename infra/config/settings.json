@@ -3,7 +3,10 @@
     "project_title": "Chromium M102",
     "ref": "refs/branch-heads/5005",
     "chrome_project": "chrome-m102",
-    "branch_types": [
-        "cros-lts"
-    ]
+    "is_main": false,
+    "platforms": {
+        "cros-lts": {
+            "description": "CrOS LTS"
+        }
+    }
 }

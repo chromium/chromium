@@ -152,7 +152,10 @@ reclient = struct(
 )
 
 def _rotation(name):
-    return branches.value({branches.MAIN: [name]})
+    return branches.value(
+        branch_selector = branches.selector.MAIN,
+        value = [name],
+    )
 
 # Sheriff rotations that a builder can be added to (only takes effect on trunk)
 # Arbitrary elements can't be added, new rotations must be added in SoM code
@@ -364,7 +367,7 @@ defaults = args.defaults(
 def builder(
         *,
         name,
-        branch_selector = branches.MAIN,
+        branch_selector = branches.selector.MAIN,
         bucket = args.DEFAULT,
         executable = args.DEFAULT,
         notifies = None,

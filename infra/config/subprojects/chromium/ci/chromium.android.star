@@ -28,7 +28,7 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.android",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     ordering = {
         None: ["cronet", "builder", "tester"],
         "*cpu*": ["arm", "arm64", "x86"],
@@ -57,7 +57,7 @@ ci.builder(
 
 ci.builder(
     name = "Android WebView M (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -93,7 +93,7 @@ ci.builder(
 
 ci.builder(
     name = "Android WebView N (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -129,7 +129,7 @@ ci.builder(
 
 ci.builder(
     name = "Android WebView O (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -165,7 +165,7 @@ ci.builder(
 
 ci.builder(
     name = "Android WebView P (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -201,7 +201,7 @@ ci.builder(
 
 ci.builder(
     name = "Android arm Builder (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -238,7 +238,7 @@ ci.builder(
 
 ci.builder(
     name = "Android arm64 Builder (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -275,7 +275,7 @@ ci.builder(
 
 ci.builder(
     name = "Android x64 Builder (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -308,7 +308,7 @@ ci.builder(
 
 ci.builder(
     name = "Android x86 Builder (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -341,7 +341,7 @@ ci.builder(
 
 ci.builder(
     name = "Cast Android (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -410,7 +410,7 @@ ci.builder(
 
 ci.builder(
     name = "Marshmallow 64 bit Tester",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -479,7 +479,7 @@ ci.builder(
 
 ci.builder(
     name = "Nougat Phone Tester",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -512,7 +512,7 @@ ci.builder(
 
 ci.builder(
     name = "Oreo Phone Tester",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -595,7 +595,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-arm-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -632,7 +632,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-arm-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -721,7 +721,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-x86-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -893,7 +893,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-x86-dbg-10-tests",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/android-cronet-x86-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -984,7 +984,7 @@ ci.builder(
 
 ci.builder(
     name = "android-marshmallow-arm64-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1022,7 +1022,7 @@ ci.builder(
 
 ci.builder(
     name = "android-marshmallow-x86-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1070,7 +1070,7 @@ ci.builder(
 
 ci.builder(
     name = "android-pie-arm64-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1120,7 +1120,7 @@ ci.builder(
 
 ci.builder(
     name = "android-pie-arm64-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

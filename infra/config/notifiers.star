@@ -113,7 +113,7 @@ def _empty_notifier(*, name):
     )
 
 def tree_closer(*, name, tree_status_host, **kwargs):
-    if branches.matches(branches.MAIN):
+    if branches.matches(branches.selector.MAIN):
         luci.tree_closer(
             name = name,
             tree_status_host = tree_status_host,
@@ -134,7 +134,7 @@ tree_closer(
 )
 
 def tree_closure_notifier(*, name, **kwargs):
-    if branches.matches(branches.MAIN):
+    if branches.matches(branches.selector.MAIN):
         luci.notifier(
             name = name,
             on_occurrence = ["FAILURE"],

@@ -28,7 +28,10 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.linux",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = [
+        branches.selector.FUCHSIA_BRANCHES,
+        branches.selector.LINUX_BRANCHES,
+    ],
     ordering = {
         None: ["release", "debug"],
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
@@ -50,7 +53,7 @@ ci.builder(
 
 ci.builder(
     name = "Cast Linux",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -80,7 +83,7 @@ ci.builder(
 
 ci.builder(
     name = "Cast Linux Debug",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -113,7 +116,7 @@ ci.builder(
 
 ci.builder(
     name = "Cast Linux ARM64",
-    branch_selector = branches.MAIN,
+    branch_selector = branches.selector.MAIN,
     os = os.LINUX_BIONIC,
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -135,7 +138,7 @@ ci.builder(
             short_name = "det",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "misc",
             short_name = "det",
@@ -179,7 +182,7 @@ ci.builder(
 
 ci.builder(
     name = "Fuchsia ARM64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -205,7 +208,7 @@ ci.builder(
             short_name = "rel",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "ci",
             short_name = "arm64",
@@ -217,7 +220,7 @@ ci.builder(
 
 ci.builder(
     name = "Fuchsia x64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -242,7 +245,7 @@ ci.builder(
             short_name = "rel",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "ci",
             short_name = "x64",
@@ -270,7 +273,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Builder",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -301,7 +304,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Builder (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -327,7 +330,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Builder (Wayland)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -358,7 +361,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Tests",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -399,7 +402,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Tests (dbg)(1)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -427,7 +430,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Tests (Wayland)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux Builder (Wayland)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -458,7 +461,7 @@ ci.builder(
 
 ci.builder(
     name = "fuchsia-arm64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -487,7 +490,7 @@ ci.builder(
             short_name = "a64",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "ci",
             short_name = "arm64-cast",
@@ -510,7 +513,7 @@ ci.builder(
 
 ci.builder(
     name = "fuchsia-x64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -539,7 +542,7 @@ ci.builder(
             short_name = "x64",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "ci",
             short_name = "x64-cast",
@@ -576,7 +579,7 @@ ci.builder(
             short_name = "dbg",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "ci",
             short_name = "x64-dbg",

@@ -25,8 +25,9 @@ ci.defaults.set(
 consoles.console_view(
     name = "chromium",
     branch_selector = [
-        branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-        branches.FUCHSIA_LTS_MILESTONE,
+        branches.selector.ANDROID_BRANCHES,
+        branches.selector.DESKTOP_BRANCHES,
+        branches.selector.FUCHSIA_BRANCHES,
     ],
     ordering = {
         "*type*": consoles.ordering(short_names = ["dbg", "rel", "off"]),
@@ -80,7 +81,7 @@ ci.builder(
 
 ci.builder(
     name = "android-official",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builderless = False,
     cores = 32,
     sheriff_rotations = args.ignore_default(None),
@@ -98,7 +99,7 @@ ci.builder(
 
 ci.builder(
     name = "fuchsia-official",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     builderless = False,
     cores = 32,
     sheriff_rotations = args.ignore_default(None),
@@ -108,7 +109,7 @@ ci.builder(
             short_name = "off",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "ci",
             short_name = "off-x64",
@@ -222,7 +223,7 @@ ci.builder(
 
 ci.builder(
     name = "linux-official",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builderless = False,
     cores = 32,
     sheriff_rotations = args.ignore_default(None),
@@ -355,7 +356,7 @@ ci.builder(
 
 ci.builder(
     name = "mac-official",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -451,7 +452,7 @@ ci.builder(
 
 ci.builder(
     name = "win-official",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -546,7 +547,7 @@ ci.builder(
 
 ci.builder(
     name = "win32-official",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

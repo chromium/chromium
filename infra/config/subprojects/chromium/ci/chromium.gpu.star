@@ -25,7 +25,10 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.gpu",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = [
+        branches.selector.ANDROID_BRANCHES,
+        branches.selector.DESKTOP_BRANCHES,
+    ],
     ordering = {
         None: ["Windows", "Mac", "Linux"],
     },
@@ -33,7 +36,7 @@ consoles.console_view(
 
 ci.gpu.linux_builder(
     name = "Android Release (Nexus 5X)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -68,7 +71,7 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "GPU Linux Builder",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -110,7 +113,7 @@ ci.gpu.linux_builder(
 
 ci.gpu.mac_builder(
     name = "GPU Mac Builder",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -147,7 +150,7 @@ ci.gpu.mac_builder(
 
 ci.gpu.windows_builder(
     name = "GPU Win x64 Builder",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -199,7 +202,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Linux Release (NVIDIA)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/GPU Linux Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -237,7 +240,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac Release (Intel)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     triggered_by = ["ci/GPU Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -273,7 +276,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac Retina Release (AMD)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     triggered_by = ["ci/GPU Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -309,7 +312,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win10 x64 Release (NVIDIA)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     triggered_by = ["ci/GPU Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
