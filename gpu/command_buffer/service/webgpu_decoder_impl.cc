@@ -1213,6 +1213,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUFeatureName feature) const {
     case WGPUFeatureName_TextureCompressionASTC:
     case WGPUFeatureName_IndirectFirstInstance:
     case WGPUFeatureName_RG11B10UfloatRenderable:
+    case WGPUFeatureName_BGRA8UnormStorage:
       return true;
     default:
       return false;

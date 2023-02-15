@@ -17,6 +17,7 @@ enum GPUFeatureName {
     "indirect-first-instance",
     "chromium-experimental-dp4a",
     "rg11b10ufloat-renderable",
+    "bgra8unorm-storage",
 };
 
 [
