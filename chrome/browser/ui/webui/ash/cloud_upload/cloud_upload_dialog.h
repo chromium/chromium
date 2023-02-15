@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -16,6 +17,11 @@
 class Profile;
 
 namespace ash::cloud_upload {
+
+struct ODFSFileSystemAndPath {
+  file_system_provider::ProvidedFileSystemInterface* file_system;
+  base::FilePath file_path_within_odfs;
+};
 
 // The string conversions of ash::cloud_upload::mojom::UserAction.
 const char kUserActionCancel[] = "cancel";
@@ -27,6 +33,10 @@ const char kUserActionConfirmOrUploadToGoogleDrive[] =
     "confirm-or-upload-google-drive";
 const char kUserActionConfirmOrUploadToOneDrive[] =
     "confirm-or-upload-onedrive";
+
+// Custom action ids passed from ODFS.
+const char kOneDriveUrlActionId[] = "HIDDEN_ONEDRIVE_URL";
+const char kUserEmailActionId[] = "HIDDEN_ONEDRIVE_USER_EMAIL";
 
 // Either OneDrive for the Office PWA or Drive for Drive Web editing.
 enum class CloudProvider {
@@ -59,6 +69,37 @@ void OpenOrMoveFiles(Profile* profile,
 // Returns True if OneDrive is the selected `cloud_provider` but either ODFS
 // is not mounted or the Office PWA is not installed. Returns False otherwise.
 bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider);
+
+bool FileIsOnDriveFS(Profile* profile, const base::FilePath& file_path);
+
+bool FileIsOnODFS(Profile* profile, const FileSystemURL& url);
+
+// Returns True if the file is on the Android OneDrive DocumentsProvider.
+bool FileIsOnAndroidOneDrive(Profile* profile, const FileSystemURL& url);
+
+// Return the email from the Root Document Id of the Android OneDrive
+// DocumentsProvider.
+absl::optional<std::string> GetEmailFromAndroidOneDriveRootDoc(
+    const std::string& root_document_id);
+
+// If the Microsoft account logged into the Android OneDrive matches the account
+// logged into ODFS, open office files from ODFS that were originally selected
+// from Android OneDrive. Open the files in the MS 365 PWA. Fails if the Android
+// OneDrive URLS cannot be converted to valid ODFS file paths.
+void OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& android_onedrive_urls);
+
+// Converts the |android_onedrive_file_url| for a file in OneDrive to the
+// equivalent ODFS file path which is then parsed to detect the corresponding
+// ODFS ProvidedFileSystemInterface and relative file path. There may or may not
+// exist a file for the returned relative file path. The conversion can be done
+// for files in OneDrive that can be accessed via Android OneDrive or ODFS.
+// These are the users' own files - in the Android OneDrive "Files" directory.
+// Fails if an equivalent ODFS file path can't be constructed.
+absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
+    Profile* profile,
+    const FileSystemURL& android_onedrive_file_url);
 
 // Defines the web dialog used to help users upload Office files to the cloud.
 class CloudUploadDialog : public SystemWebDialogDelegate {

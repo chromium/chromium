@@ -115,3 +115,10 @@ constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
  * @const {string}
  */
 constants.FSP_ACTION_HIDDEN_ONEDRIVE_URL = 'HIDDEN_ONEDRIVE_URL';
+
+/**
+ * ID of the fake fileSystemProvider custom action containing OneDrive document
+ * User Emails.
+ * @const {string}
+ */
+constants.FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL = 'HIDDEN_ONEDRIVE_USER_EMAIL';

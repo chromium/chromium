@@ -4,17 +4,19 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
-#include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
@@ -25,6 +27,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash::cloud_upload {
@@ -41,7 +44,15 @@ using ash::file_system_provider::Service;
 using file_manager::file_tasks::kDriveTaskResultMetricName;
 using file_manager::file_tasks::OfficeTaskResult;
 
-const char kOneDriveUrlActionId[] = "HIDDEN_ONEDRIVE_URL";
+const char kAndroidOneDriveAuthority[] =
+    "com.microsoft.skydrive.content.StorageAccessProvider";
+
+std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
+  Service* service = Service::Get(profile);
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(
+      file_manager::file_tasks::kODFSExtensionId);
+  return service->GetProvidedFileSystemInfoList(provider_id);
+}
 
 // Open a hosted MS Office file e.g. .docx, from a url hosted in
 // DriveFS. Check the file was successfully uploaded to DriveFS.
@@ -77,19 +88,14 @@ void OpenAlreadyHostedDriveUrl(drive::FileError error,
   }
 }
 
-void OpenODFSUrl(Profile* profile, const storage::FileSystemURL& url) {
-  if (!url.is_valid()) {
-    LOG(ERROR) << "Invalid uploaded file URL";
-    return;
-  }
-  ash::file_system_provider::util::FileSystemURLParser parser(url);
-  if (!parser.Parse()) {
-    LOG(ERROR) << "Path not in FSP";
-    return;
-  }
-
-  parser.file_system()->GetActions(
-      {parser.file_path()},
+// Open file with |file_path| from ODFS |file_system|. Open in the OneDrive PWA
+// without link captruing.
+void OpenFileFromODFS(
+    Profile* profile,
+    file_system_provider::ProvidedFileSystemInterface* file_system,
+    const base::FilePath& file_path) {
+  file_system->GetActions(
+      {file_path},
       base::BindOnce(
           [](base::WeakPtr<Profile> profile_weak_ptr,
              const file_system_provider::Actions& actions,
@@ -123,10 +129,43 @@ void OpenODFSUrl(Profile* profile, const storage::FileSystemURL& url) {
           profile->GetWeakPtr()));
 }
 
+// Open office file using the ODFS |url|.
+void OpenODFSUrl(Profile* profile, const storage::FileSystemURL& url) {
+  if (!url.is_valid()) {
+    LOG(ERROR) << "Invalid uploaded file URL";
+    return;
+  }
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    LOG(ERROR) << "Path not in FSP";
+    return;
+  }
+  OpenFileFromODFS(profile, parser.file_system(), parser.file_path());
+}
+
 void OpenODFSUrls(Profile* profile,
                   const std::vector<storage::FileSystemURL>& file_urls) {
   for (const auto& file_url : file_urls) {
     OpenODFSUrl(profile, file_url);
+  }
+}
+
+// Open office files from ODFS that were originally selected from Android
+// OneDrive. First convert the |android_onedrive_urls| to ODFS file paths, then
+// open them from ODFS in the MS 365 PWA.
+void OpenAndroidOneDriveUrls(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& android_onedrive_urls) {
+  for (const auto& android_onedrive_url : android_onedrive_urls) {
+    absl::optional<ODFSFileSystemAndPath> fs_and_path =
+        AndroidOneDriveUrlToODFS(profile, android_onedrive_url);
+    if (!fs_and_path.has_value()) {
+      // TODO(b/269364287): Handle when Android OneDrive file can't be opened.
+      LOG(ERROR) << "Android OneDrive Url cannot be converted to ODFS";
+      return;
+    }
+    OpenFileFromODFS(profile, fs_and_path->file_system,
+                     fs_and_path->file_path_within_odfs);
   }
 }
 
@@ -188,28 +227,6 @@ void ConfirmMoveOrStartUpload(
     CloudUploadDialog::SetUpAndShowDialog(
         profile, file_urls, mojom::DialogPage::kMoveConfirmationOneDrive);
   }
-}
-
-bool FileIsOnDriveFS(Profile* profile, const base::FilePath& file_path) {
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  base::FilePath relative_path;
-  return integration_service->GetRelativeDrivePath(file_path, &relative_path);
-}
-
-bool FileIsOnODFS(Profile* profile, const FileSystemURL& url) {
-  ash::file_system_provider::util::FileSystemURLParser parser(url);
-  if (!parser.Parse()) {
-    return false;
-  }
-
-  file_system_provider::ProviderId provider_id =
-      file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::kODFSExtensionId);
-  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
-    return false;
-  }
-  return true;
 }
 
 bool HasWordFile(const std::vector<storage::FileSystemURL>& file_urls) {
@@ -372,8 +389,12 @@ void OpenOrMoveFiles(Profile* profile,
     OpenAlreadyHostedDriveUrls(profile, file_urls);
   } else if (cloud_provider == CloudProvider::kOneDrive &&
              FileIsOnODFS(profile, file_urls.front())) {
-    // The files are on OneDrive already.
+    // The files are on OneDrive already, selected from ODFS.
     OpenODFSUrls(profile, file_urls);
+  } else if (cloud_provider == CloudProvider::kOneDrive &&
+             FileIsOnAndroidOneDrive(profile, file_urls.front())) {
+    // The files are on OneDrive already, selected from Android OneDrive.
+    OpenAndroidOneDriveUrlsIfAccountMatchedODFS(profile, file_urls);
   } else {
     // The files need to be moved.
     ConfirmMoveOrStartUpload(profile, file_urls, cloud_provider);
@@ -384,6 +405,168 @@ bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider) {
   return cloud_provider == CloudProvider::kOneDrive &&
          !(CloudUploadDialog::IsODFSMounted(profile) &&
            CloudUploadDialog::IsOfficeWebAppInstalled(profile));
+}
+
+bool FileIsOnDriveFS(Profile* profile, const base::FilePath& file_path) {
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  base::FilePath relative_path;
+  return integration_service->GetRelativeDrivePath(file_path, &relative_path);
+}
+
+bool FileIsOnODFS(Profile* profile, const FileSystemURL& url) {
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    return false;
+  }
+
+  auto provider_id = file_system_provider::ProviderId::CreateFromExtensionId(
+      file_manager::file_tasks::kODFSExtensionId);
+  return parser.file_system()->GetFileSystemInfo().provider_id() == provider_id;
+}
+
+bool FileIsOnAndroidOneDrive(Profile* profile, const FileSystemURL& url) {
+  std::string authority;
+  std::string root_document_id;
+  base::FilePath path;
+  return arc::ParseDocumentsProviderUrl(url, &authority, &root_document_id,
+                                        &path) &&
+         authority == kAndroidOneDriveAuthority;
+}
+
+absl::optional<std::string> GetEmailFromAndroidOneDriveRootDoc(
+    const std::string& root_document_id) {
+  // After escaping the '/', the Root Document Id is:
+  // pivots%2F<user-microsoft-account-email>.
+  // Convert back to:
+  // pivots/<user-microsoft-account-email>
+  std::string root_document_id_unescaped = base::UnescapeURLComponent(
+      root_document_id, base::UnescapeRule::PATH_SEPARATORS);
+  std::vector<base::FilePath::StringType> components =
+      base::FilePath(root_document_id_unescaped).GetComponents();
+  if (components.size() != 2) {
+    LOG(ERROR) << "Android OneDrive documents provider root document id is not "
+                  "as expected.";
+    return absl::nullopt;
+  }
+  if (components[0] != "pivots") {
+    LOG(ERROR) << "Android OneDrive documents provider root document id is not "
+                  "as expected.";
+    return absl::nullopt;
+  }
+  return components[1];
+}
+
+void OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& android_onedrive_urls) {
+  // Get email account associated with Android OneDrive.
+  std::string authority;
+  std::string root_document_id;
+  base::FilePath path;
+  if (!arc::ParseDocumentsProviderUrl(android_onedrive_urls.front(), &authority,
+                                      &root_document_id, &path)) {
+    return;
+  }
+
+  absl::optional<std::string> android_onedrive_email =
+      GetEmailFromAndroidOneDriveRootDoc(root_document_id);
+  if (!android_onedrive_email.has_value()) {
+    return;
+  }
+
+  // Get email account associated with ODFS.
+  absl::optional<ODFSFileSystemAndPath> fs_and_path =
+      AndroidOneDriveUrlToODFS(profile, android_onedrive_urls.front());
+  if (!fs_and_path.has_value()) {
+    // TODO(b/269364287): Handle when Android OneDrive file can't be opened.
+    LOG(ERROR) << "Android OneDrive Url cannot be converted to ODFS";
+    return;
+  }
+  fs_and_path->file_system->GetActions(
+      {fs_and_path->file_path_within_odfs},
+      base::BindOnce(
+          [](base::WeakPtr<Profile> profile_weak_ptr,
+             std::string android_onedrive_email,
+             const std::vector<storage::FileSystemURL>& android_onedrive_urls,
+             const file_system_provider::Actions& actions,
+             base::File::Error result) {
+            if (result != base::File::Error::FILE_OK) {
+              return;
+            }
+            Profile* profile = profile_weak_ptr.get();
+            if (!profile) {
+              return;
+            }
+            // Query whether the account logged into Android OneDrive is the
+            // same as ODFS.
+            for (const file_system_provider::Action& action : actions) {
+              if (action.id == kUserEmailActionId) {
+                if (android_onedrive_email == action.title) {
+                  OpenAndroidOneDriveUrls(profile, android_onedrive_urls);
+                } else {
+                  LOG(ERROR) << "Email accounts associated with ODFS and "
+                                "Android OneDrive don't match.";
+                }
+                return;
+              }
+            }
+          },
+          profile->GetWeakPtr(), std::move(android_onedrive_email.value()),
+          android_onedrive_urls));
+}
+
+absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
+    Profile* profile,
+    const FileSystemURL& android_onedrive_file_url) {
+  if (!FileIsOnAndroidOneDrive(profile, android_onedrive_file_url)) {
+    LOG(ERROR) << "File not on Android OneDrive";
+    return absl::nullopt;
+  }
+
+  // Get the ODFS mount path.
+  std::vector<ProvidedFileSystemInfo> odfs_file_system_infos =
+      GetODFSFileSystems(profile);
+  if (odfs_file_system_infos.size() != 1u) {
+    LOG(ERROR) << "One and only one filesystem should be mounted for the ODFS "
+                  "extension";
+    return absl::nullopt;
+  }
+  base::FilePath odfs_path = odfs_file_system_infos[0].mount_path();
+
+  // Find the relative path from Android OneDrive Url.
+  std::string authority;
+  std::string root_document_id;
+  base::FilePath path;
+  if (!arc::ParseDocumentsProviderUrl(android_onedrive_file_url, &authority,
+                                      &root_document_id, &path)) {
+    return absl::nullopt;
+  }
+  // Format for Android OneDrive documents provider `path` is:
+  // Files/<rel_path>
+  std::vector<base::FilePath::StringType> components =
+      base::FilePath(path.value()).GetComponents();
+  if (components.size() < 2) {
+    LOG(ERROR)
+        << "Android OneDrive documents provider path is not as expected.";
+    return absl::nullopt;
+  }
+  if (components[0] != "Files") {
+    LOG(ERROR)
+        << "Android OneDrive documents provider path is not as expected.";
+    return absl::nullopt;
+  }
+  // Append relative path from Android OneDrive Url.
+  for (size_t i = 1; i < components.size(); i++) {
+    odfs_path = odfs_path.Append(components[i]);
+  }
+
+  ash::file_system_provider::util::LocalPathParser parser(profile, odfs_path);
+  if (!parser.Parse()) {
+    LOG(ERROR) << "Path not in FSP";
+    return absl::nullopt;
+  }
+  return ODFSFileSystemAndPath{parser.file_system(), parser.file_path()};
 }
 
 void GetEntriesFromFilePathsAndMimeTypes(
@@ -521,14 +704,8 @@ bool CloudUploadDialog::SetUpAndShowDialog(
 }
 
 bool CloudUploadDialog::IsODFSMounted(Profile* profile) {
-  Service* service = Service::Get(profile);
-  ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::kODFSExtensionId);
-  std::vector<ProvidedFileSystemInfo> file_systems =
-      service->GetProvidedFileSystemInfoList(provider_id);
-
   // Assume any file system mounted by ODFS is the correct one.
-  return !file_systems.empty();
+  return !GetODFSFileSystems(profile).empty();
 }
 
 bool CloudUploadDialog::IsOfficeWebAppInstalled(Profile* profile) {
