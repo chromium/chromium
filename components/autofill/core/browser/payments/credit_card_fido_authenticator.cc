@@ -40,6 +40,7 @@
 namespace autofill {
 
 namespace {
+
 // Default timeout for user to respond to WebAuthn prompt.
 constexpr int kWebAuthnTimeoutMs = 3 * 60 * 1000;  // 3 minutes
 constexpr char kGooglePaymentsRpid[] = "google.com";
@@ -59,6 +60,35 @@ base::Value BytesToBase64(const std::vector<uint8_t> bytes) {
   base::Base64Encode(std::string(bytes.begin(), bytes.end()), &base64);
   return base::Value(std::move(base64));
 }
+
+// Returns true if `request_options` contains a challenge and has a non-empty
+// list of keys that each have a Credential ID.
+bool IsValidRequestOptions(const base::Value::Dict& request_options) {
+  if (request_options.empty() || !request_options.contains("challenge") ||
+      !request_options.contains("key_info")) {
+    return false;
+  }
+
+  const auto* key_info_list = request_options.FindList("key_info");
+
+  if (key_info_list->empty()) {
+    return false;
+  }
+
+  for (const base::Value& key_info : *key_info_list) {
+    if (!key_info.is_dict() || !key_info.FindStringKey("credential_id")) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Returns true if `creation_options` contains a challenge.
+bool IsValidCreationOptions(const base::Value::Dict& creation_options) {
+  return creation_options.contains("challenge");
+}
+
 }  // namespace
 
 CreditCardFidoAuthenticator::CreditCardFidoAuthenticator(AutofillDriver* driver,
@@ -126,14 +156,19 @@ void CreditCardFidoAuthenticator::Authorize(
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
 
-  if (IsValidRequestOptions(request_options)) {
-    // If user is already opted-in, then a new card is trying to be
-    // authorized. Otherwise, a user with a credential on file is trying to
-    // opt-in.
-    current_flow_ = user_is_opted_in_ ? FOLLOWUP_AFTER_CVC_AUTH_FLOW
-                                      : OPT_IN_WITH_CHALLENGE_FLOW;
-    GetAssertion(ParseRequestOptions(std::move(request_options)));
+  if (!IsValidRequestOptions(request_options)) {
+    if (requester_) {
+      requester_->OnFidoAuthorizationComplete(/*did_succeed=*/false);
+    }
+    return;
   }
+
+  // If user is already opted-in, then a new card is trying to be
+  // authorized. Otherwise, a user with a credential on file is trying to
+  // opt-in.
+  current_flow_ = user_is_opted_in_ ? FOLLOWUP_AFTER_CVC_AUTH_FLOW
+                                    : OPT_IN_WITH_CHALLENGE_FLOW;
+  GetAssertion(ParseRequestOptions(std::move(request_options)));
 }
 
 void CreditCardFidoAuthenticator::OptOut() {
@@ -670,32 +705,6 @@ base::Value::Dict CreditCardFidoAuthenticator::ParseAttestationResponse(
                std::move(authenticator_transport_list));
 
   return response;
-}
-
-bool CreditCardFidoAuthenticator::IsValidRequestOptions(
-    const base::Value::Dict& request_options) {
-  if (request_options.empty() || !request_options.contains("challenge") ||
-      !request_options.contains("key_info")) {
-    return false;
-  }
-
-  const auto* key_info_list = request_options.FindList("key_info");
-
-  if (key_info_list->empty()) {
-    return false;
-  }
-
-  for (const base::Value& key_info : *key_info_list) {
-    if (!key_info.is_dict() || !key_info.FindStringKey("credential_id"))
-      return false;
-  }
-
-  return true;
-}
-
-bool CreditCardFidoAuthenticator::IsValidCreationOptions(
-    const base::Value::Dict& creation_options) {
-  return creation_options.contains("challenge");
 }
 
 void CreditCardFidoAuthenticator::LogWebauthnResult(

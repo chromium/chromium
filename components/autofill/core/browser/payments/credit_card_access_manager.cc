@@ -570,34 +570,29 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
   is_authentication_in_progress_ = false;
   can_fetch_unmask_details_ = true;
 
-  // Log completed CVC authentication if auth was successful. Do not log for
-  // kCvcThenFido flow since that is yet to be completed.
-  if (response.did_succeed &&
-      unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido) {
+  // Log completed CVC authentication if auth was successful.
+  if (response.did_succeed) {
     form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
   }
 
-  bool should_register_card_with_fido = ShouldRegisterCardWithFido(response);
-  if (ShouldRespondImmediately(response)) {
-    // If ShouldRespondImmediately() returns true,
-    // |should_register_card_with_fido| should be false.
-    DCHECK(!should_register_card_with_fido);
-    accessor_->OnCreditCardFetched(response.did_succeed
-                                       ? CreditCardFetchResult::kSuccess
-                                       : CreditCardFetchResult::kTransientError,
-                                   response.card, response.cvc);
-    unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
-  } else if (should_register_card_with_fido) {
+  // Pass the fetched credit card information to the accessor.
+  accessor_->OnCreditCardFetched(response.did_succeed
+                                     ? CreditCardFetchResult::kSuccess
+                                     : CreditCardFetchResult::kTransientError,
+                                 response.card, response.cvc);
+
+  // Check if card FIDO registration flow should be offered.
+  if (ShouldRegisterCardWithFido(response)) {
 #if !BUILDFLAG(IS_IOS)
     absl::optional<base::Value::Dict> request_options = absl::nullopt;
     if (unmask_details_.fido_request_options.has_value()) {
-      // For opted-in user (CVC then FIDO case), request options are returned in
-      // unmask detail response.
+      // For opted-in user (CVC then FIDO case), request options are
+      // returned in unmask detail response.
       request_options = unmask_details_.fido_request_options->Clone();
     } else if (response.request_options.has_value()) {
-      // For Android users, request_options are provided from GetRealPan if the
-      // user has chosen to opt-in.
+      // For Android users, request_options are provided from GetRealPan if
+      // the user has chosen to opt-in.
       request_options = response.request_options->Clone();
     }
 
@@ -611,10 +606,12 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
                                               response.card_authorization_token,
                                               request_options->Clone());
 #endif
-  }
-  if (ShouldOfferFidoOptInDialog(response)) {
-    // CreditCardFidoAuthenticator will handle enrollment completely.
-    ShowWebauthnOfferDialog(response.card_authorization_token);
+  } else {
+    unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
+    if (ShouldOfferFidoOptInDialog(response)) {
+      // CreditCardFidoAuthenticator will handle enrollment completely.
+      ShowWebauthnOfferDialog(response.card_authorization_token);
+    }
   }
 
   HandleFidoOptInStatusChange();
@@ -714,12 +711,6 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
 }
 
 void CreditCardAccessManager::OnFidoAuthorizationComplete(bool did_succeed) {
-  if (did_succeed) {
-    accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card_.get(),
-                                   cvc_);
-    form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
-        unmask_auth_flow_type_);
-  }
   Reset();
 }
 #endif

@@ -1277,19 +1277,15 @@ TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
                                    kTestNumber,
                                    /*fido_opt_in=*/false,
                                    /*follow_with_fido_auth=*/false));
-  // Ensure that form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), std::u16string());
-  EXPECT_EQ(accessor_->cvc(), std::u16string());
+  // Ensure that form is filled first (OnCreditCardFetched is called).
+  EXPECT_EQ(kTestNumber16, accessor_->number());
+  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   // Mock user response.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::FOLLOWUP_AFTER_CVC_AUTH_FLOW,
             GetFIDOAuthenticator()->current_flow());
   TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
                                                 /*did_succeed=*/true);
-  // Ensure that form is filled after user verification (OnCreditCardFetched is
-  // called).
-  EXPECT_EQ(kTestNumber16, accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   // Mock OptChange payments call.
   OptChange(AutofillClient::PaymentsRpcResult::kSuccess, true);
@@ -1360,7 +1356,7 @@ TEST_F(CreditCardAccessManagerTest,
 #if BUILDFLAG(IS_ANDROID)
 // Ensures that the WebAuthn verification prompt is invoked after user opts in
 // on unmask card checkbox.
-TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
+TEST_F(CreditCardAccessManagerTest, FidoOptInSuccess_Android) {
   base::HistogramTester histogram_tester;
   std::string histogram_name =
       "Autofill.BetterAuth.WebauthnResult.CheckoutOptIn";
@@ -1386,17 +1382,13 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
   // called and correct flow is set.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
             GetFIDOAuthenticator()->current_flow());
-  // Ensure that form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), std::u16string());
-  EXPECT_EQ(accessor_->cvc(), std::u16string());
+  // Ensure that form is filled first (OnCreditCardFetched is called).
+  EXPECT_EQ(kTestNumber16, accessor_->number());
+  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   // Mock user response.
   TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
                                                 /*did_succeed=*/true);
-  // Ensure that form is filled after user verification (OnCreditCardFetched is
-  // called).
-  EXPECT_EQ(kTestNumber16, accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   // Mock OptChange payments call.
   OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -1412,7 +1404,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
 }
 
 // Ensures that the failed user verification disallows enrollment.
-TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
+TEST_F(CreditCardAccessManagerTest, FidoOptInUserVerificationFailure) {
   base::HistogramTester histogram_tester;
   std::string histogram_name =
       "Autofill.BetterAuth.WebauthnResult.CheckoutOptIn";
@@ -1436,19 +1428,13 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
   // called and correct flow is set.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
             GetFIDOAuthenticator()->current_flow());
-  // Ensure that form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), std::u16string());
-  EXPECT_EQ(accessor_->cvc(), std::u16string());
+  // Ensure that form is filled first (OnCreditCardFetched is called).
+  EXPECT_EQ(kTestNumber16, accessor_->number());
+  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   // Mock GetAssertion failure.
   TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
                                                 /*did_succeed=*/false);
-  // Ensure that form is still filled even if user verification fails
-  // (OnCreditCardFetched is called). Note that this is different behavior than
-  // registering a new card.
-  EXPECT_EQ(kTestNumber16, accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
-
   EXPECT_FALSE(GetFIDOAuthenticator()->IsUserOptedIn());
 
   histogram_tester.ExpectUniqueSample(
@@ -1457,7 +1443,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
 }
 
 // Ensures that enrollment does not happen if the server returns a failure.
-TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
+TEST_F(CreditCardAccessManagerTest, FidoOptInServerFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
   CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
@@ -1477,17 +1463,13 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
   // called and correct flow is set.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
             GetFIDOAuthenticator()->current_flow());
-  // Ensure that form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), std::u16string());
-  EXPECT_EQ(accessor_->cvc(), std::u16string());
+  // Ensure that form is filled first (OnCreditCardFetched is called).
+  EXPECT_EQ(kTestNumber16, accessor_->number());
+  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   // Mock user response and OptChange payments call.
   TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
                                                 /*did_succeed=*/true);
-  // Ensure that form is filled after user verification (OnCreditCardFetched is
-  // called).
-  EXPECT_EQ(kTestNumber16, accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
   OptChange(AutofillClient::PaymentsRpcResult::kPermanentFailure, false);
 
   EXPECT_FALSE(GetFIDOAuthenticator()->IsUserOptedIn());
@@ -1495,7 +1477,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
 
 // Ensures that enrollment does not happen if user unchecking the opt-in
 // checkbox.
-TEST_F(CreditCardAccessManagerTest, FIDOOptIn_CheckboxDeclined) {
+TEST_F(CreditCardAccessManagerTest, FidoOptIn_CheckboxDeclined) {
   CreateServerCard(kTestGUID, kTestNumber);
   CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
