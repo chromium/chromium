@@ -80,6 +80,9 @@ absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope);
 // "updater.exe" on Win.
 base::FilePath GetExecutableRelativePath();
 
+// Returns the path to the crashpad database, creating it if it does not exist.
+absl::optional<base::FilePath> EnsureCrashDatabasePath(UpdaterScope scope);
+
 // Return the parsed values from --tag command line argument. The functions
 // return {} if there was no tag at all. An error is set if the tag fails to
 // parse.

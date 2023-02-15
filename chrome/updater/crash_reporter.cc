@@ -74,7 +74,7 @@ void StartCrashReporter(UpdaterScope updater_scope,
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
   const absl::optional<base::FilePath> database_path =
-      GetVersionedInstallDirectory(updater_scope);
+      EnsureCrashDatabasePath(updater_scope);
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
     return;

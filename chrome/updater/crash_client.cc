@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -53,7 +54,7 @@ bool CrashClient::InitializeDatabaseOnly(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const absl::optional<base::FilePath> database_path =
-      GetVersionedInstallDirectory(updater_scope);
+      EnsureCrashDatabasePath(updater_scope);
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
     return false;
