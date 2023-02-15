@@ -14,6 +14,10 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace blink {
+class ScriptWrappableTaskState;
+}  // namespace blink
+
 namespace blink::scheduler {
 
 class TaskAttributionTrackerTest;
@@ -71,6 +75,17 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     }
   }
 
+ protected:
+  // Saves the given `ScriptWrappableTaskState` as the current continuation
+  // preserved embedder data. Virtual for testing.
+  virtual void SetCurrentTaskContinuationData(ScriptState*,
+                                              ScriptWrappableTaskState*);
+
+  // Gets the current `ScriptWrappableTaskState` from the current continuation
+  // preserved embedder data. Virtual for testing.
+  virtual ScriptWrappableTaskState* GetCurrentTaskContinuationData(
+      ScriptState*) const;
+
  private:
   struct TaskAttributionIdPair {
     TaskAttributionIdPair() = default;
@@ -98,7 +113,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
                   TaskAttributionTrackerImpl*,
                   TaskAttributionId scope_task_id,
                   absl::optional<TaskAttributionId> running_task_id,
-                  absl::optional<TaskAttributionId> continuation_task_id,
+                  ScriptWrappableTaskState* continuation_task_state,
                   TaskScopeType,
                   absl::optional<TaskAttributionId> parent_task_id);
     ~TaskScopeImpl() override;
@@ -109,24 +124,19 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     absl::optional<TaskAttributionId> RunningTaskIdToBeRestored() const {
       return running_task_id_to_be_restored_;
     }
-    absl::optional<TaskAttributionId> ContinuationTaskIdToBeRestored() const {
-      return continuation_task_id_to_be_restored_;
+
+    ScriptWrappableTaskState* ContinuationTaskStateToBeRestored() const {
+      return continuation_state_to_be_restored_;
     }
+
     ScriptState* GetScriptState() const { return script_state_; }
 
    private:
     TaskAttributionTrackerImpl* task_tracker_;
     TaskAttributionId scope_task_id_;
     absl::optional<TaskAttributionId> running_task_id_to_be_restored_;
-    absl::optional<TaskAttributionId> continuation_task_id_to_be_restored_;
+    Persistent<ScriptWrappableTaskState> continuation_state_to_be_restored_;
     Persistent<ScriptState> script_state_;
-  };
-
-  class MODULES_EXPORT V8Adapter {
-   public:
-    virtual absl::optional<TaskAttributionId> GetValue(ScriptState*);
-    virtual void SetValue(ScriptState*, absl::optional<TaskAttributionId>);
-    virtual ~V8Adapter() = default;
   };
 
   void TaskScopeCompleted(const TaskScopeImpl&);
@@ -135,16 +145,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   void InsertTaskAttributionIdPair(
       TaskAttributionId task_id,
       absl::optional<TaskAttributionId> parent_task_id);
-  void SaveTaskIdStateInV8(ScriptState*, absl::optional<TaskAttributionId>);
-
-  void SetV8AdapterForTesting(std::unique_ptr<V8Adapter> adapter) {
-    v8_adapter_.swap(adapter);
-  }
 
   TaskAttributionId next_task_id_;
   absl::optional<TaskAttributionId> running_task_id_;
-
-  std::unique_ptr<V8Adapter> v8_adapter_;
 
   // The task container is a vector of optional TaskAttributionIdPairs where its
   // indexes are TaskAttributionId hashes, and its values are the TaskId of the

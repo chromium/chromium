@@ -9,16 +9,11 @@
 
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
-#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_script_wrappable_task_attribution_id.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_attribution_id.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink::scheduler {
@@ -52,19 +47,16 @@ int64_t TaskAttributionIdToInt(absl::optional<TaskAttributionId> id) {
 
 }  // namespace
 
-TaskAttributionTrackerImpl::TaskAttributionTrackerImpl()
-    : next_task_id_(0), v8_adapter_(std::make_unique<V8Adapter>()) {}
+TaskAttributionTrackerImpl::TaskAttributionTrackerImpl() : next_task_id_(0) {}
 
 absl::optional<TaskAttributionId>
 TaskAttributionTrackerImpl::RunningTaskAttributionId(
     ScriptState* script_state) const {
-  DCHECK(v8_adapter_);
-  absl::optional<TaskAttributionId> task_id =
-      v8_adapter_->GetValue(script_state);
-
+  ScriptWrappableTaskState* task_state =
+      GetCurrentTaskContinuationData(script_state);
   // V8 embedder state may have no value in the case of a JSPromise that wasn't
   // yet resolved.
-  return task_id ? task_id : running_task_id_;
+  return task_state ? task_state->GetTaskAttributionId() : running_task_id_;
 }
 
 void TaskAttributionTrackerImpl::InsertTaskAttributionIdPair(
@@ -158,9 +150,8 @@ TaskAttributionTrackerImpl::CreateTaskScope(
     TaskScopeType type) {
   absl::optional<TaskAttributionId> running_task_id_to_be_restored =
       running_task_id_;
-  DCHECK(v8_adapter_);
-  absl::optional<TaskAttributionId> continuation_task_id_to_be_restored =
-      v8_adapter_->GetValue(script_state);
+  ScriptWrappableTaskState* continuation_task_state_to_be_restored =
+      GetCurrentTaskContinuationData(script_state);
 
   next_task_id_ = next_task_id_.NextId();
   running_task_id_ = next_task_id_;
@@ -173,25 +164,34 @@ TaskAttributionTrackerImpl::CreateTaskScope(
     }
   }
 
-  SaveTaskIdStateInV8(script_state, next_task_id_);
+  SetCurrentTaskContinuationData(
+      script_state,
+      MakeGarbageCollected<ScriptWrappableTaskState>(next_task_id_));
+
   return std::make_unique<TaskScopeImpl>(
       script_state, this, next_task_id_, running_task_id_to_be_restored,
-      continuation_task_id_to_be_restored, type, parent_task_id);
+      continuation_task_state_to_be_restored, type, parent_task_id);
 }
 
 void TaskAttributionTrackerImpl::TaskScopeCompleted(
     const TaskScopeImpl& task_scope) {
   DCHECK(running_task_id_ == task_scope.GetTaskId());
   running_task_id_ = task_scope.RunningTaskIdToBeRestored();
-  SaveTaskIdStateInV8(task_scope.GetScriptState(),
-                      task_scope.ContinuationTaskIdToBeRestored());
+  SetCurrentTaskContinuationData(
+      task_scope.GetScriptState(),
+      task_scope.ContinuationTaskStateToBeRestored());
 }
 
-void TaskAttributionTrackerImpl::SaveTaskIdStateInV8(
+void TaskAttributionTrackerImpl::SetCurrentTaskContinuationData(
     ScriptState* script_state,
-    absl::optional<TaskAttributionId> task_id) {
-  DCHECK(v8_adapter_);
-  v8_adapter_->SetValue(script_state, task_id);
+    ScriptWrappableTaskState* task_state) {
+  ScriptWrappableTaskState::SetCurrent(script_state, task_state);
+}
+
+ScriptWrappableTaskState*
+TaskAttributionTrackerImpl::GetCurrentTaskContinuationData(
+    ScriptState* script_state) const {
+  return ScriptWrappableTaskState::GetCurrent(script_state);
 }
 
 // TaskScope's implementation
@@ -201,13 +201,13 @@ TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(
     TaskAttributionTrackerImpl* task_tracker,
     TaskAttributionId scope_task_id,
     absl::optional<TaskAttributionId> running_task_id,
-    absl::optional<TaskAttributionId> continuation_task_id,
+    ScriptWrappableTaskState* continuation_task_state,
     TaskScopeType type,
     absl::optional<TaskAttributionId> parent_task_id)
     : task_tracker_(task_tracker),
       scope_task_id_(scope_task_id),
       running_task_id_to_be_restored_(running_task_id),
-      continuation_task_id_to_be_restored_(continuation_task_id),
+      continuation_state_to_be_restored_(continuation_task_state),
       script_state_(script_state) {
   TRACE_EVENT_BEGIN(
       "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
@@ -217,8 +217,11 @@ TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(
         data->set_scope_task_id(scope_task_id_.value());
         data->set_running_task_id_to_be_restored(
             TaskAttributionIdToInt(running_task_id_to_be_restored_));
-        data->set_continuation_task_id_to_be_restored(
-            TaskAttributionIdToInt(continuation_task_id_to_be_restored_));
+        data->set_continuation_task_id_to_be_restored(TaskAttributionIdToInt(
+            continuation_state_to_be_restored_
+                ? absl::make_optional(continuation_state_to_be_restored_
+                                          ->GetTaskAttributionId())
+                : absl::nullopt));
         data->set_parent_task_id(TaskAttributionIdToInt(parent_task_id));
       });
 }
@@ -226,66 +229,6 @@ TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(
 TaskAttributionTrackerImpl::TaskScopeImpl::~TaskScopeImpl() {
   task_tracker_->TaskScopeCompleted(*this);
   TRACE_EVENT_END("scheduler");
-}
-
-// V8Adapter's implementation
-//////////////////////////////////////
-absl::optional<TaskAttributionId>
-TaskAttributionTrackerImpl::V8Adapter::GetValue(ScriptState* script_state) {
-  DCHECK(script_state);
-  if (!script_state->ContextIsValid()) {
-    return absl::nullopt;
-  }
-
-  ScriptState::Scope scope(script_state);
-  v8::Local<v8::Context> context = script_state->GetContext();
-  DCHECK(!context.IsEmpty());
-  v8::Local<v8::Value> v8_value =
-      context->GetContinuationPreservedEmbedderData();
-  if (v8_value->IsNullOrUndefined()) {
-    return absl::nullopt;
-  }
-  v8::Isolate* isolate = script_state->GetIsolate();
-  DCHECK(isolate);
-  if (isolate->IsExecutionTerminating()) {
-    return absl::nullopt;
-  }
-  // If not empty, the value must be a ScriptWrappableTaskAttributionId.
-  NonThrowableExceptionState exception_state;
-  ScriptWrappableTaskAttributionId* script_wrappable_task_id =
-      NativeValueTraits<ScriptWrappableTaskAttributionId>::NativeValue(
-          isolate, v8_value, exception_state);
-  DCHECK(script_wrappable_task_id);
-  return *script_wrappable_task_id;
-}
-
-void TaskAttributionTrackerImpl::V8Adapter::SetValue(
-    ScriptState* script_state,
-    absl::optional<TaskAttributionId> task_id) {
-  DCHECK(script_state);
-  if (!script_state->ContextIsValid()) {
-    return;
-  }
-  CHECK(!ScriptForbiddenScope::IsScriptForbidden());
-  ScriptState::Scope scope(script_state);
-  v8::Isolate* isolate = script_state->GetIsolate();
-  DCHECK(isolate);
-  if (isolate->IsExecutionTerminating()) {
-    return;
-  }
-  v8::Local<v8::Context> context = script_state->GetContext();
-  DCHECK(!context.IsEmpty());
-
-  if (task_id) {
-    ScriptWrappableTaskAttributionId* script_wrappable_task_id =
-        MakeGarbageCollected<ScriptWrappableTaskAttributionId>(task_id.value());
-    context->SetContinuationPreservedEmbedderData(
-        ToV8Traits<ScriptWrappableTaskAttributionId>::ToV8(
-            script_state, script_wrappable_task_id)
-            .ToLocalChecked());
-  } else {
-    context->SetContinuationPreservedEmbedderData(v8::Local<v8::Value>());
-  }
 }
 
 }  // namespace blink::scheduler

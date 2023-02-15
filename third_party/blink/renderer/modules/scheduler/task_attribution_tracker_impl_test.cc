@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink::scheduler {
@@ -19,17 +20,21 @@ class TaskAttributionTrackerTest : public PageTestBase {
   WTF::Vector<std::unique_ptr<TaskAttributionTracker::TaskScope>> task_stack_;
 
  public:
-  class MockV8Adapter : public TaskAttributionTrackerImpl::V8Adapter {
+  class TaskAttributionTrackerForTest : public TaskAttributionTrackerImpl {
    public:
-    absl::optional<TaskAttributionId> GetValue(ScriptState*) override {
-      return value_;
+    ScriptWrappableTaskState* GetCurrentTaskContinuationData(
+        ScriptState*) const override {
+      return state_;
     }
-    void SetValue(ScriptState*, absl::optional<TaskAttributionId> id) override {
-      value_ = id;
+
+    void SetCurrentTaskContinuationData(
+        ScriptState*,
+        ScriptWrappableTaskState* state) override {
+      state_ = state;
     }
 
    private:
-    absl::optional<TaskAttributionId> value_;
+    Persistent<ScriptWrappableTaskState> state_;
   };
 
   void PostTasks(TaskAttributionTrackerImpl& tracker,
@@ -72,8 +77,7 @@ class TaskAttributionTrackerTest : public PageTestBase {
                             unsigned asserts_length,
                             bool nested_tasks_complete,
                             bool assert_last_task) {
-    TaskAttributionTrackerImpl tracker;
-    MockV8ForTracker(tracker);
+    TaskAttributionTrackerForTest tracker;
     // Post tasks for half the queue.
     unsigned half_queue = TaskAttributionTrackerImpl::kVectorSize / 2;
     TaskAttributionId id(0);
@@ -113,10 +117,6 @@ class TaskAttributionTrackerTest : public PageTestBase {
       task_stack_.pop_back();
     }
   }
-
-  void MockV8ForTracker(TaskAttributionTrackerImpl& tracker) {
-    tracker.SetV8AdapterForTesting(std::make_unique<MockV8Adapter>());
-  }
 };
 
 TEST_F(TaskAttributionTrackerTest, TrackTaskLargerThanQueue) {
@@ -150,8 +150,7 @@ TEST_F(TaskAttributionTrackerTest, CausalityChainOverflow) {
 }
 
 TEST_F(TaskAttributionTrackerTest, NotAncestor) {
-  TaskAttributionTrackerImpl tracker;
-  MockV8ForTracker(tracker);
+  TaskAttributionTrackerForTest tracker;
   TaskAttributionId first_id(0);
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
