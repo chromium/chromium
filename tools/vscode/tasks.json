@@ -130,59 +130,70 @@
     {
       "label": "1-build_chrome",
       "type": "shell",
-      "command": "autoninja -C ${config:chrome.outputDir} chrome",
+      "command": "autoninja",
+      "args": ["-C", "${config:chrome.outputDir}", "chrome"],
       "group": "test"
     },
     {
       "label": "2-build_all",
       "type": "shell",
-      "command": "autoninja -C ${config:chrome.outputDir}"
+      "command": "autoninja",
+      "args": ["-C", "${config:chrome.outputDir}"]
     },
     {
       "label": "3-test_current_file",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run-all ${file}"
+      "command": "${workspaceFolder}/tools/autotest.py",
+      "args": ["-C", "${config:chrome.outputDir}", "--run-all", "${file}"]
     },
     {
       "label": "4-test_current_file_with_filter",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --gtest_filter ${input:gtestFilter} ${file}"
+      "command": "${workspaceFolder}/tools/autotest.py",
+      "args": ["-C", "${config:chrome.outputDir}", "--gtest_filter", "${input:gtestFilter}", "${file}"]
     },
     {
       "label": "5-test_current_line",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --line ${lineNumber} ${file}"
+      "command": "${workspaceFolder}/tools/autotest.py",
+      "args": ["-C", "${config:chrome.outputDir}", "--line", "${lineNumber}", "${file}"]
     },
     {
       "label": "6-test_current_directory",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run-all ${fileDirname}"
+      "command": "${workspaceFolder}/tools/autotest.py",
+      "args": ["-C", "${config:chrome.outputDir}", "--run-all", "${fileDirname}"]
     },
     {
       "label": "7-build_current_file",
       "type": "shell",
-      "command": "compile_single_file --build-dir=${config:chrome.outputDir} --file-path=${file}"
+      "command": "compile_single_file",
+      "args": ["--build-dir=${config:chrome.outputDir}", "--file-path=${file}"]
     },
     // Some more specific build tasks, which hard-code the output directory.
     {
       "label": "8-build_chrome_debug",
       "type": "shell",
-      "command": "autoninja -C ${workspaceFolder}/out/Debug chrome"
+      "command": "autoninja",
+      "args": ["-C", "${workspaceFolder}/out/Debug", "chrome"]
     },
     {
       "label": "9-build_chrome_release",
       "type": "shell",
-      "command": "autoninja -C ${workspaceFolder}/out/Release chrome"
+      "command": "autoninja",
+      "args": ["-C", "${workspaceFolder}/out/Release", "chrome"]
     },
     {
       "label": "10-build_test_debug",
       "type": "shell",
-      "command": "autoninja -C ${workspaceFolder}/out/Debug unit_tests components_unittests browser_tests extensions_unittests ash_unittests"
+      "command": "autoninja",
+      "args": ["-C", "${workspaceFolder}/out/Debug", "unit_tests", "components_unittests", "browser_tests", "extensions_unittests", "ash_unittests"]
     },
     {
       "label": "11-generate_compile_commands",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/clang/scripts/generate_compdb.py -p ${config:chrome.outputDir} > ${workspaceFolder}/compile_commands.json"
+      "command": "${workspaceFolder}/tools/clang/scripts/generate_compdb.py",
+      "args": ["-p", "${config:chrome.outputDir}", ">", "${workspaceFolder}/compile_commands.json"]
     }
   ]
 }
