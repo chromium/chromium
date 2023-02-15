@@ -273,8 +273,6 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
                             msg.message_contents(),
                             ClientToServerMessage::Contents_MAX + 1);
 
-  std::map<int, std::string> progress_marker_token_per_data_type;
-
   if (msg.has_get_updates()) {
     UMA_HISTOGRAM_ENUMERATION("Sync.PostedGetUpdatesOrigin",
                               msg.get_updates().get_updates_origin(),
@@ -282,8 +280,6 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
 
     for (const sync_pb::DataTypeProgressMarker& progress_marker :
          msg.get_updates().from_progress_marker()) {
-      progress_marker_token_per_data_type[progress_marker.data_type_id()] =
-          progress_marker.token();
       UMA_HISTOGRAM_ENUMERATION(
           "Sync.PostedDataTypeGetUpdatesRequest",
           ModelTypeHistogramValue(GetModelTypeFromSpecificsFieldNumber(
