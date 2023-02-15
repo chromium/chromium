@@ -387,6 +387,7 @@ class TestPlatform : public authenticator::Platform {
     if (params->device_public_key) {
       request.device_public_key.emplace();
     }
+    request.prf = params->prf_enable;
 
     std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>
         request_cbor = AsCTAPRequestValuePair(request);
@@ -402,12 +403,28 @@ class TestPlatform : public authenticator::Platform {
     device::CtapGetAssertionRequest request(std::move(params->relying_party_id),
                                             /* client_data_json= */ "");
     request.allow_list = std::move(params->allow_credentials);
+    request.user_verification = params->user_verification;
 
     CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
     memcpy(request.client_data_hash.data(), params->challenge.data(),
            params->challenge.size());
     if (params->device_public_key) {
       request.device_public_key.emplace();
+    }
+    for (const auto& prf_input_from_request : params->prf_inputs) {
+      PRFInput prf_input_to_authenticator;
+      prf_input_to_authenticator.credential_id =
+          std::move(prf_input_from_request->id);
+      CHECK(fido_parsing_utils::ExtractArray(
+          prf_input_from_request->first, 0, &prf_input_to_authenticator.salt1));
+      if (prf_input_from_request->second) {
+        prf_input_to_authenticator.salt2.emplace();
+        CHECK(fido_parsing_utils::ExtractArray(
+            *prf_input_from_request->second, 0,
+            &prf_input_to_authenticator.salt2.value()));
+      }
+
+      request.prf_inputs.emplace_back(std::move(prf_input_to_authenticator));
     }
 
     std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>
@@ -466,7 +483,7 @@ class TestPlatform : public authenticator::Platform {
     if (!result || result->empty()) {
       std::move(callback).Run(
           static_cast<uint32_t>(device::CtapDeviceResponseCode::kCtap2ErrOther),
-          base::span<const uint8_t>(), absl::nullopt);
+          base::span<const uint8_t>(), absl::nullopt, /* prf_enabled= */ false);
       return;
     }
     const base::span<const uint8_t> payload = *result;
@@ -475,7 +492,7 @@ class TestPlatform : public authenticator::Platform {
         payload[0] !=
             static_cast<uint8_t>(device::CtapDeviceResponseCode::kSuccess)) {
       std::move(callback).Run(payload[0], base::span<const uint8_t>(),
-                              absl::nullopt);
+                              absl::nullopt, /* prf_enabled= */ false);
       return;
     }
 
@@ -489,12 +506,23 @@ class TestPlatform : public authenticator::Platform {
     out_map.emplace("attStmt", in_map.find(cbor::Value(3))->second.GetMap());
 
     absl::optional<base::span<const uint8_t>> device_public_key_signature;
+    bool prf_enabled = false;
     const auto& unsigned_extension_outputs_it = in_map.find(cbor::Value(6));
     if (unsigned_extension_outputs_it != in_map.end()) {
-      device_public_key_signature =
-          unsigned_extension_outputs_it->second.GetMap()
-              .find(cbor::Value(kExtensionDevicePublicKey))
-              ->second.GetBytestring();
+      const cbor::Value::MapValue& unsigned_extension_outputs =
+          unsigned_extension_outputs_it->second.GetMap();
+      const auto dpk_it = unsigned_extension_outputs.find(
+          cbor::Value(kExtensionDevicePublicKey));
+      if (dpk_it != unsigned_extension_outputs.end()) {
+        device_public_key_signature = dpk_it->second.GetBytestring();
+      }
+      const auto prf_it =
+          unsigned_extension_outputs.find(cbor::Value(kExtensionPRF));
+      if (prf_it != unsigned_extension_outputs.end()) {
+        prf_enabled = prf_it->second.GetMap()
+                          .find(cbor::Value(kExtensionPRFEnabled))
+                          ->second.GetBool();
+      }
     }
 
     absl::optional<std::vector<uint8_t>> attestation_obj =
@@ -502,7 +530,7 @@ class TestPlatform : public authenticator::Platform {
 
     std::move(callback).Run(
         static_cast<uint32_t>(device::CtapDeviceResponseCode::kSuccess),
-        *attestation_obj, device_public_key_signature);
+        *attestation_obj, device_public_key_signature, prf_enabled);
   }
 
   void OnGetAssertionResult(GetAssertionCallback callback,
@@ -545,12 +573,33 @@ class TestPlatform : public authenticator::Platform {
 
     auto unsigned_extension_outputs_it = in_map.find(cbor::Value(8));
     if (unsigned_extension_outputs_it != in_map.end()) {
-      response->device_public_key =
-          blink::mojom::DevicePublicKeyResponse::New();
-      response->device_public_key->signature =
-          unsigned_extension_outputs_it->second.GetMap()
-              .find(cbor::Value(kExtensionDevicePublicKey))
-              ->second.GetBytestring();
+      const cbor::Value::MapValue& unsigned_extension_outputs =
+          unsigned_extension_outputs_it->second.GetMap();
+      const auto dpk_it = unsigned_extension_outputs.find(
+          cbor::Value(kExtensionDevicePublicKey));
+      if (dpk_it != unsigned_extension_outputs.end()) {
+        response->device_public_key =
+            blink::mojom::DevicePublicKeyResponse::New();
+        response->device_public_key->signature = dpk_it->second.GetBytestring();
+      }
+      const auto prf_it =
+          unsigned_extension_outputs.find(cbor::Value(kExtensionPRF));
+      if (prf_it != unsigned_extension_outputs.end()) {
+        const cbor::Value::MapValue& results_from_authenticator =
+            prf_it->second.GetMap()
+                .find(cbor::Value(kExtensionPRFResults))
+                ->second.GetMap();
+        auto results_for_response = blink::mojom::PRFValues::New();
+        results_for_response->first =
+            results_from_authenticator.find(cbor::Value(kExtensionPRFFirst))
+                ->second.GetBytestring();
+        const auto second_it =
+            results_from_authenticator.find(cbor::Value(kExtensionPRFSecond));
+        if (second_it != results_from_authenticator.end()) {
+          results_for_response->second = second_it->second.GetBytestring();
+        }
+        response->prf_results = std::move(results_for_response);
+      }
     }
 
     std::move(callback).Run(

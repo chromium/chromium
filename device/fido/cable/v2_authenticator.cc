@@ -97,6 +97,7 @@ struct MakeCredRequest {
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* excluded_credentials;
   RAW_PTR_EXCLUSION const bool* resident_key;
   RAW_PTR_EXCLUSION const std::string* device_public_key_attestation;
+  RAW_PTR_EXCLUSION const cbor::Value* prf;
 };
 
 static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
@@ -142,6 +143,9 @@ static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
         StringKey<MakeCredRequest>(), 'a', 't', 't', 'e', 's', 't', 'a', 't',
                                       'i', 'o', 'n', '\0',
       Stop<MakeCredRequest>(),
+
+      ELEMENT(Is::kOptional, MakeCredRequest, prf),
+      StringKey<MakeCredRequest>(), 'p', 'r', 'f', '\0',
     Stop<MakeCredRequest>(),
 
     Map<MakeCredRequest>(Is::kOptional),
@@ -186,6 +190,9 @@ struct GetAssertionRequest {
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* client_data_hash;
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* allowed_credentials;
   RAW_PTR_EXCLUSION const std::string* device_public_key_attestation;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* prf_eval_first;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* prf_eval_second;
+  RAW_PTR_EXCLUSION const cbor::Value* prf_eval_by_cred;
 };
 
 static constexpr StepOrByte<GetAssertionRequest> kGetAssertionParseSteps[] = {
@@ -209,6 +216,22 @@ static constexpr StepOrByte<GetAssertionRequest> kGetAssertionParseSteps[] = {
         ELEMENT(Is::kRequired, GetAssertionRequest, device_public_key_attestation),
         StringKey<GetAssertionRequest>(), 'a', 't', 't', 'e', 's', 't', 'a', 't',
                                           'i', 'o', 'n', '\0',
+      Stop<GetAssertionRequest>(),
+
+      Map<GetAssertionRequest>(Is::kOptional),
+      StringKey<GetAssertionRequest>(), 'p', 'r', 'f', '\0',
+        Map<GetAssertionRequest>(Is::kOptional),
+        StringKey<GetAssertionRequest>(), 'e', 'v', 'a', 'l', '\0',
+          ELEMENT(Is::kRequired, GetAssertionRequest, prf_eval_first),
+          StringKey<GetAssertionRequest>(), 'f', 'i', 'r', 's', 't', '\0',
+          ELEMENT(Is::kOptional, GetAssertionRequest, prf_eval_second),
+          StringKey<GetAssertionRequest>(), 's', 'e', 'c', 'o', 'n', 'd', '\0',
+        Stop<GetAssertionRequest>(),
+
+        ELEMENT(Is::kOptional, GetAssertionRequest, prf_eval_by_cred),
+        StringKey<GetAssertionRequest>(), 'e', 'v', 'a', 'l', 'B', 'y', 'C',
+                                          'r', 'e', 'd', 'e', 'n', 't', 'i',
+                                          'a', 'l', '\0',
       Stop<GetAssertionRequest>(),
     Stop<GetAssertionRequest>(),
 
@@ -237,6 +260,9 @@ std::vector<uint8_t> BuildGetInfoResponse() {
 
   cbor::Value::ArrayValue extensions;
   extensions.emplace_back("devicePubKey");
+  if (base::FeatureList::IsEnabled(kWebAuthnPRFAsAuthenticator)) {
+    extensions.emplace_back("prf");
+  }
 
   cbor::Value::MapValue response_map;
   response_map.emplace(1, std::move(versions));
@@ -787,6 +813,10 @@ class CTAP2Processor : public Transaction {
               blink::mojom::DevicePublicKeyRequest::New();
         }
 
+        if (make_cred_request.prf) {
+          params->prf_enable = true;
+        }
+
         if (!CopyCredIds(make_cred_request.excluded_credentials,
                          &params->exclude_credentials)) {
           return Platform::Error::INTERNAL_ERROR;
@@ -861,6 +891,50 @@ class CTAP2Processor : public Transaction {
               blink::mojom::DevicePublicKeyRequest::New();
         }
 
+        if (get_assertion_request.prf_eval_first) {
+          params->prf = true;
+          auto values = blink::mojom::PRFValues::New();
+          values->first = *get_assertion_request.prf_eval_first;
+          if (get_assertion_request.prf_eval_second) {
+            values->second = *get_assertion_request.prf_eval_second;
+          }
+          params->prf_inputs.emplace_back(std::move(values));
+        }
+
+        if (get_assertion_request.prf_eval_by_cred) {
+          params->prf = true;
+          if (!get_assertion_request.prf_eval_by_cred->is_map()) {
+            return Platform::Error::INVALID_CTAP;
+          }
+          const cbor::Value::MapValue& by_cred =
+              get_assertion_request.prf_eval_by_cred->GetMap();
+          for (const auto& element : by_cred) {
+            if (!element.first.is_bytestring() || !element.second.is_map()) {
+              return Platform::Error::INVALID_CTAP;
+            }
+            auto values = blink::mojom::PRFValues::New();
+            values->id = element.first.GetBytestring();
+
+            const cbor::Value::MapValue& eval_points = element.second.GetMap();
+            const auto first_it = eval_points.find(cbor::Value("first"));
+            if (first_it == eval_points.end() ||
+                !first_it->second.is_bytestring()) {
+              return Platform::Error::INVALID_CTAP;
+            }
+            values->first = first_it->second.GetBytestring();
+
+            const auto second_it = eval_points.find(cbor::Value("second"));
+            if (second_it != eval_points.end()) {
+              if (!second_it->second.is_bytestring()) {
+                return Platform::Error::INVALID_CTAP;
+              }
+              values->second = second_it->second.GetBytestring();
+            }
+
+            params->prf_inputs.emplace_back(std::move(values));
+          }
+        }
+
         transaction_received_ = true;
         const bool empty_allowlist = params->allow_credentials.empty();
         platform_->GetAssertion(
@@ -890,7 +964,8 @@ class CTAP2Processor : public Transaction {
       bool was_discoverable_credential_request,
       uint32_t ctap_status,
       base::span<const uint8_t> attestation_object_bytes,
-      absl::optional<base::span<const uint8_t>> device_public_key_signature) {
+      absl::optional<base::span<const uint8_t>> device_public_key_signature,
+      bool prf_enabled) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_LE(ctap_status, 0xFFu);
 
@@ -918,10 +993,17 @@ class CTAP2Processor : public Transaction {
           2, base::span<const uint8_t>(*attestation_object.auth_data));
       response_map.emplace(3, attestation_object.statement->Clone());
 
+      cbor::Value::MapValue unsigned_extension_outputs;
       if (device_public_key_signature) {
-        cbor::Value::MapValue unsigned_extension_outputs;
         unsigned_extension_outputs.emplace(kExtensionDevicePublicKey,
                                            *device_public_key_signature);
+      }
+      if (prf_enabled) {
+        cbor::Value::MapValue prf;
+        prf.emplace(kExtensionPRFEnabled, true);
+        unsigned_extension_outputs.emplace(kExtensionPRF, std::move(prf));
+      }
+      if (!unsigned_extension_outputs.empty()) {
         response_map.emplace(6, std::move(unsigned_extension_outputs));
       }
 
@@ -1000,11 +1082,23 @@ class CTAP2Processor : public Transaction {
         response_map.emplace(6, true);
       }
 
+      cbor::Value::MapValue unsigned_extension_outputs;
       if (auth_response->device_public_key) {
-        cbor::Value::MapValue unsigned_extension_outputs;
         unsigned_extension_outputs.emplace(
             kExtensionDevicePublicKey,
             auth_response->device_public_key->signature);
+      }
+      if (auth_response->prf_results) {
+        cbor::Value::MapValue prf, results;
+        results.emplace(kExtensionPRFFirst, auth_response->prf_results->first);
+        if (auth_response->prf_results->second) {
+          results.emplace(kExtensionPRFSecond,
+                          *auth_response->prf_results->second);
+        }
+        prf.emplace(kExtensionPRFResults, std::move(results));
+        unsigned_extension_outputs.emplace(kExtensionPRF, std::move(prf));
+      }
+      if (!unsigned_extension_outputs.empty()) {
         response_map.emplace(8, std::move(unsigned_extension_outputs));
       }
 

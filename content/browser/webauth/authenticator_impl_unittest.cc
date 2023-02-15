@@ -102,6 +102,7 @@
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -520,6 +521,17 @@ device::AttestationConveyancePreference ConvertAttestationConveyancePreference(
       return ::device::AttestationConveyancePreference::
           kEnterpriseIfRPListedOnAuthenticator;
   }
+}
+
+std::array<uint8_t, crypto::kSHA256Length> EvaluateHMAC(
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> salt) {
+  std::array<uint8_t, crypto::kSHA256Length> ret;
+  unsigned hmac_out_length;
+  HMAC(EVP_sha256(), key.data(), key.size(), salt.data(), salt.size(),
+       ret.data(), &hmac_out_length);
+  CHECK_EQ(hmac_out_length, ret.size());
+  return ret;
 }
 
 }  // namespace
@@ -8814,15 +8826,6 @@ class AuthenticatorCableV2Test
     : public AuthenticatorImplTest,
       public ::testing::WithParamInterface<unsigned> {
  public:
-  AuthenticatorCableV2Test()
-      : network_context_(device::cablev2::NewMockTunnelServer(
-            base::BindRepeating(&AuthenticatorCableV2Test::OnContact,
-                                base::Unretained(this)))),
-        virtual_device_(new VirtualFidoDevice::State, DeviceConfig()),
-        browser_client_(
-            base::BindRepeating(&AuthenticatorCableV2Test::MaybeContactPhones,
-                                base::Unretained(this))) {}
-
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
 
@@ -8972,9 +8975,12 @@ class AuthenticatorCableV2Test
       0};
   const std::array<uint8_t, device::cablev2::kQRSeedSize> zero_seed_ = {0};
 
-  std::unique_ptr<network::mojom::NetworkContext> network_context_;
+  std::unique_ptr<network::mojom::NetworkContext> network_context_ =
+      device::cablev2::NewMockTunnelServer(
+          base::BindRepeating(&AuthenticatorCableV2Test::OnContact,
+                              base::Unretained(this)));
   uint8_t peer_identity_x962_[device::kP256X962Length] = {0};
-  device::VirtualCtap2Device virtual_device_;
+  device::VirtualCtap2Device virtual_device_{DeviceState(), DeviceConfig()};
   std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings_;
   base::OnceCallback<void(
       base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
@@ -8982,16 +8988,22 @@ class AuthenticatorCableV2Test
       base::span<const uint8_t, device::cablev2::kClientNonceSize> client_nonce,
       const std::string& request_type_hint)>
       contact_callback_;
-
   std::unique_ptr<device::cablev2::Discovery::AdvertEventStream>
       ble_advert_events_;
   device::cablev2::Discovery::AdvertEventStream::Callback ble_advert_callback_;
-
-  ContactWhenReadyContentBrowserClient browser_client_;
+  ContactWhenReadyContentBrowserClient browser_client_{
+      base::BindRepeating(&AuthenticatorCableV2Test::MaybeContactPhones,
+                          base::Unretained(this))};
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
   base::OnceClosure maybe_contact_phones_callback_;
 
  private:
+  static VirtualCtap2Device::State* DeviceState() {
+    VirtualCtap2Device::State* state = new VirtualCtap2Device::State;
+    state->fingerprints_enrolled = true;
+    return state;
+  }
+
   static VirtualCtap2Device::Config DeviceConfig() {
     // `MockPlatform` uses a virtual device to answer requests, but it can't
     // handle the credential ID being omitted in responses.
@@ -8999,6 +9011,10 @@ class AuthenticatorCableV2Test
     ret.include_credential_in_assertion_response =
         VirtualCtap2Device::Config::IncludeCredential::ALWAYS;
     ret.device_public_key_support = true;
+    ret.prf_support = true;
+    ret.internal_account_chooser = true;
+    ret.internal_uv_support = true;
+    ret.always_uv = true;
     ret.backup_eligible = true;
     // None attestation is needed because, otherwise, zeroing the AAGUID
     // invalidates the DPK signature.
@@ -9336,6 +9352,8 @@ class AuthenticatorCableV2AuthenticatorTest
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction_;
   bool did_complete_ = false;
   absl::optional<device::cablev2::authenticator::Platform::Error> error_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnPRFAsAuthenticator};
 };
 
 TEST_F(AuthenticatorCableV2AuthenticatorTest, GetAssertion) {
@@ -9400,6 +9418,88 @@ TEST_F(AuthenticatorCableV2AuthenticatorTest, DevicePublicKeyGetAssertion) {
 
   ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
   EXPECT_TRUE(result.response->device_public_key);
+}
+
+TEST_F(AuthenticatorCableV2AuthenticatorTest, PRFMakeCredential) {
+  auto options = GetTestPublicKeyCredentialCreationOptions();
+  options->prf_enable = true;
+
+  const auto result = AuthenticatorMakeCredential(std::move(options));
+
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(result.response->echo_prf);
+  EXPECT_TRUE(result.response->prf);
+}
+
+static std::tuple<PublicKeyCredentialRequestOptionsPtr,
+                  std::vector<uint8_t>,
+                  std::vector<uint8_t>>
+BuildPRFGetAssertion(device::VirtualCtap2Device& virtual_device,
+                     bool use_eval_by_credential) {
+  const std::vector<uint8_t> salt1(32, 1);
+  const std::vector<uint8_t> salt2(32, 2);
+  const std::array<uint8_t, 32> key1 = {1};
+  const std::array<uint8_t, 32> key2 = {2};
+  const std::array<uint8_t, 32> output1 = EvaluateHMAC(key2, salt1);
+  const std::array<uint8_t, 32> output2 = EvaluateHMAC(key2, salt2);
+  auto options = GetTestPublicKeyCredentialRequestOptions();
+
+  CHECK(virtual_device.mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id, options->relying_party_id));
+  virtual_device.mutable_state()
+      ->registrations.begin()
+      ->second.hmac_key.emplace(key1, key2);
+
+  std::vector<blink::mojom::PRFValuesPtr> prf_inputs;
+  auto prf_value = blink::mojom::PRFValues::New();
+  prf_value->first = salt1;
+  prf_value->second = salt2;
+  if (use_eval_by_credential) {
+    prf_value->id = options->allow_credentials[0].id;
+  }
+  prf_inputs.emplace_back(std::move(prf_value));
+
+  options->allow_credentials[0].transports.insert(
+      device::FidoTransportProtocol::kHybrid);
+  options->prf = true;
+  options->prf_inputs = std::move(prf_inputs);
+  options->user_verification = device::UserVerificationRequirement::kRequired;
+
+  return std::make_tuple(std::move(options),
+                         device::fido_parsing_utils::Materialize(output1),
+                         device::fido_parsing_utils::Materialize(output2));
+}
+
+TEST_F(AuthenticatorCableV2AuthenticatorTest, PRFGetAssertion) {
+  PublicKeyCredentialRequestOptionsPtr options;
+  std::vector<uint8_t> output1, output2;
+  std::tie(options, output1, output2) = BuildPRFGetAssertion(
+      virtual_device_, /* use_eval_by_credential= */ false);
+
+  const auto result = AuthenticatorGetAssertion(std::move(options));
+
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(result.response->echo_prf);
+  EXPECT_TRUE(result.response->prf_results);
+  EXPECT_EQ(result.response->prf_results->first, output1);
+  ASSERT_TRUE(result.response->prf_results->second.has_value());
+  EXPECT_EQ(*result.response->prf_results->second, output2);
+}
+
+TEST_F(AuthenticatorCableV2AuthenticatorTest, PRFGetAssertionByCredential) {
+  PublicKeyCredentialRequestOptionsPtr options;
+  std::vector<uint8_t> output1, output2;
+  std::tie(options, output1, output2) =
+      BuildPRFGetAssertion(virtual_device_, /* use_eval_by_credential= */ true);
+
+  const auto result = AuthenticatorGetAssertion(std::move(options));
+
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(result.response->echo_prf);
+  EXPECT_TRUE(result.response->prf_results);
+  EXPECT_EQ(result.response->prf_results->first, output1);
+  ASSERT_TRUE(result.response->prf_results->second.has_value());
+  EXPECT_EQ(*result.response->prf_results->second, output2);
 }
 
 // AuthenticatorImplWithRequestProxyTest tests behavior with an installed

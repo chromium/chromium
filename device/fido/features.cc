@@ -57,4 +57,9 @@ BASE_FEATURE(kWebAuthnCredProtectThree,
              "WebAuthenticationCredProtectThree",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Added in M112. Disabled while we wait for Play Services support.
+BASE_FEATURE(kWebAuthnPRFAsAuthenticator,
+             "WebAuthenticationPRFAsAuthenticator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

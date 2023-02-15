@@ -24,6 +24,7 @@ import org.chromium.blink.mojom.CommonCredentialInfo;
 import org.chromium.blink.mojom.DevicePublicKeyResponse;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
+import org.chromium.blink.mojom.PrfValues;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
@@ -306,7 +307,8 @@ public final class Fido2Api {
         writeLength(b, parcel);
 
         // 12: extensions
-        if (options.devicePublicKey != null || options.isPaymentCredentialCreation) {
+        if (options.devicePublicKey != null || options.isPaymentCredentialCreation
+                || options.prfEnable) {
             b = writeHeader(12, parcel);
             appendMakeCredentialExtensionsToParcel(options, parcel);
             writeLength(b, parcel);
@@ -345,6 +347,18 @@ public final class Fido2Api {
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(1, parcel);
             parcel.writeInt(1);
+            writeLength(d, parcel);
+            writeLength(c, parcel);
+            writeLength(b, parcel);
+        }
+
+        // 11: PRF
+        if (options.prfEnable) {
+            final int b = writeHeader(11, parcel);
+            final int c = writeHeader(OBJECT_MAGIC, parcel);
+            final int d = writeHeader(1, parcel);
+            // length of PRF inputs. None for makeCredential.
+            parcel.writeInt(0);
             writeLength(d, parcel);
             writeLength(c, parcel);
             writeLength(b, parcel);
@@ -465,6 +479,29 @@ public final class Fido2Api {
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(1, parcel);
             parcel.writeInt(1);
+            writeLength(d, parcel);
+            writeLength(c, parcel);
+            writeLength(b, parcel);
+        }
+
+        // 11: PRF
+        if (options.prf) {
+            final int b = writeHeader(11, parcel);
+            final int c = writeHeader(OBJECT_MAGIC, parcel);
+            final int d = writeHeader(1, parcel);
+            parcel.writeInt(2 * options.prfInputs.length);
+            for (PrfValues input : options.prfInputs) {
+                parcel.writeByteArray(input.id);
+                if (input.second == null) {
+                    parcel.writeByteArray(input.first);
+                } else {
+                    byte[] values = new byte[input.first.length + input.second.length];
+                    System.arraycopy(input.first, 0, values, 0, input.first.length);
+                    System.arraycopy(
+                            input.second, 0, values, input.first.length, input.second.length);
+                    parcel.writeByteArray(values);
+                }
+            }
             writeLength(d, parcel);
             writeLength(c, parcel);
             writeLength(b, parcel);
@@ -798,6 +835,10 @@ public final class Fido2Api {
                     creationResponse.hasCredPropsRk = true;
                     creationResponse.credPropsRk = extensions.didCreateDiscoverableCredential;
                 }
+                if (extensions.prf != null) {
+                    creationResponse.echoPrf = true;
+                    creationResponse.prf = extensions.prf.first;
+                }
             }
             return creationResponse;
         }
@@ -815,6 +856,20 @@ public final class Fido2Api {
                 assertionResponse.devicePublicKey.authenticatorOutput =
                         Fido2ApiJni.get().getDevicePublicKeyFromAuthenticatorData(
                                 assertionResponse.info.authenticatorData);
+            }
+            if (extensions != null && extensions.prf != null) {
+                assertionResponse.echoPrf = true;
+                assertionResponse.prfResults = new PrfValues();
+                if (extensions.prf.second.length == 32) {
+                    assertionResponse.prfResults.first = extensions.prf.second;
+                } else {
+                    assertionResponse.prfResults.first = new byte[32];
+                    assertionResponse.prfResults.second = new byte[32];
+                    System.arraycopy(
+                            extensions.prf.second, 0, assertionResponse.prfResults.first, 0, 32);
+                    System.arraycopy(
+                            extensions.prf.second, 32, assertionResponse.prfResults.second, 0, 32);
+                }
             }
             if (attachment >= AuthenticatorAttachment.MIN_VALUE) {
                 assertionResponse.authenticatorAttachment = attachment;
@@ -1022,6 +1077,9 @@ public final class Fido2Api {
         public DevicePublicKeyResponse devicePublicKey;
         public boolean hasCredProps;
         public boolean didCreateDiscoverableCredential;
+        // prf contains an "enabled" flag and a bytestring that contains either
+        // one or two 32-byte strings.
+        public Pair<Boolean, byte[]> prf;
     }
 
     private static Extensions parseExtensionResponse(Parcel parcel)
@@ -1051,6 +1109,10 @@ public final class Fido2Api {
                 case 3:
                     ret.hasCredProps = true;
                     ret.didCreateDiscoverableCredential = parseCredPropsResponse(parcel);
+                    break;
+
+                case 4:
+                    ret.prf = parsePrfResponse(parcel);
                     break;
 
                 default:
@@ -1182,6 +1244,40 @@ public final class Fido2Api {
         }
 
         return ret;
+    }
+
+    private static Pair<Boolean, byte[]> parsePrfResponse(Parcel parcel)
+            throws IllegalArgumentException {
+        Pair<Integer, Integer> header = readHeader(parcel);
+        if (header.first != OBJECT_MAGIC) {
+            throw new IllegalArgumentException();
+        }
+        final int endPosition = addLengthToParcelPosition(header.second, parcel);
+
+        boolean enabled = false;
+        byte[] outputs = null;
+
+        while (parcel.dataPosition() < endPosition) {
+            header = readHeader(parcel);
+            switch (header.first) {
+                case 1:
+                    enabled = parcel.readInt() != 0;
+                    break;
+
+                case 2:
+                    outputs = parcel.createByteArray();
+                    if (outputs.length != 32 && outputs.length != 64) {
+                        throw new IllegalArgumentException("bad PRF output length");
+                    }
+                    break;
+
+                default:
+                    // unknown tag. Skip over it.
+                    parcel.setDataPosition(addLengthToParcelPosition(header.second, parcel));
+            }
+        }
+
+        return Pair.create(enabled, outputs);
     }
 
     /**
