@@ -56,27 +56,15 @@ void FakeCrosHealthd::Initialize() {
   CHECK(!g_instance);
   g_instance = new FakeCrosHealthd();
 
-  if (mojo_service_manager::IsServiceManagerBound()) {
-    auto* proxy = mojo_service_manager::GetServiceManagerProxy();
-    proxy->Register(
-        chromeos::mojo_services::kCrosHealthdDiagnostics,
-        g_instance->diagnostics_provider_.BindNewPipeAndPassRemote());
-    proxy->Register(chromeos::mojo_services::kCrosHealthdEvent,
-                    g_instance->event_provider_.BindNewPipeAndPassRemote());
-    proxy->Register(chromeos::mojo_services::kCrosHealthdProbe,
-                    g_instance->probe_provider_.BindNewPipeAndPassRemote());
-  }
-
-  if (!FakeCrosHealthdClient::Get()) {
-    CHECK(!CrosHealthdClient::Get())
-        << "A real dbus client has already been initialized. Cannot initialize "
-           "FakeCrosHealthd.";
-    CrosHealthdClient::InitializeFake();
-  }
-  // FakeCrosHealthd will shutdown the fake dbus client when shutdowning so it
-  // is safe to use `Unretained` here.
-  FakeCrosHealthdClient::Get()->SetBootstrapCallback(base::BindRepeating(
-      &FakeCrosHealthd::BindNewRemote, base::Unretained(g_instance)));
+  CHECK(mojo_service_manager::IsServiceManagerBound())
+      << "Healthd requires mojo service manager.";
+  auto* proxy = mojo_service_manager::GetServiceManagerProxy();
+  proxy->Register(chromeos::mojo_services::kCrosHealthdDiagnostics,
+                  g_instance->diagnostics_provider_.BindNewPipeAndPassRemote());
+  proxy->Register(chromeos::mojo_services::kCrosHealthdEvent,
+                  g_instance->event_provider_.BindNewPipeAndPassRemote());
+  proxy->Register(chromeos::mojo_services::kCrosHealthdProbe,
+                  g_instance->probe_provider_.BindNewPipeAndPassRemote());
 }
 
 // static
@@ -86,11 +74,6 @@ void FakeCrosHealthd::Shutdown() {
   // after FakeCrosHealthd is shutdowned in unit tests and causes weird
   // behavior.
   ServiceConnection::GetInstance();
-
-  CHECK(FakeCrosHealthdClient::Get())
-      << "The fake dbus client has been shutdowned by others. Cannot shutdown "
-         "the FakeCrosHealthd";
-  CrosHealthdClient::Shutdown();
 
   CHECK(g_instance);
   delete g_instance;
@@ -458,30 +441,6 @@ void FakeCrosHealthd::EmitSignalStrengthChangedEventForTesting(
         network_guid, chromeos::network_health::mojom::UInt32Value::New(
                           signal_strength->value));
   }
-}
-
-void FakeCrosHealthd::RequestNetworkHealthForTesting(
-    chromeos::network_health::mojom::NetworkHealthService::
-        GetHealthSnapshotCallback callback) {
-  // Flush the receiver, so pending network interface are registered before it
-  // is used.
-  if (healthd_receiver_.is_bound()) {
-    healthd_receiver_.FlushForTesting();
-  }
-
-  network_health_remote_->GetHealthSnapshot(std::move(callback));
-}
-
-void FakeCrosHealthd::RunLanConnectivityRoutineForTesting(
-    chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
-        RunLanConnectivityCallback callback) {
-  // Flush the receiver, so pending network interface are registered before it
-  // is used.
-  if (healthd_receiver_.is_bound()) {
-    healthd_receiver_.FlushForTesting();
-  }
-
-  network_diagnostics_routines_->RunLanConnectivity(std::move(callback));
 }
 
 absl::optional<mojom::DiagnosticRoutineEnum>

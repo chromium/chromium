@@ -100,8 +100,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // will initialize this in browser test.
   static void Initialize();
 
-  // Shutdowns the global instance. This also shutdown the CrosHealthdClient
-  // (the dbus client). In browser test this will not be called.
+  // Shutdowns the global instance.
   static void Shutdown();
 
   // Same as above but skip the steps which is not used in browser tests. These
@@ -223,16 +222,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   void EmitSignalStrengthChangedEventForTesting(
       const std::string& network_guid,
       chromeos::network_health::mojom::UInt32ValuePtr signal_strength);
-
-  // Requests the network health state using the network_health_remote_.
-  void RequestNetworkHealthForTesting(
-      chromeos::network_health::mojom::NetworkHealthService::
-          GetHealthSnapshotCallback callback);
-
-  // Calls the LanConnectivity routine on |network_diagnostics_routines_|.
-  void RunLanConnectivityRoutineForTesting(
-      chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
-          RunLanConnectivityCallback callback);
 
   // Returns the last created routine by any Run*Routine method.
   absl::optional<mojom::DiagnosticRoutineEnum> GetLastRunRoutine() const;
