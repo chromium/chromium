@@ -1755,11 +1755,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "enable-assistant-routines",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "enable-assistant-stereo-input",
     "owners": [ "croissant-eng" ],
     "expiry_milestone": 88
