@@ -86,8 +86,10 @@ bool RemoteCommandJob::Init(
   }
 
   if (!ParseCommandPayload(command.payload())) {
+    // payload may contain crypto key, thus only enabled for debugging mode.
     SYSLOG(ERROR) << "Unable to parse command payload for type "
-                  << command.type() << ": " << command.payload();
+                  << command.type();
+    DLOG(ERROR) << "Command payload: " << command.payload();
     return false;
   }
 

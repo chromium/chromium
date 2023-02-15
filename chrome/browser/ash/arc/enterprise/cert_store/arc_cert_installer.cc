@@ -140,6 +140,8 @@ std::string ArcCertInstaller::InstallArcCert(
 
   crypto::RSAPrivateKey* rsa = certificate.placeholder_key.get();
   std::string pkcs12 = CreatePkcs12ForKey(name, rsa->key());
+  // NOTE: command_proto contains crypto key value. Avoid logging its value out
+  // on release build, by using LOG instead of SYSLOG.
   command_proto.set_payload(
       base::StringPrintf("{\"type\":\"INSTALL_KEY_PAIR\","
                          "\"payload\":\"{"
@@ -149,6 +151,7 @@ std::string ArcCertInstaller::InstallArcCert(
                          "\\\"is_user_selectable\\\":false"
                          "}\"}",
                          pkcs12.c_str(), name.c_str(), der_cert64.c_str()));
+  LOG(INFO) << "Attempting to install a key pair via remote command.";
   if (!job || !job->Init(queue_->GetNowTicks(), command_proto,
                          enterprise_management::SignedData())) {
     LOG(ERROR) << "Initialization of remote command failed";

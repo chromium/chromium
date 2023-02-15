@@ -45,7 +45,9 @@ bool UserCommandArcJob::ParseCommandPayload(
 
 void UserCommandArcJob::RunImpl(CallbackWithResult succeeded_callback,
                                 CallbackWithResult failed_callback) {
-  SYSLOG(INFO) << "Running Arc command, payload = " << command_payload_;
+  // Payload may contain crypto key, thus only log payload in debugging mode.
+  SYSLOG(INFO) << "Running Arc command...";
+  DLOG(INFO) << "payload = " << command_payload_;
 
   auto* const arc_policy_bridge =
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);

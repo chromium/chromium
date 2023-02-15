@@ -2939,6 +2939,8 @@ def CheckSpamLogging(input_api, output_api):
             r"^base/logging\.cc$",
             r"^base/task/thread_pool/task_tracker\.cc$",
             r"^chrome/app/chrome_main_delegate\.cc$",
+            r"^chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer\.cc$",
+            r"^chrome/browser/ash/policy/remote_commands/user_command_arc_job\.cc$",
             r"^chrome/browser/chrome_browser_main\.cc$",
             r"^chrome/browser/ui/startup/startup_browser_creator\.cc$",
             r"^chrome/browser/browser_switcher/bho/.*",
