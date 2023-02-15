@@ -364,6 +364,13 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
     VectorOf<Element>& elements,
     VectorOf<AtomicString>& transition_names,
     absl::optional<RootData>& root_data) {
+  // If the root element doesn't generate a layout object then there can't be
+  // any elements participating in the transition since no element can generate
+  // a box. This is a valid state for things like entry or exit animations.
+  if (!document_->documentElement()->GetLayoutObject()) {
+    return true;
+  }
+
   // We need to flatten the data first, and sort it by ordering which reflects
   // the setElement ordering.
   struct FlatData : public GarbageCollected<FlatData> {
@@ -788,6 +795,25 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   DCHECK_GE(document_->Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
+
+  if (!document_->documentElement()->GetLayoutObject()) {
+    // If we have any view transition elements, while having no
+    // documentElement->GetLayoutObject(), we should abort. Target elements are
+    // only set on the current phase of the animation, so it means that the
+    // documentElement's layout object disappeared in this phase.
+    if (new_root_data_) {
+      return false;
+    }
+
+    for (auto& entry : element_data_map_) {
+      auto& element_data = entry.value;
+      if (element_data->target_element) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   bool needs_style_invalidation = false;
 
   // Use the document element's effective zoom, since that's what the parent
