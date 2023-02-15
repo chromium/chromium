@@ -5182,6 +5182,21 @@
     },
 
     'webrtc_chromium_baremetal_gtests': {
+      # Run capture unittests on bots that have real webcams.
+      'capture_unittests': {
+        'args': ['--enable-logging', '--v=1', '--test-launcher-jobs=1',
+                 '--test-launcher-print-test-stdio=always'],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'WebRTC-chromium',
+            }
+          ],
+        },
+      },
+    },
+
+    'webrtc_chromium_gtests': {
       'browser_tests': {
         'args': [
           '--gtest_filter=WebRtcStatsPerfBrowserTest.*:'
@@ -5197,21 +5212,6 @@
           '--test-launcher-print-test-stdio=always',
         ],
       },
-      # Run capture unittests as well since our bots have real webcams.
-      'capture_unittests': {
-        'args': ['--enable-logging', '--v=1', '--test-launcher-jobs=1',
-                 '--test-launcher-print-test-stdio=always'],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'WebRTC-chromium',
-            }
-          ],
-        },
-      },
-    },
-
-    'webrtc_chromium_gtests': {
       # TODO(b/246519185) - Py3 incompatible, decide if to keep test.:
       #'browser_tests_apprtc': {
       #  'args': ['--gtest_filter=WebRtcApprtcBrowserTest.*',
@@ -5227,6 +5227,13 @@
         # Run all normal WebRTC content_browsertests. This is mostly so
         # the FYI bots can detect breakages.
         'args': ['--gtest_filter=WebRtc*'],
+      },
+      'content_browsertests_sequential': {
+        # These run a few tests on fake webcams. They need to run sequentially,
+        # otherwise tests may interfere with each other.
+        'args': ['--gtest_filter=UsingRealWebcam*', '--run-manual',
+                 '--test-launcher-jobs=1'],
+        'test': 'content_browsertests',
       },
       'content_browsertests_stress': {
         'args': ['--gtest_filter=WebRtc*MANUAL*:-UsingRealWebcam*',
@@ -5244,19 +5251,16 @@
       },
     },
 
-    'webrtc_chromium_simple_baremetal_gtests': {
-      'content_browsertests_sequential': {
-        # These run a few tests that require webcam access. They need to
-        # run sequentially, otherwise tests may interfere with each other.
-        'args': ['--gtest_filter=UsingRealWebcam*', '--run-manual',
-                 '--test-launcher-jobs=1'],
-        'test': 'content_browsertests',
-      },
-    },
-
     'webrtc_chromium_simple_gtests': {
       'content_browsertests': {
         'args': ['--gtest_filter=WebRtc*'],
+      },
+      'content_browsertests_sequential': {
+        # These run a few tests on fake webcams. They need to run sequentially,
+        # otherwise tests may interfere with each other.
+        'args': ['--gtest_filter=UsingRealWebcam*', '--run-manual',
+                 '--test-launcher-jobs=1'],
+        'test': 'content_browsertests',
       },
     },
 
@@ -6538,16 +6542,9 @@
       'chromium_browser_tests',
     ],
 
-    'webrtc_android_tests_with_baremetal_tests': [
-      'webrtc_chromium_simple_baremetal_gtests',
-      'webrtc_chromium_simple_gtests',
-    ],
-
     'webrtc_chromium_tests_with_baremetal_tests': [
       'webrtc_chromium_baremetal_gtests',
       'webrtc_chromium_gtests',
-      'webrtc_chromium_simple_baremetal_gtests',
-      'webrtc_chromium_simple_gtests',
     ],
 
     'webview_bot_all_gtests': [

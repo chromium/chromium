@@ -5949,7 +5949,7 @@
         'os_type': 'android',
         'mixins': ['walleye', 'pie_fleet'],
         'test_suites': {
-          'gtest_tests': 'webrtc_android_tests_with_baremetal_tests',
+          'gtest_tests': 'webrtc_chromium_simple_gtests',
         },
       },
       'WebRTC Chromium Linux Builder': {
