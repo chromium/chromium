@@ -12,6 +12,7 @@
 
 @implementation FollowedWebSite
 
+// TODO(crbug.com/1416286): remove.
 - (instancetype)initWithTitle:(NSString*)title
                    webPageURL:(NSURL*)webPageURL
                    faviconURL:(NSURL*)faviconURL

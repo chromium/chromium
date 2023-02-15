@@ -40,7 +40,10 @@ source_set("utils") {
 
 source_set("enums") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "follow_action_state.h" ]
+  sources = [
+    "follow_action_state.h",
+    "followed_web_site_state.h",
+  ]
   deps = []
 }
 
@@ -90,6 +93,7 @@ source_set("service") {
     "web_page_urls.mm",
   ]
   deps = [
+    ":enums",
     "//base",
     "//components/keyed_service/core",
   ]
