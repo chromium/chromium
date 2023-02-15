@@ -16,7 +16,7 @@ GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
     GpuMemoryBufferSupport* support) {
   GpuMemoryBufferConfigurationSet configurations;
 
-#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
   const gfx::BufferFormat kBufferFormats[] = {
       gfx::BufferFormat::R_8,
