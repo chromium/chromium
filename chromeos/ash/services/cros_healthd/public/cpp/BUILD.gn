@@ -27,7 +27,6 @@ source_set("cpp") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chromeos/ash/components/dbus/cros_healthd",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//ui/events/ozone/evdev:event_device_info",
@@ -48,8 +47,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/services/network_health/public/mojom",
-    "//chromeos/services/network_health/public/mojom:types",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",

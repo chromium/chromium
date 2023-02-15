@@ -16,7 +16,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -75,11 +74,9 @@ class ServiceProvider
 // The factory methods bind to receivers held within FakeCrosHealtdService, and
 // all requests on each of the interfaces are fulfilled by
 // FakeCrosHealthd.
-class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
-                              public mojom::CrosHealthdDiagnosticsService,
+class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
                               public mojom::CrosHealthdEventService,
-                              public mojom::CrosHealthdProbeService,
-                              public mojom::CrosHealthdSystemService {
+                              public mojom::CrosHealthdProbeService {
  public:
   // Stores the params passed to `GetRoutineUpdate`.
   struct RoutineUpdateParams {
@@ -237,27 +234,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // Binds a new mojo remote and disconnected the old one if exists.
   mojo::Remote<mojom::CrosHealthdServiceFactory> BindNewRemote();
 
-  // CrosHealthdServiceFactory overrides:
-  void GetProbeService(
-      mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) override;
-  void GetDiagnosticsService(
-      mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service)
-      override;
-  void GetEventService(
-      mojo::PendingReceiver<mojom::CrosHealthdEventService> service) override;
-  void SendNetworkHealthService(
-      mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
-          remote) override;
-  void SendNetworkDiagnosticsRoutines(
-      mojo::PendingRemote<
-          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
-          network_diagnostics_routines) override;
-  void GetSystemService(
-      mojo::PendingReceiver<mojom::CrosHealthdSystemService> service) override;
-  void SendChromiumDataCollector(
-      mojo::PendingRemote<internal::mojom::ChromiumDataCollector> remote)
-      override;
-
   // CrosHealthdDiagnosticsService overrides:
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
   void GetRoutineUpdate(int32_t id,
@@ -391,12 +367,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
       bool ignore_single_process_error,
       ProbeMultipleProcessInfoCallback callback) override;
 
-  // CrosHealthdSystemService overrides:
-  void GetServiceStatus(GetServiceStatusCallback callback) override;
-
-  // Used to simulate the bootstrap of healthd mojo interface.
-  mojo::Receiver<mojom::CrosHealthdServiceFactory> healthd_receiver_{this};
-
   // Used as the response to any GetAvailableRoutines IPCs received.
   std::vector<mojom::DiagnosticRoutineEnum> available_routines_;
   // Used to store last created routine by any Run*Routine method.
@@ -422,18 +392,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
       this};
   internal::ServiceProvider<mojom::CrosHealthdProbeService> probe_provider_{
       this};
-
-  // Allows the remote end to call the probe, diagnostics and event service
-  // methods.
-  mojo::ReceiverSet<mojom::CrosHealthdProbeService> probe_receiver_set_;
-  mojo::ReceiverSet<mojom::CrosHealthdDiagnosticsService>
-      diagnostics_receiver_set_;
-  mojo::ReceiverSet<mojom::CrosHealthdEventService> event_receiver_set_;
-  mojo::ReceiverSet<mojom::CrosHealthdSystemService> system_receiver_set_;
-
-  // NetworkHealthService remote.
-  mojo::Remote<chromeos::network_health::mojom::NetworkHealthService>
-      network_health_remote_;
 
   // Collection of registered Bluetooth observers.
   mojo::RemoteSet<mojom::CrosHealthdBluetoothObserver> bluetooth_observers_;
@@ -462,11 +420,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   base::Value::Dict expected_passed_parameters_;
   // Actually passed parameter.
   base::Value::Dict actual_passed_parameters_;
-
-  // Allow |this| to call the methods on the NetworkDiagnosticsRoutines
-  // interface.
-  mojo::Remote<chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
-      network_diagnostics_routines_;
 
   base::TimeDelta callback_delay_;
 };
