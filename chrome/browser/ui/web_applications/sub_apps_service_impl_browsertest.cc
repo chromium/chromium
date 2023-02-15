@@ -8,7 +8,6 @@
 
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -105,15 +104,16 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   void UninstallParentApp() { UninstallWebApp(parent_app_id_); }
 
   void UninstallParentAppBySource(WebAppManagement::Type source) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> uninstall_future;
     provider().install_finalizer().UninstallExternalWebApp(
         parent_app_id_, source,
         webapps::WebappUninstallSource::kParentUninstall,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-          run_loop.Quit();
+          uninstall_future.SetValue();
         }));
-    run_loop.Run();
+    ASSERT_TRUE(uninstall_future.Wait())
+        << "UninstallExternalWebApp did not trigger the callback.";
   }
 
   std::vector<AppId> GetAllSubAppIds(const AppId& parent_app_id) {
@@ -140,6 +140,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
 
     base::test::TestFuture<SubAppsServiceImpl::AddResultsMojo> future;
     remote_->Add(std::move(sub_apps_mojo), future.GetCallback());
+    EXPECT_TRUE(future.Wait()) << "Add did not trigger the callback.";
 
     // Unpack the mojo results before returning them.
     SubAppsServiceImpl::AddResults add_results;
@@ -167,6 +168,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   SubAppsServiceListResultPtr CallList() {
     base::test::TestFuture<SubAppsServiceListResultPtr> future;
     remote_->List(future.GetCallback());
+    EXPECT_TRUE(future.Wait()) << "List did not trigger the callback.";
     return future.Take();
   }
 
@@ -175,6 +177,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   SubAppsServiceResultCode CallRemove(const std::string& unhashed_app_id_path) {
     base::test::TestFuture<SubAppsServiceResultCode> future;
     remote_->Remove(unhashed_app_id_path, future.GetCallback());
+    EXPECT_TRUE(future.Wait()) << "Remove did not trigger the callback.";
     return future.Get();
   }
 
@@ -302,9 +305,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailWrongOrigin) {
   NavigateToParentApp();
   BindRemote();
 
-  base::RunLoop run_loop;
-  remote_.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  base::test::TestFuture<void> disconnect_handler_future;
+  remote_.set_disconnect_handler(disconnect_handler_future.GetCallback());
   // This call should never succeed and the disconnect handler should be called
   // instead.
   std::vector<SubAppsServiceAddParametersPtr> sub_apps_mojo;
@@ -315,7 +317,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailWrongOrigin) {
                    [](SubAppsServiceImpl::AddResultsMojo results) {
                      ADD_FAILURE() << "Callback unexpectedly invoked.";
                    }));
-  run_loop.Run();
+
+  ASSERT_TRUE(disconnect_handler_future.Wait())
+      << "Disconnect handler not invoked.";
 }
 
 // Make sure the Add API can't force manifest update. Add sub-app, verify
@@ -691,9 +695,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongOrigin) {
   NavigateToParentApp();
   BindRemote();
 
-  base::RunLoop run_loop;
-  remote_.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  base::test::TestFuture<void> disconnect_handler_future;
+  remote_.set_disconnect_handler(disconnect_handler_future.GetCallback());
   // This call should never succeed and the disconnect handler should be called
   // instead.
   remote_->Remove(
@@ -701,7 +704,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongOrigin) {
       base::BindLambdaForTesting([](SubAppsServiceResultCode result) {
         ADD_FAILURE() << "Callback unexpectedly invoked.";
       }));
-  run_loop.Run();
+  ASSERT_TRUE(disconnect_handler_future.Wait())
+      << "Disconnect handler not invoked.";
 }
 
 }  // namespace web_app
