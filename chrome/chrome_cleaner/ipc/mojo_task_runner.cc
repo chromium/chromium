@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
+#include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "mojo/core/embedder/embedder.h"
 
 namespace chrome_cleaner {
@@ -17,7 +19,11 @@ namespace chrome_cleaner {
 scoped_refptr<MojoTaskRunner> MojoTaskRunner::Create() {
   // Ensures thread-safe and unique initialization of the mojo lib.
   [[maybe_unused]] static bool mojo_initialization = []() {  // Leaked.
-    mojo::core::Init();
+    const auto& cmd = *base::CommandLine::ForCurrentProcess();
+    mojo::core::Init(mojo::core::Configuration{
+        .is_broker_process = !cmd.HasSwitch(switches::kTestChildProcess) &&
+                             !cmd.HasSwitch(kSandboxedProcessIdSwitch),
+    });
     return true;
   }();
 

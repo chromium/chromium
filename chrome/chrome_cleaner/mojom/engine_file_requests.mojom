@@ -37,10 +37,11 @@ interface EngineFileRequests {
   // ::FindClose.
   SandboxFindClose(FindHandle find_handle) => (uint32 result);
 
-  // Returns a read-only file handle for the given file. The only acceptable
-  // values for |dwFlagsAndAttributes| are FILE_FLAG_NO_BUFFERING,
+  // Returns a read-only file handle for the given file, or a null handle if the
+  // file could not be opened. The only acceptable values for
+  // |dwFlagsAndAttributes| are FILE_FLAG_NO_BUFFERING,
   // FILE_FLAG_SEQUENTIAL_SCAN, FILE_FLAG_RANDOM_ACCESS, and
   // FILE_FLAG_OPEN_REPARSE_POINT.
   SandboxOpenReadOnlyFile(FilePath file_name, uint32 dwFlagsAndAttributes) =>
-    (handle<platform> result);
+    (handle<platform>? result);
 };

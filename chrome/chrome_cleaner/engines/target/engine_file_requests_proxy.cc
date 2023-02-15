@@ -52,7 +52,11 @@ void SaveFindCloseCallback(uint32_t* out_result,
 void SaveOpenReadOnlyFileCallback(base::win::ScopedHandle* result_holder,
                                   base::WaitableEvent* async_call_done_event,
                                   mojo::PlatformHandle handle) {
-  *result_holder = handle.TakeHandle();
+  if (handle.is_valid_handle()) {
+    *result_holder = handle.TakeHandle();
+  } else {
+    *result_holder = base::win::ScopedHandle(INVALID_HANDLE_VALUE);
+  }
   async_call_done_event->Signal();
 }
 

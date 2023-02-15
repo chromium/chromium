@@ -110,6 +110,10 @@ class BlobRegistryImplTest : public testing::Test {
 
   void TearDown() override {
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+
+    // Give pending tasks a chance to run since they may release Mojo bindings
+    // resources.
+    base::RunLoop().RunUntilIdle();
   }
 
   std::unique_ptr<BlobDataHandle> CreateBlobFromString(

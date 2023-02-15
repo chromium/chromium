@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base_switches.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/multiprocess_test.h"
@@ -23,7 +25,11 @@ int main(int argc, char** argv) {
 
   base::TestSuite test_suite(argc, argv);
   ipcz::test::RegisterMultinodeTests();
-  mojo::core::Init();
+
+  mojo::core::Init(mojo::core::Configuration{
+      .is_broker_process = !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestChildProcess),
+  });
   base::TestIOThread test_io_thread(base::TestIOThread::kAutoStart);
   mojo::core::ScopedIPCSupport ipc_support(
       test_io_thread.task_runner(),

@@ -35,7 +35,11 @@ BASE_FEATURE(kMojoAvoidRandomPipeId,
              "MojoAvoidRandomPipeId",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 BASE_FEATURE(kMojoIpcz, "MojoIpcz", base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kMojoIpcz, "MojoIpcz", base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 }  // namespace core
 }  // namespace mojo

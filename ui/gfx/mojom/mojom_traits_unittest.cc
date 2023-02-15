@@ -4,6 +4,8 @@
 
 #include <utility>
 
+#include "base/memory/platform_shared_memory_handle.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -35,6 +37,24 @@ gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
   return reinterpret_cast<gfx::AcceleratedWidget>(i);
 #endif
 }
+
+// Used by the GpuMemoryBufferHandle test to produce a valid object handle to
+// embed in a NativePixmapPlane object, so that the test isn't sending an
+// invalid FD/vmo object where the mojom requires a valid one.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+base::ScopedFD CreateValidLookingBufferHandle() {
+  return base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+             base::UnsafeSharedMemoryRegion::Create(1024))
+      .PassPlatformHandle()
+      .fd;
+}
+#elif BUILDFLAG(IS_FUCHSIA)
+zx::vmo CreateValidLookingBufferHandle() {
+  return base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+             base::UnsafeSharedMemoryRegion::Create(1024))
+      .PassPlatformHandle();
+}
+#endif
 
 class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
  public:
@@ -183,10 +203,10 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   handle2.stride = kStride;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const uint64_t kModifier = 2;
-  base::ScopedFD buffer_handle;
+  base::ScopedFD buffer_handle = CreateValidLookingBufferHandle();
   handle2.native_pixmap_handle.modifier = kModifier;
 #elif BUILDFLAG(IS_FUCHSIA)
-  zx::vmo buffer_handle;
+  zx::vmo buffer_handle = CreateValidLookingBufferHandle();
   zx::eventpair client_handle, service_handle;
   auto status = zx::eventpair::create(0, &client_handle, &service_handle);
   DCHECK_EQ(status, ZX_OK);

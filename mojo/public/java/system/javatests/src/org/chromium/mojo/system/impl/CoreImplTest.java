@@ -18,7 +18,6 @@ import org.chromium.mojo.MojoTestRule;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.DataPipe;
 import org.chromium.mojo.system.Handle;
-import org.chromium.mojo.system.InvalidHandle;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.MojoResult;
@@ -406,28 +405,6 @@ public class CoreImplTest {
 
         checkSharing(handle, newHandle);
         checkSharing(newHandle, handle);
-    }
-
-    /**
-     * Testing that invalid handle can be used with this implementation.
-     */
-    @Test
-    @SmallTest
-    public void testInvalidHandle() {
-        Core core = CoreImpl.getInstance();
-        Handle handle = InvalidHandle.INSTANCE;
-
-        // Checking sending an invalid handle. Should result in an ABORTED
-        // exception.
-        Pair<MessagePipeHandle, MessagePipeHandle> handles = core.createMessagePipe(null);
-        addHandlePairToClose(handles);
-        try {
-            handles.first.writeMessage(null, Collections.<Handle>singletonList(handle),
-                    MessagePipeHandle.WriteFlags.NONE);
-            Assert.fail();
-        } catch (MojoException e) {
-            Assert.assertEquals(MojoResult.ABORTED, e.getMojoResult());
-        }
     }
 
     /**

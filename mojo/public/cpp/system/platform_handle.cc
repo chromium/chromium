@@ -184,6 +184,10 @@ base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
 }
 
 ScopedHandle WrapPlatformHandle(PlatformHandle handle) {
+  if (!handle.is_valid()) {
+    return ScopedHandle();
+  }
+
   MojoPlatformHandle platform_handle;
   PlatformHandle::ToMojoPlatformHandle(std::move(handle), &platform_handle);
 
@@ -196,6 +200,10 @@ ScopedHandle WrapPlatformHandle(PlatformHandle handle) {
 }
 
 PlatformHandle UnwrapPlatformHandle(ScopedHandle handle) {
+  if (!handle.is_valid()) {
+    return PlatformHandle();
+  }
+
   MojoPlatformHandle platform_handle;
   platform_handle.struct_size = sizeof(platform_handle);
   MojoResult result = MojoUnwrapPlatformHandle(handle.release().value(),

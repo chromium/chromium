@@ -16,5 +16,5 @@ struct TransferableSocket {
 [EnableIfNot=is_win]
 struct TransferableSocket {
   // On non-Windows platforms this can be the raw socket.
-  handle<platform> socket;
+  handle<platform>? socket;
 };
