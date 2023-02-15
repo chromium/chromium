@@ -16,8 +16,9 @@ ChromeKioskLaunchControllerLacros::ChromeKioskLaunchControllerLacros(
     Profile& profile)
     : profile_(profile) {
   auto* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::ChromeAppKioskService>())
+  if (!service->IsAvailable<crosapi::mojom::ChromeAppKioskService>()) {
     return;
+  }
 
   service->GetRemote<crosapi::mojom::ChromeAppKioskService>()
       ->BindLaunchController(

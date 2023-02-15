@@ -14,8 +14,8 @@
 #include "extensions/common/value_builder.h"
 
 using extensions::DictionaryBuilder;
-using extensions::ListBuilder;
 using extensions::ExtensionBuilder;
+using extensions::ListBuilder;
 
 namespace ash {
 
@@ -64,8 +64,9 @@ scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
       return nullptr;
   }
 
-  if (kiosk_enabled_)
+  if (kiosk_enabled_) {
     manifest_builder.Set("kiosk_enabled", kiosk_enabled_);
+  }
 
   manifest_builder.Set("offline_enabled", offline_enabled_);
 

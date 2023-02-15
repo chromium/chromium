@@ -34,8 +34,9 @@ bool StartupAppLauncherUpdateChecker::Run(UpdateCheckCallback callback) {
       extensions::ExtensionSystem::Get(profile_)
           ->extension_service()
           ->updater();
-  if (!updater)
+  if (!updater) {
     return false;
+  }
 
   callback_ = std::move(callback);
 

@@ -576,8 +576,9 @@ TEST_P(AppSessionRestartReasonTest, StoppedMetric) {
   // Emulate exiting the kiosk session.
   CloseMainBrowser();
   EXPECT_TRUE(IsSessionShuttingDown());
-  if (test_config.run_with_reboot)
+  if (test_config.run_with_reboot) {
     EmulateDeviceReboot();
+  }
   histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
 
   StartWebKioskSession();
@@ -603,8 +604,9 @@ TEST_P(AppSessionRestartReasonTest, CrashMetric) {
   local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
   base::FilePath crash_file;
   ASSERT_TRUE(base::CreateTemporaryFileInDir(crash_path(), &crash_file));
-  if (test_config.run_with_reboot)
+  if (test_config.run_with_reboot) {
     EmulateDeviceReboot();
+  }
 
   StartWebKioskSession();
 
@@ -622,8 +624,9 @@ TEST_P(AppSessionRestartReasonTest, LocalStateWasNotSavedMetric) {
   value.Set(kKioskSessionStartTime,
             base::TimeToValue(base::Time::Now() - base::Hours(1)));
   local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
-  if (test_config.run_with_reboot)
+  if (test_config.run_with_reboot) {
     EmulateDeviceReboot();
+  }
 
   StartWebKioskSession();
 
@@ -644,8 +647,9 @@ TEST_P(AppSessionRestartReasonTest, PluginCrashedMetric) {
   // Emulate exiting the kiosk session.
   CloseMainBrowser();
   EXPECT_TRUE(IsSessionShuttingDown());
-  if (test_config.run_with_reboot)
+  if (test_config.run_with_reboot) {
     EmulateDeviceReboot();
+  }
   histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
 
   StartWebKioskSession();
@@ -667,8 +671,9 @@ TEST_P(AppSessionRestartReasonTest, PluginHungMetric) {
   // Emulate exiting the kiosk session.
   CloseMainBrowser();
   EXPECT_TRUE(IsSessionShuttingDown());
-  if (test_config.run_with_reboot)
+  if (test_config.run_with_reboot) {
     EmulateDeviceReboot();
+  }
   histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
 
   StartWebKioskSession();

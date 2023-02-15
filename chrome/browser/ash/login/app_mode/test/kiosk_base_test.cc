@@ -194,8 +194,9 @@ void KioskBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
   OobeBaseTest::SetUpCommandLine(command_line);
   fake_cws_->Init(embedded_test_server());
 
-  if (use_consumer_kiosk_mode_)
+  if (use_consumer_kiosk_mode_) {
     command_line->AppendSwitch(switches::kEnableConsumerKiosk);
+  }
 }
 
 bool KioskBaseTest::LaunchApp(const std::string& app_id) {
@@ -212,8 +213,9 @@ void KioskBaseTest::ReloadKioskApps() {
 }
 
 void KioskBaseTest::SetupTestAppUpdateCheck() {
-  if (test_app_version().empty())
+  if (test_app_version().empty()) {
     return;
+  }
 
   fake_cws_->SetUpdateCrx(test_app_id(), test_crx_file(), test_app_version());
 }
@@ -298,13 +300,15 @@ void KioskBaseTest::WaitForAppLaunchWithOptions(bool check_launch_data,
   OobeWindowVisibilityWaiter(false /*target_visibility*/).Wait();
 
   // Terminate the app.
-  if (terminate_app)
+  if (terminate_app) {
     window->GetBaseWindow()->Close();
+  }
 
   // Wait until the app terminates if it is still running.
   if (!keep_app_open &&
-      !app_window_registry->GetAppWindowsForApp(test_app_id_).empty())
+      !app_window_registry->GetAppWindowsForApp(test_app_id_).empty()) {
     RunUntilBrowserProcessQuits();
+  }
 
   // Check that the app had been informed that it is running in a kiosk
   // session.
@@ -319,8 +323,9 @@ void KioskBaseTest::WaitForAppLaunchSuccess() {
 }
 
 void KioskBaseTest::WaitForAppLaunchNetworkTimeout() {
-  if (GetKioskLaunchController()->network_wait_timedout())
+  if (GetKioskLaunchController()->network_wait_timedout()) {
     return;
+  }
 
   base::RunLoop loop;
   base::OnceClosure callback =

@@ -158,8 +158,9 @@ class InternetPeriodicMetricsServiceTest
 
 TEST_P(InternetPeriodicMetricsServiceTest, KioskInternetMetric) {
   const KioskSessionInternetAccessTestCase& test_config = GetParam();
-  if (test_config.should_make_offline)
+  if (test_config.should_make_offline) {
     MakeOffline();
+  }
 
   EmulateKioskRestart(test_config.is_first_app_offline_enabled,
                       test_config.is_second_app_offline_enabled);

@@ -73,8 +73,9 @@ bool IsRunningInForcedAppModeForApp(const std::string& app_id) {
   DCHECK(!app_id.empty());
 
   absl::optional<std::string> forced_app_mode_app = GetForcedAppModeApp();
-  if (!forced_app_mode_app.has_value())
+  if (!forced_app_mode_app.has_value()) {
     return false;
+  }
 
   return app_id == forced_app_mode_app.value();
 }

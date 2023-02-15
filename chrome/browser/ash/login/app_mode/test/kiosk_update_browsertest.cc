@@ -223,10 +223,11 @@ class KioskUpdateTest : public KioskBaseTest {
     KioskAppManager* manager = KioskAppManager::Get();
     TestAppDataLoadWaiter waiter(manager, app_id, version);
     ReloadKioskApps();
-    if (wait_for_app_data)
+    if (wait_for_app_data) {
       waiter.WaitForAppData();
-    else
+    } else {
       waiter.Wait();
+    }
     EXPECT_TRUE(waiter.loaded());
     std::string cached_version;
     base::FilePath file_path;
@@ -424,8 +425,9 @@ class KioskUpdateTest : public KioskBaseTest {
     ~KioskAppExternalUpdateWaiter() override { manager_->RemoveObserver(this); }
 
     void Wait() {
-      if (quit_)
+      if (quit_) {
         return;
+      }
       runner_ = std::make_unique<base::RunLoop>();
       runner_->Run();
     }
@@ -437,16 +439,18 @@ class KioskUpdateTest : public KioskBaseTest {
    private:
     // KioskAppManagerObserver overrides:
     void OnKioskAppCacheUpdated(const std::string& app_id) override {
-      if (app_id_ != app_id)
+      if (app_id_ != app_id) {
         return;
+      }
       app_update_notified_ = true;
     }
 
     void OnKioskAppExternalUpdateComplete(bool success) override {
       quit_ = true;
       update_success_ = success;
-      if (runner_.get())
+      if (runner_.get()) {
         runner_->Quit();
+      }
     }
 
     std::unique_ptr<base::RunLoop> runner_;

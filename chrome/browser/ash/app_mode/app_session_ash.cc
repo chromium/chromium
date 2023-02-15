@@ -27,8 +27,9 @@ namespace {
 // `FloatingAccessibilityMenuEnabled` policy is enabled.
 void StartFloatingAccessibilityMenu() {
   auto* accessibility_controller = AccessibilityController::Get();
-  if (accessibility_controller)
+  if (accessibility_controller) {
     accessibility_controller->ShowFloatingMenuIfEnabled();
+  }
 }
 
 bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
@@ -90,8 +91,9 @@ void AppSessionAsh::InitKioskAppUpdateService(const std::string& app_id) {
   // Set the app_id for the current instance of KioskAppUpdateService.
   auto* update_service = KioskAppUpdateServiceFactory::GetForProfile(profile());
   DCHECK(update_service);
-  if (update_service)
+  if (update_service) {
     update_service->Init(app_id);
+  }
 
   // Start to monitor external update from usb stick.
   KioskAppManager::Get()->MonitorKioskExternalUpdate();

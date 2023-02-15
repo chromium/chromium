@@ -31,16 +31,18 @@ TestAppDataLoadWaiter::~TestAppDataLoadWaiter() {
 
 void TestAppDataLoadWaiter::Wait() {
   wait_type_ = WAIT_FOR_CRX_CACHE;
-  if (quit_)
+  if (quit_) {
     return;
+  }
   runner_ = std::make_unique<base::RunLoop>();
   runner_->Run();
 }
 
 void TestAppDataLoadWaiter::WaitForAppData() {
   wait_type_ = WAIT_FOR_APP_DATA;
-  if (quit_ || IsAppDataLoaded())
+  if (quit_ || IsAppDataLoaded()) {
     return;
+  }
   runner_ = std::make_unique<base::RunLoop>();
   runner_->Run();
 }
@@ -53,47 +55,56 @@ void TestAppDataLoadWaiter::OnKioskAppDataChanged(const std::string& app_id) {
 
   loaded_ = true;
   quit_ = true;
-  if (runner_.get())
+  if (runner_.get()) {
     runner_->Quit();
+  }
 }
 
 void TestAppDataLoadWaiter::OnKioskAppDataLoadFailure(
     const std::string& app_id) {
-  if (wait_type_ != WAIT_FOR_APP_DATA || app_id != app_id_)
+  if (wait_type_ != WAIT_FOR_APP_DATA || app_id != app_id_) {
     return;
+  }
 
   loaded_ = false;
   quit_ = true;
-  if (runner_.get())
+  if (runner_.get()) {
     runner_->Quit();
+  }
 }
 
 void TestAppDataLoadWaiter::OnKioskExtensionLoadedInCache(
     const std::string& app_id) {
-  if (wait_type_ != WAIT_FOR_CRX_CACHE)
+  if (wait_type_ != WAIT_FOR_CRX_CACHE) {
     return;
+  }
 
   std::string cached_version;
   base::FilePath file_path;
-  if (!manager_->GetCachedCrx(app_id_, &file_path, &cached_version))
+  if (!manager_->GetCachedCrx(app_id_, &file_path, &cached_version)) {
     return;
-  if (version_ != cached_version)
+  }
+  if (version_ != cached_version) {
     return;
+  }
   loaded_ = true;
   quit_ = true;
-  if (runner_.get())
+  if (runner_.get()) {
     runner_->Quit();
+  }
 }
 
 void TestAppDataLoadWaiter::OnKioskExtensionDownloadFailed(
     const std::string& app_id) {
-  if (wait_type_ != WAIT_FOR_CRX_CACHE)
+  if (wait_type_ != WAIT_FOR_CRX_CACHE) {
     return;
+  }
 
   loaded_ = false;
   quit_ = true;
-  if (runner_.get())
+  if (runner_.get()) {
     runner_->Quit();
+  }
 }
 
 bool TestAppDataLoadWaiter::IsAppDataLoaded() {

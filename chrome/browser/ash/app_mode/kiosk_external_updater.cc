@@ -68,24 +68,24 @@ bool ShouldUpdateForHigherVersion(const std::string& version_1,
                                   bool update_for_same_version) {
   const base::Version v1(version_1);
   const base::Version v2(version_2);
-  if (!v1.IsValid() || !v2.IsValid())
+  if (!v1.IsValid() || !v2.IsValid()) {
     return false;
+  }
   int compare_result = v1.CompareTo(v2);
-  if (compare_result < 0)
+  if (compare_result < 0) {
     return true;
+  }
   return update_for_same_version && compare_result == 0;
 }
 
 }  // namespace
 
-KioskExternalUpdater::ExternalUpdate::ExternalUpdate() {
-}
+KioskExternalUpdater::ExternalUpdate::ExternalUpdate() {}
 
 KioskExternalUpdater::ExternalUpdate::ExternalUpdate(
     const ExternalUpdate& other) = default;
 
-KioskExternalUpdater::ExternalUpdate::~ExternalUpdate() {
-}
+KioskExternalUpdater::ExternalUpdate::~ExternalUpdate() {}
 
 KioskExternalUpdater::KioskExternalUpdater(
     const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner,
@@ -100,8 +100,9 @@ KioskExternalUpdater::KioskExternalUpdater(
 }
 
 KioskExternalUpdater::~KioskExternalUpdater() {
-  if (disks::DiskMountManager::GetInstance())
+  if (disks::DiskMountManager::GetInstance()) {
     disks::DiskMountManager::GetInstance()->RemoveObserver(this);
+  }
 }
 
 void KioskExternalUpdater::OnMountEvent(
@@ -157,8 +158,9 @@ void KioskExternalUpdater::OnExternalUpdateUnpackSuccess(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // User might pull out the usb stick before updating is completed.
-  if (CheckExternalUpdateInterrupted())
+  if (CheckExternalUpdateInterrupted()) {
     return;
+  }
 
   if (!ShouldDoExternalUpdate(app_id, version, min_browser_version)) {
     external_updates_[app_id].update_status = UpdateStatus::kFailed;
@@ -167,8 +169,9 @@ void KioskExternalUpdater::OnExternalUpdateUnpackSuccess(
   }
 
   // User might pull out the usb stick before updating is completed.
-  if (CheckExternalUpdateInterrupted())
+  if (CheckExternalUpdateInterrupted()) {
     return;
+  }
 
   base::FilePath external_crx_path =
       external_updates_[app_id].external_crx.path;
@@ -186,8 +189,9 @@ void KioskExternalUpdater::OnExternalUpdateUnpackSuccess(
 void KioskExternalUpdater::OnExternalUpdateUnpackFailure(
     const std::string& app_id) {
   // User might pull out the usb stick before updating is completed.
-  if (CheckExternalUpdateInterrupted())
+  if (CheckExternalUpdateInterrupted()) {
     return;
+  }
 
   external_updates_[app_id].update_status = UpdateStatus::kFailed;
   external_updates_[app_id].error =
@@ -224,8 +228,8 @@ void KioskExternalUpdater::ProcessParsedManifest(
     std::string app_id = manifest.first;
     std::string cached_version_str;
     base::FilePath cached_crx;
-    if (!KioskAppManager::Get()->GetCachedCrx(
-            app_id, &cached_crx, &cached_version_str)) {
+    if (!KioskAppManager::Get()->GetCachedCrx(app_id, &cached_crx,
+                                              &cached_version_str)) {
       LOG(WARNING) << "Can't find app in existing cache " << app_id;
       continue;
     }
@@ -308,16 +312,18 @@ void KioskExternalUpdater::ValidateExternalUpdates() {
 
 bool KioskExternalUpdater::IsExternalUpdatePending() const {
   for (const auto& it : external_updates_) {
-    if (it.second.update_status == UpdateStatus::kPending)
+    if (it.second.update_status == UpdateStatus::kPending) {
       return true;
+    }
   }
   return false;
 }
 
 bool KioskExternalUpdater::IsAllExternalUpdatesSucceeded() const {
   for (const auto& it : external_updates_) {
-    if (it.second.update_status != UpdateStatus::kSuccess)
+    if (it.second.update_status != UpdateStatus::kSuccess) {
       return false;
+    }
   }
   return true;
 }
@@ -330,8 +336,8 @@ bool KioskExternalUpdater::ShouldDoExternalUpdate(
 
   std::string existing_version_str;
   base::FilePath existing_path;
-  bool cached = KioskAppManager::Get()->GetCachedCrx(
-      app_id, &existing_path, &existing_version_str);
+  bool cached = KioskAppManager::Get()->GetCachedCrx(app_id, &existing_path,
+                                                     &existing_version_str);
   DCHECK(cached);
 
   // Compare app version.
@@ -361,8 +367,9 @@ void KioskExternalUpdater::PutValidatedExtension(const std::string& app_id,
                                                  bool crx_copied) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (CheckExternalUpdateInterrupted())
+  if (CheckExternalUpdateInterrupted()) {
     return;
+  }
 
   if (!crx_copied) {
     LOG(ERROR) << "Cannot copy external crx file to " << crx_file.value();
@@ -384,8 +391,9 @@ void KioskExternalUpdater::OnPutValidatedExtension(const std::string& app_id,
                                                    bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (CheckExternalUpdateInterrupted())
+  if (CheckExternalUpdateInterrupted()) {
     return;
+  }
 
   if (!success) {
     external_updates_[app_id].update_status = UpdateStatus::kFailed;
@@ -401,15 +409,17 @@ void KioskExternalUpdater::OnPutValidatedExtension(const std::string& app_id,
 }
 
 void KioskExternalUpdater::MaybeValidateNextExternalUpdate() {
-  if (IsExternalUpdatePending())
+  if (IsExternalUpdatePending()) {
     ValidateExternalUpdates();
-  else
+  } else {
     MayBeNotifyKioskAppUpdate();
+  }
 }
 
 void KioskExternalUpdater::MayBeNotifyKioskAppUpdate() {
-  if (IsExternalUpdatePending())
+  if (IsExternalUpdatePending()) {
     return;
+  }
 
   NotifyKioskUpdateProgress(GetUpdateReportMessage());
   NotifyKioskAppUpdateAvailable();
@@ -429,10 +439,11 @@ void KioskExternalUpdater::NotifyKioskAppUpdateAvailable() {
 
 void KioskExternalUpdater::NotifyKioskUpdateProgress(
     const std::u16string& message) {
-  if (!notification_)
+  if (!notification_) {
     notification_ = std::make_unique<KioskExternalUpdateNotification>(message);
-  else
+  } else {
     notification_->ShowMessage(message);
+  }
 }
 
 void KioskExternalUpdater::DismissKioskUpdateNotification() {
@@ -452,10 +463,11 @@ std::u16string KioskExternalUpdater::GetUpdateReportMessage() const {
     std::u16string app_name = base::UTF8ToUTF16(update.app_name);
     if (update.update_status == UpdateStatus::kSuccess) {
       ++updated;
-      if (updated_apps.empty())
+      if (updated_apps.empty()) {
         updated_apps = app_name;
-      else
+      } else {
         updated_apps += u", " + app_name;
+      }
     } else {  // UpdateStatus::kFailed
       ++failed;
       if (failed_apps.empty()) {

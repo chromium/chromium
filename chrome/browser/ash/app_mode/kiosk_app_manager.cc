@@ -110,8 +110,9 @@ scoped_refptr<base::SequencedTaskRunner> GetBackgroundTaskRunner() {
 
 std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
     chromeos::ExternalCacheDelegate* delegate) {
-  if (g_test_overrides)
+  if (g_test_overrides) {
     return g_test_overrides->CreateExternalCache(delegate, true);
+  }
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
       g_browser_process->shared_url_loader_factory();
@@ -125,8 +126,9 @@ std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
 }
 
 std::unique_ptr<AppSessionAsh> CreateAppSession(Profile* profile) {
-  if (g_test_overrides)
+  if (g_test_overrides) {
     return g_test_overrides->CreateAppSession();
+  }
   return std::make_unique<AppSessionAsh>(profile);
 }
 
@@ -276,8 +278,9 @@ void KioskAppManager::InitSession(Profile* profile, const std::string& app_id) {
   }
 
   app_session_ = CreateAppSession(profile);
-  if (app_session_)
+  if (app_session_) {
     app_session_->Init(app_id);
+  }
   NotifySessionInitialized();
 }
 
@@ -289,8 +292,9 @@ bool KioskAppManager::GetSwitchesForSessionRestore(
       base::CommandLine::ForCurrentProcess();
   bool has_auto_launched_flag =
       current_command_line->HasSwitch(switches::kAppAutoLaunched);
-  if (auto_launched == has_auto_launched_flag)
+  if (auto_launched == has_auto_launched_flag) {
     return false;
+  }
 
   // Collect current policy defined switches, so they can be passed on to the
   // session manager as well - otherwise they would get lost on restart.
@@ -308,8 +312,9 @@ bool KioskAppManager::GetSwitchesForSessionRestore(
       in_policy_switches_block = true;
     }
 
-    if (in_policy_switches_block)
+    if (in_policy_switches_block) {
       switches->AppendSwitch(it);
+    }
 
     if (it == policy_switches_end) {
       DCHECK(in_policy_switches_block);
@@ -319,8 +324,9 @@ bool KioskAppManager::GetSwitchesForSessionRestore(
 
   DCHECK(!in_policy_switches_block);
 
-  if (auto_launched)
+  if (auto_launched) {
     switches->AppendSwitch(switches::kAppAutoLaunched);
+  }
 
   return true;
 }
@@ -352,8 +358,9 @@ void KioskAppManager::AddAppForTest(
 void KioskAppManager::EnableConsumerKioskAutoLaunch(
     KioskAppManager::EnableKioskAutoLaunchCallback callback) {
   if (!IsConsumerKioskEnabled()) {
-    if (callback)
+    if (callback) {
       std::move(callback).Run(false);
+    }
     return;
   }
 
@@ -371,8 +378,9 @@ void KioskAppManager::EnableConsumerKioskAutoLaunch(
 void KioskAppManager::GetConsumerKioskAutoLaunchStatus(
     KioskAppManager::GetConsumerKioskAutoLaunchStatusCallback callback) {
   if (!IsConsumerKioskEnabled()) {
-    if (callback)
+    if (callback) {
       std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kDisabled);
+    }
     return;
   }
 
@@ -394,8 +402,9 @@ bool KioskAppManager::IsConsumerKioskDeviceWithAutoLaunch() {
 void KioskAppManager::OnLockDevice(
     KioskAppManager::EnableKioskAutoLaunchCallback callback,
     InstallAttributes::LockResult result) {
-  if (!callback)
+  if (!callback) {
     return;
+  }
 
   std::move(callback).Run(result == InstallAttributes::LOCK_SUCCESS);
 }
@@ -405,21 +414,24 @@ void KioskAppManager::OnOwnerFileChecked(
     bool* owner_present) {
   ownership_established_ = *owner_present;
 
-  if (!callback)
+  if (!callback) {
     return;
+  }
 
   // If we have owner already established on the machine, don't let
   // consumer kiosk to be enabled.
-  if (ownership_established_)
+  if (ownership_established_) {
     std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kDisabled);
-  else
+  } else {
     std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kConfigurable);
+  }
 }
 
 void KioskAppManager::OnReadImmutableAttributes(
     KioskAppManager::GetConsumerKioskAutoLaunchStatusCallback callback) {
-  if (!callback)
+  if (!callback) {
     return;
+  }
 
   ConsumerKioskAutoLaunchStatus status =
       ConsumerKioskAutoLaunchStatus::kDisabled;
@@ -458,37 +470,42 @@ void KioskAppManager::SetEnableAutoLaunch(bool value) {
 }
 
 bool KioskAppManager::IsAutoLaunchRequested() const {
-  if (GetAutoLaunchApp().empty())
+  if (GetAutoLaunchApp().empty()) {
     return false;
+  }
 
   // Apps that were installed by the policy don't require machine owner
   // consent through UI.
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsDeviceEnterpriseManaged())
+  if (connector->IsDeviceEnterpriseManaged()) {
     return false;
+  }
 
   return GetAutoLoginState() == AutoLoginState::kRequested;
 }
 
 bool KioskAppManager::IsAutoLaunchEnabled() const {
-  if (GetAutoLaunchApp().empty())
+  if (GetAutoLaunchApp().empty()) {
     return false;
+  }
 
   // Apps that were installed by the policy don't require machine owner
   // consent through UI.
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsDeviceEnterpriseManaged())
+  if (connector->IsDeviceEnterpriseManaged()) {
     return true;
+  }
 
   return GetAutoLoginState() == AutoLoginState::kApproved;
 }
 
 std::string KioskAppManager::GetAutoLaunchAppRequiredPlatformVersion() const {
   // Bail out if there is no auto launched app with zero delay.
-  if (!IsAutoLaunchEnabled() || !GetAutoLaunchDelay().is_zero())
+  if (!IsAutoLaunchEnabled() || !GetAutoLaunchDelay().is_zero()) {
     return std::string();
+  }
 
   const KioskAppData* data = GetAppData(GetAutoLaunchApp());
   return data == nullptr ? std::string() : data->required_platform_version();
@@ -520,13 +537,15 @@ void KioskAppManager::AddApp(const std::string& app_id,
 void KioskAppManager::RemoveApp(const std::string& app_id,
                                 OwnerSettingsServiceAsh* service) {
   // Resets auto launch app if it is the removed app.
-  if (auto_launch_app_id_ == app_id)
+  if (auto_launch_app_id_ == app_id) {
     SetAutoLaunchApp(std::string(), service);
+  }
 
   std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
-  if (device_local_accounts.empty())
+  if (device_local_accounts.empty()) {
     return;
+  }
 
   // Remove entries that match |app_id|.
   for (std::vector<policy::DeviceLocalAccount>::iterator it =
@@ -564,16 +583,18 @@ KioskAppManager::App KioskAppManager::ConstructApp(
 
 bool KioskAppManager::GetApp(const std::string& app_id, App* app) const {
   const KioskAppData* data = GetAppData(app_id);
-  if (!data)
+  if (!data) {
     return false;
+  }
   *app = ConstructApp(*data);
   return true;
 }
 
 void KioskAppManager::ClearAppData(const std::string& app_id) {
   KioskAppData* app_data = GetAppDataMutable(app_id);
-  if (!app_data)
+  if (!app_data) {
     return;
+  }
 
   app_data->ClearCache();
 }
@@ -583,16 +604,18 @@ void KioskAppManager::UpdateAppDataFromProfile(
     Profile* profile,
     const extensions::Extension* app) {
   KioskAppData* app_data = GetAppDataMutable(app_id);
-  if (!app_data)
+  if (!app_data) {
     return;
+  }
 
   app_data->LoadFromInstalledApp(profile, app);
 }
 
 void KioskAppManager::RetryFailedAppDataFetch() {
   for (size_t i = 0; i < apps_.size(); ++i) {
-    if (apps_[i]->status() == KioskAppData::Status::kError)
+    if (apps_[i]->status() == KioskAppData::Status::kError) {
       apps_[i]->Load();
+    }
   }
 }
 
@@ -641,14 +664,16 @@ void KioskAppManager::UpdateExternalCache() {
 }
 
 void KioskAppManager::OnKioskAppCacheUpdated(const std::string& app_id) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnKioskAppCacheUpdated(app_id);
+  }
 }
 
 void KioskAppManager::OnKioskAppExternalUpdateComplete(bool success) {
   base::UmaHistogramBoolean(kKioskExternalUpdateSuccessHistogram, success);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnKioskAppExternalUpdateComplete(success);
+  }
 }
 
 void KioskAppManager::PutValidatedExternalExtension(
@@ -663,8 +688,9 @@ void KioskAppManager::PutValidatedExternalExtension(
 bool KioskAppManager::IsPlatformCompliant(
     const std::string& required_platform_version) const {
   // Empty required version is compliant with any platform version.
-  if (required_platform_version.empty())
+  if (required_platform_version.empty()) {
     return true;
+  }
 
   // Not compliant for bad formatted required versions.
   const base::Version required_version(required_platform_version);
@@ -681,8 +707,9 @@ bool KioskAppManager::IsPlatformCompliant(
   const auto& platform_version_components = platform_version.components();
   const auto& required_version_components = required_version.components();
   for (size_t i = 0; i < count; ++i) {
-    if (platform_version_components[i] != required_version_components[i])
+    if (platform_version_components[i] != required_version_components[i]) {
       return false;
+    }
   }
 
   return true;
@@ -691,17 +718,20 @@ bool KioskAppManager::IsPlatformCompliant(
 bool KioskAppManager::IsPlatformCompliantWithApp(
     const extensions::Extension* app) const {
   // Compliant if the app is not the auto launched with zero delay app.
-  if (currently_auto_launched_with_zero_delay_app_ != app->id())
+  if (currently_auto_launched_with_zero_delay_app_ != app->id()) {
     return true;
+  }
 
   // Compliant if the app does not specify required platform version.
   const extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(app);
-  if (info == nullptr)
+  if (info == nullptr) {
     return true;
+  }
 
   // Compliant if the app wants to be always updated.
-  if (info->always_update)
+  if (info->always_update) {
     return true;
+  }
 
   return IsPlatformCompliant(info->required_platform_version);
 }
@@ -728,8 +758,9 @@ void KioskAppManager::MonitorKioskExternalUpdate() {
 const KioskAppData* KioskAppManager::GetAppData(
     const std::string& app_id) const {
   for (const auto& app : apps_) {
-    if (app->app_id() == app_id)
+    if (app->app_id() == app_id) {
       return app.get();
+    }
   }
 
   return nullptr;
@@ -742,8 +773,9 @@ KioskAppData* KioskAppManager::GetAppDataMutable(const std::string& app_id) {
 void KioskAppManager::UpdateAppsFromPolicy() {
   // Gets app id to data mapping for existing apps.
   std::map<std::string, std::unique_ptr<KioskAppData>> old_apps;
-  for (auto& app : apps_)
+  for (auto& app : apps_) {
     old_apps[app->app_id()] = std::move(app);
+  }
   apps_.clear();
 
   auto_launch_app_id_.clear();
@@ -757,11 +789,13 @@ void KioskAppManager::UpdateAppsFromPolicy() {
   for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
            device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
-    if (it->type != policy::DeviceLocalAccount::TYPE_KIOSK_APP)
+    if (it->type != policy::DeviceLocalAccount::TYPE_KIOSK_APP) {
       continue;
+    }
 
-    if (it->account_id == auto_login_account_id)
+    if (it->account_id == auto_login_account_id) {
       auto_launch_app_id_ = it->kiosk_app_id;
+    }
 
     // Note that app ids are not canonical, i.e. they can contain upper
     // case letters.
@@ -822,16 +856,19 @@ void KioskAppManager::OnExtensionLoadedInCache(
     const extensions::ExtensionId& id,
     bool is_updated) {
   KioskAppData* app_data = GetAppDataMutable(id);
-  if (!app_data)
+  if (!app_data) {
     return;
+  }
 
   base::FilePath crx_path;
   std::string version;
-  if (GetCachedCrx(id, &crx_path, &version))
+  if (GetCachedCrx(id, &crx_path, &version)) {
     app_data->SetCachedCrx(crx_path);
+  }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnKioskExtensionLoadedInCache(id);
+  }
 
   if (is_updated) {
     base::UmaHistogramEnumeration(kKioskPrimaryAppUpdateResultHistogram,
@@ -843,10 +880,12 @@ void KioskAppManager::OnExtensionDownloadFailed(
     const extensions::ExtensionId& id,
     extensions::ExtensionDownloaderDelegate::Error error) {
   KioskAppData* app_data = GetAppDataMutable(id);
-  if (!app_data)
+  if (!app_data) {
     return;
-  for (auto& observer : observers_)
+  }
+  for (auto& observer : observers_) {
     observer.OnKioskExtensionDownloadFailed(id);
+  }
 
   if (!external_cache_->GetExtension(id, nullptr, nullptr)) {
     // Initial install fail.
@@ -863,8 +902,9 @@ KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {
   const base::Value::Dict& dict =
       prefs->GetDict(KioskAppManager::kKioskDictionaryName);
   absl::optional<int> value = dict.FindInt(kKeyAutoLoginState);
-  if (!value.has_value())
+  if (!value.has_value()) {
     return AutoLoginState::kNone;
+  }
 
   return static_cast<AutoLoginState>(value.value());
 }

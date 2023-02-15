@@ -35,12 +35,9 @@ const char kKioskPrimaryAppInSessionUpdateHistogram[] =
 KioskAppUpdateService::KioskAppUpdateService(
     Profile* profile,
     system::AutomaticRebootManager* automatic_reboot_manager)
-    : profile_(profile),
-      automatic_reboot_manager_(automatic_reboot_manager) {
-}
+    : profile_(profile), automatic_reboot_manager_(automatic_reboot_manager) {}
 
-KioskAppUpdateService::~KioskAppUpdateService() {
-}
+KioskAppUpdateService::~KioskAppUpdateService() {}
 
 void KioskAppUpdateService::Init(const std::string& app_id) {
   DCHECK(app_id_.empty());
@@ -48,25 +45,29 @@ void KioskAppUpdateService::Init(const std::string& app_id) {
 
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (service)
+  if (service) {
     service->AddUpdateObserver(this);
+  }
 
-  if (automatic_reboot_manager_)
+  if (automatic_reboot_manager_) {
     automatic_reboot_manager_->AddObserver(this);
+  }
 
   if (KioskAppManager::IsInitialized()) {
     KioskAppManager::Get()->AddObserver(this);
   }
 
-  if (automatic_reboot_manager_->reboot_requested())
+  if (automatic_reboot_manager_->reboot_requested()) {
     OnRebootRequested(automatic_reboot_manager_->reboot_reason());
+  }
 }
 
 void KioskAppUpdateService::StartAppUpdateRestartTimer() {
   base::UmaHistogramCounts100(kKioskPrimaryAppInSessionUpdateHistogram, 1);
 
-  if (restart_timer_.IsRunning())
+  if (restart_timer_.IsRunning()) {
     return;
+  }
 
   // Setup timer to force restart once the wait period expires.
   restart_timer_.Start(FROM_HERE, base::Milliseconds(kForceRestartWaitTimeMs),
@@ -82,25 +83,28 @@ void KioskAppUpdateService::ForceAppUpdateRestart() {
 void KioskAppUpdateService::Shutdown() {
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (service)
+  if (service) {
     service->RemoveUpdateObserver(this);
+  }
   if (KioskAppManager::IsInitialized()) {
     KioskAppManager::Get()->RemoveObserver(this);
   }
-  if (automatic_reboot_manager_)
+  if (automatic_reboot_manager_) {
     automatic_reboot_manager_->RemoveObserver(this);
+  }
 }
 
 void KioskAppUpdateService::OnAppUpdateAvailable(
     const extensions::Extension* extension) {
-  if (extension->id() != app_id_)
+  if (extension->id() != app_id_) {
     return;
+  }
 
   // Clears cached app data so that it will be reloaded if update from app
   // does not finish in this run.
   KioskAppManager::Get()->ClearAppData(app_id_);
-  KioskAppManager::Get()->UpdateAppDataFromProfile(
-      app_id_, profile_, extension);
+  KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
+                                                   extension);
 
   extensions::RuntimeEventRouter::DispatchOnRestartRequiredEvent(
       profile_, app_id_,
@@ -136,8 +140,9 @@ void KioskAppUpdateService::WillDestroyAutomaticRebootManager() {
 }
 
 void KioskAppUpdateService::OnKioskAppCacheUpdated(const std::string& app_id) {
-  if (app_id != app_id_)
+  if (app_id != app_id_) {
     return;
+  }
 
   extensions::RuntimeEventRouter::DispatchOnRestartRequiredEvent(
       profile_, app_id_,
@@ -152,16 +157,16 @@ KioskAppUpdateServiceFactory::KioskAppUpdateServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-KioskAppUpdateServiceFactory::~KioskAppUpdateServiceFactory() {
-}
+KioskAppUpdateServiceFactory::~KioskAppUpdateServiceFactory() {}
 
 // static
 KioskAppUpdateService* KioskAppUpdateServiceFactory::GetForProfile(
     Profile* profile) {
   // This should never be called unless we are running in forced app mode.
   DCHECK(chrome::IsRunningInForcedAppMode());
-  if (!chrome::IsRunningInForcedAppMode())
+  if (!chrome::IsRunningInForcedAppMode()) {
     return nullptr;
+  }
 
   return static_cast<KioskAppUpdateService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));

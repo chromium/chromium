@@ -93,8 +93,9 @@ void KioskAppLaunchError::SaveCryptohomeFailure(
 
 // static
 KioskAppLaunchError::Error KioskAppLaunchError::Get() {
-  if (s_last_error)
+  if (s_last_error) {
     return *s_last_error;
+  }
   s_last_error = Error::kNone;
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict =

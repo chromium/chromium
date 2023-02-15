@@ -22,11 +22,9 @@ KioskExternalUpdateValidator::KioskExternalUpdateValidator(
     : backend_task_runner_(backend_task_runner),
       crx_file_(file),
       crx_unpack_dir_(crx_unpack_dir),
-      delegate_(delegate) {
-}
+      delegate_(delegate) {}
 
-KioskExternalUpdateValidator::~KioskExternalUpdateValidator() {
-}
+KioskExternalUpdateValidator::~KioskExternalUpdateValidator() {}
 
 void KioskExternalUpdateValidator::Start() {
   auto unpacker = base::MakeRefCounted<extensions::SandboxedUnpacker>(

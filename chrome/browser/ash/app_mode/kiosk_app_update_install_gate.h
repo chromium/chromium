@@ -10,7 +10,7 @@
 namespace extensions {
 class Extension;
 class ExtensionRegistry;
-}
+}  // namespace extensions
 
 class Profile;
 

@@ -76,16 +76,18 @@ void ChromeKioskAppInstaller::BeginInstall(InstallCallback callback) {
 }
 
 void ChromeKioskAppInstaller::MaybeInstallSecondaryApps() {
-  if (install_complete_)
+  if (install_complete_) {
     return;
+  }
 
   secondary_apps_installing_ = true;
   extensions::KioskModeInfo* info =
       extensions::KioskModeInfo::Get(GetPrimaryAppExtension());
 
   std::vector<std::string> secondary_app_ids;
-  for (const auto& app : info->secondary_apps)
+  for (const auto& app : info->secondary_apps) {
     secondary_app_ids.push_back(app.id);
+  }
 
   ChromeKioskExternalLoaderBroker::Get()->TriggerSecondaryAppInstall(
       secondary_app_ids);
@@ -209,10 +211,11 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
     return;
   }
 
-  if (!secondary_apps_installing_)
+  if (!secondary_apps_installing_) {
     MaybeInstallSecondaryApps();
-  else
+  } else {
     MaybeCheckExtensionUpdate();
+  }
 }
 
 void ChromeKioskAppInstaller::OnExtensionInstallationFailed(
@@ -290,8 +293,9 @@ bool ChromeKioskAppInstaller::PrimaryAppHasPendingUpdate() const {
 bool ChromeKioskAppInstaller::DidPrimaryOrSecondaryAppFailedToInstall(
     bool success,
     const std::string& id) const {
-  if (success)
+  if (success) {
     return false;
+  }
 
   if (id == primary_app_install_data_.id) {
     SYSLOG(ERROR) << "Failed to install crx file of the primary app id=" << id;
@@ -299,8 +303,9 @@ bool ChromeKioskAppInstaller::DidPrimaryOrSecondaryAppFailedToInstall(
   }
 
   const extensions::Extension* extension = GetPrimaryAppExtension();
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(extension);
   for (const auto& app : info->secondary_apps) {

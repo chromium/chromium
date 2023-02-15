@@ -94,8 +94,9 @@ TEST_F(KioskSessionPluginHandlerTest, ObserveAndDestroyWebContents) {
 
   // The number of watchers returns to zero after each WebContents instance is
   // destroyed.
-  for (WebContentsObserver* observer : watchers)
+  for (WebContentsObserver* observer : watchers) {
     observer->WebContentsDestroyed();
+  }
   EXPECT_EQ(handler()->GetWatchersForTesting().size(), 0U);
 }
 

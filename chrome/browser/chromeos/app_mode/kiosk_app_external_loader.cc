@@ -18,9 +18,10 @@ KioskAppExternalLoader::KioskAppExternalLoader(AppClass app_class)
     : app_class_(app_class) {}
 
 KioskAppExternalLoader::~KioskAppExternalLoader() {
-  if (state_ != State::kInitial)
+  if (state_ != State::kInitial) {
     SetPrefsChangedHandler(
         ChromeKioskExternalLoaderBroker::InstallDataChangeCallback());
+  }
 }
 
 void KioskAppExternalLoader::StartLoading() {

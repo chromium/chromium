@@ -141,8 +141,9 @@ void ChromeKioskAppLauncher::OnAppServiceAppLaunched(bool success) {
 void ChromeKioskAppLauncher::MaybeUpdateAppData() {
   // Skip copying meta data from the current installed primary app when
   // there is a pending update.
-  if (PrimaryAppHasPendingUpdate())
+  if (PrimaryAppHasPendingUpdate()) {
     return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   KioskAppManager::Get()->ClearAppData(app_id_);
@@ -202,8 +203,9 @@ void ChromeKioskAppLauncher::SetSecondaryAppsEnabledState(
   for (const auto& app_info : info->secondary_apps) {
     // If the enabled on launch is not specified in the manifest, the apps
     // enabled state should be kept as is.
-    if (!app_info.enabled_on_launch.has_value())
+    if (!app_info.enabled_on_launch.has_value()) {
       continue;
+    }
 
     SetAppEnabledState(app_info.id, app_info.enabled_on_launch.value());
   }

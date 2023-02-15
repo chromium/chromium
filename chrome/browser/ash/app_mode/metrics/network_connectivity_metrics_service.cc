@@ -38,8 +38,9 @@ NetworkConnectivityMetricsService::NetworkConnectivityMetricsService(
     PrefService* prefs)
     : prefs_(prefs) {
   // This check is needed only for tests without initialized network stubs.
-  if (!NetworkHandler::IsInitialized())
+  if (!NetworkHandler::IsInitialized()) {
     return;
+  }
   network_state_handler_ = NetworkHandler::Get()->network_state_handler();
   is_online_ = (network_state_handler_->ConnectedNetworkByType(
                     NetworkTypePattern::Default()) != nullptr);
@@ -47,8 +48,9 @@ NetworkConnectivityMetricsService::NetworkConnectivityMetricsService(
   ReportPreviousSessionNetworkDrops();
 }
 NetworkConnectivityMetricsService::~NetworkConnectivityMetricsService() {
-  if (!NetworkHandler::IsInitialized())
+  if (!NetworkHandler::IsInitialized()) {
     return;
+  }
   network_state_handler_->RemoveObserver(this, FROM_HERE);
 }
 

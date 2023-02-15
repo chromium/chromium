@@ -39,8 +39,9 @@ void KioskSessionPluginHandler::Observer::OnHungWaitTimer() {
 void KioskSessionPluginHandler::Observer::PluginCrashed(
     const base::FilePath& plugin_path,
     base::ProcessId plugin_pid) {
-  if (!owner_->delegate_->ShouldHandlePlugin(plugin_path))
+  if (!owner_->delegate_->ShouldHandlePlugin(plugin_path)) {
     return;
+  }
 
   owner_->OnPluginCrashed(plugin_path);
 }
@@ -49,13 +50,15 @@ void KioskSessionPluginHandler::Observer::PluginHungStatusChanged(
     int plugin_child_id,
     const base::FilePath& plugin_path,
     bool is_hung) {
-  if (!owner_->delegate_->ShouldHandlePlugin(plugin_path))
+  if (!owner_->delegate_->ShouldHandlePlugin(plugin_path)) {
     return;
+  }
 
-  if (is_hung)
+  if (is_hung) {
     hung_plugins_.insert(plugin_child_id);
-  else
+  } else {
     hung_plugins_.erase(plugin_child_id);
+  }
 
   if (!hung_plugins_.empty()) {
     if (!hung_wait_timer_.IsRunning()) {
@@ -75,8 +78,9 @@ void KioskSessionPluginHandler::Observer::WebContentsDestroyed() {
 std::vector<KioskSessionPluginHandler::Observer*>
 KioskSessionPluginHandler::GetWatchersForTesting() const {
   std::vector<KioskSessionPluginHandler::Observer*> observers;
-  for (const auto& watcher : watchers_)
+  for (const auto& watcher : watchers_) {
     observers.push_back(watcher.get());
+  }
   return observers;
 }
 

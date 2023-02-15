@@ -41,27 +41,27 @@ const char kDetailsURLPrefix[] =
 
 const char kAppNoUpdateTemplate[] =
     "<app appid=\"$AppId\" status=\"ok\">"
-      "<updatecheck status=\"noupdate\"/>"
+    "<updatecheck status=\"noupdate\"/>"
     "</app>";
 
 const char kAppHasUpdateTemplate[] =
     "<app appid=\"$AppId\" status=\"ok\">"
-      "<updatecheck codebase=\"$CrxDownloadUrl\" fp=\"1.$FP\" "
-        "hash=\"\" hash_sha256=\"$FP\" size=\"$Size\" status=\"ok\" "
-        "version=\"$Version\"/>"
+    "<updatecheck codebase=\"$CrxDownloadUrl\" fp=\"1.$FP\" "
+    "hash=\"\" hash_sha256=\"$FP\" size=\"$Size\" status=\"ok\" "
+    "version=\"$Version\"/>"
     "</app>";
 
 const char kPrivateStoreAppHasUpdateTemplate[] =
     "<app appid=\"$AppId\">"
-      "<updatecheck codebase=\"$CrxDownloadUrl\" version=\"$Version\"/>"
+    "<updatecheck codebase=\"$CrxDownloadUrl\" version=\"$Version\"/>"
     "</app>";
 
 const char kUpdateContentTemplate[] =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     "<gupdate xmlns=\"http://www.google.com/update2/response\" "
-        "protocol=\"2.0\" server=\"prod\">"
-      "<daystart elapsed_days=\"2569\" elapsed_seconds=\"36478\"/>"
-      "$APPS"
+    "protocol=\"2.0\" server=\"prod\">"
+    "<daystart elapsed_days=\"2569\" elapsed_seconds=\"36478\"/>"
+    "$APPS"
     "</gupdate>";
 
 const char kAppNoUpdateTemplateJSON[] =
@@ -112,8 +112,9 @@ const char kAppIdHeader[] = "X-Goog-Update-AppId";
 
 bool GetAppIdsFromHeader(const HttpRequest::HeaderMap& headers,
                          std::vector<std::string>* ids) {
-  if (headers.count(kAppIdHeader) == 0)
+  if (headers.count(kAppIdHeader) == 0) {
     return false;
+  }
   base::StringTokenizer t(headers.at(kAppIdHeader), ",");
   while (t.GetNext()) {
     ids->push_back(t.token());
@@ -124,8 +125,9 @@ bool GetAppIdsFromHeader(const HttpRequest::HeaderMap& headers,
 bool GetAppIdsFromUpdateUrl(const GURL& update_url,
                             std::vector<std::string>* ids) {
   for (net::QueryIterator it(update_url); !it.IsAtEnd(); it.Advance()) {
-    if (it.GetKey() != "x")
+    if (it.GetKey() != "x") {
       continue;
+    }
     std::string id;
     net::GetValueForKeyInQuery(GURL("http://dummy?" + it.GetUnescapedValue()),
                                "id", &id);
@@ -172,10 +174,10 @@ std::string ApplyHasUpdateTemplate(std::string app_id,
                                    std::string version,
                                    bool use_json,
                                    bool use_private_store) {
-  std::string update_check_content(
-      use_json ? kAppHasUpdateTemplateJSON
-               : use_private_store ? kPrivateStoreAppHasUpdateTemplate
-                                   : kAppHasUpdateTemplate);
+  std::string update_check_content(use_json ? kAppHasUpdateTemplateJSON
+                                   : use_private_store
+                                       ? kPrivateStoreAppHasUpdateTemplate
+                                       : kAppHasUpdateTemplate);
   base::ReplaceSubstringsAfterOffset(&update_check_content, 0, "$AppId",
                                      app_id);
   base::ReplaceSubstringsAfterOffset(&update_check_content, 0,
@@ -205,8 +207,9 @@ FakeCWS::~FakeCWS() {
   // situation, so we check that primary FakeCWS is not destroyed yet.
   DCHECK(g_is_fakecws_active);
 
-  if (scoped_ignore_content_verifier_)
+  if (scoped_ignore_content_verifier_) {
     g_is_fakecws_active = false;
+  }
 }
 
 void FakeCWS::Init(net::EmbeddedTestServer* embedded_test_server) {
@@ -312,15 +315,18 @@ bool FakeCWS::GetUpdateCheckContent(const std::vector<std::string>& ids,
   for (const std::string& id : ids) {
     std::string app_update_content;
     auto it = id_to_update_check_content_map_.find(id);
-    if (it == id_to_update_check_content_map_.end())
+    if (it == id_to_update_check_content_map_.end()) {
       return false;
-    if (need_comma)
+    }
+    if (need_comma) {
       apps_content.append(",");
+    }
     apps_content.append(it->second.Run(use_json, use_private_store_templates_));
     need_comma = use_json;
   }
-  if (apps_content.empty())
+  if (apps_content.empty()) {
     return false;
+  }
 
   *update_check_content =
       use_json ? kUpdateContentTemplateJSON : kUpdateContentTemplate;
@@ -346,8 +352,9 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
         std::unique_ptr<BasicHttpResponse> http_response(
             new BasicHttpResponse());
         http_response->set_code(net::HTTP_OK);
-        if (!use_json)
+        if (!use_json) {
           http_response->set_content_type("text/xml");
+        }
         http_response->set_content(update_check_content);
         return std::move(http_response);
       }

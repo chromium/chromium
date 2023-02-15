@@ -59,8 +59,9 @@ void OnRemoveAppCryptohomeComplete(
       error == cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST) {
     UnscheduleDelayedCryptohomeRemoval(id);
   }
-  if (callback)
+  if (callback) {
     std::move(callback).Run();
+  }
 }
 
 void PerformDelayedCryptohomeRemovals(bool service_is_available) {
@@ -74,8 +75,9 @@ void PerformDelayedCryptohomeRemovals(bool service_is_available) {
       local_state->GetDict(prefs::kAllKioskUsersToRemove);
   for (const auto it : dict) {
     std::string app_id;
-    if (it.second.is_string())
+    if (it.second.is_string()) {
       app_id = it.second.GetString();
+    }
     VLOG(1) << "Removing obsolete cryptohome for " << app_id;
 
     const cryptohome::Identification cryptohome_id(
@@ -114,8 +116,9 @@ void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   AccountId active_account_id;
-  if (active_user)
+  if (active_user) {
     active_account_id = active_user->GetAccountId();
+  }
   if (base::Contains(account_ids, active_account_id)) {
     cryptohomes_barrier_closure = BarrierClosure(
         account_ids.size() - 1, base::BindOnce(&chrome::AttemptUserExit));

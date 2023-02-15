@@ -46,14 +46,16 @@ bool CheckUrlMatchSettingsPage(
 bool KioskSettingsNavigationThrottle::IsSettingsPage(const std::string& url) {
   if (g_test_settings_pages) {
     for (auto& page : *g_test_settings_pages) {
-      if (CheckUrlMatchSettingsPage(page, url))
+      if (CheckUrlMatchSettingsPage(page, url)) {
         return true;
+      }
     }
     return false;
   }
   for (auto& page : kSettingsPages) {
-    if (CheckUrlMatchSettingsPage(page, url))
+    if (CheckUrlMatchSettingsPage(page, url)) {
       return true;
+    }
   }
   return false;
 }
@@ -71,12 +73,14 @@ KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Kiosk check.
-  if (!chrome::IsRunningInForcedAppMode())
+  if (!chrome::IsRunningInForcedAppMode()) {
     return nullptr;
+  }
   // If the web contents were previously marked as restricted, attach a throttle
   // to it.
-  if (handle->GetWebContents()->GetUserData(kRestrictedSettingsWindowKey))
+  if (handle->GetWebContents()->GetUserData(kRestrictedSettingsWindowKey)) {
     return std::make_unique<KioskSettingsNavigationThrottle>(handle);
+  }
   // Otherwise, check whether the navigated to url is a settings page, and if
   // so, mark it.
   if (IsSettingsPage(handle->GetURL().spec())) {

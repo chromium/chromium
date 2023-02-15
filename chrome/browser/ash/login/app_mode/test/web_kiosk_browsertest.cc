@@ -118,11 +118,12 @@ class WebKioskTest : public WebKioskBaseTest {
   }
 
   void SetBlockAppLaunch(bool block) {
-    if (block)
+    if (block) {
       block_app_launch_override_ =
           KioskLaunchController::BlockAppLaunchForTesting();
-    else
+    } else {
       block_app_launch_override_.reset();
+    }
   }
 
   void WaitNetworkConfigureScreenAndContinueWithOnlineState(

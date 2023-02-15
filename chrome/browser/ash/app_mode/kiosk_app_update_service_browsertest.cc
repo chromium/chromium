@@ -62,7 +62,7 @@ void WaitForAutomaticRebootManagerInit(system::AutomaticRebootManager* manager,
   std::move(quit_closure).Run();
 }
 
-} // namespace
+}  // namespace
 
 class KioskAppUpdateServiceTest
     : public extensions::PlatformAppBrowserTest,
@@ -127,8 +127,9 @@ class KioskAppUpdateServiceTest
   // system::AutomaticRebootManagerObserver:
   void OnRebootRequested(
       system::AutomaticRebootManagerObserver::Reason) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   void WillDestroyAutomaticRebootManager() override {
@@ -141,9 +142,7 @@ class KioskAppUpdateServiceTest
     update_service_->Init(app_->id());
   }
 
-  void FireAppUpdateAvailable() {
-    update_service_->OnAppUpdateAvailable(app_);
-  }
+  void FireAppUpdateAvailable() { update_service_->OnAppUpdateAvailable(app_); }
 
   void FireUpdatedNeedReboot() {
     update_engine::StatusResult status;
@@ -163,8 +162,8 @@ class KioskAppUpdateServiceTest
  private:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> uptime_file_override_;
-  const extensions::Extension* app_;  // Not owned.
-  KioskAppUpdateService* update_service_;  // Not owned.
+  const extensions::Extension* app_;                          // Not owned.
+  KioskAppUpdateService* update_service_;                     // Not owned.
   system::AutomaticRebootManager* automatic_reboot_manager_;  // Not owned.
   std::unique_ptr<base::RunLoop> run_loop_;
 };

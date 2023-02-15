@@ -123,10 +123,11 @@ class KioskProfileLoader::CryptohomedChecker
   }
 
   void ReportCheckResult(KioskAppLaunchError::Error error) {
-    if (error == KioskAppLaunchError::Error::kNone)
+    if (error == KioskAppLaunchError::Error::kNone) {
       loader_->LoginAsKioskAccount();
-    else
+    } else {
       loader_->ReportLaunchResult(error);
+    }
   }
 
   KioskProfileLoader* loader_;

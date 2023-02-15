@@ -73,8 +73,9 @@ void WebKioskAppManager::GetApps(std::vector<App>* apps) const {
 }
 
 void WebKioskAppManager::LoadIcons() {
-  for (auto& web_app : apps_)
+  for (auto& web_app : apps_) {
     web_app->LoadIcon();
+  }
 }
 
 const AccountId& WebKioskAppManager::GetAutoLaunchAccountId() const {
@@ -145,8 +146,9 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
   // Store current apps. We will compare old and new apps to determine which
   // apps are new, and which were deleted.
   std::map<std::string, std::unique_ptr<WebKioskAppData>> old_apps;
-  for (auto& app : apps_)
+  for (auto& app : apps_) {
     old_apps[app->app_id()] = std::move(app);
+  }
   apps_.clear();
   auto_launch_account_id_.clear();
   auto_launched_with_zero_delay_ = false;
@@ -158,8 +160,9 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (auto account : device_local_accounts) {
-    if (account.type != policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP)
+    if (account.type != policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
       continue;
+    }
     const AccountId account_id(AccountId::FromUserEmail(account.user_id));
 
     if (account.account_id == auto_login_account_id_from_settings) {
@@ -192,8 +195,9 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
   }
 
   std::vector<KioskAppDataBase*> old_apps_to_remove;
-  for (auto& entry : old_apps)
+  for (auto& entry : old_apps) {
     old_apps_to_remove.emplace_back(entry.second.get());
+  }
   ClearRemovedApps(old_apps_to_remove);
   NotifyKioskAppsChanged();
 }

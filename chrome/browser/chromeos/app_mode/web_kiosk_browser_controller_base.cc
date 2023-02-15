@@ -45,8 +45,9 @@ bool WebKioskBrowserControllerBase::ShouldShowCustomTabBar() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ui::ImageModel WebKioskBrowserControllerBase::GetWindowAppIcon() const {
-  if (app_icon_)
+  if (app_icon_) {
     return *app_icon_;
+  }
   app_icon_ = GetFallbackAppIcon();
   return *app_icon_;
 }

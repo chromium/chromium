@@ -111,7 +111,7 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
   value.Set("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
     value.SetByDottedPath("kiosk.required_platform_version",
-                        required_platform_version);
+                          required_platform_version);
   }
 
   std::string err;
@@ -133,8 +133,9 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
   ~AppDataLoadWaiter() override { manager_->RemoveObserver(this); }
 
   void Wait() {
-    if (quit_)
+    if (quit_) {
       return;
+    }
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
@@ -153,20 +154,23 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
   // KioskAppManagerObserver overrides:
   void OnKioskAppDataChanged(const std::string& app_id) override {
     ++data_change_count_;
-    if (data_change_count_ < expected_data_change_)
+    if (data_change_count_ < expected_data_change_) {
       return;
+    }
     loaded_ = true;
     quit_ = true;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   void OnKioskAppDataLoadFailure(const std::string& app_id) override {
     ++data_load_failure_count_;
     loaded_ = false;
     quit_ = true;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   void OnKioskExtensionLoadedInCache(const std::string& app_id) override {
@@ -198,8 +202,9 @@ class ExternalCachePutWaiter {
   ~ExternalCachePutWaiter() {}
 
   void Wait() {
-    if (quit_)
+    if (quit_) {
       return;
+    }
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
@@ -207,8 +212,9 @@ class ExternalCachePutWaiter {
   void OnPutExtension(const std::string& id, bool success) {
     success_ = success;
     quit_ = true;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   bool success() const { return success_; }
@@ -277,8 +283,9 @@ class KioskAppManagerTest : public InProcessBrowserTest {
 
     std::string str;
     for (size_t i = 0; i < apps.size(); ++i) {
-      if (i > 0)
+      if (i > 0) {
         str += ',';
+      }
       str += apps[i].app_id;
     }
 
@@ -320,7 +327,7 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     apps_dict.SetByDottedPath(app_id + ".name", app_name);
     apps_dict.SetByDottedPath(app_id + ".icon", icon_path.MaybeAsASCII());
     apps_dict.SetByDottedPath(app_id + ".required_platform_version",
-                            required_platform_version);
+                              required_platform_version);
 
     PrefService* local_state = g_browser_process->local_state();
     ScopedDictPrefUpdate dict_update(local_state,
@@ -572,8 +579,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromProfile) {
 
   scoped_refptr<extensions::Extension> updated_app =
       MakeKioskApp("Updated App1 Name", "2.0", "app_1", "1234");
-  manager()->UpdateAppDataFromProfile(
-      "app_1", browser()->profile(), updated_app.get());
+  manager()->UpdateAppDataFromProfile("app_1", browser()->profile(),
+                                      updated_app.get());
 
   waiter.Reset();
   waiter.Wait();

@@ -117,8 +117,9 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
     fake_cws_.SetUpdateCrx(GetTestAppId(), GetTestAppId() + ".crx", "1.0.0");
 
     std::vector<std::string> secondary_apps = GetTestSecondaryAppIds();
-    for (const auto& secondary_app : secondary_apps)
+    for (const auto& secondary_app : secondary_apps) {
       fake_cws_.SetUpdateCrx(secondary_app, secondary_app + ".crx", "1.0.0");
+    }
 
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -203,8 +204,9 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
     window->GetBaseWindow()->Close();
 
     // Wait until the app terminates if it is still running.
-    if (!app_window_registry->GetAppWindowsForApp(app_id).empty())
+    if (!app_window_registry->GetAppWindowsForApp(app_id).empty()) {
       RunUntilBrowserProcessQuits();
+    }
     return true;
   }
 

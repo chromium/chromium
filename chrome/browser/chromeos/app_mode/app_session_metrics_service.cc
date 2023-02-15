@@ -69,8 +69,9 @@ bool IsRestoredSession() {
 bool IsPreviousKioskSessionCrashed(const std::vector<std::string>& crash_dirs,
                                    const base::Time& previous_start_time) {
   for (const auto& crash_file_path : crash_dirs) {
-    if (!base::PathExists(base::FilePath(crash_file_path)))
+    if (!base::PathExists(base::FilePath(crash_file_path))) {
       continue;
+    }
     base::FileEnumerator enumerator(
         base::FilePath(crash_file_path), /* recursive= */ true,
         base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
@@ -159,11 +160,13 @@ absl::optional<KioskSessionEndReason> GetSessionEndReason(
   const base::Value::Dict& metrics_dict = prefs->GetDict(prefs::kKioskMetrics);
   const auto* kiosk_session_stop_reason_value =
       metrics_dict.Find(kKioskSessionEndReason);
-  if (!kiosk_session_stop_reason_value)
+  if (!kiosk_session_stop_reason_value) {
     return absl::nullopt;
+  }
   auto kiosk_session_stop_reason = kiosk_session_stop_reason_value->GetIfInt();
-  if (!kiosk_session_stop_reason.has_value())
+  if (!kiosk_session_stop_reason.has_value()) {
     return absl::nullopt;
+  }
 
   return static_cast<KioskSessionEndReason>(kiosk_session_stop_reason.value());
 }
@@ -214,8 +217,9 @@ void AppSessionMetricsService::RecordKioskSessionWebStarted() {
 }
 
 void AppSessionMetricsService::RecordKioskSessionStopped() {
-  if (!IsKioskSessionRunning())
+  if (!IsKioskSessionRunning()) {
     return;
+  }
   SaveSessionEndReason(KioskSessionEndReason::kStopped);
   RecordKioskSessionState(KioskSessionState::kStopped);
   RecordKioskSessionDuration(kKioskSessionDurationNormalHistogram,
@@ -305,8 +309,9 @@ void AppSessionMetricsService::RecordKioskSessionCountPerDay() {
 void AppSessionMetricsService::RecordKioskSessionDuration(
     const std::string& kiosk_session_duration_histogram,
     const std::string& kiosk_session_duration_in_days_histogram) {
-  if (!IsKioskSessionRunning())
+  if (!IsKioskSessionRunning()) {
     return;
+  }
   RecordKioskSessionDuration(kiosk_session_duration_histogram,
                              kiosk_session_duration_in_days_histogram,
                              start_time_);
@@ -344,8 +349,9 @@ void AppSessionMetricsService::RecordPreviousKioskSessionEndState() {
   const base::Value::Dict& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
   auto previous_start_time =
       base::ValueToTime(metrics_dict.Find(kKioskSessionStartTime));
-  if (!previous_start_time.has_value())
+  if (!previous_start_time.has_value()) {
     return;
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},

@@ -121,8 +121,9 @@ class ExtensionReadyObserver : public extensions::ExtensionRegistryObserver {
   // extensions::ExtensionReadyObserver:
   void OnExtensionReady(content::BrowserContext* browser_context,
                         const extensions::Extension* extension) override {
-    if (extension->id() == extension_id_)
+    if (extension->id() == extension_id_) {
       count_++;
+    }
   }
 
   int count_ = 0;

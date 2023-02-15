@@ -73,8 +73,9 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
                             public KioskAppDataDelegate {
  public:
   void WaitForAppDataChange(int count) {
-    if (change_count_ >= count)
+    if (change_count_ >= count) {
       return;
+    }
     waited_count_ = count;
     waiter_ = std::make_unique<base::RunLoop>();
     waiter_->Run();
@@ -108,8 +109,9 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
 
   void OnKioskAppDataChanged(const std::string& app_id) override {
     change_count_++;
-    if (change_count_ >= waited_count_ && waiter_)
+    if (change_count_ >= waited_count_ && waiter_) {
       waiter_->Quit();
+    }
   }
 
   void OnKioskAppDataLoadFailure(const std::string& app_id) override {}

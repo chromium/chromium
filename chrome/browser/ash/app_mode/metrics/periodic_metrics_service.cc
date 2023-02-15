@@ -58,11 +58,13 @@ absl::optional<ResultType> GetSavedEnumFromKioskMetrics(
     const std::string& key_name) {
   const base::Value::Dict& metrics_dict = prefs->GetDict(prefs::kKioskMetrics);
   const auto* result_value = metrics_dict.Find(key_name);
-  if (!result_value)
+  if (!result_value) {
     return absl::nullopt;
+  }
   auto result = result_value->GetIfInt();
-  if (!result.has_value())
+  if (!result.has_value()) {
     return absl::nullopt;
+  }
   return static_cast<ResultType>(result.value());
 }
 
