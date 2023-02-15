@@ -130,7 +130,28 @@ BASE_DECLARE_FEATURE(kPreinstalledWebAppInstallation);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kPreinstalledWebAppDuplicationFixer);
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kPreinstalledWebAppWindowExperiment);
+// Finch-controlled user group for the experiment.
+// Used in metrics. Do not renumber or reuse values.
+enum class PreinstalledWebAppWindowExperimentUserGroup : int32_t {
+  // Default. Experiment is not running.
+  kUnknown = 0,
+  // User assigned to have the default behaviour.
+  kControl = 1,
+  // User assigned to have preinstalled web apps open in windows with link
+  // capturing.
+  kWindow = 2,
+  // User assigned to have preinstalled web apps open in browser tabs without
+  // link capturing.
+  kTab = 3
+};
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kOsIntegrationSubManagers);
 enum class OsIntegrationSubManagersStage {

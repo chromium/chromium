@@ -5747,6 +5747,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "preinstalled-web-app-window-experiment",
+    "owners": [ "glenrob", "chromeos-web-apps-platform-syd@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "print-with-postscript-type42-fonts",
     "owners": [ "thestig" ],
     "expiry_milestone": 112

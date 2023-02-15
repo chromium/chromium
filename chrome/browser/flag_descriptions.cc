@@ -6251,6 +6251,13 @@ const char kOneGroupPerRendererName[] =
 const char kOneGroupPerRendererDescription[] =
     "Places each Chrome foreground renderer into its own cgroup";
 
+const char kPreinstalledWebAppWindowExperimentName[] =
+    "Preinstalled web app window experiment.";
+const char kPreinstalledWebAppWindowExperimentDescription[] =
+    "A ChromeOS experiment for new users that makes all preinstalled web apps "
+    "open in windows with link capturing enabled, or tabs, instead of the "
+    "default behavior.";
+
 const char kDisableQuickAnswersV2TranslationName[] =
     "Disable Quick Answers Translation";
 const char kDisableQuickAnswersV2TranslationDescription[] =

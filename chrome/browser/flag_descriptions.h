@@ -3601,6 +3601,9 @@ extern const char kMicrosoftOfficeWebAppExperimentDescription[];
 extern const char kOneGroupPerRendererName[];
 extern const char kOneGroupPerRendererDescription[];
 
+extern const char kPreinstalledWebAppWindowExperimentName[];
+extern const char kPreinstalledWebAppWindowExperimentDescription[];
+
 extern const char kDisableQuickAnswersV2TranslationName[];
 extern const char kDisableQuickAnswersV2TranslationDescription[];
 

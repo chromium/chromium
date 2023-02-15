@@ -766,6 +766,25 @@ const FeatureEntry::FeatureVariation
         {"with holdback", kSearchPrefetchWithHoldback,
          std::size(kSearchPrefetchWithHoldback), nullptr}};
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Note these strings must match the `kUserGroupParam` definition in
+// web_applications/preinstalled_web_app_window_experiment.cc.
+const FeatureEntry::FeatureParam kPreinstalledWebAppWindowExperimentControl[] =
+    {{"user_group", "control"}};
+const FeatureEntry::FeatureParam kPreinstalledWebAppWindowExperimentWindow[] = {
+    {"user_group", "window"}};
+const FeatureEntry::FeatureParam kPreinstalledWebAppWindowExperimentTab[] = {
+    {"user_group", "tab"}};
+const FeatureEntry::FeatureVariation
+    kPreinstalledWebAppWindowExperimentVariations[] = {
+        {"control", kPreinstalledWebAppWindowExperimentControl,
+         std::size(kPreinstalledWebAppWindowExperimentControl), nullptr},
+        {"window", kPreinstalledWebAppWindowExperimentWindow,
+         std::size(kPreinstalledWebAppWindowExperimentWindow), nullptr},
+        {"tab", kPreinstalledWebAppWindowExperimentTab,
+         std::size(kPreinstalledWebAppWindowExperimentTab), nullptr}};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kCloseTabSuggestionsStale_Immediate[] = {
     {"baseline_tab_suggestions", "true"},
@@ -7754,7 +7773,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
-
     {"default-chrome-apps-migration",
      flag_descriptions::kDefaultChromeAppsMigrationName,
      flag_descriptions::kDefaultChromeAppsMigrationDescription, kOsCrOS,
@@ -7767,6 +7785,16 @@ const FeatureEntry kFeatureEntries[] = {
     {"lacros-color-management", flag_descriptions::kLacrosColorManagementName,
      flag_descriptions::kLacrosColorManagementDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kLacrosColorManagement)},
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    {"preinstalled-web-app-window-experiment",
+     flag_descriptions::kPreinstalledWebAppWindowExperimentName,
+     flag_descriptions::kPreinstalledWebAppWindowExperimentDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kPreinstalledWebAppWindowExperiment,
+         kPreinstalledWebAppWindowExperimentVariations,
+         "PreinstalledWebAppWindowExperimentVariations")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
