@@ -67,6 +67,7 @@ const std::string kDummyWindowRestorationData = "e30=";
 @property(readonly, nonatomic) int invalidateShadowCount;
 @property(assign, nonatomic) BOOL fakeOnInactiveSpace;
 @property(assign, nonatomic) bool* deallocFlag;
++ (void)waitForDealloc;
 @end
 
 // Used to mock BridgedContentView so that calls to drawRect: can be
@@ -909,9 +910,13 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
     [native_parent close];
   }
 
-  // Check this only once the autorelease pool has been drained: AppKit likes to
-  // autorelease NSWindows when tearing them down, presumably to make UAF bugs
-  // with NSWindows less likely.
+  // As of macOS 13 (Ventura), it seems that exiting the autoreleasepool
+  // block does not immediately trigger a release of its contents. Wait
+  // here for the deallocations to occur before proceeding.
+  while (!child_dealloced || !native_parent_dealloced) {
+    [NativeWidgetMacTestWindow waitForDealloc];
+  }
+
   EXPECT_TRUE(child_dealloced);
   EXPECT_TRUE(native_parent_dealloced);
 }
@@ -2413,10 +2418,29 @@ TEST_F(NativeWidgetMacTest, FocusManagerChangeOnReparentNativeView) {
 @synthesize fakeOnInactiveSpace = _fakeOnInactiveSpace;
 @synthesize deallocFlag = _deallocFlag;
 
++ (base::RunLoop**)runLoop {
+  static base::RunLoop* runLoop = nullptr;
+  return &runLoop;
+}
+
+// Returns once the NativeWidgetMacTestWindow's -dealloc method has been
+// called.
++ (void)waitForDealloc {
+  base::RunLoop runLoop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, runLoop.QuitClosure(), TestTimeouts::action_timeout());
+  (*[NativeWidgetMacTestWindow runLoop]) = &runLoop;
+  runLoop.Run();
+  (*[NativeWidgetMacTestWindow runLoop]) = nullptr;
+}
+
 - (void)dealloc {
   if (_deallocFlag) {
     DCHECK(!*_deallocFlag);
     *_deallocFlag = true;
+    if (*[NativeWidgetMacTestWindow runLoop]) {
+      (*[NativeWidgetMacTestWindow runLoop])->Quit();
+    }
   }
   [super dealloc];
 }
