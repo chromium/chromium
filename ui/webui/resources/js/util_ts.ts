@@ -118,3 +118,30 @@ export function listenOnce(target: EventTarget, eventNames: string[]|string,
 export function hasKeyModifiers(e: KeyboardEvent): boolean {
   return !!(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey);
 }
+
+/**
+ * @return Whether a given KeyboardEvent resembles an undo action, on different
+ * platforms.
+ */
+
+export function isUndoKeyboardEvent(event: KeyboardEvent): boolean {
+  if (event.key !== 'z') {
+    return false;
+  }
+  const excludedModifiers = [
+    event.altKey, event.shiftKey,
+    // <if expr="is_macosx">
+    event.ctrlKey,
+    // </if>
+    // <if expr="not is_macosx">
+    event.metaKey,
+    // </if>
+  ];
+
+  let targetModifier = event.ctrlKey;
+  // <if expr="is_macosx">
+  targetModifier = event.metaKey;
+  // </if>
+
+  return targetModifier && !excludedModifiers.some(modifier => modifier);
+}

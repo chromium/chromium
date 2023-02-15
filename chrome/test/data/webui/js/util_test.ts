@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {quoteString as quoteStringJs} from 'chrome://resources/js/util_ts.js';
-import {$, getRequiredElement, quoteString} from 'chrome://resources/js/util_ts.js';
-import {assertEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isMac} from 'chrome://resources/js/platform.js';
+import {$, getRequiredElement, isUndoKeyboardEvent, quoteString as quoteStringJs, quoteString} from 'chrome://resources/js/util_ts.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('UtilModuleTest', function() {
   test('get elements', function() {
@@ -56,5 +58,45 @@ suite('UtilModuleTest', function() {
     re = new RegExp(quoteStringJs('Hello, .*'), 'gim');
     match = re.exec('Hello, world');
     assertEquals(null, match);
+  });
+
+  test('Ctrl+Z', async function() {
+    const eventPromise = eventToPromise('keydown', document.body);
+    keyDownOn(document.body, 0, isMac ? 'meta' : 'ctrl', 'z');
+    const event = await eventPromise;
+    assertTrue(isUndoKeyboardEvent(event));
+  });
+
+  test('Ctrl+Not_Z', async function() {
+    for (let i = 32; i < 127; i++) {
+      const chr = String.fromCharCode(i);
+      if (chr.toLowerCase() === 'z') {
+        continue;
+      }
+      const eventPromise = eventToPromise('keydown', document.body);
+      keyDownOn(document.body, 0, isMac ? 'meta' : 'ctrl', chr);
+      const event = await eventPromise;
+      assertFalse(isUndoKeyboardEvent(event));
+      assertFalse(event.defaultPrevented);
+    }
+  });
+
+  test('ModifierCombination+Z', async function() {
+    const ctrlModifier = isMac ? 'meta' : 'ctrl';
+    const modifierCombinations = [
+      ['shift'],
+      ['shift', 'alt'],
+      ['shift', ctrlModifier],
+      ['shift', ctrlModifier, 'alt'],
+      ['alt'],
+      ['alt', ctrlModifier],
+    ];
+    for (const modifierCombination of modifierCombinations) {
+      const eventPromise = eventToPromise('keydown', document.body);
+      keyDownOn(document.body, 0, modifierCombination, 'z');
+      const event = await eventPromise;
+      assertFalse(isUndoKeyboardEvent(event));
+      assertFalse(event.defaultPrevented);
+    }
   });
 });
