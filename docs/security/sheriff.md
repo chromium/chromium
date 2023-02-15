@@ -18,6 +18,12 @@ go/chrome-security-bugs](http://go/chrome-security-bugs).
 You might also like the [HOWTO: Be A Security Sheriff
 deck](https://docs.google.com/presentation/d/1eISJXxyv7dUCGUKk_rvUI9t9s2xb98QY4d_-dZSa7Wg/edit#slide=id.p).
 
+The [Chrome Security FAQ](faq.md), [Extensions Security
+FAQ](/extensions/docs/security_faq.md), and [Service Worker Security
+FAQ](service-worker-security-faq.md) include commonly-raised questions about
+security and what is or is not considered a security bug. When triaging new
+bugs, you may want to reference these to see if there's an established stance.
+
 ## What Is A Security Sheriff Or Marshal?
 
 A security sheriff (as well as a security marshal) is a member of a rotation
