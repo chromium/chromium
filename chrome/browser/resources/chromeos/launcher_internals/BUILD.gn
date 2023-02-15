@@ -22,16 +22,17 @@ copy("copy_src") {
 }
 
 copy("copy_mojo") {
-  deps = [
-    "//chrome/browser/ui/webui/ash/launcher_internals:mojo_bindings_webui_js",
-  ]
-  mojom_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/launcher_internals/"
-  sources = [ "$mojom_folder/launcher_internals.mojom-webui.js" ]
+  deps = [ "//chrome/browser/ui/webui/ash/launcher_internals:mojo_bindings_ts__generator" ]
+  mojom_folder = "$root_gen_dir/chrome/browser/ui/webui/ash/launcher_internals/"
+  sources = [ "$mojom_folder/launcher_internals.mojom-webui.ts" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {
-  deps = [ "//third_party/polymer/v3_0:library" ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/mojo:library",
+  ]
   extra_deps = [
     ":copy_mojo",
     ":copy_src",
@@ -39,9 +40,8 @@ ts_library("build_ts") {
   ]
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   in_files =
-      ts_files + html_wrapper_files + [ "launcher_internals.mojom-webui.js" ]
+      ts_files + html_wrapper_files + [ "launcher_internals.mojom-webui.ts" ]
 }
 
 generate_grd("build_grd") {

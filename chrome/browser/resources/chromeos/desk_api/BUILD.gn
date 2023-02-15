@@ -46,7 +46,6 @@ ts_library("build_ts") {
   ]
   root_dir = "$target_gen_dir"
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   in_files = ts_files
   definitions = [
     "$target_gen_dir/chrome_type_extension.d.ts",

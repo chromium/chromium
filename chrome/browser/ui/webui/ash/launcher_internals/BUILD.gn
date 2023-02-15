@@ -10,4 +10,5 @@ assert(is_chromeos_ash, "Launcher internals is ash-chrome only.")
 mojom("mojo_bindings") {
   sources = [ "launcher_internals.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
 }

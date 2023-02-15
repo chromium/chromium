@@ -40,10 +40,12 @@ build_webui("build") {
     "cloud_upload_dialog.ts",
     "main.ts",
   ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-webui.js" ]
-  mojo_files_deps =
-      [ "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_webui_js" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_ts__generator",
+  ]
   ts_composite = true
+  ts_use_local_config = false
 
   html_to_wrapper_template = "native"
 
