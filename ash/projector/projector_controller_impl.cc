@@ -154,8 +154,7 @@ ProjectorControllerImpl::ProjectorControllerImpl()
     : projector_session_(std::make_unique<ash::ProjectorSessionImpl>()),
       metadata_controller_(
           std::make_unique<ash::ProjectorMetadataController>()) {
-  if (features::IsProjectorAnnotatorEnabled())
-    ui_controller_ = std::make_unique<ash::ProjectorUiController>(this);
+  ui_controller_ = std::make_unique<ash::ProjectorUiController>(this);
 
   projector_session_->AddObserver(this);
   CrasAudioHandler::Get()->AddAudioObserver(this);

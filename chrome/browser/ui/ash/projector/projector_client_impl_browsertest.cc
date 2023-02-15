@@ -119,9 +119,7 @@ class ProjectorClientTest : public InProcessBrowserTest {
  public:
   ProjectorClientTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kProjector, features::kProjectorAnnotator,
-         features::kOnDeviceSpeechRecognition},
-        {});
+        {features::kProjector, features::kOnDeviceSpeechRecognition}, {});
   }
 
   ~ProjectorClientTest() override = default;

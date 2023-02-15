@@ -47,9 +47,8 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
       std::make_unique<ash::HelpAppKidsMagazineUntrustedUIConfig>());
   if (ash::features::IsProjectorEnabled())
     map.AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
-  if (ash::features::IsProjectorAnnotatorEnabled())
-    map.AddUntrustedWebUIConfig(
-        std::make_unique<UntrustedProjectorAnnotatorUIConfig>());
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<UntrustedProjectorAnnotatorUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<ash::file_manager::FileManagerUntrustedUIConfig>());
   if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {

@@ -1025,7 +1025,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::TrustedProjectorUI>;
   }
   if (url.host_piece() == ash::kChromeUIProjectorAnnotatorHost &&
-      ash::features::IsProjectorAnnotatorEnabled() &&
       IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorAnnotatorUI>;
   }

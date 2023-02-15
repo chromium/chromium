@@ -5833,10 +5833,6 @@ const char kProjectorName[] = "Enable Projector";
 const char kProjectorDescription[] =
     "Enables Projects SWA and associated recording tools";
 
-const char kProjectorAnnotatorName[] = "Enable Projector annotator";
-const char kProjectorAnnotatorDescription[] =
-    "Turns on annotator tools when recording a screen capture using Projector";
-
 const char kProjectorExcludeTranscriptName[] =
     "Enable Projector exclude transcript feature";
 const char kProjectorExcludeTranscriptDescription[] =

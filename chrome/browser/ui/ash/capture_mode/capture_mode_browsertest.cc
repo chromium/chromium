@@ -851,8 +851,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeCameraBrowserTests, VerifyFrames) {
 class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
  public:
   CaptureModeProjectorBrowserTests() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kProjector, ash::features::kProjectorAnnotator}, {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kProjector}, {});
   }
 
   ~CaptureModeProjectorBrowserTests() override = default;

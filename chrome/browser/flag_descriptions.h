@@ -3341,9 +3341,6 @@ extern const char kProductivityLauncherImageSearchDescription[];
 extern const char kProjectorName[];
 extern const char kProjectorDescription[];
 
-extern const char kProjectorAnnotatorName[];
-extern const char kProjectorAnnotatorDescription[];
-
 extern const char kProjectorExcludeTranscriptName[];
 extern const char kProjectorExcludeTranscriptDescription[];
 

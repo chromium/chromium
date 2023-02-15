@@ -171,8 +171,7 @@ class ProjectorControllerTest : public AshTestBase {
 
  protected:
   virtual void InitFeatureFlags() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProjector, features::kProjectorAnnotator}, {});
+    scoped_feature_list_.InitWithFeatures({features::kProjector}, {});
   }
 
   void InitFakeMic(bool mic_present) {

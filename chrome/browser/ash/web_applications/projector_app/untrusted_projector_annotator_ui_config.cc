@@ -32,8 +32,7 @@ UntrustedProjectorAnnotatorUIConfig::~UntrustedProjectorAnnotatorUIConfig() =
 bool UntrustedProjectorAnnotatorUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return ash::features::IsProjectorAnnotatorEnabled() &&
-         IsProjectorAppEnabled(profile);
+  return IsProjectorAppEnabled(profile);
 }
 
 std::unique_ptr<content::WebUIController>

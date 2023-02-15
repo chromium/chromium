@@ -64,8 +64,7 @@ class MockMessageCenterObserver : public message_center::MessageCenterObserver {
 class ProjectorUiControllerTest : public AshTestBase {
  public:
   ProjectorUiControllerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProjector, features::kProjectorAnnotator}, {});
+    scoped_feature_list_.InitWithFeatures({features::kProjector}, {});
   }
 
   ProjectorUiControllerTest(const ProjectorUiControllerTest&) = delete;

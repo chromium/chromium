@@ -132,10 +132,8 @@ void StatusAreaWidget::Initialize() {
   stop_recording_button_tray_ =
       AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));
 
-  if (features::IsProjectorAnnotatorEnabled()) {
-    projector_annotation_tray_ =
-        AddTrayButton(std::make_unique<ProjectorAnnotationTray>(shelf_));
-  }
+  projector_annotation_tray_ =
+      AddTrayButton(std::make_unique<ProjectorAnnotationTray>(shelf_));
 
   palette_tray_ = AddTrayButton(std::make_unique<PaletteTray>(shelf_));
 

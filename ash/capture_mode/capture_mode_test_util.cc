@@ -197,8 +197,7 @@ void SetDeviceScaleFactor(float dsf) {
 
 ProjectorCaptureModeIntegrationHelper::ProjectorCaptureModeIntegrationHelper() {
   scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kProjector,
-                            features::kProjectorAnnotator},
+      /*enabled_features=*/{features::kProjector},
       /*disabled_features=*/{});
 }
 

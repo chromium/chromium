@@ -1624,12 +1624,6 @@ BASE_FEATURE(kProjectorManagedUser,
              "ProjectorManagedUser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable Projector annotator tools.
-// The annotator tools are based on the ink library.
-BASE_FEATURE(kProjectorAnnotator,
-             "ProjectorAnnotator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the Projector app launches in debug mode, with more detailed
 // error messages.
 BASE_FEATURE(kProjectorAppDebug,
@@ -2950,11 +2944,6 @@ bool IsProjectorAllUserEnabled() {
 
 bool IsProjectorManagedUserEnabled() {
   return base::FeatureList::IsEnabled(kProjectorManagedUser);
-}
-
-bool IsProjectorAnnotatorEnabled() {
-  return IsProjectorEnabled() &&
-         base::FeatureList::IsEnabled(kProjectorAnnotator);
 }
 
 bool IsProjectorAppDebugMode() {
