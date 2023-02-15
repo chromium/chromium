@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -72,9 +73,10 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
   }
 
   void SetCellularEnabled(bool enabled) {
-    NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
-        NetworkTypePattern::Cellular(), enabled,
-        network_handler::ErrorCallback());
+    NetworkHandler::Get()
+        ->technology_state_controller()
+        ->SetTechnologiesEnabled(NetworkTypePattern::Cellular(), enabled,
+                                 network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }
 

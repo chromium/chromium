@@ -37,6 +37,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -49,6 +50,10 @@ constexpr int kGetNetworksListLimit = 100;
 
 ash::NetworkStateHandler* GetStateHandler() {
   return ash::NetworkHandler::Get()->network_state_handler();
+}
+
+ash::TechnologyStateController* GetTechnologyStateController() {
+  return ash::NetworkHandler::Get()->technology_state_controller();
 }
 
 ash::ManagedNetworkConfigurationHandler* GetManagedConfigurationHandler() {
@@ -585,7 +590,7 @@ void ArcNetHostImpl::SetWifiEnabledState(bool is_enabled,
   }
 
   NET_LOG(USER) << __func__ << ":" << is_enabled;
-  GetStateHandler()->SetTechnologyEnabled(
+  GetTechnologyStateController()->SetTechnologiesEnabled(
       ash::NetworkTypePattern::WiFi(), is_enabled,
       ash::network_handler::ErrorCallback());
   std::move(callback).Run(true);

@@ -37,6 +37,7 @@ class ManagedNetworkConfigurationHandler;
 class NetworkConnect;
 class NetworkConnectionHandler;
 class NetworkStateHandler;
+class TechnologyStateController;
 
 namespace tether {
 
@@ -63,6 +64,7 @@ class TetherComponentImpl : public TetherComponent {
             gms_core_notifications_state_tracker,
         PrefService* pref_service,
         NetworkStateHandler* network_state_handler,
+        TechnologyStateController* technology_state_controller,
         ManagedNetworkConfigurationHandler*
             managed_network_configuration_handler,
         NetworkConnect* network_connect,
@@ -111,6 +113,7 @@ class TetherComponentImpl : public TetherComponent {
           gms_core_notifications_state_tracker,
       PrefService* pref_service,
       NetworkStateHandler* network_state_handler,
+      TechnologyStateController* technology_state_controller,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
       NetworkConnect* network_connect,
       NetworkConnectionHandler* network_connection_handler,

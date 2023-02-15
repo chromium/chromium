@@ -84,6 +84,7 @@ std::unique_ptr<TetherComponent> TetherComponentImpl::Factory::Create(
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     PrefService* pref_service,
     NetworkStateHandler* network_state_handler,
+    TechnologyStateController* technology_state_controller,
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
     NetworkConnect* network_connect,
     NetworkConnectionHandler* network_connection_handler,
@@ -101,7 +102,7 @@ std::unique_ptr<TetherComponent> TetherComponentImpl::Factory::Create(
   return base::WrapUnique(new TetherComponentImpl(
       device_sync_client, secure_channel_client, tether_host_fetcher,
       notification_presenter, gms_core_notifications_state_tracker,
-      pref_service, network_state_handler,
+      pref_service, network_state_handler, technology_state_controller,
       managed_network_configuration_handler, network_connect,
       network_connection_handler, adapter, session_manager));
 }
@@ -128,6 +129,7 @@ TetherComponentImpl::TetherComponentImpl(
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     PrefService* pref_service,
     NetworkStateHandler* network_state_handler,
+    TechnologyStateController* technology_state_controller,
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
     NetworkConnect* network_connect,
     NetworkConnectionHandler* network_connection_handler,
@@ -149,6 +151,7 @@ TetherComponentImpl::TetherComponentImpl(
               gms_core_notifications_state_tracker,
               pref_service,
               network_state_handler,
+              technology_state_controller,
               network_connect,
               network_connection_handler,
               session_manager,

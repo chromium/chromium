@@ -41,6 +41,7 @@
 #include "chromeos/ash/components/network/onc/onc_translation_tables.h"
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
@@ -2345,7 +2346,8 @@ CrosNetworkConfig::CrosNetworkConfig()
           NetworkHandler::Get()->managed_network_configuration_handler(),
           NetworkHandler::Get()->network_connection_handler(),
           NetworkHandler::Get()->network_certificate_handler(),
-          NetworkHandler::Get()->network_profile_handler()) {}
+          NetworkHandler::Get()->network_profile_handler(),
+          NetworkHandler::Get()->technology_state_controller()) {}
 
 CrosNetworkConfig::CrosNetworkConfig(
     NetworkStateHandler* network_state_handler,
@@ -2355,7 +2357,8 @@ CrosNetworkConfig::CrosNetworkConfig(
     ManagedNetworkConfigurationHandler* network_configuration_handler,
     NetworkConnectionHandler* network_connection_handler,
     NetworkCertificateHandler* network_certificate_handler,
-    NetworkProfileHandler* network_profile_handler)
+    NetworkProfileHandler* network_profile_handler,
+    TechnologyStateController* technology_state_controller)
     : network_state_handler_(network_state_handler),
       network_device_handler_(network_device_handler),
       cellular_inhibitor_(cellular_inhibitor),
@@ -2363,7 +2366,8 @@ CrosNetworkConfig::CrosNetworkConfig(
       network_configuration_handler_(network_configuration_handler),
       network_connection_handler_(network_connection_handler),
       network_certificate_handler_(network_certificate_handler),
-      network_profile_handler_(network_profile_handler) {
+      network_profile_handler_(network_profile_handler),
+      technology_state_controller_(technology_state_controller) {
   CHECK(network_state_handler);
 }
 
@@ -2874,9 +2878,9 @@ void CrosNetworkConfig::SetNetworkTypeEnabledState(
 
   NET_LOG(USER) << __func__ << " " << type << ":" << enabled;
 
-  // Set the technology enabled state and return true. The call to Shill does
+  // Set the technologies enabled state and return true. The call to Shill does
   // not have a 'success' callback (and errors are already logged).
-  network_state_handler_->SetTechnologyEnabled(
+  technology_state_controller_->SetTechnologiesEnabled(
       pattern, enabled, network_handler::ErrorCallback());
   std::move(callback).Run(true);
 }

@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace extensions {
@@ -60,9 +61,11 @@ ShellNetworkController::ShellNetworkController(
   ash::NetworkStateHandler* state_handler =
       ash::NetworkHandler::Get()->network_state_handler();
   state_handler->AddObserver(this, FROM_HERE);
-  state_handler->SetTechnologyEnabled(
-      ash::NetworkTypePattern::Primitive(shill::kTypeWifi), true,
-      base::BindRepeating(&HandleEnableWifiError));
+  ash::NetworkHandler::Get()
+      ->technology_state_controller()
+      ->SetTechnologiesEnabled(
+          ash::NetworkTypePattern::Primitive(shill::kTypeWifi), true,
+          base::BindRepeating(&HandleEnableWifiError));
 
   // If we're unconnected, trigger a connection attempt and start scanning.
   NetworkConnectionStateChanged(nullptr);

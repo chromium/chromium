@@ -14,18 +14,22 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/shill_property_util.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash::tether {
 
 WifiHotspotConnector::WifiHotspotConnector(
     NetworkStateHandler* network_state_handler,
+    TechnologyStateController* technology_state_controller,
     NetworkConnect* network_connect)
     : network_state_handler_(network_state_handler),
+      technology_state_controller_(technology_state_controller),
       network_connect_(network_connect),
       timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
@@ -94,7 +98,7 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
     is_waiting_for_wifi_to_enable_ = true;
 
     // Once Wi-Fi is enabled, UpdateWaitingForWifi will be called.
-    network_state_handler_->SetTechnologyEnabled(
+    technology_state_controller_->SetTechnologiesEnabled(
         NetworkTypePattern::WiFi(), true /*enabled */,
         base::BindRepeating(&WifiHotspotConnector::OnEnableWifiError,
                             weak_ptr_factory_.GetWeakPtr()));

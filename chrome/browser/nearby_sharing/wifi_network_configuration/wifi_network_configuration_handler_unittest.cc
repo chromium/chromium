@@ -27,14 +27,16 @@ class FakeCrosNetworkConfig : public ash::network_config::CrosNetworkConfig {
  public:
   explicit FakeCrosNetworkConfig(
       ash::NetworkStateTestHelper* network_state_test_helper)
-      : CrosNetworkConfig(network_state_test_helper->network_state_handler(),
-                          network_state_test_helper->network_device_handler(),
-                          /*cellular_inhibitor=*/nullptr,
-                          /*cellular_esim_profile_handler=*/nullptr,
-                          /*network_configuration_handler=*/nullptr,
-                          /*network_connection_handler=*/nullptr,
-                          /*network_certificate_handler=*/nullptr,
-                          /*network_profile_handler=*/nullptr) {}
+      : CrosNetworkConfig(
+            network_state_test_helper->network_state_handler(),
+            network_state_test_helper->network_device_handler(),
+            /*cellular_inhibitor=*/nullptr,
+            /*cellular_esim_profile_handler=*/nullptr,
+            /*network_configuration_handler=*/nullptr,
+            /*network_connection_handler=*/nullptr,
+            /*network_certificate_handler=*/nullptr,
+            /*network_profile_handler=*/nullptr,
+            network_state_test_helper->technology_state_controller()) {}
 
   ~FakeCrosNetworkConfig() override = default;
 

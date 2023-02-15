@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/network/network_event_log.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
@@ -31,8 +31,8 @@
 #include "ui/display/types/display_constants.h"
 
 using ::ash::NetworkHandler;
-using ::ash::NetworkStateHandler;
 using ::ash::NetworkTypePattern;
+using ::ash::TechnologyStateController;
 using ::ash::assistant::AndroidAppInfo;
 using ::ash::assistant::AppStatus;
 
@@ -118,7 +118,7 @@ DeviceActions::~DeviceActions() = default;
 
 void DeviceActions::SetWifiEnabled(bool enabled) {
   NET_LOG(USER) << __func__ << ":" << enabled;
-  NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
+  NetworkHandler::Get()->technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), enabled,
       ash::network_handler::ErrorCallback());
 }

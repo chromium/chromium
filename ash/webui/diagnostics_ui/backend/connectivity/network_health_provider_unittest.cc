@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -298,8 +299,10 @@ class NetworkHealthProviderTest : public testing::Test {
     NetworkTypePattern pattern = type == shill::kTypeEthernet
                                      ? NetworkTypePattern::Ethernet()
                                      : NetworkTypePattern::WiFi();
-    NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
-        pattern, enabled, network_handler::ErrorCallback());
+    NetworkHandler::Get()
+        ->technology_state_controller()
+        ->SetTechnologiesEnabled(pattern, enabled,
+                                 network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }
 

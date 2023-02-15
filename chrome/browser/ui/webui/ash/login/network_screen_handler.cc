@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
@@ -33,10 +33,10 @@ void NetworkScreenHandler::Show() {
   // If OOBE is not completed, we assume that the only instance of this object
   // could be OOBE itself.
   if (!StartupUtils::IsOobeCompleted()) {
-    NetworkStateHandler* handler =
-        NetworkHandler::Get()->network_state_handler();
-    handler->SetTechnologyEnabled(NetworkTypePattern::Physical(), true,
-                                  network_handler::ErrorCallback());
+    TechnologyStateController* controller =
+        NetworkHandler::Get()->technology_state_controller();
+    controller->SetTechnologiesEnabled(NetworkTypePattern::Physical(), true,
+                                       network_handler::ErrorCallback());
   }
 
   base::Value::Dict data;

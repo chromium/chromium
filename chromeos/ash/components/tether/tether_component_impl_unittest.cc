@@ -169,6 +169,7 @@ class TetherComponentImplTest : public testing::Test {
         nullptr /* tether_host_fetcher */, nullptr /* notification_presenter */,
         nullptr /* gms_core_notifications_state_tracker */,
         nullptr /* pref_service */, nullptr /* network_state_handler */,
+        nullptr /* technology_state_controller */,
         nullptr /* managed_network_configuration_handler */,
         nullptr /* network_connect */, nullptr /* network_connection_handler */,
         nullptr /* adapter */, nullptr /* session_manager */);

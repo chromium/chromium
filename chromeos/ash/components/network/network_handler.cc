@@ -44,6 +44,7 @@
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/stub_cellular_networks_provider.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 
 namespace ash {
 
@@ -56,6 +57,7 @@ NetworkHandler::NetworkHandler()
   cellular_inhibitor_.reset(new CellularInhibitor());
   cellular_esim_profile_handler_.reset(new CellularESimProfileHandlerImpl());
   stub_cellular_networks_provider_.reset(new StubCellularNetworksProvider());
+  technology_state_controller_.reset(new TechnologyStateController());
   cellular_connection_handler_.reset(new CellularConnectionHandler());
   network_profile_handler_.reset(new NetworkProfileHandler());
   network_configuration_handler_.reset(new NetworkConfigurationHandler());
@@ -106,6 +108,7 @@ void NetworkHandler::Init() {
   stub_cellular_networks_provider_->Init(network_state_handler_.get(),
                                          cellular_esim_profile_handler_.get(),
                                          managed_cellular_pref_handler_.get());
+  technology_state_controller_->Init(network_state_handler_.get());
   cellular_connection_handler_->Init(network_state_handler_.get(),
                                      cellular_inhibitor_.get(),
                                      cellular_esim_profile_handler_.get());
@@ -172,7 +175,7 @@ void NetworkHandler::Init() {
   }
   prohibited_technologies_handler_->Init(
       managed_network_configuration_handler_.get(),
-      network_state_handler_.get());
+      network_state_handler_.get(), technology_state_controller_.get());
   network_sms_handler_->Init();
   geolocation_handler_->Init();
 }
@@ -275,6 +278,10 @@ CellularInhibitor* NetworkHandler::cellular_inhibitor() {
 
 CellularPolicyHandler* NetworkHandler::cellular_policy_handler() {
   return cellular_policy_handler_.get();
+}
+
+TechnologyStateController* NetworkHandler::technology_state_controller() {
+  return technology_state_controller_.get();
 }
 
 HiddenNetworkHandler* NetworkHandler::hidden_network_handler() {

@@ -28,6 +28,7 @@ class SecureChannelClient;
 class NetworkConnect;
 class NetworkConnectionHandler;
 class NetworkStateHandler;
+class TechnologyStateController;
 
 namespace tether {
 
@@ -70,6 +71,7 @@ class SynchronousShutdownObjectContainerImpl
             gms_core_notifications_state_tracker,
         PrefService* pref_service,
         NetworkStateHandler* network_state_handler,
+        TechnologyStateController* technology_state_controller,
         NetworkConnect* network_connect,
         NetworkConnectionHandler* network_connection_handler,
         session_manager::SessionManager* session_manager,
@@ -117,6 +119,7 @@ class SynchronousShutdownObjectContainerImpl
           gms_core_notifications_state_tracker,
       PrefService* pref_service,
       NetworkStateHandler* network_state_handler,
+      TechnologyStateController* technology_state_controller,
       NetworkConnect* network_connect,
       NetworkConnectionHandler* network_connection_handler,
       session_manager::SessionManager* session_manager,

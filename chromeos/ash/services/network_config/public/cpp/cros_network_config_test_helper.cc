@@ -103,7 +103,8 @@ void CrosNetworkConfigTestHelper::Initialize(
         network_configuration_handler,
         /*network_connection_handler=*/nullptr,
         /*network_certificate_handler=*/nullptr,
-        /*network_profile_handler=*/nullptr);
+        /*network_profile_handler=*/nullptr,
+        network_state_helper_.technology_state_controller());
   }
   OverrideInProcessInstanceForTesting(cros_network_config_impl_.get());
 }

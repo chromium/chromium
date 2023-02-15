@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -327,6 +328,10 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
 
   NetworkStateHandler* network_state_handler() {
     return network_state_helper().network_state_handler();
+  }
+
+  TechnologyStateController* technology_state_controller() {
+    return network_state_helper().technology_state_controller();
   }
 
   std::unique_ptr<ShimlessRmaService> shimless_rma_provider_;
@@ -919,7 +924,7 @@ TEST_F(ShimlessRmaServiceTest, SelectNetworkTurnsOnWiFi) {
   base::RunLoop run_loop;
 
   // Simulate disabling WiFi.
-  network_state_handler()->SetTechnologyEnabled(
+  technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), /*enabled=*/false,
       network_handler::ErrorCallback());
   EXPECT_FALSE(

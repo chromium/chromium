@@ -24,6 +24,7 @@ namespace ash {
 class NetworkConnect;
 class NetworkState;
 class NetworkStateHandler;
+class TechnologyStateController;
 
 namespace tether {
 
@@ -31,6 +32,7 @@ namespace tether {
 class WifiHotspotConnector : public NetworkStateHandlerObserver {
  public:
   WifiHotspotConnector(NetworkStateHandler* network_state_handler,
+                       TechnologyStateController* technolog_state_controller,
                        NetworkConnect* network_connect);
 
   WifiHotspotConnector(const WifiHotspotConnector&) = delete;
@@ -78,6 +80,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
                       scoped_refptr<base::TaskRunner> test_task_runner);
 
   NetworkStateHandler* network_state_handler_;
+  TechnologyStateController* technology_state_controller_;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 

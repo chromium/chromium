@@ -847,7 +847,7 @@ TEST_F(NetworkStateHandlerTest, GetVisibleNetworks) {
 TEST_F(NetworkStateHandlerTest, TechnologyChanged) {
   // Disable a technology. Will immediately set the state to DISABLING and
   // notify observers.
-  network_state_handler_->SetTechnologyEnabled(
+  network_state_handler_->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), false, network_handler::ErrorCallback());
   EXPECT_EQ(1u, test_observer_->device_list_changed_count());
   EXPECT_EQ(
@@ -866,7 +866,7 @@ TEST_F(NetworkStateHandlerTest, TechnologyChanged) {
   // Enable a technology. Will immediately set the state to ENABLING and
   // notify observers.
   test_observer_->reset_change_counts();
-  network_state_handler_->SetTechnologyEnabled(
+  network_state_handler_->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), true, network_handler::ErrorCallback());
   EXPECT_EQ(1u, test_observer_->device_list_changed_count());
   EXPECT_EQ(
@@ -902,7 +902,7 @@ TEST_F(NetworkStateHandlerTest, TechnologyState) {
       network_state_handler_->GetTechnologyState(NetworkTypePattern::WiFi()));
 
   manager_test_->SetTechnologyInitializing(shill::kTypeWifi, false);
-  network_state_handler_->SetTechnologyEnabled(
+  network_state_handler_->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), true, network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
@@ -940,8 +940,8 @@ TEST_F(NetworkStateHandlerTest, TetherTechnologyState) {
   EXPECT_EQ(tether_device_state, network_state_handler_->GetDeviceStateByType(
                                      NetworkTypePattern::Tether()));
 
-  // Test SetTechnologyEnabled() with a Tether network:
-  network_state_handler_->SetTechnologyEnabled(
+  // Test SetTechnologiesEnabled() with a Tether network:
+  network_state_handler_->SetTechnologiesEnabled(
       NetworkTypePattern::Tether(), true, network_handler::ErrorCallback());
   EXPECT_EQ(2u, test_observer_->device_list_changed_count());
   EXPECT_EQ(
@@ -2123,7 +2123,7 @@ TEST_F(NetworkStateHandlerTest, RequestScan) {
   // Disable cellular, scan request for cellular only should not send a
   // notification
   test_observer_->reset_change_counts();
-  network_state_handler_->SetTechnologyEnabled(
+  network_state_handler_->SetTechnologiesEnabled(
       NetworkTypePattern::Cellular(), false, network_handler::ErrorCallback());
   network_state_handler_->RequestScan(NetworkTypePattern::Cellular());
   EXPECT_EQ(0u, test_observer_->scan_requested_count());
@@ -2132,7 +2132,7 @@ TEST_F(NetworkStateHandlerTest, RequestScan) {
 
   // Disable wifi, scan request for wifi only should not send a notification.
   test_observer_->reset_change_counts();
-  network_state_handler_->SetTechnologyEnabled(
+  network_state_handler_->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), false, network_handler::ErrorCallback());
   network_state_handler_->RequestScan(NetworkTypePattern::WiFi());
   EXPECT_EQ(0u, test_observer_->scan_requested_count());

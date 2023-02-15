@@ -154,6 +154,7 @@ void TetherService::StartTetherIfPossible() {
       notification_presenter_.get(),
       gms_core_notifications_state_tracker_.get(), profile_->GetPrefs(),
       network_state_handler_,
+      NetworkHandler::Get()->technology_state_controller(),
       NetworkHandler::Get()->managed_network_configuration_handler(),
       NetworkConnect::Get(),
       NetworkHandler::Get()->network_connection_handler(), adapter_,

@@ -37,6 +37,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
@@ -155,6 +156,9 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     network_device_handler_ = NetworkDeviceHandler::InitializeForTesting(
         network_state_handler_.get());
     network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
+    technology_state_controller_ =
+        std::make_unique<TechnologyStateController>();
+    technology_state_controller_->Init(network_state_handler_.get());
     network_configuration_handler_ =
         NetworkConfigurationHandler::InitializeForTest(
             network_state_handler_.get(), network_device_handler_.get());
@@ -217,7 +221,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         managed_network_configuration_handler_.get());
     prohibited_technologies_handler_->Init(
         managed_network_configuration_handler_.get(),
-        network_state_handler_.get());
+        network_state_handler_.get(), technology_state_controller_.get());
 
     base::RunLoop().RunUntilIdle();
   }
@@ -234,6 +238,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     managed_cellular_pref_handler_.reset();
     network_configuration_handler_.reset();
     ui_proxy_config_service_.reset();
+    technology_state_controller_.reset();
     network_profile_handler_.reset();
     network_device_handler_.reset();
     network_state_handler_.reset();
@@ -379,6 +384,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
 
   TestNetworkPolicyObserver policy_observer_;
   std::unique_ptr<MockNetworkStateHandler> network_state_handler_;
+  std::unique_ptr<TechnologyStateController> technology_state_controller_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;

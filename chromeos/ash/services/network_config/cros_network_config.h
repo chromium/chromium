@@ -24,6 +24,7 @@ class NetworkConnectionHandler;
 class NetworkDeviceHandler;
 class NetworkProfileHandler;
 class NetworkStateHandler;
+class TechnologyStateController;
 
 namespace network_config {
 
@@ -48,7 +49,8 @@ class CrosNetworkConfig
       ManagedNetworkConfigurationHandler* network_configuration_handler,
       NetworkConnectionHandler* network_connection_handler,
       NetworkCertificateHandler* network_certificate_handler,
-      NetworkProfileHandler* network_profile_handler);
+      NetworkProfileHandler* network_profile_handler,
+      TechnologyStateController* technology_state_controller);
   CrosNetworkConfig(const CrosNetworkConfig&) = delete;
   CrosNetworkConfig& operator=(const CrosNetworkConfig&) = delete;
   ~CrosNetworkConfig() override;
@@ -219,6 +221,7 @@ class CrosNetworkConfig
   NetworkConnectionHandler* network_connection_handler_;    // Unowned
   NetworkCertificateHandler* network_certificate_handler_;  // Unowned
   NetworkProfileHandler* network_profile_handler_;          // Unowned
+  TechnologyStateController* technology_state_controller_;  // Unowned
 
   mojo::RemoteSet<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       observers_;

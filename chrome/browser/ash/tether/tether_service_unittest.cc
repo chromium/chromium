@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/tether/fake_notification_presenter.h"
 #include "chromeos/ash/components/tether/fake_tether_component.h"
 #include "chromeos/ash/components/tether/fake_tether_host_fetcher.h"
@@ -450,9 +451,10 @@ class TetherServiceTest : public testing::Test {
   }
 
   void SetCellularTechnologyStateEnabled(bool enabled) {
-    network_state_handler()->SetTechnologyEnabled(
-        NetworkTypePattern::Cellular(), enabled,
-        network_handler::ErrorCallback());
+    NetworkHandler::Get()
+        ->technology_state_controller()
+        ->SetTechnologiesEnabled(NetworkTypePattern::Cellular(), enabled,
+                                 network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }
 

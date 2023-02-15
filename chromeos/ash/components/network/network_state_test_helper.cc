@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 
 namespace ash {
 
@@ -20,6 +21,8 @@ NetworkStateTestHelper::NetworkStateTestHelper(
   network_state_handler_ = NetworkStateHandler::InitializeForTest();
   network_device_handler_ =
       NetworkDeviceHandler::InitializeForTesting(network_state_handler_.get());
+  technology_state_controller_ = std::make_unique<TechnologyStateController>();
+  technology_state_controller_->Init(network_state_handler_.get());
 
   if (!use_default_devices_and_services)
     ResetDevicesAndServices();
@@ -27,6 +30,7 @@ NetworkStateTestHelper::NetworkStateTestHelper(
 
 NetworkStateTestHelper::~NetworkStateTestHelper() {
   network_device_handler_.reset();
+  technology_state_controller_.reset();
   if (!network_state_handler_)
     return;
   network_state_handler_->Shutdown();

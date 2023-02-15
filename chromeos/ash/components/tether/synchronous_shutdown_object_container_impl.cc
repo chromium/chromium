@@ -51,6 +51,7 @@ SynchronousShutdownObjectContainerImpl::Factory::Create(
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     PrefService* pref_service,
     NetworkStateHandler* network_state_handler,
+    TechnologyStateController* technology_state_controller,
     NetworkConnect* network_connect,
     NetworkConnectionHandler* network_connection_handler,
     session_manager::SessionManager* session_manager,
@@ -67,8 +68,8 @@ SynchronousShutdownObjectContainerImpl::Factory::Create(
   return base::WrapUnique(new SynchronousShutdownObjectContainerImpl(
       asychronous_container, notification_presenter,
       gms_core_notifications_state_tracker, pref_service, network_state_handler,
-      network_connect, network_connection_handler, session_manager,
-      device_sync_client, secure_channel_client));
+      technology_state_controller, network_connect, network_connection_handler,
+      session_manager, device_sync_client, secure_channel_client));
 }
 
 // static
@@ -85,6 +86,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     PrefService* pref_service,
     NetworkStateHandler* network_state_handler,
+    TechnologyStateController* technology_state_controller,
     NetworkConnect* network_connect,
     NetworkConnectionHandler* network_connection_handler,
     session_manager::SessionManager* session_manager,
@@ -103,6 +105,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
               tether_host_response_recorder_.get())),
       wifi_hotspot_connector_(
           std::make_unique<WifiHotspotConnector>(network_state_handler_,
+                                                 technology_state_controller,
                                                  network_connect)),
       active_host_(std::make_unique<ActiveHost>(
           asychronous_container->tether_host_fetcher(),

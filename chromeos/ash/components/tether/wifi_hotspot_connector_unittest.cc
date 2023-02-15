@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/shill_property_util.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -258,10 +259,9 @@ class WifiHotspotConnectorTest : public testing::Test {
   void SetUp() override {
     other_wifi_service_path_.clear();
     connection_callback_responses_.clear();
-
     helper_.network_state_handler()->SetTetherTechnologyState(
         NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
-    helper_.network_state_handler()->SetTechnologyEnabled(
+    helper_.technology_state_controller()->SetTechnologiesEnabled(
         NetworkTypePattern::WiFi(), true /* enabled */,
         network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
@@ -281,7 +281,8 @@ class WifiHotspotConnectorTest : public testing::Test {
         100 /* full signal strength */, false /* has_connected_to_host */);
 
     wifi_hotspot_connector_ = base::WrapUnique(new WifiHotspotConnector(
-        helper_.network_state_handler(), test_network_connect_.get()));
+        helper_.network_state_handler(), helper_.technology_state_controller(),
+        test_network_connect_.get()));
 
     mock_timer_ = new base::MockOneShotTimer();
     test_clock_.SetNow(base::Time::UnixEpoch());
@@ -373,6 +374,10 @@ class WifiHotspotConnectorTest : public testing::Test {
 
   NetworkStateHandler* network_state_handler() {
     return helper_.network_state_handler();
+  }
+
+  TechnologyStateController* technology_state_controller() {
+    return helper_.technology_state_controller();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -705,7 +710,7 @@ TEST_F(WifiHotspotConnectorTest,
 }
 
 TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_Success) {
-  network_state_handler()->SetTechnologyEnabled(
+  technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,
       network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
@@ -717,10 +722,11 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_Success) {
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  // Allow the asyncronous call to NetworkStateHandler::SetTechnologyEnabled()
-  // within WifiHotspotConnector::ConnectToWifiHotspot() to synchronously
-  // run. After this call, Wi-Fi should be enabled and WifiHotspotConnector
-  // will have called TestNetworkConnect::CreateConfiguration().
+  // Allow the asynchronous call to
+  // TechnologyStateHandler::SetTechnologiesEnabled() within
+  // WifiHotspotConnector::ConnectToWifiHotspot() to synchronously run. After
+  // this call, Wi-Fi should be enabled and WifiHotspotConnector will have
+  // called TestNetworkConnect::CreateConfiguration().
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
       network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
@@ -756,7 +762,7 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_Success) {
 
 TEST_F(WifiHotspotConnectorTest,
        TestConnect_WifiDisabled_Success_OtherDeviceStatesChange) {
-  network_state_handler()->SetTechnologyEnabled(
+  technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,
       network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
@@ -774,10 +780,11 @@ TEST_F(WifiHotspotConnectorTest,
   wifi_hotspot_connector_->DeviceListChanged();
   EXPECT_TRUE(test_network_connect_->GetLastConfiguration().empty());
 
-  // Allow the asyncronous call to NetworkStateHandler::SetTechnologyEnabled()
-  // within WifiHotspotConnector::ConnectToWifiHotspot() to synchronously
-  // run. After this call, Wi-Fi should be enabled and WifiHotspotConnector
-  // will have called TestNetworkConnect::CreateConfiguration().
+  // Allow the asynchronous call to
+  // TechnologyStateController::SetTechnologiesEnabled() within
+  // WifiHotspotConnector::ConnectToWifiHotspot() to synchronously run. After
+  // this call, Wi-Fi should be enabled and WifiHotspotConnector will have
+  // called TestNetworkConnect::CreateConfiguration().
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
       network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
@@ -812,7 +819,7 @@ TEST_F(WifiHotspotConnectorTest,
 }
 
 TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_AttemptTimesOut) {
-  network_state_handler()->SetTechnologyEnabled(
+  technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,
       network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
@@ -829,10 +836,11 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_AttemptTimesOut) {
   EXPECT_EQ(1u, connection_callback_responses_.size());
   EXPECT_TRUE(connection_callback_responses_[0].empty());
 
-  // Allow the asyncronous call to NetworkStateHandler::SetTechnologyEnabled()
-  // within WifiHotspotConnector::ConnectToWifiHotspot() to synchronously
-  // run. After this call, Wi-Fi should be enabled, but the connection attempt
-  // has timed out and therefore a new Wi-Fi configuration should not exist.
+  // Allow the asynchronous call to
+  // TechnologyStateController::SetTechnologiesEnabled() within
+  // WifiHotspotConnector::ConnectToWifiHotspot() to synchronously run. After
+  // this call, Wi-Fi should be enabled, but the connection attempt has timed
+  // out and therefore a new Wi-Fi configuration should not exist.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
       network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
@@ -847,7 +855,7 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_AttemptTimesOut) {
 
 TEST_F(WifiHotspotConnectorTest,
        TestConnect_WifiDisabled_SecondConnectionWhileWaitingForWifiEnabled) {
-  network_state_handler()->SetTechnologyEnabled(
+  technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,
       network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
@@ -871,10 +879,11 @@ TEST_F(WifiHotspotConnectorTest,
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  // Allow the asyncronous call to NetworkStateHandler::SetTechnologyEnabled()
-  // within WifiHotspotConnector::ConnectToWifiHotspot() to synchronously
-  // run. After this call, Wi-Fi should be enabled and WifiHotspotConnector
-  // will have called TestNetworkConnect::CreateConfiguration().
+  // Allow the asynchronous call to
+  // TechnologyStateController::SetTechnologiesEnabled() within
+  // WifiHotspotConnector::ConnectToWifiHotspot() to synchronously run. After
+  // this call, Wi-Fi should be enabled and WifiHotspotConnector will have
+  // called TestNetworkConnect::CreateConfiguration().
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
       network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));

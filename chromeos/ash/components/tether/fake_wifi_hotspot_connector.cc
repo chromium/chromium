@@ -13,8 +13,10 @@ namespace ash {
 namespace tether {
 
 FakeWifiHotspotConnector::FakeWifiHotspotConnector(
-    NetworkStateHandler* network_state_handler)
+    NetworkStateHandler* network_state_handler,
+    TechnologyStateController* technology_state_controller)
     : WifiHotspotConnector(network_state_handler,
+                           technology_state_controller,
                            nullptr /* network_connect */) {}
 
 FakeWifiHotspotConnector::~FakeWifiHotspotConnector() = default;

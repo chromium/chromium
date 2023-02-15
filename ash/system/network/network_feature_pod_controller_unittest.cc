@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -343,6 +344,10 @@ class NetworkFeaturePodControllerTest
     return network_state_helper()->network_state_handler();
   }
 
+  TechnologyStateController* technology_state_controller() {
+    return network_state_helper()->technology_state_controller();
+  }
+
   FeaturePodButton* feature_pod_button() { return feature_pod_button_.get(); }
 
   FeatureTile* feature_tile() { return feature_tile_.get(); }
@@ -460,7 +465,7 @@ TEST_P(NetworkFeaturePodControllerTest,
   EXPECT_TRUE(IsButtonToggled());
   ClearNetworks();
 
-  network_state_handler()->SetTechnologyEnabled(
+  technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), /*enabled=*/false,
       network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
@@ -857,7 +862,7 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
 
   // Disable WiFi which will update the feature pod button state to be enabled
   // but not toggled.
-  network_state_handler()->SetTechnologyEnabled(
+  technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), /*enabled=*/false,
       network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();

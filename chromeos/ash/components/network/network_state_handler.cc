@@ -324,7 +324,7 @@ NetworkStateHandler::TechnologyState NetworkStateHandler::GetTechnologyState(
   return TECHNOLOGY_AVAILABLE;
 }
 
-void NetworkStateHandler::SetTechnologyEnabled(
+void NetworkStateHandler::SetTechnologiesEnabled(
     const NetworkTypePattern& type,
     bool enabled,
     network_handler::ErrorCallback error_callback) {

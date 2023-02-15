@@ -21,8 +21,8 @@ void TechnologyStateController::SetTechnologiesEnabled(
     const NetworkTypePattern& type,
     bool enabled,
     network_handler::ErrorCallback error_callback) {
-  network_state_handler_->SetTechnologyEnabled(type, enabled,
-                                               std::move(error_callback));
+  network_state_handler_->SetTechnologiesEnabled(type, enabled,
+                                                 std::move(error_callback));
 }
 
 }  // namespace ash

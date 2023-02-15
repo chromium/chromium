@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/onc/onc_translator.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "components/onc/onc_constants.h"
 #include "components/proxy_config/proxy_prefs.h"
@@ -43,6 +44,7 @@ using ::ash::NetworkCertificateHandler;
 using ::ash::NetworkHandler;
 using ::ash::NetworkStateHandler;
 using ::ash::NetworkTypePattern;
+using ::ash::TechnologyStateController;
 using extensions::NetworkingPrivateDelegate;
 
 namespace private_api = extensions::api::networking_private;
@@ -51,6 +53,10 @@ namespace {
 
 NetworkStateHandler* GetStateHandler() {
   return NetworkHandler::Get()->network_state_handler();
+}
+
+TechnologyStateController* GetTechnologyStateController() {
+  return NetworkHandler::Get()->technology_state_controller();
 }
 
 ash::ManagedNetworkConfigurationHandler* GetManagedConfigurationHandler() {
@@ -759,7 +765,7 @@ void NetworkingPrivateChromeOS::EnableNetworkType(const std::string& type,
   NetworkTypePattern pattern = ash::onc::NetworkTypePatternFromOncType(type);
 
   NET_LOG(USER) << __func__ << ":" << type;
-  GetStateHandler()->SetTechnologyEnabled(
+  GetTechnologyStateController()->SetTechnologiesEnabled(
       pattern, true, ash::network_handler::ErrorCallback());
 
   std::move(callback).Run(true);
@@ -770,7 +776,7 @@ void NetworkingPrivateChromeOS::DisableNetworkType(const std::string& type,
   NetworkTypePattern pattern = ash::onc::NetworkTypePatternFromOncType(type);
 
   NET_LOG(USER) << __func__ << ":" << type;
-  GetStateHandler()->SetTechnologyEnabled(
+  GetTechnologyStateController()->SetTechnologiesEnabled(
       pattern, false, ash::network_handler::ErrorCallback());
 
   std::move(callback).Run(true);

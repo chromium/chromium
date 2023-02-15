@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/tether/fake_active_host.h"
 #include "chromeos/ash/components/tether/fake_disconnect_tethering_request_sender.h"
 #include "chromeos/ash/components/tether/fake_network_configuration_remover.h"
@@ -89,7 +90,7 @@ class TetherNetworkDisconnectionHandlerTest : public testing::Test {
   }
 
   void SetWiFiTechnologyStateEnabled(bool enabled) {
-    helper_.network_state_handler()->SetTechnologyEnabled(
+    helper_.technology_state_controller()->SetTechnologiesEnabled(
         NetworkTypePattern::WiFi(), enabled, network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }

@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -198,9 +199,11 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
       // Enable WiFi on the device.
       NetworkStateHandler* network_state_handler =
           NetworkHandler::Get()->network_state_handler();
+      TechnologyStateController* technology_state_controller =
+          NetworkHandler::Get()->technology_state_controller();
       if (!network_state_handler->IsTechnologyEnabled(
               NetworkTypePattern::WiFi())) {
-        network_state_handler->SetTechnologyEnabled(
+        technology_state_controller->SetTechnologiesEnabled(
             NetworkTypePattern::WiFi(), /*enabled=*/true,
             network_handler::ErrorCallback());
       }

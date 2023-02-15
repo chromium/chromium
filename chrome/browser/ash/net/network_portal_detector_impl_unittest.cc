@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_testing_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -173,9 +174,10 @@ class NetworkPortalDetectorImplTest
   }
 
   void SetNetworkDeviceEnabled(const std::string& type, bool enabled) {
-    NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
-        NetworkTypePattern::Primitive(type), enabled,
-        network_handler::ErrorCallback());
+    NetworkHandler::Get()
+        ->technology_state_controller()
+        ->SetTechnologiesEnabled(NetworkTypePattern::Primitive(type), enabled,
+                                 network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }
 

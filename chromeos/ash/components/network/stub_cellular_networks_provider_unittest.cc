@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,7 +129,7 @@ class StubCellularNetworksProviderTest : public testing::Test {
   }
 
   void DisableCellularTechnology() {
-    helper_.network_state_handler()->SetTechnologyEnabled(
+    helper_.technology_state_controller()->SetTechnologiesEnabled(
         NetworkTypePattern::Cellular(), /*enabled=*/false,
         /*error_callback=*/base::DoNothing());
     base::RunLoop().RunUntilIdle();
