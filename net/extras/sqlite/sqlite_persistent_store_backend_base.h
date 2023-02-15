@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -47,9 +46,7 @@ namespace net {
 // - overridden DoCommit() to actually handle the logic of committing
 //   pending operations to the database,
 // - optionally overridden Record*() to record the appropriate metrics.
-// TODO(b/260646344): COMPONENT_EXPORT(NET_EXTRAS) for prototyping only.
-//  Do not use in prod. Move to a proper base class.
-class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentStoreBackendBase
+class SQLitePersistentStoreBackendBase
     : public base::RefCountedThreadSafe<SQLitePersistentStoreBackendBase> {
  public:
   SQLitePersistentStoreBackendBase(const SQLitePersistentStoreBackendBase&) =
