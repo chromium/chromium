@@ -910,7 +910,8 @@ IN_PROC_BROWSER_TEST_F(
       {
           url::Origin::Create(kFirstPartyURL),
           net::CookiePartitionKey::FromURLForTesting(kFirstPartyURL),
-          blink::StorageKey(url::Origin::Create(kFirstPartyURL)),
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(kFirstPartyURL)),
           false,
       },
       {
@@ -983,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverStorageBucketsBrowserTest,
                        ClearSiteDataStorageBuckets) {
   GURL url("https://example.com");
   url::Origin origin = url::Origin::Create(url);
-  auto storage_key = blink::StorageKey(origin);
+  const auto storage_key = blink::StorageKey::CreateFirstParty(origin);
 
   storage::QuotaManager* quota_manager =
       GetBrowser()->profile()->GetDefaultStoragePartition()->GetQuotaManager();

@@ -107,8 +107,10 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
       net::SchemefulSite(GURL("https://example.com"));
   net::SchemefulSite kTopLevelSite2 =
       net::SchemefulSite(GURL("https://foobar.com"));
-  blink::StorageKey storageKey1 = blink::StorageKey(url::Origin::Create(kURL1));
-  blink::StorageKey storageKey2 = blink::StorageKey(url::Origin::Create(kURL2));
+  const blink::StorageKey storageKey1 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kURL1));
+  const blink::StorageKey storageKey2 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kURL2));
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 

@@ -80,7 +80,8 @@ void ExternallyManagedAppRegistrationTask::SetTimeoutForTesting(
 
 void ExternallyManagedAppRegistrationTask::CheckHasServiceWorker() {
   service_worker_context_->CheckHasServiceWorker(
-      install_url(), blink::StorageKey(url::Origin::Create(install_url())),
+      install_url(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(install_url())),
       base::BindOnce(
           &ExternallyManagedAppRegistrationTask::OnDidCheckHasServiceWorker,
           weak_ptr_factory_.GetWeakPtr()));

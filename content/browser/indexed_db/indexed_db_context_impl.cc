@@ -1204,7 +1204,7 @@ IndexedDBContextImpl::FindLegacyIndexedDBFiles() {
                                        .RemoveExtension()
                                        .RemoveExtension()
                                        .MaybeAsASCII();
-      storage_key_to_file_path[blink::StorageKey(
+      storage_key_to_file_path[blink::StorageKey::CreateFirstParty(
           storage::GetOriginFromIdentifier(storage_key_id))] = file_path;
     }
   }

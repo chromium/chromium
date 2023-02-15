@@ -525,7 +525,7 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   // Try delete
   storage->DeleteInterestGroupData(base::BindLambdaForTesting(
       [&test_origin](const blink::StorageKey& candidate) {
-        return candidate == blink::StorageKey(test_origin);
+        return candidate == blink::StorageKey::CreateFirstParty(test_origin);
       }));
 
   origins = storage->GetAllInterestGroupOwners();
@@ -775,7 +775,8 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
 
   storage->DeleteInterestGroupData(base::BindLambdaForTesting(
       [&owner_originA](const blink::StorageKey& storage_key) {
-        return storage_key == blink::StorageKey(owner_originA);
+        return storage_key ==
+               blink::StorageKey::CreateFirstParty(owner_originA);
       }));
 
   origins = storage->GetAllInterestGroupOwners();
@@ -788,7 +789,8 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   // we will be left with the one that joined on joining_origin B.
   storage->DeleteInterestGroupData(base::BindLambdaForTesting(
       [&joining_originA](const blink::StorageKey& storage_key) {
-        return storage_key == blink::StorageKey(joining_originA);
+        return storage_key ==
+               blink::StorageKey::CreateFirstParty(joining_originA);
       }));
 
   origins = storage->GetAllInterestGroupOwners();

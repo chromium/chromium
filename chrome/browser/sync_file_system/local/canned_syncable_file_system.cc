@@ -468,8 +468,10 @@ File::Error CannedSyncableFileSystem::DeleteFileSystem() {
   EXPECT_TRUE(is_filesystem_set_up_);
   return RunOnThread<File::Error>(
       io_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&FileSystemContext::DeleteFileSystem, file_system_context_,
-                     blink::StorageKey(url::Origin::Create(origin_)), type_));
+      base::BindOnce(
+          &FileSystemContext::DeleteFileSystem, file_system_context_,
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(origin_)),
+          type_));
 }
 
 blink::mojom::QuotaStatusCode CannedSyncableFileSystem::GetUsageAndQuota(
@@ -529,9 +531,9 @@ void CannedSyncableFileSystem::DoOpenFileSystem(
   EXPECT_TRUE(io_task_runner_->RunsTasksInCurrentSequence());
   EXPECT_FALSE(is_filesystem_opened_);
   file_system_context_->OpenFileSystem(
-      blink::StorageKey(url::Origin::Create(origin_)), /*bucket=*/absl::nullopt,
-      type_, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-      std::move(callback));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin_)),
+      /*bucket=*/absl::nullopt, type_,
+      storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, std::move(callback));
 }
 
 void CannedSyncableFileSystem::DoCreateDirectory(const FileSystemURL& url,
@@ -682,7 +684,8 @@ void CannedSyncableFileSystem::DoGetUsageAndQuota(
   EXPECT_TRUE(is_filesystem_opened_);
   DCHECK(quota_manager_.get());
   quota_manager_->GetUsageAndQuota(
-      blink::StorageKey(url::Origin::Create(origin_)), storage_type(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin_)),
+      storage_type(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), usage, quota));
 }
 

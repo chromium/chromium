@@ -90,9 +90,9 @@ class NearbyShareActionTest : public testing::Test {
     storage::ExternalMountPoints* mount_points =
         storage::ExternalMountPoints::GetSystemInstance();
     return mount_points
-        ->CreateExternalFileSystemURL(blink::StorageKey(origin),
-                                      mount_point_name,
-                                      base::FilePath(file_name))
+        ->CreateExternalFileSystemURL(
+            blink::StorageKey::CreateFirstParty(origin), mount_point_name,
+            base::FilePath(file_name))
         .ToGURL();
   }
 

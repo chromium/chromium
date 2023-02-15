@@ -118,7 +118,7 @@ void BackgroundSyncBaseBrowserTest::RegistrationPendingOnCoreThread(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
   sw_context->FindReadyRegistrationForClientUrl(
-      url, blink::StorageKey(url::Origin::Create(url)),
+      url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       base::BindOnce(&BackgroundSyncBaseBrowserTest::
                          RegistrationPendingDidGetSWRegistration,
                      base::Unretained(this), sync_context, tag,

@@ -712,20 +712,23 @@ void AddToContainer(browsing_data::LocalSharedObjectsContainer& container,
     case StorageType::LOCAL_STORAGE:
       // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
       // function directly.
-      container.local_storages()->Add(blink::StorageKey(origin));
+      container.local_storages()->Add(
+          blink::StorageKey::CreateFirstParty(origin));
       return;
     case StorageType::SESSION_STORAGE:
       // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
       // function directly.
-      container.session_storages()->Add(blink::StorageKey(origin));
+      container.session_storages()->Add(
+          blink::StorageKey::CreateFirstParty(origin));
       return;
     case StorageType::INDEXED_DB:
       // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
       // function directly.
-      container.indexed_dbs()->Add(blink::StorageKey(origin));
+      container.indexed_dbs()->Add(blink::StorageKey::CreateFirstParty(origin));
       return;
     case StorageType::CACHE:
-      container.cache_storages()->Add(blink::StorageKey(origin));
+      container.cache_storages()->Add(
+          blink::StorageKey::CreateFirstParty(origin));
       return;
     case StorageType::FILE_SYSTEM:
       container.file_systems()->Add(origin);

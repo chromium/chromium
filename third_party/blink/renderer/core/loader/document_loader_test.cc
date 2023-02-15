@@ -536,8 +536,9 @@ TEST_P(DocumentLoaderTest, NavigationToAboutBlank) {
   params->storage_key = local_frame->DomWindow()->GetStorageKey();
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(requestor_url)),
-            local_frame->DomWindow()->GetStorageKey());
+  EXPECT_EQ(
+      BlinkStorageKey::CreateFirstParty(SecurityOrigin::Create(requestor_url)),
+      local_frame->DomWindow()->GetStorageKey());
 }
 
 TEST_P(DocumentLoaderTest, SameOriginNavigation) {
@@ -552,13 +553,14 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation) {
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
-  params->storage_key =
-      BlinkStorageKey(SecurityOrigin::Create(same_origin_url));
+  params->storage_key = BlinkStorageKey::CreateFirstParty(
+      SecurityOrigin::Create(same_origin_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(same_origin_url)),
+  EXPECT_EQ(BlinkStorageKey::CreateFirstParty(
+                SecurityOrigin::Create(same_origin_url)),
             local_frame->DomWindow()->GetStorageKey());
 
   EXPECT_TRUE(local_frame->Loader()
@@ -578,13 +580,14 @@ TEST_P(DocumentLoaderTest, CrossOriginNavigation) {
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
-  params->storage_key =
-      BlinkStorageKey(SecurityOrigin::Create(other_origin_url));
+  params->storage_key = BlinkStorageKey::CreateFirstParty(
+      SecurityOrigin::Create(other_origin_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(other_origin_url)),
+  EXPECT_EQ(BlinkStorageKey::CreateFirstParty(
+                SecurityOrigin::Create(other_origin_url)),
             local_frame->DomWindow()->GetStorageKey());
 
   EXPECT_FALSE(local_frame->Loader()

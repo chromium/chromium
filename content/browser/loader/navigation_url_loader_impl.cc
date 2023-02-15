@@ -1426,7 +1426,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
             ChildProcessHost::kInvalidUniqueID,
             frame_tree_node->frame_tree_node_id(),
             storage_partition_->GetFileSystemContext(), storage_domain,
-            blink::StorageKey(url::Origin::Create(url_))));
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(url_))));
   }
 
   non_network_url_loader_factories_.emplace(url::kAboutScheme,

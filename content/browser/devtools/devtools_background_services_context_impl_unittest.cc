@@ -173,7 +173,8 @@ class DevToolsBackgroundServicesContextTest
 
   void LogTestBackgroundServiceEvent(const std::string& log_message) {
     context_->LogBackgroundServiceEvent(
-        service_worker_registration_id_, blink::StorageKey(origin_),
+        service_worker_registration_id_,
+        blink::StorageKey::CreateFirstParty(origin_),
         DevToolsBackgroundService::kBackgroundFetch, kEventName, kInstanceId,
         {{"key", log_message}});
   }
@@ -214,7 +215,7 @@ class DevToolsBackgroundServicesContextTest
  private:
   int64_t RegisterServiceWorker() {
     GURL script_url(origin_.GetURL().spec() + "sw.js");
-    blink::StorageKey key(origin_);
+    const blink::StorageKey key = blink::StorageKey::CreateFirstParty(origin_);
     int64_t service_worker_registration_id =
         blink::mojom::kInvalidServiceWorkerRegistrationId;
 

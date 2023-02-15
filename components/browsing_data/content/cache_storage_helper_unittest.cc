@@ -32,8 +32,8 @@ class CannedCacheStorageHelperTest : public testing::Test {
 };
 
 TEST_F(CannedCacheStorageHelperTest, Empty) {
-  const blink::StorageKey storage_key(
-      url::Origin::Create(GURL("http://host1:1/")));
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
   auto helper = MakeHelper();
   ASSERT_TRUE(helper->empty());
@@ -45,9 +45,9 @@ TEST_F(CannedCacheStorageHelperTest, Empty) {
 
 TEST_F(CannedCacheStorageHelperTest, Delete) {
   const blink::StorageKey storage_key_1 =
-      blink::StorageKey(url::Origin::Create(GURL("http://host1:9000")));
+      blink::StorageKey::CreateFromStringForTesting("http://host1:9000");
   const blink::StorageKey storage_key_2 =
-      blink::StorageKey(url::Origin::Create(GURL("http://example.com")));
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
 
   auto helper = MakeHelper();
   EXPECT_TRUE(helper->empty());
@@ -60,10 +60,12 @@ TEST_F(CannedCacheStorageHelperTest, Delete) {
 }
 
 TEST_F(CannedCacheStorageHelperTest, IgnoreExtensionsAndDevTools) {
-  const blink::StorageKey storage_key_1(url::Origin::Create(
-      GURL("chrome-extension://abcdefghijklmnopqrstuvwxyz/")));
-  const blink::StorageKey storage_key_2(
-      url::Origin::Create(GURL("devtools://abcdefghijklmnopqrstuvwxyz/")));
+  const blink::StorageKey storage_key_1 =
+      blink::StorageKey::CreateFromStringForTesting(
+          "chrome-extension://abcdefghijklmnopqrstuvwxyz/");
+  const blink::StorageKey storage_key_2 =
+      blink::StorageKey::CreateFromStringForTesting(
+          "devtools://abcdefghijklmnopqrstuvwxyz/");
 
   auto helper = MakeHelper();
   ASSERT_TRUE(helper->empty());

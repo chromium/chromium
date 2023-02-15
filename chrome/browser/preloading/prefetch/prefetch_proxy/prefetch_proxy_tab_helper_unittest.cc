@@ -1310,7 +1310,7 @@ TEST_F(PrefetchProxyTabHelperTest, ServiceWorkerRegistered) {
   GURL prediction_url("https://www.cat-food.com/");
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
-      blink::StorageKey(url::Origin::Create(prediction_url)));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(prediction_url)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -1336,7 +1336,8 @@ TEST_F(PrefetchProxyTabHelperTest, ServiceWorkerNotRegistered) {
   GURL service_worker_registration("https://www.service-worker.com/");
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
-      blink::StorageKey(url::Origin::Create(service_worker_registration)));
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(service_worker_registration)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -1412,7 +1413,7 @@ TEST_F(PrefetchProxyTabHelperWithDecoyTest, ServiceWorkerRegistered) {
   GURL prediction_url("https://www.cat-food.com/");
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
-      blink::StorageKey(url::Origin::Create(prediction_url)));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(prediction_url)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -1932,7 +1933,7 @@ TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest, ServiceWorkerRegistered) {
   GURL redirect_url("https://www.kitty-krunch.com/");
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
-      blink::StorageKey(url::Origin::Create(prediction_url)));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(prediction_url)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -1977,7 +1978,7 @@ TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest,
   GURL prediction_url("https://www.cat-food.com/");
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
-      blink::StorageKey(url::Origin::Create(prediction_url)));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(prediction_url)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -2094,7 +2095,8 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_ServiceWorker) {
   GURL site_with_worker("https://service-worker.com");
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
-      blink::StorageKey(url::Origin::Create(site_with_worker)));
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(site_with_worker)));
 
   RunNoRedirectTest(prediction_url, site_with_worker);
 

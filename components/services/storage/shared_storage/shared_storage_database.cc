@@ -709,9 +709,9 @@ SharedStorageDatabase::PurgeMatchingOrigins(
 
   for (const auto& origin : origins) {
     if (storage_key_matcher &&
-        !storage_key_matcher.Run(
-            blink::StorageKey(url::Origin::Create(GURL(origin))),
-            special_storage_policy_.get())) {
+        !storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(
+                                     url::Origin::Create(GURL(origin))),
+                                 special_storage_policy_.get())) {
       continue;
     }
 
@@ -815,7 +815,8 @@ std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins() {
 
   while (statement.Step()) {
     fetched_origin_infos.emplace_back(mojom::StorageUsageInfo::New(
-        blink::StorageKey(url::Origin::Create(GURL(statement.ColumnString(0)))),
+        blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(GURL(statement.ColumnString(0)))),
         statement.ColumnInt64(2) * kSharedStorageEntryTotalBytesMultiplier *
             max_string_length_,
         statement.ColumnTime(1)));

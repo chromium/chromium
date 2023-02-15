@@ -67,7 +67,7 @@ blink::StorageKey Convert(const storage_key_proto::StorageKey& storage_key) {
   StorageKey::OneOfCase storage_key_type = storage_key.OneOf_case();
 
   if (storage_key_type == StorageKeyType::ONEOF_NOT_SET)
-    return blink::StorageKey(origin);
+    return blink::StorageKey::CreateFirstParty(origin);
 
   if (storage_key_type == StorageKeyType::kUnguessableToken) {
     auto nonce = base::UnguessableToken::Create();

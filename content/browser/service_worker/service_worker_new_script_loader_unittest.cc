@@ -182,9 +182,9 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
   void SetUpRegistration(const GURL& script_url) {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = script_url.GetWithoutFilename();
-    SetUpRegistrationWithOptions(
-        script_url, options,
-        blink::StorageKey(url::Origin::Create(options.scope)));
+    SetUpRegistrationWithOptions(script_url, options,
+                                 blink::StorageKey::CreateFirstParty(
+                                     url::Origin::Create(options.scope)));
   }
   void SetUpRegistrationWithOptions(
       const GURL& script_url,
@@ -621,7 +621,8 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_PathRestriction) {
   // Service-Worker-Allowed header allows it.
   const GURL kScriptURL("https://example.com/out-of-scope/normal.js");
   const GURL kScope("https://example.com/in-scope/");
-  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
   mock_server_.Set(kScriptURL,
                    MockHTTPServer::Response(
                        std::string("HTTP/1.1 200 OK\n"
@@ -661,7 +662,8 @@ TEST_F(ServiceWorkerNewScriptLoaderTest,
   // Service-Worker-Allowed header allows it.
   const GURL kImportedScriptURL(kNormalImportedScriptURL);
   const GURL kScope("https://example.com/in-scope/");
-  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
   mock_server_.Set(
       kImportedScriptURL,
       MockHTTPServer::Response(std::string("HTTP/1.1 200 OK\n"
@@ -700,7 +702,8 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Error_PathRestriction) {
   // Service-Worker-Allowed header is not specified.
   const GURL kScriptURL("https://example.com/out-of-scope/normal.js");
   const GURL kScope("https://example.com/in-scope/");
-  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
   mock_server_.Set(
       kScriptURL,
       MockHTTPServer::Response(std::string("HTTP/1.1 200 OK\n"

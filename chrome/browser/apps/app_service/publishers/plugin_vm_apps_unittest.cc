@@ -91,8 +91,9 @@ class PluginVmAppsTest : public testing::Test {
 
   storage::FileSystemURL GetMyFilesFileSystemURL(const std::string& path) {
     return mount_points_->CreateExternalFileSystemURL(
-        blink::StorageKey(file_manager::util::GetFilesAppOrigin()), mount_name_,
-        base::FilePath(path));
+        blink::StorageKey::CreateFirstParty(
+            file_manager::util::GetFilesAppOrigin()),
+        mount_name_, base::FilePath(path));
   }
 
   // Set up the test PluginVm app for our desired mime types.

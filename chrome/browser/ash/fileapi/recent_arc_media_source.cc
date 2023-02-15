@@ -304,7 +304,8 @@ RecentArcMediaSource::MediaRoot::BuildDocumentsProviderUrl(
       storage::ExternalMountPoints::GetSystemInstance();
 
   return mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(url::Origin::Create(params_.value().origin())),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(params_.value().origin())),
       arc::kDocumentsProviderMountPointName, relative_mount_path_.Append(path));
 }
 

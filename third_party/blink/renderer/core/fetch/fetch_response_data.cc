@@ -372,7 +372,7 @@ void FetchResponseData::InitFromResourceResponse(
                     // have a specified storage key within the ExecutionContext
                     // and if warranted change this to use the actual storage
                     // key instead.
-                    blink::StorageKey(
+                    blink::StorageKey::CreateFirstParty(
                         context->GetSecurityOrigin()->ToUrlOrigin()),
                     Url()->GetString().Utf8(), ResponseTime(),
                     request_method.Utf8())

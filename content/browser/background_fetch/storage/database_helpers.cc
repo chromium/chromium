@@ -138,7 +138,7 @@ blink::StorageKey GetMetadataStorageKey(
 
   // Fall back to the deprecated `origin` field.
   if (metadata_proto.has_origin()) {
-    return blink::StorageKey(
+    return blink::StorageKey::CreateFirstParty(
         url::Origin::Create(GURL(metadata_proto.origin())));
   }
 

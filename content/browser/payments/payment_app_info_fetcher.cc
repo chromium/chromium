@@ -43,7 +43,8 @@ void PaymentAppInfoFetcher::Start(
 
   std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids =
       service_worker_context->GetWindowClientFrameRoutingIds(
-          blink::StorageKey(url::Origin::Create(context_url)));
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(context_url)));
 
   SelfDeleteFetcher* fetcher = new SelfDeleteFetcher(std::move(callback));
   fetcher->Start(context_url, std::move(frame_routing_ids));

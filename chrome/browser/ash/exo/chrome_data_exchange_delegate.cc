@@ -449,7 +449,7 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
       continue;
     const GURL gurl(line);
     storage::FileSystemURL url = mount_points->CrackURL(
-        gurl, blink::StorageKey(url::Origin::Create(gurl)));
+        gurl, blink::StorageKey::CreateFirstParty(url::Origin::Create(gurl)));
     if (!url.is_valid()) {
       LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
       continue;

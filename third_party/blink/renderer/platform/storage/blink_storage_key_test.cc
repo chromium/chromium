@@ -54,7 +54,8 @@ TEST(BlinkStorageKeyTest, OpaqueOriginRetained) {
       SecurityOrigin::CreateUniqueOpaque();
   scoped_refptr<const SecurityOrigin> opaque_copied =
       opaque_origin->IsolatedCopy();
-  BlinkStorageKey from_opaque(std::move(opaque_origin));
+  const BlinkStorageKey from_opaque =
+      BlinkStorageKey::CreateFirstParty(std::move(opaque_origin));
   EXPECT_TRUE(
       from_opaque.GetSecurityOrigin()->IsSameOriginWith(opaque_copied.get()));
 }
@@ -75,12 +76,14 @@ TEST(BlinkStorageKeyTest, CreateFromNonOpaqueOrigin) {
     scoped_refptr<const SecurityOrigin> copied = origin->IsolatedCopy();
 
     // Test that the origin is retained.
-    BlinkStorageKey storage_key(std::move(origin));
+    const BlinkStorageKey storage_key =
+        BlinkStorageKey::CreateFirstParty(std::move(origin));
     EXPECT_TRUE(
         storage_key.GetSecurityOrigin()->IsSameOriginWith(copied.get()));
 
     // Test that two StorageKeys from the same origin are the same.
-    BlinkStorageKey storage_key_from_copy(std::move(copied));
+    const BlinkStorageKey storage_key_from_copy =
+        BlinkStorageKey::CreateFirstParty(std::move(copied));
     EXPECT_EQ(storage_key, storage_key_from_copy);
   }
 }
@@ -104,10 +107,10 @@ TEST(BlinkStorageKeyTest, BlinkStorageKeyRoundTripConversion) {
         net::features::kThirdPartyStoragePartitioning, toggle);
     Vector<BlinkStorageKey> keys = {
         BlinkStorageKey(),
-        BlinkStorageKey(origin1),
-        BlinkStorageKey(origin2),
-        BlinkStorageKey(origin3),
-        BlinkStorageKey(origin4),
+        BlinkStorageKey::CreateFirstParty(origin1),
+        BlinkStorageKey::CreateFirstParty(origin2),
+        BlinkStorageKey::CreateFirstParty(origin3),
+        BlinkStorageKey::CreateFirstParty(origin4),
         BlinkStorageKey::CreateWithNonce(origin1, nonce),
         BlinkStorageKey::CreateWithNonce(origin2, nonce),
         BlinkStorageKey(origin1, BlinkSchemefulSite(origin2), nullptr,
@@ -141,10 +144,10 @@ TEST(BlinkStorageKeyTest, StorageKeyRoundTripConversion) {
     scope_feature_list.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning, toggle);
     Vector<StorageKey> storage_keys = {
-        StorageKey(url_origin1),
-        StorageKey(url_origin2),
-        StorageKey(url_origin3),
-        StorageKey(url_origin4),
+        StorageKey::CreateFirstParty(url_origin1),
+        StorageKey::CreateFirstParty(url_origin2),
+        StorageKey::CreateFirstParty(url_origin3),
+        StorageKey::CreateFirstParty(url_origin4),
         StorageKey::CreateWithNonceForTesting(url_origin1, nonce),
         StorageKey::CreateWithNonceForTesting(url_origin2, nonce),
         StorageKey::CreateWithOptionalNonce(
@@ -178,7 +181,8 @@ TEST(BlinkStorageKeyTest, CreateFromStringForTesting) {
       BlinkStorageKey::CreateFromStringForTesting(WTF::String());
 
   EXPECT_FALSE(key1.GetSecurityOrigin()->IsOpaque());
-  EXPECT_EQ(key1, BlinkStorageKey(SecurityOrigin::CreateFromString(example)));
+  EXPECT_EQ(key1, BlinkStorageKey::CreateFirstParty(
+                      SecurityOrigin::CreateFromString(example)));
   EXPECT_TRUE(key2.GetSecurityOrigin()->IsOpaque());
   EXPECT_TRUE(key3.GetSecurityOrigin()->IsOpaque());
 }
@@ -192,7 +196,7 @@ TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningDisabled) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
-  StorageKey key_origin1 = StorageKey(origin1);
+  StorageKey key_origin1 = StorageKey::CreateFirstParty(origin1);
   StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
   StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
 
@@ -213,7 +217,7 @@ TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   scoped_refptr<const SecurityOrigin> origin2 =
       SecurityOrigin::CreateFromString("https://test.example");
 
-  BlinkStorageKey key_origin1 = BlinkStorageKey(origin1);
+  BlinkStorageKey key_origin1 = BlinkStorageKey::CreateFirstParty(origin1);
   BlinkStorageKey key_origin1_site1 =
       BlinkStorageKey::CreateForTesting(origin1, BlinkSchemefulSite(origin1));
   BlinkStorageKey key_origin1_site2 =

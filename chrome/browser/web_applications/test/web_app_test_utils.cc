@@ -791,7 +791,7 @@ void CheckServiceWorkerStatus(const GURL& url,
   content::ServiceWorkerContext* service_worker_context =
       storage_partition->GetServiceWorkerContext();
   service_worker_context->CheckHasServiceWorker(
-      url, blink::StorageKey(url::Origin::Create(url)),
+      url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       base::BindLambdaForTesting(
           [&run_loop, status](content::ServiceWorkerCapability capability) {
             CHECK_EQ(status, capability);

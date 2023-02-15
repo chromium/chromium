@@ -934,7 +934,7 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
 
     const storage::FileSystemURL url =
         file_system_context->CreateCrackedFileSystemURL(
-            blink::StorageKey(extension()->origin()),
+            blink::StorageKey::CreateFirstParty(extension()->origin()),
             storage::kFileSystemTypeIsolated,
             storage::IsolatedContext::GetInstance()
                 ->CreateVirtualRootPath(filesystem_id)

@@ -82,7 +82,7 @@ constexpr base::TimeDelta kReportDelay = base::Milliseconds(5);
 StoragePartition::StorageKeyMatcherFunction GetMatcher(
     const url::Origin& to_delete) {
   return base::BindRepeating(std::equal_to<blink::StorageKey>(),
-                             blink::StorageKey(to_delete));
+                             blink::StorageKey::CreateFirstParty(to_delete));
 }
 
 MATCHER_P(CreateReportSourceIs, matcher, "") {

@@ -50,8 +50,8 @@ void QuotaBackendImpl::ReserveQuota(const url::Origin& origin,
   }
   DCHECK(quota_manager_proxy_.get());
   quota_manager_proxy_->GetUsageAndQuota(
-      blink::StorageKey(origin), FileSystemTypeToQuotaStorageType(type),
-      file_task_runner_,
+      blink::StorageKey::CreateFirstParty(origin),
+      FileSystemTypeToQuotaStorageType(type), file_task_runner_,
       base::BindOnce(&QuotaBackendImpl::DidGetUsageAndQuotaForReserveQuota,
                      weak_ptr_factory_.GetWeakPtr(),
                      QuotaReservationInfo(origin, type, delta),
@@ -144,7 +144,8 @@ void QuotaBackendImpl::ReserveQuotaInternal(const QuotaReservationInfo& info) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!info.origin.opaque());
   DCHECK(quota_manager_proxy_.get());
-  auto bucket = BucketLocator::ForDefaultBucket(blink::StorageKey(info.origin));
+  auto bucket = BucketLocator::ForDefaultBucket(
+      blink::StorageKey::CreateFirstParty(info.origin));
   bucket.type = FileSystemTypeToQuotaStorageType(info.type);
   quota_manager_proxy_->NotifyBucketModified(
       QuotaClientType::kFileSystem, bucket, info.delta, base::Time::Now(),
@@ -157,8 +158,9 @@ base::FileErrorOr<base::FilePath> QuotaBackendImpl::GetUsageCachePath(
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!origin.opaque());
   return SandboxFileSystemBackendDelegate::
-      GetUsageCachePathForStorageKeyAndType(obfuscated_file_util_,
-                                            blink::StorageKey(origin), type);
+      GetUsageCachePathForStorageKeyAndType(
+          obfuscated_file_util_, blink::StorageKey::CreateFirstParty(origin),
+          type);
 }
 
 QuotaBackendImpl::QuotaReservationInfo::QuotaReservationInfo(

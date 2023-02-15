@@ -124,7 +124,8 @@ class TempFileSystem {
   // Returns a file system URL for the specified path relative to `temp_dir_`.
   storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
     return GetFileSystemContext(profile_)->CreateCrackedFileSystemURL(
-        blink::StorageKey(origin_), storage::kFileSystemTypeLocal,
+        blink::StorageKey::CreateFirstParty(origin_),
+        storage::kFileSystemTypeLocal,
         temp_dir_.GetPath().Append(base::FilePath::FromUTF8Unsafe(path)));
   }
 

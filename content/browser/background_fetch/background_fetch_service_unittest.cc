@@ -1117,8 +1117,8 @@ TEST_F(BackgroundFetchServiceTest, GetDeveloperIds) {
   // the service worker registration is correct.
   {
     ScopedCustomBackgroundFetchService scoped_bogus_url_service(
-        this, blink::StorageKey(
-                  url::Origin::Create(GURL("https://www.bogus-origin.com"))));
+        this, blink::StorageKey::CreateFromStringForTesting(
+                  "https://www.bogus-origin.com"));
     blink::mojom::BackgroundFetchError error;
     std::vector<std::string> developer_ids;
 

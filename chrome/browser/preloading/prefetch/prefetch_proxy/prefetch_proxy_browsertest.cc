@@ -1044,13 +1044,12 @@ IN_PROC_BROWSER_TEST_F(
           ->profile()
           ->GetDefaultStoragePartition()
           ->GetServiceWorkerContext();
-  EXPECT_EQ(
-      true,
-      service_worker_context_->MaybeHasRegistrationForStorageKey(
-          blink::StorageKey(url::Origin::Create(GetOriginServerURL("/")))));
+  EXPECT_EQ(true, service_worker_context_->MaybeHasRegistrationForStorageKey(
+                      blink::StorageKey::CreateFirstParty(
+                          url::Origin::Create(GetOriginServerURL("/")))));
   EXPECT_EQ(false, service_worker_context_->MaybeHasRegistrationForStorageKey(
-                       blink::StorageKey(url::Origin::Create(
-                           GURL("https://unregistered.com")))));
+                       blink::StorageKey::CreateFromStringForTesting(
+                           "https://unregistered.com")));
 
   GURL prefetch_url = GetOriginServerURL("/title2.html");
 
@@ -2196,7 +2195,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
           ->GetDefaultStoragePartition()
           ->GetServiceWorkerContext();
   ASSERT_TRUE(service_worker_context_->MaybeHasRegistrationForStorageKey(
-      blink::StorageKey(url::Origin::Create(starting_page))));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(starting_page))));
 
   ukm::SourceId srp_source_id =
       GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();

@@ -5391,7 +5391,8 @@ void RenderFrameHostImpl::WillPotentiallyStartOutermostMainFrameNavigation(
   if (base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
     if (ServiceWorkerContext* context =
             GetStoragePartition()->GetServiceWorkerContext()) {
-      const blink::StorageKey key(url::Origin::Create(filtered_url));
+      const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(filtered_url));
       if (context->MaybeHasRegistrationForStorageKey(key)) {
         context->StartServiceWorkerForNavigationHint(filtered_url, key,
                                                      base::DoNothing());

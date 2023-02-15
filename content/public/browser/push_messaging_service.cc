@@ -127,7 +127,7 @@ void PushMessagingService::UpdatePushSubscriptionId(
   GetServiceWorkerContext(browser_context, origin)
       ->StoreRegistrationUserData(
           service_worker_registration_id,
-          blink::StorageKey(url::Origin::Create(origin)),
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(origin)),
           {{kPushRegistrationIdServiceWorkerKey, subscription_id}},
           base::BindOnce(&CallClosure, std::move(callback)));
 }
@@ -144,7 +144,7 @@ void PushMessagingService::StorePushSubscriptionForTesting(
   GetServiceWorkerContext(browser_context, origin)
       ->StoreRegistrationUserData(
           service_worker_registration_id,
-          blink::StorageKey(url::Origin::Create(origin)),
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(origin)),
           {{kPushRegistrationIdServiceWorkerKey, subscription_id},
            {kPushSenderIdServiceWorkerKey, sender_id}},
           base::BindOnce(&CallClosure, std::move(callback)));

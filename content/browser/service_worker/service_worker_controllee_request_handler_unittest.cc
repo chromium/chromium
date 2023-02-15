@@ -75,7 +75,9 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
       DCHECK(!loader_loop_.AnyQuitCalled());
       handler_->MaybeCreateLoader(
           resource_request,
-          blink::StorageKey(url::Origin::Create(resource_request.url)), nullptr,
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(resource_request.url)),
+          nullptr,
           base::BindOnce(
               [](base::OnceClosure closure,
                  scoped_refptr<network::SharedURLLoaderFactory>) {
@@ -159,7 +161,8 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope_;
     registration_ = new ServiceWorkerRegistration(
-        options, blink::StorageKey(url::Origin::Create(scope_)), 1L,
+        options,
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_)), 1L,
         context()->AsWeakPtr(), blink::mojom::AncestorFrameType::kNormalFrame);
     version_ = new ServiceWorkerVersion(
         registration_.get(), script_url_, blink::mojom::ScriptType::kClassic,

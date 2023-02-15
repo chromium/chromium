@@ -44,8 +44,8 @@ storage::FileSystemURL FileInDownloads(Profile* profile, base::FilePath file) {
       mount_point_name, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       file_manager::util::GetDownloadsFolderForProfile(profile));
-  return mount_points->CreateExternalFileSystemURL(blink::StorageKey(origin),
-                                                   mount_point_name, file);
+  return mount_points->CreateExternalFileSystemURL(
+      blink::StorageKey::CreateFirstParty(origin), mount_point_name, file);
 }
 
 storage::FileSystemURL FileInNonNativeFileSystemType(Profile* profile,

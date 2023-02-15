@@ -36,12 +36,14 @@ void MockCacheStorageHelper::DeleteCacheStorage(
 void MockCacheStorageHelper::AddCacheStorageSamples() {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("https://cshost1:1/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("https://cshost2:2/"));
-  content::StorageUsageInfo info1(blink::StorageKey(kOrigin1), 1, base::Time());
+  content::StorageUsageInfo info1(blink::StorageKey::CreateFirstParty(kOrigin1),
+                                  1, base::Time());
   response_.push_back(info1);
-  storage_keys_[blink::StorageKey(kOrigin1)] = true;
-  content::StorageUsageInfo info2(blink::StorageKey(kOrigin2), 2, base::Time());
+  storage_keys_[blink::StorageKey::CreateFirstParty(kOrigin1)] = true;
+  content::StorageUsageInfo info2(blink::StorageKey::CreateFirstParty(kOrigin2),
+                                  2, base::Time());
   response_.push_back(info2);
-  storage_keys_[blink::StorageKey(kOrigin2)] = true;
+  storage_keys_[blink::StorageKey::CreateFirstParty(kOrigin2)] = true;
 }
 
 void MockCacheStorageHelper::Notify() {

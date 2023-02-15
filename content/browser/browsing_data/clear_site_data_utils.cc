@@ -111,7 +111,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       // the storage buckets are successfully removed, the `failed_data_types`
       // arg should be set to 0 to align with existing behaviour in this class.
       remover_->RemoveStorageBucketsAndReply(
-          storage_key_.value_or(blink::StorageKey(origin_)),
+          storage_key_.value_or(blink::StorageKey::CreateFirstParty(origin_)),
           storage_buckets_to_remove_,
           base::BindOnce(&SiteDataClearer::OnBrowsingDataRemoverDone,
                          weak_factory_.GetWeakPtr(), 0));

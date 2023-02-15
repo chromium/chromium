@@ -886,8 +886,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
   void GetDirectoryDatabase_IsolatedTestBody() {
     storage_policy_->AddIsolated(origin().GetURL());
     FileSystemURL url = FileSystemURL::CreateForTest(
-        blink::StorageKey(origin()), kFileSystemTypePersistent,
-        base::FilePath());
+        blink::StorageKey::CreateFirstParty(origin()),
+        kFileSystemTypePersistent, base::FilePath());
     if (is_non_default_bucket())
       url.SetBucket(custom_bucket_);
 

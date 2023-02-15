@@ -36,7 +36,8 @@ TEST(BackgroundFetchDatabaseHelpers, CacheUrlRoundTrip) {
 }
 
 TEST(BackgroundFetchDatabaseHelpers, GetMetadataStorageKeyFromStorageKey) {
-  blink::StorageKey key(url::Origin::Create(GURL("http://example.com")));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   proto::BackgroundFetchMetadata metadata_proto;
   metadata_proto.set_storage_key(key.Serialize());
   EXPECT_EQ(GetMetadataStorageKey(metadata_proto).Serialize(), key.Serialize());
@@ -44,7 +45,7 @@ TEST(BackgroundFetchDatabaseHelpers, GetMetadataStorageKeyFromStorageKey) {
 
 TEST(BackgroundFetchDatabaseHelpers, GetMetadataStorageKeyFromOrigin) {
   auto origin = url::Origin::Create(GURL("http://example.com"));
-  blink::StorageKey key(origin);
+  const blink::StorageKey key = blink::StorageKey::CreateFirstParty(origin);
   proto::BackgroundFetchMetadata metadata_proto;
   metadata_proto.set_origin(origin.Serialize());
   EXPECT_EQ(GetMetadataStorageKey(metadata_proto).Serialize(), key.Serialize());

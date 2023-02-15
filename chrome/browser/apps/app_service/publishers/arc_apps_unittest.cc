@@ -111,8 +111,8 @@ GURL FileInDownloads(Profile* profile, base::FilePath file) {
       storage::FileSystemMountOption(),
       file_manager::util::GetDownloadsFolderForProfile(profile));
   return mount_points
-      ->CreateExternalFileSystemURL(blink::StorageKey(origin), mount_point_name,
-                                    file)
+      ->CreateExternalFileSystemURL(blink::StorageKey::CreateFirstParty(origin),
+                                    mount_point_name, file)
       .ToGURL();
 }
 

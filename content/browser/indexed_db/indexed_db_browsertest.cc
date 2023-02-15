@@ -399,7 +399,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
           ->GetQuotaManager()
           ->proxy()
           ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
-              blink::StorageKey(url::Origin::Create(database_open_url))));
+              blink::StorageKey::CreateFirstParty(
+                  url::Origin::Create(database_open_url))));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
@@ -437,7 +438,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
           ->GetQuotaManager()
           ->proxy()
           ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
-              blink::StorageKey(url::Origin::Create(database_open_url))));
+              blink::StorageKey::CreateFirstParty(
+                  url::Origin::Create(database_open_url))));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
@@ -621,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion123456Schema,
                        DestroyTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage(kTestStorageKey);
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -639,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion987654SSVData,
                        DestroyTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage(kTestStorageKey);
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -657,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCorruptLevelDB,
                        DestroyTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage(kTestStorageKey);
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -675,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithMissingSSTFile,
                        DestroyTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_missing_table.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage(kTestStorageKey);
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -697,7 +699,7 @@ class IndexedDBBrowserTestWithCrbug899446
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCrbug899446, StableTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "crbug899446.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage(kTestStorageKey);
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -714,7 +716,7 @@ class IndexedDBBrowserTestWithCrbug899446Noai
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCrbug899446Noai, StableTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "crbug899446_noai.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage(kTestStorageKey);
   SimpleTest(kTestUrl);
   int64_t new_size = RequestUsage(kTestStorageKey);
@@ -749,7 +751,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LevelDBLogFileTest) {
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CanDeleteWhenOverQuotaTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "fill_up_5k.html");
   SimpleTest(kTestUrl);
-  int64_t size = RequestUsage(blink::StorageKey(url::Origin::Create(kTestUrl)));
+  int64_t size = RequestUsage(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl)));
   const int kQuotaKilobytes = 2;
   EXPECT_GT(size, kQuotaKilobytes * 1024);
   SetQuota(kQuotaKilobytes);
@@ -760,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
   // First delete all IDB's for the test storage_key
   const GURL kTestUrl = GetTestUrl("indexeddb", "empty_blob.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   DeleteForStorageKey(kTestStorageKey);
   const auto maybe_bucket_info =
       shell()
@@ -792,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyDeletesBlobs) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "write_4mb_blob.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   SimpleTest(kTestUrl);
   int64_t size = RequestUsage(kTestStorageKey);
   // This assertion assumes that we do not compress blobs.
@@ -804,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyDeletesBlobs) {
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyIncognito) {
   const GURL test_url = GetTestUrl("indexeddb", "fill_up_5k.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(test_url));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url));
 
   Shell* browser = CreateOffTheRecordBrowser();
   NavigateToURLBlockUntilNavigationsComplete(browser, test_url, 2);
@@ -1050,7 +1053,7 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithCorruption,
                        OperationOnCorruptedOpenDatabase) {
   ASSERT_TRUE(embedded_test_server()->Started() ||
               embedded_test_server()->InitializeAndListen());
-  const blink::StorageKey storage_key = blink::StorageKey(
+  const blink::StorageKey storage_key = blink::StorageKey::CreateFirstParty(
       url::Origin::Create(embedded_test_server()->base_url()));
   base::RunLoop loop;
   storage::BucketLocator bucket_locator;
@@ -1090,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,
                        DISABLED_DeleteCompactsBackingStore) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "delete_compact.html");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   SimpleTest(GURL(kTestUrl.spec() + "#fill"));
 
   int64_t after_filling = RequestUsage(kTestStorageKey);
@@ -1193,7 +1196,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
   constexpr char kFilename[] = "force_close_event.html";
   NavigateAndWaitForTitle(shell(), kFilename, nullptr, "connection ready");
-  DeleteForStorageKey(blink::StorageKey(
+  DeleteForStorageKey(blink::StorageKey::CreateFirstParty(
       url::Origin::Create(GetTestUrl("indexeddb", kFilename))));
   std::u16string expected_title16(u"connection closed");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
@@ -1233,8 +1236,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestV2SchemaCorruption, LifecycleTest) {
           ->GetDefaultStoragePartition()
           ->GetQuotaManager()
           ->proxy()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(blink::StorageKey(
+          ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
+              blink::StorageKey::CreateFirstParty(
                   url::Origin::Create(embedded_test_server()->base_url()))));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
@@ -1329,8 +1332,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
           ->GetDefaultStoragePartition()
           ->GetQuotaManager()
           ->proxy()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(blink::StorageKey(
+          ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
+              blink::StorageKey::CreateFirstParty(
                   url::Origin::Create(embedded_test_server()->base_url()))));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();

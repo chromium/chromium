@@ -405,7 +405,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
                 ->GetServiceWorkerContext();
   bool site_has_service_worker =
       service_worker_context->MaybeHasRegistrationForStorageKey(
-          blink::StorageKey(url::Origin::Create(prefetch_container->GetURL())));
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(prefetch_container->GetURL())));
   if (site_has_service_worker) {
     std::move(result_callback)
         .Run(prefetch_container, false,

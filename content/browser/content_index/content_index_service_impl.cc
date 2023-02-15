@@ -128,7 +128,8 @@ void ContentIndexServiceImpl::CheckOfflineCapability(
   // TODO(rayankans): Figure out if we can check the service worker specified
   // by |service_worker_registration_id| rather than any service worker.
   service_worker_context_->CheckOfflineCapability(
-      launch_url, blink::StorageKey(url::Origin::Create(launch_url)),
+      launch_url,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(launch_url)),
       base::BindOnce(&DidCheckOfflineCapability, std::move(callback),
                      service_worker_registration_id));
 }

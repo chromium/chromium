@@ -202,7 +202,8 @@ Response ServiceWorkerHandler::Unregister(const std::string& scope_url) {
   if (!context_)
     return CreateContextErrorResponse();
   GURL url(scope_url);
-  blink::StorageKey key(url::Origin::Create(url));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
   context_->UnregisterServiceWorker(url, key, base::DoNothing());
   return Response::Success();
 }
@@ -213,7 +214,8 @@ Response ServiceWorkerHandler::StartWorker(const std::string& scope_url) {
   if (!context_)
     return CreateContextErrorResponse();
   context_->StartActiveServiceWorker(
-      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))),
+      GURL(scope_url),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(scope_url))),
       base::DoNothing());
   return Response::Success();
 }
@@ -223,8 +225,9 @@ Response ServiceWorkerHandler::SkipWaiting(const std::string& scope_url) {
     return CreateDomainNotEnabledErrorResponse();
   if (!context_)
     return CreateContextErrorResponse();
-  context_->SkipWaitingWorker(
-      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))));
+  context_->SkipWaitingWorker(GURL(scope_url),
+                              blink::StorageKey::CreateFirstParty(
+                                  url::Origin::Create(GURL(scope_url))));
   return Response::Success();
 }
 
@@ -264,8 +267,9 @@ Response ServiceWorkerHandler::UpdateRegistration(
     return CreateDomainNotEnabledErrorResponse();
   if (!context_)
     return CreateContextErrorResponse();
-  context_->UpdateRegistration(
-      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))));
+  context_->UpdateRegistration(GURL(scope_url),
+                               blink::StorageKey::CreateFirstParty(
+                                   url::Origin::Create(GURL(scope_url))));
   return Response::Success();
 }
 
@@ -335,7 +339,8 @@ Response ServiceWorkerHandler::DispatchSyncEvent(
       base::WrapRefCounted(storage_partition_->GetBackgroundSyncContext());
 
   context_->FindReadyRegistrationForId(
-      id, blink::StorageKey(url::Origin::Create(GURL(origin))),
+      id,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(origin))),
       base::BindOnce(&DidFindRegistrationForDispatchSyncEvent,
                      std::move(sync_context), tag, last_chance));
 
@@ -358,7 +363,8 @@ Response ServiceWorkerHandler::DispatchPeriodicSyncEvent(
       base::WrapRefCounted(storage_partition_->GetBackgroundSyncContext());
 
   context_->FindReadyRegistrationForId(
-      id, blink::StorageKey(url::Origin::Create(GURL(origin))),
+      id,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(origin))),
       base::BindOnce(&DidFindRegistrationForDispatchPeriodicSyncEvent,
                      std::move(sync_context), tag));
 

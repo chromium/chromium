@@ -693,7 +693,8 @@ void AccessContextAuditDatabase::RemoveStorageApiRecords(
     auto type = static_cast<StorageAPIType>(select_storage_api.ColumnInt(1));
     if (storage_api_types.count(type) &&
         (!storage_key_matcher ||
-         storage_key_matcher.Run(blink::StorageKey(origin)))) {
+         storage_key_matcher.Run(
+             blink::StorageKey::CreateFirstParty(origin)))) {
       origin_type_pairs_for_removal.emplace_back(origin, type);
     }
   }

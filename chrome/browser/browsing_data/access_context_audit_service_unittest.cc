@@ -721,7 +721,7 @@ TEST_F(AccessContextAuditServiceTest, OnStorageKeyDataCleared) {
   // Provide all parameters such that TestOrigin1's record is removed.
   auto storage_key_matcher =
       base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
-        return storage_key == blink::StorageKey(kTestOrigin1);
+        return storage_key == blink::StorageKey::CreateFirstParty(kTestOrigin1);
       });
   service()->OnStorageKeyDataCleared(
       content::StoragePartition::REMOVE_DATA_MASK_WEBSQL, storage_key_matcher,

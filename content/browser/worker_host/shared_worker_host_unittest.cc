@@ -86,7 +86,7 @@ class SharedWorkerHostTest : public testing::Test {
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        blink::StorageKey(url::Origin::Create(kWorkerUrl)),
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl)),
         blink::mojom::SharedWorkerCreationContextType::kSecure);
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
@@ -426,7 +426,7 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,
       network::mojom::CredentialsMode::kSameOrigin, "name",
-      blink::StorageKey(url::Origin::Create(kWorkerUrl)),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl)),
       blink::mojom::SharedWorkerCreationContextType::kSecure);
   PolicyContainerPolicies policies;
   policies.cross_origin_embedder_policy.value =

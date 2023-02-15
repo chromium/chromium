@@ -203,7 +203,7 @@ class BlobURLTest : public testing::Test {
   void TestRequest(const std::string& method,
                    const net::HttpRequestHeaders& extra_headers) {
     auto origin = url::Origin::Create(GURL("https://example.com"));
-    auto storage_key = blink::StorageKey(origin);
+    const auto storage_key = blink::StorageKey::CreateFirstParty(origin);
     auto url = GURL("blob:" + origin.Serialize() + "/id1");
     network::ResourceRequest request;
     request.url = url;

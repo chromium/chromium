@@ -1661,7 +1661,8 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
   auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
       storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
   storage::BucketLocator bucket_locator;
-  bucket_locator.storage_key = blink::StorageKey(url::Origin());
+  bucket_locator.storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin());
   bucket_locator.is_default = true;
 
   // No `path_base`.

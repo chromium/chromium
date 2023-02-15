@@ -485,6 +485,14 @@ bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
 }
 
 // static
+StorageKey StorageKey::CreateFirstParty(const url::Origin& origin) {
+  return StorageKey(origin, net::SchemefulSite(origin), nullptr,
+                    origin.opaque()
+                        ? blink::mojom::AncestorChainBit::kCrossSite
+                        : blink::mojom::AncestorChainBit::kSameSite);
+}
+
+// static
 StorageKey StorageKey::CreateWithNonceForTesting(
     const url::Origin& origin,
     const base::UnguessableToken& nonce) {

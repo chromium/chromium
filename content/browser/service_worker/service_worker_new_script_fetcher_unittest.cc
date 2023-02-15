@@ -47,7 +47,7 @@ class ServiceWorkerNewScriptFetcherTest : public testing::Test {
     options.scope = scope;
     auto registration = CreateNewServiceWorkerRegistration(
         context()->registry(), options,
-        blink::StorageKey(url::Origin::Create(scope)));
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)));
     return registration;
   }
 

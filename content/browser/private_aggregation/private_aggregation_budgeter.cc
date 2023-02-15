@@ -382,7 +382,7 @@ void PrivateAggregationBudgeter::ClearDataImpl(
   for (const auto& [origin_key, budgets] :
        storage_->budgets_data()->GetAllCached()) {
     if (filter.is_null() ||
-        filter.Run(blink::StorageKey(url::Origin::Create(GURL(origin_key))))) {
+        filter.Run(blink::StorageKey::CreateFromStringForTesting(origin_key))) {
       origins_to_delete.push_back(origin_key);
     }
   }

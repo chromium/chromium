@@ -128,7 +128,8 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
 TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
   // Make a service worker.
   GURL scope("https://example.com/");
-  blink::StorageKey key(url::Origin::Create(scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
   GURL script("https://example.com/sw.js");
   scoped_refptr<ServiceWorkerRegistration> registration =
       CreateServiceWorkerRegistrationAndVersion(context(), scope, script, key,
@@ -155,7 +156,7 @@ TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
   wrapper_->context()->WaitForRegistrationsInitializedForTest();
   EXPECT_TRUE(wrapper_->MaybeHasRegistrationForStorageKey(key));
   EXPECT_FALSE(wrapper_->MaybeHasRegistrationForStorageKey(
-      blink::StorageKey(url::Origin::Create(GURL("https://example.org")))));
+      blink::StorageKey::CreateFromStringForTesting("https://example.org")));
 }
 
 // This test involves storing two registrations for the same key to storage
@@ -168,7 +169,8 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameKey) {
 
   // Make two registrations for same origin.
   GURL scope1("https://example1.com/abc/");
-  blink::StorageKey key(url::Origin::Create(scope1));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope1));
   GURL script1("https://example1.com/abc/sw.js");
   scoped_refptr<ServiceWorkerRegistration> registration1 =
       CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1, key,
@@ -278,7 +280,8 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistration) {
 
   // Make registration.
   GURL scope1("https://example2.com/");
-  blink::StorageKey key(url::Origin::Create(scope1));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope1));
   GURL script1("https://example2.com/");
   scoped_refptr<ServiceWorkerRegistration> registration =
       CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1, key,

@@ -65,7 +65,8 @@ DevToolsCallback GetDevToolsCallback(BrowserContext* browser_context,
   auto base_callback = base::BindOnce(
       &DevToolsBackgroundServicesContext::LogBackgroundServiceEvent,
       base::Unretained(devtools_context), data.service_worker_registration_id,
-      blink::StorageKey(origin), DevToolsBackgroundService::kNotifications);
+      blink::StorageKey::CreateFirstParty(origin),
+      DevToolsBackgroundService::kNotifications);
 
   return base::BindOnce(
       [](DevToolsBaseCallback callback, const std::string& notification_id,

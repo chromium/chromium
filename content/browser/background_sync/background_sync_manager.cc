@@ -1032,7 +1032,8 @@ void BackgroundSyncManager::RegisterDidGetDelay(
   if (registration.sync_type() == BackgroundSyncType::PERIODIC &&
       ShouldLogToDevTools(registration.sync_type())) {
     devtools_context_->LogBackgroundServiceEvent(
-        sw_registration_id, blink::StorageKey(registration.origin()),
+        sw_registration_id,
+        blink::StorageKey::CreateFirstParty(registration.origin()),
         DevToolsBackgroundService::kPeriodicBackgroundSync,
         /* event_name= */ "Got next event delay",
         /* instance_id= */ registration.options()->tag,
@@ -1311,7 +1312,7 @@ void BackgroundSyncManager::RemoveActiveRegistration(
       ShouldLogToDevTools(registration_info.sync_type)) {
     devtools_context_->LogBackgroundServiceEvent(
         registration_info.service_worker_registration_id,
-        blink::StorageKey(origin),
+        blink::StorageKey::CreateFirstParty(origin),
         DevToolsBackgroundService::kPeriodicBackgroundSync,
         /* event_name= */ "Unregistered periodicsync",
         /* instance_id= */ registration_info.tag,
@@ -1341,7 +1342,7 @@ void BackgroundSyncManager::AddOrUpdateActiveRegistration(
           base::NumberToString(sync_registration.options()->min_interval);
     }
     devtools_context_->LogBackgroundServiceEvent(
-        sw_registration_id, blink::StorageKey(origin),
+        sw_registration_id, blink::StorageKey::CreateFirstParty(origin),
         GetDevToolsBackgroundService(sync_type),
         /* event_name= */ "Registered " + GetSyncEventName(sync_type),
         /* instance_id= */ sync_registration.options()->tag, event_metadata);
@@ -1357,8 +1358,8 @@ void BackgroundSyncManager::StoreDataInBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   service_worker_context_->StoreRegistrationUserData(
-      sw_registration_id, blink::StorageKey(origin), {{backend_key, data}},
-      std::move(callback));
+      sw_registration_id, blink::StorageKey::CreateFirstParty(origin),
+      {{backend_key, data}}, std::move(callback));
 }
 
 void BackgroundSyncManager::GetDataFromBackend(
@@ -1997,7 +1998,7 @@ void BackgroundSyncManager::FireReadyEventsImpl(
     // BackgroundSyncRegistrations should be changed to use StorageKey.
     service_worker_context_->FindReadyRegistrationForId(
         service_worker_registration_id,
-        blink::StorageKey(
+        blink::StorageKey::CreateFirstParty(
             active_registrations_[service_worker_registration_id].origin),
         base::BindOnce(
             &BackgroundSyncManager::FireReadyEventsDidFindRegistration,
@@ -2179,7 +2180,8 @@ void BackgroundSyncManager::EventCompleteDidGetDelay(
 
   UpdateNumFiringRegistrationsBy(registration_info->sync_type, -1);
 
-  blink::StorageKey storage_key = blink::StorageKey(origin);
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFirstParty(origin);
   BackgroundSyncRegistration* registration =
       LookupActiveRegistration(*registration_info);
   if (!registration) {

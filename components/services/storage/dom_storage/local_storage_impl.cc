@@ -414,7 +414,8 @@ void LocalStorageImpl::ApplyPolicyUpdates(
   for (const auto& update : policy_updates) {
     // TODO(https://crbug.com/1199077): Pass the real StorageKey when
     // StoragePolicyUpdate is converted.
-    blink::StorageKey storage_key(update->origin);
+    const blink::StorageKey storage_key =
+        blink::StorageKey::CreateFirstParty(update->origin);
     if (!update->purge_on_shutdown)
       storage_keys_to_purge_on_shutdown_.erase(storage_key);
     else

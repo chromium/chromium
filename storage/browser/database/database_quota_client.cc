@@ -76,7 +76,7 @@ void DatabaseQuotaClient::GetStorageKeysForType(
     all_storage_keys.reserve(origin_identifiers.size());
     for (const auto& identifier : origin_identifiers)
       all_storage_keys.emplace_back(
-          StorageKey(GetOriginFromIdentifier(identifier)));
+          StorageKey::CreateFirstParty(GetOriginFromIdentifier(identifier)));
   }
   std::move(callback).Run(all_storage_keys);
 }

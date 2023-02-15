@@ -2070,7 +2070,7 @@ bool DoDeleteInterestGroupData(
     return false;
   for (const url::Origin& origin : maybe_all_origins.value()) {
     if (storage_key_matcher.is_null() ||
-        storage_key_matcher.Run(blink::StorageKey(origin))) {
+        storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(origin))) {
       affected_origins.push_back(origin);
     }
   }
@@ -2094,7 +2094,7 @@ bool DoDeleteInterestGroupData(
     return false;
   for (const url::Origin& origin : maybe_all_origins.value()) {
     if (storage_key_matcher.is_null() ||
-        storage_key_matcher.Run(blink::StorageKey(origin))) {
+        storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(origin))) {
       affected_origins.push_back(origin);
     }
   }

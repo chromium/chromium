@@ -131,7 +131,7 @@ void StopServiceWorkerForScope(ServiceWorkerContext* context,
       static_cast<ServiceWorkerContextWrapper*>(context));
 
   context_wrapper->FindReadyRegistrationForScope(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&StopServiceWorkerForRegistration, context_wrapper,
                      std::move(completion_callback_ui)));
 }
@@ -145,7 +145,7 @@ void DispatchServiceWorkerNotificationClick(
       static_cast<ServiceWorkerContextWrapper*>(context));
 
   context_wrapper->FindReadyRegistrationForScope(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&DispatchNotificationClickForRegistration,
                      notification_data));
 }

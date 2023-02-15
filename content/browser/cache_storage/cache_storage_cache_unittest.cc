@@ -588,7 +588,8 @@ class CacheStorageCacheTest : public testing::Test {
   }
 
   storage::BucketLocator GetOrCreateBucket(const GURL& url) {
-    auto storage_key = blink::StorageKey(url::Origin::Create(url));
+    const auto storage_key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams(storage_key, storage::kDefaultBucketName),
@@ -998,7 +999,7 @@ class CacheStorageCacheTest : public testing::Test {
 
   void SetQuota(uint64_t quota) {
     mock_quota_manager_->SetQuota(
-        blink::StorageKey(url::Origin::Create(kTestUrl)),
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl)),
         blink::mojom::StorageType::kTemporary, quota);
   }
 

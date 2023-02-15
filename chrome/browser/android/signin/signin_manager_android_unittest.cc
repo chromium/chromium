@@ -142,8 +142,8 @@ TEST_F(SigninManagerAndroidTest, DISABLED_DeleteGoogleServiceWorkerCaches) {
       profile()->GetDefaultStoragePartition());
 
   for (const TestCase& test_case : kTestCases)
-    helper->Add(
-        blink::StorageKey(url::Origin::Create(GURL(test_case.worker_url))));
+    helper->Add(blink::StorageKey::CreateFirstParty(
+        url::Origin::Create(GURL(test_case.worker_url))));
 
   ASSERT_EQ(std::size(kTestCases), helper->GetCount());
 
@@ -160,11 +160,10 @@ TEST_F(SigninManagerAndroidTest, DISABLED_DeleteGoogleServiceWorkerCaches) {
 
   // TODO(crbug.com/929456): If deleted, the key should not be present.
   for (const TestCase& test_case : kTestCases) {
-    EXPECT_EQ(
-        test_case.should_be_deleted,
-        base::Contains(
-            remaining_cache_storages,
-            blink::StorageKey(url::Origin::Create(GURL(test_case.worker_url)))))
+    EXPECT_EQ(test_case.should_be_deleted,
+              base::Contains(remaining_cache_storages,
+                             blink::StorageKey::CreateFromStringForTesting(
+                                 test_case.worker_url)))
         << test_case.worker_url << " should "
         << (test_case.should_be_deleted ? "" : "NOT ")
         << "be deleted, but it was"

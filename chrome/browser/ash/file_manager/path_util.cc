@@ -601,7 +601,7 @@ bool ConvertPathInsideVMToFileSystemURL(
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
       *file_system_url = mount_points->CreateExternalFileSystemURL(
-          blink::StorageKey(GetFilesAppOrigin()),
+          blink::StorageKey::CreateFirstParty(GetFilesAppOrigin()),
           GetCrostiniMountPointName(profile), relative_path);
       return file_system_url->is_valid();
     }
@@ -678,7 +678,8 @@ bool ConvertPathInsideVMToFileSystemURL(
   }
 
   *file_system_url = mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(GetFilesAppOrigin()), mount_name, path);
+      blink::StorageKey::CreateFirstParty(GetFilesAppOrigin()), mount_name,
+      path);
   return file_system_url->is_valid();
 }
 

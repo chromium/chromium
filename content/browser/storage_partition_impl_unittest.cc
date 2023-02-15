@@ -629,8 +629,8 @@ void ClearQuotaDataForOrigin(content::StoragePartition* partition,
                              base::RunLoop* loop_to_quit) {
   partition->ClearData(
       kAllQuotaRemoveMask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      blink::StorageKey(url::Origin::Create(remove_origin)), delete_begin,
-      base::Time::Max(), loop_to_quit->QuitClosure());
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(remove_origin)),
+      delete_begin, base::Time::Max(), loop_to_quit->QuitClosure());
 }
 
 void ClearQuotaDataForTemporary(content::StoragePartition* partition,
@@ -1830,8 +1830,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   base::RunLoop run_loop;
   partition->ClearData(
       StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
-      blink::StorageKey(source.common_info().reporting_origin()), now, now,
-      run_loop.QuitClosure());
+      blink::StorageKey::CreateFirstParty(
+          source.common_info().reporting_origin()),
+      now, now, run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(GetAttributionReportsForTesting(attribution_manager).empty());
@@ -1853,9 +1854,10 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
 
   // Arbitrary non-conversions mask.
   base::RunLoop run_loop;
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
-                       blink::StorageKey(source.common_info().source_origin()),
-                       now, now, run_loop.QuitClosure());
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
+      blink::StorageKey::CreateFirstParty(source.common_info().source_origin()),
+      now, now, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_FALSE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
@@ -1949,8 +1951,8 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
   const auto kEndTime = base::Time() + base::Hours(2);
   const auto storage_key_callback_valid =
       [&](content::StoragePartition::StorageKeyMatcherFunction callback) {
-        return callback.Run(
-            blink::StorageKey(url::Origin::Create(kTestOrigin)));
+        return callback.Run(blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(kTestOrigin)));
       };
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
@@ -1973,9 +1975,10 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
               OnStorageKeyDataCleared(
                   kTestClearMask, testing::Truly(storage_key_callback_valid),
                   kBeginTime, kEndTime));
-  partition->ClearData(kTestClearMask, kTestQuotaClearMask,
-                       blink::StorageKey(url::Origin::Create(kTestOrigin)),
-                       kBeginTime, kEndTime, base::DoNothing());
+  partition->ClearData(
+      kTestClearMask, kTestQuotaClearMask,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestOrigin)),
+      kBeginTime, kEndTime, base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_CALL(observer,
@@ -1987,8 +1990,8 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
       /*filter_builder=*/nullptr,
       base::BindLambdaForTesting([&](const blink::StorageKey& storage_key,
                                      storage::SpecialStoragePolicy* policy) {
-        return storage_key ==
-               blink::StorageKey(url::Origin::Create(kTestOrigin));
+        return storage_key == blink::StorageKey::CreateFirstParty(
+                                  url::Origin::Create(kTestOrigin));
       }),
       /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
       kBeginTime, kEndTime, base::DoNothing());
@@ -2018,12 +2021,14 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
   const auto is_test_origin_valid =
       [&kTestOrigin](
           content::StoragePartition::StorageKeyMatcherFunction filter) {
-        return filter.Run(blink::StorageKey(url::Origin::Create(kTestOrigin)));
+        return filter.Run(blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(kTestOrigin)));
       };
   const auto is_other_origin_valid =
       [&kOtherOrigin](
           content::StoragePartition::StorageKeyMatcherFunction filter) {
-        return filter.Run(blink::StorageKey(url::Origin::Create(kOtherOrigin)));
+        return filter.Run(blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(kOtherOrigin)));
       };
   const auto is_filter_null =
       [&](content::StoragePartition::StorageKeyMatcherFunction filter) {
@@ -2058,9 +2063,10 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
       .WillOnce(testing::Invoke(invoke_callback));
   {
     base::RunLoop run_loop;
-    partition->ClearData(kTestClearMask, kTestQuotaClearMask,
-                         blink::StorageKey(url::Origin::Create(kTestOrigin)),
-                         kBeginTime, kEndTime, run_loop.QuitClosure());
+    partition->ClearData(
+        kTestClearMask, kTestQuotaClearMask,
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestOrigin)),
+        kBeginTime, kEndTime, run_loop.QuitClosure());
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
   }
@@ -2080,8 +2086,8 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
         /*filter_builder=*/nullptr,
         base::BindLambdaForTesting([&](const blink::StorageKey& storage_key,
                                        storage::SpecialStoragePolicy* policy) {
-          return storage_key ==
-                 blink::StorageKey(url::Origin::Create(kTestOrigin));
+          return storage_key == blink::StorageKey::CreateFirstParty(
+                                    url::Origin::Create(kTestOrigin));
         }),
         /*cookie_deletion_filter=*/nullptr,
         /*perform_storage_cleanup=*/false, kBeginTime, kEndTime,
@@ -2151,12 +2157,14 @@ TEST_F(StoragePartitionImplTest, RemovePrivateAggregationData) {
   const auto is_test_origin_valid =
       [&kTestOrigin](
           content::StoragePartition::StorageKeyMatcherFunction filter) {
-        return filter.Run(blink::StorageKey(url::Origin::Create(kTestOrigin)));
+        return filter.Run(blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(kTestOrigin)));
       };
   const auto is_other_origin_valid =
       [&kOtherOrigin](
           content::StoragePartition::StorageKeyMatcherFunction filter) {
-        return filter.Run(blink::StorageKey(url::Origin::Create(kOtherOrigin)));
+        return filter.Run(blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(kOtherOrigin)));
       };
   const auto is_filter_null =
       [&](content::StoragePartition::StorageKeyMatcherFunction filter) {
@@ -2191,9 +2199,10 @@ TEST_F(StoragePartitionImplTest, RemovePrivateAggregationData) {
       .WillOnce(testing::Invoke(invoke_callback));
   {
     base::RunLoop run_loop;
-    partition->ClearData(kTestClearMask, kTestQuotaClearMask,
-                         blink::StorageKey(url::Origin::Create(kTestOrigin)),
-                         kBeginTime, kEndTime, run_loop.QuitClosure());
+    partition->ClearData(
+        kTestClearMask, kTestQuotaClearMask,
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestOrigin)),
+        kBeginTime, kEndTime, run_loop.QuitClosure());
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(private_aggregation_manager_ptr);
   }
@@ -2213,8 +2222,8 @@ TEST_F(StoragePartitionImplTest, RemovePrivateAggregationData) {
         /*filter_builder=*/nullptr,
         base::BindLambdaForTesting([&](const blink::StorageKey& storage_key,
                                        storage::SpecialStoragePolicy* policy) {
-          return storage_key ==
-                 blink::StorageKey(url::Origin::Create(kTestOrigin));
+          return storage_key == blink::StorageKey::CreateFirstParty(
+                                    url::Origin::Create(kTestOrigin));
         }),
         /*cookie_deletion_filter=*/nullptr,
         /*perform_storage_cleanup=*/false, kBeginTime, kEndTime,

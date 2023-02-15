@@ -309,11 +309,11 @@ TEST_P(PostMessageCounterTest, FirstPartyToFirstPartyDifferentBucket) {
 
   // Check storage key counter state
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
-      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      StorageKey(url::Origin::Create(GURL("https://bar.com/"))), &recorder_));
+      1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
+      StorageKey::CreateFromStringForTesting("https://bar.com/"), &recorder_));
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
-      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      StorageKey(url::Origin::Create(GURL("https://bar.com/"))), &recorder_));
+      1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
+      StorageKey::CreateFromStringForTesting("https://bar.com/"), &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(
       recorder_
@@ -334,11 +334,11 @@ TEST_P(PostMessageCounterTest, FirstPartyToFirstPartySameBucket) {
 
   // Check storage key counter state
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
-      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      StorageKey(url::Origin::Create(GURL("https://foo.com/"))), &recorder_));
+      1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
+      StorageKey::CreateFromStringForTesting("https://foo.com/"), &recorder_));
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
-      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      StorageKey(url::Origin::Create(GURL("https://foo.com/"))), &recorder_));
+      1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
+      StorageKey::CreateFromStringForTesting("https://foo.com/"), &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
                 .GetEntriesByName(
@@ -359,13 +359,13 @@ TEST_P(PostMessageCounterTest,
 
   // Check storage key counter state
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
-      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
+      1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
       StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://qux.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
       &recorder_));
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
-      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
+      1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
       StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://qux.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
@@ -394,7 +394,7 @@ TEST_P(PostMessageCounterTest,
         (PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned() &&
          ThirdPartyStoragePartitioning())),
       frame_counter_.RecordMessageAndCheckIfShouldSend(
-          1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
+          1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
           StorageKey::CreateForTesting(
               url::Origin::Create(GURL("https://foo.com/")),
               url::Origin::Create(GURL("https://qux.com/"))),
@@ -404,7 +404,7 @@ TEST_P(PostMessageCounterTest,
         (PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned() &&
          ThirdPartyStoragePartitioning())),
       frame_counter_.RecordMessageAndCheckIfShouldSend(
-          1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
+          1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
           StorageKey::CreateForTesting(
               url::Origin::Create(GURL("https://foo.com/")),
               url::Origin::Create(GURL("https://qux.com/"))),
@@ -433,14 +433,14 @@ TEST_P(PostMessageCounterTest,
       StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://qux.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
-      2, StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
+      2, StorageKey::CreateFromStringForTesting("https://foo.com/"),
       &recorder_));
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1,
       StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://qux.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
-      2, StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
+      2, StorageKey::CreateFromStringForTesting("https://foo.com/"),
       &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -470,7 +470,7 @@ TEST_P(PostMessageCounterTest,
           StorageKey::CreateForTesting(
               url::Origin::Create(GURL("https://foo.com/")),
               url::Origin::Create(GURL("https://qux.com/"))),
-          2, StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
+          2, StorageKey::CreateFromStringForTesting("https://foo.com/"),
           &recorder_));
   EXPECT_EQ(
       !(PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked() ||
@@ -481,7 +481,7 @@ TEST_P(PostMessageCounterTest,
           StorageKey::CreateForTesting(
               url::Origin::Create(GURL("https://foo.com/")),
               url::Origin::Create(GURL("https://qux.com/"))),
-          2, StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
+          2, StorageKey::CreateFromStringForTesting("https://foo.com/"),
           &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_

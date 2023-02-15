@@ -435,7 +435,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     options.type = script_type;
     registration_ = CreateNewServiceWorkerRegistration(
         wrapper()->context()->registry(), options,
-        blink::StorageKey(url::Origin::Create(scope)));
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)));
     // Set the update check time to avoid triggering updates in the middle of
     // tests.
     registration_->set_last_update_check(base::Time::Now());
@@ -464,8 +464,9 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
             /*is_parent_frame_secure=*/true, wrapper()->context()->AsWeakPtr(),
             &remote_endpoints_.back());
     const GURL url = embedded_test_server()->GetURL("/service_worker/host");
-    container_host->UpdateUrls(url, url::Origin::Create(url),
-                               blink::StorageKey(url::Origin::Create(url)));
+    container_host->UpdateUrls(
+        url, url::Origin::Create(url),
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
     container_host->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
   }
@@ -1297,7 +1298,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
       embedded_test_server()->GetURL(kScope),
       blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kAll);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
 
   // Register and wait for activation.
   auto observer = base::MakeRefCounted<WorkerActivatedObserver>(wrapper());
@@ -1370,7 +1372,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
       embedded_test_server()->GetURL(kScope),
       blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kNone);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
   auto observer = base::MakeRefCounted<WorkerActivatedObserver>(wrapper());
   observer->Init();
   public_context()->RegisterServiceWorker(

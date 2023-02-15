@@ -63,8 +63,8 @@ FileSystemURL CreateSyncableFileSystemURL(const GURL& origin,
     path_for_url = base::FilePath(path.value().substr(1));
 
   return ExternalMountPoints::GetSystemInstance()->CreateExternalFileSystemURL(
-      blink::StorageKey(url::Origin::Create(origin)), kSyncableMountName,
-      path_for_url);
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin)),
+      kSyncableMountName, path_for_url);
 }
 
 FileSystemURL CreateSyncableFileSystemURLForSync(
@@ -93,7 +93,7 @@ bool DeserializeSyncableFileSystemURL(const std::string& serialized_url,
   const GURL gurl(serialized_url);
   FileSystemURL deserialized =
       ExternalMountPoints::GetSystemInstance()->CrackURL(
-          gurl, blink::StorageKey(url::Origin::Create(gurl)));
+          gurl, blink::StorageKey::CreateFirstParty(url::Origin::Create(gurl)));
   if (!deserialized.is_valid() ||
       deserialized.type() != storage::kFileSystemTypeSyncable) {
     return false;

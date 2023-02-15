@@ -1628,7 +1628,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingApiTest,
   content::RunAllTasksUntilIdle();
 
   url::Origin extension_origin = url::Origin::Create(extension->url());
-  blink::StorageKey extension_key(extension_origin);
+  const blink::StorageKey extension_key =
+      blink::StorageKey::CreateFirstParty(extension_origin);
   EXPECT_EQ(0u, GetWorkerRefCount(extension_key));
 }
 

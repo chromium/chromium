@@ -192,7 +192,7 @@ void LogMessageReceivedEventToDevTools(
   url::Origin origin = url::Origin::Create(app_identifier.origin());
   devtools_context->LogBackgroundServiceEvent(
       app_identifier.service_worker_registration_id(),
-      blink::StorageKey(origin),
+      blink::StorageKey::CreateFirstParty(origin),
       content::DevToolsBackgroundService::kPushMessaging,
       "Push message received" /* event_name */, message_id, event_metadata);
 }
@@ -660,7 +660,7 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
       ss << unsubscribe_reason;
       devtools_context->LogBackgroundServiceEvent(
           app_identifier.service_worker_registration_id(),
-          blink::StorageKey(origin),
+          blink::StorageKey::CreateFirstParty(origin),
           content::DevToolsBackgroundService::kPushMessaging,
           "Unsubscribed due to error" /* event_name */, message.message_id,
           {{"Reason", ss.str()}});
@@ -729,7 +729,7 @@ void PushMessagingServiceImpl::DidHandleMessage(
   if (auto* devtools_context = GetDevToolsContext(app_identifier.origin())) {
     devtools_context->LogBackgroundServiceEvent(
         app_identifier.service_worker_registration_id(),
-        blink::StorageKey(origin),
+        blink::StorageKey::CreateFirstParty(origin),
         content::DevToolsBackgroundService::kPushMessaging,
         "Generic notification shown" /* event_name */, push_message_id,
         {} /* event_metadata */);

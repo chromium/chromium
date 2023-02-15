@@ -1087,7 +1087,8 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
         storage_partition_->GetServiceWorkerContext();
     std::vector<GlobalRenderFrameHostId> destinations =
         *service_worker_context->GetWindowClientFrameRoutingIds(
-            blink::StorageKey(url::Origin::Create(details->url)));
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(details->url)));
     if (destinations.empty())
       return;
 

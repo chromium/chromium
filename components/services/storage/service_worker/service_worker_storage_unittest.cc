@@ -569,7 +569,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   const GURL kScope("http://www.example.com/scope/");
   const url::Origin kOrigin = url::Origin::Create(kScope);
-  const blink::StorageKey kKey(kOrigin);
+  const blink::StorageKey kKey = blink::StorageKey::CreateFirstParty(kOrigin);
   const GURL kScript("http://www.example.com/script.js");
   const GURL kDocumentUrl("http://www.example.com/scope/document.html");
   const int64_t kRegistrationId = 0;
@@ -661,7 +661,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   const int64_t kRegistrationId = 1;
   const GURL kScope("http://www.test.not/scope/");
   const url::Origin kOrigin = url::Origin::Create(kScope);
-  const blink::StorageKey kKey(kOrigin);
+  const blink::StorageKey kKey = blink::StorageKey::CreateFirstParty(kOrigin);
   const GURL kScript("http://www.test.not/script.js");
   LazyInitialize();
 
@@ -835,7 +835,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 TEST_F(ServiceWorkerStorageTest, StoreUserData_BeforeInitialize) {
   const int kRegistrationId = 0;
   EXPECT_EQ(StoreUserData(kRegistrationId,
-                          blink::StorageKey(
+                          blink::StorageKey::CreateFirstParty(
                               url::Origin::Create(GURL("https://example.com"))),
                           {{"key", "data"}}),
             ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -883,7 +883,8 @@ class ServiceWorkerStorageDiskTest : public ServiceWorkerStorageTest {
     // Store a registration with a resource to make sure disk cache and
     // database directories are created.
     const GURL kScope("http://www.example.com/scope/");
-    const blink::StorageKey kKey(url::Origin::Create(kScope));
+    const blink::StorageKey kKey =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
     const GURL kScript("http://www.example.com/script.js");
     const int64_t kScriptSize = 5;
     auto data = mojom::ServiceWorkerRegistrationData::New();
@@ -983,7 +984,8 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_OpenedFileExists) {
 TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
   const int64_t kRegistrationId1 = 1;
   const GURL kScope1("https://www.example.com/foo/");
-  const blink::StorageKey kKey1(url::Origin::Create(kScope1));
+  const blink::StorageKey kKey1 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope1));
   const GURL kScript1("https://www.example.com/foo/sw.js");
   const int64_t kRegistrationId2 = 2;
   const GURL kScope2("https://www.example.com/bar/");

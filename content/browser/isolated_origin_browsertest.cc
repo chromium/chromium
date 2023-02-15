@@ -4155,8 +4155,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
                        LocalStorageOriginEnforcement_OpaqueOrigin) {
   url::Origin precursor_origin =
       url::Origin::Create(GURL("https://non-isolated.com"));
-  blink::StorageKey opaque_storage_key =
-      blink::StorageKey(precursor_origin.DeriveNewOpaqueOrigin());
+  const blink::StorageKey opaque_storage_key =
+      blink::StorageKey::CreateFirstParty(
+          precursor_origin.DeriveNewOpaqueOrigin());
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
       base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
                           opaque_storage_key, absl::nullopt));

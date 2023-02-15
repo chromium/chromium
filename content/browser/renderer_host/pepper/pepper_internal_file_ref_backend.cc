@@ -139,7 +139,8 @@ storage::FileSystemURL PepperInternalFileRefBackend::GetFileSystemURL() const {
         GetFileSystemContext();
     if (fs_context.get())
       fs_url_ = fs_context->CrackURL(
-          fs_path, blink::StorageKey(url::Origin::Create(fs_path)));
+          fs_path,
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(fs_path)));
   }
   return fs_url_;
 }

@@ -305,7 +305,8 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
 
       base::RunLoop run_loop;
       worker_context->CheckHasServiceWorker(
-          scope, blink::StorageKey(url::Origin::Create(scope)),
+          scope,
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
           base::BindLambdaForTesting(
               [&](content::ServiceWorkerCapability capability) {
                 EXPECT_EQ(capability,

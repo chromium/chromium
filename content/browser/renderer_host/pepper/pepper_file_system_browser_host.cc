@@ -131,8 +131,9 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
   // should replaced with a third-party value: is ppapi only limited to
   // first-party contexts? If so, the implementation below is correct.
   file_system_context_->OpenFileSystem(
-      blink::StorageKey(url::Origin::Create(origin)), /*bucket=*/absl::nullopt,
-      file_system_type, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin)),
+      /*bucket=*/absl::nullopt, file_system_type,
+      storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&IOThreadState::OpenFileSystemComplete, this,
                      reply_context));
 }
@@ -283,7 +284,7 @@ void PepperFileSystemBrowserHost::IOThreadState::ShouldCreateQuotaReservation(
   storage::FileSystemType file_system_type =
       PepperFileSystemTypeToFileSystemType(type_);
   quota_manager_proxy->IsStorageUnlimited(
-      blink::StorageKey(url::Origin::Create(root_url_)),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(root_url_)),
       storage::FileSystemTypeToQuotaStorageType(file_system_type),
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(

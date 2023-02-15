@@ -182,7 +182,8 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
     DCHECK(!version_);
     base::RunLoop run_loop;
     GURL url = embedded_test_server()->GetURL("/service_worker/");
-    blink::StorageKey key = blink::StorageKey(url::Origin::Create(url));
+    const blink::StorageKey key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
     wrapper()->context()->registry()->FindRegistrationForScope(
         embedded_test_server()->GetURL("/service_worker/"), key,
         base::BindOnce(&ServiceWorkerOfflineCapabilityCheckBrowserTest::
@@ -224,7 +225,7 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
     absl::optional<OfflineCapability> out_offline_capability;
     GURL url = embedded_test_server()->GetURL(path);
     wrapper()->CheckOfflineCapability(
-        url, blink::StorageKey(url::Origin::Create(url)),
+        url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
         base::BindLambdaForTesting(
             [&out_offline_capability, &fetch_run_loop](
                 OfflineCapability offline_capability, int64_t registration_id) {

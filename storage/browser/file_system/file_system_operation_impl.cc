@@ -435,7 +435,7 @@ void FileSystemOperationImpl::GetUsageAndQuotaThenRunTask(
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetUsageAndQuota(
-      blink::StorageKey(url.origin()),
+      blink::StorageKey::CreateFirstParty(url.origin()),
       FileSystemTypeToQuotaStorageType(url.type()),
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&FileSystemOperationImpl::DidGetUsageAndQuotaAndRunTask,

@@ -368,7 +368,7 @@ bool RateLimitTable::ClearDataForOriginsInRange(
 
   while (select_statement.Step()) {
     int64_t rate_limit_id = select_statement.ColumnInt64(0);
-    if (filter.Run(blink::StorageKey(
+    if (filter.Run(blink::StorageKey::CreateFirstParty(
             DeserializeOrigin(select_statement.ColumnString(1))))) {
       // See https://www.sqlite.org/isolation.html for why it's OK for this
       // DELETE to be interleaved in the surrounding SELECT.

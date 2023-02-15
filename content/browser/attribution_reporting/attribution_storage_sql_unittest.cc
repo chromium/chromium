@@ -402,9 +402,9 @@ TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
   // Use a time range that targets all triggers.
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
-      base::BindRepeating(
-          std::equal_to<blink::StorageKey>(),
-          blink::StorageKey(source.common_info().reporting_origin())));
+      base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                          blink::StorageKey::CreateFirstParty(
+                              source.common_info().reporting_origin())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
@@ -456,9 +456,9 @@ TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
   // Use a time range that only intersects the last trigger.
   storage()->ClearData(
       base::Time::Now(), base::Time::Now(),
-      base::BindRepeating(
-          std::equal_to<blink::StorageKey>(),
-          blink::StorageKey(source.common_info().reporting_origin())));
+      base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                          blink::StorageKey::CreateFirstParty(
+                              source.common_info().reporting_origin())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();

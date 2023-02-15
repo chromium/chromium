@@ -71,7 +71,7 @@ class FileUtilsTest : public ::testing::Test {
   // system type.
   storage::FileSystemURL ToTestFileSystemURL(const std::string& path) {
     return storage::FileSystemURL::CreateForTest(
-        blink::StorageKey(GetFileManagerOrigin()),
+        blink::StorageKey::CreateFirstParty(GetFileManagerOrigin()),
         storage::FileSystemType::kFileSystemTypeTest, base::FilePath(path));
   }
 

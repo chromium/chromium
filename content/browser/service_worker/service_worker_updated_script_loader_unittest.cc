@@ -96,9 +96,9 @@ class ServiceWorkerUpdatedScriptLoaderTest
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = script_url.GetWithoutFilename();
     options.type = script_type;
-    SetUpRegistrationWithOptions(
-        script_url, options,
-        blink::StorageKey(url::Origin::Create(options.scope)));
+    SetUpRegistrationWithOptions(script_url, options,
+                                 blink::StorageKey::CreateFirstParty(
+                                     url::Origin::Create(options.scope)));
   }
   void SetUpRegistrationWithOptions(
       const GURL& script_url,

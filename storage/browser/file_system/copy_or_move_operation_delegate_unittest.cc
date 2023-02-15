@@ -319,8 +319,9 @@ class CopyOrMoveOperationTestHelper {
     FileSystemBackend* backend =
         file_system_context_->GetFileSystemBackend(src_type_);
     backend->ResolveURL(
-        FileSystemURL::CreateForTest(blink::StorageKey(url::Origin(origin_)),
-                                     src_type_, base::FilePath()),
+        FileSystemURL::CreateForTest(
+            blink::StorageKey::CreateFirstParty(url::Origin(origin_)),
+            src_type_, base::FilePath()),
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, base::BindOnce(&ExpectOk));
     backend = file_system_context_->GetFileSystemBackend(dest_type_);
     if (dest_type_ == kFileSystemTypeTest) {
@@ -334,16 +335,17 @@ class CopyOrMoveOperationTestHelper {
             std::move(factory));
     }
     backend->ResolveURL(
-        FileSystemURL::CreateForTest(blink::StorageKey(url::Origin(origin_)),
-                                     dest_type_, base::FilePath()),
+        FileSystemURL::CreateForTest(
+            blink::StorageKey::CreateFirstParty(url::Origin(origin_)),
+            dest_type_, base::FilePath()),
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, base::BindOnce(&ExpectOk));
     task_environment_.RunUntilIdle();
 
     // Grant relatively big quota initially.
-    quota_manager_->SetQuota(blink::StorageKey(origin_),
+    quota_manager_->SetQuota(blink::StorageKey::CreateFirstParty(origin_),
                              FileSystemTypeToQuotaStorageType(src_type_),
                              1024 * 1024);
-    quota_manager_->SetQuota(blink::StorageKey(origin_),
+    quota_manager_->SetQuota(blink::StorageKey::CreateFirstParty(origin_),
                              FileSystemTypeToQuotaStorageType(dest_type_),
                              1024 * 1024);
   }
@@ -362,13 +364,13 @@ class CopyOrMoveOperationTestHelper {
 
   FileSystemURL SourceURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        blink::StorageKey(origin_), src_type_,
+        blink::StorageKey::CreateFirstParty(origin_), src_type_,
         base::FilePath::FromUTF8Unsafe(path));
   }
 
   FileSystemURL DestURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        blink::StorageKey(origin_), dest_type_,
+        blink::StorageKey::CreateFirstParty(origin_), dest_type_,
         base::FilePath::FromUTF8Unsafe(path));
   }
 
@@ -634,9 +636,9 @@ class CopyOrMoveOperationTestHelper {
  private:
   void GetUsageAndQuota(FileSystemType type, int64_t* usage, int64_t* quota) {
     blink::mojom::QuotaStatusCode status =
-        AsyncFileTestHelper::GetUsageAndQuota(quota_manager_->proxy(),
-                                              blink::StorageKey(origin_), type,
-                                              usage, quota);
+        AsyncFileTestHelper::GetUsageAndQuota(
+            quota_manager_->proxy(),
+            blink::StorageKey::CreateFirstParty(origin_), type, usage, quota);
     ASSERT_EQ(blink::mojom::QuotaStatusCode::kOk, status);
   }
 
@@ -1326,26 +1328,28 @@ class CopyOrMoveOperationDelegateTestHelper {
     FileSystemBackend* backend =
         file_system_context_->GetFileSystemBackend(src_type_);
     backend->ResolveURL(
-        FileSystemURL::CreateForTest(blink::StorageKey(url::Origin(origin_)),
-                                     src_type_, base::FilePath()),
+        FileSystemURL::CreateForTest(
+            blink::StorageKey::CreateFirstParty(url::Origin(origin_)),
+            src_type_, base::FilePath()),
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, base::BindOnce(&ExpectOk));
     backend = file_system_context_->GetFileSystemBackend(dest_type_);
     backend->ResolveURL(
-        FileSystemURL::CreateForTest(blink::StorageKey(url::Origin(origin_)),
-                                     dest_type_, base::FilePath()),
+        FileSystemURL::CreateForTest(
+            blink::StorageKey::CreateFirstParty(url::Origin(origin_)),
+            dest_type_, base::FilePath()),
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, base::BindOnce(&ExpectOk));
     task_environment_.RunUntilIdle();
   }
 
   FileSystemURL GenerateSourceUrlFromPath(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        blink::StorageKey(origin_), src_type_,
+        blink::StorageKey::CreateFirstParty(origin_), src_type_,
         base::FilePath::FromUTF8Unsafe(path));
   }
 
   FileSystemURL GenerateDestinationUrlFromPath(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        blink::StorageKey(origin_), dest_type_,
+        blink::StorageKey::CreateFirstParty(origin_), dest_type_,
         base::FilePath::FromUTF8Unsafe(path));
   }
 

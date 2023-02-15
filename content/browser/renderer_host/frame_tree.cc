@@ -1003,7 +1003,7 @@ const blink::StorageKey FrameTree::GetSessionStorageKey(
       unpartitioned_session_storage_origins_.end()) {
     // If the storage key matches a participating origin we need to return the
     // first-party version for use in binding session storage.
-    return blink::StorageKey(storage_key.origin());
+    return blink::StorageKey::CreateFirstParty(storage_key.origin());
   }
   return storage_key;
 }

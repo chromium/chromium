@@ -2452,7 +2452,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   url::Origin extension_origin = url::Origin::Create(extension->url());
-  blink::StorageKey extension_key(extension_origin);
+  const blink::StorageKey extension_key =
+      blink::StorageKey::CreateFirstParty(extension_origin);
 
   // Service worker should have no pending requests because it hasn't performed
   // any extension API request yet.
@@ -2844,7 +2845,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
 
     // The service worker is registered at the root scope.
     context->UnregisterServiceWorker(
-        extension->url(), blink::StorageKey(extension->origin()),
+        extension->url(),
+        blink::StorageKey::CreateFirstParty(extension->origin()),
         base::BindLambdaForTesting(
             [&run_loop](bool success) { run_loop.Quit(); }));
     run_loop.Run();

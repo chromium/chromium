@@ -524,7 +524,7 @@ TEST_F(BackgroundFetchJobControllerTest, ServiceWorkerRegistrationDeleted) {
                               std::move(controller));
   scheduler()->OnRegistrationDeleted(
       kExampleServiceWorkerRegistrationId, kFunnyCatUrl,
-      blink::StorageKey(url::Origin::Create(kFunnyCatUrl)));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kFunnyCatUrl)));
 
   base::RunLoop().RunUntilIdle();
 

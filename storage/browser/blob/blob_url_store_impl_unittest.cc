@@ -172,7 +172,8 @@ class BlobURLStoreImplTestP
 
   const std::string kId = "id";
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  const blink::StorageKey kStorageKey = blink::StorageKey(kOrigin);
+  const blink::StorageKey kStorageKey =
+      blink::StorageKey::CreateFirstParty(kOrigin);
   const GURL kValidUrl = GURL("blob:" + kOrigin.Serialize() + "/id1");
   const GURL kValidUrl2 = GURL("blob:" + kOrigin.Serialize() + "/id2");
   const GURL kInvalidUrl = GURL("bolb:id");

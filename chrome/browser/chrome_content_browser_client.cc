@@ -3383,7 +3383,7 @@ bool ChromeContentBrowserClient::IsSharedStorageAllowed(
       top_frame_origin, accessing_origin);
   if (rfh) {
     content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
-        rfh, blink::StorageKey(accessing_origin),
+        rfh, blink::StorageKey::CreateFirstParty(accessing_origin),
         BrowsingDataModel::StorageType::kSharedStorage, !allowed);
   }
   return allowed;

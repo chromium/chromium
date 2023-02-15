@@ -1879,7 +1879,8 @@ NavigationRequest::NavigationRequest(
                 .GetBrowserContext()
                 ->GetStoragePartition(site_info_.storage_partition_config())
                 ->GetServiceWorkerContext()) {
-      const blink::StorageKey key(GetTentativeOriginAtRequestTime());
+      const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
+          GetTentativeOriginAtRequestTime());
       if (context->MaybeHasRegistrationForStorageKey(key)) {
         context->StartServiceWorkerForNavigationHint(GetURL(), key,
                                                      base::DoNothing());

@@ -1586,7 +1586,7 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
   // constructed with the top-level site to ensure correct partitioning.
   bool site_has_service_worker =
       service_worker_context_->MaybeHasRegistrationForStorageKey(
-          blink::StorageKey(url::Origin::Create(url)));
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
   if (site_has_service_worker) {
     std::move(result_callback)
         .Run(url, false,

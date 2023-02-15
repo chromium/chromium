@@ -28,11 +28,11 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
     scope_feature_list.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning, toggle);
     StorageKey test_keys[] = {
-        StorageKey(url::Origin::Create(GURL("https://example.com"))),
-        StorageKey(url::Origin::Create(GURL("http://example.com"))),
-        StorageKey(url::Origin::Create(GURL("https://example.test"))),
-        StorageKey(url::Origin::Create(GURL("https://sub.example.com"))),
-        StorageKey(url::Origin::Create(GURL("http://sub2.example.com"))),
+        StorageKey::CreateFromStringForTesting("https://example.com"),
+        StorageKey::CreateFromStringForTesting("http://example.com"),
+        StorageKey::CreateFromStringForTesting("https://example.test"),
+        StorageKey::CreateFromStringForTesting("https://sub.example.com"),
+        StorageKey::CreateFromStringForTesting("http://sub2.example.com"),
         StorageKey::CreateForTesting(
             url::Origin::Create(GURL("https://example.com")),
             url::Origin::Create(GURL("https://example.com"))),
@@ -48,7 +48,7 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
         StorageKey::CreateForTesting(
             url::Origin::Create(GURL("http://sub2.example.com")),
             url::Origin::Create(GURL("https://example.com"))),
-        StorageKey(url::Origin()),
+        StorageKey::CreateFirstParty(url::Origin()),
         StorageKey::CreateWithNonceForTesting(
             url::Origin::Create(GURL("https://.example.com")),
             base::UnguessableToken::Create()),

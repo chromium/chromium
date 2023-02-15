@@ -60,8 +60,9 @@ TEST(BrowserFileSystemHelperTest,
       storage::FileSystemMountOption(), mount_path));
   storage::FileSystemURL original_file =
       external_mount_points->CreateExternalFileSystemURL(
-          blink::StorageKey(url::Origin::Create(kSensitiveOrigin)), kMountName,
-          kTestPath);
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(kSensitiveOrigin)),
+          kMountName, kTestPath);
   EXPECT_TRUE(original_file.is_valid());
   EXPECT_EQ(kSensitiveOrigin, original_file.origin().GetURL());
 

@@ -76,8 +76,9 @@ bool MatchesURL(const std::set<url::Origin>& origins,
                 bool is_cross_site_clear_site_data,
                 const GURL& url) {
   DCHECK(!is_cross_site_clear_site_data);
-  return MatchesStorageKey(origins, registerable_domains, mode, origin_mode,
-                           blink::StorageKey(url::Origin::Create(url)));
+  return MatchesStorageKey(
+      origins, registerable_domains, mode, origin_mode,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 }
 
 // True if none of the supplied domains matches this plugin's |site| and we're a

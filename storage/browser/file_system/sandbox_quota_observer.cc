@@ -91,7 +91,8 @@ void SandboxQuotaObserver::SetUsageCacheEnabled(const url::Origin& origin,
                                                 bool enabled) {
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->SetUsageCacheEnabled(
-        QuotaClientType::kFileSystem, blink::StorageKey(origin),
+        QuotaClientType::kFileSystem,
+        blink::StorageKey::CreateFirstParty(origin),
         FileSystemTypeToQuotaStorageType(type), enabled);
   }
 }

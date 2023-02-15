@@ -249,7 +249,7 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     {
       blink::mojom::ServiceWorkerRegistrationOptions options;
       options.scope = origin.GetURL();
-      blink::StorageKey key(origin);
+      const blink::StorageKey key = blink::StorageKey::CreateFirstParty(origin);
       base::RunLoop run_loop;
       embedded_worker_test_helper_.context()->RegisterServiceWorker(
           script_url, key, options,
@@ -272,7 +272,8 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     {
       base::RunLoop run_loop;
       embedded_worker_test_helper_.context()->registry()->FindRegistrationForId(
-          service_worker_registration_id, blink::StorageKey(origin),
+          service_worker_registration_id,
+          blink::StorageKey::CreateFirstParty(origin),
           base::BindOnce(&DidFindServiceWorkerRegistration,
                          &service_worker_registration_,
                          run_loop.QuitClosure()));

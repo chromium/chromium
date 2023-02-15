@@ -286,7 +286,7 @@ void LaunchTerminalWithIntent(
     storage::ExternalMountPoints* mount_points =
         storage::ExternalMountPoints::GetSystemInstance();
     storage::FileSystemURL url = mount_points->CrackURL(
-        gurl, blink::StorageKey(url::Origin::Create(gurl)));
+        gurl, blink::StorageKey::CreateFirstParty(url::Origin::Create(gurl)));
 
     cwd = provider->PrepareCwd(url);
   }

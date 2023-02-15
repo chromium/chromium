@@ -944,7 +944,8 @@ IN_PROC_BROWSER_TEST_P(ClearSiteDataHandlerStorageBucketsBrowserTest,
                        StorageBucketsIntegrationTest) {
   GURL url = https_server()->GetURL("127.0.0.1", "/");
 
-  auto storage_key = blink::StorageKey(url::Origin::Create(url));
+  const auto storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
 
   StorageBucketClearSiteDataTester tester(storage_partition());
   tester.CreateBucketForTesting(

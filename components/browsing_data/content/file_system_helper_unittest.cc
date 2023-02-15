@@ -88,8 +88,8 @@ class FileSystemHelperTest : public testing::Test {
     browser_context_.GetDefaultStoragePartition()
         ->GetFileSystemContext()
         ->OpenFileSystem(
-            blink::StorageKey(origin), /*bucket=*/absl::nullopt, type,
-            open_mode,
+            blink::StorageKey::CreateFirstParty(origin),
+            /*bucket=*/absl::nullopt, type, open_mode,
             base::BindOnce(&FileSystemHelperTest::OpenFileSystemCallback,
                            base::Unretained(this), &run_loop));
     BlockUntilQuit(&run_loop);

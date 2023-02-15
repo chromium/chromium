@@ -280,7 +280,8 @@ class ObfuscatedStorageKeyEnumerator
     record = origin_records_.back();
     origin_records_.pop_back();
     current_ = record;
-    return blink::StorageKey(GetOriginFromIdentifier(record.origin));
+    return blink::StorageKey::CreateFirstParty(
+        GetOriginFromIdentifier(record.origin));
   }
 
   // Returns the current StorageKey.origin()'s information.

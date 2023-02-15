@@ -135,7 +135,8 @@ class ServiceWorkerInstalledScriptsSenderTest : public testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope_;
     registration_ = base::MakeRefCounted<ServiceWorkerRegistration>(
-        options, blink::StorageKey(url::Origin::Create(scope_)), 1L,
+        options,
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_)), 1L,
         context()->AsWeakPtr(), blink::mojom::AncestorFrameType::kNormalFrame);
     version_ = CreateNewServiceWorkerVersion(
         context()->registry(), registration_.get(),

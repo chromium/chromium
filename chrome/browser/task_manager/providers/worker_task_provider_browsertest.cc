@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
       base::CompareCase::INSENSITIVE_ASCII));
 
   GetServiceWorkerContext(browser())->StopAllServiceWorkersForStorageKey(
-      blink::StorageKey(
+      blink::StorageKey::CreateFirstParty(
           url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
       base::CompareCase::INSENSITIVE_ASCII));
 
   GetServiceWorkerContext(incognito)->StopAllServiceWorkersForStorageKey(
-      blink::StorageKey(
+      blink::StorageKey::CreateFirstParty(
           url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
@@ -276,13 +276,13 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
                                base::CompareCase::INSENSITIVE_ASCII));
 
   GetServiceWorkerContext(browser_1)->StopAllServiceWorkersForStorageKey(
-      blink::StorageKey(
+      blink::StorageKey::CreateFirstParty(
           url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(1);
   EXPECT_EQ(task_2, tasks()[0]);
 
   GetServiceWorkerContext(browser_2)->StopAllServiceWorkersForStorageKey(
-      blink::StorageKey(
+      blink::StorageKey::CreateFirstParty(
           url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest, CreateExistingTasks) {
       base::CompareCase::INSENSITIVE_ASCII));
 
   GetServiceWorkerContext(browser())->StopAllServiceWorkersForStorageKey(
-      blink::StorageKey(
+      blink::StorageKey::CreateFirstParty(
           url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 

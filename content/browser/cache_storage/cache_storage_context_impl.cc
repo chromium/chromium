@@ -156,10 +156,10 @@ void CacheStorageContextImpl::ApplyPolicyUpdates(
   for (const auto& update : policy_updates) {
     if (!update->purge_on_shutdown)
       storage_keys_to_purge_on_shutdown_.erase(
-          blink::StorageKey(update->origin));
+          blink::StorageKey::CreateFirstParty(update->origin));
     else
       storage_keys_to_purge_on_shutdown_.insert(
-          blink::StorageKey(std::move(update->origin)));
+          blink::StorageKey::CreateFirstParty(std::move(update->origin)));
   }
 }
 

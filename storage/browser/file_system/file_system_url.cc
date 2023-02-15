@@ -61,7 +61,8 @@ FileSystemURL::~FileSystemURL() = default;
 
 // static
 FileSystemURL FileSystemURL::CreateForTest(const GURL& url) {
-  return FileSystemURL(url, blink::StorageKey(url::Origin::Create(url)));
+  return FileSystemURL(
+      url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 }
 
 FileSystemURL FileSystemURL::CreateForTest(const blink::StorageKey& storage_key,

@@ -241,7 +241,8 @@ class ServiceWorkerObjectHostTest : public testing::Test {
 
 TEST_F(ServiceWorkerObjectHostTest, OnVersionStateChanged) {
   const GURL scope("https://www.example.com/");
-  const blink::StorageKey key(url::Origin::Create(scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
   const GURL script_url("https://www.example.com/service_worker.js");
   Initialize(std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath()));
   SetUpRegistration(scope, script_url, key);
@@ -254,8 +255,9 @@ TEST_F(ServiceWorkerObjectHostTest, OnVersionStateChanged) {
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
           &remote_endpoint);
-  container_host->UpdateUrls(scope, url::Origin::Create(scope),
-                             blink::StorageKey(url::Origin::Create(scope)));
+  container_host->UpdateUrls(
+      scope, url::Origin::Create(scope),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)));
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), scope);
   // |version_| is the installing version of |registration_| now.
@@ -276,7 +278,8 @@ TEST_F(ServiceWorkerObjectHostTest, OnVersionStateChanged) {
 TEST_F(ServiceWorkerObjectHostTest,
        DispatchExtendableMessageEvent_FromServiceWorker) {
   const GURL scope("https://www.example.com/");
-  const blink::StorageKey key(url::Origin::Create(scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
   const GURL script_url("https://www.example.com/service_worker.js");
   Initialize(std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath()));
   SetUpRegistration(scope, script_url, key);
@@ -388,7 +391,8 @@ TEST_F(ServiceWorkerObjectHostTest,
 // Tests postMessage() from a page to a service worker.
 TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
   const GURL scope("https://www.example.com/");
-  const blink::StorageKey key(url::Origin::Create(scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
   const GURL script_url("https://www.example.com/service_worker.js");
   Initialize(std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath()));
   SetUpRegistration(scope, script_url, key);
@@ -447,7 +451,8 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
 // This is a regression test for https://crbug.com/1056598.
 TEST_F(ServiceWorkerObjectHostTest, OnConnectionError) {
   const GURL scope("https://www.example.com/");
-  const blink::StorageKey key(url::Origin::Create(scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
   const GURL script_url("https://www.example.com/service_worker.js");
   Initialize(std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath()));
   SetUpRegistration(scope, script_url, key);
@@ -474,7 +479,8 @@ TEST_F(ServiceWorkerObjectHostTest, OnConnectionError) {
 TEST_F(ServiceWorkerObjectHostTest,
        OnConnectionErrorForRegistrationObjectHost) {
   const GURL scope("https://www.example.com/");
-  const blink::StorageKey key(url::Origin::Create(scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
   const GURL script_url("https://www.example.com/service_worker.js");
   Initialize(std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath()));
   SetUpRegistration(scope, script_url, key);

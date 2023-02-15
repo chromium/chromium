@@ -198,7 +198,7 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
   cache_storage_control->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(),
       storage::BucketLocator::ForDefaultBucket(
-          blink::StorageKey(cache_storage_origin)),
+          blink::StorageKey::CreateFirstParty(cache_storage_origin)),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote.BindNewPipeAndPassReceiver());
 

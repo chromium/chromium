@@ -38,8 +38,8 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // (1B) Construct a first-party (origin and top_level_site match) key.
   // This should be used only in contexts verified to be first-party or where
   // a third-party context is impossible, otherwise use Create().
-  // TODO(crbug.com/1410254): Rename this to CreateFirstParty(origin).
-  explicit BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin);
+  static BlinkStorageKey CreateFirstParty(
+      scoped_refptr<const SecurityOrigin> origin);
 
   // (1C) Construct for an ephemeral browsing context with a nonce.
   // This is a common entry point when constructing a context, and callsites

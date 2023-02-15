@@ -126,8 +126,9 @@ void WebDatabaseHostImpl::OpenFileValidated(const std::u16string& vfs_file_name,
                                                    database_name)) {
     DCHECK(db_tracker_->quota_manager_proxy());
     db_tracker_->quota_manager_proxy()->UpdateOrCreateBucket(
-        storage::BucketInitParams::ForDefaultBucket(blink::StorageKey(
-            storage::GetOriginFromIdentifier(origin_identifier))),
+        storage::BucketInitParams::ForDefaultBucket(
+            blink::StorageKey::CreateFirstParty(
+                storage::GetOriginFromIdentifier(origin_identifier))),
         db_tracker_->task_runner(),
         base::BindOnce(&WebDatabaseHostImpl::OpenFileWithBucketCreated,
                        weak_ptr_factory_.GetWeakPtr(), vfs_file_name,
@@ -272,8 +273,8 @@ void WebDatabaseHostImpl::GetSpaceAvailableValidated(
 
   DCHECK(db_tracker_->quota_manager_proxy());
   db_tracker_->quota_manager_proxy()->GetUsageAndQuota(
-      blink::StorageKey(origin), blink::mojom::StorageType::kTemporary,
-      db_tracker_->task_runner(),
+      blink::StorageKey::CreateFirstParty(origin),
+      blink::mojom::StorageType::kTemporary, db_tracker_->task_runner(),
       base::BindOnce(
           [](GetSpaceAvailableCallback callback,
              blink::mojom::QuotaStatusCode status, int64_t usage,

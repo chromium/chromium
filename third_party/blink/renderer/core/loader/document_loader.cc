@@ -2368,7 +2368,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // storage key. The purpose of this path is to change the partition for a
     // given origin, not to allow access to another origin's data.
     DCHECK(session_storage_key_ ==
-           BlinkStorageKey(storage_key_.GetSecurityOrigin()));
+           BlinkStorageKey::CreateFirstParty(storage_key_.GetSecurityOrigin()));
     // We use the renderer side origin when setting the StorageKey on the path
     // above, so we check that the renderer's understanding of the origin
     // matches the session storage StorageKey. This is another precaution to

@@ -167,7 +167,7 @@ class NativeMediaFileUtilTest : public testing::Test {
 
   FileSystemURL CreateURL(const base::FilePath::CharType* test_case_path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        blink::StorageKey(url::Origin::Create(origin())),
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(origin())),
         storage::kFileSystemTypeIsolated, GetVirtualPath(test_case_path));
   }
 

@@ -415,10 +415,11 @@ void TestServiceWorkerContext::StartServiceWorker(int64_t version_id,
   GURL scope_url;
   for (auto& observer : observer_list_) {
     observer.OnVersionStartedRunning(
-        version_id, content::ServiceWorkerRunningInfo(
-                        worker_url, scope_url,
-                        blink::StorageKey(url::Origin::Create(scope_url)),
-                        worker_process_id, blink::ServiceWorkerToken()));
+        version_id,
+        content::ServiceWorkerRunningInfo(
+            worker_url, scope_url,
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url)),
+            worker_process_id, blink::ServiceWorkerToken()));
   }
 }
 

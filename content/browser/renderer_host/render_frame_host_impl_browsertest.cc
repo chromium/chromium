@@ -3086,7 +3086,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(root_frame_host(), 0));
   ASSERT_TRUE(subframe);
   EXPECT_EQ(main_origin, subframe->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(main_origin), subframe->storage_key());
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(main_origin),
+            subframe->storage_key());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -3156,7 +3157,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostImpl* subframe =
       static_cast<RenderFrameHostImpl*>(subframe_observer.Wait());
   EXPECT_EQ(main_origin, subframe->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(main_origin), subframe->storage_key());
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(main_origin),
+            subframe->storage_key());
 
   // Wait for the about:blank navigation to finish.
   load_observer.Wait();
@@ -3172,7 +3174,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   ASSERT_TRUE(subframe2);
   EXPECT_EQ(subframe, subframe2);  // No swaps are expected.
   EXPECT_EQ(main_origin, subframe2->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(main_origin), subframe2->storage_key());
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(main_origin),
+            subframe2->storage_key());
   EXPECT_EQ(main_origin.Serialize(), EvalJs(subframe2, "window.origin"));
 }
 
@@ -3205,7 +3208,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   WebContents* popup = popup_observer.GetWebContents();
   EXPECT_EQ(main_origin,
             popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(main_origin),
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(main_origin),
             static_cast<RenderFrameHostImpl*>(popup->GetPrimaryMainFrame())
                 ->storage_key());
 
@@ -3242,14 +3245,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   content::TestNavigationObserver load_observer(popup);
   EXPECT_EQ(main_origin,
             popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(main_origin),
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(main_origin),
             static_cast<RenderFrameHostImpl*>(popup->GetPrimaryMainFrame())
                 ->storage_key());
   load_observer.WaitForNavigationFinished();
 
   EXPECT_EQ(main_origin,
             popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(main_origin),
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(main_origin),
             static_cast<RenderFrameHostImpl*>(popup->GetPrimaryMainFrame())
                 ->storage_key());
 
@@ -6927,7 +6930,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
 
   // Check root document setup. The StorageKey at the root should be the same
   // regardless of if `kThirdPartyStoragePartitioning` is enabled.
-  EXPECT_EQ(blink::StorageKey(url::Origin::Create(main_url)),
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(url::Origin::Create(main_url)),
             root_rfh->storage_key());
 
   // child_rfh_1 should have a StorageKey of a.com + b.com when
@@ -6949,10 +6952,12 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
     // When `kThirdPartyStoragePartitioning` is disabled, the child and
     // grandchild document's storage key should depend only on their own origin
     // regardless of host permissions.
-    EXPECT_EQ(blink::StorageKey(url::Origin::Create(child_rfh_url)),
-              child_rfh_1->storage_key());
+    EXPECT_EQ(
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(child_rfh_url)),
+        child_rfh_1->storage_key());
 
-    EXPECT_EQ(blink::StorageKey(url::Origin::Create(grandchild_rfh_url)),
+    EXPECT_EQ(blink::StorageKey::CreateFirstParty(
+                  url::Origin::Create(grandchild_rfh_url)),
               grandchild_rfh_1->storage_key());
   }
 
@@ -6979,7 +6984,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
       child_rfh_2->child_at(0)->current_frame_host();
 
   // root_rfh's storage key should not have changed.
-  EXPECT_EQ(blink::StorageKey(url::Origin::Create(main_url)),
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(url::Origin::Create(main_url)),
             root_rfh->storage_key());
 
   if (ThirdPartyStoragePartitioningEnabled()) {
@@ -7003,10 +7008,12 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
     // When `kThirdPartyStoragePartitioning` is disabled, the child and
     // grandchild document's storage key should depend only on their own origin
     // regardless of host permissions.
-    EXPECT_EQ(blink::StorageKey(url::Origin::Create(child_rfh_url)),
-              child_rfh_2->storage_key());
+    EXPECT_EQ(
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(child_rfh_url)),
+        child_rfh_2->storage_key());
 
-    EXPECT_EQ(blink::StorageKey(url::Origin::Create(grandchild_rfh_url)),
+    EXPECT_EQ(blink::StorageKey::CreateFirstParty(
+                  url::Origin::Create(grandchild_rfh_url)),
               grandchild_rfh_2->storage_key());
   }
 }

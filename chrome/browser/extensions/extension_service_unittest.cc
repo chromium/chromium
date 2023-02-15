@@ -5252,7 +5252,7 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
       profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
   mojo::Remote<blink::mojom::StorageArea> area;
   local_storage_control->BindStorageArea(
-      blink::StorageKey(url::Origin::Create(ext_url)),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(ext_url)),
       area.BindNewPipeAndPassReceiver());
   {
     base::test::TestFuture<bool> future;
@@ -5275,7 +5275,7 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
     auto bucket_locator = storage::BucketLocator();
     bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
     bucket_locator.storage_key =
-        blink::StorageKey(url::Origin::Create(ext_url));
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(ext_url));
     idb_control_test->GetFilePathForTesting(
         bucket_locator,
         base::BindLambdaForTesting([&](const base::FilePath& path) {
@@ -5414,7 +5414,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
       profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
   mojo::Remote<blink::mojom::StorageArea> area;
   local_storage_control->BindStorageArea(
-      blink::StorageKey(url::Origin::Create(origin1)),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin1)),
       area.BindNewPipeAndPassReceiver());
   {
     base::test::TestFuture<bool> future;
@@ -5437,7 +5437,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
     auto bucket_locator = storage::BucketLocator();
     bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
     bucket_locator.storage_key =
-        blink::StorageKey(url::Origin::Create(origin1));
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(origin1));
     idb_control_test->GetFilePathForTesting(
         bucket_locator,
         base::BindLambdaForTesting([&](const base::FilePath& path) {

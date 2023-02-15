@@ -276,7 +276,8 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
       FROM_HERE,
       base::BindOnce(
           &QuotaManager::GetUsageAndQuota, GetQuotaManager(),
-          blink::StorageKey(url::Origin::Create(GURL(origin_string))),
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(GURL(origin_string))),
           blink::mojom::StorageType::kTemporary,
           base::BindOnce(&OnUsageAndQuotaObtained, std::move(ui_callback))));
 }

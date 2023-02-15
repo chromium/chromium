@@ -62,7 +62,7 @@ void ServiceWorkerHostInterceptor::FindRegistration(
     const GURL& scope,
     base::OnceClosure done) {
   context->FindRegistrationForScope(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerHostInterceptor::OnFoundRegistration,
                      base::Unretained(this), std::move(done)));
 }

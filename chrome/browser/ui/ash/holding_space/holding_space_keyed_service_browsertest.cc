@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
       holding_space_util::ResolveFileSystemUrl(browser()->profile(), file_path);
   storage::FileSystemURL file_system_url =
       storage::ExternalMountPoints::GetSystemInstance()->CrackURL(
-          url, blink::StorageKey(url::Origin::Create(url)));
+          url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
   ASSERT_TRUE(file_system_url.is_valid());
   ASSERT_EQ(storage::kFileSystemTypeDriveFs, file_system_url.type());
 

@@ -201,7 +201,8 @@ PaymentManager* PaymentAppContentUnitTestBase::CreatePaymentManager(
   int64_t registration_id;
   blink::mojom::ServiceWorkerRegistrationOptions registration_opt;
   registration_opt.scope = scope_url;
-  blink::StorageKey key(url::Origin::Create(scope_url));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url));
   worker_helper_->context()->RegisterServiceWorker(
       sw_script_url, key, registration_opt,
       blink::mojom::FetchClientSettingsObject::New(),

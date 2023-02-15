@@ -341,7 +341,7 @@ void DevToolsFileHelper::UpgradeDraggedFileSystemPermissions(
     const ShowInfoBarCallback& show_info_bar_callback) {
   const GURL gurl(file_system_url);
   storage::FileSystemURL root_url = isolated_context()->CrackURL(
-      gurl, blink::StorageKey(url::Origin::Create(gurl)));
+      gurl, blink::StorageKey::CreateFirstParty(url::Origin::Create(gurl)));
   if (!root_url.is_valid() || !root_url.path().empty())
     return;
 

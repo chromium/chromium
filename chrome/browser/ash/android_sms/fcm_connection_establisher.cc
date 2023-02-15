@@ -141,7 +141,8 @@ void FcmConnectionEstablisher::SendInFlightMessage() {
   PA_LOG(VERBOSE) << "Dispatching message " << message.message_type;
   message.service_worker_context->StartServiceWorkerAndDispatchMessage(
       message.service_worker_scope,
-      blink::StorageKey(url::Origin::Create(message.service_worker_scope)),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(message.service_worker_scope)),
       std::move(msg),
       base::BindOnce(&FcmConnectionEstablisher::OnMessageDispatchResult,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -2416,7 +2416,7 @@ TEST_F(BackgroundFetchDataManagerTest, StorageErrorsReported) {
 
   BackgroundFetchRegistrationId registration_id2(
       sw_id,
-      blink::StorageKey(url::Origin::Create(GURL("https://examplebad.com"))),
+      blink::StorageKey::CreateFromStringForTesting("https://examplebad.com"),
       kAlternativeDeveloperId, kAlternativeUniqueId);
 
   {

@@ -226,8 +226,10 @@ bool UsageInfosHasStorageKey(
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageAll) {
-  blink::StorageKey key1(url::Origin::Create(GURL("https://example.com")));
-  blink::StorageKey key2(url::Origin::Create(GURL("https://other.com")));
+  const blink::StorageKey key1 =
+      blink::StorageKey::CreateFromStringForTesting("https://example.com");
+  const blink::StorageKey key2 =
+      blink::StorageKey::CreateFromStringForTesting("https://other.com");
   // Create some local storage for each of the origins.
   CreateLocalStorageForKey(browser()->profile(), key1);
   CreateLocalStorageForKey(browser()->profile(), key2);
@@ -248,8 +250,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageAll) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageOrigin) {
-  blink::StorageKey key1(url::Origin::Create(GURL("https://example.com")));
-  blink::StorageKey key2(url::Origin::Create(GURL("https://other.com")));
+  const blink::StorageKey key1 =
+      blink::StorageKey::CreateFromStringForTesting("https://example.com");
+  const blink::StorageKey key2 =
+      blink::StorageKey::CreateFromStringForTesting("https://other.com");
   // Create some local storage for each of the origins.
   CreateLocalStorageForKey(browser()->profile(), key1);
   CreateLocalStorageForKey(browser()->profile(), key2);

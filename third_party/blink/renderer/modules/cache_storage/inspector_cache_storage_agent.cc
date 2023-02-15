@@ -567,8 +567,8 @@ void InspectorCacheStorageAgent::requestCacheNames(
       callback->sendSuccess(std::make_unique<protocol::Array<ProtocolCache>>());
       return;
     }
-    storage_key =
-        WTF::String(StorageKey(sec_origin->ToUrlOrigin()).Serialize());
+    storage_key = WTF::String(
+        StorageKey::CreateFirstParty(sec_origin->ToUrlOrigin()).Serialize());
   }
 
   mojom::blink::CacheStorage* cache_storage = nullptr;

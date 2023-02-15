@@ -150,7 +150,8 @@ absl::optional<fusebox::Moniker> ConvertToMoniker(Profile* profile,
   const storage::FileSystemURL fs_url =
       file_manager::util::GetFileManagerFileSystemContext(profile)
           ->CreateCrackedFileSystemURL(
-              blink::StorageKey(file_manager::util::GetFilesAppOrigin()),
+              blink::StorageKey::CreateFirstParty(
+                  file_manager::util::GetFilesAppOrigin()),
               storage::kFileSystemTypeExternal, virtual_path);
   if (!fs_url.is_valid()) {
     LOG(ERROR) << "Failed to create moniker for invalid FileSystemURL.";

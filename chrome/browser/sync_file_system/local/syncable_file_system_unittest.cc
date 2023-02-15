@@ -126,7 +126,8 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
 
   const int64_t kQuota = 12345 * 1024;
   file_system_.quota_manager()->SetQuota(
-      blink::StorageKey(url::Origin::Create(file_system_.origin())),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(file_system_.origin())),
       file_system_.storage_type(), kQuota);
   int64_t usage, quota;
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
@@ -153,7 +154,8 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   // Shrink the quota to the current usage, try to extend the file further
   // and see if it fails.
   file_system_.quota_manager()->SetQuota(
-      blink::StorageKey(url::Origin::Create(file_system_.origin())),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(file_system_.origin())),
       file_system_.storage_type(), new_usage);
   EXPECT_EQ(base::File::FILE_ERROR_NO_SPACE,
             file_system_.TruncateFile(URL("dir/foo"), kFileSizeToExtend + 1));
@@ -174,7 +176,8 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
 
   // Restore the system default quota.
   file_system_.quota_manager()->SetQuota(
-      blink::StorageKey(url::Origin::Create(file_system_.origin())),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(file_system_.origin())),
       file_system_.storage_type(), kOriginalQuota);
 }
 

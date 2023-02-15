@@ -1023,7 +1023,8 @@ IN_PROC_BROWSER_TEST_F(
   blink::mojom::ServiceWorkerRegistrationOptions options(
       impression_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
   public_context()->RegisterServiceWorker(
       https_server()->GetURL("a.test",
                              "/attribution_reporting/service_worker.js"),
@@ -1102,7 +1103,8 @@ IN_PROC_BROWSER_TEST_F(
   blink::mojom::ServiceWorkerRegistrationOptions options(
       impression_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
   public_context()->RegisterServiceWorker(
       https_server()->GetURL("a.test",
                              "/attribution_reporting/service_worker.js"),

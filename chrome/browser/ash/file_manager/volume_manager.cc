@@ -829,7 +829,7 @@ void VolumeManager::OnProvidedFileSystemMount(
       file_system_info.mount_path().BaseName().AsUTF8Unsafe();
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
   auto fsp_file_system_url = mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(util::GetFilesAppOrigin()), fsid, {});
+      blink::StorageKey::CreateFirstParty(util::GetFilesAppOrigin()), fsid, {});
   const std::string url = fsp_file_system_url.ToGURL().spec();
   DCHECK(fsp_file_system_url.is_valid());
 
@@ -1081,7 +1081,7 @@ void VolumeManager::DoAttachMtpStorage(
 
   // Get the FileSystemURL of the MTP storage device.
   auto mtp_file_system_url = mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(util::GetFilesAppOrigin()), fsid, {});
+      blink::StorageKey::CreateFirstParty(util::GetFilesAppOrigin()), fsid, {});
   const std::string url = mtp_file_system_url.ToGURL().spec();
   DCHECK(mtp_file_system_url.is_valid());
 
@@ -1183,7 +1183,7 @@ void VolumeManager::OnDocumentsProviderRootAdded(
   // Get the FileSystemURL of the ADP storage device.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
   auto adp_file_system_url = mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(util::GetFilesAppOrigin()),
+      blink::StorageKey::CreateFirstParty(util::GetFilesAppOrigin()),
       arc::kDocumentsProviderMountPointName,
       base::FilePath(base::StrCat({authority, "/", root_id})));
   const std::string url = adp_file_system_url.ToGURL().spec();

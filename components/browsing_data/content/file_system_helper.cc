@@ -56,7 +56,7 @@ void FileSystemHelper::DeleteFileSystemOrigin(const url::Origin& origin) {
       FROM_HERE,
       base::BindOnce(
           &FileSystemHelper::DeleteFileSystemForStorageKeyInFileThread, this,
-          blink::StorageKey(origin)));
+          blink::StorageKey::CreateFirstParty(origin)));
 }
 
 void FileSystemHelper::FetchFileSystemInfoInFileThread(FetchCallback callback) {

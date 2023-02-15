@@ -146,8 +146,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemURLDragDropBrowserTest, FileSystemFileDrop) {
 
   storage::FileSystemURL original_file =
       external_mount_points->CreateExternalFileSystemURL(
-          blink::StorageKey(url::Origin::Create(url)), testMountName,
-          file_inside_dir.BaseName());
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+          testMountName, file_inside_dir.BaseName());
   EXPECT_TRUE(original_file.is_valid());
 
   // Get the points corresponding to the center of the browser window in
@@ -269,8 +269,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemURLDragDropBrowserTest, FileSystemFileLeave) {
 
   storage::FileSystemURL original_file =
       external_mount_points->CreateExternalFileSystemURL(
-          blink::StorageKey(url::Origin::Create(url)), testMountName,
-          file_inside_dir.BaseName());
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+          testMountName, file_inside_dir.BaseName());
   EXPECT_TRUE(original_file.is_valid());
 
   // Get the points corresponding to the center of the browser window in

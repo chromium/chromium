@@ -88,8 +88,9 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
             get_expected_main_world_origin(main_rfh()));
   EXPECT_EQ(url::Origin::Create(initial_url),
             main_rfh()->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(url::Origin::Create(initial_url)),
-            main_test_rfh()->storage_key());
+  EXPECT_EQ(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url)),
+      main_test_rfh()->storage_key());
 
   // Verify expected main world origin when a pending navigation was started but
   // hasn't yet reached the ready-to-commit state.
@@ -108,8 +109,9 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
             get_expected_main_world_origin(main_rfh()));
   EXPECT_EQ(url::Origin::Create(initial_url),
             main_rfh()->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(url::Origin::Create(initial_url)),
-            main_test_rfh()->storage_key());
+  EXPECT_EQ(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url)),
+      main_test_rfh()->storage_key());
 
   // Verify expected main world origin once we are again in a steady state -
   // after a commit.
@@ -118,7 +120,7 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
             get_expected_main_world_origin(main_rfh()));
   EXPECT_EQ(url::Origin::Create(final_url),
             main_rfh()->GetLastCommittedOrigin());
-  EXPECT_EQ(blink::StorageKey(url::Origin::Create(final_url)),
+  EXPECT_EQ(blink::StorageKey::CreateFirstParty(url::Origin::Create(final_url)),
             main_test_rfh()->storage_key());
 
   // As a test correctness check, verify that there was no RFH swap (the bug
@@ -192,8 +194,8 @@ TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
 TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
   GURL initial_url = GURL("https://initial.example.test/");
   url::Origin expected_initial_origin = url::Origin::Create(initial_url);
-  blink::StorageKey expected_initial_storage_key =
-      blink::StorageKey(expected_initial_origin);
+  const blink::StorageKey expected_initial_storage_key =
+      blink::StorageKey::CreateFirstParty(expected_initial_origin);
   net::IsolationInfo expected_initial_isolation_info =
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, expected_initial_origin,
@@ -203,8 +205,8 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
 
   GURL final_url = GURL("https://final.example.test/");
   url::Origin expected_final_origin = url::Origin::Create(final_url);
-  blink::StorageKey expected_final_storage_key =
-      blink::StorageKey(expected_final_origin);
+  const blink::StorageKey expected_final_storage_key =
+      blink::StorageKey::CreateFirstParty(expected_final_origin);
   net::IsolationInfo expected_final_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, expected_final_origin,
       expected_final_origin,
@@ -989,8 +991,9 @@ TEST_P(RenderFrameHostImplThirdPartyStorageTest,
 
   // Top level storage key should not change if third party partitioning is on
   // or off
-  EXPECT_EQ(blink::StorageKey(url::Origin::Create(initial_url)),
-            main_test_rfh()->storage_key());
+  EXPECT_EQ(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url)),
+      main_test_rfh()->storage_key());
 
   if (ThirdPartyStoragePartitioningEnabled()) {
     // child frame storage key should contain child_origin + top_level_origin if
@@ -1003,8 +1006,9 @@ TEST_P(RenderFrameHostImplThirdPartyStorageTest,
   } else {
     // child frame storage key should only be partitioned by child origin if
     // third party partitioning is off.
-    EXPECT_EQ(blink::StorageKey(url::Origin::Create(child_url)),
-              child_frame->storage_key());
+    EXPECT_EQ(
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(child_url)),
+        child_frame->storage_key());
   }
 }
 

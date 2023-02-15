@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   GURL scope = embedded_test_server()->GetURL("/service_worker/");
   int worker_process_id;
   wrapper()->ServiceWorkerContextWrapper::StartWorkerForScope(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindLambdaForTesting(
           [&](int64_t version_id, int process_id, int thread_id) {
             worker_process_id = process_id;

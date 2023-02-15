@@ -107,7 +107,8 @@ GURL AddServiceWorker(const std::string& origin,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       scope_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
   service_worker_context->RegisterServiceWorker(
       js_url, key, options, base::BindOnce(&AddServiceWorkerCallback));
 

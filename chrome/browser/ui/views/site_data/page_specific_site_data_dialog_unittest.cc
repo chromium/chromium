@@ -212,7 +212,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveOnlyBrowsingData) {
   url::Origin currentUrlOrigin = url::Origin::Create(GURL(kCurrentUrl));
   url::Origin thirdPartyUrlOrigin = url::Origin::Create(GURL(kThirdPartyUrl));
   BrowsingDataModel::DataKey thirdPartyDataKey =
-      blink::StorageKey(thirdPartyUrlOrigin);
+      blink::StorageKey::CreateFirstParty(thirdPartyUrlOrigin);
   blocked_browsing_data_model->AddBrowsingData(
       thirdPartyDataKey, BrowsingDataModel::StorageType::kSharedStorage,
       /*storage_size=*/0);
@@ -269,7 +269,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveOnlyCookieTreeData) {
   url::Origin currentUrlOrigin = url::Origin::Create(GURL(kCurrentUrl));
   url::Origin thirdPartyUrlOrigin = url::Origin::Create(GURL(kThirdPartyUrl));
   BrowsingDataModel::DataKey thirdPartyDataKey =
-      blink::StorageKey(thirdPartyUrlOrigin);
+      blink::StorageKey::CreateFirstParty(thirdPartyUrlOrigin);
   blocked_browsing_data_model->AddBrowsingData(
       thirdPartyDataKey, BrowsingDataModel::StorageType::kSharedStorage,
       /*storage_size=*/0);
@@ -340,12 +340,12 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveMixedModelData) {
   url::Origin thirdPartyUrlOrigin = url::Origin::Create(GURL(kThirdPartyUrl));
 
   BrowsingDataModel::DataKey exampleDataKey =
-      blink::StorageKey(exampleUrlOrigin);
+      blink::StorageKey::CreateFirstParty(exampleUrlOrigin);
   allowed_browsing_data_model->AddBrowsingData(
       exampleDataKey, BrowsingDataModel::StorageType::kSharedStorage,
       /*storage_size=*/0);
   BrowsingDataModel::DataKey thirdPartyDataKey =
-      blink::StorageKey(thirdPartyUrlOrigin);
+      blink::StorageKey::CreateFirstParty(thirdPartyUrlOrigin);
   blocked_browsing_data_model->AddBrowsingData(
       thirdPartyDataKey, BrowsingDataModel::StorageType::kSharedStorage,
       /*storage_size=*/0);

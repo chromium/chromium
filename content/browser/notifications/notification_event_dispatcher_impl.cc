@@ -185,7 +185,7 @@ void FindServiceWorkerRegistration(
   // NotificationDatabaseData should be changed to use StorageKey.
   service_worker_context->FindReadyRegistrationForId(
       notification_database_data.service_worker_registration_id,
-      blink::StorageKey(origin),
+      blink::StorageKey::CreateFirstParty(origin),
       base::BindOnce(&DispatchNotificationEventOnRegistration,
                      notification_database_data,
                      std::move(notification_action_callback),

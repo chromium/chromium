@@ -112,7 +112,8 @@ SyncFileSystemDeleteFileSystemFunction::Run() {
       FROM_HERE,
       BindOnce(
           &storage::FileSystemContext::DeleteFileSystem, file_system_context,
-          blink::StorageKey(url::Origin::Create(source_url())),
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(source_url())),
           file_system_url.type(),
           BindOnce(&SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem,
                    this)));
@@ -158,7 +159,8 @@ SyncFileSystemRequestFileSystemFunction::Run() {
       FROM_HERE,
       BindOnce(&storage::FileSystemContext::OpenFileSystem,
                GetFileSystemContext(),
-               blink::StorageKey(url::Origin::Create(source_url())),
+               blink::StorageKey::CreateFirstParty(
+                   url::Origin::Create(source_url())),
                /*bucket=*/absl::nullopt, storage::kFileSystemTypeSyncable,
                storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
                base::BindOnce(&self::DidOpenFileSystem, this)));
@@ -349,7 +351,8 @@ SyncFileSystemGetUsageAndQuotaFunction::Run() {
       FROM_HERE,
       BindOnce(
           &storage::QuotaManager::GetUsageAndQuotaForWebApps, quota_manager,
-          blink::StorageKey(url::Origin::Create(source_url())),
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(source_url())),
           storage::FileSystemTypeToQuotaStorageType(file_system_url.type()),
           BindOnce(&SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
                    this)));

@@ -75,14 +75,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   // (1B) Construct a first-party (origin and top_level_site match) key.
   // This should be used only in contexts verified to be first-party or where
   // a third-party context is impossible, otherwise use Create().
-  // TODO(crbug.com/1410254): Rename this to CreateFirstParty().
-  explicit StorageKey(const url::Origin& origin)
-      : StorageKey(origin,
-                   net::SchemefulSite(origin),
-                   nullptr,
-                   origin.opaque()
-                       ? blink::mojom::AncestorChainBit::kCrossSite
-                       : blink::mojom::AncestorChainBit::kSameSite) {}
+  static StorageKey CreateFirstParty(const url::Origin& origin);
 
   // (1C) Construct for an ephemeral browsing context with a nonce.
   // This is a common entry point when constructing a context, and callsites

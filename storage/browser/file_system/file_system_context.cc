@@ -637,8 +637,8 @@ FileSystemURL FileSystemContext::CrackURL(
 
 FileSystemURL FileSystemContext::CrackURLInFirstPartyContext(
     const GURL& url) const {
-  return CrackFileSystemURL(
-      FileSystemURL(url, blink::StorageKey(url::Origin::Create(url))));
+  return CrackFileSystemURL(FileSystemURL(
+      url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url))));
 }
 
 FileSystemURL FileSystemContext::CreateCrackedFileSystemURL(

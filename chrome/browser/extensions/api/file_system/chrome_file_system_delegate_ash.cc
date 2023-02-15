@@ -107,8 +107,8 @@ void OnConsentReceived(content::BrowserContext* browser_context,
 
   const storage::FileSystemURL original_url =
       file_system_context->CreateCrackedFileSystemURL(
-          blink::StorageKey(origin), storage::kFileSystemTypeExternal,
-          virtual_path);
+          blink::StorageKey::CreateFirstParty(origin),
+          storage::kFileSystemTypeExternal, virtual_path);
 
   // Set a fixed register name, as the automatic one would leak the mount point
   // directory.

@@ -171,10 +171,12 @@ class BackgroundSyncManagerTest
     bool called_2 = false;
     blink::mojom::ServiceWorkerRegistrationOptions options1;
     options1.scope = GURL(kScope1);
-    blink::StorageKey key1(url::Origin::Create(GURL(kScope1)));
+    const blink::StorageKey key1 =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(kScope1)));
     blink::mojom::ServiceWorkerRegistrationOptions options2;
     options2.scope = GURL(kScope2);
-    blink::StorageKey key2(url::Origin::Create(GURL(kScope2)));
+    const blink::StorageKey key2 =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(kScope2)));
     helper_->context()->RegisterServiceWorker(
         GURL(kScript1), key1, options1,
         blink::mojom::FetchClientSettingsObject::New(),
@@ -549,7 +551,7 @@ class BackgroundSyncManagerTest
     bool called = false;
     const GURL scope = ScopeForSWId(sw_registration_id);
     helper_->context()->UnregisterServiceWorker(
-        scope, blink::StorageKey(url::Origin::Create(scope)),
+        scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
         /*is_immediate=*/false,
         base::BindOnce(&UnregisterServiceWorkerCallback, &called));
     base::RunLoop().RunUntilIdle();

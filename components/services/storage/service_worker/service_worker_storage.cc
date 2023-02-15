@@ -1275,7 +1275,8 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
   }
 
   for (const auto& update : policy_updates) {
-    blink::StorageKey key(update->origin);
+    const blink::StorageKey key =
+        blink::StorageKey::CreateFirstParty(update->origin);
     if (!update->purge_on_shutdown)
       keys_to_purge_on_shutdown_.erase(key);
     else

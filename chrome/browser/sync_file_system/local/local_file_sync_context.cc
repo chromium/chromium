@@ -96,7 +96,8 @@ void LocalFileSyncContext::MaybeInitializeFileSystemContext(
       base::BindOnce(
           &LocalFileSyncContext::InitializeFileSystemContextOnIOThread, this,
           source_url, base::RetainedRef(file_system_context));
-  blink::StorageKey storage_key(url::Origin::Create(source_url));
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(source_url));
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&storage::SandboxFileSystemBackendDelegate::OpenFileSystem,

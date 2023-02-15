@@ -65,7 +65,7 @@ class NotificationStorageTest : public ::testing::Test {
   // ServiceWorkerRegistration will be kept alive for the test's lifetime.
   int64_t RegisterServiceWorker() {
     GURL script_url = url_;
-    blink::StorageKey key(origin_);
+    const blink::StorageKey key = blink::StorageKey::CreateFirstParty(origin_);
     {
       blink::mojom::ServiceWorkerRegistrationOptions options;
       options.scope = url_;

@@ -735,7 +735,8 @@ void InstallableManager::CheckServiceWorker() {
   // Check to see if there is a service worker for the manifest's scope.
   service_worker_context_->CheckHasServiceWorker(
       manifest().scope,
-      blink::StorageKey(url::Origin::Create(manifest().scope)),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(manifest().scope)),
       base::BindOnce(&InstallableManager::OnDidCheckHasServiceWorker,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
@@ -766,7 +767,8 @@ void InstallableManager::OnDidCheckHasServiceWorker(
         // environment and see if the site supports an offline page.
         service_worker_context_->CheckOfflineCapability(
             manifest().start_url,
-            blink::StorageKey(url::Origin::Create(manifest().start_url)),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(manifest().start_url)),
             base::BindOnce(&InstallableManager::OnDidCheckOfflineCapability,
                            weak_factory_.GetWeakPtr(),
                            check_service_worker_start_time,

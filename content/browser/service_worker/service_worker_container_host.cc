@@ -1709,7 +1709,7 @@ ServiceWorkerContainerHost::GetCorrectStorageKeyForWebSecurityState(
     url::Origin other_origin = url::Origin::Create(url);
 
     if (key_.origin() != other_origin)
-      return blink::StorageKey(other_origin);
+      return blink::StorageKey::CreateFirstParty(other_origin);
   }
 
   return key_;

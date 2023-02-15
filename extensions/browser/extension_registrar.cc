@@ -523,7 +523,8 @@ void ExtensionRegistrar::UnregisterServiceWorkerWithRootScope(
   // asynchronous, we begin the process before the new extension is added, so
   // the old worker will be unregistered before the new one is registered.
   context->UnregisterServiceWorker(
-      new_extension->url(), blink::StorageKey(new_extension->origin()),
+      new_extension->url(),
+      blink::StorageKey::CreateFirstParty(new_extension->origin()),
       base::BindOnce(&ExtensionRegistrar::NotifyServiceWorkerUnregistered,
                      weak_factory_.GetWeakPtr(), new_extension->id()));
 }

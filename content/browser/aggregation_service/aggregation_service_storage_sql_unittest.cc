@@ -831,7 +831,8 @@ TEST_F(AggregationServiceStorageSqlTest,
       base::Time::Min(), base::Time::Max(),
       base::BindLambdaForTesting(
           [&reporting_origins](const blink::StorageKey& storage_key) {
-            return storage_key != blink::StorageKey(reporting_origins[2]);
+            return storage_key !=
+                   blink::StorageKey::CreateFirstParty(reporting_origins[2]);
           }));
 
   std::vector<AggregationServiceStorage::RequestAndId> stored_reports =

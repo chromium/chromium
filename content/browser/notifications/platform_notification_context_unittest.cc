@@ -577,7 +577,8 @@ TEST_F(PlatformNotificationContextTest, ServiceWorkerUnregistered) {
 
   GURL origin("https://example.com");
   GURL script_url("https://example.com/worker.js");
-  blink::StorageKey key(url::Origin::Create(origin));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin));
 
   int64_t service_worker_registration_id =
       blink::mojom::kInvalidServiceWorkerRegistrationId;

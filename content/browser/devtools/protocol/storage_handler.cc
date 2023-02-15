@@ -463,8 +463,8 @@ void StorageHandler::ClearDataForOrigin(
 
   storage_partition_->ClearData(
       remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      blink::StorageKey(url::Origin::Create(GURL(origin))), base::Time(),
-      base::Time::Max(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(origin))),
+      base::Time(), base::Time::Max(),
       base::BindOnce(&ClearDataForOriginCallback::sendSuccess,
                      std::move(callback)));
 }
@@ -513,7 +513,8 @@ void StorageHandler::GetUsageAndQuota(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&GetUsageAndQuotaOnIOThread, base::RetainedRef(manager),
-                     blink::StorageKey(origin), std::move(callback)));
+                     blink::StorageKey::CreateFirstParty(origin),
+                     std::move(callback)));
 }
 
 void StorageHandler::OverrideQuotaForOrigin(
@@ -540,7 +541,7 @@ void StorageHandler::OverrideQuotaForOrigin(
   }
 
   quota_override_handle_->OverrideQuotaForStorageKey(
-      blink::StorageKey(origin),
+      blink::StorageKey::CreateFirstParty(origin),
       quota_size.isJust() ? absl::make_optional(quota_size.fromJust())
                           : absl::nullopt,
       base::BindOnce(&OverrideQuotaForOriginCallback::sendSuccess,
@@ -557,7 +558,8 @@ Response StorageHandler::TrackCacheStorageForOrigin(
   if (!origin_url.is_valid() || origin.opaque())
     return Response::InvalidParams(origin_string + " is not a valid URL");
 
-  GetCacheStorageObserver()->TrackStorageKey(blink::StorageKey(origin));
+  GetCacheStorageObserver()->TrackStorageKey(
+      blink::StorageKey::CreateFirstParty(origin));
   return Response::Success();
 }
 
@@ -585,7 +587,8 @@ Response StorageHandler::UntrackCacheStorageForOrigin(
   if (!origin_url.is_valid() || origin.opaque())
     return Response::InvalidParams(origin_string + " is not a valid URL");
 
-  GetCacheStorageObserver()->UntrackStorageKey(blink::StorageKey(origin));
+  GetCacheStorageObserver()->UntrackStorageKey(
+      blink::StorageKey::CreateFirstParty(origin));
   return Response::Success();
 }
 
@@ -613,7 +616,8 @@ Response StorageHandler::TrackIndexedDBForOrigin(
   if (!origin_url.is_valid() || origin.opaque())
     return Response::InvalidParams(origin_string + " is not a valid URL");
 
-  GetIndexedDBObserver()->TrackStorageKey(blink::StorageKey(origin));
+  GetIndexedDBObserver()->TrackStorageKey(
+      blink::StorageKey::CreateFirstParty(origin));
   return Response::Success();
 }
 
@@ -641,7 +645,8 @@ Response StorageHandler::UntrackIndexedDBForOrigin(
   if (!origin_url.is_valid() || origin.opaque())
     return Response::InvalidParams(origin_string + " is not a valid URL");
 
-  GetIndexedDBObserver()->UntrackStorageKey(blink::StorageKey(origin));
+  GetIndexedDBObserver()->UntrackStorageKey(
+      blink::StorageKey::CreateFirstParty(origin));
   return Response::Success();
 }
 

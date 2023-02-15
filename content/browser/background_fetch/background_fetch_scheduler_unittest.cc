@@ -202,12 +202,12 @@ TEST_F(BackgroundFetchSchedulerTest, TwoControllersSynchronous) {
 
   // Create a controller with A1 -> A4.
   InitializeControllerWithRequests(
-      blink::StorageKey(url::Origin::Create(GURL("https://A.com"))),
+      blink::StorageKey::CreateFromStringForTesting("https://A.com"),
       std::vector<std::string>(all_requests.begin(), all_requests.begin() + 4));
 
   // Create a controller with B1 -> B4.
   InitializeControllerWithRequests(
-      blink::StorageKey(url::Origin::Create(GURL("https://B.com"))),
+      blink::StorageKey::CreateFromStringForTesting("https://B.com"),
       std::vector<std::string>(all_requests.begin() + 4, all_requests.end()));
 
   RunSchedulerToCompletion();
@@ -222,12 +222,12 @@ TEST_F(BackgroundFetchSchedulerTest, TwoControllersConcurrent) {
 
   // Create a controller with A1 -> A4.
   InitializeControllerWithRequests(
-      blink::StorageKey(url::Origin::Create(GURL("https://A.com"))),
+      blink::StorageKey::CreateFromStringForTesting("https://A.com"),
       std::vector<std::string>(all_requests.begin(), all_requests.begin() + 4));
 
   // Create a controller with B1 -> B4.
   InitializeControllerWithRequests(
-      blink::StorageKey(url::Origin::Create(GURL("https://B.com"))),
+      blink::StorageKey::CreateFromStringForTesting("https://B.com"),
       std::vector<std::string>(all_requests.begin() + 4, all_requests.end()));
 
   RunSchedulerToCompletion();

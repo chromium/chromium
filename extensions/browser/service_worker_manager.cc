@@ -29,7 +29,7 @@ void ServiceWorkerManager::OnExtensionUnloaded(
   util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
       ->GetServiceWorkerContext()
       ->StopAllServiceWorkersForStorageKey(
-          blink::StorageKey(extension->origin()));
+          blink::StorageKey::CreateFirstParty(extension->origin()));
 }
 
 void ServiceWorkerManager::OnExtensionUninstalled(
@@ -42,8 +42,9 @@ void ServiceWorkerManager::OnExtensionUninstalled(
   // c) Check for any orphaned workers.
   util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
       ->GetServiceWorkerContext()
-      ->DeleteForStorageKey(blink::StorageKey(extension->origin()),
-                            base::DoNothing());
+      ->DeleteForStorageKey(
+          blink::StorageKey::CreateFirstParty(extension->origin()),
+          base::DoNothing());
 }
 
 }  // namespace extensions

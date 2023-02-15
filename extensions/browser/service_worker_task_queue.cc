@@ -418,7 +418,7 @@ void ServiceWorkerTaskQueue::VerifyRegistration(
     const SequencedContextId& context_id,
     const GURL& scope) {
   service_worker_context->CheckHasServiceWorker(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerTaskQueue::DidVerifyRegistration,
                      weak_factory_.GetWeakPtr(), context_id));
 }
@@ -439,7 +439,9 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension.id());
   service_worker_context->RegisterServiceWorker(
-      script_url, blink::StorageKey(url::Origin::Create(option.scope)), option,
+      script_url,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(option.scope)),
+      option,
       base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
                      weak_factory_.GetWeakPtr(), context_id, reason,
                      base::Time::Now()));
@@ -469,7 +471,8 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       GetServiceWorkerContext(extension->id());
 
   service_worker_context->UnregisterServiceWorker(
-      extension->url(), blink::StorageKey(extension->origin()),
+      extension->url(),
+      blink::StorageKey::CreateFirstParty(extension->origin()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
                      weak_factory_.GetWeakPtr(), extension_id, *sequence));
 
@@ -496,7 +499,7 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
 
   const GURL& scope = context_id.first.service_worker_scope();
   service_worker_context->StartWorkerForScope(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerForScope,
                      weak_factory_.GetWeakPtr(), context_id, base::Time::Now()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerFail,

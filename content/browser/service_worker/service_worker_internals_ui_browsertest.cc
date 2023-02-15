@@ -256,7 +256,8 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
     blink::ServiceWorkerStatusCode status;
     base::RunLoop loop;
     wrapper()->FindReadyRegistrationForClientUrl(
-        document_url, blink::StorageKey(url::Origin::Create(document_url)),
+        document_url,
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(document_url)),
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode find_status,
                 scoped_refptr<ServiceWorkerRegistration> registration) {
@@ -328,7 +329,8 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
           blink::mojom::ScriptType::kClassic,
           blink::mojom::ServiceWorkerUpdateViaCache::kImports);
       // Set up the storage key for the service worker
-      blink::StorageKey key(url::Origin::Create(options.scope));
+      const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(options.scope));
       // Register returns when the promise is resolved.
       public_context()->RegisterServiceWorker(
           embedded_test_server()->GetURL(kServiceWorkerUrl), key, options,
@@ -342,8 +344,9 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
   void UnRegisterServiceWorker() {
     {
       base::RunLoop run_loop;
-      blink::StorageKey key(url::Origin::Create(
-          embedded_test_server()->GetURL(kServiceWorkerScope)));
+      const blink::StorageKey key =
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(
+              embedded_test_server()->GetURL(kServiceWorkerScope)));
       // Unregistering something should return true.
       public_context()->UnregisterServiceWorker(
           embedded_test_server()->GetURL(kServiceWorkerScope), key,

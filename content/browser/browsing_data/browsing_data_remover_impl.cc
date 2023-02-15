@@ -169,7 +169,8 @@ bool BrowsingDataRemoverImpl::DoesOriginMatchMaskForTesting(
     embedder_matcher = embedder_delegate_->GetOriginTypeMatcher();
 
   return DoesStorageKeyMatchMask(origin_type_mask, std::move(embedder_matcher),
-                                 blink::StorageKey(origin), policy);
+                                 blink::StorageKey::CreateFirstParty(origin),
+                                 policy);
 }
 
 void BrowsingDataRemoverImpl::Remove(const base::Time& delete_begin,

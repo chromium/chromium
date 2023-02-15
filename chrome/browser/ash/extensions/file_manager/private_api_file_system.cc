@@ -1630,7 +1630,8 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
     case file_manager::io_task::OperationType::kEmptyTrash:
       if (is_trash_enabled) {
         task = std::make_unique<file_manager::io_task::EmptyTrashIOTask>(
-            blink::StorageKey(render_frame_host()->GetLastCommittedOrigin()),
+            blink::StorageKey::CreateFirstParty(
+                render_frame_host()->GetLastCommittedOrigin()),
             profile, file_system_context,
             /*base_path=*/base::FilePath(), show_notification);
       }

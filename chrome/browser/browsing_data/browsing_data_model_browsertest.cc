@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(
       browsing_data_model.get(),
       {{kTestHost,
-        blink::StorageKey(testOrigin),
+        blink::StorageKey::CreateFirstParty(testOrigin),
         {BrowsingDataModel::StorageType::kSharedStorage,
          test_entry_storage_size.Get(), /*cookie_count=*/0}}});
 
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
   ValidateBrowsingDataEntries(content_settings->allowed_browsing_data_model(),
                               {{kTestHost,
-                                blink::StorageKey(testOrigin),
+                                blink::StorageKey::CreateFirstParty(testOrigin),
                                 {BrowsingDataModel::StorageType::kSharedStorage,
                                  /*storage_size=*/0, /*cookie_count=*/0}}});
 }

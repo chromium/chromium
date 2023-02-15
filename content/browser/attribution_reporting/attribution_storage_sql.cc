@@ -1684,8 +1684,9 @@ void AttributionStorageSql::ClearData(
   std::vector<StoredSource::Id> source_ids_to_delete;
   int num_event_reports_deleted = 0;
   while (statement.Step()) {
-    if (filter.is_null() || filter.Run(blink::StorageKey(DeserializeOrigin(
-                                statement.ColumnString(0))))) {
+    if (filter.is_null() ||
+        filter.Run(blink::StorageKey::CreateFirstParty(
+            DeserializeOrigin(statement.ColumnString(0))))) {
       source_ids_to_delete.emplace_back(statement.ColumnInt64(1));
       if (statement.GetColumnType(2) != sql::ColumnType::kNull) {
         if (!DeleteReportInternal(AttributionReport::EventLevelData::Id(
@@ -2462,8 +2463,9 @@ int AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
 
   int num_aggregate_reports_deleted = 0;
   while (statement.Step()) {
-    if (filter.is_null() || filter.Run(blink::StorageKey(DeserializeOrigin(
-                                statement.ColumnString(0))))) {
+    if (filter.is_null() ||
+        filter.Run(blink::StorageKey::CreateFirstParty(
+            DeserializeOrigin(statement.ColumnString(0))))) {
       source_ids_to_delete.emplace_back(statement.ColumnInt64(1));
       if (statement.GetColumnType(2) != sql::ColumnType::kNull) {
         if (!DeleteReportInternal(
@@ -2983,8 +2985,9 @@ AttributionStorageSql::GetAllDataKeys() {
 void AttributionStorageSql::DeleteByDataKey(
     const AttributionDataModel::DataKey& key) {
   ClearData(base::Time::Min(), base::Time::Max(),
-            base::BindRepeating(std::equal_to<blink::StorageKey>(),
-                                blink::StorageKey(key.reporting_origin())),
+            base::BindRepeating(
+                std::equal_to<blink::StorageKey>(),
+                blink::StorageKey::CreateFirstParty(key.reporting_origin())),
             /*delete_rate_limit_data=*/true);
 }
 

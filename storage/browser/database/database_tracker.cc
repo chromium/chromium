@@ -179,8 +179,8 @@ void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
 
   if (quota_manager_proxy_.get())
     quota_manager_proxy_->NotifyBucketAccessed(
-        BucketLocator::ForDefaultBucket(
-            blink::StorageKey(GetOriginFromIdentifier(origin_identifier))),
+        BucketLocator::ForDefaultBucket(blink::StorageKey::CreateFirstParty(
+            GetOriginFromIdentifier(origin_identifier))),
         base::Time::Now());
 
   InsertOrUpdateDatabaseDetails(origin_identifier, database_name,
@@ -216,8 +216,8 @@ void DatabaseTracker::DatabaseClosed(const std::string& origin_identifier,
   // closed because we don't call it for read while open.
   if (quota_manager_proxy_.get())
     quota_manager_proxy_->NotifyBucketAccessed(
-        BucketLocator::ForDefaultBucket(
-            blink::StorageKey(GetOriginFromIdentifier(origin_identifier))),
+        BucketLocator::ForDefaultBucket(blink::StorageKey::CreateFirstParty(
+            GetOriginFromIdentifier(origin_identifier))),
         base::Time::Now());
 
   UpdateOpenDatabaseSizeAndNotify(origin_identifier, database_name);
@@ -427,8 +427,8 @@ bool DatabaseTracker::DeleteClosedDatabase(
   if (quota_manager_proxy_.get() && db_file_size) {
     quota_manager_proxy_->NotifyBucketModified(
         QuotaClientType::kDatabase,
-        BucketLocator::ForDefaultBucket(
-            blink::StorageKey(GetOriginFromIdentifier(origin_identifier))),
+        BucketLocator::ForDefaultBucket(blink::StorageKey::CreateFirstParty(
+            GetOriginFromIdentifier(origin_identifier))),
         -db_file_size, base::Time::Now(),
         base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   }
@@ -508,8 +508,8 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
   if (quota_manager_proxy_.get() && deleted_size) {
     quota_manager_proxy_->NotifyBucketModified(
         QuotaClientType::kDatabase,
-        BucketLocator::ForDefaultBucket(
-            blink::StorageKey(GetOriginFromIdentifier(origin_identifier))),
+        BucketLocator::ForDefaultBucket(blink::StorageKey::CreateFirstParty(
+            GetOriginFromIdentifier(origin_identifier))),
         -deleted_size, base::Time::Now(),
         base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   }
@@ -711,8 +711,8 @@ int64_t DatabaseTracker::UpdateOpenDatabaseInfoAndNotify(
     if (quota_manager_proxy_.get()) {
       quota_manager_proxy_->NotifyBucketModified(
           QuotaClientType::kDatabase,
-          BucketLocator::ForDefaultBucket(
-              blink::StorageKey(GetOriginFromIdentifier(origin_id))),
+          BucketLocator::ForDefaultBucket(blink::StorageKey::CreateFirstParty(
+              GetOriginFromIdentifier(origin_id))),
           new_size - old_size, base::Time::Now(),
           base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
     }

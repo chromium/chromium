@@ -251,10 +251,10 @@ class CacheStorageManagerTest : public testing::Test {
   CacheStorageManagerTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         blob_storage_context_(nullptr),
-        storage_key1_(blink::StorageKey(
-            url::Origin::Create(GURL("http://example1.com")))),
-        storage_key2_(blink::StorageKey(
-            url::Origin::Create(GURL("http://example2.com")))) {}
+        storage_key1_(blink::StorageKey::CreateFromStringForTesting(
+            "http://example1.com")),
+        storage_key2_(blink::StorageKey::CreateFromStringForTesting(
+            "http://example2.com")) {}
 
   CacheStorageManagerTest(const CacheStorageManagerTest&) = delete;
   CacheStorageManagerTest& operator=(const CacheStorageManagerTest&) = delete;
@@ -917,9 +917,9 @@ class CacheStorageManagerStorageKeyAndBucketTestP
     // times `DestroyStorageManager()` and then `CreateStorageManager()`
     // are called.
     storage_key1_ =
-        blink::StorageKey(url::Origin::Create(GURL("http://example1.com")));
+        blink::StorageKey::CreateFromStringForTesting("http://example1.com");
     storage_key2_ =
-        blink::StorageKey(url::Origin::Create(GURL("http://example2.com")));
+        blink::StorageKey::CreateFromStringForTesting("http://example2.com");
 
     CacheStorageManagerTest::CreateStorageManager();
 
@@ -1350,8 +1350,9 @@ TEST_F(CacheStorageManagerTest, BadCacheName) {
 TEST_F(CacheStorageManagerTest, BadKeyName) {
   // Since the implementation writes origin names to disk, ensure that we don't
   // escape the directory.
-  blink::StorageKey bad_key(url::Origin::Create(
-      GURL("http://../../../../../../../../../../../../../../foo")));
+  const blink::StorageKey bad_key =
+      blink::StorageKey::CreateFromStringForTesting(
+          "http://../../../../../../../../../../../../../../foo");
   storage::BucketLocator bad_bucket_locator =
       GetOrCreateBucket(bad_key, storage::kDefaultBucketName);
   EXPECT_TRUE(Open(bad_bucket_locator, "foo"));
@@ -2183,7 +2184,7 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
 
     url::Origin test_origin = url::Origin::Create(GURL("http://example4.com"));
 
-    auto storage_key3 = blink::StorageKey(test_origin);
+    auto storage_key3 = blink::StorageKey::CreateFirstParty(test_origin);
 
     auto storage_key4 = blink::StorageKey::CreateForTesting(
         test_origin, url::Origin::Create(GURL("http://example5.com")));

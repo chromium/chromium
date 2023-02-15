@@ -1301,7 +1301,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
   budgeter()->ClearData(
       kExampleTime, kExampleTime,
       base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
-        return storage_key == blink::StorageKey(kOriginA);
+        return storage_key == blink::StorageKey::CreateFirstParty(kOriginA);
       }),
       base::BindLambdaForTesting([&]() {
         ++num_queries_processed;
@@ -1370,7 +1370,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
   budgeter()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
-        return storage_key == blink::StorageKey(kOriginA);
+        return storage_key == blink::StorageKey::CreateFirstParty(kOriginA);
       }),
       base::BindLambdaForTesting([&]() {
         ++num_queries_processed;

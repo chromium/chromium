@@ -166,7 +166,7 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     NavigateToPageAndWaitForReadyTitle("/test.html");
 
     GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
-        blink::StorageKey(
+        blink::StorageKey::CreateFirstParty(
             url::Origin::Create(embedded_test_server()->base_url())));
     HostContentSettingsMapFactory::GetForProfile(browser()->profile())
         ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
@@ -204,7 +204,8 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
 
     GURL url = embedded_test_server()->GetURL("/scope/");
     GetServiceWorkerContext()->StartServiceWorkerAndDispatchMessage(
-        url, blink::StorageKey(url::Origin::Create(url)), std::move(msg),
+        url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+        std::move(msg),
         base::BindRepeating(&ExpectResultAndRun<bool>, true,
                             run_loop.QuitClosure()));
     run_loop.Run();
@@ -226,7 +227,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
@@ -255,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
@@ -284,7 +287,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
@@ -863,7 +867,7 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
     base::RunLoop run_loop;
     GURL url = embedded_test_server()->GetURL(scope);
     GetServiceWorkerContext()->StartServiceWorkerForNavigationHint(
-        url, blink::StorageKey(url::Origin::Create(url)),
+        url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
         base::BindOnce(&ExpectResultAndRun<
                            content::StartServiceWorkerForNavigationHintResult>,
                        expected_result, run_loop.QuitClosure()));
@@ -889,7 +893,7 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
     GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
-        blink::StorageKey(
+        blink::StorageKey::CreateFirstParty(
             url::Origin::Create(embedded_test_server()->base_url())));
     RunNavigationHintTest(
         "/scope/", content::StartServiceWorkerForNavigationHintResult::STARTED,
@@ -913,7 +917,7 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
     GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
-        blink::StorageKey(
+        blink::StorageKey::CreateFirstParty(
             url::Origin::Create(embedded_test_server()->base_url())));
     RunNavigationHintTest(
         "/scope/",
@@ -963,7 +967,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
       embedded_test_server()->GetURL("/scope/"),
       blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/sw.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
@@ -1092,7 +1097,8 @@ class ChromeWebUIServiceWorkerTest : public ChromeServiceWorkerTest {
     blink::mojom::ServiceWorkerRegistrationOptions options(
         base_url, blink::mojom::ScriptType::kClassic,
         blink::mojom::ServiceWorkerUpdateViaCache::kNone);
-    blink::StorageKey key(url::Origin::Create(service_worker_url));
+    const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
+        url::Origin::Create(service_worker_url));
     GetServiceWorkerContext()->RegisterServiceWorker(
         service_worker_url, key, options,
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode r) {

@@ -27,7 +27,7 @@ TEST_F(CannedSharedWorkerHelperTest, Empty) {
   const GURL worker("https://host1:1/worker.js");
   std::string name("test");
   const blink::StorageKey storage_key =
-      blink::StorageKey(url::Origin::Create(worker));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(worker));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
       browser_context()->GetDefaultStoragePartition());
@@ -42,10 +42,12 @@ TEST_F(CannedSharedWorkerHelperTest, Empty) {
 TEST_F(CannedSharedWorkerHelperTest, Delete) {
   const GURL worker1("http://host1:9000/worker.js");
   std::string name1("name");
-  const blink::StorageKey storage_key1(url::Origin::Create(worker1));
+  const blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(worker1));
   const GURL worker2("https://example.com/worker.js");
   std::string name2("name");
-  const blink::StorageKey storage_key2(url::Origin::Create(worker2));
+  const blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(worker2));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
       browser_context()->GetDefaultStoragePartition());
@@ -62,8 +64,10 @@ TEST_F(CannedSharedWorkerHelperTest, IgnoreExtensionsAndDevTools) {
   const GURL worker1("chrome-extension://abcdefghijklmnopqrstuvwxyz/worker.js");
   const GURL worker2("devtools://abcdefghijklmnopqrstuvwxyz/worker.js");
   std::string name("name");
-  const blink::StorageKey storage_key1(url::Origin::Create(worker1));
-  const blink::StorageKey storage_key2(url::Origin::Create(worker2));
+  const blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(worker1));
+  const blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(worker2));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
       browser_context()->GetDefaultStoragePartition());

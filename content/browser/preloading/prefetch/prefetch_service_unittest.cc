@@ -1583,7 +1583,7 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
-      blink::StorageKey(url::Origin::Create(GURL("https://example.com"))));
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"));
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
@@ -1643,7 +1643,7 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
-      blink::StorageKey(url::Origin::Create(GURL("https://other.com"))));
+      blink::StorageKey::CreateFromStringForTesting("https://other.com"));
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),

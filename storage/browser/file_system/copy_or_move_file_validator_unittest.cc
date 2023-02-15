@@ -92,8 +92,9 @@ class CopyOrMoveFileValidatorTestHelper {
     FileSystemBackend* src_file_system_backend =
         file_system_context_->GetFileSystemBackend(src_type_);
     src_file_system_backend->ResolveURL(
-        FileSystemURL::CreateForTest(blink::StorageKey(url::Origin(origin_)),
-                                     src_type_, base::FilePath()),
+        FileSystemURL::CreateForTest(
+            blink::StorageKey::CreateFirstParty(url::Origin(origin_)),
+            src_type_, base::FilePath()),
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, base::BindOnce(&ExpectOk));
     base::RunLoop().RunUntilIdle();
     ASSERT_EQ(base::File::FILE_OK, CreateDirectory(SourceURL("")));
@@ -156,13 +157,13 @@ class CopyOrMoveFileValidatorTestHelper {
  private:
   FileSystemURL SourceURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        blink::StorageKey(origin_), src_type_,
+        blink::StorageKey::CreateFirstParty(origin_), src_type_,
         base::FilePath().AppendASCII("src").AppendASCII(path));
   }
 
   FileSystemURL DestURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        blink::StorageKey(origin_), dest_type_,
+        blink::StorageKey::CreateFirstParty(origin_), dest_type_,
         base::FilePath().AppendASCII("dest").AppendASCII(path));
   }
 

@@ -1655,13 +1655,15 @@ class FrameTreeSessionStorageDeprecationTrialBrowserSecureTest
 IN_PROC_BROWSER_TEST_F(FrameTreeSessionStorageDeprecationTrialBrowserSecureTest,
                        RegisterOriginForUnpartitionedSessionStorageAccess) {
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  const blink::StorageKey first_party = blink::StorageKey(origin);
+  const blink::StorageKey first_party =
+      blink::StorageKey::CreateFirstParty(origin);
   const blink::StorageKey third_party =
       blink::StorageKey::CreateWithOptionalNonce(
           origin, net::SchemefulSite(GURL("https://notexample.com")), nullptr,
           blink::mojom::AncestorChainBit::kCrossSite);
   const url::Origin opaque_origin = url::Origin();
-  const blink::StorageKey opaque_first_party = blink::StorageKey(opaque_origin);
+  const blink::StorageKey opaque_first_party =
+      blink::StorageKey::CreateFirstParty(opaque_origin);
   const blink::StorageKey opaque_third_party =
       blink::StorageKey::CreateWithOptionalNonce(
           opaque_origin, net::SchemefulSite(GURL("https://notexample.com")),

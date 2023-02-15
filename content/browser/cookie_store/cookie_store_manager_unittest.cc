@@ -205,7 +205,8 @@ class CookieStoreManagerTest
     int64_t registration_id;
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GURL(scope);
-    blink::StorageKey key(url::Origin::Create(GURL(scope)));
+    const blink::StorageKey key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(scope)));
     base::RunLoop run_loop;
     worker_test_helper_->context()->RegisterServiceWorker(
         GURL(script_url), key, options,

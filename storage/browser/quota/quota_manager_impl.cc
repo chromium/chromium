@@ -2168,7 +2168,7 @@ void QuotaManagerImpl::MaybeRunStoragePressureCallback(
 }
 
 void QuotaManagerImpl::SimulateStoragePressure(const url::Origin& origin_url) {
-  StorageKey key(origin_url);
+  const StorageKey key = StorageKey::CreateFirstParty(origin_url);
   storage_pressure_callback_.Run(key);
 }
 

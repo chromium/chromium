@@ -229,7 +229,8 @@ class ServiceWorkerRegistrationTest : public testing::Test {
 
 TEST_F(ServiceWorkerRegistrationTest, SetAndUnsetVersions) {
   const GURL kScope("http://www.example.not/");
-  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
   const GURL kScript("http://www.example.not/service_worker.js");
   int64_t kRegistrationId = 1L;
 
@@ -308,7 +309,8 @@ TEST_F(ServiceWorkerRegistrationTest, SetAndUnsetVersions) {
 
 TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
   const GURL kScope("http://www.example.not/");
-  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
   int64_t kRegistrationId = 1L;
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
@@ -339,7 +341,8 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
 
 TEST_F(ServiceWorkerRegistrationTest, NavigationPreload) {
   const GURL kScope("http://www.example.not/");
-  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
   const GURL kScript("https://www.example.not/service_worker.js");
   // Setup.
 
@@ -392,7 +395,8 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
 
     const GURL kUrl("https://www.example.not/");
     const GURL kScope("https://www.example.not/");
-    const blink::StorageKey kKey(url::Origin::Create(kScope));
+    const blink::StorageKey kKey =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
     const GURL kScript("https://www.example.not/service_worker.js");
 
     blink::mojom::ServiceWorkerRegistrationOptions options;
@@ -884,7 +888,8 @@ class ServiceWorkerRegistrationObjectHostTest
       const GURL& scope) {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope;
-    blink::StorageKey key(url::Origin::Create(scope));
+    const blink::StorageKey key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
     return CreateNewServiceWorkerRegistration(context()->registry(), options,
                                               key);
   }
@@ -940,7 +945,7 @@ class ServiceWorkerRegistrationObjectHostTest
             &remote_endpoint);
     container_host->UpdateUrls(
         document_url, url::Origin::Create(document_url),
-        blink::StorageKey(url::Origin::Create(document_url)));
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(document_url)));
     if (out_container_host)
       *out_container_host = container_host;
     return remote_endpoint;
@@ -1044,8 +1049,9 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
 
   ASSERT_TRUE(bad_messages_.empty());
   GURL url("https://does.not.exist/");
-  container_host->UpdateUrls(url, url::Origin::Create(url),
-                             blink::StorageKey(url::Origin::Create(url)));
+  container_host->UpdateUrls(
+      url, url::Origin::Create(url),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
   CallUpdate(registration_host.get(), /*out_error_msg=*/nullptr);
   EXPECT_EQ(1u, bad_messages_.size());
 }
@@ -1156,8 +1162,9 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoint);
-  container_host->UpdateUrls(kScope, url::Origin::Create(kScope),
-                             blink::StorageKey(url::Origin::Create(kScope)));
+  container_host->UpdateUrls(
+      kScope, url::Origin::Create(kScope),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope)));
   version->AddControllee(container_host.get());
 
   // Initially set |self_update_delay| to zero.
@@ -1195,17 +1202,17 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, Unregister_Success) {
   info->receiver.reset();
   info->waiting->receiver.reset();
 
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kOk,
-      FindRegistrationInStorage(
-          registration_id, blink::StorageKey(url::Origin::Create(kScope))));
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            FindRegistrationInStorage(registration_id,
+                                      blink::StorageKey::CreateFirstParty(
+                                          url::Origin::Create(kScope))));
   EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNone,
             CallUnregister(registration_host.get()));
 
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kErrorNotFound,
-      FindRegistrationInStorage(
-          registration_id, blink::StorageKey(url::Origin::Create(kScope))));
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
+            FindRegistrationInStorage(registration_id,
+                                      blink::StorageKey::CreateFirstParty(
+                                          url::Origin::Create(kScope))));
   EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNotFound,
             CallUnregister(registration_host.get()));
 }
@@ -1228,7 +1235,7 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest,
   container_host->UpdateUrls(
       GURL("https://does.not.exist/"),
       url::Origin::Create(GURL("https://does.not.exist/")),
-      blink::StorageKey(url::Origin::Create(GURL("https://does.not.exist/"))));
+      blink::StorageKey::CreateFromStringForTesting("https://does.not.exist/"));
   CallUnregister(registration_host.get());
   EXPECT_EQ(1u, bad_messages_.size());
 }

@@ -80,7 +80,8 @@ BackgroundFetchTestBase::BackgroundFetchTestBase()
     : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
       delegate_(browser_context_.GetBackgroundFetchDelegate()),
       embedded_worker_test_helper_(base::FilePath()),
-      storage_key_(blink::StorageKey(url::Origin::Create(GURL(kTestOrigin)))),
+      storage_key_(blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(GURL(kTestOrigin)))),
       storage_partition_factory_(static_cast<StoragePartitionImpl*>(
           browser_context()->GetDefaultStoragePartition())) {}
 
@@ -108,7 +109,7 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
   int64_t service_worker_registration_id =
       blink::mojom::kInvalidServiceWorkerRegistrationId;
 
-  const blink::StorageKey key(origin);
+  const blink::StorageKey key = blink::StorageKey::CreateFirstParty(origin);
 
   {
     blink::mojom::ServiceWorkerRegistrationOptions options;
@@ -162,7 +163,7 @@ void BackgroundFetchTestBase::UnregisterServiceWorker(
   base::RunLoop run_loop;
   const GURL scope = GetScopeForId(kTestOrigin, service_worker_registration_id);
   embedded_worker_test_helper_.context()->UnregisterServiceWorker(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       /*is_immediate=*/false,
       base::BindOnce(&DidUnregisterServiceWorker, run_loop.QuitClosure()));
   run_loop.Run();

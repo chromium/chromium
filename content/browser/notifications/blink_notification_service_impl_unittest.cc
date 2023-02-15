@@ -130,7 +130,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
     contents_ = CreateTestWebContents();
 
-    storage_key_ = blink::StorageKey(url::Origin::Create(GURL(kTestOrigin)));
+    storage_key_ = blink::StorageKey::CreateFirstParty(
+        url::Origin::Create(GURL(kTestOrigin)));
 
     notification_service_ = std::make_unique<BlinkNotificationServiceImpl>(
         notification_context_.get(), &browser_context_,

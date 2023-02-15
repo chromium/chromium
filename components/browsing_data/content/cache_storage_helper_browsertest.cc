@@ -41,10 +41,10 @@ class CacheStorageHelperTest : public content::ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CacheStorageHelperTest, CannedAddCacheStorage) {
-  const blink::StorageKey storage_key_1(
-      url::Origin::Create(GURL("http://host1:1/")));
-  const blink::StorageKey storage_key_2(
-      url::Origin::Create(GURL("http://host2:1/")));
+  const blink::StorageKey storage_key_1 =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const blink::StorageKey storage_key_2 =
+      blink::StorageKey::CreateFromStringForTesting("http://host2:1/");
 
   auto helper = MakeHelper();
   helper->Add(storage_key_1);
@@ -64,8 +64,8 @@ IN_PROC_BROWSER_TEST_F(CacheStorageHelperTest, CannedAddCacheStorage) {
 }
 
 IN_PROC_BROWSER_TEST_F(CacheStorageHelperTest, CannedUnique) {
-  const blink::StorageKey storage_key(
-      url::Origin::Create(GURL("http://host1:1/")));
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
   auto helper = MakeHelper();
   helper->Add(storage_key);

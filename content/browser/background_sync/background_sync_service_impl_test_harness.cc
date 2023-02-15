@@ -180,7 +180,8 @@ void BackgroundSyncServiceImplTestHarness::CreateServiceWorkerRegistration() {
   bool called = false;
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL(kServiceWorkerScope);
-  blink::StorageKey key(url::Origin::Create(GURL(kServiceWorkerScope)));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting(kServiceWorkerScope);
   embedded_worker_helper_->context()->RegisterServiceWorker(
       GURL(kServiceWorkerScript), key, options,
       blink::mojom::FetchClientSettingsObject::New(),

@@ -238,7 +238,8 @@ storage::FileSystemURL RecentDiskSource::BuildDiskURL(
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   return mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(url::Origin::Create(params_.value().origin())),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(params_.value().origin())),
       mount_point_name_, path);
 }
 

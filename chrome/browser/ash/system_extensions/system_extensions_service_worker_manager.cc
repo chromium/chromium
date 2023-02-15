@@ -32,7 +32,8 @@ void SystemExtensionsServiceWorkerManager::RegisterServiceWorker(
   blink::mojom::ServiceWorkerRegistrationOptions options(
       system_extension->base_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
 
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
@@ -55,7 +56,7 @@ void SystemExtensionsServiceWorkerManager::UnregisterServiceWorker(
 
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
-  blink::StorageKey key(origin);
+  const blink::StorageKey key = blink::StorageKey::CreateFirstParty(origin);
   worker_context->UnregisterServiceWorker(
       scope, key,
       base::BindOnce(&SystemExtensionsServiceWorkerManager::
@@ -75,7 +76,7 @@ void SystemExtensionsServiceWorkerManager::StartServiceWorker(
 
   const GURL& scope = system_extension->base_url;
   const url::Origin& origin = url::Origin::Create(system_extension->base_url);
-  blink::StorageKey key(origin);
+  const blink::StorageKey key = blink::StorageKey::CreateFirstParty(origin);
 
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();

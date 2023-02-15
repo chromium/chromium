@@ -50,7 +50,7 @@ TEST_F(StorageKeyTest, ConstructionValidity) {
   // These cases will have the same origin for both `origin` and
   // `top_level_site`.
   url::Origin valid_origin = url::Origin::Create(GURL("https://example.com"));
-  StorageKey valid = StorageKey(valid_origin);
+  const StorageKey valid = StorageKey::CreateFirstParty(valid_origin);
   EXPECT_FALSE(IsOpaque(valid));
   // Since the same origin is used for both `origin` and `top_level_site`, it is
   // by definition same-site.
@@ -58,7 +58,7 @@ TEST_F(StorageKeyTest, ConstructionValidity) {
 
   url::Origin invalid_origin =
       url::Origin::Create(GURL("I'm not a valid URL."));
-  StorageKey invalid = StorageKey(invalid_origin);
+  const StorageKey invalid = StorageKey::CreateFirstParty(invalid_origin);
   EXPECT_TRUE(IsOpaque(invalid));
 }
 
@@ -77,8 +77,8 @@ TEST_F(StorageKeyTest, EquivalenceUnpartitioned) {
   base::UnguessableToken nonce2 = base::UnguessableToken::Create();
 
   // Ensure that the opaque origins produce opaque StorageKeys
-  EXPECT_TRUE(IsOpaque(StorageKey(origin3)));
-  EXPECT_TRUE(IsOpaque(StorageKey(origin4)));
+  EXPECT_TRUE(IsOpaque(StorageKey::CreateFirstParty(origin3)));
+  EXPECT_TRUE(IsOpaque(StorageKey::CreateFirstParty(origin4)));
 
   const struct {
     StorageKey storage_key1;
@@ -86,10 +86,14 @@ TEST_F(StorageKeyTest, EquivalenceUnpartitioned) {
     bool expected_equivalent;
   } kTestCases[] = {
       // StorageKeys made from the same origin are equivalent.
-      {StorageKey(origin1), StorageKey(origin1), true},
-      {StorageKey(origin2), StorageKey(origin2), true},
-      {StorageKey(origin3), StorageKey(origin3), true},
-      {StorageKey(origin4), StorageKey(origin4), true},
+      {StorageKey::CreateFirstParty(origin1),
+       StorageKey::CreateFirstParty(origin1), true},
+      {StorageKey::CreateFirstParty(origin2),
+       StorageKey::CreateFirstParty(origin2), true},
+      {StorageKey::CreateFirstParty(origin3),
+       StorageKey::CreateFirstParty(origin3), true},
+      {StorageKey::CreateFirstParty(origin4),
+       StorageKey::CreateFirstParty(origin4), true},
       // StorageKeys made from the same origin and nonce are equivalent.
       {StorageKey::CreateWithNonceForTesting(origin1, nonce1),
        StorageKey::CreateWithNonceForTesting(origin1, nonce1), true},
@@ -98,8 +102,10 @@ TEST_F(StorageKeyTest, EquivalenceUnpartitioned) {
       {StorageKey::CreateWithNonceForTesting(origin2, nonce1),
        StorageKey::CreateWithNonceForTesting(origin2, nonce1), true},
       // StorageKeys made from different origins are not equivalent.
-      {StorageKey(origin1), StorageKey(origin2), false},
-      {StorageKey(origin3), StorageKey(origin4), false},
+      {StorageKey::CreateFirstParty(origin1),
+       StorageKey::CreateFirstParty(origin2), false},
+      {StorageKey::CreateFirstParty(origin3),
+       StorageKey::CreateFirstParty(origin4), false},
       {StorageKey::CreateWithNonceForTesting(origin1, nonce1),
        StorageKey::CreateWithNonceForTesting(origin2, nonce1), false},
       // StorageKeys made from different nonces are not equivalent.
@@ -110,10 +116,10 @@ TEST_F(StorageKeyTest, EquivalenceUnpartitioned) {
        StorageKey::CreateWithNonceForTesting(origin2, nonce2), false},
       // When storage partitioning is disabled, the top-level site isn't taken
       // into account for equivalence.
-      {StorageKey::CreateForTesting(origin1, origin2), StorageKey(origin1),
-       true},
-      {StorageKey::CreateForTesting(origin2, origin1), StorageKey(origin2),
-       true},
+      {StorageKey::CreateForTesting(origin1, origin2),
+       StorageKey::CreateFirstParty(origin1), true},
+      {StorageKey::CreateForTesting(origin2, origin1),
+       StorageKey::CreateFirstParty(origin2), true},
   };
   for (const auto& test_case : kTestCases) {
     ASSERT_EQ(test_case.storage_key1 == test_case.storage_key2,
@@ -136,8 +142,8 @@ TEST_F(StorageKeyTest, EquivalencePartitioned) {
   // created by the two argument constructor (when both arguments are the same
   // origin).
 
-  StorageKey OneArgKey_origin1 = StorageKey(origin1);
-  StorageKey OneArgKey_origin2 = StorageKey(origin2);
+  const StorageKey OneArgKey_origin1 = StorageKey::CreateFirstParty(origin1);
+  const StorageKey OneArgKey_origin2 = StorageKey::CreateFirstParty(origin2);
 
   StorageKey TwoArgKey_origin1_origin1 =
       StorageKey::CreateForTesting(origin1, origin1);
@@ -188,7 +194,8 @@ TEST_F(StorageKeyTest, SerializeFirstParty) {
 
     for (const auto& test : kTestCases) {
       SCOPED_TRACE(test.origin_str);
-      StorageKey key(url::Origin::Create(GURL(test.origin_str)));
+      const StorageKey key =
+          StorageKey::CreateFromStringForTesting(test.origin_str);
       EXPECT_EQ(test.expected_serialization, key.Serialize());
     }
   }
@@ -217,7 +224,8 @@ TEST_F(StorageKeyTest, SerializeFirstPartyForLocalStorage) {
 
     for (const auto& test : kTestCases) {
       SCOPED_TRACE(test.origin_str);
-      StorageKey key(url::Origin::Create(GURL(test.origin_str)));
+      const StorageKey key =
+          StorageKey::CreateFromStringForTesting(test.origin_str);
       EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
     }
   }
@@ -361,7 +369,7 @@ TEST_F(StorageKeyTest, CreateFromStringForTesting) {
   StorageKey key3 = StorageKey::CreateFromStringForTesting(std::string());
 
   EXPECT_FALSE(IsOpaque(key1));
-  EXPECT_EQ(key1, StorageKey(url::Origin::Create(GURL(example))));
+  EXPECT_EQ(key1, StorageKey::CreateFromStringForTesting(example));
   EXPECT_TRUE(IsOpaque(key2));
   EXPECT_TRUE(IsOpaque(key3));
 }
@@ -376,7 +384,7 @@ TEST_F(StorageKeyTest, SerializeDeserialize) {
   for (const char* test : kTestCases) {
     SCOPED_TRACE(test);
     url::Origin origin = url::Origin::Create(GURL(test));
-    StorageKey key(origin);
+    const StorageKey key = StorageKey::CreateFirstParty(origin);
     std::string key_string = key.Serialize();
     std::string key_string_for_local_storage = key.SerializeForLocalStorage();
     absl::optional<StorageKey> key_deserialized =
@@ -391,9 +399,9 @@ TEST_F(StorageKeyTest, SerializeDeserialize) {
       EXPECT_EQ(key, *key_deserialized_from_local_storage);
     } else {
       // file origins are all collapsed to file:// by serialization.
-      EXPECT_EQ(StorageKey(url::Origin::Create(GURL("file://"))),
+      EXPECT_EQ(StorageKey::CreateFromStringForTesting("file://"),
                 *key_deserialized);
-      EXPECT_EQ(StorageKey(url::Origin::Create(GURL("file://"))),
+      EXPECT_EQ(StorageKey::CreateFromStringForTesting("file://"),
                 *key_deserialized_from_local_storage);
     }
   }
@@ -690,7 +698,7 @@ TEST_F(StorageKeyTest, TopLevelSiteGetterWithPartitioningDisabled) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
-  StorageKey key_origin1 = StorageKey(origin1);
+  const StorageKey key_origin1 = StorageKey::CreateFirstParty(origin1);
   StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
   StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
 
@@ -709,7 +717,7 @@ TEST_F(StorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
-  StorageKey key_origin1 = StorageKey(origin1);
+  const StorageKey key_origin1 = StorageKey::CreateFirstParty(origin1);
   StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
   StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
 
@@ -898,7 +906,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
          net::features::kNoncedPartitionedCookies});
 
     TestCase test_cases[] = {
-        {StorageKey(url::Origin::Create(GURL("https://www.example.com"))),
+        {StorageKey::CreateFromStringForTesting("https://www.example.com"),
          absl::nullopt},
         {StorageKey::CreateForTesting(
              url::Origin::Create(GURL("https://www.foo.com")),
@@ -923,7 +931,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
         {net::features::kPartitionedCookies});
 
     TestCase test_cases[] = {
-        {StorageKey(url::Origin::Create(GURL("https://www.example.com"))),
+        {StorageKey::CreateFromStringForTesting("https://www.example.com"),
          absl::nullopt},
         {StorageKey::CreateWithNonceForTesting(
              url::Origin::Create(GURL("https://www.example.com")), nonce),
@@ -944,7 +952,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
         {});
 
     TestCase test_cases[] = {
-        {StorageKey(url::Origin::Create(GURL("https://www.example.com"))),
+        {StorageKey::CreateFromStringForTesting("https://www.example.com"),
          net::CookiePartitionKey::FromURLForTesting(
              GURL("https://www.example.com"))},
         {StorageKey::CreateForTesting(

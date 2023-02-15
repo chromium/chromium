@@ -58,7 +58,8 @@ class EntriesBuilder {
                            ->GetProcess()
                            ->GetStoragePartition()
                            ->GetFileSystemAccessEntryFactory()),
-        context_(blink::StorageKey(url::Origin::Create(launch_url)),
+        context_(blink::StorageKey::CreateFirstParty(
+                     url::Origin::Create(launch_url)),
                  launch_url,
                  content::GlobalRenderFrameHostId(
                      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),

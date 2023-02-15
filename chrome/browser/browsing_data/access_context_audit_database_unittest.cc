@@ -641,7 +641,8 @@ TEST_F(AccessContextAuditDatabaseTest, RemoveStorageApiRecords) {
 
   auto storage_key_matcher =
       base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
-        return storage_key == blink::StorageKey(kStorageOrigin);
+        return storage_key ==
+               blink::StorageKey::CreateFirstParty(kStorageOrigin);
       });
 
   auto begin_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(5));

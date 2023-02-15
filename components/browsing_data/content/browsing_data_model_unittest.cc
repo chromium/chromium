@@ -97,10 +97,10 @@ TEST_F(BrowsingDataModelTest, PrimaryHostMapping) {
   model()->AddBrowsingData(kSubdomainOrigin,
                            BrowsingDataModel::StorageType::kTrustTokens, 0, 1);
   model()->AddBrowsingData(
-      blink::StorageKey(kSubdomainOrigin),
+      blink::StorageKey::CreateFirstParty(kSubdomainOrigin),
       BrowsingDataModel::StorageType::kPartitionedQuotaStorage, 123, 0);
   model()->AddBrowsingData(
-      blink::StorageKey(kSubdomainOrigin),
+      blink::StorageKey::CreateFirstParty(kSubdomainOrigin),
       BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage, 456, 0);
 
   ValidateBrowsingDataEntries(
@@ -109,10 +109,10 @@ TEST_F(BrowsingDataModelTest, PrimaryHostMapping) {
         kSubdomainOrigin,
         {BrowsingDataModel::StorageType::kTrustTokens, 0, 1}},
        {kSubdomainOriginSite,
-        blink::StorageKey(kSubdomainOrigin),
+        blink::StorageKey::CreateFirstParty(kSubdomainOrigin),
         {BrowsingDataModel::StorageType::kPartitionedQuotaStorage, 123, 0}},
        {kSubdomainOriginHost,
-        blink::StorageKey(kSubdomainOrigin),
+        blink::StorageKey::CreateFirstParty(kSubdomainOrigin),
         {BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage, 456, 0}}});
 }
 
@@ -121,15 +121,15 @@ TEST_F(BrowsingDataModelTest, EntryCoalescense) {
   // Browsing data with the same primary_host + data_key pair should update the
   // same entry's details.
   model()->AddBrowsingData(
-      blink::StorageKey(kSiteOrigin),
+      blink::StorageKey::CreateFirstParty(kSiteOrigin),
       BrowsingDataModel::StorageType::kPartitionedQuotaStorage, 123, 0);
   model()->AddBrowsingData(
-      blink::StorageKey(kSiteOrigin),
+      blink::StorageKey::CreateFirstParty(kSiteOrigin),
       BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage, 234, 5);
 
   auto expected_entries = std::vector<BrowsingDataEntry>(
       {{kSiteOriginHost,
-        blink::StorageKey(kSiteOrigin),
+        blink::StorageKey::CreateFirstParty(kSiteOrigin),
         {{BrowsingDataModel::StorageType::kPartitionedQuotaStorage,
           BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage},
          123 + 234,
@@ -140,14 +140,14 @@ TEST_F(BrowsingDataModelTest, EntryCoalescense) {
   // Entries related to the same primary_host, but different data_keys, should
   // create a new entry.
   model()->AddBrowsingData(
-      blink::StorageKey(kAnotherSiteOrigin),
+      blink::StorageKey::CreateFirstParty(kAnotherSiteOrigin),
       BrowsingDataModel::StorageType::kPartitionedQuotaStorage, 345, 0);
   model()->AddBrowsingData(
       kAnotherSiteOrigin, BrowsingDataModel::StorageType::kTrustTokens, 456, 6);
 
   expected_entries.push_back(
       {kAnotherSiteOriginHost,
-       blink::StorageKey(kAnotherSiteOrigin),
+       blink::StorageKey::CreateFirstParty(kAnotherSiteOrigin),
        {BrowsingDataModel::StorageType::kPartitionedQuotaStorage, 345}});
   expected_entries.push_back(
       {kAnotherSiteOriginHost,
