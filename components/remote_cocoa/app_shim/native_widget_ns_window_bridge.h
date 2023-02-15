@@ -298,7 +298,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void UpdateWindowGeometry();
 
   // Move `child_windows_` to `target`.
-  void MoveChildrenTo(NativeWidgetNSWindowBridge* target);
+  // Optionally set `anchored_only` to true, which will only move children that
+  // are anchored to the target window. Currently only BubbleWidgets with a
+  // BubbleDialogDelegate are supported.
+  void MoveChildrenTo(NativeWidgetNSWindowBridge* target,
+                      bool anchored_only = false);
 
  private:
   friend class views::test::BridgedNativeWidgetTestApi;

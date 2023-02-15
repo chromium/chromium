@@ -418,11 +418,6 @@ ImmersiveModeController::ImmersiveModeController(NSWindow* browser_widget,
       NSLayoutAttributeBottom;
   thin_titlebar_view_controller_.get().fullScreenMinHeight =
       kThinControllerHeight;
-
-  // Move sub-widgets from the browser widget to the overlay widget so that
-  // they are rendered above the toolbar.
-  ObserveOverlayChildWindows();
-  ReparentChildWindows(browser_window_, overlay_window_);
 }
 
 ImmersiveModeController::~ImmersiveModeController() {
@@ -452,6 +447,12 @@ void ImmersiveModeController::Enable() {
   enabled_ = true;
   [browser_window_ addTitlebarAccessoryViewController:
                        immersive_mode_titlebar_view_controller_];
+
+  // Move sub-widgets from the browser widget to the overlay widget so that
+  // they are rendered above the toolbar.
+  ObserveOverlayChildWindows();
+  ReparentChildWindows(browser_window_, overlay_window_);
+
   [browser_window_
       addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
   NSRect frame = thin_titlebar_view_controller_.get().view.frame;
@@ -587,7 +588,7 @@ void ImmersiveModeController::ReparentChildWindows(NSWindow* source,
   // TODO(kerenzhu): DCHECK(source_bridge && target_bridge)
   // Only in unittests the associated bridges might not exist.
   if (source_bridge && target_bridge) {
-    source_bridge->MoveChildrenTo(target_bridge);
+    source_bridge->MoveChildrenTo(target_bridge, /*anchored_only=*/true);
   }
 }
 

@@ -1652,11 +1652,22 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
 }
 
 void NativeWidgetNSWindowBridge::MoveChildrenTo(
-    NativeWidgetNSWindowBridge* target) {
+    NativeWidgetNSWindowBridge* target,
+    bool anchored_only) {
   // Make a copy of `child_windows_` because it will be updated during the loop.
   std::vector<NativeWidgetNSWindowBridge*> child_windows(child_windows_);
   for (NativeWidgetNSWindowBridge* child : child_windows) {
     if (child != target) {
+      // If anchored_only is true, skip windows that are not anchored to the
+      // target window.
+      if (anchored_only) {
+        bool contained = false;
+        child->host()->BubbleAnchorViewContainedInWidget(target->id_,
+                                                         &contained);
+        if (!contained) {
+          continue;
+        }
+      }
       child->SetParent(target->id_);
       child->host()->OnWindowParentChanged(target->id_);
     }
