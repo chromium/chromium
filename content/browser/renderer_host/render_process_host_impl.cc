@@ -2176,6 +2176,7 @@ void RenderProcessHostImpl::ReinitializeLogging(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void RenderProcessHostImpl::CreateStableVideoDecoder(
     mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!stable_video_decoder_factory_remote_.is_bound()) {
     LaunchStableVideoDecoderFactory(
         stable_video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
@@ -4819,6 +4820,8 @@ void RenderProcessHostImpl::ProcessDied(
 }
 
 void RenderProcessHostImpl::ResetIPC() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  media_interface_proxy_.reset();
   renderer_host_receiver_.reset();
   io_thread_host_impl_.reset();
   associated_interfaces_.reset();
