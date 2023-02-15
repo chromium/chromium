@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AnimationTheme, AnimationThemeItem, emptyState, Paths, PersonalizationRouter, SetAlbumsAction, SetAmbientModeEnabledAction, SetAnimationThemeAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AmbientUiVisibility, AnimationTheme, AnimationThemeItem, emptyState, Paths, PersonalizationRouter, SetAlbumsAction, SetAmbientModeEnabledAction, SetAnimationThemeAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -35,6 +35,7 @@ suite('AmbientSubpageTest', function() {
     loadTimeData.overrideValues({
       isAmbientModeAllowed: true,
       isPersonalizationJellyEnabled: true,
+      isScreenSaverPreviewEnabled: true,
     });
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
@@ -735,5 +736,27 @@ suite('AmbientSubpageTest', function() {
         null,
         ambientSubpageElement.shadowRoot!.querySelector('ambient-zero-state'),
         'zero state should not be present');
+  });
+
+  test('preview and downloading buttons should be present', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    const ambientPreview = ambientSubpageElement.shadowRoot!.querySelector(
+        'ambient-preview-small');
+    assertTrue(!!ambientPreview, 'ambient-preview element exists');
+
+    const previewButton =
+        ambientPreview.shadowRoot!.querySelector('.preview-button');
+    assertTrue(!!previewButton, 'preview button should be present');
+
+    personalizationStore.data.ambient.ambientUiVisibility =
+        AmbientUiVisibility.kPreview;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
+    const downloadingButton =
+        ambientPreview.shadowRoot!.querySelector('.preview-button-disabled');
+    assertTrue(!!downloadingButton, 'downloading button should be present');
   });
 });
