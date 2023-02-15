@@ -13,6 +13,13 @@ namespace ash::device_activity {
 
 namespace {
 
+// Set the first active week from VPD field as "2000-01".
+// This value represents the UTC based activate date of the device formatted
+// YYYY-WW to reduce privacy granularity.
+// See
+// https://crsrc.org/o/src/third_party/chromiumos-overlay/chromeos-base/chromeos-activate-date/files/activate_date;l=67
+const char kFakeFirstActivateDate[] = "2000-01";
+
 template <typename T>
 int ConvertBitSetToInt(T bitset) {
   return static_cast<int>(bitset.to_ulong());
@@ -46,15 +53,20 @@ base::Time GetNextMonth(base::Time ts) {
 
 class ChurnActiveStatusBase : public testing::Test {
  public:
+  ChurnActiveStatusBase() : ChurnActiveStatusBase(0) {}
   explicit ChurnActiveStatusBase(int active_status_val) {
     // Set the fake instance of statistics provider before
     // initializing churn active status.
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
+    // Initialize base value of ActivateDate vpd field as
+    // kFakeFirstActivateDate.
+    statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
+                                             kFakeFirstActivateDate);
+
     churn_active_status_ =
         std::make_unique<ChurnActiveStatus>(active_status_val);
   }
-  ChurnActiveStatusBase() = default;
   ChurnActiveStatusBase(const ChurnActiveStatusBase&) = delete;
   ChurnActiveStatusBase& operator=(const ChurnActiveStatusBase&) = delete;
   ~ChurnActiveStatusBase() override = default;
@@ -65,12 +77,218 @@ class ChurnActiveStatusBase : public testing::Test {
     return churn_active_status_.get();
   }
 
- private:
   system::FakeStatisticsProvider statistics_provider_;
 
+ private:
   // Object under test.
   std::unique_ptr<ChurnActiveStatus> churn_active_status_;
 };
+
+TEST_F(ChurnActiveStatusBase, ActivateDateWeeksIsLargerThanLimit) {
+  // Overwrite the ActivateDate key in machine statistics.
+  // Number of weeks "54" is invalid and should not be a possible value.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2023-54");
+
+  // Validate that default constructor of base::Time() is returned when number
+  // of weeks is invalid.
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2023", "54"),
+            base::Time());
+}
+
+TEST_F(ChurnActiveStatusBase, InvalidFormatActivateDate) {
+  // Overwrite the ActivateDate key in machine statistics.
+  // ActivateDate value should be formatted as numbers with YYYY-WW.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "XXXX-XX");
+
+  // Validate that default constructor of base::Time() is returned when invalid
+  // input is passed.
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("XXXX", "XX"),
+            base::Time());
+}
+
+TEST_F(ChurnActiveStatusBase, ZeroWeeksUntilFirstMondayOfYear) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2023-00");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(base::Time::FromString("Jan 01 00:00:00 GMT 2023", &expected_ts));
+
+  // Validate activate date for week 0 of 2023 is Jan 01, 2023.
+  // Note this date is not a monday since 00 week of year represents
+  // a non-monday date in ActivateDate.
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2023", "00"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, FirstDayOfYearIsMonday) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "1996-01");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Jan 01 00:00:00 GMT 1996", &expected_ts));
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("1996", "01"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, ValidateCertainMonthsHaveFiftyThreeWeeks) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "1996-53");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Dec 30 00:00:00 GMT 1996", &expected_ts));
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("1996", "53"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, GetNewYearDateIfFirstDayOfYearIsNotMonday) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "1997-00");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Jan 01 00:00:00 GMT 1997", &expected_ts));
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("1997", "00"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, GetFirstMondayIfFirstDayOfYearIsNotMonday) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "1997-01");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Jan 06 00:00:00 GMT 1997", &expected_ts));
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("1997", "01"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, ValidateIso8601WeekBetween1And52) {
+  // Overwrite the ActivateDate key in machine statistics.
+  // Year 1996 has 53 ISO 8601 weeks standard in it.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "1996-52");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Dec 23 00:00:00 GMT 1996", &expected_ts));
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("1996", "52"),
+            expected_ts);
+
+  // Validate 1997 week 2 in ISO 8601 week standard.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "1997-02");
+  base::Time expected_ts2;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Jan 13 00:00:00 GMT 1997", &expected_ts2));
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("1997", "02"),
+            expected_ts2);
+
+  // Validate 1997 week 52 in ISO 8601 week standard.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "1997-52");
+  base::Time expected_ts3;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Dec 29 00:00:00 GMT 1997", &expected_ts3));
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("1997", "52"),
+            expected_ts3);
+}
+
+TEST_F(ChurnActiveStatusBase, FirstMondayOfYear) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2023-01");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Jan 02 00:00:00 GMT 2023", &expected_ts));
+
+  // Validate activate date for week 1 of 2023 is Monday Jan 02, 2023.
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2023", "01"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, TenthWeekOfYear) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2023-10");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Mar 06 00:00:00 GMT 2023", &expected_ts));
+
+  // Validate activate date for week 10 of 2023 is Monday Mar 06, 2023.
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2023", "10"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, ActivateWeekExceedsFiftyTwo) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2023-53");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Jan 01 00:00:00 GMT 2024", &expected_ts));
+
+  // Validate activate date for week 53 of 2023 is Monday Jan 01, 2024.
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2023", "53"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, ActivateDateWeekNeverSpansTwoYears) {
+  // Validate expected_ts does not go over year boundary.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2019-52");
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Dec 30 00:00:00 GMT 2019", &expected_ts));
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2019", "52"),
+            expected_ts);
+
+  // Validate expected_ts2 doesn't go prior to current year date.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2020-00");
+  base::Time expected_ts2;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Jan 01 00:00:00 GMT 2020", &expected_ts2));
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2020", "00"),
+            expected_ts2);
+
+  // Validate expected_ts3 does not go over year boundary.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2020-52");
+  base::Time expected_ts3;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Dec 28 00:00:00 GMT 2020", &expected_ts3));
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2020", "52"),
+            expected_ts3);
+}
+
+TEST_F(ChurnActiveStatusBase, ActivateDateWeekAtEndOfYear) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2020-52");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Dec 28 00:00:00 GMT 2020", &expected_ts));
+
+  // Validate activate date for week 52 of 2020 is Monday Dec 30, 2020.
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2020", "52"),
+            expected_ts);
+}
+
+TEST_F(ChurnActiveStatusBase, ActivateDateWeekSpansTwoMonths) {
+  // Overwrite the ActivateDate key in machine statistics.
+  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2020-04");
+
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("Mon Jan 27 00:00:00 GMT 2020", &expected_ts));
+
+  // Validate activate date for week 4 of 2020 is Monday Jan 27, 2020.
+  EXPECT_EQ(GetChurnActiveStatus()->GetFirstActiveWeekForTesting("2020", "04"),
+            expected_ts);
+}
 
 class ChurnActiveStatusAtInceptionDate : public ChurnActiveStatusBase {
  public:

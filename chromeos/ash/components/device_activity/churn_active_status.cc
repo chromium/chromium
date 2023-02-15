@@ -16,6 +16,84 @@ namespace {
 // Default value for devices that are missing the activate date.
 const char kActivateDateKeyNotFound[] = "ACTIVATE_DATE_KEY_NOT_FOUND";
 
+// Number of days in a week.
+constexpr int kNumberOfDaysInWeek = 7;
+
+// day_of_week index for Monday in the base::Time::Exploded object.
+constexpr int kMondayDayOfWeekIndex = 1;
+
+base::Time GetFirstMondayFromNewYear(base::Time ts) {
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+
+  // Only the Year, Month, and Day fields should be set.
+  // All other values such as hour, minute, second should be set to 0.
+  exploded.hour = 0;
+  exploded.minute = 0;
+  exploded.second = 0;
+  exploded.millisecond = 0;
+
+  // day_of_week field is 0 based starting from Sunday.
+  int days_to_first_monday;
+
+  if (kMondayDayOfWeekIndex >= exploded.day_of_week) {
+    // Difference in days between Sunday/Monday to Monday.
+    days_to_first_monday = kMondayDayOfWeekIndex - exploded.day_of_week;
+  } else {
+    // Number of days to get to the next Monday from the current day_of_week.
+    days_to_first_monday = kNumberOfDaysInWeek - (exploded.day_of_week - 1);
+  }
+
+  return ts + base::Days(days_to_first_monday);
+}
+
+// VPD field ActivateDate is based on GMT/UTC timezone.
+// The ActivateDate vpd field value includes the weeks: %W
+// Note: week number of year, with Monday as first day of week (00..53)
+base::Time Iso8601DateWeekAsTime(int activate_year, int activate_week_of_year) {
+  if (activate_year < 0 || activate_week_of_year < 0 ||
+      activate_week_of_year > 53) {
+    LOG(ERROR) << "Invalid year or week of year"
+               << ". Variable activate_year = " << activate_year
+               << ". Variable activate_week_of_year = "
+               << activate_week_of_year;
+    return base::Time();
+  }
+
+  // Get the first monday of the parsed activate date year as a base::Time
+  // object. This will make it easier to add the required number of days to get
+  // the start of the ISO 8601 week standard period.
+  base::Time new_year_ts;
+  std::string new_year_date =
+      "Jan 01 00:00:00 GMT " + std::to_string(activate_year);
+  bool success = base::Time::FromString(new_year_date.c_str(), &new_year_ts);
+
+  if (!success) {
+    LOG(ERROR)
+        << "Failed to store new year in base::Time using FromString method.";
+    return base::Time();
+  }
+
+  // ISO 8601 assigns the weeks to 0 if the stored date was
+  // before the first monday of the year.
+  // For example, the first monday of 2020 is Jan 6th, so devices that had
+  // Activated between [Jan 1st, Jan 5th] have activate week of year set to 0.
+  if (activate_week_of_year == 0) {
+    return new_year_ts;
+  }
+
+  base::Time first_monday_of_year = GetFirstMondayFromNewYear(new_year_ts);
+
+  // Get the number of days to the start of a ISO 8601 week standard period for
+  // that year from the years first monday.
+  // This is equal to (activate_week_of_year-1) * 7 days.
+  int days_in_iso_period = 0;
+  days_in_iso_period = (activate_week_of_year - 1) * 7;
+
+  // Add the above two steps to get the start of a ISO 8601 week time.
+  return first_monday_of_year + base::Days(days_in_iso_period);
+}
+
 }  // namespace
 
 ChurnActiveStatus::ChurnActiveStatus() : ChurnActiveStatus(0) {}
@@ -104,6 +182,24 @@ const base::Time ChurnActiveStatus::GetFirstActiveWeek() const {
   return first_active_week_;
 }
 
+base::Time ChurnActiveStatus::GetFirstActiveWeekForTesting(
+    const std::string& year,
+    const std::string& weeks) {
+  // Convert parsed year and weeks to int.
+  int activate_year;
+  int activate_week_of_year;
+
+  bool year_success = base::StringToInt(year, &activate_year);
+  bool week_of_year_success = base::StringToInt(weeks, &activate_week_of_year);
+
+  if (!year_success || !week_of_year_success) {
+    LOG(ERROR) << "Failed to convert string value year or weeks to type int.";
+    return base::Time();
+  }
+
+  return Iso8601DateWeekAsTime(activate_year, activate_week_of_year);
+}
+
 void ChurnActiveStatus::SetFirstActiveWeek() {
   // Retrieve ActivateDate vpd field from machine statistics object.
   // Default |first_active_week_| to kActivateDateKeyNotFound if retrieval
@@ -120,46 +216,45 @@ void ChurnActiveStatus::SetFirstActiveWeek() {
     return;
   }
 
-  // Activate date is formatted: "YYYY-DD"
+  // Activate date is formatted: "YYYY-WW"
   int delimiter_index = first_active_week_str.find('-');
 
   const int expected_first_active_week_size = 7;
   const int expected_delimiter_index = 4;
   if (first_active_week_str.size() != expected_first_active_week_size ||
       delimiter_index != expected_delimiter_index) {
-    LOG(ERROR) << "ActivateDate was retrieved but is not formatted as YYYY-DD. "
+    LOG(ERROR) << "ActivateDate was retrieved but is not formatted as YYYY-WW. "
                << "Received string : " << first_active_week_str;
     return;
   }
 
   const int expected_year_size = 4;
-  const int expected_month_size = 2;
+  const int expected_weeks_size = 2;
 
-  // Exploded object will use 1st day of month as the default.
-  base::Time::Exploded exploded;
-  bool parsed_year = base::StringToInt(
-      first_active_week_str.substr(0, expected_year_size), &exploded.year);
-  bool parsed_month =
-      base::StringToInt(first_active_week_str.substr(
-                            expected_delimiter_index + 1, expected_month_size),
-                        &exploded.month);
-  exploded.day_of_month = 1;
+  std::string parsed_year = first_active_week_str.substr(0, expected_year_size);
+  std::string parsed_weeks = first_active_week_str.substr(
+      expected_delimiter_index + 1, expected_weeks_size);
 
-  // Verify that the StringToInt methods were able to parse the
-  // |first_active_week_| string successfully for the year and month.
-  if (!parsed_year || !parsed_month) {
-    LOG(ERROR) << "Failed to parse and convert the first active week string "
-               << "year and month.";
+  // Verify |first_active_week_| string parsed successfully for the
+  // year and weeks.
+  if (parsed_year.empty() || parsed_weeks.empty()) {
+    LOG(ERROR) << "Failed to parse and convert the first active weeks string "
+               << "year and weeks.";
     return;
   }
 
-  // Store |first_active_week_| using ActivateDate VPD UTC field.
-  bool success = base::Time::FromUTCExploded(exploded, &first_active_week_);
-  if (!success) {
-    LOG(ERROR) << "ActivateDate could not be converted to base::Time "
-               << "from exploded object.";
-    return;
-  }
+  // Convert parsed year and weeks to int.
+  int activate_year;
+  int activate_week_of_year;
+
+  base::StringToInt(parsed_year, &activate_year);
+  base::StringToInt(parsed_weeks, &activate_week_of_year);
+
+  // Convert an ISO 8601 date week year and week of year to base::Time object.
+  // The returned base::Time object represents the start of a new ISO 8601 week.
+  // This will be based on the activate week that is stored by ActivateDate.
+  first_active_week_ =
+      Iso8601DateWeekAsTime(activate_year, activate_week_of_year);
 }
 
 }  // namespace ash::device_activity

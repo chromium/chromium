@@ -58,6 +58,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   const base::Time GetFirstActiveWeek() const;
 
+  // Method is used to test the ActivateDate VPD field is able to get translated
+  // to the correct base::Time object.
+  base::Time GetFirstActiveWeekForTesting(const std::string& year,
+                                          const std::string& weeks);
+
  private:
   // Set |first_active_week_|, which is at the week granularity.
   // This field is set by retrieving the ActivateDate vpd field stored in
@@ -75,6 +80,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // callback logic exists in the device activity controller.
   // The |first_active_week_| stores the UTC based ActivateDate VPD field, which
   // specifies the date (week granularity) when the device was first activated.
+  // Note: The exact first active month cannot be determined because of the
+  // week granularity, but the overall calculation for first active
+  // should be accurate since most weeks fall within the month.
   base::Time first_active_week_;
 };
 
