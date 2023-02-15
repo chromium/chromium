@@ -562,9 +562,21 @@ export class DestinationStore extends EventTarget {
     return new DestinationMatch(idRegExp, displayNameRegExp);
   }
 
-  /** @param Key identifying the destination to select */
+  /**
+   * This function is only invoked when the user selects a new destination via
+   * the UI. Programmatic selection of a destination should not use this
+   * function.
+   * @param Key identifying the destination to select
+   */
   selectDestinationByKey(key: string) {
-    assert(this.tryToSelectDestinationByKey_(key));
+    const success = this.tryToSelectDestinationByKey_(key);
+    assert(success);
+    // <if expr="is_chromeos">
+    if (success && this.selectedDestination_ &&
+        this.selectedDestination_.type !== PrinterType.PDF_PRINTER) {
+      this.selectedDestination_.printerManuallySelected = true;
+    }
+    // </if>
   }
 
   /**

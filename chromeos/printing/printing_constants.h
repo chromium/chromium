@@ -9,6 +9,24 @@
 
 namespace chromeos {
 
+// This enum is used in histograms, do not remove/renumber entries. If you're
+// adding to this enum, update the corresponding enum listing in
+// tools/metrics/histograms/enums.xml.
+enum class PrintAttemptOutcome {
+  kCancelledPrintButtonDisabled = 0,
+  kCancelledNoPrintersAvailable,
+  kCancelledOtherPrintersAvailable,
+  kCancelledPrinterErrorStatus,
+  kCancelledPrinterGoodStatus,
+  kCancelledPrinterUnknownStatus,
+  kPdfPrintAttempted,
+  kPrintJobSuccessInitialPrinter,
+  kPrintJobSuccessManuallySelectedPrinter,
+  kPrintJobFailInitialPrinter,
+  kPrintJobFailManuallySelectedPrinter,
+  kMaxValue = kPrintJobFailManuallySelectedPrinter,
+};
+
 // Maximum size of a PPD file that we will accept, currently 250k.  This number
 // is relatively
 // arbitrary, we just don't want to try to handle ridiculously huge files.

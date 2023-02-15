@@ -319,6 +319,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     settings->set_client_infos(
         ConvertJobSettingToClientInfo(*client_info_list));
   }
+
+  settings->set_printer_manually_selected(
+      job_settings.FindBool(kSettingPrinterManuallySelected).value_or(false));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return settings;

@@ -172,6 +172,7 @@ export type PrintTicket = Ticket&{
   pageHeight: number,
   pageWidth: number,
   // <if expr="is_chromeos">
+  printerManuallySelected: boolean,
   printToGoogleDrive: boolean,
   // </if>
   showSystemDialog: boolean,
@@ -1567,6 +1568,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       // <if expr="is_chromeos">
       printToGoogleDrive:
           destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
+      printerManuallySelected: destination.printerManuallySelected,
       // </if>
     };
 

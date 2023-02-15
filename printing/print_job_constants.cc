@@ -244,6 +244,10 @@ const char kSettingIppClientPatches[] = "ipp-client-patches";
 const char kSettingIppClientStringVersion[] = "ipp-client-string-version";
 const char kSettingIppClientType[] = "ipp-client-type";
 const char kSettingIppClientVersion[] = "ipp-client-version";
+
+// True if the user selects to print to a different printer than the original
+// destination shown when Print Preview opens.
+const char kSettingPrinterManuallySelected[] = "printerManuallySelected";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

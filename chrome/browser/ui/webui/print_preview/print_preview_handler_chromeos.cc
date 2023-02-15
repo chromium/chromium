@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +28,7 @@
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "chromeos/printing/printing_constants.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -109,6 +111,11 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
       "getPrintServersConfig",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordPrintAttemptOutcome",
+      base::BindRepeating(
+          &PrintPreviewHandlerChromeOS::HandleRecordPrintAttemptOutcome,
           base::Unretained(this)));
 }
 
@@ -306,6 +313,14 @@ void PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig(
           .Then(base::BindOnce(
               &PrintPreviewHandlerChromeOS::ResolveJavascriptCallback,
               weak_factory_.GetWeakPtr(), base::Value(callback_id))));
+}
+
+void PrintPreviewHandlerChromeOS::HandleRecordPrintAttemptOutcome(
+    const base::Value::List& args) {
+  CHECK(args[0].is_int());
+  chromeos::PrintAttemptOutcome result =
+      static_cast<chromeos::PrintAttemptOutcome>(args[0].GetInt());
+  base::UmaHistogramEnumeration("PrintPreview.PrintAttemptOutcome", result);
 }
 
 void PrintPreviewHandlerChromeOS::OnPrintServersChanged(

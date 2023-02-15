@@ -84611,6 +84611,20 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Price tracking disabled"/>
 </enum>
 
+<enum name="PrintAttemptOutcome">
+  <int value="0" label="Cancelled print button disabled"/>
+  <int value="1" label="Cancelled no printers available"/>
+  <int value="2" label="Cancelled other printers available"/>
+  <int value="3" label="Cancelled selected printer error status"/>
+  <int value="4" label="Cancelled selected printer good status"/>
+  <int value="5" label="Cancelled selected printer unknown status"/>
+  <int value="6" label="PDF print attempted"/>
+  <int value="7" label="Print job success with initially selected printer"/>
+  <int value="8" label="Print job success with manually selected printer"/>
+  <int value="9" label="Print job fail with initially selected printer"/>
+  <int value="10" label="Print job fail with manually selected printer"/>
+</enum>
+
 <enum name="PrinterEditDialogActions">
   <int value="0" label="Dialog opened"/>
   <int value="1" label="View PPD clicked"/>

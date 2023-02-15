@@ -210,6 +210,12 @@ export class Destination {
   private eulaUrl_: string = '';
 
   /**
+   * True if the user opened the print preview dropdown and selected a different
+   * printer than the original destination.
+   */
+  private printerManuallySelected_: boolean = false;
+
+  /**
    * Stores the printer status reason for a local Chrome OS printer.
    */
   private printerStatusReason_: PrinterStatusReason|null = null;
@@ -331,6 +337,14 @@ export class Destination {
 
   set eulaUrl(eulaUrl: string) {
     this.eulaUrl_ = eulaUrl;
+  }
+
+  get printerManuallySelected(): boolean {
+    return this.printerManuallySelected_;
+  }
+
+  set printerManuallySelected(printerManuallySelected: boolean) {
+    this.printerManuallySelected_ = printerManuallySelected;
   }
 
   /**

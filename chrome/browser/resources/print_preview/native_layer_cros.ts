@@ -6,7 +6,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 import {Cdd} from './data/cdd.js';
 import {ExtensionDestinationInfo} from './data/local_parsers.js';
-import {PrinterStatus} from './data/printer_status_cros.js';
+import {PrintAttemptOutcome, PrinterStatus} from './data/printer_status_cros.js';
 
 export interface PrinterSetupResponse {
   printerId: string;
@@ -71,6 +71,12 @@ export interface NativeLayerCros {
    * fetching mode.
    */
   getPrintServersConfig(): Promise<PrintServersConfig>;
+
+  /**
+   * Records the `PrintPreview.PrintAttemptOutcome` histogram for capturing
+   * the result from opening Print Preview.
+   */
+  recordPrintAttemptOutcome(printAttemptOutcome: PrintAttemptOutcome): void;
 }
 
 export class NativeLayerCrosImpl implements NativeLayerCros {
@@ -103,6 +109,10 @@ export class NativeLayerCrosImpl implements NativeLayerCros {
 
   getPrintServersConfig() {
     return sendWithPromise('getPrintServersConfig');
+  }
+
+  recordPrintAttemptOutcome(printAttemptOutcome: PrintAttemptOutcome) {
+    chrome.send('recordPrintAttemptOutcome', [printAttemptOutcome]);
   }
 
   static getInstance(): NativeLayerCros {

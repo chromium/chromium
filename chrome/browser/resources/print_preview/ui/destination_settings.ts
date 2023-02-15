@@ -492,6 +492,15 @@ export class PrintPreviewDestinationSettingsElement extends
     this.destination.eulaUrl = e.detail;
     this.notifyPath('destination.eulaUrl');
   }
+
+  /**
+   * Returns true if at least one non-PDF printer destination is shown in the
+   * destination dropdown.
+   */
+  printerExistsInDisplayedDestinations(): boolean {
+    return this.displayedDestinations_.some(
+        destination => destination.type !== PrinterType.PDF_PRINTER);
+  }
   // </if>
 }
 

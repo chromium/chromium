@@ -254,6 +254,16 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     return !!linkContainer && linkContainer.systemDialogLinkAvailable();
   }
   // </if>
+
+  // <if expr="is_chromeos">
+  /**
+   * Returns true if at least one non-PDF printer destination is shown in the
+   * destination dropdown.
+   */
+  printerExistsInDisplayedDestinations(): boolean {
+    return this.$.destinationSettings.printerExistsInDisplayedDestinations();
+  }
+  // </if>
 }
 
 declare global {

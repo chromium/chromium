@@ -74,6 +74,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrintPreview.PrintAttemptOutcome" enum="PrintAttemptOutcome"
+    expires_after="2024-02-07">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Tracks the outcome of a print journey on ChromeOS. This metric attempts to
+    capture all expected outcomes when a user goes to print. Once Print Preview
+    is opened, this metric gets recorded after one of the following: either
+    Print Preview is canceled and closed, or the attempted print job completes.
+  </summary>
+</histogram>
+
 <histogram name="PrintPreview.PrintDocumentType"
     enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2023-07-02">
   <owner>rbpotter@chromium.org</owner>

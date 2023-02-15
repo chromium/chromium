@@ -313,6 +313,7 @@ suite(model_test.suiteName, function() {
       showSystemDialog: false,
       // <if expr="is_chromeos">
       printToGoogleDrive: false,
+      printerManuallySelected: false,
       advancedSettings: {
         printArea: 4,
         paperType: 0,
@@ -351,6 +352,7 @@ suite(model_test.suiteName, function() {
       showSystemDialog: false,
       // <if expr="is_chromeos">
       printToGoogleDrive: false,
+      printerManuallySelected: false,
       // </if>
       marginsCustom: {
         marginTop: 100,

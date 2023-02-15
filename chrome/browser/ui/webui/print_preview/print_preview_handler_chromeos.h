@@ -105,6 +105,9 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // Gets the list of print servers and fetching mode.
   void HandleGetPrintServersConfig(const base::Value::List& args);
 
+  // Records the `PrintPreview.PrintAttemptOutcome` histogram.
+  void HandleRecordPrintAttemptOutcome(const base::Value::List& args);
+
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
 
   // Used to transmit mojo interface method calls to ash chrome.

@@ -9,22 +9,29 @@ import '../data/document_info.js';
 import './sidebar.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {isMac, isWindows} from 'chrome://resources/js/platform.js';
-import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
+import {isMac, isWindows} from 'chrome://resources/js/platform.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, PrinterType} from '../data/destination.js';
+import {Destination, DestinationOrigin, PrinterType} from '../data/destination.js';
 import {DocumentSettings, PrintPreviewDocumentInfoElement} from '../data/document_info.js';
 import {Margins} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
 import {DuplexMode, PrintPreviewModelElement, whenReady} from '../data/model.js';
 import {PrintableArea} from '../data/printable_area.js';
+// <if expr="is_chromeos">
+import {computePrinterState, PrintAttemptOutcome, PrinterState} from '../data/printer_status_cros.js';
+// </if>
 import {Size} from '../data/size.js';
 import {Error, PrintPreviewStateElement, State} from '../data/state.js';
 import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
+// <if expr="is_chromeos">
+import {NativeLayerCrosImpl} from '../native_layer_cros.js';
+
+// </if>
 
 import {getTemplate} from './app.html.js';
 import {DestinationState} from './destination_settings.js';
@@ -208,6 +215,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         this.close_();
         e.preventDefault();
       }
+
+      // <if expr="is_chromeos">
+      this.recordCancelMetricCros_();
+      // </if>
 
       return;
     }
@@ -401,6 +412,13 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         this.nativeLayer_!.hidePreview();
       }
     } else if (this.state === State.PRINTING) {
+      // <if expr="is_chromeos">
+      if (this.destination_.type === PrinterType.PDF_PRINTER) {
+        NativeLayerCrosImpl.getInstance().recordPrintAttemptOutcome(
+            PrintAttemptOutcome.PDF_PRINT_ATTEMPTED);
+      }
+      // </if>
+
       const whenPrintDone =
           this.nativeLayer_!.print(this.$.model.createPrintTicket(
               this.destination_, this.openPdfInPreview_,
@@ -430,9 +448,49 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   }
 
   private onCancelRequested_() {
+    // <if expr="is_chromeos">
+    this.recordCancelMetricCros_();
+    // </if>
     this.cancelled_ = true;
     this.$.state.transitTo(State.CLOSING);
   }
+
+  // <if expr="is_chromeos">
+  /** Records the Print Preview state when cancel is requested. */
+  private recordCancelMetricCros_() {
+    let printAttemptOutcome = null;
+    if (this.state !== State.READY) {
+      // Print button is disabled when state !== READY.
+      printAttemptOutcome = PrintAttemptOutcome.CANCELLED_PRINT_BUTTON_DISABLED;
+    } else if (!this.$.sidebar.printerExistsInDisplayedDestinations()) {
+      printAttemptOutcome = PrintAttemptOutcome.CANCELLED_NO_PRINTERS_AVAILABLE;
+    } else if (this.destination_.origin === DestinationOrigin.CROS) {
+      // Fetch and record printer state.
+      switch (computePrinterState(this.destination_.printerStatusReason)) {
+        case PrinterState.GOOD:
+          printAttemptOutcome =
+              PrintAttemptOutcome.CANCELLED_PRINTER_GOOD_STATUS;
+          break;
+        case PrinterState.ERROR:
+          printAttemptOutcome =
+              PrintAttemptOutcome.CANCELLED_PRINTER_ERROR_STATUS;
+          break;
+        case PrinterState.UNKNOWN:
+          printAttemptOutcome =
+              PrintAttemptOutcome.CANCELLED_PRINTER_UNKNOWN_STATUS;
+          break;
+      }
+    } else {
+      printAttemptOutcome =
+          PrintAttemptOutcome.CANCELLED_OTHER_PRINTERS_AVAILABLE;
+    }
+
+    if (printAttemptOutcome !== null) {
+      NativeLayerCrosImpl.getInstance().recordPrintAttemptOutcome(
+          printAttemptOutcome);
+    }
+  }
+  // </if>
 
   /**
    * @param e The event containing the new validity.
