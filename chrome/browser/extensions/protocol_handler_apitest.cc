@@ -61,7 +61,13 @@ class ProtocolHandlerChangeWaiter
 // This test verifies correct registration of protocol handlers using HTML5's
 // registerProtocolHandler in extension context and its validation with relaxed
 // security checks.
-IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, Registration) {
+// TODO(crbug.com/1177254): Flaky on win/mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_Registration DISABLED_Registration
+#else
+#define MAYBE_Registration Registration
+#endif
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, MAYBE_Registration) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Initialize listener and result catcher before the test page is loaded to
