@@ -667,8 +667,12 @@ void AmbientBackendControllerImpl::OnSettingPreviewFetched(
 
   // Parse the |SettingPreviewResponse| out from the response string.
   // Note that the |preview_urls| can be empty if the parsing has failed.
-  std::vector<std::string> preview_urls =
+  std::vector<std::string> parsed_response =
       BackdropClientConfig::ParseSettingPreviewResponse(*response);
+  std::vector<GURL> preview_urls;
+  for (const std::string& preivew_url : parsed_response) {
+    preview_urls.emplace_back(preivew_url);
+  }
   std::move(callback).Run(std::move(preview_urls));
 }
 

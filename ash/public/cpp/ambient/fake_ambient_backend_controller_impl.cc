@@ -149,7 +149,7 @@ void FakeAmbientBackendControllerImpl::FetchSettingPreview(
     int preview_width,
     int preview_height,
     OnSettingPreviewFetchedCallback callback) {
-  std::vector<std::string> urls = {kFakeUrl};
+  std::vector<GURL> urls = {GURL(kFakeUrl)};
   // Pretend to respond asynchronously.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), urls));
