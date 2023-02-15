@@ -814,7 +814,7 @@ int QuicStreamFactory::Job::DoResolveHostComplete(int rv) {
         SelectQuicVersion(*resolve_host_request_->GetEndpointResults(),
                           factory_->supported_versions());
     if (quic_version_ == quic::ParsedQuicVersion::Unsupported()) {
-      return ERR_DNS_NO_MACHING_SUPPORTED_ALPN;
+      return ERR_DNS_NO_MATCHING_SUPPORTED_ALPN;
     }
   }
 

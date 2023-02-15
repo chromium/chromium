@@ -15281,7 +15281,7 @@ void QuicStreamFactoryTestBase::TestRequireDnsHttpsAlpn(
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
   } else {
     EXPECT_THAT(callback_.WaitForResult(),
-                IsError(ERR_DNS_NO_MACHING_SUPPORTED_ALPN));
+                IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
   }
 }
 
