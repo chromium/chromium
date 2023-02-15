@@ -741,7 +741,6 @@ void LayoutMultiColumnSet::FinishLayoutFromNG() {
   ComputeLogicalHeight(/* logical_height */ LayoutUnit(),
                        /* logical_top */ LayoutUnit(), computed_values);
   SetLogicalHeight(computed_values.extent_);
-  ComputeLayoutOverflow(computed_values.extent_);
 }
 
 void LayoutMultiColumnSet::SetIsIgnoredByNG() {

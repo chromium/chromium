@@ -595,6 +595,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutRect NoOverflowRect() const;
   LayoutRect LayoutOverflowRect() const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled() ||
+           !IsLayoutMultiColumnSet());
     return LayoutOverflowIsSet()
                ? overflow_->layout_overflow->LayoutOverflowRect()
                : NoOverflowRect();
