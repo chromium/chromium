@@ -768,19 +768,16 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
       original_db->NewIterator(leveldb::ReadOptions()));
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
     const std::string key = it->key().ToString();
-    std::string value;
-
-    status = original_db->Get(leveldb::ReadOptions(), key, &value);
-    if (!status.ok()) {
-      PLOG(ERROR) << "Failure while reading from original leveldb: "
-                  << original_path;
-      return false;
-    }
-
+    const std::string value = it->value().ToString();
     if (IsAshOnlySyncDataType(key))
       ash_write_batch.Put(key, value);
     else
       lacros_write_batch.Put(key, value);
+  }
+  if (!it->status().ok()) {
+    PLOG(ERROR) << "Failure while reading from original leveldb: "
+                << original_path;
+    return false;
   }
 
   // Write everything in bulk.
