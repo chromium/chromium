@@ -60,6 +60,8 @@ class EditFinishView : public views::View {
   void OnSaveButtonPressed();
   void OnCancelButtonPressed();
 
+  void ResetFocus();
+
   // Drag operations.
   void OnDragStart(const ui::LocatedEvent& event);
   void OnDragUpdate(const ui::LocatedEvent& event);

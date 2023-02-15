@@ -47,8 +47,7 @@ class ActionLabel : public views::LabelButton {
   void SetTextActionLabel(const std::string& text);
   void SetImageActionLabel(MouseAction mouse_action);
   void SetDisplayMode(DisplayMode mode);
-  // Return true if it has focus before clear focus.
-  bool ClearFocus();
+  void ClearFocus();
   // It is possible that multiple labels are in one ActionView and these labels
   // are called sibling labels. This label reacts to sibling's focus change.
   void OnSiblingUpdateFocus(bool sibling_focused);
