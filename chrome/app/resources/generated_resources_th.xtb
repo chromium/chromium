@@ -999,7 +999,6 @@
 <translation id="1869433484041798909">ปุ่มบุ๊กมาร์ก</translation>
 <translation id="1871098866036088250">เปิดในเบราว์เซอร์ Chrome</translation>
 <translation id="187145082678092583">แสดงแอปน้อยลง</translation>
-<translation id="1871463148436682760">เยี่ยมมาก</translation>
 <translation id="1871534214638631766">แสดงข้อมูลที่เกี่ยวข้องเมื่อคลิกขวาที่เนื้อหาหรือกดเนื้อหาค้างไว้</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> ของคุณเป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="1873920700418191231">อนุญาตสิทธิ์อีกครั้งสำหรับ <ph name="WEBSITE" /></translation>
@@ -1431,6 +1430,7 @@
 <translation id="2251809247798634662">หน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="2252017960592955005">การป้องกันการดู (เบต้า)</translation>
 <translation id="225240747099314620">อนุญาตตัวระบุสำหรับเนื้อหาที่มีการป้องกัน (อาจจำเป็นต้องรีสตาร์ทคอมพิวเตอร์)</translation>
+<translation id="2253318212986772520">เรียกดู PPD ของ <ph name="PRINTER_NAME" /> ไม่ได้</translation>
 <translation id="2255077166240162850">อุปกรณ์นี้ล็อกอยู่ในโดเมนหรือโหมดอื่น</translation>
 <translation id="2255317897038918278">การระบุเวลาของ Microsoft</translation>
 <translation id="2256115617011615191">รีสตาร์ทเลย</translation>
@@ -2899,6 +2899,7 @@
 <translation id="3582057310199111521">มีการป้อนรหัสผ่านนี้ในเว็บไซต์ที่หลอกลวง และพบในการละเมิดข้อมูล</translation>
 <translation id="3582299299336701326">ปรับหน้าจอที่สว่างให้มืดและหน้าจอที่มืดให้สว่าง กดแป้นค้นหา + Ctrl + H เพื่อเปิดและปิดการกลับสี</translation>
 <translation id="3584169441612580296">อ่านและเปลี่ยนแปลงรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
+<translation id="3584527007414070635">กลับไปท่องเว็บเกี่ยวกับ<ph name="MODULE_TITLE" />ต่อ</translation>
 <translation id="3586787825263265024">แอปพลิเคชัน <ph name="APPLICATION_NAME" /> ต้องใช้ OneDrive จึงจะแสดงได้</translation>
 <translation id="3586806079541226322">เปิดไฟล์นี้ไม่ได้</translation>
 <translation id="3587438013689771191">ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="SUBPAGE_TITLE" /></translation>
@@ -3198,7 +3199,6 @@
 <translation id="3828953470056652895">ฉันได้อ่านและยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Chrome และ Chrome OS<ph name="END_LINK2" /> รวมถึง<ph name="BEGIN_LINK3" />ข้อกำหนดในการให้บริการของ Play<ph name="END_LINK3" /></translation>
 <translation id="3829765597456725595">พื้นที่แชร์ไฟล์ SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{ผู้ดูแลระบบได้เปิดส่วนขยายที่อาจเป็นอันตราย 1 รายการขึ้นมาอีกครั้ง}other{ผู้ดูแลระบบได้เปิดส่วนขยายที่อาจเป็นอันตราย {NUM_EXTENSIONS} รายการขึ้นมาอีกครั้ง}}</translation>
-<translation id="3831436149286513437">คำแนะนำในการค้นหา Google ไดรฟ์</translation>
 <translation id="3834728400518755610">ต้องปิด Linux เพื่อทำการเปลี่ยนแปลงการตั้งค่าไมโครโฟน ปิด Linux เพื่อดำเนินการต่อ</translation>
 <translation id="3834775135533257713">ไม่สามารถเพิ่มแอปพลิเคชัน "<ph name="TO_INSTALL_APP_NAME" />" เนื่องจากขัดแย้งกับ "<ph name="INSTALLED_APP_NAME" />"</translation>
 <translation id="3835904559946595746">กู้คืนข้อมูลสำรองของ Linux ไม่สำเร็จ</translation>
@@ -3858,6 +3858,7 @@
 <translation id="4443536555189480885">&amp;ความช่วยเหลือ</translation>
 <translation id="4444304522807523469">เข้าถึงเครื่องสแกนเอกสารที่เชื่อมต่อผ่าน USB หรือบนเครือข่าย LAN</translation>
 <translation id="4444512841222467874">หากไม่เพิ่มพื้นที่ว่าง ระบบอาจลบผู้ใช้และข้อมูลโดยอัตโนมัติ</translation>
+<translation id="4445446646109808714">ข้อตกลงการอนุญาตให้ใช้สิทธิผู้ใช้ปลายทาง: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">มิเรอร์</translation>
 <translation id="4448914100439890108">ซ่อนรหัสผ่านของ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">ชื่อผู้ใช้ของคุณเป็นของบัญชีองค์กรของคุณ หากต้องการลงทะเบียนอุปกรณ์กับบัญชีดังกล่าว ก่อนอื่นให้ยืนยันการเป็นเจ้าของโดเมนในคอนโซลผู้ดูแลระบบ คุณจะต้องมีสิทธิ์ระดับผู้ดูแลระบบในบัญชีเพื่อยืนยัน</translation>

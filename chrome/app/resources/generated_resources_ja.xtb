@@ -995,7 +995,6 @@
 <translation id="1869433484041798909">ブックマーク ボタン</translation>
 <translation id="1871098866036088250">Chrome ブラウザで開く</translation>
 <translation id="187145082678092583">表示するアプリを減らす</translation>
-<translation id="1871463148436682760">完了しました</translation>
 <translation id="1871534214638631766">コンテンツを右クリックまたは長押ししたときに関連情報を表示します</translation>
 <translation id="1871615898038944731">お使いの <ph name="DEVICE_TYPE" /> は最新です</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> にもう一度権限を許可します</translation>
@@ -3185,7 +3184,6 @@
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />、<ph name="BEGIN_LINK3" />Play 利用規約<ph name="END_LINK3" />を確認し、内容に同意します。</translation>
 <translation id="3829765597456725595">SMB ファイル共有</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{管理者が 1 個の有害な可能性がある拡張機能を再度有効にしました}other{管理者が {NUM_EXTENSIONS} 個の有害な可能性がある拡張機能を再度有効にしました}}</translation>
-<translation id="3831436149286513437">Google ドライブのファイル候補</translation>
 <translation id="3834728400518755610">マイクの設定を変更するには、Linux をシャットダウンする必要があります。続行するには Linux をシャットダウンしてください。</translation>
 <translation id="3834775135533257713">「<ph name="INSTALLED_APP_NAME" />」と競合するため、アプリケーション「<ph name="TO_INSTALL_APP_NAME" />」を追加できませんでした。</translation>
 <translation id="3835904559946595746">Linux バックアップを復元できませんでした</translation>

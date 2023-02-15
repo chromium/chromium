@@ -133,6 +133,7 @@
 <translation id="163517899691012366">"Тынчымды алба" режими күйүп турганда билдирмелердин үнү басылат</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> түзмөк</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
+<translation id="1647986356840967552">Мурунку бет</translation>
 <translation id="1654477262762802994">Айтып издеп баштоо</translation>
 <translation id="1668469839109562275">Камтылган VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> калды</translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="397726367135689299">Батарея жакшы кубатталбашы мүмкүн.</translation>
 <translation id="3977512764614765090">Батареянын деңгээли – <ph name="PERCENTAGE" /> %, кубатталууда.</translation>
+<translation id="3984536049089846927">Кийинки бет</translation>
 <translation id="3986082989454912832">Жооп берүү</translation>
 <translation id="3995138139523574647">USB-C түзмөгү (оң жактагы арткы оюкча)</translation>
 <translation id="40062176907008878">Кол жазма</translation>
@@ -731,6 +733,7 @@
 <translation id="4895488851634969361">Батарея толду.</translation>
 <translation id="490375751687810070">Тигинен</translation>
 <translation id="490788395437447240">Батарея <ph name="BATTERY_PERCENTAGE" />% кубатталган</translation>
+<translation id="491504982845934899">Түзмөк тууралангандан кийин <ph name="NETWORK_NAME" /> иштетилсин</translation>
 <translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4918086044614829423">Кабыл алуу</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> учурда камераңызды колдонуп жатат</translation>
@@ -1327,6 +1330,7 @@
 <translation id="8131740175452115882">Ырастоо</translation>
 <translation id="8131994907636310308">Иреттөө эскертмесин жабуу</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> менен туташты</translation>
+<translation id="8138705869659070104">Түзмөк тууралангандан кийин иштетилсин</translation>
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>
 <translation id="8142441511840089262">Эки жолу чыкылдатуу</translation>
 <translation id="8142699993796781067">Жеке тармак</translation>

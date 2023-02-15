@@ -733,6 +733,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4895488851634969361">Puno na ang baterya.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
+<translation id="491504982845934899">I-activate ang <ph name="NETWORK_NAME" /> pagkatapos ng pag-set up ng device</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4919841137949306064">Kasalukuyang ginagamit ng <ph name="APP_NAME" /> ang iyong camera</translation>
@@ -1329,6 +1330,7 @@ Kaka-install lang</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8131994907636310308">Isara ang pagbubukod-bukod ng toast</translation>
 <translation id="8132793192354020517">Kumukonekta sa <ph name="NAME" /></translation>
+<translation id="8138705869659070104">I-activate matapos ang setup</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
 <translation id="8142441511840089262">I-double click</translation>
 <translation id="8142699993796781067">Pribadong network</translation>

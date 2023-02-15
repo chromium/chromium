@@ -733,6 +733,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4895488851634969361">De batterij is vol.</translation>
 <translation id="490375751687810070">Verticaal</translation>
 <translation id="490788395437447240">Batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">Activeren na apparaatinstelling <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Accepteren</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> gebruikt momenteel je camera</translation>
@@ -1326,6 +1327,7 @@ Nieuwe installatie</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8131994907636310308">Sorteertoast sluiten</translation>
 <translation id="8132793192354020517">Verbonden met <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Activeren na apparaatinstelling</translation>
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>
 <translation id="8142699993796781067">Privénetwerk</translation>

@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">“继续您的历程”按钮，按 Enter 键即可继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="1101672080107056897">错误操作</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">某些必填字段是空的。请先填写这些字段，然后再保存。</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">选择对<ph name="PERMISSION_NAME" />的权限</translation>
 <translation id="1112828774174131240">古玩与收藏品</translation>
@@ -2013,6 +2014,7 @@
 <translation id="5992691462791905444">工程 Z 型折</translation>
 <translation id="5992805036496113940">查看向您展示广告时使用的信息</translation>
 <translation id="5995727681868049093">在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
+<translation id="5996887213716993070">“<ph name="FIELD" />”字段不得为空</translation>
 <translation id="5997247540087773573">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理工具建议您立即更改此密码并检查您已保存的所有密码。</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6005765687956866568">已从此表单中清除自动填充的信息</translation>
@@ -2751,6 +2753,7 @@
 <translation id="7766518757692125295">裙式</translation>
 <translation id="7773005668374414287">顺序不变，正面朝上</translation>
 <translation id="7785790577395078482">这台平板电脑</translation>
+<translation id="7786368602962652765">有一个必填字段是空的。请先填写该字段，然后再保存。</translation>
 <translation id="7790488044432570133">您访问的网站可请求 Chrome 提供相关信息，以便衡量各自的广告效果。Chrome 允许网站收集有限类型的数据，例如一天中向您展示广告的时段。</translation>
 <translation id="7791011319128895129">未发布</translation>
 <translation id="7791196057686275387">捆绑式装订</translation>

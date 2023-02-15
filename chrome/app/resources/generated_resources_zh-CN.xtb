@@ -992,7 +992,6 @@
 <translation id="1869433484041798909">书签按钮</translation>
 <translation id="1871098866036088250">在 Chrome 浏览器中打开</translation>
 <translation id="187145082678092583">收起部分应用</translation>
-<translation id="1871463148436682760">太棒了，大功告成！</translation>
 <translation id="1871534214638631766">在您右键点击或长按内容时显示相关信息</translation>
 <translation id="1871615898038944731">您的 <ph name="DEVICE_TYPE" /> 使用的操作系统已为最新版本</translation>
 <translation id="1873920700418191231">重新为 <ph name="WEBSITE" /> 授予权限</translation>
@@ -1424,6 +1423,7 @@
 <translation id="2251809247798634662">打开新的无痕式窗口</translation>
 <translation id="2252017960592955005">防窥探（Beta 版）</translation>
 <translation id="225240747099314620">允许将标识符用于受保护内容（可能需要重新启动计算机）</translation>
+<translation id="2253318212986772520">无法检索<ph name="PRINTER_NAME" />的 PPD。</translation>
 <translation id="2255077166240162850">此设备已锁定到其他网域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 时间戳</translation>
 <translation id="2256115617011615191">立即重新启动</translation>
@@ -2891,6 +2891,7 @@
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3582299299336701326">将亮屏幕调暗，或将暗屏幕调亮。按搜索键 + Ctrl + H 即可开启和关闭颜色反转功能。</translation>
 <translation id="3584169441612580296">读取和更改您计算机上的照片、音乐和其他媒体</translation>
+<translation id="3584527007414070635">继续您的<ph name="MODULE_TITLE" />之旅</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" />应用要求 OneDrive 必须可用。</translation>
 <translation id="3586806079541226322">无法打开此文件</translation>
 <translation id="3587438013689771191">详细了解：<ph name="SUBPAGE_TITLE" /></translation>
@@ -3190,7 +3191,6 @@
 <translation id="3828953470056652895">我已阅读并同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />以及 <ph name="BEGIN_LINK3" />Play 服务条款<ph name="END_LINK3" />。</translation>
 <translation id="3829765597456725595">SMB 文件共享</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{您的管理员重新开启了 1 个可能有害的扩展程序}other{您的管理员重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
-<translation id="3831436149286513437">Google 云端硬盘搜索建议</translation>
 <translation id="3834728400518755610">您必须关闭 Linux 才能更改麦克风设置。请关闭 Linux 以继续操作。</translation>
 <translation id="3834775135533257713">无法添加应用“<ph name="TO_INSTALL_APP_NAME" />”，因为它与“<ph name="INSTALLED_APP_NAME" />”冲突。</translation>
 <translation id="3835904559946595746">无法恢复 Linux 备份</translation>
@@ -3847,6 +3847,7 @@
 <translation id="4443536555189480885">帮助(&amp;H)</translation>
 <translation id="4444304522807523469">使用通过 USB 连接的或本地网络中的文档扫描仪</translation>
 <translation id="4444512841222467874">如果没有可用空间，系统可能会自动移除用户和数据。</translation>
+<translation id="4445446646109808714">最终用户许可协议：<ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">镜像</translation>
 <translation id="4448914100439890108">隐藏 <ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
 <translation id="4449948729197510913">您的用户名属于贵单位的企业帐号。如需将设备注册到该帐号，请先在管理控制台中验证域名所有权。您需要拥有该帐号的管理员权限才能进行验证。</translation>

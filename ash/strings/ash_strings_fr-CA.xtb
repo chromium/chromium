@@ -733,6 +733,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4895488851634969361">La batterie est pleinement chargée.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Pile chargée à <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="491504982845934899">Activer après la configuration de l'appareil <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> utilise actuellement votre appareil photo</translation>
@@ -1329,6 +1330,7 @@ Nouvelle installation</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8131994907636310308">Fermer le message de tri</translation>
 <translation id="8132793192354020517">Connecté à <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Activer après config. app.</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
 <translation id="8142441511840089262">Double-clic</translation>
 <translation id="8142699993796781067">Réseau privé</translation>

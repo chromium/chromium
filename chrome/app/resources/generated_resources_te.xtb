@@ -1009,7 +1009,6 @@
 <translation id="1869433484041798909">బుక్‌మార్క్ బటన్</translation>
 <translation id="1871098866036088250">Chrome browserలో తెరవండి</translation>
 <translation id="187145082678092583">తక్కువ యాప్‌లు</translation>
-<translation id="1871463148436682760">చక్కగా పూర్తి చేశారు!</translation>
 <translation id="1871534214638631766">కంటెంట్‌పై కుడి క్లిక్ చేసినప్పుడు లేదా ఎక్కువసేపు నొక్కినప్పుడు సంబంధిత సమాచారాన్ని చూపు</translation>
 <translation id="1871615898038944731">మీ <ph name="DEVICE_TYPE" /> తాజాగా ఉంది</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" />‌కు అనుమతులను తిరిగి మంజూరు చేయండి</translation>
@@ -3210,7 +3209,6 @@
 <translation id="3828953470056652895">నేను <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome, అలాగే ChromeOS అదనపు సర్వీస్ నియమాలు<ph name="END_LINK2" />, అలాగే <ph name="BEGIN_LINK3" />Play సర్వీస్ నియమాలను<ph name="END_LINK3" /> చదివి అంగీకరిస్తున్నాను.</translation>
 <translation id="3829765597456725595">SMB ఫైల్ షేర్</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{మీ నిర్వాహకుడు, హానికరమైనది అయ్యే అవకాశం ఉన్న 1 ఎక్స్‌టెన్షన్‌ను తిరిగి ఆన్ చేశారు}other{మీ నిర్వాహకుడు, హానికరమైనవి అయ్యే అవకాశం ఉన్న {NUM_EXTENSIONS} ఎక్స్‌టెన్షన్‌లను తిరిగి ఆన్ చేశారు}}</translation>
-<translation id="3831436149286513437">Google Drive సెర్చ్ సూచనలు</translation>
 <translation id="3834728400518755610">మైక్రోఫోన్ సెట్టింగ్‌లో మార్పు కోసం Linuxను షట్ డౌన్ చేయాల్సి ఉంటుంది. కొనసాగించడానికి Linuxను షట్ డౌన్ చేయండి.</translation>
 <translation id="3834775135533257713"><ph name="TO_INSTALL_APP_NAME" /> యాప్ "<ph name="INSTALLED_APP_NAME" />"కి వైరుధ్యంగా ఉన్నందున దాన్ని జోడించలేరు.</translation>
 <translation id="3835904559946595746">Linux బ్యాకప్‌ను రీస్టోర్ చేయడం సాధ్యపడలేదు</translation>
@@ -8131,6 +8129,7 @@
 <translation id="8358912028636606457">ట్యాబ్ ఆడియోను ప్రసారం చేయడానికి ఈ పరికరంలో మద్దతు లేదు.</translation>
 <translation id="835951711479681002">మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="8360140320636871023">మీ డిస్‌ప్లే రూపాన్ని వ్యక్తిగతీకరించండి</translation>
+<translation id="8360267485906769442">ఫీడ్‌బ్యాక్ పంపండి బటన్</translation>
 <translation id="8363095875018065315">స్థిరం</translation>
 <translation id="8363142353806532503">మైక్రోఫోన్ బ్లాక్ చేయబడింది</translation>
 <translation id="8366396658833131068">మీ నెట్‌వర్క్ కనెక్టివిటీ పునరుద్ధరించబడింది. దయచేసి వేరే నెట్‌వర్క్‌ను ఎంచుకోండి లేదా మీ కియోస్క్ యాప్‌ను ప్రారంభించడానికి కింది 'కొనసాగించండి' బటన్ నొక్కండి.</translation>

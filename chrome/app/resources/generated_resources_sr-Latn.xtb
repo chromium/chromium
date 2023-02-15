@@ -998,7 +998,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1869433484041798909">Dugme obeleživača</translation>
 <translation id="1871098866036088250">Otvori u pregledaču Chrome</translation>
 <translation id="187145082678092583">Manje aplikacija</translation>
-<translation id="1871463148436682760">Bravo!</translation>
 <translation id="1871534214638631766">Prikažite povezane informacije kada kliknete desnim tasterom na sadržaj ili ga dugo pritisnete</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> je ažuriran</translation>
 <translation id="1873920700418191231">Ponovo omogućite dozvole za <ph name="WEBSITE" /></translation>
@@ -1569,6 +1568,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Beleške na zaključanom ekranu se automatski čuvaju u aplikaciji <ph name="LOCK_SCREEN_APP_NAME" />. Najnovija beleška će ostati na zaključanom ekranu.</translation>
 <translation id="2353297238722298836">Kamera i mikrofon su dozvoljeni</translation>
+<translation id="2353910600995338714">Izvoz je uspeo</translation>
 <translation id="2355314311311231464">Dodela nije uspela jer detalji o nalogu nisu preuzeti. Probajte ponovo. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">Opcije za uštedu energije</translation>
 <translation id="2355604387869345912">Uključi trenutno privezivanje</translation>
@@ -3196,7 +3196,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3828953470056652895">Pročitao/la sam i prihvatam <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Chrome i Chrome OS<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />uslove korišćenja usluge Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Deljenje SMB datoteka</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administrator je ponovo uključio 1 potencijalno štetan dodatak}one{Administrator je ponovo uključio {NUM_EXTENSIONS} potencijalno štetan dodatak}few{Administrator je ponovo uključio {NUM_EXTENSIONS} potencijalno štetna dodatka}other{Administrator je ponovo uključio {NUM_EXTENSIONS} potencijalno štetnih dodataka}}</translation>
-<translation id="3831436149286513437">Predlozi za pretragu Google diska</translation>
 <translation id="3834728400518755610">Promena podešavanja mikrofona zahteva isključivanje Linux-a. Isključite Linux da biste nastavili.</translation>
 <translation id="3834775135533257713">Dodavanje aplikacije „<ph name="TO_INSTALL_APP_NAME" />“ nije uspelo zbog konflikta sa aplikacijom „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="3835904559946595746">Vraćanje rezervne kopije Linux-a nije uspelo</translation>
@@ -5396,6 +5395,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5877064549588274448">Kanal je promenjen. Pokrenite ponovo uređaj da biste primenili promene.</translation>
 <translation id="5877584842898320529">Izabrani štampač nije dostupan ili nije pravilno instaliran. <ph name="BR" /> Proverite štampač ili izaberite neki drugi.</translation>
 <translation id="5878945009165002849">Blokirajte upite za prijavljivanje koje prikazuju usluge za identitet</translation>
+<translation id="5881710783061958569">Ako je tako, izmenite sačuvanu lozinku u <ph name="BRAND" />-u tako da se podudara sa novom lozinkom.</translation>
 <translation id="5882449899683447569">Došlo je do greške i lozinke nisu uvezene</translation>
 <translation id="5882919346125742463">Poznate mreže</translation>
 <translation id="5883356647197510494">Automatski je blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>

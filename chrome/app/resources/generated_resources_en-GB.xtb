@@ -1011,7 +1011,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1869433484041798909">Bookmark button</translation>
 <translation id="1871098866036088250">Open in Chrome browser</translation>
 <translation id="187145082678092583">Fewer apps</translation>
-<translation id="1871463148436682760">Nicely done!</translation>
 <translation id="1871534214638631766">Show related info when you right-click or long press on content</translation>
 <translation id="1871615898038944731">Your <ph name="DEVICE_TYPE" /> is up to date</translation>
 <translation id="1873920700418191231">Allow permissions again for <ph name="WEBSITE" /></translation>
@@ -3213,7 +3212,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3828953470056652895">I have read and agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />Play Terms of Service<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">SMB file share</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Your administrator turned 1 potentially harmful extension back on}other{Your administrator turned {NUM_EXTENSIONS} potentially harmful extensions back on}}</translation>
-<translation id="3831436149286513437">Google Drive search suggestions</translation>
 <translation id="3834728400518755610">The change in microphone setting requires Linux to shut down. Shut down Linux to proceed.</translation>
 <translation id="3834775135533257713">Could not add application "<ph name="TO_INSTALL_APP_NAME" />" because it conflicts with "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="3835904559946595746">Couldn’t restore Linux backup</translation>

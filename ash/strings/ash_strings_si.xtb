@@ -133,6 +133,7 @@
 <translation id="163517899691012366">බාධා නොකරන්න ක්‍රියාත්මක විට දැනුම්දීම් නිහඬ වේ</translation>
 <translation id="1637505162081889933">උපාංග <ph name="NUM_DEVICES" />ක්</translation>
 <translation id="1639239467298939599">පැටවෙමින්</translation>
+<translation id="1647986356840967552">පෙර පිටුව</translation>
 <translation id="1654477262762802994">හඬ විමසුමක් අරඹන්න</translation>
 <translation id="1668469839109562275">තිළැලි VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ඉතිරිය</translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
 <translation id="397726367135689299">බැටරි ආරෝපණය විශ්වාස කළ නොහැකි විය හැකිය.</translation>
 <translation id="3977512764614765090">බැටරිය <ph name="PERCENTAGE" />% කි, ආරෝපණ කෙරේ.</translation>
+<translation id="3984536049089846927">මීළඟ පිටුව</translation>
 <translation id="3986082989454912832">පිළිතුරු දෙන්න</translation>
 <translation id="3995138139523574647">USB-C උපාංගය (දකුණුපස පසු තොට)</translation>
 <translation id="40062176907008878">අත් අකුරු</translation>
@@ -731,6 +733,7 @@
 <translation id="4895488851634969361">බැටරීය සම්පූර්ණයි.</translation>
 <translation id="490375751687810070">සිරස්</translation>
 <translation id="490788395437447240">බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">උපාංගය පිහිටුවීමෙන් පසුව සක්‍රිය කරන්න <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">ශක්තිමත්</translation>
 <translation id="4918086044614829423">පිළිගන්න</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> දැනට ඔබේ කැමරාව භාවිතා කරයි</translation>
@@ -1327,6 +1330,7 @@
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
 <translation id="8131994907636310308">අනුපිළිවෙළට සැකසීමේ ටෝස්ට් වසන්න</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> වෙත සබඳව ඇත</translation>
+<translation id="8138705869659070104">උපාංග පිහිටුවීමෙන් පසුව ස. ක.</translation>
 <translation id="813913629614996137">මුල පුරමින්…</translation>
 <translation id="8142441511840089262">ද්විත්ව ක්ලික් කරන්න</translation>
 <translation id="8142699993796781067">පුද්ගලික ජාලය</translation>

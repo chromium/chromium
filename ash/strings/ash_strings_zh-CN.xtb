@@ -736,6 +736,7 @@
 <translation id="4895488851634969361">电池电量已满。</translation>
 <translation id="490375751687810070">纵向</translation>
 <translation id="490788395437447240">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">在设备完成设置后启用“<ph name="NETWORK_NAME" />”</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" />正在使用您的摄像头</translation>
@@ -1329,6 +1330,7 @@
 <translation id="8131740175452115882">确认</translation>
 <translation id="8131994907636310308">关闭排序消息框</translation>
 <translation id="8132793192354020517">已连接到 <ph name="NAME" /></translation>
+<translation id="8138705869659070104">在设备完成设置后启用</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">双击</translation>
 <translation id="8142699993796781067">专用网络</translation>

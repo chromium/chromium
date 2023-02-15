@@ -101,6 +101,7 @@
 <translation id="1608337082864370066">搜尋複製的圖片</translation>
 <translation id="1612730193129642006">顯示分頁方格</translation>
 <translation id="1620510694547887537">攝影機</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> 組重複使用的密碼</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1650222530560417226">輕觸 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕觸 [停止記錄] 為止。</translation>
@@ -192,6 +193,7 @@
 <translation id="2411749908844615428">{count,plural, =1{鍵盤上方顯示 {count} 個已儲存的地址。}other{鍵盤上方顯示 {count} 個已儲存的地址。}}</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} 組密碼遭外洩}other{{COUNT} 組密碼遭外洩}}</translation>
 <translation id="2434405374328098816">你已儲存過「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2451654228769116489">固定分頁</translation>
@@ -334,6 +336,7 @@
 <translation id="345565170154308620">管理密碼...</translation>
 <translation id="3469166899695866866">要停止下載嗎？</translation>
 <translation id="3470502288861289375">複製中...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} 個網站或應用程式}other{{COUNT} 個網站和應用程式}}</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478058380795961209">到期月份</translation>
 <translation id="3482959374254649722">正在同步處理您的分頁...</translation>
@@ -346,6 +349,7 @@
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3530206579861815432">快速尋找所有已同步裝置上目前開啟和最近關閉的分頁</translation>
+<translation id="3532949712013449743">如果產品在任何網站上降價，系統會透過快訊通知你。這個頁面會儲存在<ph name="BEGIN_LINK" />行動裝置的書籤<ph name="END_LINK" />中。</translation>
 <translation id="3533202363250687977">關閉所有無痕式分頁</translation>
 <translation id="3533436815740441613">新分頁</translation>
 <translation id="3540141921715814660">加入書籤</translation>
@@ -380,6 +384,7 @@
 <translation id="3818293389945649617">尋找下一個相符的項目</translation>
 <translation id="3819183753496523827">你已經離線，請檢查網際網路連線，然後再試一次。</translation>
 <translation id="3835964409414434850">前往下一個分頁</translation>
+<translation id="3838691874161539578">請檢查已儲存的密碼，強化安全性並保護自己的線上安全</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3851938967634752633">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶的密碼，但不會刪除你的帳戶。</translation>
 <translation id="3858860766373142691">名稱</translation>
@@ -435,6 +440,7 @@
 <translation id="4249955472157341256">依最新時間排序</translation>
 <translation id="42618743927498729">如果產品在任何網站上降價，系統會透過快訊通知你。</translation>
 <translation id="4263576668337963058">顯示可用的網頁動作</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{你已忽略 {COUNT} 則警告}other{你已忽略 {COUNT} 則警告}}</translation>
 <translation id="4272631900155121838">如要掃描 QR 圖碼，請在設定中啟用相機</translation>
 <translation id="4277990410970811858">安全瀏覽</translation>
 <translation id="4281844954008187215">服務條款</translation>
@@ -481,6 +487,7 @@
 <translation id="4630540211544979320">翻譯網頁</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4636930964841734540">資訊</translation>
+<translation id="4642472735733036929">已停止追蹤價格</translation>
 <translation id="4650125387981512669">以「<ph name="FIRST_RUN_ACCOUNT_NAME" />」的身分登入繼續使用</translation>
 <translation id="4659126640776004816">當你登入 Google 帳戶時，系統會啟用這項功能。</translation>
 <translation id="4659667755519643272">進入分頁切換選項</translation>
@@ -555,6 +562,7 @@
 <translation id="5118764316110575523">關閉</translation>
 <translation id="5119391094379141756">選取 [Chrome]</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} 組密碼的強度太低}other{{COUNT} 組密碼的強度太低}}</translation>
 <translation id="5149188072385105201">新增密碼…</translation>
 <translation id="5150492518600715772">傳送到你的裝置</translation>
 <translation id="5168414296986405587">專為 iPadOS 打造</translation>
@@ -638,6 +646,7 @@
 <translation id="5804241973901381774">權限</translation>
 <translation id="5812974770859303494">新增至...</translation>
 <translation id="581659025233126501">開啟同步功能</translation>
+<translation id="5817176759448082654">密碼安全檢查</translation>
 <translation id="5819208479324046259">由「<ph name="MANAGER" />」管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">在 Chrome 中儲存密碼、付款方式和地址，以便稍後自動填入。</translation>
 <translation id="5834415013958049700">你複製的智慧鏡頭圖片</translation>
@@ -838,6 +847,7 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7006788746334555276">內容設定</translation>
+<translation id="7014087399239955356">正在檢查密碼...</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
@@ -892,6 +902,7 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7531345132340165516">目前網站</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
+<translation id="754655535278952384">已在 <ph name="TIME" />勾選</translation>
 <translation id="7553234618121028547">如要關閉，請開啟<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />並前往「密碼選項」部分。</translation>
 <translation id="7554645225856321710">全部關閉</translation>
 <translation id="7554791636758816595">新分頁</translation>
@@ -970,6 +981,7 @@
 <translation id="806745655614357130">分開保留我的資料</translation>
 <translation id="8073670137947914548">下載完成</translation>
 <translation id="8073872304774253879">改善搜尋和瀏覽體驗</translation>
+<translation id="8077675488769462025">閒置分頁</translation>
 <translation id="8079602123447022758">這項設定是由管理員控管，輕觸兩下即可查看更多資訊</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="8084285576995584326">控管 Google 帳戶資料</translation>
@@ -1004,6 +1016,7 @@
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8386068868580335421">重設</translation>
+<translation id="8393889347136007944">已有 <ph name="THRESHOLD" /> 天未使用的分頁</translation>
 <translation id="8407669440184693619">找不到這個網站的密碼</translation>
 <translation id="842017693807136194">目前登入身分</translation>
 <translation id="8427613705947111202">「選單」→「設定」→「密碼」</translation>

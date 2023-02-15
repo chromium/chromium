@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Tombol Lanjutkan perjalanan Anda, tekan Enter untuk melanjutkan perjalanan Anda dan melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="1101672080107056897">Tindakan error</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Beberapa kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Pilih izin untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Barang antik &amp; koleksi</translation>
@@ -2015,6 +2016,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5992691462791905444">Lipatan format engineering Z</translation>
 <translation id="5992805036496113940">Lihat info yang digunakan untuk menampilkan iklan kepada Anda</translation>
 <translation id="5995727681868049093">Kelola info, privasi, dan keamanan di Akun Google Anda</translation>
+<translation id="5996887213716993070"><ph name="FIELD" /> tidak boleh kosong</translation>
 <translation id="5997247540087773573">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Untuk mengamankan akun Anda, Pengelola Sandi Google merekomendasikan untuk mengubah sandi tersebut sekarang dan memeriksa sandi tersimpan Anda.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6005765687956866568">Info yang diisi otomatis telah dihapus dari formulir</translation>
@@ -2752,6 +2754,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7766518757692125295">Perbatasan</translation>
 <translation id="7773005668374414287">Urutan yang sama menghadap ke atas</translation>
 <translation id="7785790577395078482">tablet ini</translation>
+<translation id="7786368602962652765">Kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.</translation>
 <translation id="7790488044432570133">Situs yang Anda buka dapat meminta informasi kepada Chrome untuk membantunya mengukur performa iklan. Chrome memungkinkan situs mengumpulkan jenis data tertentu, misalnya jam berapa iklan ditampilkan kepada Anda.</translation>
 <translation id="7791011319128895129">Belum dirilis</translation>
 <translation id="7791196057686275387">Bale</translation>

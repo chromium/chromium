@@ -133,6 +133,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="163517899691012366">Les notifications sont désactivées lorsque le mode Ne pas déranger est activé</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1639239467298939599">Chargement en cours…</translation>
+<translation id="1647986356840967552">Page précédente</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
 <translation id="1668469839109562275">VPN intégré</translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
@@ -554,6 +555,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
 <translation id="397726367135689299">La recharge de la batterie n'est peut-être pas fiable.</translation>
 <translation id="3977512764614765090">La batterie est en charge, avec un niveau de <ph name="PERCENTAGE" /> % pour l'instant.</translation>
+<translation id="3984536049089846927">Page suivante</translation>
 <translation id="3986082989454912832">Répondre</translation>
 <translation id="3995138139523574647">Appareil USB de type C (port situé sur la droite de l'appareil, à l'arrière)</translation>
 <translation id="40062176907008878">Écriture manuscrite</translation>

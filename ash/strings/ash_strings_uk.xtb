@@ -133,6 +133,7 @@
 <translation id="163517899691012366">Коли ввімкнено режим "Не турбувати", сповіщення надходять без звуку</translation>
 <translation id="1637505162081889933">Пристроїв: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Завантаження</translation>
+<translation id="1647986356840967552">Попередня сторінка</translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="397726367135689299">Джерело для заряджання акумулятора ненадійне.</translation>
 <translation id="3977512764614765090">Акумулятор заряджений на <ph name="PERCENTAGE" />% і продовжує заряджатися.</translation>
+<translation id="3984536049089846927">Наступна сторінка</translation>
 <translation id="3986082989454912832">Відповісти</translation>
 <translation id="3995138139523574647">пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="40062176907008878">Рукописне введення</translation>

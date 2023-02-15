@@ -139,6 +139,7 @@
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
 <translation id="1677582821739292812">有人正在望向您的螢幕</translation>
+<translation id="1683399938733266832">CPU 目前使用情況：<ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 計時器 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 位址：<ph name="ADDRESS" /></translation>
@@ -381,6 +382,7 @@
 <translation id="3051189971848907985">正在重新命名設定檔。請等候幾分鐘。</translation>
 <translation id="3055162170959710888">您今天的裝置使用時間：<ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">不支援</translation>
+<translation id="3068622547379332530">版本 <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">捷徑列喺螢幕左邊</translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">打開選單</translation>
@@ -579,6 +581,7 @@
 <translation id="4123259114412175274">如要解鎖 Chromebook，請確保手機的藍牙已開啟</translation>
 <translation id="4125970834901680537">無法在平板電腦模式中串流應用程式。請使用手提電腦模式再試一次。</translation>
 <translation id="4129129681837227511">如要在上鎖畫面上查看通知，請將裝置解鎖並變更相關設定</translation>
+<translation id="4131973331381812765">溫度：<ph name="TEMPERATURE" />°C - 目前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">開啟，直到日出</translation>
 <translation id="4146833061457621061">播音樂</translation>
 <translation id="4150201353443180367">顯示屏</translation>
@@ -733,7 +736,7 @@
 <translation id="4895488851634969361">電池電量已滿。</translation>
 <translation id="490375751687810070">垂直</translation>
 <translation id="490788395437447240">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="491504982845934899">在裝置完成「<ph name="NETWORK_NAME" />」設定後啟用</translation>
+<translation id="491504982845934899">喺裝置設定完 <ph name="NETWORK_NAME" /> 之後啟用</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4919841137949306064">「<ph name="APP_NAME" />」目前正在使用您的相機</translation>

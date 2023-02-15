@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Button na Ipagpatuloy ang iyong journey, pindutin ang Enter para ipagpatuloy ang journey mo at makakita ng nauugnay na aktibidad sa iyong history sa Chrome</translation>
 <translation id="1101672080107056897">Error sa pagkilos</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Pumili ng pahintulot para sa <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Mga antigo at collectible</translation>
@@ -2016,6 +2017,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5992691462791905444">Engineering Z-fold</translation>
 <translation id="5992805036496113940">Tingnan ang impormasyong ginamit para magpakita sa iyo ng mga ad</translation>
 <translation id="5995727681868049093">Pamahalaan ang iyong impormasyon, privacy, at seguridad sa iyong Google Account</translation>
+<translation id="5996887213716993070">Hindi puwedeng walang laman ang <ph name="FIELD" /></translation>
 <translation id="5997247540087773573">Nakita sa isang data breach ang password na kakagamit mo lang. Para ma-secure ang iyong mga account, inirerekomenda ng Google Password Manager na palitan na ito ngayon at tingnan ang mga naka-save mong password.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> (na) resulta para sa '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6005765687956866568">Na-clear sa form ang naka-autofill na impormasyon</translation>
@@ -2755,6 +2757,7 @@ Mga karagdagang detalye:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Parehong pagkakasunod-sunod nang nakatihaya</translation>
 <translation id="7785790577395078482">ang tablet na ito</translation>
+<translation id="7786368602962652765">Walang laman ang isang nire-require na field. Sagutan ito bago i-save.</translation>
 <translation id="7790488044432570133">Puwedeng humiling ng impormasyon sa Chrome ang mga site na binibisita para matulungan silang masukat ang performance ng kanilang mga ad. Pinapayagan ng Chrome ang mga site na mangolekta ng mga limitadong uri ng data, tulad ng oras kung kailan ipinakita sa iyo ang isang ad.</translation>
 <translation id="7791011319128895129">Hindi pa na-release</translation>
 <translation id="7791196057686275387">Bale</translation>

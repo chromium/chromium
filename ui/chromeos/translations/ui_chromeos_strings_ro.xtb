@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">Un dosar cu acces permis pentru Bruschetta</translation>
 <translation id="2578394532502990878">Tamilă fonetică</translation>
 <translation id="2579959351793446050">Odia</translation>
+<translation id="2587195714949534472">Se pregătește sincronizarea pentru <ph name="FILE_NAME" />…</translation>
 <translation id="2602810353103180630">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
 <translation id="2614589611416690597">Videoclip <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Disc Google nu poate fi accesat în acest moment.</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">Mongolă</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erori.</translation>
 <translation id="3509680540198371098">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
+<translation id="3511705761158917664">Se pregătește sincronizarea pentru <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="3522708245912499433">Portugheză</translation>
 <translation id="3524311639100184459">Atenție: aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosar</translation>

@@ -970,6 +970,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="806745655614357130">Не обједињуј моје податке</translation>
 <translation id="8073670137947914548">Преузимање је завршено</translation>
 <translation id="8073872304774253879">Побољшај претраге и прегледање</translation>
+<translation id="8077675488769462025">Неактивне картице</translation>
 <translation id="8079602123447022758">Овим подешавањем се управља. Двапут додирните за више информација</translation>
 <translation id="8080028325999236607">Затвори све картице</translation>
 <translation id="8084285576995584326">Контролишите податке Google налога</translation>
@@ -1004,6 +1005,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="8378714024927312812">Овим управља организација</translation>
 <translation id="8386068868580335421">Ресетуј</translation>
+<translation id="8393889347136007944">Картице се не користе <ph name="THRESHOLD" /> дана</translation>
 <translation id="8407669440184693619">Није пронађена ниједна лозинка за овај сајт</translation>
 <translation id="842017693807136194">Пријављени сте помоћу:</translation>
 <translation id="8427613705947111202">Мени → Подешавања → Лозинке</translation>

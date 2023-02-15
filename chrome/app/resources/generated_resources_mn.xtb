@@ -1006,7 +1006,6 @@
 <translation id="1869433484041798909">Хавчуурганы товчлуур</translation>
 <translation id="1871098866036088250">Chrome хөтөч дээр нээх</translation>
 <translation id="187145082678092583">Арай цөөн апп</translation>
-<translation id="1871463148436682760">Амжилттай дууссан!</translation>
 <translation id="1871534214638631766">Таныг контент дээр хулганынхаа баруун талыг товших эсвэл дээр нь удаан дарах үед холбоотой мэдээллийг харуулна</translation>
 <translation id="1871615898038944731">Таны <ph name="DEVICE_TYPE" />-г шинэчилсэн байна</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" />-д зөвшөөрлийг дахин зөвшөөрөх</translation>
@@ -3203,7 +3202,6 @@
 <translation id="3828953470056652895">Би <ph name="BEGIN_LINK1" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome, ChromeOS-н үйлчилгээний нэмэлт нөхцөл<ph name="END_LINK2" /> болон <ph name="BEGIN_LINK3" />Play-н үйлчилгээний нөхцөлийг<ph name="END_LINK3" /> уншсан бөгөөд зөвшөөрч байна.</translation>
 <translation id="3829765597456725595">SMB-н файл хуваалцах</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Таны администратор аюултай байж болзошгүй 1 өргөтгөлийг буцааж идэвхжүүлсэн}other{Таны администратор аюултай байж болзошгүй {NUM_EXTENSIONS} өргөтгөлийг буцааж идэвхжүүлсэн}}</translation>
-<translation id="3831436149286513437">Google Драйвын хайлтын зөвлөмж</translation>
 <translation id="3834728400518755610">Микрофоны тохиргоонд хийсэн өөрчлөлт Linux-г унтраахыг шаардаж байна. Үргэлжлүүлэхийн тулд Linux-г унтраана уу.</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" апп нь "<ph name="INSTALLED_APP_NAME" />"-тай зөрчилдөж байгаа тул үүнийг нэмэх боломжгүй байна.</translation>
 <translation id="3835904559946595746">Linux-н нөөцлөлтийг сэргээж чадсангүй</translation>

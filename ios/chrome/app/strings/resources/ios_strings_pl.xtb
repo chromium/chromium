@@ -40,6 +40,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1207113853726624428">Nowe wyszukiwanie</translation>
 <translation id="1209206284964581585">Na razie ukryj</translation>
 <translation id="1219674500290482172">Nie można połączyć się z internetem.</translation>
+<translation id="1226238226094914652">Hasła na wszystkich Twoich urządzeniach</translation>
 <translation id="122699739164161391">Zamknij wszystkie karty</translation>
 <translation id="1229222343402087523">Wyszukaj ${searchPhrase} w Chrome</translation>
 <translation id="1242044645101871359">Zaloguj się ponownie</translation>
@@ -205,6 +206,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
 <translation id="2556092377360758201">Brak ochrony (niezalecane)</translation>
 <translation id="2562041823070056534">Wysyłam na urządzenie <ph name="DEVICE_NAME" />…</translation>
+<translation id="2576499762020411840">Używaj haseł na swoim koncie Google i je zapisuj</translation>
 <translation id="2578571896248130439">Wyślij stronę internetową</translation>
 <translation id="2584132361465095047">Dodaj konto…</translation>
 <translation id="2600682495497606169">Wyczyść pliki cookie witryny</translation>
@@ -410,6 +412,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4063300985191096908">Przejdź do kanału</translation>
 <translation id="408404951701638773">Pasek wyszukiwania jest teraz łatwiej dostępny</translation>
 <translation id="4092655288299341041">Pokaż pomoc</translation>
+<translation id="4101942614374785540">Hasła są teraz zapisywane na Twoim koncie Google (<ph name="ACCOUNT" />). Możesz ich używać wszędzie, gdzie się zalogujesz. Aby wyłączyć tę funkcję, otwórz <ph name="BEGIN_LINK" />ustawienia<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
 <translation id="411254640334432676">Błąd pobierania.</translation>
 <translation id="4112644173421521737">Szukaj</translation>
@@ -693,6 +696,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6184086493125982861">Pokaż karty</translation>
 <translation id="6187302354554850004">Ostatnia synchronizacja: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Nieprzeczytane</translation>
+<translation id="6193424046394092997">{count,plural, =1{Dodano do zakładek w folderze {title}}few{Dodano do zakładek w folderze {title}}many{Dodano do zakładek w folderze {title}}other{Dodano do zakładek w folderze {title}}}</translation>
 <translation id="6196207969502475924">Wyszukiwanie głosowe</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zamknij {COUNT} kartę}few{Zamknij {COUNT} karty}many{Zamknij {COUNT} kart}other{Zamknij {COUNT} karty}}</translation>
 <translation id="6219550825416862075">Witamy z powrotem</translation>
@@ -838,6 +842,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7062545763355031412">Zaakceptuj i przełącz konta</translation>
 <translation id="7080806333218412752">Wysyłaj adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie. Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, by pomóc w wykrywaniu nowych zagrożeń. Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, by chronić Cię we wszystkich aplikacjach Google.</translation>
+<translation id="7083860864742905105">Gdy to ustawienie jest włączone, hasła są zapisywane na koncie <ph name="ACCOUNT" />. Gdy jest wyłączone, hasła są zapisywane tylko na tym urządzeniu.</translation>
 <translation id="7095110968493193530">W Menedżerze haseł Google w przypadku konta <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Ostatnie karty</translation>
 <translation id="7102005569666697658">Pobieram… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7756478488453921771">Menu → Ustawienia → Formy płatności</translation>
 <translation id="7765158879357617694">Przenieś</translation>
 <translation id="7772032839648071052">Potwierdź hasło</translation>
+<translation id="777572173400717978">{count,plural, =1{Dodano do zakładek}few{Dodano do zakładek}many{Dodano do zakładek}other{Dodano do zakładek}}</translation>
 <translation id="7781011649027948662">Przetłumaczyć stronę?</translation>
 <translation id="7781069478569868053">Strona Nowa karta</translation>
 <translation id="7781829728241885113">Wczoraj</translation>

@@ -998,7 +998,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1869433484041798909">Yer işareti düğmesi</translation>
 <translation id="1871098866036088250">Chrome tarayıcıda aç</translation>
 <translation id="187145082678092583">Daha az uygulama</translation>
-<translation id="1871463148436682760">İyi iş çıkardınız.</translation>
 <translation id="1871534214638631766">İçeriği sağ tıkladığınızda veya uzun bastığınızda ilgili bilgileri gösterir</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> cihazınız güncel</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> sitesine tekrar izin verin</translation>
@@ -3190,7 +3189,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" /> ile <ph name="BEGIN_LINK3" />Play Hizmet Şartları<ph name="END_LINK3" />'nı okudum ve kabul ediyorum.</translation>
 <translation id="3829765597456725595">SMB dosya paylaşımı</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Yöneticiniz zararlı olabilecek 1 uzantıyı tekrar açtı}other{Yöneticiniz zararlı olabilecek {NUM_EXTENSIONS} uzantıyı tekrar açtı}}</translation>
-<translation id="3831436149286513437">Google Drive arama önerileri</translation>
 <translation id="3834728400518755610">Mikrofon ayarlarında yapılan değişiklik, Linux'un kapatılmasını gerektirir. Devam etmek için Linux'u kapatın.</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" uygulaması, zaten yüklenmiş olan "<ph name="INSTALLED_APP_NAME" />" uygulamasıyla çakıştığından eklenemedi.</translation>
 <translation id="3835904559946595746">Linux yedeklemesi geri yüklenemedi</translation>

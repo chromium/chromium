@@ -133,6 +133,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="163517899691012366">Ilmoitukset mykistetään, kun Älä häiritse ‐tila on päällä</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> laitetta</translation>
 <translation id="1639239467298939599">Ladataan</translation>
+<translation id="1647986356840967552">Edellinen sivu</translation>
 <translation id="1654477262762802994">Aloita puhekysely</translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> jäljellä</translation>
@@ -555,6 +556,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="397726367135689299">Akun lataus ei välttämättä toimi oikein.</translation>
 <translation id="3977512764614765090">Akkua ladataan, varaus nyt <ph name="PERCENTAGE" /> %</translation>
+<translation id="3984536049089846927">Seuraava sivu</translation>
 <translation id="3986082989454912832">Vastaa</translation>
 <translation id="3995138139523574647">C-tyypin USB-laite (oikean sivun taaimmainen portti)</translation>
 <translation id="40062176907008878">Käsinkirjoitus</translation>

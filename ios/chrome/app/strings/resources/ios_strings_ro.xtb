@@ -40,6 +40,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1207113853726624428">Căutare nouă</translation>
 <translation id="1209206284964581585">Ascunde momentan</translation>
 <translation id="1219674500290482172">Nu se poate realiza conexiunea la internet.</translation>
+<translation id="1226238226094914652">Parole disponibile pe toate dispozitivele</translation>
 <translation id="122699739164161391">Închide toate filele</translation>
 <translation id="1229222343402087523">Caută ${searchPhrase} în Chrome</translation>
 <translation id="1242044645101871359">Reconectează-te</translation>
@@ -205,6 +206,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2529021024822217800">Deschide-le pe toate</translation>
 <translation id="2556092377360758201">Fără protecție (nu este recomandat)</translation>
 <translation id="2562041823070056534">Se trimite la <ph name="DEVICE_NAME" />...</translation>
+<translation id="2576499762020411840">Folosește și salvează parole din Contul Google</translation>
 <translation id="2578571896248130439">Trimite pagina web</translation>
 <translation id="2584132361465095047">Adaugă un cont…</translation>
 <translation id="2600682495497606169">Șterge cookie-urile site-ului</translation>
@@ -410,6 +412,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4063300985191096908">Accesează feedul</translation>
 <translation id="408404951701638773">Bara de căutare este acum mai ușor de accesat</translation>
 <translation id="4092655288299341041">Afișează secțiunea Ajutor</translation>
+<translation id="4101942614374785540">Parolele se salvează acum în Contul tău Google (<ph name="ACCOUNT" />). Le poți folosi oriunde te conectezi. Pentru a dezactiva opțiunea, accesează <ph name="BEGIN_LINK" />setările<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Detectează și te avertizează cu privire la evenimentele periculoase atunci când au loc.</translation>
 <translation id="411254640334432676">Nu s-a descărcat.</translation>
 <translation id="4112644173421521737">Caută</translation>
@@ -693,6 +696,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6184086493125982861">Afișează butonul File</translation>
 <translation id="6187302354554850004">Ultima sincronizare: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Necitite</translation>
+<translation id="6193424046394092997">{count,plural, =1{Marcaj adăugat în {title}}few{Marcaje adăugate în {title}}other{Marcaje adăugate în {title}}}</translation>
 <translation id="6196207969502475924">Căutare vocală</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Închide {COUNT} filă}few{Închide {COUNT} file}other{Închide {COUNT} de file}}</translation>
 <translation id="6219550825416862075">Bine ai revenit</translation>
@@ -838,6 +842,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7062545763355031412">Acceptă și comută conturile</translation>
 <translation id="7080806333218412752">Trimite adresele URL la funcția Navigare sigură, pentru a le verifica. În plus, trimite un mic eșantion cu pagini, descărcări, activități ale extensiilor și informații despre sistem pentru a descoperi noi amenințări. Conectează temporar aceste date la Contul tău Google dacă te-ai conectat, pentru a te proteja în aplicațiile Google.</translation>
+<translation id="7083860864742905105">Când opțiunea este activată, parolele se salvează în <ph name="ACCOUNT" />. Când opțiunea este dezactivată, parolele se salvează numai pe acest dispozitiv.</translation>
 <translation id="7095110968493193530">În Manager de parole Google pentru <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">File recente</translation>
 <translation id="7102005569666697658">Se descarcă… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7756478488453921771">Meniu → Setări → Metode de plată</translation>
 <translation id="7765158879357617694">Mută</translation>
 <translation id="7772032839648071052">Confirmă expresia de acces</translation>
+<translation id="777572173400717978">{count,plural, =1{Ai marcat}few{Ai marcat}other{Ai marcat}}</translation>
 <translation id="7781011649027948662">Traduci pagina?</translation>
 <translation id="7781069478569868053">Pagina Filă nouă</translation>
 <translation id="7781829728241885113">Ieri</translation>

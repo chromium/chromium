@@ -40,6 +40,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1207113853726624428">Új keresés</translation>
 <translation id="1209206284964581585">Elrejtés ideiglenesen</translation>
 <translation id="1219674500290482172">Nem lehet kapcsolódni az internethez.</translation>
+<translation id="1226238226094914652">Jelszavak az összes eszközén</translation>
 <translation id="122699739164161391">Összes lap bezárása</translation>
 <translation id="1229222343402087523">Keresés a következőre a Chrome-ban: ${searchPhrase}</translation>
 <translation id="1242044645101871359">Bejelentkezés újra</translation>
@@ -205,6 +206,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2529021024822217800">Az összes megnyitása</translation>
 <translation id="2556092377360758201">Nincs védelem (nem javasolt)</translation>
 <translation id="2562041823070056534">Küldés a következőre: <ph name="DEVICE_NAME" />…</translation>
+<translation id="2576499762020411840">Jelszavak mentése és használata a Google-fiókban</translation>
 <translation id="2578571896248130439">Weboldal küldése</translation>
 <translation id="2584132361465095047">Fiók hozzáadása...</translation>
 <translation id="2600682495497606169">Webhely cookie-jainak törlése</translation>
@@ -410,6 +412,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4063300985191096908">Hírcsatorna megnyitása</translation>
 <translation id="408404951701638773">Mostantól egyszerűbb a keresés a keresősávban</translation>
 <translation id="4092655288299341041">Súgó megjelenítése</translation>
+<translation id="4101942614374785540">A jelszavakat mostantól a Google-fiókjába (<ph name="ACCOUNT" />) menti a rendszer. Mindenhol használhatja őket, ahol be van jelentkezve. Ha ki szeretné kapcsolni, lépjen a <ph name="BEGIN_LINK" />beállításokhoz<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Már a bekövetkezésük idején észleli a veszélyes eseményeket, és figyelmezteti Önt rájuk.</translation>
 <translation id="411254640334432676">A letöltés sikertelen.</translation>
 <translation id="4112644173421521737">Keresés</translation>
@@ -693,6 +696,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6184086493125982861">Lapok megjelenítése</translation>
 <translation id="6187302354554850004">Utolsó szinkron.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Olvasatlan</translation>
+<translation id="6193424046394092997">{count,plural, =1{Könyvjelzők közé téve itt: {title}}other{Könyvjelzők közé téve itt: {title}}}</translation>
 <translation id="6196207969502475924">Hangalapú keresés</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} lap bezárása}other{{COUNT} lap bezárása}}</translation>
 <translation id="6219550825416862075">Üdvözöljük ismét!</translation>
@@ -838,6 +842,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7062545763355031412">Elfogadás és fiókváltás</translation>
 <translation id="7080806333218412752">Elküldi az URL-eket a Biztonságos Böngészésnek ellenőrzésre. Elküldi továbbá az oldalakkal, letöltésekkel, bővítményekkel és rendszerrel kapcsolatos adatok egy kisebb mintáját annak érdekében, hogy a jövőben könnyebben felismerhessük az új fenyegetéseket. Amikor be van jelentkezve, ideiglenesen a Google-fiókjához kapcsolja ezeket az adatokat, hogy megvédhessük Önt a Google-alkalmazásokban.</translation>
+<translation id="7083860864742905105">Ha be van kapcsolva, a jelszavakat a rendszer menti a következő fiókba: <ph name="ACCOUNT" />. Ha ki van kapcsolva, a rendszer csak ezen az eszközön menti a jelszavakat.</translation>
 <translation id="7095110968493193530">A Google Jelszókezelőbe a következő fióknál: <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Nemrég megnyitott lapok</translation>
 <translation id="7102005569666697658">Letöltés… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7756478488453921771">Menü → Beállítások → Fizetési módok</translation>
 <translation id="7765158879357617694">Áthelyezés</translation>
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>
+<translation id="777572173400717978">{count,plural, =1{Könyvjelző létrehozva}other{Könyvjelző létrehozva}}</translation>
 <translation id="7781011649027948662">Lefordítja az oldalt?</translation>
 <translation id="7781069478569868053">Új lap oldal</translation>
 <translation id="7781829728241885113">Tegnap</translation>
@@ -964,6 +970,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="806745655614357130">Maradjanak elkülönítve az adataim</translation>
 <translation id="8073670137947914548">Sikeres letöltés</translation>
 <translation id="8073872304774253879">A keresések és a böngészés javítása</translation>
+<translation id="8077675488769462025">Inaktív lapok</translation>
 <translation id="8079602123447022758">Felügyelt beállítás. További információért koppintson duplán.</translation>
 <translation id="8080028325999236607">Összes lap bezárása</translation>
 <translation id="8084285576995584326">Google-fiókadatok vezérlése</translation>
@@ -998,6 +1005,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8343993175958086504">Biztonsági másolatot készíthet adatairól, és bármely eszközön használatja őket.</translation>
 <translation id="8378714024927312812">Az Ön szervezete kezeli</translation>
 <translation id="8386068868580335421">Visszaállítás</translation>
+<translation id="8393889347136007944"><ph name="THRESHOLD" /> napja nem használt lapok</translation>
 <translation id="8407669440184693619">Nem található jelszó a webhelyhez</translation>
 <translation id="842017693807136194">Bejelentkezve a következővel:</translation>
 <translation id="8427613705947111202">Menü → Beállítások → Jelszavak</translation>

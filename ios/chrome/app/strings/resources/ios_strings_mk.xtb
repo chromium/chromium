@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">Ново пребарување</translation>
 <translation id="1209206284964581585">Сокриј засега</translation>
 <translation id="1219674500290482172">Не може да се поврзе на интернет.</translation>
+<translation id="1226238226094914652">Лозинки на сите ваши уреди</translation>
 <translation id="122699739164161391">Затвори ги сите картички</translation>
 <translation id="1229222343402087523">Пребарајте ${searchPhrase} во Chrome</translation>
 <translation id="1242044645101871359">Најавете се повторно</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">Отвори ги сите</translation>
 <translation id="2556092377360758201">Без заштита (не се препорачува)</translation>
 <translation id="2562041823070056534">Се испраќа на <ph name="DEVICE_NAME" />…</translation>
+<translation id="2576499762020411840">Користете и зачувувајте лозинки на вашата сметка на Google</translation>
 <translation id="2578571896248130439">Испратете веб-страница</translation>
 <translation id="2584132361465095047">Додајте сметка</translation>
 <translation id="2600682495497606169">Избриши ги колачињата од сајтот</translation>
@@ -410,6 +412,7 @@
 <translation id="4063300985191096908">Оди на активноста</translation>
 <translation id="408404951701638773">Сега е полесно да се дојде до лентата за пребарување</translation>
 <translation id="4092655288299341041">Прикажи помош</translation>
+<translation id="4101942614374785540">Лозинките сега се зачувуваат на вашата сметка на Google (<ph name="ACCOUNT" />). Може да ги користите каде и да сте најавени. За да го исклучите ова, одете до <ph name="BEGIN_LINK" />поставките<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Открива опасни настани и ве предупредува кога ќе се случат.</translation>
 <translation id="411254640334432676">Преземањето не успеа.</translation>
 <translation id="4112644173421521737">Пребарај</translation>
@@ -693,6 +696,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6184086493125982861">Прикажи картички</translation>
 <translation id="6187302354554850004">Последна синхронизација: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Непрочитани</translation>
+<translation id="6193424046394092997">{count,plural, =1{Додаден е обележувач во {title}}one{Додадени се обележувачи во {title}}other{Додадени се обележувачи во {title}}}</translation>
 <translation id="6196207969502475924">Гласовно пребарување</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затвори {COUNT} картичка}one{Затвори {COUNT} картичка}other{Затвори {COUNT} картички}}</translation>
 <translation id="6219550825416862075">Добре дојдовте назад</translation>
@@ -838,6 +842,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7062545763355031412">Прифати и замени ги сметките</translation>
 <translation id="7080806333218412752">Испраќа URL-адреси во „Безбедно прелистување“ за да се проверат. Испраќа и мал примерок од страници, преземања, активност на екстензиите и информации за системот за да помогне да се откријат нови закани. Привремено ги поврзува податоциве со вашата сметка на Google кога сте најавени за да ве заштити на апликациите на Google.</translation>
+<translation id="7083860864742905105">Кога е вклучено, лозинките за зачувуваат на <ph name="ACCOUNT" />. Кога е исклучено, лозинките се зачувуваат само на уредов.</translation>
 <translation id="7095110968493193530">До Google Password Manager за <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Неодамнешни картички</translation>
 <translation id="7102005569666697658">Се презема… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7756478488453921771">Мени → Поставки → Начини на плаќање</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7772032839648071052">Потврди лозинка</translation>
+<translation id="777572173400717978">{count,plural, =1{Обележано}one{Обележани}other{Обележани}}</translation>
 <translation id="7781011649027948662">Да се преведе страницата?</translation>
 <translation id="7781069478569868053">Страница во нова картичка</translation>
 <translation id="7781829728241885113">Вчера</translation>

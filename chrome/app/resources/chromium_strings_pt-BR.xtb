@@ -119,7 +119,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="3702352323269013324">Saiba mais sobre a personalização de anúncios no Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita.}=1{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="3713809861844741608">Abrir link em nova &amp;guia do Chromium</translation>
-<translation id="3728336900324680424">O Chromium acessará seu Drive para fazer sugestões na barra de endereço</translation>
 <translation id="378917192836375108">O Chromium permite que você clique em um número de telefone na web e ligue para ele com o Skype!</translation>
 <translation id="3830894615770080216">Sistema ChromiumOS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
@@ -215,6 +214,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6072463441809498330">Deixe o Chromium mais rápido</translation>
 <translation id="608006075545470555">Adicionar um perfil de trabalho a este navegador</translation>
 <translation id="6096348254544841612">Personalize e controle o Chromium. Uma atualização está disponível.</translation>
+<translation id="6102072151902574948">Quando essa opção está ativada, o Chromium economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos.</translation>
 <translation id="6119438414301547735">Permitir que a extensão mostre solicitações de acesso na barra de ferramentas do Chromium</translation>
 <translation id="6120345080069858279">O Chromium salvará essa senha na sua Conta do Google. Você não precisará se lembrar dela.</translation>
 <translation id="6129621093834146363">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chromium.</translation>
@@ -273,6 +273,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6940431691900807093">Os sites que você visitar vão poder pedir ao Chromium para ver seus interesses e personalizar os anúncios mostrados a você. O Chromium pode compartilhar até três interesses.</translation>
 <translation id="6964305034639999644">Abrir link na janela &amp;sem rastros do Chromium</translation>
 <translation id="6978145336957848883">Senhas fracas são fáceis de adivinhar. Deixe o Chromium <ph name="BEGIN_LINK" />criar e guardar senhas fortes para você<ph name="END_LINK" />.</translation>
+<translation id="6981396265751285733">Quando essa opção está ativada, o Chromium libera memória das guias inativas. Isso permite que guias ativas e outros apps usem mais recursos do computador e mantém o Chromium rápido. Suas guias inativas são reativadas automaticamente quando você volta para elas.</translation>
 <translation id="6984667024406244807">O Chromium está inativo</translation>
 <translation id="6985329841647292029">Termos do ChromiumOS</translation>
 <translation id="6990124437352146030">O Chromium precisa de permissão para este site acessar seu microfone</translation>

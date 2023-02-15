@@ -38,6 +38,7 @@
 <translation id="103279545524624934">‏Android ایپس شروع کرنے کیلئے ڈسک اسپیس خالی کریں۔</translation>
 <translation id="1033780634303702874">اپنے سلسلہ وار آلات تک رسائی حاصل کریں</translation>
 <translation id="1034484273907870301">ٹیبلیٹ وضع کے لیے تھمب نیل ٹیب اسٹرپ</translation>
+<translation id="1035875743511577452">فنکاران، فطرت اور بہت کچھ سے متاثر تھیمز کو دریافت کرنے کے لیے "تھیم تبدیل کریں" پر کلک کریں</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1036511912703768636">‏ان میں سے کسی بھی USB آلات تک رسائی حاصل کریں</translation>
 <translation id="1038168778161626396">صرف انسائفر</translation>
@@ -998,7 +999,6 @@
 <translation id="1869433484041798909">بُک مارک بٹن</translation>
 <translation id="1871098866036088250">‏Chrome براؤزر میں کھولیں</translation>
 <translation id="187145082678092583">کم ایپس</translation>
-<translation id="1871463148436682760">اچھی طرح سے ہو گیا!</translation>
 <translation id="1871534214638631766">جب آپ مواد پر دایاں کلک یا لانگ پریس کریں تو متعلقہ معلومات دکھائیں</translation>
 <translation id="1871615898038944731">آپ کا <ph name="DEVICE_TYPE" /> اپ ٹو ڈیٹ ہے</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> کے لیے اجازتوں کو دوبارہ اجازت دیں</translation>
@@ -1378,6 +1378,7 @@
 <translation id="2203088913459920044">نام میں حروف، نمبرز اور مخصوص حروف کا استعمال کیا جا سکتا ہے</translation>
 <translation id="220321590587754225">منسلک نہیں ہو سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="2203903197029773650">‏جب آپ اپنے Google اکاؤنٹ سے سائن ان ہوتے ہیں تو <ph name="BRAND" /> آپ کے پاس ورڈز کو چیک کر سکتا ہے</translation>
+<translation id="2204020417499639567">ای میل پُر کی گئی۔</translation>
 <translation id="2204034823255629767">آپ جو کچھ بھی ٹائپ کرتے ہیں اسے پڑھیں اور تبدیل کریں</translation>
 <translation id="2204387456724731099">اس انتخاب کا ترجمہ نہیں ہو سکا</translation>
 <translation id="2210462644007531147">انسٹالیشن مکمل نہیں ہو سکی</translation>
@@ -1570,6 +1571,7 @@
 <translation id="2352662711729498748">‎&lt; 1 MB</translation>
 <translation id="2352810082280059586">مقفل اسکرین کے نوٹس خودکار طور پر <ph name="LOCK_SCREEN_APP_NAME" /> میں محفوظ ہوتے ہیں۔ آپ کا حالیہ ترین نوٹ مقفل اسکرین پر باقی رہے گا۔</translation>
 <translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
+<translation id="2353910600995338714">برآمد کا عمل مکمل ہو گیا ہے</translation>
 <translation id="2355314311311231464">فراہمی ناکام ہو گئی کیوں کہ آپ کے اکاؤنٹ کی تفصیلات بازیافت نہیں کی جا سکیں۔ براہ کرم دوبارہ کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="2355477091455974894">انرجی سیور کے اختیارات</translation>
 <translation id="2355604387869345912">فوری ٹیدرنگ آن کریں</translation>
@@ -1833,6 +1835,7 @@
 <translation id="2603355571917519942">‏Voice Match تیار ہے</translation>
 <translation id="2604129989323098489">سائٹس عام طور پر آپ کے ڈسپلیز کے بارے میں معلومات طلب کرتی ہیں تاکہ وہ ونڈوز کو اچھے طریقے سے کھول سکیں اور رکھ سکیں، جیسے دستاویزات یا پوری اسکرین مواد کو ساتھ ساتھ دکھانا</translation>
 <translation id="2604255671529671813">نیٹ ورک کنکشن میں خرابی</translation>
+<translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> پتے کا فارم پر کیا گیا۔</translation>
 <translation id="2605668923777146443">‏Better Together کی خاطر اپنے اختیارات دیکھنے کیلئے <ph name="LINK_BEGIN" />ترتیبات<ph name="LINK_END" /> پر جائیں۔</translation>
 <translation id="2606246518223360146">ڈیٹا کو لنک کریں</translation>
 <translation id="2606454609872547359">‏نہیں، بغیر ChromeVox کے جاری رکھیں</translation>
@@ -2424,6 +2427,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ڈیٹا ڈائریکٹری بنانے میں ناکام ہوگیا</translation>
 <translation id="3124111068741548686">صارف ہینڈلز</translation>
+<translation id="3124332159330678621">‏اپنے براؤزر کو نئی شکل دینے کے لیے Chrome کو حسب ضرورت بنائیں</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">‏چارجنگ اور کارکردگی کے مسائل سے بچنے کیلئے، موافق Dell یا USB ٹائپ سی پاور ایڈاپٹر کا استعمال کریں۔</translation>
 <translation id="3127862849166875294">‏Linux کی ڈسک کا سائز تبدیل کریں</translation>
@@ -3049,6 +3053,7 @@
 <translation id="3713091615825314967">خود کار اپ ڈیٹس آن ہیں۔</translation>
 <translation id="371370241367527062">سامنے کا مائیکروفون</translation>
 <translation id="3714195043138862580">اس ڈیمو آلہ کو "غیر فراہم کردہ" کی حالت میں رکھ دیا گیا ہے۔</translation>
+<translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> پر کیا گیا۔</translation>
 <translation id="3719826155360621982">ہوم صفحہ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏آپ اور Google</translation>
@@ -3194,7 +3199,6 @@
 <translation id="3828953470056652895">‏میں نے پڑھا اور میں <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، <ph name="BEGIN_LINK2" />Chrome اور ChromeOS کی اضافی سروس کی شرائط<ph name="END_LINK2" /> اور <ph name="BEGIN_LINK3" />Play کی سروس کی شرائط<ph name="END_LINK3" /> سے اتفاق کرتا ہوں۔</translation>
 <translation id="3829765597456725595">‏SMB فائل کا اشتراک</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{آپ کے منتظم نے 1 ممکنہ طور پر نقصان دہ ایکسٹینشن کو پھر سے آن کر دیا}other{آپ کے منتظم نے {NUM_EXTENSIONS} ممکنہ طور پر نقصان دہ ایکسٹینشنز کو واپس آن کر دیا}}</translation>
-<translation id="3831436149286513437">‏Google Drive تلاش کی تجاویز</translation>
 <translation id="3834728400518755610">‏مائیکروفون کی ترتیب میں تبدیلی کیلئے Linux کو شٹ ڈاؤن کرنے کی ضرورت ہے۔ آگے بڑھنے کے لیے Linux کو شٹ ڈاؤن کریں۔</translation>
 <translation id="3834775135533257713">ایپلیکیشن "<ph name="TO_INSTALL_APP_NAME" />" کو شامل نہیں کیا جا سکا کیونکہ یہ "<ph name="INSTALLED_APP_NAME" />" کے ساتھ متصادم ہے۔</translation>
 <translation id="3835904559946595746">‏Linux کا بیک اپ بحال نہیں ہو سکا</translation>
@@ -3656,6 +3660,7 @@
 <translation id="426652736638196239">‏یہ IBAN صرف اس آلے میں محفوظ ہوگا</translation>
 <translation id="4266679478228765574">فولڈرز کو حذف کرنے سے اشتراک کا عمل رک جائے گا تاہم فائلز حذف نہیں ہوں گی۔</translation>
 <translation id="4267455501101322486">تعلیمی وسائل تک رسائی کے لئے اکاؤنٹ شامل کرنے کیلئے، والدین سے کہیں کہ آپ کو اجازت دیں</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{کوئی پاس ورڈ نہیں ملا}=1{1 نتیجہ ملا}other{{COUNT} نتائج ملے}}</translation>
 <translation id="4267924571297947682">اجازت کے ليے والد/والدہ سے پوچھیں</translation>
 <translation id="4267953847983678297">سیلولر نیٹ ورک سے خودکار طور پر منسلک ہوں</translation>
 <translation id="4268025649754414643">کلید کی خفیہ کاری</translation>
@@ -3936,6 +3941,7 @@
 <translation id="4522890784888918985">بچوں کے اکاؤنٹس تعاون یافتہ نہیں ہیں</translation>
 <translation id="4523876148417776526">‏XML سائٹ لسٹس جو ابھی تک بازیاب نہیں کی گئی ہیں۔</translation>
 <translation id="4524832533047962394">فراہم کردہ اندراج کا موڈ آپریٹنگ سسٹم کے اس ورژن کے ساتھ تعاون یافتہ نہیں ہے۔ براہ کرم یہ یقینی بنائیں کہ آپ جدید ترین ورژن چلا رہے ہیں۔</translation>
+<translation id="4526853756266614740">فوری طور پر تھیم کو لاگو کرنے کے لیے تصویر کو منتخب کریں</translation>
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4527929807707405172">معکوس اسکرولنگ کو فعال کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">ترجمہ کی تجویز</translation>
@@ -4235,6 +4241,7 @@
 <translation id="4800839971935185386">نام اور آئیکن کے اپ ڈیٹس کا جائزہ لیں</translation>
 <translation id="4801448226354548035">اکاؤنٹس چھپائیں</translation>
 <translation id="4801512016965057443">موبائل ڈیٹا رومنگ کی اجازت دیں</translation>
+<translation id="4804311503028830356">دیگر اختیارات دریافت کرنے کے لیے پچھلے تیر کے نشان پر کلک کریں</translation>
 <translation id="4804818685124855865">منقطع کریں</translation>
 <translation id="4804827417948292437">مَگَر ناشپاتی</translation>
 <translation id="4806457879608775995">ان شرائط کا جائزہ لیں اور اپنے ڈیٹا کو کنٹرول کریں</translation>
@@ -5390,6 +5397,7 @@
 <translation id="5877064549588274448">چینل تبدیل ہو گیا ہے۔ تبدیلیوں کو لاگو کرنے کیلئے اپنے آلہ کو دوبارہ شروع کریں۔</translation>
 <translation id="5877584842898320529">منتخب کردہ پرنٹر دستیاب نہیں ہے یا صحیح سے انسٹال نہیں ہوا ہے۔ <ph name="BR" /> اپنا پرنٹر چیک کریں یا دوسرا پرنٹر منتخب کر کے آزمائيں۔</translation>
 <translation id="5878945009165002849">شناختی سروسز سے سائن ان کے پرامپٹس مسدود کریں</translation>
+<translation id="5881710783061958569">اگر ایسا ہے تو براہ کرم <ph name="BRAND" /> میں اپنے محفوظ کردہ پاس ورڈ میں ترمیم کریں تاکہ یہ آپ کے نئے پاس ورڈ سے مماثل ہو جائے۔</translation>
 <translation id="5882449899683447569">کچھ غلط ہو گیا اور آپ کے پاس ورڈز درآمد نہیں ہوئے</translation>
 <translation id="5882919346125742463">معلوم نیٹ ورکس</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کو خودکار طور پر مسدود کر دیا گیا</translation>
@@ -6972,6 +6980,7 @@
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7353261921908507769">ان کے قریب ہونے پر آپ کے رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ آپ کے قبول کئے بغیر منتقلیاں شروع نہیں ہوں گی۔</translation>
 <translation id="735361434055555355">‏Linux کو انسٹال کیا جا رہا ہے…</translation>
+<translation id="7354120289251608189">آپ اب کسی بھی وقت اپنے براؤزر کو نئی شکل دے سکتے ہیں۔</translation>
 <translation id="7356908624372060336">نیٹ ورک لاگز</translation>
 <translation id="735745346212279324">‏VPN منقطع ہو گیا</translation>
 <translation id="7358324924540718595">آج کیلئے مخفی میموریز</translation>
@@ -8260,6 +8269,7 @@
 <translation id="8498214519255567734">اس سے مدھم روشنی میں اپنی اسکرین کو دیکھنا یا پڑھنا آسان بناتا ہے</translation>
 <translation id="8498395510292172881">‏Chrome میں پڑھنا جاری رکھیں</translation>
 <translation id="8499083585497694743">مائیکروفون کی آواز چالو کریں</translation>
+<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />آٹو فل میٹا ڈیٹا<ph name="END_LINK1" /> بھیجیں</translation>
 <translation id="8502536196501630039">‏Google Play سے ایپس استعمال کرنے کے لیے، آپ کے لیے ضروری ہے کہ سب سے پہلے اپنی ایپس کو بحال کریں۔ کچھ ڈیٹا ضائع ہو سکتا ہے۔</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="850382998924680137">آج دیکھا گيا</translation>

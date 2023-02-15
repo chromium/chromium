@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">Maszynie wirtualnej Bruschetta udostępniono 1 folder</translation>
 <translation id="2578394532502990878">Tamilski fonetyczny</translation>
 <translation id="2579959351793446050">Orija</translation>
+<translation id="2587195714949534472">Przygotowuję do synchronizacji pliku <ph name="FILE_NAME" />…</translation>
 <translation id="2602810353103180630">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zablokowana przez administratora, szczegóły</translation>
 <translation id="2614589611416690597">Plik wideo <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Dysk Google jest obecnie nieosiągalny.</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">Mongolski</translation>
 <translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
+<translation id="3511705761158917664">Przygotowuję do synchronizacji <ph name="NUMBER_OF_ITEMS" /> elementów…</translation>
 <translation id="3522708245912499433">Portugalski</translation>
 <translation id="3524311639100184459">Uwaga: te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>

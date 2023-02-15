@@ -133,6 +133,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="163517899691012366">Les notificacions estan silenciades quan el mode No molestis està activat</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositius</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
+<translation id="1647986356840967552">Pàgina anterior</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="397726367135689299">És possible que la càrrega de la bateria sigui poc fiable.</translation>
 <translation id="3977512764614765090">La bateria s'està carregant i està a un <ph name="PERCENTAGE" />%.</translation>
+<translation id="3984536049089846927">Pàgina següent</translation>
 <translation id="3986082989454912832">Respon</translation>
 <translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="40062176907008878">Escriptura a mà</translation>

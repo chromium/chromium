@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Libérez de l'espace disque pour lancer les applications Android.</translation>
 <translation id="1033780634303702874">Accéder à vos périphériques en série</translation>
 <translation id="1034484273907870301">Bande d'onglets de miniatures pour le mode tablette</translation>
+<translation id="1035875743511577452">Cliquez sur « Changer de thème » pour découvrir des thèmes inspirés par des artistes, la nature et plus encore</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1036511912703768636">Accéder à ces appareils USB</translation>
 <translation id="1038168778161626396">Chiffrer seulement</translation>
@@ -999,7 +1000,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1869433484041798909">Bouton de favori</translation>
 <translation id="1871098866036088250">Ouvrir dans le navigateur Chrome</translation>
 <translation id="187145082678092583">Moins d'applications</translation>
-<translation id="1871463148436682760">Bien joué!</translation>
 <translation id="1871534214638631766">Afficher de l'information connexe lorsque vous faites un clic droit ou un appui prolongé sur un élément</translation>
 <translation id="1871615898038944731">Votre <ph name="DEVICE_TYPE" /> est à jour</translation>
 <translation id="1873920700418191231">Autoriser à nouveau les autorisations pour <ph name="WEBSITE" /></translation>
@@ -1378,6 +1378,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2203088913459920044">Le nom peut comprendre des lettres, des chiffres et des caractères spéciaux</translation>
 <translation id="220321590587754225">Impossible de se connecter. Réessayez.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google</translation>
+<translation id="2204020417499639567">Courriel rempli.</translation>
 <translation id="2204034823255629767">Lire et modifier tout ce que vous tapez</translation>
 <translation id="2204387456724731099">Impossible de traduire cette sélection</translation>
 <translation id="2210462644007531147">Impossible de terminer l'installation</translation>
@@ -1833,6 +1834,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2603355571917519942">Voice Match est prête à être utilisée</translation>
 <translation id="2604129989323098489">Les sites demandent généralement à accéder à des renseignements sur vos écrans pour pouvoir ouvrir et positionner des fenêtres intelligemment, comme afficher des documents ou du contenu en mode plein écran côte à côte.</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
+<translation id="2604805099836652105">Le formulaire d'adresse <ph name="ADDRESS_LABEL" /> a été rempli.</translation>
 <translation id="2605668923777146443">Accédez à <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" /> pour voir les options Better Together qui s'offrent à vous.</translation>
 <translation id="2606246518223360146">Associer les données</translation>
 <translation id="2606454609872547359">Non, continuer sans ChromeVox</translation>
@@ -2424,6 +2426,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3122496702278727796">Échec de la création du répertoire des données</translation>
 <translation id="3124111068741548686">Descripteurs de l'UTILISATEUR</translation>
+<translation id="3124332159330678621">Personnaliser Chrome pour donner un nouveau style à votre navigateur</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Pour éviter les problèmes de recharge et de performance, servez-vous d'un adaptateur d'alimentation conçu par Dell ou d'un adaptateur USB de type C.</translation>
 <translation id="3127862849166875294">Modification de la taille du disque pour Linux</translation>
@@ -3049,6 +3052,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3713091615825314967">Les mises à jour automatiques sont activées.</translation>
 <translation id="371370241367527062">Microphone avant</translation>
 <translation id="3714195043138862580">Le provisionnement de cet appareil de démonstration a été supprimé.</translation>
+<translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> a été rempli.</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
 <translation id="372062398998492895">Imprimantes CUPS</translation>
 <translation id="3721119614952978349">Vous et Google</translation>
@@ -3194,7 +3198,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3828953470056652895">J'ai lu et accepté les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" />, les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" /> ainsi que les <ph name="BEGIN_LINK3" />conditions d'utilisation de Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Partage de fichiers SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Votre administrateur a réactivé 1 extension potentiellement nuisible}one{Votre administrateur a réactivé {NUM_EXTENSIONS} extension potentiellement nuisible}other{Votre administrateur a réactivé {NUM_EXTENSIONS} extensions potentiellement nuisibles}}</translation>
-<translation id="3831436149286513437">Suggestions de recherche dans Google Disque</translation>
 <translation id="3834728400518755610">Pour que la modification apportée au microphone soit appliquée, Linux doit être éteint. Éteignez Linux pour continuer.</translation>
 <translation id="3834775135533257713">Impossible d'ajouter l'application « <ph name="TO_INSTALL_APP_NAME" /> », car elle crée un conflit avec « <ph name="INSTALLED_APP_NAME" /> ».</translation>
 <translation id="3835904559946595746">Impossible de restaurer la sauvegarde de Linux</translation>
@@ -3656,6 +3659,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="426652736638196239">Ce IBAN sera enregistré sur cet appareil uniquement</translation>
 <translation id="4266679478228765574">La suppression d'un dossier mettra fin au partage, mais ne supprimera pas les fichiers qu'il contient.</translation>
 <translation id="4267455501101322486">Pour ajouter un compte afin d'accéder aux ressources éducatives, demande à un parent de te donner l'autorisation</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{Aucun mot de passe trouvé}=1{1 résultat trouvé}one{{COUNT} résultats trouvés}other{{COUNT} résultats trouvés}}</translation>
 <translation id="4267924571297947682">Demande l'autorisation à un parent</translation>
 <translation id="4267953847983678297">Connexion automatique au réseau cellulaire</translation>
 <translation id="4268025649754414643">Chiffrement de la clé</translation>
@@ -3936,6 +3940,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4522890784888918985">Les comptes d'enfants ne sont pas pris en charge</translation>
 <translation id="4523876148417776526">Les listes de sites XML n'ont pas encore été récupérées.</translation>
 <translation id="4524832533047962394">Le mode d'inscription fourni n'est pas compatible avec cette version du système d'exploitation. Veuillez vous assurer que vous utilisez la version la plus récente.</translation>
+<translation id="4526853756266614740">Choisir une image pour appliquer le thème instantanément</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4527929807707405172">Activer le défilement inversé. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Suggestion de traduction</translation>
@@ -4235,6 +4240,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4800839971935185386">Examiner les mises à jour du nom et de l'icône</translation>
 <translation id="4801448226354548035">Masquer les comptes</translation>
 <translation id="4801512016965057443">Autoriser l'itinérance des données mobiles</translation>
+<translation id="4804311503028830356">Cliquer sur la flèche de retour pour découvrir d'autres options</translation>
 <translation id="4804818685124855865">Déconnecter</translation>
 <translation id="4804827417948292437">Avocat</translation>
 <translation id="4806457879608775995">Consulter ces conditions et contrôler vos données</translation>
@@ -8263,6 +8269,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8498214519255567734">Permettre de regarder l'écran plus facilement lorsque l'éclairage est faible</translation>
 <translation id="8498395510292172881">Continuer la lecture dans Chrome</translation>
 <translation id="8499083585497694743">Réactiver le microphone</translation>
+<translation id="8499526927826495298">Envoyer des <ph name="BEGIN_LINK1" />métadonnées de remplissage automatique<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Pour utiliser des applications de Google Play, vous devez d'abord restaurer vos applications. Certaines données ont peut-être été perdues.</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="850382998924680137">Consulté aujourd'hui</translation>

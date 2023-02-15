@@ -244,6 +244,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja}=1{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="5686916850681061684">Prilagodite i kontrolirajte Google Chrome. Potrebna je vaša pažnja – kliknite za detalje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="570005089986962444">Kada je postavka uključena, Chrome oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Chroma. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome će se ponovo pokrenuti za 1 sekundu.}one{Google Chrome će se ponovo pokrenuti za # sekundu.}few{Google Chrome će se ponovo pokrenuti za # sekunde.}other{Google Chrome će se ponovo pokrenuti za # sekundi.}}</translation>
 <translation id="5727531838415286053">Ako vas je Chrome nasumično ubacio u aktivni probni period, vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše interesovanja na mjesečnoj osnovi. Interesovanja se osvježavaju ukoliko ih ne uklonite.</translation>
 <translation id="5736850870166430177">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
@@ -324,7 +325,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="7410958280246779049">Chrome je blokirao ovaj fajl jer je opasan</translation>
 <translation id="7426611252293106642">Google Chrome možda neće ispravno raditi jer više nije podržan na ovoj Linux distribuciji</translation>
 <translation id="7481213027396403996">Odaberite maksimalnu sigurnost koju nudi Chrome</translation>
-<translation id="7486227612705979895">Chrome će pristupiti Disku kako bi pružio prijedloge u traci za adresu.</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Alat za instaliranje preglednika <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -421,6 +421,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="93760716455950538">Ponovo pokrenite ChromeOS Flex</translation>
 <translation id="940313311831216333">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim Chrome stvarima na svim svojim uređajima.</translation>
 <translation id="943390475793766444">Chrome preporučuje skeniranje ovog fajla jer bi mogao biti opasan.</translation>
+<translation id="963650557422347554">Kada je postavka uključena, Chrome štedi energiju baterije ograničavanjem pozadinske aktivnosti i vizuelnih efekata, poput glatkog klizanja i broja slika u sekundi videozapisa.</translation>
 <translation id="989369509083708165">Google Chrome je vaš zadani preglednik</translation>
 <translation id="989816563149873169">Prečicom <ph name="SHORTCUT" /> možete prebacivati između Chrome profila</translation>
 </translationbundle>

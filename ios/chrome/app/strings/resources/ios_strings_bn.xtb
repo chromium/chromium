@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">নতুন সার্চ</translation>
 <translation id="1209206284964581585">এখনকার মতো লুকান</translation>
 <translation id="1219674500290482172">ইন্টারনেটের সাথে সংযোগ করতে অক্ষম৷</translation>
+<translation id="1226238226094914652">আপনার সব ডিভাইসে থাকা পাসওয়ার্ড</translation>
 <translation id="122699739164161391">সব ট্যাব বন্ধ করুন</translation>
 <translation id="1229222343402087523">Chrome-এ ${searchPhrase} সার্চ করুন</translation>
 <translation id="1242044645101871359">আবার সাইন-ইন করুন</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">সবকটি খুলুন</translation>
 <translation id="2556092377360758201">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />-এ পাঠানো হচ্ছে…</translation>
+<translation id="2576499762020411840">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড ব্যবহার করে সেভ করা</translation>
 <translation id="2578571896248130439">ওয়েবপেজ পাঠান</translation>
 <translation id="2584132361465095047">অ্যাকাউন্ট যোগ করুন...</translation>
 <translation id="2600682495497606169">সাইটের কুকি মুছুন</translation>
@@ -410,6 +412,7 @@
 <translation id="4063300985191096908">ফিডে যান</translation>
 <translation id="408404951701638773">সার্চ বারে কাজ করা এখন সহজ</translation>
 <translation id="4092655288299341041">সহায়তা দেখান</translation>
+<translation id="4101942614374785540">পাসওয়ার্ড এখন আপনার Google অ্যাকাউন্টে (<ph name="ACCOUNT" />) সেভ করা আছে। আপনি যখনই সাইন-ইন করবেন তখনই সেগুলি ব্যবহার করতে পারবেন। এটি বন্ধ করার জন্য, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="4108998448622696017">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="411254640334432676">ডাউনলোড করা যায়নি।</translation>
 <translation id="4112644173421521737">Search</translation>
@@ -694,6 +697,7 @@
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">অপঠিত</translation>
+<translation id="6193424046394092997">{count,plural, =1{{title}-এ বুকমার্ক করা হয়েছে}one{{title}-এ বুকমার্ক করা হয়েছে}other{{title}-এ বুকমার্ক করা হয়েছে}}</translation>
 <translation id="6196207969502475924">ভয়েস সার্চ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT}টি ট্যাব বন্ধ করুন}one{{COUNT}টি ট্যাব বন্ধ করুন}other{{COUNT}টি ট্যাব বন্ধ করুন}}</translation>
 <translation id="6219550825416862075">আপনাকে আবার স্বাগত জানাই</translation>
@@ -839,6 +843,7 @@
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7062545763355031412">স্বীকার করে অ্যাকাউন্টগুলি সুইচ করুন</translation>
 <translation id="7080806333218412752">Safe Browsing-এ ইউআরএল চেক করতে পাঠানো হয়। তাছাড়া, নতুন কোনও ঝুঁকি খুঁজে পেতে সাহায্য করার জন্য পৃষ্ঠার ছোট নমুনা, ডাউনলোড, এক্সটেনশন অ্যাক্টিভিটি এবং সিস্টেম সংক্রান্ত তথ্যও পাঠানো হয়। সমস্ত Google অ্যাপ জুড়ে আপনাকে সুরক্ষিত রাখতে, যখন আপনি সাইন-ইন করেন, তখন আপনার Google অ্যাকাউন্টে অস্থায়ীভাবে এই ডেটাকে লিঙ্ক করানো হয়।</translation>
+<translation id="7083860864742905105">চালু থাকাকালীন, <ph name="ACCOUNT" />-এ পাসওয়ার্ড সেভ করা থাকে। বন্ধ থাকাকালীন, পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা থাকে।</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" />-এর Google Password Manager-এ</translation>
 <translation id="7099761977003084116">সাম্প্রতিক ট্যাব</translation>
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> ডাউনলোড করা হচ্ছে…</translation>
@@ -914,6 +919,7 @@
 <translation id="7756478488453921771">মেনু → সেটিংস → পেমেন্ট পদ্ধতি</translation>
 <translation id="7765158879357617694">সরান</translation>
 <translation id="7772032839648071052">পাসফ্রেজ নিশ্চিত করুন</translation>
+<translation id="777572173400717978">{count,plural, =1{বুকমার্ক করা হয়েছে}one{বুকমার্ক করা হয়েছে}other{বুকমার্ক করা হয়েছে}}</translation>
 <translation id="7781011649027948662">পৃষ্ঠাটি অনুবাদ করতে চান?</translation>
 <translation id="7781069478569868053">নতুন ট্যাব পৃষ্ঠা</translation>
 <translation id="7781829728241885113">গতকাল</translation>

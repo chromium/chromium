@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Android 앱을 실행하려면 디스크 저장 공간을 확보하세요.</translation>
 <translation id="1033780634303702874">직렬 기기에 액세스</translation>
 <translation id="1034484273907870301">태블릿 모드의 썸네일 탭 표시줄</translation>
+<translation id="1035875743511577452">'테마 변경'을 클릭하여 아티스트, 자연 등에서 영감을 받은 테마를 살펴봅니다.</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1036511912703768636">이 USB 기기에 액세스</translation>
 <translation id="1038168778161626396">암호화만</translation>
@@ -1010,7 +1011,6 @@
 <translation id="1869433484041798909">북마크 버튼</translation>
 <translation id="1871098866036088250">Chrome 브라우저에서 열기</translation>
 <translation id="187145082678092583">앱 간략히 보기</translation>
-<translation id="1871463148436682760">모두 완료</translation>
 <translation id="1871534214638631766">콘텐츠를 마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 관련 정보가 표시됩니다.</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" />이(가) 최신 버전</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" />에 대한 권한 다시 허용</translation>
@@ -1389,6 +1389,7 @@
 <translation id="2203088913459920044">이름에는 문자, 숫자, 특수문자를 사용할 수 있습니다</translation>
 <translation id="220321590587754225">연결할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="2203903197029773650">Google 계정으로 로그인하면 <ph name="BRAND" />에서 비밀번호를 확인할 수 있습니다.</translation>
+<translation id="2204020417499639567">이메일이 입력되었습니다.</translation>
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
 <translation id="2204387456724731099">선택 항목을 번역할 수 없습니다</translation>
 <translation id="2210462644007531147">설치를 완료할 수 없음</translation>
@@ -1847,6 +1848,7 @@
 <translation id="2603355571917519942">Voice Match가 준비됨</translation>
 <translation id="2604129989323098489">일반적으로 사이트에서는 문서 또는 전체 화면 콘텐츠를 나란히 표시하는 등 창을 지능적으로 열고 배치하기 위해 디스플레이에 관한 정보를 요청합니다.</translation>
 <translation id="2604255671529671813">네트워크 연결 오류</translation>
+<translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> 주소 양식이 입력되었습니다.</translation>
 <translation id="2605668923777146443">Better Together 옵션을 확인하려면 <ph name="LINK_BEGIN" />설정<ph name="LINK_END" />으로 이동하세요</translation>
 <translation id="2606246518223360146">데이터 연결</translation>
 <translation id="2606454609872547359">아니요, ChromeVox 활성화 없이 계속</translation>
@@ -2438,6 +2440,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">데이터 디렉터리 만들기 실패</translation>
 <translation id="3124111068741548686">사용자 핸들</translation>
+<translation id="3124332159330678621">Chrome 브라우저를 새로운 디자인으로 맞춤설정합니다.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">충전 및 성능 문제를 방지하려면 호환되는 Dell 또는 USB 타입-C 전원 어댑터를 사용하세요.</translation>
 <translation id="3127862849166875294">Linux 디스크 크기 조절</translation>
@@ -3063,6 +3066,7 @@
 <translation id="3713091615825314967">자동 업데이트가 사용 설정되어 있습니다.</translation>
 <translation id="371370241367527062">전면 마이크</translation>
 <translation id="3714195043138862580">이 데모 기기는 프로비저닝 해제 상태로 설정되었습니다.</translation>
+<translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> 카드가 입력되었습니다.</translation>
 <translation id="3719826155360621982">홈페이지</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">나와 Google의 관계</translation>
@@ -3208,7 +3212,6 @@
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />Play 서비스 약관<ph name="END_LINK3" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="3829765597456725595">SMB 파일 공유</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{관리자가 1개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}other{관리자가 {NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}}</translation>
-<translation id="3831436149286513437">Google Drive 검색 추천어</translation>
 <translation id="3834728400518755610">마이크 설정을 변경하려면 Linux를 종료해야 합니다. 계속하려면 Linux를 종료하세요.</translation>
 <translation id="3834775135533257713">애플리케이션 '<ph name="TO_INSTALL_APP_NAME" />'이(가) '<ph name="INSTALLED_APP_NAME" />'와(과) 충돌하기 때문에 추가하지 못했습니다.</translation>
 <translation id="3835904559946595746">Linux 백업을 복원할 수 없음</translation>
@@ -3668,6 +3671,7 @@
 <translation id="426652736638196239">이 IBAN은 이 기기에만 저장됩니다.</translation>
 <translation id="4266679478228765574">폴더를 삭제하면 공유가 중지되지만 파일이 삭제되지는 않습니다.</translation>
 <translation id="4267455501101322486">교육 자료에 액세스하기 위해 계정을 추가하려면 부모님에게 권한을 부여해 달라고 요청하세요.</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{비밀번호를 찾을 수 없음}=1{검색결과 1개}other{검색결과 {COUNT}개}}</translation>
 <translation id="4267924571297947682">부모님에게 권한 요청하기</translation>
 <translation id="4267953847983678297">자동으로 이동통신망에 연결</translation>
 <translation id="4268025649754414643">키 암호화</translation>
@@ -3949,6 +3953,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4522890784888918985">자녀 계정은 지원되지 않습니다.</translation>
 <translation id="4523876148417776526">XML 사이트 목록을 아직 가져오지 않았습니다.</translation>
 <translation id="4524832533047962394">제공된 등록 모드는 이 버전의 운영체제에서 지원되지 않습니다. 최신 버전을 실행하고 있는지 확인하세요.</translation>
+<translation id="4526853756266614740">이미지를 선택하여 테마를 즉시 적용하세요</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4527929807707405172">역방향 스크롤이 사용 설정되었습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">번역 제안</translation>
@@ -4248,6 +4253,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4800839971935185386">이름 및 아이콘 업데이트 검토</translation>
 <translation id="4801448226354548035">계정 숨기기</translation>
 <translation id="4801512016965057443">모바일 데이터 로밍 허용</translation>
+<translation id="4804311503028830356">다른 옵션을 살펴보려면 뒤로 화살표를 클릭합니다.</translation>
 <translation id="4804818685124855865">연결 해제</translation>
 <translation id="4804827417948292437">아보카도</translation>
 <translation id="4806457879608775995">약관을 검토하고 데이터를 관리하세요</translation>
@@ -8276,6 +8282,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8498214519255567734">어두운 곳에서 화면을 보거나 읽기 편하도록 설정합니다.</translation>
 <translation id="8498395510292172881">Chrome에서 계속 읽기</translation>
 <translation id="8499083585497694743">마이크 음소거 해제</translation>
+<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />자동 완성 메타데이터<ph name="END_LINK1" /> 보내기</translation>
 <translation id="8502536196501630039">Google Play의 앱을 사용하려면 먼저 앱을 복원해야 합니다. 일부 데이터가 삭제되었을 수 있습니다.</translation>
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="850382998924680137">오늘 조회함</translation>

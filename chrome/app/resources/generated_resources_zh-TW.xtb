@@ -999,7 +999,6 @@
 <translation id="1869433484041798909">書籤按鈕</translation>
 <translation id="1871098866036088250">在 Chrome 瀏覽器中開啟</translation>
 <translation id="187145082678092583">較少應用程式</translation>
-<translation id="1871463148436682760">太厲害了！</translation>
 <translation id="1871534214638631766">當你在內容上按一下滑鼠右鍵或長按時顯示相關資訊</translation>
 <translation id="1871615898038944731">你的 <ph name="DEVICE_TYPE" /> 已搭載最新版本的作業系統</translation>
 <translation id="1873920700418191231">重新授權給 <ph name="WEBSITE" /></translation>
@@ -1431,6 +1430,7 @@
 <translation id="2251809247798634662">新增無痕式視窗</translation>
 <translation id="2252017960592955005">檢視防護 (Beta 版)</translation>
 <translation id="225240747099314620">允許受保護內容的 ID (可能需要重新啟動電腦)</translation>
+<translation id="2253318212986772520">無法擷取「<ph name="PRINTER_NAME" />」的 PPD。</translation>
 <translation id="2255077166240162850">這個裝置已鎖定使用其他網域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 時間戳記</translation>
 <translation id="2256115617011615191">立即重新啟動</translation>
@@ -1570,6 +1570,7 @@
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">螢幕鎖定記事內容會自動儲存到「<ph name="LOCK_SCREEN_APP_NAME" />」。你最近的記事仍會保留在鎖定畫面上。</translation>
 <translation id="2353297238722298836">可使用攝影機和麥克風</translation>
+<translation id="2353910600995338714">匯出成功</translation>
 <translation id="2355314311311231464">無法擷取你的帳戶詳細資料，因此佈建失敗。請再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2355477091455974894">節能模式選項</translation>
 <translation id="2355604387869345912">開啟即時網路共用功能</translation>
@@ -2898,6 +2899,7 @@
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
+<translation id="3584527007414070635">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="3586787825263265024">必須要能存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
 <translation id="3587438013689771191">進一步瞭解<ph name="SUBPAGE_TITLE" /></translation>
@@ -3197,7 +3199,6 @@
 <translation id="3828953470056652895">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》以及《<ph name="BEGIN_LINK3" />Play 服務條款<ph name="END_LINK3" />》。</translation>
 <translation id="3829765597456725595">SMB 檔案共用</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{系統管理員已重新開啟 1 個可能有害的擴充功能}other{系統管理員已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充功能}}</translation>
-<translation id="3831436149286513437">Google 雲端硬碟搜尋建議</translation>
 <translation id="3834728400518755610">必須先關閉 Linux，麥克風設定的變更才會生效。請關閉 Linux 以繼續操作。</translation>
 <translation id="3834775135533257713">「<ph name="TO_INSTALL_APP_NAME" />」應用程式和「<ph name="INSTALLED_APP_NAME" />」發生衝突，因此無法新增。</translation>
 <translation id="3835904559946595746">無法還原 Linux 備份內容</translation>
@@ -3856,6 +3857,7 @@
 <translation id="4443536555189480885">說明(&amp;H)</translation>
 <translation id="4444304522807523469">存取透過 USB 附加或是在區域網路上的文件掃描器</translation>
 <translation id="4444512841222467874">如果未釋出可用空間，系統可能會自動移除使用者和資料。</translation>
+<translation id="4445446646109808714">使用者授權協議：<ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">鏡像模式</translation>
 <translation id="4448914100439890108">在 <ph name="DOMAIN" /> 上隱藏 <ph name="USERNAME" /> 的密碼</translation>
 <translation id="4449948729197510913">你的使用者名稱屬於貴機構的公司帳戶。如要將裝置註冊到這個帳戶，請先在管理控制台中驗證網域擁有權。你必須擁有帳戶的管理員權限才能進行驗證。</translation>
@@ -5394,6 +5396,7 @@
 <translation id="5877064549588274448">版本已變更。請重新啟動裝置以套用變更。</translation>
 <translation id="5877584842898320529">選取的印表機無法使用或未正確安裝。<ph name="BR" />請檢查你的印表機，或改選其他印表機。</translation>
 <translation id="5878945009165002849">封鎖身分識別服務的登入提示</translation>
+<translation id="5881710783061958569">如果是的話，請編輯儲存在 <ph name="BRAND" /> 中的密碼，使其與新密碼相符。</translation>
 <translation id="5882449899683447569">發生錯誤，系統並未匯入密碼</translation>
 <translation id="5882919346125742463">已知網路</translation>
 <translation id="5883356647197510494">已自動封鎖：<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
@@ -6975,6 +6978,7 @@
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353261921908507769">聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
 <translation id="735361434055555355">正在安裝 Linux...</translation>
+<translation id="7354120289251608189">現在隨時可以更新瀏覽器的外觀。</translation>
 <translation id="7356908624372060336">網路記錄</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7358324924540718595">今天隱藏回憶集錦</translation>

@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">탐색 여정 재개 버튼, 탐색 여정을 재개하고 Chrome 방문 기록에서 관련 활동을 보려면 Enter를 누르세요</translation>
 <translation id="1101672080107056897">오류 작업</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
+<translation id="1104409666019087579">일부 필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> 권한을 선택합니다</translation>
 <translation id="1112828774174131240">골동품 및 수집품</translation>
@@ -2016,6 +2017,7 @@
 <translation id="5992691462791905444">엔지니어링 Z 폴드</translation>
 <translation id="5992805036496113940">광고 표시에 사용되는 정보 확인</translation>
 <translation id="5995727681868049093">Google 계정에서 정보, 개인 정보 보호 및 보안 설정 관리</translation>
+<translation id="5996887213716993070"><ph name="FIELD" /> 입력란은 비워 둘 수 없습니다.</translation>
 <translation id="5997247540087773573">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하고 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' 검색결과 <ph name="RESULT_COUNT" />개</translation>
 <translation id="6005765687956866568">양식에서 자동 완성 정보가 삭제되었습니다</translation>
@@ -2754,6 +2756,7 @@
 <translation id="7766518757692125295">스커트</translation>
 <translation id="7773005668374414287">같은 순서로 인쇄면이 위를 향하게</translation>
 <translation id="7785790577395078482">이 태블릿</translation>
+<translation id="7786368602962652765">필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.</translation>
 <translation id="7790488044432570133">방문하는 사이트에서는 광고 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Chrome에서는 사이트가 제한된 유형의 데이터(예: 광고가 표시된 시간)를 수집하도록 허용합니다.</translation>
 <translation id="7791011319128895129">미공개</translation>
 <translation id="7791196057686275387">베일</translation>

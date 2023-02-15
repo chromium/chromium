@@ -2141,6 +2141,7 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 
         Dit beleid heeft geen invloed op al uitgebrachte beleidsregels.</translation>
 <translation id="3002067315837777719">Niet toestaan dat Telefoonhub-meldingen worden aangezet</translation>
+<translation id="3010907817113180883">Snelheid voor verzameling van hartslag voor apparaatactiviteit in milliseconden.</translation>
 <translation id="3017578958356048910">De pdf-viewer mag pdf's annoteren</translation>
 <translation id="3020623128585817424">De check voor de standaardbrowser bij het opstarten uitzetten</translation>
 <translation id="3020953534071988875">Als je dit beleid instelt, wordt Ambient-verificatie voor incognito- en gastprofielen toegestaan/niet toegestaan in <ph name="PRODUCT_NAME" />.
@@ -4424,6 +4425,10 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
 Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> voor een account, mag dit account alleen inloggen als primair account. Het mag niet inloggen als secundair account.</translation>
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
+<translation id="5235607513961923779">Rapporteert de apparaatactiviteitsstatus op ingeschreven apparaten voor aangesloten gebruikers.
+
+      Als je het beleid niet toepast of niet instelt, wordt de apparaatactiviteitsstatus niet gerapporteerd.
+      Als je het beleid toepast, wordt de apparaatactiviteitsstatus gerapporteerd aan de server zodat deze kan waarnemen of het apparaat offline is, op voorwaarde dat de gebruiker aangesloten is.</translation>
 <translation id="5238275681097851753">Toestaan dat bepaalde <ph name="FLASH_PLUGIN_NAME" />-content wordt geblokkeerd</translation>
 <translation id="5238976843489093540">Snel koppelen (snelle bluetooth-koppeling) geforceerd aanzetten.</translation>
 <translation id="52393120393725840">Als je het beleid toepast, kunnen gebruikers <ph name="PRODUCT_NAME" /> wachtwoorden opslaan en gebruiken als ze opnieuw inloggen op een site.
@@ -7237,6 +7242,7 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 
       De aanbevolen manier om het scherm te vergrendelen bij inactiviteit is de schermvergrendeling bij opschorting aanzetten en <ph name="PRODUCT_OS_NAME" /> opschorten na een inactieve periode. Gebruik dit beleid alleen als schermvergrendeling veel eerder moet plaatsvinden dan opschorting of als je helemaal niet wilt opschorten bij inactiviteit.</translation>
 <translation id="7895553628261067384">Externe toegang</translation>
+<translation id="7898807590879163195">Hartslag voor apparaatactiviteit uitzetten</translation>
 <translation id="789975630884141379">Voorgestelde content aanzetten</translation>
 <translation id="7899952578398457262">Beheerde gebruikers om toestemming vragen om apparaatsignalen te delen op onbeheerde apparaten om toegang te krijgen</translation>
 <translation id="7900469325540540107">Browsegegevens standaard bewaren als je een zakelijk profiel maakt</translation>
@@ -7830,6 +7836,9 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
       Als je dit beleid niet toepast of niet instelt, worden alleen de gewone lokale profielen gebruikt.</translation>
 <translation id="8417305981081876834">De maximumlengte van de pincode voor het vergrendelscherm instellen</translation>
 <translation id="841977920223099909">Waarschuwingstrigger voor wachtwoordbeveiliging</translation>
+<translation id="8419965165591256432">Snelheid waarmee de apparaatactiviteitsstatus wordt verzameld op ingeschreven apparaten voor aangesloten gebruikers. Het toegestane minimum is 1 minuut.
+
+      Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
 <translation id="8420426128163801949">Gebruikers toestaan bluetooth aan of uit te zetten</translation>
 <translation id="8422658829373743789">Het nieuwe gedrag beheren voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren</translation>
 <translation id="8422866312638683210">Als je het beleid instelt, probeert <ph name="PRODUCT_NAME" /> zichzelf aan te melden bij <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. De waarde van dit beleid is een token voor inschrijving die je kunt ophalen uit de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
@@ -8525,6 +8534,7 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="9076477053438828079">Altijd namen en foto's van gebruikers laten zien</translation>
 <translation id="9077227880520270584">Timer voor automatisch inloggen op lokaal account op apparaat</translation>
 <translation id="9079531125758468956">Import van bookmarks bij eerste uitvoering uitzetten</translation>
+<translation id="9084038227968802480">Rapportage van hartslag voor apparaatactiviteit aanzetten</translation>
 <translation id="9084985621503260744">Specificeer of videoactiviteit invloed heeft op stroombeheer</translation>
 <translation id="9087434639296483430">Inlog-/uitloggebeurtenissen van gebruikers op ingeschreven apparaten rapporteren, waaronder mislukte logins.
 
@@ -8719,6 +8729,7 @@ en 6 optionele leden:
 Als je het beleid niet toepast, staat de achtergrondmodus uit.
 
 Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserinstellingen. Als je het niet instelt, staat de achtergrondmodus aanvankelijk uit, maar kunnen gebruikers dit aanpassen.</translation>
+<translation id="981245424658084931">Hartslag voor apparaatactiviteit aanzetten</translation>
 <translation id="981346395360763138">Locatieservices van Google staan uit</translation>
 <translation id="982497069985795632">Spellingcontrole aanzetten</translation>
 <translation id="983256325512298435">Een lijst definiëren met protocollen die een externe app waarvan de herkomst in een lijst wordt vermeld, kunnen starten zonder prompt aan de gebruiker</translation>

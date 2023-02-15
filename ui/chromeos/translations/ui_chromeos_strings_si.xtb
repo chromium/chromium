@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">1 ෆෝල්ඩරයක් Bruschetta සමග බෙදා ගෙන ඇත</translation>
 <translation id="2578394532502990878">දෙමළ ශබ්දිම</translation>
 <translation id="2579959351793446050">ඔඩියා</translation>
+<translation id="2587195714949534472"><ph name="FILE_NAME" /> සමමුහුර්ත කිරීමට සූදානම් කරමින්...</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />වන ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> වීඩියෝ</translation>
 <translation id="2620090360073999360">මේ අවස්ථාවේ Google Drive වෙත ලගාවිය නොහැක.</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">මොන්ගෝලියානු</translation>
 <translation id="3495304270784461826">දෝෂ <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
+<translation id="3511705761158917664">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් සමමුහුර්ත කිරීමට සූදානම් කරමින්...</translation>
 <translation id="3522708245912499433">පෘතුගීසි</translation>
 <translation id="3524311639100184459">අවවාදය: මෙම ගොනු තාවකාලික වන අතර, තැටි ඉඩ නිදහස් කිරීමට ස්වයංක්‍රීයව මකනු ලැබිය හැක.  <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ෆෝල්ඩරය</translation>

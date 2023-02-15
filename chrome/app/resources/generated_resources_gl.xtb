@@ -997,7 +997,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1869433484041798909">Botón de marcador</translation>
 <translation id="1871098866036088250">Abrir no navegador Chrome</translation>
 <translation id="187145082678092583">Menos aplicacións</translation>
-<translation id="1871463148436682760">Bo traballo!</translation>
 <translation id="1871534214638631766">Mostra información relacionada cando manteñas premido o contido ou fagas clic co botón dereito nel</translation>
 <translation id="1871615898038944731">O dispositivo <ph name="DEVICE_TYPE" /> está actualizado</translation>
 <translation id="1873920700418191231">Volver conceder permisos a <ph name="WEBSITE" /></translation>
@@ -3191,7 +3190,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3828953470056652895">Lin e acepto as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Chrome e ChromeOS<ph name="END_LINK2" /> e as <ph name="BEGIN_LINK3" />Condicións de servizo de Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Sistema de ficheiros compartido SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{O teu administrador activou de novo 1 extensión potencialmente daniña}other{O teu administrador activou de novo {NUM_EXTENSIONS} extensións potencialmente daniñas}}</translation>
-<translation id="3831436149286513437">Suxestións de busca de Google Drive</translation>
 <translation id="3834728400518755610">Para cambiar a configuración do micrófono é necesario pechar Linux. Péchao para continuar.</translation>
 <translation id="3834775135533257713">Non se puido engadir a aplicación <ph name="TO_INSTALL_APP_NAME" /> porque entra en conflito con <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="3835904559946595746">Non se puido restaurar a copia de seguranza de Linux</translation>
@@ -8108,6 +8106,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8358912028636606457">A emisión do audio da pestana non é compatible con este dispositivo.</translation>
 <translation id="835951711479681002">Gardar na túa Conta de Google</translation>
 <translation id="8360140320636871023">Personalizar o tema da pantalla</translation>
+<translation id="8360267485906769442">Botón de enviar comentarios</translation>
 <translation id="8363095875018065315">estable</translation>
 <translation id="8363142353806532503">Bloqueouse o micrófono</translation>
 <translation id="8366396658833131068">Restableceuse a túa conectividade de rede. Selecciona unha rede diferente ou preme o botón "Continuar" a continuación para iniciar a túa aplicación de quiosco.</translation>

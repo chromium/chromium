@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">1 mappa megosztva a Bruschettával</translation>
 <translation id="2578394532502990878">tamil, fonetikus</translation>
 <translation id="2579959351793446050">odia</translation>
+<translation id="2587195714949534472">Felkészülés a következő fájl szinkronizálására: <ph name="FILE_NAME" />…</translation>
 <translation id="2602810353103180630">Hálózat száma: <ph name="NETWORK_INDEX" />, összes hálózat: <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, rendszergazda tiltja, részletek</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> videó</translation>
 <translation id="2620090360073999360">A Google Drive jelenleg nem érhető el.</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> hiba.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
+<translation id="3511705761158917664">Felkészülés <ph name="NUMBER_OF_ITEMS" /> elem szinkronizálására…</translation>
 <translation id="3522708245912499433">portugál</translation>
 <translation id="3524311639100184459">Figyelem: Ezek ideiglenes fájlok, és automatikusan törlésre kerülnek azért, hogy tárhely szabaduljon fel.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mappa</translation>

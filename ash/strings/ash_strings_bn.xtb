@@ -133,6 +133,7 @@
 <translation id="163517899691012366">'বিরক্ত করবে না' মোড চালু থাকলে বিজ্ঞপ্তিগুলি মিউট করা হয়</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />টি ডিভাইস</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
+<translation id="1647986356840967552">আগের পৃষ্ঠা</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="397726367135689299">ব্যাটারি চার্জ করার জায়গাটি নির্ভরযোগ্য নাও হতে পারে।</translation>
 <translation id="3977512764614765090">ব্যাটারি <ph name="PERCENTAGE" /> শতাংশ চার্জ করা হয়েছে এবং এখনও চার্জ করা চলছে।</translation>
+<translation id="3984536049089846927">পরের পৃষ্ঠা</translation>
 <translation id="3986082989454912832">উত্তর</translation>
 <translation id="3995138139523574647">USB-C ডিভাইস (ডান দিকের পিছনের পোর্ট)</translation>
 <translation id="40062176907008878">'হ্যান্ডরাইটিং' ফিচার</translation>
@@ -731,6 +733,7 @@
 <translation id="4895488851634969361">ব্যাটারি পূর্ণ৷</translation>
 <translation id="490375751687810070">উল্লম্ব</translation>
 <translation id="490788395437447240">ব্যাটারিতে <ph name="BATTERY_PERCENTAGE" />% চার্জ আছে</translation>
+<translation id="491504982845934899">ডিভাইস সেট-আপ করার পরে চালু করুন<ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> এখন আপনার ক্যামেরা ব্যবহার করছে</translation>
@@ -1327,6 +1330,7 @@
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8131994907636310308">'বেছে নেওয়ার সুবিধা বন্ধ করুন' বিজ্ঞপ্তি দেখানো টোস্ট মেসেজ</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> তে সংযুক্ত</translation>
+<translation id="8138705869659070104">ডিভাইস সেট-আপ করার পরে চালু করুন</translation>
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
 <translation id="8142441511840089262">ডবল ক্লিক করুন</translation>
 <translation id="8142699993796781067">ব্যক্তিগত নেটওয়ার্ক</translation>

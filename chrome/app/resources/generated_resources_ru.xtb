@@ -1000,7 +1000,6 @@
 <translation id="1869433484041798909">Кнопка добавления в закладки</translation>
 <translation id="1871098866036088250">Открывать в браузере Chrome</translation>
 <translation id="187145082678092583">Меньше приложений</translation>
-<translation id="1871463148436682760">Готово!</translation>
 <translation id="1871534214638631766">Показывать информацию о контенте, когда вы выбираете его с помощью правого клика или долгого нажатия</translation>
 <translation id="1871615898038944731">На вашем устройстве <ph name="DEVICE_TYPE" /> установлены все необходимые обновления</translation>
 <translation id="1873920700418191231">Предоставить разрешения для <ph name="WEBSITE" /> снова</translation>
@@ -3194,7 +3193,6 @@
 <translation id="3828953470056652895">Я принимаю <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Условия использования Google Play<ph name="END_LINK3" /></translation>
 <translation id="3829765597456725595">Общая папка SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Администратор снова включил 1 потенциально опасное расширение.}one{Администратор снова включил {NUM_EXTENSIONS} потенциально опасное расширение.}few{Администратор снова включил {NUM_EXTENSIONS} потенциально опасных расширения.}many{Администратор снова включил {NUM_EXTENSIONS} потенциально опасных расширений.}other{Администратор снова включил {NUM_EXTENSIONS} потенциально опасного расширения.}}</translation>
-<translation id="3831436149286513437">Автозаполнение при поиске на Google Диске</translation>
 <translation id="3834728400518755610">Настройки микрофона были изменены. Чтобы продолжить, завершите работу Linux.</translation>
 <translation id="3834775135533257713">Не удалось установить приложение "<ph name="TO_INSTALL_APP_NAME" />", так как оно конфликтует с приложением "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="3835904559946595746">Не удалось восстановить резервную копию Linux</translation>

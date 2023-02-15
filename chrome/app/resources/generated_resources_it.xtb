@@ -999,7 +999,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1869433484041798909">Pulsante Preferito</translation>
 <translation id="1871098866036088250">Apri nel browser Chrome</translation>
 <translation id="187145082678092583">Meno app</translation>
-<translation id="1871463148436682760">Ottimo lavoro!</translation>
 <translation id="1871534214638631766">Mostra le informazioni correlate quando fai clic con il tasto destro del mouse o eserciti una pressione prolungata su un contenuto</translation>
 <translation id="1871615898038944731">Il dispositivo <ph name="DEVICE_TYPE" /> è aggiornato</translation>
 <translation id="1873920700418191231">Consenti di nuovo le autorizzazioni per il sito <ph name="WEBSITE" /></translation>
@@ -1431,6 +1430,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2251809247798634662">Nuova finestra di navigazione in incognito</translation>
 <translation id="2252017960592955005">Visualizzazione protetta (beta)</translation>
 <translation id="225240747099314620">Consenti identificatori per contenuti protetti (potrebbe essere necessario riavviare il computer)</translation>
+<translation id="2253318212986772520">Impossibile recuperare il file PPD di <ph name="PRINTER_NAME" />.</translation>
 <translation id="2255077166240162850">Questo dispositivo è stato bloccato con un dominio o una modalità diversi.</translation>
 <translation id="2255317897038918278">Timestamp Microsoft</translation>
 <translation id="2256115617011615191">Riavvia adesso</translation>
@@ -2898,6 +2898,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3582057310199111521">Inserita in un sito ingannevole e rilevata in una violazione dei dati</translation>
 <translation id="3582299299336701326">Scurisci gli schermi chiari e schiarisci quelli scuri. Premi il tasto per la ricerca + Ctrl + H per attivare e disattivare l'inversione dei colori.</translation>
 <translation id="3584169441612580296">Lettura e modifica di foto, musica e altri contenuti multimediali del computer</translation>
+<translation id="3584527007414070635">Riprendi il percorso relativo a "<ph name="MODULE_TITLE" />"</translation>
 <translation id="3586787825263265024">L'applicazione <ph name="APPLICATION_NAME" /> richiede che OneDrive sia disponibile.</translation>
 <translation id="3586806079541226322">Impossibile aprire questo file</translation>
 <translation id="3587438013689771191">Scopri di più su: <ph name="SUBPAGE_TITLE" /></translation>
@@ -3197,7 +3198,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3828953470056652895">Ho letto e accetto i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" />, i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Chrome e ChromeOS<ph name="END_LINK2" /> e i <ph name="BEGIN_LINK3" />Termini di servizio di Google Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Condivisione file SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{L'amministratore ha riattivato 1 estensione potenzialmente dannosa}other{L'amministratore ha riattivato {NUM_EXTENSIONS} estensioni potenzialmente dannose}}</translation>
-<translation id="3831436149286513437">Suggerimenti di ricerca di Google Drive</translation>
 <translation id="3834728400518755610">La modifica dell'impostazione del microfono richiede l'arresto di Linux. Arresta Linux per continuare.</translation>
 <translation id="3834775135533257713">Impossibile aggiungere l'applicazione "<ph name="TO_INSTALL_APP_NAME" />" perché è in conflitto con "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="3835904559946595746">Impossibile ripristinare la copia di backup di Linux</translation>
@@ -3857,6 +3857,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4443536555189480885">&amp;Guida</translation>
 <translation id="4444304522807523469">Accesso a scanner di documenti aggiunti tramite USB o sulla rete locale</translation>
 <translation id="4444512841222467874">Se non viene liberato dello spazio, utenti e dati potrebbero essere rimossi automaticamente.</translation>
+<translation id="4445446646109808714">Contratto di licenza con l'utente finale: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Speculare</translation>
 <translation id="4448914100439890108">Nascondi password per <ph name="USERNAME" /> su <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Il tuo nome utente appartiene all'account aziendale della tua organizzazione. Per registrare dispositivi all'account, verifica innanzitutto la proprietà del dominio nella Console di amministrazione. Per la verifica, avrai bisogno dei privilegi di amministratore sull'account.</translation>

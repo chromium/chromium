@@ -1011,7 +1011,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1869433484041798909">Boekmerk-knoppie</translation>
 <translation id="1871098866036088250">Maak in Chrome-blaaier oop</translation>
 <translation id="187145082678092583">Minder programme</translation>
-<translation id="1871463148436682760">Mooi so!</translation>
 <translation id="1871534214638631766">Wys soortgelyke inligting wanneer jy op inhoud regsklik of langdruk</translation>
 <translation id="1871615898038944731">Jou <ph name="DEVICE_TYPE" /> is op datum</translation>
 <translation id="1873920700418191231">Laat toestemmings weer toe vir <ph name="WEBSITE" /></translation>
@@ -3212,7 +3211,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3828953470056652895">Ek het <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />Play se diensbepalings<ph name="END_LINK3" /> gelees en stem daartoe in.</translation>
 <translation id="3829765597456725595">SMB-lêerdeling</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Jou administrateur het 1 potensieel skadelike uitbreiding weer aangeskakel}other{Jou administrateur het {NUM_EXTENSIONS} potensieel skadelike uitbreidings weer aangeskakel}}</translation>
-<translation id="3831436149286513437">Google Drive-soekvoorstelle</translation>
 <translation id="3834728400518755610">Die verandering aan mikrofooninstelling vereis dat Linux afgeskakel moet word. Skakel Linux af om voort te gaan.</translation>
 <translation id="3834775135533257713">Kon nie program "<ph name="TO_INSTALL_APP_NAME" />" byvoeg nie omdat dit met "<ph name="INSTALLED_APP_NAME" />" bots.</translation>
 <translation id="3835904559946595746">Kon nie Linux-rugsteun terugstel nie</translation>

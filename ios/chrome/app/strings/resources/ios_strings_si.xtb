@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">අලුත් සෙවීම</translation>
 <translation id="1209206284964581585">දැනට සඟවන්න</translation>
 <translation id="1219674500290482172">අන්තර්ජාලය වෙත සම්බන්ධ වීමට නොහැකිය.</translation>
+<translation id="1226238226094914652">ඔබේ සියලු උපාංගවල මුරපද</translation>
 <translation id="122699739164161391">සියලු පටිති වසන්න</translation>
 <translation id="1229222343402087523">Chrome තුළ ${searchPhrase} සොයන්න</translation>
 <translation id="1242044645101871359">නැවත පුරන්න</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">සියල්ල විවෘත කරන්න</translation>
 <translation id="2556092377360758201">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> වෙත යවනු ලැබේ...</translation>
+<translation id="2576499762020411840">ඔබේ Google ගිණුම තුළ මුරපද භාවිතා කර සුරකින්න</translation>
 <translation id="2578571896248130439">වෙබ් පිටුව යවන්න</translation>
 <translation id="2584132361465095047">ගිණුම එක් කරන්න...</translation>
 <translation id="2600682495497606169">අඩවි කුකී හිස් කරන්න</translation>
@@ -410,6 +412,7 @@
 <translation id="4063300985191096908">සංග්‍රහය වෙත යන්න</translation>
 <translation id="408404951701638773">දැන් සෙවුම් තීරුවට ළඟා වීමට පහසුය</translation>
 <translation id="4092655288299341041">උදවු පෙන්වන්න</translation>
+<translation id="4101942614374785540">මුරපද දැන් ඔබේ Google ගිණුම තුළ (<ph name="ACCOUNT" />) සුරකිනු ලැබේ. ඔබ පුරනය වී ඇති ඕනෑම තැනක ඔබට ඒවා භාවිතා කළ හැක. මෙය ක්‍රියාවිරහිත කිරීම සඳහා, <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> වෙත යන්න.</translation>
 <translation id="4108998448622696017">අනතුරුදායක සිදුවීම් සිදු වන විට ඒවා අනාවරණ කර ඔබට අවවාද කරයි.</translation>
 <translation id="411254640334432676">බාගැනීම අසාර්ථකයි</translation>
 <translation id="4112644173421521737">සෙවීම</translation>
@@ -693,6 +696,7 @@
 <translation id="6184086493125982861">පටිති පෙන්වන්න</translation>
 <translation id="6187302354554850004">අවසන් වරට සමමුහුර්ත කළේ: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">නොකියවූ</translation>
+<translation id="6193424046394092997">{count,plural, =1{{title} වෙත පිටුසන් කර ඇත}one{{title} වෙත පිටුසන් කර ඇත}other{{title} වෙත පිටුසන් කර ඇත}}</translation>
 <translation id="6196207969502475924">හඬ සෙවීම</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ටැබ {COUNT}ක් වසන්න}one{ටැබ {COUNT}ක් වසන්න}other{ටැබ {COUNT}ක් වසන්න}}</translation>
 <translation id="6219550825416862075">ආපසු සාදරයෙන් පිළිගනිමු</translation>
@@ -838,6 +842,7 @@
 <translation id="7053983685419859001">අවහිර කරන්න</translation>
 <translation id="7062545763355031412">පිළිගන්න සහ ගිණුම් මාරු කරන්න</translation>
 <translation id="7080806333218412752">URL පරීක්ෂා කිරීමට ඒවා ආරක්ෂිත බ්‍රවුස් කිරීම වෙත යවයි. නව තර්ජන සොයා ගැනීමට උදවු කිරීමට පිටුවල, බාගැනීම්වල, දිගු ක්‍රියාකාරකමේ, සහ පද්ධති තොරතුරුවල කුඩා නියැදියක් ද යවයි. Google යෙදුම් හරහා ඔබව ආරක්ෂා කිරීමට, ඔබ පුරා සිටින විට ඔබේ Google ගිණුමට මෙම දත්ත තාවකාලිකව සබැඳි කෙරේ.</translation>
+<translation id="7083860864742905105">ක්‍රියාත්මක වූ විට, මුරපද <ph name="ACCOUNT" /> තුළ සුරකිනු ලැබේ. ක්‍රියාවිරහිත වූ විට, මුරපද සුරැකෙන්නේ මෙම උපාංගයෙහි පමණි.</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> සඳහා Google මුරපද කළමනාකරු වෙත</translation>
 <translation id="7099761977003084116">මෑතකාලීන පටිති</translation>
 <translation id="7102005569666697658">බාගනිමින්… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@
 <translation id="7756478488453921771">මෙනුව → සැකසීම් → ගෙවීමේ ක්‍රම</translation>
 <translation id="7765158879357617694">චලනය කරන්න</translation>
 <translation id="7772032839648071052">රහස්පදය ස්ථිර කරන්න</translation>
+<translation id="777572173400717978">{count,plural, =1{පිටුසන් කළ}one{පිටුසන් කළ}other{පිටුසන් කළ}}</translation>
 <translation id="7781011649027948662">පිටුව පරිවර්තන කරන්නද?</translation>
 <translation id="7781069478569868053">නව පටිති පිටුව</translation>
 <translation id="7781829728241885113">ඊයේ</translation>

@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">新しく検索</translation>
 <translation id="1209206284964581585">今は表示しない</translation>
 <translation id="1219674500290482172">インターネットに接続できません。</translation>
+<translation id="1226238226094914652">すべてのデバイスでパスワードを使用</translation>
 <translation id="122699739164161391">すべてのタブを閉じる</translation>
 <translation id="1229222343402087523">Chrome で ${searchPhrase} を検索</translation>
 <translation id="1242044645101871359">もう一度ログインしてください</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">すべて開く</translation>
 <translation id="2556092377360758201">保護なし（推奨されません）</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> にタブを送信しています...</translation>
+<translation id="2576499762020411840">Google アカウントのパスワードの使用と保存</translation>
 <translation id="2578571896248130439">ウェブページの送信</translation>
 <translation id="2584132361465095047">アカウントを追加...</translation>
 <translation id="2600682495497606169">サイトの Cookie を削除</translation>
@@ -410,6 +412,7 @@
 <translation id="4063300985191096908">フィードに移動</translation>
 <translation id="408404951701638773">検索バーをより手軽に使用できるようになりました</translation>
 <translation id="4092655288299341041">ヘルプを表示</translation>
+<translation id="4101942614374785540">パスワードは Google アカウント（<ph name="ACCOUNT" />）に保存されました。ログインすればどのデバイスでもパスワードを使用できます。この機能をオフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
 <translation id="411254640334432676">ダウンロードできませんでした。</translation>
 <translation id="4112644173421521737">検索</translation>
@@ -693,6 +696,7 @@
 <translation id="6184086493125982861">タブを表示</translation>
 <translation id="6187302354554850004">最終同期: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">未読</translation>
+<translation id="6193424046394092997">{count,plural, =1{{title} にブックマークしました}other{{title} にブックマークしました}}</translation>
 <translation id="6196207969502475924">音声検索</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} 個のタブを閉じる}other{{COUNT} 個のタブを閉じる}}</translation>
 <translation id="6219550825416862075">おかえりなさい</translation>
@@ -838,6 +842,7 @@
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7062545763355031412">同意してアカウントを切り替える</translation>
 <translation id="7080806333218412752">セーフ ブラウジングに URL を送信して安全性を確認します。また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します。ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します。</translation>
+<translation id="7083860864742905105">オンにすると、パスワードは <ph name="ACCOUNT" /> に保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> の Google パスワード マネージャーに移動</translation>
 <translation id="7099761977003084116">最近使ったタブ</translation>
 <translation id="7102005569666697658">ダウンロードしています… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@
 <translation id="7756478488453921771">メニュー → 設定 → お支払い方法</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
+<translation id="777572173400717978">{count,plural, =1{ブックマークしました}other{ブックマークしました}}</translation>
 <translation id="7781011649027948662">ページを翻訳しますか？</translation>
 <translation id="7781069478569868053">新しいタブページ</translation>
 <translation id="7781829728241885113">昨日</translation>

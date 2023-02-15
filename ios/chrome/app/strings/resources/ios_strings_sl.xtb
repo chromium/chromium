@@ -40,6 +40,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1207113853726624428">Novo iskanje</translation>
 <translation id="1209206284964581585">Zaenkrat skrij</translation>
 <translation id="1219674500290482172">Internetne povezave ni mogoče vzpostaviti.</translation>
+<translation id="1226238226094914652">Gesla v vseh napravah</translation>
 <translation id="122699739164161391">Zapri vse zavihke</translation>
 <translation id="1229222343402087523">Iskanje poizvedbe ${searchPhrase} v Chromu</translation>
 <translation id="1242044645101871359">Prijavite se znova</translation>
@@ -205,6 +206,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2529021024822217800">Odpri vse</translation>
 <translation id="2556092377360758201">Brez zaščite (ni priporočljivo)</translation>
 <translation id="2562041823070056534">Pošiljanje v napravo <ph name="DEVICE_NAME" /> …</translation>
+<translation id="2576499762020411840">Uporaba in shranjevanje gesel v računu Google</translation>
 <translation id="2578571896248130439">Pošlji spletno stran</translation>
 <translation id="2584132361465095047">Dodajanje računa ...</translation>
 <translation id="2600682495497606169">Brisanje piškotkov spletnega mesta</translation>
@@ -410,6 +412,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4063300985191096908">Na vir</translation>
 <translation id="408404951701638773">Vrstico za iskanje je zdaj preprosteje doseči</translation>
 <translation id="4092655288299341041">Pokaži pomoč</translation>
+<translation id="4101942614374785540">Gesla so shranjena v računu Google (<ph name="ACCOUNT" />). Uporabljate jih lahko, kjer koli ste prijavljeni. Če želite to izklopiti, odprite <ph name="BEGIN_LINK" />nastavitve<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Zaznava nevarne dogodke, ko se zgodijo, in vas opozarja nanje.</translation>
 <translation id="411254640334432676">Prenos ni uspel.</translation>
 <translation id="4112644173421521737">Iskanje</translation>
@@ -693,6 +696,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6184086493125982861">Pokaži zavihke</translation>
 <translation id="6187302354554850004">Nazadnje sinhronizirano: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Neprebrano</translation>
+<translation id="6193424046394092997">{count,plural, =1{Zaznamek ustvarjen v mapi {title}}one{Zaznamki ustvarjeni v mapi {title}}two{Zaznamki ustvarjeni v mapi {title}}few{Zaznamki ustvarjeni v mapi {title}}other{Zaznamki ustvarjeni v mapi {title}}}</translation>
 <translation id="6196207969502475924">Glasovno iskanje</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zapri {COUNT} zavihek}one{Zapri {COUNT} zavihek}two{Zapri {COUNT} zavihka}few{Zapri {COUNT} zavihke}other{Zapri {COUNT} zavihkov}}</translation>
 <translation id="6219550825416862075">Dobrodošli nazaj</translation>
@@ -838,6 +842,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7062545763355031412">Sprejmi in preklopi račun</translation>
 <translation id="7080806333218412752">Pošlje URL-je Varnemu brskanju, da jih ta preveri. Prav tako pošlje manjši vzorec strani, prenosov, dejavnosti razširitev in podatkov o sistemu zaradi pomoči pri odkrivanju novih groženj. Te podatke začasno poveže z vašim računom Google, če ste prijavljeni, zaradi zagotavljanja zaščite v Googlovih aplikacijah.</translation>
+<translation id="7083860864742905105">Če je vklopljeno, se gesla shranjujejo v računu <ph name="ACCOUNT" />. Če je izklopljeno, se gesla shranjujejo samo v tej napravi.</translation>
 <translation id="7095110968493193530">V Googlov upravitelj gesel za <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Nedavni zavihki</translation>
 <translation id="7102005569666697658">Prenašanje … <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7756478488453921771">Meni → Nastavitve → Plačilna sredstva</translation>
 <translation id="7765158879357617694">Premakni</translation>
 <translation id="7772032839648071052">Potrdi geslo</translation>
+<translation id="777572173400717978">{count,plural, =1{Dodano med zaznamke}one{Dodano med zaznamke}two{Dodano med zaznamke}few{Dodano med zaznamke}other{Dodano med zaznamke}}</translation>
 <translation id="7781011649027948662">Želite prevod te strani?</translation>
 <translation id="7781069478569868053">Nov zavihek s povezavami</translation>
 <translation id="7781829728241885113">Včeraj</translation>

@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">కొత్త శోధన</translation>
 <translation id="1209206284964581585">ప్రస్తుతానికి దాచు</translation>
 <translation id="1219674500290482172">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>
+<translation id="1226238226094914652">మీ అన్ని పరికరాలలోని పాస్‌వర్డ్‌లు</translation>
 <translation id="122699739164161391">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="1229222343402087523">Chromeలో ${searchPhrase}ను సెర్చ్ చేయండి</translation>
 <translation id="1242044645101871359">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">అన్నీ తెరువు</translation>
 <translation id="2556092377360758201">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />కు పంపుతోంది...</translation>
+<translation id="2576499762020411840">మీ Google ఖాతాలో పాస్‌వర్డ్‌లను ఉపయోగించండి, సేవ్ చేయండి</translation>
 <translation id="2578571896248130439">వెబ్‌పేజీని పంపండి</translation>
 <translation id="2584132361465095047">ఖాతాను జోడించండి…</translation>
 <translation id="2600682495497606169">సైట్ కుక్కీలను క్లియర్ చేయండి</translation>
@@ -410,6 +412,7 @@
 <translation id="4063300985191096908">ఫీడ్‌కు వెళ్లండి</translation>
 <translation id="408404951701638773">ఇప్పుడు శోధన బార్‌కు మరింత సులభంగా చేరుకోవచ్చు</translation>
 <translation id="4092655288299341041">సహాయాన్ని చూడండి</translation>
+<translation id="4101942614374785540">పాస్‌వర్డ్‌లు ఇప్పుడు మీ Google ఖాతా (<ph name="ACCOUNT" />)లో సేవ్ చేయబడ్డాయి. మీరు ఎక్కడ సైన్ ఇన్ చేసినా వాటిని ఉపయోగించవచ్చు. దీన్ని ఆఫ్ చేయడానికి, <ph name="BEGIN_LINK" />సెట్టింగ్‌లు<ph name="END_LINK" /> ఆప్షన్‌కు వెళ్లండి.</translation>
 <translation id="4108998448622696017">ప్రమాదకరమైన సంఘటనలు జరిగినప్పుడు గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="411254640334432676">డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="4112644173421521737">సెర్చ్</translation>
@@ -693,6 +696,7 @@
 <translation id="6184086493125982861">ట్యాబ్‌లను చూపించు</translation>
 <translation id="6187302354554850004">చివరగా సింక్ చేసింది: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">చదవనివి</translation>
+<translation id="6193424046394092997">{count,plural, =1{{title}కి బుక్‌మార్క్ చేశారు}other{{title}కి బుక్‌మార్క్ చేశారు}}</translation>
 <translation id="6196207969502475924">వాయిస్ శోధన</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ట్యాబ్‌ను మూసివేయి}other{{COUNT} ట్యాబ్‌లను మూసివేయి}}</translation>
 <translation id="6219550825416862075">పునఃస్వాగతం</translation>
@@ -838,6 +842,7 @@
 <translation id="7053983685419859001">నిరోధించు</translation>
 <translation id="7062545763355031412">అంగీకరిస్తున్నాను, ఖాతాలను మార్చు</translation>
 <translation id="7080806333218412752">URLలను చెక్ చేయడానికి వాటిని సురక్షిత బ్రౌజింగ్‌కు పంపుతుంది. కొత్త రకం ప్రమాదాలను గుర్తించడంలో సహాయపడటానికి కొన్ని నమూనా పేజీలు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్ యాక్టివిటీ, సిస్టమ్ సమాచారాన్ని కూడా పంపుతుంది. మీరు సైన్ ఇన్ చేసి ఉన్నప్పుడు, మిమ్మల్ని అన్ని Google యాప్‌లలో కాపాడటానికి ఈ డేటాను తాత్కాలికంగా మీ Google ఖాతాకు లింక్ చేస్తుంది.</translation>
+<translation id="7083860864742905105">ఆన్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు <ph name="ACCOUNT" />లో సేవ్ చేయబడతాయి. ఈమెయిల్ ఆఫ్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> కోసం Google Password Managerకు</translation>
 <translation id="7099761977003084116">ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="7102005569666697658">డౌన్‌లోడ్ చేస్తోంది… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@
 <translation id="7756478488453921771">మెనూ → సెట్టింగ్‌లు → పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="7765158879357617694">తరలించు</translation>
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
+<translation id="777572173400717978">{count,plural, =1{బుక్‌మార్క్ చేయబడింది}other{బుక్‌మార్క్ చేయబడింది}}</translation>
 <translation id="7781011649027948662">పేజీని అనువాదం చేయాలా?</translation>
 <translation id="7781069478569868053">కొత్త ట్యాబ్ పేజీ</translation>
 <translation id="7781829728241885113">నిన్న</translation>

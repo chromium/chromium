@@ -1009,7 +1009,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1869433484041798909">Kirjanmerkkipainike</translation>
 <translation id="1871098866036088250">Avaa Chrome-selaimessa</translation>
 <translation id="187145082678092583">Vähemmän sovelluksia</translation>
-<translation id="1871463148436682760">Hyvin tehty!</translation>
 <translation id="1871534214638631766">Näytä aiheeseen liittyviä tietoja klikkaamalla sisältöä hiiren kakkospainikkeella tai painamalla sitä pitkään</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> on ajan tasalla.</translation>
 <translation id="1873920700418191231">Salli luvat uudelleen: <ph name="WEBSITE" /></translation>
@@ -3206,7 +3205,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3828953470056652895">Olen lukenut ja hyväksyn <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chromen ja ChromeOS:n lisäkäyttöehdot<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />Playn käyttöehdot<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">SMB-tiedostonjako</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Järjestelmänvalvoja laittoi 1 mahdollisesti haitallisen laajennuksen päälle}other{Järjestelmänvalvoja laittoi {NUM_EXTENSIONS} mahdollisesti haitallista laajennusta päälle}}</translation>
-<translation id="3831436149286513437">Google Drive ‑hakuehdotukset</translation>
 <translation id="3834728400518755610">Mikrofoniasetuksen muutos edellyttää Linuxin käynnistämistä uudelleen. Sammuta Linux jatkaaksesi.</translation>
 <translation id="3834775135533257713">Sovellusta <ph name="TO_INSTALL_APP_NAME" /> ei voitu asentaa, koska se on ristiriidassa sovelluksen <ph name="INSTALLED_APP_NAME" /> kanssa.</translation>
 <translation id="3835904559946595746">Linux-varmuuskopiota ei voitu palauttaa</translation>
@@ -8124,6 +8122,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8358912028636606457">Tämä laite ei tue välilehden äänten striimausta.</translation>
 <translation id="835951711479681002">Tallenna Google-tilillesi</translation>
 <translation id="8360140320636871023">Näytön teeman personointi</translation>
+<translation id="8360267485906769442">Lähetä palautetta ‑painike</translation>
 <translation id="8363095875018065315">vakaa</translation>
 <translation id="8363142353806532503">Mikrofoni estetty</translation>
 <translation id="8366396658833131068">Verkkoyhteytesi on palautettu. Valitse eri verkko tai paina alla olevaa Jatka-painiketta, jos haluat käynnistää kioskisovelluksen.</translation>

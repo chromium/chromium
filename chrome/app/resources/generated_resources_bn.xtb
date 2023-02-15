@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Android অ্যাপ্লিকেশন লঞ্চ করার জন্য ডিস্কে জায়গা খালি করুন।</translation>
 <translation id="1033780634303702874">আপনার সিরিয়াল ডিভাইসগুলি অ্যাক্সেস করুন</translation>
 <translation id="1034484273907870301">ট্যাবলেট মোডের জন্য থাম্বনেল ট্যাব বার</translation>
+<translation id="1035875743511577452">শিল্পী, প্রকৃতি এবং আরও অনেক কিছু দ্বারা অনুপ্রাণিত থিমগুলি এক্সপ্লোর করতে "থিম পরিবর্তন করুন" বিকল্পে ক্লিক করুন</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1036511912703768636">এই USB ডিভাইসগুলির মধ্যে যে কোনোটি অ্যাক্সেস করুন</translation>
 <translation id="1038168778161626396">কেবলমাত্র চিহ্ন প্রদান</translation>
@@ -1011,7 +1012,6 @@
 <translation id="1869433484041798909">'বুকমার্ক' বোতাম</translation>
 <translation id="1871098866036088250">Chrome ব্রাউজারে খুলুন</translation>
 <translation id="187145082678092583">কয়েকটি অ্যাপ</translation>
-<translation id="1871463148436682760">দারুণ হয়েছে!</translation>
 <translation id="1871534214638631766">কন্টেন্টের উপর মাউস রেখে ডানদিকে ক্লিক করলে বা দীর্ঘক্ষণ প্রেস করে ধরে রাখলে এর সংশ্লিষ্ট তথ্য দেখানো হয়</translation>
 <translation id="1871615898038944731">আপনার <ph name="DEVICE_TYPE" /> আপ-টু-ডেট আছে</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" />-এর জন্য অনুমতি দিন</translation>
@@ -1390,6 +1390,7 @@
 <translation id="2203088913459920044">নামে অক্ষর, সংখ্যা ও বিশেষ অক্ষর ব্যবহার করা যেতে পারে</translation>
 <translation id="220321590587754225">কানেক্ট করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="2203903197029773650">আপনি Google অ্যাকাউন্ট দিয়ে সাইন-ইন করলে <ph name="BRAND" /> আপনার পাসওয়ার্ড চেক করতে পারবে</translation>
+<translation id="2204020417499639567">ইমেল আইডি লেখা হয়েছে।</translation>
 <translation id="2204034823255629767">আপনি যা টাইপ করেন তা পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="2204387456724731099">বেছে নেওয়া টেক্সট অনুবাদ করা যায়নি</translation>
 <translation id="2210462644007531147">ইনস্টলেশন সম্পূর্ণ করা যায়নি</translation>
@@ -1847,6 +1848,7 @@
 <translation id="2603355571917519942">Voice Match ব্যবহারের জন্য প্রস্তুত</translation>
 <translation id="2604129989323098489">সাইট সাধারণত আপনার ডিসপ্লে সংক্রান্ত তথ্য চায় যাতে তারা সুবিধাজনকভাবে উইন্ডো খুলতে ও তা দেখাতে পারে, যেমন ডকুমেন্ট বা ফুল-স্ক্রিন কন্টেন্ট পাশাপাশি দেখানো</translation>
 <translation id="2604255671529671813">নেটওয়ার্ক সংযোগে সমস্যা</translation>
+<translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> ঠিকানার ফর্ম পূরণ করা হয়েছে।</translation>
 <translation id="2605668923777146443">Better Together-এর জন্য বিকল্প দেখতে <ph name="LINK_BEGIN" />সেটিংস<ph name="LINK_END" />-এ যান।</translation>
 <translation id="2606246518223360146">ডেটা লিঙ্ক করুন</translation>
 <translation id="2606454609872547359">না, ChromeVox ছাড়াই চালিয়ে যান</translation>
@@ -2438,6 +2440,7 @@
 <translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3122496702278727796">ডেটা ডিরেক্টরি তৈরি করা যায়নি</translation>
 <translation id="3124111068741548686">ব্যবহারকারীর হ্যান্ডলগুলি</translation>
+<translation id="3124332159330678621">আপনার ব্রাউজারকে একটি নতুন চেহারা দিতে Chrome কাস্টমাইজ করুন</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">চার্জ করা ও পারফর্ম্যান্স সংক্রান্ত সমস্যা এড়াতে মানানসই USB টাইপ-সি পাওয়ার অ্যাডাপ্টার ব্যবহার করুন।</translation>
 <translation id="3127862849166875294">Linux-এর ডিস্ক সাইজ পরিবর্তন করা</translation>
@@ -3063,6 +3066,7 @@
 <translation id="3713091615825314967">অটোমেটিক আপডেট চালু করা হয়েছে।</translation>
 <translation id="371370241367527062">সামনের মাইক্রোফোন</translation>
 <translation id="3714195043138862580">এই ডেমো ডিভাইসটির অধিকার বাতিল করা হয়েছে।</translation>
+<translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> পূরণ করা হয়েছে।</translation>
 <translation id="3719826155360621982">হোমপেজ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">আপনি এবং Google</translation>
@@ -3208,7 +3212,6 @@
 <translation id="3828953470056652895">আমি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ও ChromeOS-এর অতিরিক্ত পরিষেবার শর্তাবলী<ph name="END_LINK2" /> এবং <ph name="BEGIN_LINK3" />Play পরিষেবার শর্তাবলী<ph name="END_LINK3" /> পড়েছি ও সেগুলিতে সম্মতি জানাচ্ছি।</translation>
 <translation id="3829765597456725595">SMB ফাইল শেয়ার</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{আপনার অ্যাডমিনিস্ট্রেটর ১টি সম্ভাব্য ক্ষতিকর এক্সটেনশন আবার চালু করে দিয়েছে}one{আপনার অ্যাডমিনিস্ট্রেটর {NUM_EXTENSIONS}টি সম্ভাব্য ক্ষতিকর এক্সটেনশন আবার চালু করে দিয়েছে}other{আপনার অ্যাডমিনিস্ট্রেটর {NUM_EXTENSIONS}টি সম্ভাব্য ক্ষতিকর এক্সটেনশন আবার চালু করে দিয়েছে}}</translation>
-<translation id="3831436149286513437">Google ড্রাইভ সার্চ সাজেশন</translation>
 <translation id="3834728400518755610">মাইক্রোফোন সেটিং পরিবর্তন করতে Linux বন্ধ করতে হবে। এগোনোর জন্য Linux বন্ধ করুন।</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" অ্যাপ্লিকেশান যোগ করা যায়নি কারণ "<ph name="INSTALLED_APP_NAME" />" এর সাথে এর বিরোধ আছে।</translation>
 <translation id="3835904559946595746">Linux-এর ব্যাক-আপ ফিরিয়ে আনা যায়নি</translation>
@@ -3670,6 +3673,7 @@
 <translation id="426652736638196239">এই IBAN শুধুমাত্র এই ডিভাইসে সেভ করা হবে</translation>
 <translation id="4266679478228765574">ফোল্ডার সরিয়ে দিলে শেয়ার করা বন্ধ হয়ে যাবে কিন্তু ফাইল মুছে যাবে না।</translation>
 <translation id="4267455501101322486">শিক্ষাগত রিসোর্স অ্যাক্সেস করার জন্য একটি অ্যাকাউন্ট যোগ করতে, অভিভাবকের কাছ থেকে অনুমতি চান</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{কোনও পাসওয়ার্ড পাওয়া যায়নি}=1{১টি ফলাফল পাওয়া গেছে}one{{COUNT}টি ফলাফল পাওয়া গেছে}other{{COUNT}টি ফলাফল পাওয়া গেছে}}</translation>
 <translation id="4267924571297947682">অভিভাবকের থেকে অনুমতি নিন</translation>
 <translation id="4267953847983678297">মোবাইল নেটওয়ার্কে অটোমেটিক কানেক্ট করুন</translation>
 <translation id="4268025649754414643">কী চিহ্নকরণ</translation>
@@ -3951,6 +3955,7 @@
 <translation id="4522890784888918985">বাচ্চার অ্যাকাউন্ট কাজ করে না</translation>
 <translation id="4523876148417776526">XML সাইটলিস্ট এখনও লোড করা হয়নি।</translation>
 <translation id="4524832533047962394">অপারেটিং সিস্টেমের এই ভার্সনটি প্রদত্ত নথিভুক্তকরণের মোড সমর্থন করে না। আপনি সর্বাধুনিক ভার্সনটি চালাচ্ছেন কিনা দেখুন।</translation>
+<translation id="4526853756266614740">ঝটপট থিম প্রয়োগ করার জন্য ছবি বেছে নিন</translation>
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
 <translation id="4527929807707405172">রিভার্স স্ক্রলিং চালু করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">অনুবাদ সাজেশন</translation>
@@ -4251,6 +4256,7 @@
 <translation id="4800839971935185386">নাম এবং আইকনের আপডেট দেখে নিন</translation>
 <translation id="4801448226354548035">অ্যাকাউন্টগুলি লুকান</translation>
 <translation id="4801512016965057443">মোবাইল ডেটা রোমিংয়ের অনুমতি দিন</translation>
+<translation id="4804311503028830356">অন্য বিকল্পগুলি এক্সপ্লোর করার জন্য পিছনের দিকের তীর চিহ্ন ক্লিক করুন</translation>
 <translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="4804827417948292437">অ্যাভোকাডো</translation>
 <translation id="4806457879608775995">এই শর্তাবলী পর্যালোচনা করুন এবং আপনার ডেটা নিয়ন্ত্রণ করুন</translation>
@@ -8134,6 +8140,7 @@
 <translation id="8358912028636606457">এই ডিভাইসে ট্যাব থেকে অডিও কাস্ট করার সুবিধা নেই।</translation>
 <translation id="835951711479681002">আপনার Google অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="8360140320636871023">আপনার ডিসপ্লে থিম পছন্দমতো সেট করুন</translation>
+<translation id="8360267485906769442">মতামত জানানোর বোতাম</translation>
 <translation id="8363095875018065315">স্থায়ী</translation>
 <translation id="8363142353806532503">মাইক্রোফোনের ব্যবহার ব্লক করা হয়েছে</translation>
 <translation id="8366396658833131068">আপনার নেটওয়ার্ক আবার কানেক্ট করা হয়েছে৷ আপনার কিয়স্ক অ্যাপ লঞ্চ করার জন্য অনুগ্রহ করে একটি ভিন্ন নেটওয়ার্ক বেছে নিন অথবা নীচের 'অবিরত থাকুন' বোতাম টিপুন৷</translation>
@@ -8280,6 +8287,7 @@
 <translation id="8498214519255567734">এটি ব্যবহার করলে আপনি কম আলোতেও স্বচ্ছন্দে স্ক্রিনের দিকে তাকাতে বা পড়তে পারবেন</translation>
 <translation id="8498395510292172881">Chrome-এ পড়া চালিয়ে যান</translation>
 <translation id="8499083585497694743">মাইক্রোফোন আনমিউট করুন</translation>
+<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />আপনা-আপনি পূরণ হওয়া মেটাডেটা<ph name="END_LINK1" /> পাঠান</translation>
 <translation id="8502536196501630039">Google Play থেকে অ্যাপ ব্যবহার করতে, প্রথমে আপনার অ্যাপ রিস্টোর করতে হবে। কিছু ডেটা হারিয়ে যেতে পারে।</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="850382998924680137">আজ দেখা হয়েছে</translation>

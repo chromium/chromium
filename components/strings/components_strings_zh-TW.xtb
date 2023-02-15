@@ -1315,6 +1315,7 @@
 <translation id="4223404254440398437">不允許使用麥克風</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />嘗試執行網路診斷<ph name="END_LINK" />。</translation>
 <translation id="4230204356098880324">可以要求使用及移動你的攝影機</translation>
+<translation id="4231448684371260244">8 x 13 英寸</translation>
 <translation id="4235360514405112390">有效</translation>
 <translation id="4250431568374086873">你與這個網站的連線可能有安全漏洞</translation>
 <translation id="4250680216510889253">否</translation>
@@ -2448,7 +2449,7 @@
 <translation id="7108634116785509031"><ph name="HOST" /> 要求使用攝影機</translation>
 <translation id="7108819624672055576">依據擴充功能設定允許</translation>
 <translation id="7111012039238467737">(有效)</translation>
-<translation id="7112327784801341716">資料與現況不符嗎？請與你的銀行聯絡來更新資訊。</translation>
+<translation id="7112327784801341716">資料與現況不符嗎？請聯絡銀行辦理資料更新。</translation>
 <translation id="7118618213916969306">搜尋剪貼簿網址 <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
 <translation id="7124354851782353862">請輸入信用卡驗證碼</translation>
@@ -3188,6 +3189,7 @@
 <translation id="8899807382908246773">侵入式廣告</translation>
 <translation id="8903921497873541725">放大</translation>
 <translation id="890493561996401738">移除建議按鈕，按一下 Enter 鍵即可移除「<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」</translation>
+<translation id="8910898109640902752">8 x 10 英寸</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8913778647360618320">「管理付款方式」按鈕，按下 Enter 鍵即可在 Chrome 設定中管理付款和信用卡資訊</translation>
 <translation id="8922013791253848639">一律允許在這個網站中顯示廣告</translation>

@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">[ジャーニーを再開] ボタンです。Enter キーを押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="1101672080107056897">エラー アクション</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
+<translation id="1104409666019087579">一部の必須項目が空白です。保存する前に入力してください。</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> の権限を選択します</translation>
 <translation id="1112828774174131240">アンティーク、コレクション</translation>
@@ -2016,6 +2017,7 @@
 <translation id="5992691462791905444">工学 Z 折り</translation>
 <translation id="5992805036496113940">広告の表示に使用される情報を表示します</translation>
 <translation id="5995727681868049093">Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
+<translation id="5996887213716993070"><ph name="FIELD" /> は空欄にできません</translation>
 <translation id="5997247540087773573">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために今すぐパスワードを変更して、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
 <translation id="6005765687956866568">自動入力された情報をフォームから削除しました</translation>
@@ -2755,6 +2757,7 @@
 <translation id="7766518757692125295">スカート</translation>
 <translation id="7773005668374414287">同じ順序（上向き）</translation>
 <translation id="7785790577395078482">このタブレット</translation>
+<translation id="7786368602962652765">必須項目が空白です。保存する前に入力してください。</translation>
 <translation id="7790488044432570133">アクセスしたサイトから、広告のパフォーマンスを測定するための情報が Chrome に求められることがあります。Chrome では、広告が表示された日時など、限られた種類のデータをサイトが収集できるようにします。</translation>
 <translation id="7791011319128895129">未公開</translation>
 <translation id="7791196057686275387">梱包</translation>

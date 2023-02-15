@@ -1009,7 +1009,6 @@
 <translation id="1869433484041798909">လိပ်စာမှတ်ရန် ခလုတ်</translation>
 <translation id="1871098866036088250">Chrome ဘရောင်ဇာတွင် ဖွင့်ရန်</translation>
 <translation id="187145082678092583">အက်ပ်များ လျှော့ပြရန်</translation>
-<translation id="1871463148436682760">လုပ်ဆောင်ပြီးပါပြီ။</translation>
 <translation id="1871534214638631766">အကြောင်းအရာကို ဖိထားလျှင် သို့မဟုတ် ညာဘက်ခလုတ်ကို နှိပ်လိုက်လျှင် ရှိုးနှင့်ပတ်သက်သည့် အချက်အလက်များပြပါမည်</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> ကို အပ်ဒိတ်လုပ်ပြီးသားဖြစ်သည်</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> အတွက် ခွင့်ပြုချက်များ ပြန်ပေးရန်</translation>
@@ -3210,7 +3209,6 @@
 <translation id="3828953470056652895">ကျွန်ုပ်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" />၊ <ph name="BEGIN_LINK2" />Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> နှင့် <ph name="BEGIN_LINK3" />Play ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK3" /> ကို ဖတ်ရှုပြီး သဘောတူပါသည်။</translation>
 <translation id="3829765597456725595">SMB ဖိုင်မျှဝေမှု</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{သင့်စီမံခန့်ခွဲသူက အန္တရာယ်ရှိနိုင်သော နောက်ဆက်တွဲ ၁ ခုကို ပြန်ဖွင့်လိုက်သည်}other{သင့်စီမံခန့်ခွဲသူက အန္တရာယ်ရှိနိုင်သော နောက်ဆက်တွဲ {NUM_EXTENSIONS} ခုကို ပြန်ဖွင့်လိုက်သည်}}</translation>
-<translation id="3831436149286513437">Google Drive ရှာဖွေမှု အကြံပြုချက်များ</translation>
 <translation id="3834728400518755610">မိုက်ခရိုဖုန်းဆက်တင်တွင် ထည့်လိုက်သော အပြောင်းအလဲက Linux ကို ပိတ်ရန် လိုအပ်သည်။ ရှေ့ဆက်ရန် Linux ကို ပိတ်ပါ။</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" နှင့် တူနေသောကြောင့် "<ph name="TO_INSTALL_APP_NAME" />" အပလီကေးရှင်းကိုထည့်သွင်း၍မရပါ။</translation>
 <translation id="3835904559946595746">Linux မိတ္တူကို ပြန်ယူ၍မရပါ</translation>

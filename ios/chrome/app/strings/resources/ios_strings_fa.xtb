@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">جستجوی جدید</translation>
 <translation id="1209206284964581585">فعلاً پنهان شود</translation>
 <translation id="1219674500290482172">اتصال به اینترنت امکان‌پذیر نیست.</translation>
+<translation id="1226238226094914652">گذرواژه‌ها در همه دستگاه‌ها دردسترس است</translation>
 <translation id="122699739164161391">بستن همه برگه‌ها</translation>
 <translation id="1229222343402087523">‏جستجوی ${searchPhrase} در Chrome</translation>
 <translation id="1242044645101871359">دوباره به سیستم وارد شوید</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">باز کردن همه</translation>
 <translation id="2556092377360758201">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="2562041823070056534">درحال ارسال به <ph name="DEVICE_NAME" />...</translation>
+<translation id="2576499762020411840">‏استفاده و ذخیره گذرواژه‌ها در «حساب Google» شما</translation>
 <translation id="2578571896248130439">ارسال صفحه وب</translation>
 <translation id="2584132361465095047">افزودن حساب…</translation>
 <translation id="2600682495497606169">پاک کردن کوکی‌های سایت</translation>
@@ -410,6 +412,7 @@
 <translation id="4063300985191096908">رفتن به جارزن</translation>
 <translation id="408404951701638773">اکنون دسترسی به نوار جستجو آسان‌تر است</translation>
 <translation id="4092655288299341041">نمایش راهنما</translation>
+<translation id="4101942614374785540">‏ازاین‌پس گذرواژه‌ها در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره می‌شود. می‌توانید در هر جایی که به سیستم وارد شده‌اید از آن‌ها استفاده کنید. برای خاموش کردن این ویژگی، به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> بروید.</translation>
 <translation id="4108998448622696017">رویدادهای خطرناکی را که اتفاق می‌افتد شناسایی می‌کند و درباره آن‌ها به شما هشدار می‌دهد.</translation>
 <translation id="411254640334432676">بارگیری نشد.</translation>
 <translation id="4112644173421521737">جستجو</translation>
@@ -693,6 +696,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6184086493125982861">نمایش برگه‌ها</translation>
 <translation id="6187302354554850004">آخرین همگام‌سازی: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">خوانده‌نشده</translation>
+<translation id="6193424046394092997">{count,plural, =1{نشانک‌گذاری‌شده در {title}}one{نشانک‌گذاری‌شده در {title}}other{نشانک‌گذاری‌شده در {title}}}</translation>
 <translation id="6196207969502475924">جستجوی گفتاری</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{بستن {COUNT} برگه}one{بستن {COUNT} برگه}other{بستن {COUNT} برگه}}</translation>
 <translation id="6219550825416862075">مجدداً خوش آمدید</translation>
@@ -838,6 +842,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7062545763355031412">پذیرش و تغییر حساب‌ها</translation>
 <translation id="7080806333218412752">‏نشانی‌های وب را به «مرور ایمن» ارسال می‌کند تا بررسی شوند. نمونه کوچکی از صفحات، بارگیری‌ها، فعالیت افزونه، و اطلاعات سیستم را هم ارسال می‌کند تا به کشف تهدیدهای جدید کمک کند. وقتی به سیستم وارد شده باشید، این داده‌ها را به‌طور موقت به «حساب Google» شما پیوند می‌دهد تا در همه برنامه‌های Google از شما محافظت شود.</translation>
+<translation id="7083860864742905105">وقتی روشن باشد، گذرواژه‌ها در <ph name="ACCOUNT" /> ذخیره می‌شود. وقتی خاموش باشد، گذرواژه‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
 <translation id="7095110968493193530">‏در «مدیر گذرواژه Google» برای <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">برگه‌های اخیر</translation>
 <translation id="7102005569666697658">درحال بارگیری… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7756478488453921771">منو ← تنظیمات ← روش‌های پرداخت</translation>
 <translation id="7765158879357617694">انتقال</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
+<translation id="777572173400717978">{count,plural, =1{نشانک‌گذاری‌شده}one{نشانک‌گذاری‌شده}other{نشانک‌گذاری‌شده}}</translation>
 <translation id="7781011649027948662">صفحه ترجمه شود؟</translation>
 <translation id="7781069478569868053">صفحه برگه جدید</translation>
 <translation id="7781829728241885113">دیروز</translation>

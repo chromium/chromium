@@ -40,6 +40,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1207113853726624428">New Search</translation>
 <translation id="1209206284964581585">Hide for now</translation>
 <translation id="1219674500290482172">Unable to connect to the Internet.</translation>
+<translation id="1226238226094914652">Passwords on all of your devices</translation>
 <translation id="122699739164161391">Close All Tabs</translation>
 <translation id="1229222343402087523">Search ${searchPhrase} in Chrome</translation>
 <translation id="1242044645101871359">Sign in again</translation>
@@ -205,6 +206,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2529021024822217800">Open All</translation>
 <translation id="2556092377360758201">No protection (not recommended)</translation>
 <translation id="2562041823070056534">Sending to <ph name="DEVICE_NAME" />...</translation>
+<translation id="2576499762020411840">Use and save passwords in Your Google Account</translation>
 <translation id="2578571896248130439">Send Web Page</translation>
 <translation id="2584132361465095047">Add Account…</translation>
 <translation id="2600682495497606169">Clear site cookies</translation>
@@ -410,6 +412,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4063300985191096908">Go to feed</translation>
 <translation id="408404951701638773">Search bar is now easier to reach</translation>
 <translation id="4092655288299341041">Show help</translation>
+<translation id="4101942614374785540">Passwords are now saved in your Google Account (<ph name="ACCOUNT" />). You can use them wherever you're signed in. To turn this off, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="411254640334432676">Download failed.</translation>
 <translation id="4112644173421521737">Search</translation>
@@ -693,6 +696,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6184086493125982861">Show Tabs</translation>
 <translation id="6187302354554850004">Last synced: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Unread</translation>
+<translation id="6193424046394092997">{count,plural, =1{Bookmarked to {title}}other{Bookmarked to {title}}}</translation>
 <translation id="6196207969502475924">Voice Search</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
 <translation id="6219550825416862075">Welcome back</translation>
@@ -838,6 +842,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7053983685419859001">Block</translation>
 <translation id="7062545763355031412">Accept and switch accounts</translation>
 <translation id="7080806333218412752">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.</translation>
+<translation id="7083860864742905105">When on, passwords are saved in <ph name="ACCOUNT" />. When off, passwords are saved only on this device.</translation>
 <translation id="7095110968493193530">To Google Password Manager for <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Recent Tabs</translation>
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7756478488453921771">Menu → Settings → Payment methods</translation>
 <translation id="7765158879357617694">Move</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>
+<translation id="777572173400717978">{count,plural, =1{Bookmarked}other{Bookmarked}}</translation>
 <translation id="7781011649027948662">Translate page?</translation>
 <translation id="7781069478569868053">New Tab Page</translation>
 <translation id="7781829728241885113">Yesterday</translation>

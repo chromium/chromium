@@ -732,6 +732,7 @@
 <translation id="4895488851634969361">باتری پر است.</translation>
 <translation id="490375751687810070">عمودی</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />٪ باتری</translation>
+<translation id="491504982845934899">فعال‌سازی بعداز راه‌اندازی دستگاه <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">قوی</translation>
 <translation id="4918086044614829423">می‌پذیرم</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> درحال استفاده از دوربین است</translation>
@@ -1328,6 +1329,7 @@
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8131994907636310308">بستن پنجره خبری مرتب‌سازی</translation>
 <translation id="8132793192354020517">متصل به <ph name="NAME" /></translation>
+<translation id="8138705869659070104">فعال‌سازی بعداز راه‌اندازی دستگاه</translation>
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
 <translation id="8142441511840089262">دوبار کلیک کردن</translation>
 <translation id="8142699993796781067">شبکه‌های خصوصی</translation>

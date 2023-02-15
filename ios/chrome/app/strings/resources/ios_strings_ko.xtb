@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">새 검색</translation>
 <translation id="1209206284964581585">지금 숨기기</translation>
 <translation id="1219674500290482172">인터넷에 연결할 수 없습니다.</translation>
+<translation id="1226238226094914652">모든 기기의 비밀번호</translation>
 <translation id="122699739164161391">탭 모두 닫기</translation>
 <translation id="1229222343402087523">Chrome에서 ${searchPhrase} 검색</translation>
 <translation id="1242044645101871359">다시 로그인</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">모두 열기</translation>
 <translation id="2556092377360758201">보호되지 않음(권장되지 않음)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />에 보내는 중...</translation>
+<translation id="2576499762020411840">내 Google 계정에서 비밀번호 사용 및 저장</translation>
 <translation id="2578571896248130439">웹페이지 보내기</translation>
 <translation id="2584132361465095047">계정 추가...</translation>
 <translation id="2600682495497606169">사이트 쿠키 삭제</translation>
@@ -410,6 +412,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4063300985191096908">피드로 이동</translation>
 <translation id="408404951701638773">검색창을 사용하기가 더욱 쉬워졌습니다.</translation>
 <translation id="4092655288299341041">도움말 표시</translation>
+<translation id="4101942614374785540">비밀번호가 Google 계정(<ph name="ACCOUNT" />)에 저장되었습니다. 로그인하면 어디서나 비밀번호를 사용할 수 있습니다. 사용 중지하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요</translation>
 <translation id="4108998448622696017">위험한 이벤트가 발생하면 이를 감지하여 알립니다.</translation>
 <translation id="411254640334432676">다운로드에 실패했습니다.</translation>
 <translation id="4112644173421521737">검색</translation>
@@ -693,6 +696,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6184086493125982861">탭 표시</translation>
 <translation id="6187302354554850004">최근 동기화: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">읽지않음</translation>
+<translation id="6193424046394092997">{count,plural, =1{{title}에 북마크를 생성함}other{{title}에 북마크를 생성함}}</translation>
 <translation id="6196207969502475924">음성 검색</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{탭 {COUNT}개 닫기}other{탭 {COUNT}개 닫기}}</translation>
 <translation id="6219550825416862075">다시 방문해 주셔서 감사합니다</translation>
@@ -838,6 +842,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7053983685419859001">차단</translation>
 <translation id="7062545763355031412">동의 및 계정 전환</translation>
 <translation id="7080806333218412752">세이프 브라우징 서비스에 URL을 전송하여 확인하도록 합니다. 또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다. 사용자가 로그인하면 이 데이터를 사용자의 Google 계정에 일시적으로 연결하여 Google 앱 전반에서 사용자를 보호합니다.</translation>
+<translation id="7083860864742905105">사용 설정하면 비밀번호가 <ph name="ACCOUNT" />에 저장됩니다. 사용 중지하면 비밀번호가 이 기기에만 저장됩니다</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" />의 Google 비밀번호 관리자에 저장</translation>
 <translation id="7099761977003084116">최근 탭</translation>
 <translation id="7102005569666697658">다운로드 중… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7756478488453921771">메뉴 → 설정 → 결제 수단</translation>
 <translation id="7765158879357617694">이동</translation>
 <translation id="7772032839648071052">암호 확인</translation>
+<translation id="777572173400717978">{count,plural, =1{북마크를 생성함}other{북마크를 생성함}}</translation>
 <translation id="7781011649027948662">페이지를 번역하시겠습니까?</translation>
 <translation id="7781069478569868053">새 탭 페이지</translation>
 <translation id="7781829728241885113">어제</translation>

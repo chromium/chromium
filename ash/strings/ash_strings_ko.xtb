@@ -733,6 +733,7 @@
 <translation id="4895488851634969361">배터리 충전이 완료되었습니다.</translation>
 <translation id="490375751687810070">세로</translation>
 <translation id="490788395437447240">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">기기 설정 후 <ph name="NETWORK_NAME" /> 활성화</translation>
 <translation id="4917385247580444890">강함</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" />에서 카메라를 사용 중입니다.</translation>
@@ -1329,6 +1330,7 @@
 <translation id="8131740175452115882">확인</translation>
 <translation id="8131994907636310308">정렬 닫기 토스트</translation>
 <translation id="8132793192354020517"><ph name="NAME" />에 연결됨</translation>
+<translation id="8138705869659070104">기기 설정 후 활성화</translation>
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8142441511840089262">더블클릭</translation>
 <translation id="8142699993796781067">사설 네트워크</translation>

@@ -1009,7 +1009,6 @@
 <translation id="1869433484041798909">বুকমাৰ্ক কৰাৰ বুটাম</translation>
 <translation id="1871098866036088250">Chrome ব্ৰাউজাৰত খোলক</translation>
 <translation id="187145082678092583">কম এপ্‌</translation>
-<translation id="1871463148436682760">ভালদৰে কৰা হ’ল!</translation>
 <translation id="1871534214638631766">আপুনি সমলত ৰাইট ক্লিক কৰিলে অথবা দীঘলীয়াকৈ টিপি ধৰি থাকিলে প্ৰাসংগিক তথ্য দেখুৱাওক</translation>
 <translation id="1871615898038944731">আপোনাৰ <ph name="DEVICE_TYPE" /> আপ টু ডে’ট হৈ আছে</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" />ৰ বাবে পুনৰ অনুমতি দিয়ক</translation>
@@ -1583,6 +1582,7 @@
 <translation id="2352662711729498748">&lt; ১ এমবি</translation>
 <translation id="2352810082280059586">লক স্ক্ৰীনৰ টোকাসমূহ স্বয়ংক্ৰিয়ভাৱে <ph name="LOCK_SCREEN_APP_NAME" />ত ছেভ কৰা হয়। আপোনাৰ সকলোতকৈ শেহতীয়া টোকাটো লক স্ক্ৰীনত থাকিব।</translation>
 <translation id="2353297238722298836">কেমেৰা আৰু মাইক্ৰ’ফ’নৰ ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
+<translation id="2353910600995338714">ৰপ্তানি কৰাটো সফল হৈছে</translation>
 <translation id="2355314311311231464">আপোনাৰ একাউণ্টৰ সবিশেষ পুনৰুদ্ধাৰ কৰিব নোৱৰাৰ বাবে প্ৰ’ভিজনিং বিফল হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="2355477091455974894">শক্তি সঞ্চয়কাৰীৰ বিকল্প</translation>
 <translation id="2355604387869345912">তাৎক্ষণিক টেডাৰিং অন কৰক</translation>
@@ -3210,7 +3210,6 @@
 <translation id="3828953470056652895">মই <ph name="BEGIN_LINK1" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome আৰু ChromeOSৰ অতিৰিক্ত সেৱাৰ চৰ্তাৱলী<ph name="END_LINK2" /> আৰু <ph name="BEGIN_LINK3" />Playৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK3" /> পঢ়িছোঁ আৰু সেইসমূহত সন্মতি দিওঁ।</translation>
 <translation id="3829765597456725595">SMB ফাইল শ্বেয়াৰ</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{আপোনাৰ প্ৰশাসকে ১ টা সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বন পুনৰ অন কৰিছে}one{আপোনাৰ প্ৰশাসকে {NUM_EXTENSIONS} টা সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বন পুনৰ অন কৰিছে}other{আপোনাৰ প্ৰশাসকে {NUM_EXTENSIONS} টা সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বন পুনৰ অন কৰিছে}}</translation>
-<translation id="3831436149286513437">Google Driveৰ সন্ধানৰ পৰামৰ্শ</translation>
 <translation id="3834728400518755610">মাইক্ৰ’ফ’নৰ ছেটিংত কৰা সালসলনিটোৰ বাবে Linux শ্বাট ডাউন কৰাৰ আৱশ্যক। আগবাঢ়িবলৈ Linux শ্বাট ডাউন কৰক।</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />"ৰ সৈতে বিৰোধ ঘটাৰ বাবে "<ph name="TO_INSTALL_APP_NAME" />"ক যোগ কৰিব পৰা নগ'ল।</translation>
 <translation id="3835904559946595746">Linuxৰ বেকআপ পুনঃস্থাপন কৰিব পৰা নগ’ল</translation>
@@ -5410,6 +5409,7 @@
 <translation id="5877064549588274448">চেনেল সলনি কৰা হ'ল। সলনি কার্যসমূহ প্ৰয়োগ কৰিবলৈ আপোনাৰ ডিভাইচ ৰিষ্টার্ট কৰক।</translation>
 <translation id="5877584842898320529">বাছনি কৰা প্ৰিণ্টাৰটো উপলব্ধ নহয় বা ভালদৰে ইনষ্টল কৰা হোৱা নাই। <ph name="BR" /> আপোনাৰ প্ৰিণ্টাৰটো পৰীক্ষা কৰক বা অন্য এটা প্ৰিণ্টাৰ বাছনি কৰি চাওক।</translation>
 <translation id="5878945009165002849">পৰিচয় সেৱাসমূহৰ পৰা ছাইন-ইনৰ প্ৰম্প্‌ট অৱৰোধ কৰক</translation>
+<translation id="5881710783061958569">যদি তেনে হয়, অনুগ্ৰহ কৰি <ph name="BRAND" />ত আপোনাৰ ছেভ হৈ থকা পাছৱৰ্ডটো সম্পাদনা কৰক যাতে এইটো আপোনাৰ নতুন পাছৱৰ্ডটোৰ সৈতে মিলে।</translation>
 <translation id="5882449899683447569">কিবা ভুল হ’ল আৰু আপোনাৰ পাছৱৰ্ডসমূহ আমদানি কৰা নহ’ল</translation>
 <translation id="5882919346125742463">জ্ঞাত নেটৱর্ক</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ক স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
@@ -8136,6 +8136,7 @@
 <translation id="8358912028636606457">এই ডিভাইচটোত টেব অডিঅ’ কাষ্ট কৰাটো সমৰ্থিত নহয়।</translation>
 <translation id="835951711479681002">আপোনাৰ Google একাউণ্টত ছেভ কৰক</translation>
 <translation id="8360140320636871023">আপোনাৰ ডিছপ্লে’ থীম ব্যক্তিগতকৰণ কৰক</translation>
+<translation id="8360267485906769442">মতামত পঠিওৱাৰ বুটাম</translation>
 <translation id="8363095875018065315">স্থিৰ</translation>
 <translation id="8363142353806532503">মাইক্ৰ'ফ'ন অৱৰোধ কৰা হ'ল</translation>
 <translation id="8366396658833131068">আপোনাৰ নেটৱৰ্ক সংযোগক্ষমতা পুনঃস্থাপন কৰা হৈছে৷ আপোনাৰ কিঅ’স্ক এপ্ লঞ্চ কৰিবলৈ অনুগ্ৰহ কৰি পৃথক নেটৱৰ্ক বাছনি কৰক বা তলৰ 'অব্যাহত ৰাখক' বুটামটো হেঁচক৷</translation>

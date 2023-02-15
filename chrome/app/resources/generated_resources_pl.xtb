@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Aby uruchomić aplikacje na Androida, zwolnij miejsce na dysku.</translation>
 <translation id="1033780634303702874">Dostęp do urządzeń szeregowych</translation>
 <translation id="1034484273907870301">Pasek kart z miniaturami w trybie tabletu</translation>
+<translation id="1035875743511577452">Kliknij „Zmień motyw”, aby zobaczyć dostępne motywy inspirowane dziełami artystów, naturą itp.</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1036511912703768636">Dostęp do dowolnego z tych urządzeń USB</translation>
 <translation id="1038168778161626396">Tylko szyfrowanie</translation>
@@ -996,7 +997,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1869433484041798909">Przycisk zakładki</translation>
 <translation id="1871098866036088250">Otwórz w przeglądarce Chrome</translation>
 <translation id="187145082678092583">Mniej aplikacji</translation>
-<translation id="1871463148436682760">Dobra robota!</translation>
 <translation id="1871534214638631766">Pokazuj powiązane informacje po kliknięciu prawym przyciskiem lub przytrzymaniu treści</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> używa aktualnej wersji oprogramowania</translation>
 <translation id="1873920700418191231">Przyznaj ponownie uprawnienia witrynie <ph name="WEBSITE" /></translation>
@@ -1375,6 +1375,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2203088913459920044">Nazwa może zawierać litery, cyfry i znaki specjalne</translation>
 <translation id="220321590587754225">Nie udało się połączyć. Spróbuj ponownie.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> będzie mógł sprawdzić Twoje hasła, gdy zalogujesz się na konto Google</translation>
+<translation id="2204020417499639567">Adres e-mail został uzupełniony.</translation>
 <translation id="2204034823255629767">Odczyt i zmiana wpisanego tekstu</translation>
 <translation id="2204387456724731099">Nie udało się przetłumaczyć zaznaczonego tekstu</translation>
 <translation id="2210462644007531147">Nie udało się ukończyć instalacji</translation>
@@ -1818,6 +1819,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2603355571917519942">Funkcja Voice Match jest gotowa</translation>
 <translation id="2604129989323098489">Strony zwykle proszą o informacje o wyświetlaczach, aby inteligentnie rozmieszczać otwierane okna. Przydaje się to np. przy wyświetlaniu dokumentów czy treści pełnoekranowych obok siebie.</translation>
 <translation id="2604255671529671813">Błąd połączenia z siecią</translation>
+<translation id="2604805099836652105">Formularz adresu (<ph name="ADDRESS_LABEL" />) został wypełniony.</translation>
 <translation id="2605668923777146443">Aby zobaczyć opcje Better Together, otwórz <ph name="LINK_BEGIN" />Ustawienia<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Połącz dane</translation>
 <translation id="2606454609872547359">Nie, kontynuuj bez ChromeVoksa</translation>
@@ -2409,6 +2411,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3122464029669770682">Procesor</translation>
 <translation id="3122496702278727796">Nie można utworzyć katalogu danych</translation>
 <translation id="3124111068741548686">Uchwyty USER</translation>
+<translation id="3124332159330678621">Spersonalizuj Chrome, aby zmienić wygląd przeglądarki</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Aby uniknąć problemów z ładowaniem i działaniem urządzenia, używaj zgodnego z nim zasilacza firmy Dell lub zasilacza USB typu C.</translation>
 <translation id="3127862849166875294">Zmiana rozmiaru dysku Linuksa</translation>
@@ -3034,6 +3037,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3713091615825314967">Automatyczne aktualizacje są włączone</translation>
 <translation id="371370241367527062">Przedni mikrofon</translation>
 <translation id="3714195043138862580">To urządzenie demonstracyjne zostało wyrejestrowane.</translation>
+<translation id="3719310907809321183">Dane karty <ph name="CARD_IDENTIFIER" /> zostały uzupełnione.</translation>
 <translation id="3719826155360621982">Strona główna</translation>
 <translation id="372062398998492895">Drukarki CUPS</translation>
 <translation id="3721119614952978349">Ty i Google</translation>
@@ -3179,7 +3183,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3828953470056652895">Znam i akceptuję <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" /> oraz <ph name="BEGIN_LINK3" />Warunki korzystania z usługi Google Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Udział plików SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Twój administrator ponownie włączył 1 potencjalnie niebezpieczne rozszerzenie}few{Twój administrator ponownie włączył {NUM_EXTENSIONS} potencjalnie niebezpieczne rozszerzenia}many{Twój administrator ponownie włączył {NUM_EXTENSIONS} potencjalnie niebezpiecznych rozszerzeń}other{Twój administrator ponownie włączył {NUM_EXTENSIONS} potencjalnie niebezpiecznego rozszerzenia}}</translation>
-<translation id="3831436149286513437">Podpowiedzi z Dysku Google podczas wyszukiwania</translation>
 <translation id="3834728400518755610">Zmiana ustawienia mikrofonu wymaga wyłączenia Linuksa. Wyłącz Linuksa, by kontynuować.</translation>
 <translation id="3834775135533257713">Nie udało się dodać aplikacji „<ph name="TO_INSTALL_APP_NAME" />”, bo występuje konflikt z aplikacją „<ph name="INSTALLED_APP_NAME" />”.</translation>
 <translation id="3835904559946595746">Nie udało się przywrócić kopii zapasowej Linuksa</translation>
@@ -3641,6 +3644,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="426652736638196239">Ten numer IBAN zostanie zapisany tylko na tym urządzeniu</translation>
 <translation id="4266679478228765574">Usuwając foldery, zatrzymasz udostępnianie, ale nie usuniesz plików.</translation>
 <translation id="4267455501101322486">Aby dodać konto umożliwiające dostęp do zasobów edukacyjnych, poproś o zgodę rodziców</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{Nie znaleziono haseł}=1{Znaleziono 1 wynik}few{Znaleziono {COUNT} wyniki}many{Znaleziono {COUNT} wyników}other{Znaleziono {COUNT} wyniku}}</translation>
 <translation id="4267924571297947682">Poproś rodzica o zezwolenie</translation>
 <translation id="4267953847983678297">Automatycznie łącz się z siecią komórkową</translation>
 <translation id="4268025649754414643">Szyfrowanie klucza</translation>
@@ -3921,6 +3925,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4522890784888918985">Profile podrzędne nie są obsługiwane</translation>
 <translation id="4523876148417776526">Listy witryn XML nie zostały jeszcze pobrane.</translation>
 <translation id="4524832533047962394">Ta wersja systemu operacyjnego nie obsługuje użytego trybu rejestrowania. Upewnij się, że używasz najnowszej wersji systemu.</translation>
+<translation id="4526853756266614740">Wybierz obraz, aby od razu zastosować motyw</translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4527929807707405172">Włącz odwrotne przewijanie. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Sugestia tłumaczenia</translation>
@@ -4220,6 +4225,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4800839971935185386">Sprawdź zmienione nazwy i ikony</translation>
 <translation id="4801448226354548035">Ukryj konta</translation>
 <translation id="4801512016965057443">Zezwól na przesył danych w roamingu</translation>
+<translation id="4804311503028830356">Kliknij strzałkę wstecz, aby zobaczyć inne opcje</translation>
 <translation id="4804818685124855865">Rozłącz</translation>
 <translation id="4804827417948292437">Awokado</translation>
 <translation id="4806457879608775995">Przeczytaj te warunki i określ sposób użycia swoich danych</translation>
@@ -8248,6 +8254,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8498214519255567734">Dzięki tej funkcji oczy mniej się męczą podczas patrzenia na ekran lub czytania przy słabym oświetleniu</translation>
 <translation id="8498395510292172881">Czytaj dalej w Chrome</translation>
 <translation id="8499083585497694743">Włącz mikrofon</translation>
+<translation id="8499526927826495298">Wyślij <ph name="BEGIN_LINK1" />metadane autouzupełniania<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Aby używać aplikacji z Google Play, musisz najpierw przywrócić swoje aplikacje. Niektóre dane mogły zostać utracone.</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="850382998924680137">Wyświetlono dzisiaj</translation>

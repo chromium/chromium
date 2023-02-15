@@ -1001,7 +1001,6 @@
 <translation id="1869433484041798909">Кнопка закладкі</translation>
 <translation id="1871098866036088250">Адкрываць у браўзеры Chrome</translation>
 <translation id="187145082678092583">Менш праграм</translation>
-<translation id="1871463148436682760">Выдатна!</translation>
 <translation id="1871534214638631766">Паказваць інфармацыю пра змесціва пры доўгім націсканні на яго або націсканні правай кнопкай мышы</translation>
 <translation id="1871615898038944731">Абнаўленне прылады <ph name="DEVICE_TYPE" /> не патрабуецца</translation>
 <translation id="1873920700418191231">Даць дазволы вэб-сайту <ph name="WEBSITE" /> зноў</translation>
@@ -3193,7 +3192,6 @@
 <translation id="3828953470056652895">Мною былі прачытаны <ph name="BEGIN_LINK1" />Умовы выкарыстання Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Дадатковыя ўмовы выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" /> і <ph name="BEGIN_LINK3" />Умовы выкарыстання Play<ph name="END_LINK3" />, і я згаджаюся з імі.</translation>
 <translation id="3829765597456725595">Абагульванне файлаў праз SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Адміністратар зноў уключыў адно патэнцыйна шкоднае пашырэнне}one{Адміністратар зноў уключыў {NUM_EXTENSIONS} патэнцыйна шкоднае пашырэнне}few{Адміністратар зноў уключыў {NUM_EXTENSIONS} патэнцыйна шкодныя пашырэнні}many{Адміністратар зноў уключыў {NUM_EXTENSIONS} патэнцыйна шкодных пашырэнняў}other{Адміністратар зноў уключыў {NUM_EXTENSIONS} патэнцыйна шкоднага пашырэння}}</translation>
-<translation id="3831436149286513437">Прапановы пошуку на Google Дыску</translation>
 <translation id="3834728400518755610">Для змянення налад мікрафона неабходна выключыць Linux. Каб працягнуць, завяршыце работу Linux.</translation>
 <translation id="3834775135533257713">Не ўдалося дадаць праграму "<ph name="TO_INSTALL_APP_NAME" />", бо яна канфліктуе з праграмай "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="3835904559946595746">Не ўдалося аднавіць рэзервовую копію Linux</translation>
@@ -6978,6 +6976,7 @@
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7353261921908507769">Вашы кантакты могуць абагульваць з вамі даныя, калі знаходзяцца паблізу. Перадача даных не пачнецца, пакуль вы яе не ўхваліце.</translation>
 <translation id="735361434055555355">Ідзе ўсталяванне Linux...</translation>
+<translation id="7354120289251608189">Цяпер вы можаце ў любы час наладзіць знешні выгляд браўзера.</translation>
 <translation id="7356908624372060336">Сеткавыя журналы</translation>
 <translation id="735745346212279324">Сетка VPN адключана</translation>
 <translation id="7358324924540718595">Успаміны схаваны на сёння</translation>
@@ -8119,6 +8118,7 @@
 <translation id="8358912028636606457">Гэта прылада не падтрымлівае трансляцыю аўдыя з укладкі.</translation>
 <translation id="835951711479681002">Захаваць ва Уліковым запісе Google</translation>
 <translation id="8360140320636871023">Персаналізацыя тэмы для дысплэя</translation>
+<translation id="8360267485906769442">Кнопка "Адправіць водгук"</translation>
 <translation id="8363095875018065315">стабільна</translation>
 <translation id="8363142353806532503">Мікрафон заблакіраваны</translation>
 <translation id="8366396658833131068">Падключэнне да сеткі адноўлена. Выберыце іншую сетку або націсніце ніжэй кнопку "Працягнуць", каб запусціць праграму-кіёск.</translation>

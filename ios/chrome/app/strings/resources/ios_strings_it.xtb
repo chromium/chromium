@@ -101,6 +101,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1608337082864370066">Cerca l'immagine copiata</translation>
 <translation id="1612730193129642006">Mostra griglia schede</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> password riutilizzate</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1650222530560417226">Tocca il pulsante "Inizia registrazione" per raccogliere i log della console JavaScript e gli errori di tutte le schede. I log verranno raccolti e archiviati unicamente in memoria fino alla chiusura della pagina o finché non toccherai "Interrompi registrazione".</translation>
@@ -192,6 +193,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2411749908844615428">{count,plural, =1{{count} indirizzo salvato disponibile sopra la tastiera.}other{{count} indirizzi salvati disponibili sopra la tastiera.}}</translation>
 <translation id="2421004566762153674">Blocco dei cookie di terze parti</translation>
 <translation id="2421044535038393232">Continua a modificare</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="2434405374328098816">Hai già salvato una password per "<ph name="USERNAME" />" su <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2451654228769116489">Blocca scheda</translation>
@@ -334,6 +336,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="345565170154308620">Gestisci password…</translation>
 <translation id="3469166899695866866">Interrompere il download?</translation>
 <translation id="3470502288861289375">Copia...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{per {COUNT} sito o app}other{per {COUNT} siti e app}}</translation>
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mese di scadenza</translation>
 <translation id="3482959374254649722">Sincronizzazione delle schede...</translation>
@@ -346,6 +349,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3527085408025491307">Cartella</translation>
 <translation id="3529024052484145543">Non sicuro</translation>
 <translation id="3530206579861815432">Trova rapidamente le schede aperte e chiuse di recente su tutti i tuoi dispositivi sincronizzati.</translation>
+<translation id="3532949712013449743">Riceverai un avviso se il prezzo calerà su qualsiasi sito. Questa pagina viene salvata in <ph name="BEGIN_LINK" />Preferiti su disp. mobili<ph name="END_LINK" />.</translation>
 <translation id="3533202363250687977">Chiudi tutte le schede in incognito*</translation>
 <translation id="3533436815740441613">Nuova scheda</translation>
 <translation id="3540141921715814660">Aggiungi ai preferiti</translation>
@@ -380,6 +384,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3818293389945649617">Trova successivo</translation>
 <translation id="3819183753496523827">Sei offline. Controlla la connessione a Internet e riprova.</translation>
 <translation id="3835964409414434850">Passa alla scheda successiva</translation>
+<translation id="3838691874161539578">Controlla le password salvate per aumentare la tua sicurezza e proteggerti meglio online</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3851938967634752633">Le password di <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e di altri <ph name="NUMBER_OF_ACCOUNTS" /> siti verranno eliminate. I tuoi account non verranno eliminati.</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -435,6 +440,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4249955472157341256">Ordina per Più recenti</translation>
 <translation id="42618743927498729">Ricevi un avviso se il prezzo cala su qualsiasi sito.</translation>
 <translation id="4263576668337963058">Mostra le azioni disponibili per la pagina</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{Hai ignorato {COUNT} avviso}other{Hai ignorato {COUNT} avvisi}}</translation>
 <translation id="4272631900155121838">Per eseguire la scansione di un codice QR, attiva la videocamera dalle impostazioni</translation>
 <translation id="4277990410970811858">Navigazione sicura</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
@@ -481,6 +487,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4630540211544979320">Traduci pagine</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4642472735733036929">Monitoraggio del prezzo interrotto</translation>
 <translation id="4650125387981512669">Continua come <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Questa funzionalità viene attivata quando accedi al tuo Account Google.</translation>
 <translation id="4659667755519643272">Apri selettore di schede</translation>
@@ -555,6 +562,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5118764316110575523">Off</translation>
 <translation id="5119391094379141756">Seleziona Chrome</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} password inefficace}other{{COUNT} password inefficaci}}</translation>
 <translation id="5149188072385105201">Aggiungi password…</translation>
 <translation id="5150492518600715772">Invia al tuo dispositivo</translation>
 <translation id="5168414296986405587">Realizzato per iPadOS</translation>
@@ -638,6 +646,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5812974770859303494">Aggiungi a…</translation>
 <translation id="581659025233126501">Attiva la sincronizzazione</translation>
+<translation id="5817176759448082654">Controllo password</translation>
 <translation id="5819208479324046259">Gestito da <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Salva password, metodi di pagamento e indirizzi per la compilazione automatica di Chrome in un secondo momento.</translation>
 <translation id="5834415013958049700">Immagine Lens copiata</translation>
@@ -838,6 +847,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Schede recenti</translation>
 <translation id="7006788746334555276">Impostazioni contenuti</translation>
+<translation id="7014087399239955356">Controllo delle password in corso…</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7062545763355031412">Accetta e cambia account</translation>
@@ -892,6 +902,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7531345132340165516">Sito corrente</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>
+<translation id="754655535278952384">Ultimo controllo: <ph name="TIME" /></translation>
 <translation id="7553234618121028547">Per disattivare, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai a Opzioni password.</translation>
 <translation id="7554645225856321710">Chiudi tutte</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>

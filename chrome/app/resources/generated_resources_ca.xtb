@@ -261,7 +261,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1225177025209879837">S'està processant la sol·licitud...</translation>
 <translation id="1227660082540388410">Edita la clau d'accés</translation>
 <translation id="1227993798763400520">No s'ha pogut emetre. Torna-ho a provar.</translation>
-<translation id="1230417814058465809">Està activada la protecció estàndard. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
+<translation id="1230417814058465809">La protecció estàndard està activada. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
 <translation id="1231733316453485619">Vols activar la sincronització?</translation>
 <translation id="1232569758102978740">Sense títol</translation>
 <translation id="1233497634904001272">Torna a tocar la clau de seguretat per completar la sol·licitud.</translation>
@@ -998,7 +998,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1869433484041798909">Botó d'adreça d'interès</translation>
 <translation id="1871098866036088250">Obre al navegador Chrome</translation>
 <translation id="187145082678092583">Menys aplicacions</translation>
-<translation id="1871463148436682760">Ben fet!</translation>
 <translation id="1871534214638631766">Mostra informació relacionada amb el contingut en mantenir-lo premut o fer-hi clic amb el botó dret</translation>
 <translation id="1871615898038944731">El dispositiu <ph name="DEVICE_TYPE" /> està actualitzat</translation>
 <translation id="1873920700418191231">Torna a concedir els permisos per a <ph name="WEBSITE" /></translation>
@@ -3192,7 +3191,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3828953470056652895">He llegit i accepto les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" />, les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Chrome i Chrome OS<ph name="END_LINK2" /> i les <ph name="BEGIN_LINK3" />condicions del servei de Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Compartició de fitxers d'SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{L'administrador ha tornat a activar 1 extensió potencialment perjudicial}other{L'administrador ha tornat a activar {NUM_EXTENSIONS} extensions potencialment perjudicials}}</translation>
-<translation id="3831436149286513437">Suggeriments de cerca de Google Drive</translation>
 <translation id="3834728400518755610">El canvi en la configuració del micròfon requereix apagar Linux. Apaga'l per continuar.</translation>
 <translation id="3834775135533257713">No s'ha pogut afegir l'aplicació <ph name="TO_INSTALL_APP_NAME" /> perquè entra en conflicte amb <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="3835904559946595746">No s'ha pogut restaurar la còpia de seguretat de Linux</translation>
@@ -4816,7 +4814,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5352257124367865087">Gestiona els permisos dels llocs web</translation>
 <translation id="5353252989841766347">Exporteu contrasenyes de Chrome</translation>
 <translation id="5355099869024327351">Permet que l'Assistent et mostri notificacions</translation>
-<translation id="5355191726083956201">Està activada la protecció millorada</translation>
+<translation id="5355191726083956201">La protecció millorada està activada</translation>
 <translation id="5355501370336370394">Inscriu un dispositiu d'empresa</translation>
 <translation id="5355926466126177564">L'extensió <ph name="EXTENSION_NAME" /> ha canviat la pàgina que es mostra quan feu una cerca des de l'omnibox.</translation>
 <translation id="5356155057455921522">Aquesta actualització de l'administrador farà que les aplicacions de la teva organització s'obrin més de pressa. Aquest procés pot tardar uns minuts.</translation>
@@ -8112,6 +8110,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8358912028636606457">L'emissió d'àudio de la pestanya no és compatible amb aquest dispositiu.</translation>
 <translation id="835951711479681002">Desa-la al teu Compte de Google</translation>
 <translation id="8360140320636871023">Personalitza el teu tema de visualització</translation>
+<translation id="8360267485906769442">Botó Envia suggeriments</translation>
 <translation id="8363095875018065315">estable</translation>
 <translation id="8363142353806532503">El micròfon està bloquejat</translation>
 <translation id="8366396658833131068">S'ha restablert la vostra connectivitat de xarxa. Seleccioneu una altra xarxa o bé premeu el botó Continua per iniciar l'aplicació de quiosc.</translation>

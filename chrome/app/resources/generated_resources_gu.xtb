@@ -995,7 +995,6 @@
 <translation id="1869433484041798909">બુકમાર્કનું બટન</translation>
 <translation id="1871098866036088250">Chrome બ્રાઉઝરમાં ખોલો</translation>
 <translation id="187145082678092583">ઓછી ઍપ</translation>
-<translation id="1871463148436682760">સરસ રીતે પૂર્ણ કર્યું!</translation>
 <translation id="1871534214638631766">તમે જ્યારે રાઇટ ક્લિક કરો અથવા કન્ટેન્ટને થોડીવાર દબાવી રાખો, ત્યારે સંબંધિત માહિતી બતાવો</translation>
 <translation id="1871615898038944731">તમારું <ph name="DEVICE_TYPE" /> અપ ટૂ ડેટ છે</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" />ને ફરી પરવાનગીઓ આપો</translation>
@@ -3190,7 +3189,6 @@
 <translation id="3828953470056652895">મેં <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome અને ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> તથા <ph name="BEGIN_LINK3" />Playની સેવાની શરતો<ph name="END_LINK3" /> વાંચી છે તેમજ તેમની સાથે સંમત છું.</translation>
 <translation id="3829765597456725595">SMB ફાઇલ શેર</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{તમારા વ્યવસ્થાપકે નુકસાન પહોંચાડવાની સંભાવના હોય એવું 1 એક્સ્ટેંશન પાછું ચાલુ કર્યું છે}one{તમારા વ્યવસ્થાપકે નુકસાન પહોંચાડવાની સંભાવના હોય એવું {NUM_EXTENSIONS} એક્સ્ટેંશન પાછું ચાલુ કર્યું છે}other{તમારા વ્યવસ્થાપકે નુકસાન પહોંચાડવાની સંભાવના હોય એવા {NUM_EXTENSIONS} એક્સ્ટેંશન પાછા ચાલુ કર્યાં છે}}</translation>
-<translation id="3831436149286513437">Google Drive શોધ સૂચનો</translation>
 <translation id="3834728400518755610">માઇક્રોફોનના સેટિંગમાં ફેરફાર કરવા માટે Linuxને શટ ડાઉન કરવાની જરૂર પડે છે. આગળ વધવા માટે Linuxને શટ ડાઉન કરો</translation>
 <translation id="3834775135533257713">ઍપ્લિકેશન "<ph name="TO_INSTALL_APP_NAME" />" ઉમેરી શક્યાં નથી કારણ કે તે "<ph name="INSTALLED_APP_NAME" />" સાથે વિરોધાભાસ ઉભો કરે છે.</translation>
 <translation id="3835904559946595746">Linuxનું બૅકઅપ રિસ્ટોર કરી શકાયું નથી</translation>
@@ -8109,6 +8107,7 @@ USB ડિવાઇસ</translation>
 <translation id="8358912028636606457">આ ડિવાઇસ પર ટૅબ ઑડિયો કાસ્ટ કરવાની સુવિધા નથી.</translation>
 <translation id="835951711479681002">તમારા Google એકાઉન્ટમાં સાચવો</translation>
 <translation id="8360140320636871023">તમારી ડિસ્પ્લે થીમને મનગમતી બનાવો</translation>
+<translation id="8360267485906769442">પ્રતિસાદ મોકલવાનું બટન</translation>
 <translation id="8363095875018065315">સ્થિર</translation>
 <translation id="8363142353806532503">માઇક્રોફોન અવરોધિત</translation>
 <translation id="8366396658833131068">તમારી નેટવર્ક કનેક્ટિવિટી પુનઃસ્થાપિત થઈ છે. કૃપા કરીને બીજું નેટવર્ક પસંદ કરો અથવા તમારી કિઓસ્ક એપ્લિકેશનને લોંચ કરવા માટે નીચે 'ચાલુ રાખો' બટનને દબાવો.</translation>

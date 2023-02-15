@@ -1316,6 +1316,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4223404254440398437">Acesso ao microfone não permitido</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Rede<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Pode pedir para usar e mover a câmera</translation>
+<translation id="4231448684371260244">20 x 33 cm</translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4250431568374086873">Sua conexão com esse site não é completamente segura</translation>
 <translation id="4250680216510889253">Não</translation>
@@ -2568,6 +2569,7 @@ Mais detalhes:
 <translation id="7388594495505979117">{0,plural, =1{Seu dispositivo será reiniciado em 1 minuto}one{Seu dispositivo será reiniciado em # minuto}other{Seu dispositivo será reiniciado em # minutos}}</translation>
 <translation id="7390545607259442187">Confirmar cartão</translation>
 <translation id="7392089738299859607">Atualizar endereço</translation>
+<translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
@@ -3189,6 +3191,7 @@ Mais detalhes:
 <translation id="8899807382908246773">Anúncios invasivos</translation>
 <translation id="8903921497873541725">Aumentar zoom</translation>
 <translation id="890493561996401738">Botão "Remover sugestão", pressione Enter para remover, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="8910898109640902752">20 x 25 cm</translation>
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8913778647360618320">Botão "Gerenciar formas de pagamento". Pressione "Enter" para gerenciar suas informações de pagamento e de cartão de crédito nas configurações do Chrome</translation>
 <translation id="8922013791253848639">Sempre permitir anúncios neste site</translation>

@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Utazás folytatása gomb. Nyomja le az Enter billentyűt, ha folytatni szeretné az utazást, és meg szeretné tekinteni a releváns tevékenységet Chrome-előzményei között.</translation>
 <translation id="1101672080107056897">Hibaművelet</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> - mindig legyen lefordítva</translation>
+<translation id="1104409666019087579">Néhány kötelező mező üres. A mentés előtt töltse ki őket.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Engedély kiválasztása a következőhöz: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Régiségek és gyűjtemények</translation>
@@ -1313,6 +1314,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4223404254440398437">Mikrofonhasználat nem engedélyezett</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Próbálkozzon a Hálózati diagnosztika futtatásával<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Engedélyt kérhet a kamera használatára vagy mozgatására</translation>
+<translation id="4231448684371260244">8 × 13 hüvelyk</translation>
 <translation id="4235360514405112390">Érvényes</translation>
 <translation id="4250431568374086873">Kapcsolata a webhellyel nem teljesen biztonságos</translation>
 <translation id="4250680216510889253">Nem</translation>
@@ -2014,6 +2016,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5992691462791905444">Z-hajtás hellyel kötés, lyukasztás és kapcsok számára</translation>
 <translation id="5992805036496113940">Hirdetések megjelenítéséhez használt információk megtekintése</translation>
 <translation id="5995727681868049093">Kezelheti adatait, az adatvédelmet és a biztonságot a Google-fiókjában</translation>
+<translation id="5996887213716993070">A(z) <ph name="FIELD" /> mező nem maradhat üresen</translation>
 <translation id="5997247540087773573">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Google Jelszókezelő a jelszó haladéktalan módosítását, majd a mentett jelszavak ellenőrzését javasolja.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> találat a következőre: <ph name="SEARCH_TEXT" /></translation>
 <translation id="6005765687956866568">Az automatikusan kitöltött adatok törölve lettek az űrlapról</translation>
@@ -2564,6 +2567,7 @@ További részletek:
 <translation id="7388594495505979117">{0,plural, =1{Eszköze 1 perc múlva újraindul}other{Eszköze # perc múlva újraindul}}</translation>
 <translation id="7390545607259442187">Kártya igazolása</translation>
 <translation id="7392089738299859607">Cím frissítése</translation>
+<translation id="739728382607845710">Fizetéskezelő ikonja</translation>
 <translation id="7399802613464275309">Biztonsági ellenőrzés</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Megoszthatja ezt a lapot a link használatával, QR-kód létrehozásával, átküldéssel és egyéb műveletekkel</translation>
@@ -2752,6 +2756,7 @@ További részletek:
 <translation id="7766518757692125295">Szoknya</translation>
 <translation id="7773005668374414287">Azonos sorrend, felfelé fordítva</translation>
 <translation id="7785790577395078482">ennek a táblagépnek</translation>
+<translation id="7786368602962652765">Egy kötelező mező üres. A mentés előtt töltse ki.</translation>
 <translation id="7790488044432570133">Az Ön által felkeresett webhelyek olyan információkat kérhetnek a Chrome-tól, amelyek segítségével mérhetik a hirdetések teljesítményét. A Chrome lehetővé teszi a webhelyek számára, hogy korlátozott adattípusokat gyűjtsenek (például hogy milyen napszakban jelent meg Önnek a hirdetés).</translation>
 <translation id="7791011319128895129">Kiadatlan</translation>
 <translation id="7791196057686275387">Köteg</translation>
@@ -3184,6 +3189,7 @@ További részletek:
 <translation id="8899807382908246773">Tolakodó hirdetések</translation>
 <translation id="8903921497873541725">Nagyítás</translation>
 <translation id="890493561996401738">Javaslat eltávolítása gomb. Nyomja meg az Entert a következő eltávolításához: <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="8910898109640902752">8 × 10 hüvelyk</translation>
 <translation id="8912362522468806198">Google Fiókjába</translation>
 <translation id="8913778647360618320">Fizetési módok kezelése gomb, nyomja meg az Enter billentyűt a fizetési és hitelkártyaadatoknak a Chrome beállításaiban való kezeléséhez</translation>
 <translation id="8922013791253848639">Mindig engedélyezi a hirdetéseket ezen a webhelyen</translation>

@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Butonul Continuă-ți parcursul, apasă pe Enter pentru a-ți continua parcursul și a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="1101672080107056897">Eroare privind acțiunea</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Unele câmpuri obligatorii sunt necompletate. Completează-le înainte de a salva.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Selectează permisiunea pentru <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Antichități și obiecte de colecție</translation>
@@ -2016,6 +2017,7 @@
 <translation id="5992691462791905444">Îndoire în Z pentru inginerie</translation>
 <translation id="5992805036496113940">Vezi informațiile folosite pentru a-ți afișa anunțuri</translation>
 <translation id="5995727681868049093">Gestionează-ți informațiile, confidențialitatea și securitatea Contului Google</translation>
+<translation id="5996887213716993070"><ph name="FIELD" /> nu poate fi necompletat</translation>
 <translation id="5997247540087773573">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să schimbi parola acum și să verifici parolele salvate.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6005765687956866568">Informațiile completate automat au fost șterse din formular</translation>
@@ -2566,6 +2568,7 @@ Detalii suplimentare:
 <translation id="7388594495505979117">{0,plural, =1{Dispozitivul va reporni într-un minut}few{Dispozitivul va reporni în # minute}other{Dispozitivul va reporni în # de minute}}</translation>
 <translation id="7390545607259442187">Confirmă cardul</translation>
 <translation id="7392089738299859607">Actualizează adresa</translation>
+<translation id="739728382607845710">Pictograma handlerului pentru plăți</translation>
 <translation id="7399802613464275309">Verificare de siguranță</translation>
 <translation id="7400418766976504921">Adresă URL</translation>
 <translation id="7403392780200267761">Distribuie fila trimițând un link, creând un cod QR, proiectând și multe altele.</translation>
@@ -2754,6 +2757,7 @@ Detalii suplimentare:
 <translation id="7766518757692125295">Contur</translation>
 <translation id="7773005668374414287">În aceeași ordine, cu fața în sus</translation>
 <translation id="7785790577395078482">această tabletă</translation>
+<translation id="7786368602962652765">Un câmp obligatoriu este necompletat. Completează-l înainte de a salva.</translation>
 <translation id="7790488044432570133">Site-urile pe care le accesezi pot solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor lor. Chrome le permite site-urilor să colecteze tipuri de date limitate, cum ar fi ora la care ți-a fost afișat un anunț.</translation>
 <translation id="7791011319128895129">Nelansată</translation>
 <translation id="7791196057686275387">Balot</translation>

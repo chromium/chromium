@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">የጉዞን ከቆመበት ቀጥል አዝራር፣ ጉዞዎን ከቆመበት ለመቀጠል አስገባን ይጫኑ እና በChrome ታሪክዎ ውስጥ አግባብነት ያለው እንቅስቃሴን ይመልከቱ</translation>
 <translation id="1101672080107056897">የስህተት እርምጃ</translation>
 <translation id="1103523840287552314">ሁልጊዜ <ph name="LANGUAGE" />ን መተርጎም</translation>
+<translation id="1104409666019087579">አንዳንድ አስፈላጊ መስኮች ባዶ ናቸው። ከማስቀመጥ በፊት ይሙሏቸው።</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">ለ<ph name="PERMISSION_NAME" /> ፈቃድ አቀናብር</translation>
 <translation id="1112828774174131240">የቆዩ እና የሰብሳቢ ዕቃዎች</translation>
@@ -2015,6 +2016,7 @@
 <translation id="5992691462791905444">Z-እጥፋትን በመቀየስ ላይ</translation>
 <translation id="5992805036496113940">ለእርስዎ ማስታወቂያዎችን ለማሳየት ጥቅም ላይ የዋለ መረጃን ይመልከቱ</translation>
 <translation id="5995727681868049093">በGoogle መለያዎ ውስጥ የእርስዎን መረጃ፣ ግላዊነት እና ደህንነት ያስተዳድሩ</translation>
+<translation id="5996887213716993070"><ph name="FIELD" /> ባዶ መሆን አይችልም</translation>
 <translation id="5997247540087773573">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ Google የይለፍ ቃል አስተዳዳሪ አሁኑኑ እንዲቀይሩት እና የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>
 <translation id="6000758707621254961">ለ«<ph name="SEARCH_TEXT" />» <ph name="RESULT_COUNT" /> ውጤቶችን አሳይ</translation>
 <translation id="6005765687956866568">ራስ-ሙላ መረጃው ከቅጹ ላይ ጸድቷል</translation>
@@ -2754,6 +2756,7 @@
 <translation id="7766518757692125295">ቀሚስ</translation>
 <translation id="7773005668374414287">ተመሳሳይ ቅደም-ተከተል ፊቱ ወደ ላይ</translation>
 <translation id="7785790577395078482">ይህ ጡባዊ</translation>
+<translation id="7786368602962652765">አስፈላጊ መስክ ባዶ ነው። ከማስቀመጥ በፊት ይሙሉት።</translation>
 <translation id="7790488044432570133">እርስዎ የሚጎበኟቸው ጣቢያዎች የማስታወቂያዎቻቸውን አፈጻጸም ለመለካት እንዲያግዛቸው Chromeን መረጃ ሊጠይቁ ይችላሉ። Chrome ጣቢያዎች እንደ አንድ ማስታወቂያ ለእርስዎ የታየበት የቀን ሰዓት ያሉ የተገደቡ የውሂብ ዓይነቶችን እንዲሰበስቡ ያስችላቸዋል።</translation>
 <translation id="7791011319128895129">ያልተለቀቁ</translation>
 <translation id="7791196057686275387">ቤል</translation>

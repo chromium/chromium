@@ -1012,7 +1012,6 @@
 <translation id="1869433484041798909">बुकमार्क बटन</translation>
 <translation id="1871098866036088250">Chrome ब्राउज़र में खोलें</translation>
 <translation id="187145082678092583">कम ऐप्लिकेशन</translation>
-<translation id="1871463148436682760">हो गया!</translation>
 <translation id="1871534214638631766">सामग्री पर दायां क्लिक करने या दबाकर रखने पर उससे जुड़ी जानकारी दिखाता है</translation>
 <translation id="1871615898038944731">आपका <ph name="DEVICE_TYPE" /> अप टू डेट है</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> को फिर से अनुमतियां दें</translation>
@@ -1586,6 +1585,7 @@
 <translation id="2352662711729498748">&lt; एक एमबी</translation>
 <translation id="2352810082280059586">लॉक स्क्रीन के नोट <ph name="LOCK_SCREEN_APP_NAME" /> में अपने आप सेव किए जाते हैं. आपका सबसे हाल का नोट लॉक स्क्रीन पर ही रहेगा.</translation>
 <translation id="2353297238722298836">कैमरे और माइक्रोफ़ोन की अनुमति है</translation>
+<translation id="2353910600995338714">एक्सपोर्ट पूरा हो गया</translation>
 <translation id="2355314311311231464">सेट अप नहीं किया जा सका, क्योंकि आपके खाते की जानकारी डाउनलोड नहीं हो सकी. कृपया फिर से कोशिश करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">एनर्जी सेवर मोड के विकल्प</translation>
 <translation id="2355604387869345912">इंस्टैंट टेदरिंग चालू करें</translation>
@@ -3213,7 +3213,6 @@
 <translation id="3828953470056652895">मैंने <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_LINK2" />, और <ph name="BEGIN_LINK3" />Google Play की सेवा की शर्तों<ph name="END_LINK3" /> को पढ़ लिया है और उनसे सहमत हूं.</translation>
 <translation id="3829765597456725595">एसएमबी फ़ाइल शेयर</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{आपके एडमिन ने 1 ऐसा एक्सटेंशन फिर से चालू कर दिया है जो शायद नुकसान पहुंचा सकता है}one{आपके एडमिन ने {NUM_EXTENSIONS} ऐसा एक्सटेंशन फिर से चालू कर दिया है जो शायद नुकसान पहुंचा सकता है}other{आपके एडमिन ने {NUM_EXTENSIONS} ऐसे एक्सटेंशन फिर से चालू कर दिए हैं जो शायद नुकसान पहुंचा सकते हैं}}</translation>
-<translation id="3831436149286513437">'Google डिस्क' के खोज सुझाव</translation>
 <translation id="3834728400518755610">माइक्रोफ़ोन की सेटिंग में बदलाव के लिए, Linux को बंद (शट डाउन) करना ज़रूरी है. आगे बढ़ने के लिए Linux को बंद करें.</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ऐप्लिकेशन जोड़ा नहीं जा सका क्योंकि उसका "<ph name="INSTALLED_APP_NAME" />" से विरोध है.</translation>
 <translation id="3835904559946595746">Linux का बैक अप वापस नहीं लाया जा सका</translation>
@@ -5413,6 +5412,7 @@
 <translation id="5877064549588274448">चैनल बदल दिया गया है. बदलावों का लागू करने के लिए अपने डिवाइस को फिर से प्रारंभ करें.</translation>
 <translation id="5877584842898320529">चुना गया प्रिंटर उपलब्ध नहीं है या ठीक से इंस्टॉल नहीं किया गया है. <ph name="BR" /> अपना प्रिंटर जाँचें या कोई दूसरा प्रिंटर चुनकर देखें.</translation>
 <translation id="5878945009165002849">पहचान करने वाली सेवाओं से जुड़े, साइन इन करने के अनुरोध ब्लॉक करें</translation>
+<translation id="5881710783061958569">अगर आपने पहले ही पासवर्ड बदल दिया है, तो कृपया <ph name="BRAND" /> पर जाकर सेव किए गए पासवर्ड में बदलाव करें, ताकि यह आपके नए पासवर्ड से मेल खाए.</translation>
 <translation id="5882449899683447569">किसी गड़बड़ी की वजह से आपके पासवर्ड इंपोर्ट नहीं किए जा सके</translation>
 <translation id="5882919346125742463">ज्ञात नेटवर्क</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> को अपने-आप ब्लॉक किया गया</translation>

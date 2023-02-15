@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">폴더 1개가 Bruschetta와 공유됨</translation>
 <translation id="2578394532502990878">타밀어(표음)</translation>
 <translation id="2579959351793446050">오리야어</translation>
+<translation id="2587195714949534472"><ph name="FILE_NAME" /> 동기화 준비 중...</translation>
 <translation id="2602810353103180630">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 동영상</translation>
 <translation id="2620090360073999360">현재 Google Drive에 연결할 수 없습니다.</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">몽골어</translation>
 <translation id="3495304270784461826">오류가 <ph name="COUNT" />개 있습니다.</translation>
 <translation id="3509680540198371098">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
+<translation id="3511705761158917664">항목 <ph name="NUMBER_OF_ITEMS" />개 동기화 준비 중...</translation>
 <translation id="3522708245912499433">포르투갈어</translation>
 <translation id="3524311639100184459">주의: 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다.  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">폴더</translation>

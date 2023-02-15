@@ -2132,6 +2132,7 @@
 
         此政策不会影响已发布的政策。</translation>
 <translation id="3002067315837777719">不允许启用 Phone Hub 通知</translation>
+<translation id="3010907817113180883">设备活动检测信号收集时间间隔（以毫秒为单位）。</translation>
 <translation id="3017578958356048910">PDF 查看器能在 PDF 文件中添加注释</translation>
 <translation id="3020623128585817424">禁止在启动浏览器时检查是否为默认浏览器</translation>
 <translation id="3020953534071988875">通过配置此政策，您可以允许/禁止对 <ph name="PRODUCT_NAME" /> 中的无痕模式和访客个人资料进行静默身份验证。
@@ -4411,6 +4412,10 @@
 
       如果此政策在某个帐号中设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" />，系统将仅允许该帐号作为主帐号登录，而不允许它作为辅助帐号登录。</translation>
 <translation id="523505283826916779">无障碍设置</translation>
+<translation id="5235607513961923779">针对已关联的用户，报告已注册设备上的设备活动状态。
+
+      如果此政策已停用或未设置，系统将不会报告设备活动状态。
+      如果此政策已启用，只要用户已被关联，系统就会向服务器报告设备活动状态，以便服务器检测设备是否处于离线状态。</translation>
 <translation id="5238275681097851753">允许屏蔽特定的 <ph name="FLASH_PLUGIN_NAME" /> 内容</translation>
 <translation id="5238976843489093540">强制启用快速配对（快速蓝牙配对）。</translation>
 <translation id="52393120393725840">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 记住密码并在自己下次登录相应网站时提供密码。
@@ -7224,6 +7229,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       建议：若要在设备闲置时锁定屏幕，您可让系统在进入暂停状态时锁定屏幕，并指示 <ph name="PRODUCT_OS_NAME" />在闲置延迟时间过后进入暂停状态。只有在以下情况下才应使用此政策：屏幕锁定时间应显著早于系统进入暂停状态的时间，或者您不需要在设备闲置时暂停系统。</translation>
 <translation id="7895553628261067384">远程访问</translation>
+<translation id="7898807590879163195">停用设备活动检测信号</translation>
 <translation id="789975630884141379">启用建议的内容</translation>
 <translation id="7899952578398457262">请求受管用户同意在非受管设备上共享设备信号，以获得使用权限</translation>
 <translation id="7900469325540540107">默认在创建企业资料时保留浏览数据</translation>
@@ -7808,6 +7814,9 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您停用了或未设置此政策，系统将会仅使用常规的本地个人资料。</translation>
 <translation id="8417305981081876834">设置锁定屏幕 PIN 码的长度上限</translation>
 <translation id="841977920223099909">密码保护服务警告功能触发条件</translation>
+<translation id="8419965165591256432">针对已关联的用户，在已注册设备上收集设备活动状态的时间间隔。所允许的最短时间间隔为 1 分钟。
+
+      如果此政策未设置，系统会应用默认时间间隔（15 分钟）。</translation>
 <translation id="8420426128163801949">允许用户开启或关闭蓝牙</translation>
 <translation id="8422658829373743789">控制针对已停用的表单控件分派事件的新行为</translation>
 <translation id="8422866312638683210">如果您设置了此政策，<ph name="PRODUCT_NAME" /> 会尝试向 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />注册自身。此政策的值是一个可从 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />检索的注册令牌。
@@ -8503,6 +8512,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="9076477053438828079">始终显示用户名和照片</translation>
 <translation id="9077227880520270584">设备本地帐号自动登录计时器</translation>
 <translation id="9079531125758468956">禁止在首次运行时导入书签</translation>
+<translation id="9084038227968802480">启用设备活动检测信号报告</translation>
 <translation id="9084985621503260744">指定视频活动是否影响电源管理</translation>
 <translation id="9087434639296483430">旨在报告已注册的设备上发生的用户登录/退出事件（包括登录失败）。
 
@@ -8692,6 +8702,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用，系统会关闭后台模式。
 
       如果您设置了此政策，用户便无法在浏览器设置中更改相关设置。如果您未设置此政策，系统最初会关闭后台模式，但用户可以自行更改它。</translation>
+<translation id="981245424658084931">启用设备活动检测信号</translation>
 <translation id="981346395360763138">已停用 Google 位置信息服务</translation>
 <translation id="982497069985795632">启用拼写检查</translation>
 <translation id="983256325512298435">指定一系列协议以便无需提示用户就能启动所列来源中的外部应用</translation>

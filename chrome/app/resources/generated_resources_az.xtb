@@ -994,7 +994,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1869433484041798909">Əlfəcin düyməsi</translation>
 <translation id="1871098866036088250">Chrome brauzerində açın</translation>
 <translation id="187145082678092583">Daha az tətbiq</translation>
-<translation id="1871463148436682760">Hazırdır!</translation>
 <translation id="1871534214638631766">Məzmuna sağ düymə ilə toxunduqda və ya basıb saxladıqda əlaqəli məlumat göstərilsin</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> cihazı güncəldir</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> üçün icazələri yenidən verin</translation>
@@ -3191,7 +3190,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> və <ph name="BEGIN_LINK3" />Play Xidmət Şərtlərini<ph name="END_LINK3" /> oxudum və qəbul edirəm.</translation>
 <translation id="3829765597456725595">SMB fayl paylaşımı</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Admininiz 1 potensial zərərli artırmanı yenidən aktiv etdi}other{Admininiz {NUM_EXTENSIONS} potensial zərərli artırmanı yenidən aktiv etdi}}</translation>
-<translation id="3831436149286513437">Google Disk axtarış təklifləri</translation>
 <translation id="3834728400518755610">Mikrofon ayarına edilən dəyişiklik Linux'un söndürülməsini tələb edir. Başlamaq üçün Linux'u söndürün.</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" tətbiqi əlavə edilmədi, cünki "<ph name="INSTALLED_APP_NAME" />" tətbiqi ilə zddiyət təşkil edir.</translation>
 <translation id="3835904559946595746">Linux yedəkləməsini bərpa etmək mümkün olmadı</translation>

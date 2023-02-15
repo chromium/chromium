@@ -733,6 +733,7 @@
 <translation id="4895488851634969361">ባትሪው ሙሉ ነው።</translation>
 <translation id="490375751687810070">አቀባዊ</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
+<translation id="491504982845934899">ከመሣሪያ ውቅረት <ph name="NETWORK_NAME" /> በኋላ ያግብሩ</translation>
 <translation id="4917385247580444890">ጠንካራ</translation>
 <translation id="4918086044614829423">ይቀበሉ</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> አሁን ላይ ካሜራዎን እየተጠቀመ ነው</translation>
@@ -1329,6 +1330,7 @@
 <translation id="8131740175452115882">አረጋግጥ</translation>
 <translation id="8131994907636310308">የድርድር ቶስትን ዝጋ</translation>
 <translation id="8132793192354020517">ከ<ph name="NAME" /> ጋር ተገናኝቷል</translation>
+<translation id="8138705869659070104">ከመሣሪያ ውቅረት በኋላ ያግብሩ</translation>
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
 <translation id="8142441511840089262">ድርብ ጠቅታ</translation>
 <translation id="8142699993796781067">የግል አውታረ መረብ</translation>

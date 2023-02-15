@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Kosongkan ruang disk untuk meluncurkan aplikasi Android.</translation>
 <translation id="1033780634303702874">Mengakses perangkat seri Anda</translation>
 <translation id="1034484273907870301">Tab setrip thumbnail untuk mode tablet</translation>
+<translation id="1035875743511577452">Klik “Ubah tema” untuk menjelajahi tema yang terinspirasi oleh seniman, alam, dan lainnya</translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1036511912703768636">Akses salah satu perangkat USB ini</translation>
 <translation id="1038168778161626396">Khusus Penyandi</translation>
@@ -1010,7 +1011,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1869433484041798909">Tombol bookmark</translation>
 <translation id="1871098866036088250">Buka di browser Chrome</translation>
 <translation id="187145082678092583">Lebih sedikit aplikasi</translation>
-<translation id="1871463148436682760">Bagus!</translation>
 <translation id="1871534214638631766">Menampilkan info terkait saat Anda mengklik kanan atau menekan lama konten</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> Anda adalah versi terbaru</translation>
 <translation id="1873920700418191231">Berikan izin lagi untuk <ph name="WEBSITE" /></translation>
@@ -1389,6 +1389,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2203088913459920044">Nama dapat menggunakan huruf, angka, dan karakter khusus</translation>
 <translation id="220321590587754225">Tidak dapat terhubung. Coba lagi.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> dapat memeriksa sandi saat Anda login dengan Akun Google Anda</translation>
+<translation id="2204020417499639567">Email telah diisi.</translation>
 <translation id="2204034823255629767">Membaca dan mengubah apa saja yang Anda ketik</translation>
 <translation id="2204387456724731099">Pilihan ini tidak dapat diterjemahkan</translation>
 <translation id="2210462644007531147">Tidak dapat menyelesaikan penginstalan</translation>
@@ -1846,6 +1847,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2603355571917519942">Voice Match sudah siap</translation>
 <translation id="2604129989323098489">Situs biasanya meminta informasi tentang layar agar dapat membuka dan menempatkan jendela dengan cerdas, seperti menampilkan dokumen atau konten layar penuh secara berdampingan</translation>
 <translation id="2604255671529671813">Error koneksi jaringan</translation>
+<translation id="2604805099836652105">Formulir alamat <ph name="ADDRESS_LABEL" /> telah diisi.</translation>
 <translation id="2605668923777146443">Buka <ph name="LINK_BEGIN" />Setelan<ph name="LINK_END" /> untuk melihat opsi Better Together.</translation>
 <translation id="2606246518223360146">Tautkan Data</translation>
 <translation id="2606454609872547359">Tidak, lanjutkan dengan ChromeVox</translation>
@@ -2437,6 +2439,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Gagal Membuat Direktori Data</translation>
 <translation id="3124111068741548686">Penanganan PENGGUNA</translation>
+<translation id="3124332159330678621">Sesuaikan Chrome untuk memberikan tampilan baru ke browser Anda</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Untuk menghindari masalah pengisian daya dan performa, gunakan adaptor daya USB Type-C atau Dell yang kompatibel.</translation>
 <translation id="3127862849166875294">Ubah ukuran disk Linux</translation>
@@ -3062,6 +3065,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3713091615825314967">Update otomatis diaktifkan.</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3714195043138862580">Perangkat demo ini disetel ke status akses dicabut.</translation>
+<translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> telah diisi.</translation>
 <translation id="3719826155360621982">Beranda</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Anda dan Google</translation>
@@ -3207,7 +3211,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3828953470056652895">Saya telah membaca dan menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Chrome dan ChromeOS<ph name="END_LINK2" />, dan <ph name="BEGIN_LINK3" />Persyaratan Layanan Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Berbagi file SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administrator Anda mengaktifkan kembali 1 ekstensi yang berpotensi berbahaya}other{Administrator Anda mengaktifkan kembali {NUM_EXTENSIONS} ekstensi yang berpotensi berbahaya}}</translation>
-<translation id="3831436149286513437">Saran penelusuran Google Drive</translation>
 <translation id="3834728400518755610">Perubahan pada setelan mikrofon mengharuskan Linux dimatikan. Matikan Linux untuk melanjutkan.</translation>
 <translation id="3834775135533257713">Tidak dapat menambahkan aplikasi "<ph name="TO_INSTALL_APP_NAME" />" karena bentrok dengan "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="3835904559946595746">Tidak dapat memulihkan cadangan Linux</translation>
@@ -3669,6 +3672,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="426652736638196239">IBAN ini hanya akan disimpan ke perangkat ini</translation>
 <translation id="4266679478228765574">Menghapus folder akan menghentikan fitur berbagi, tetapi tidak akan menghapus file.</translation>
 <translation id="4267455501101322486">Agar dapat menambahkan akun untuk mengakses materi pendidikan, minta izin kepada orang tuamu</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{Sandi tidak ditemukan}=1{1 hasil ditemukan}other{{COUNT} hasil ditemukan}}</translation>
 <translation id="4267924571297947682">Minta izin orang tua</translation>
 <translation id="4267953847983678297">Otomatis sambungkan ke jaringan seluler</translation>
 <translation id="4268025649754414643">Penyandian Kunci</translation>
@@ -3950,6 +3954,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4522890784888918985">Akun turunan tidak didukung</translation>
 <translation id="4523876148417776526">Sitelist XML yang belum diambil.</translation>
 <translation id="4524832533047962394">Mode pendaftaran yang disediakan tidak didukung oleh versi sistem operasi ini. Pastikan Anda menjalankan versi terbaru.</translation>
+<translation id="4526853756266614740">Pilih gambar untuk langsung menerapkan tema</translation>
 <translation id="452750746583162491">Tinjau data Anda yang disinkronkan</translation>
 <translation id="4527929807707405172">Aktifkan scroll terbalik. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Saran terjemahan</translation>
@@ -4249,6 +4254,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4800839971935185386">Tinjau pembaruan nama &amp; ikon</translation>
 <translation id="4801448226354548035">Sembunyikan akun</translation>
 <translation id="4801512016965057443">Izinkan roaming data seluler</translation>
+<translation id="4804311503028830356">Klik panah kembali untuk menjelajahi opsi lain</translation>
 <translation id="4804818685124855865">Putuskan koneksi</translation>
 <translation id="4804827417948292437">Avokad</translation>
 <translation id="4806457879608775995">Tinjau persyaratan ini dan kontrol data Anda</translation>
@@ -8276,6 +8282,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8498214519255567734">Memudahkan Anda melihat layar atau membaca saat cahaya redup</translation>
 <translation id="8498395510292172881">Lanjutkan membaca di Chrome</translation>
 <translation id="8499083585497694743">Aktifkan mikrofon</translation>
+<translation id="8499526927826495298">Kirim <ph name="BEGIN_LINK1" />metadata untuk isi otomatis<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Untuk menggunakan aplikasi dari Google Play, Anda terlebih dahulu harus memulihkan aplikasi. Beberapa data mungkin telah hilang.</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="850382998924680137">Dilihat hari ini</translation>

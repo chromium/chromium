@@ -1006,7 +1006,6 @@
 <translation id="1869433484041798909">Бутон за отметка</translation>
 <translation id="1871098866036088250">Отваряне в браузъра Chrome</translation>
 <translation id="187145082678092583">По-малко приложения</translation>
-<translation id="1871463148436682760">Браво!</translation>
 <translation id="1871534214638631766">Показване на сродната информация при кликване с десния бутон или продължително натискане на съдържание</translation>
 <translation id="1871615898038944731">Устройството ви <ph name="DEVICE_TYPE" /> е актуално</translation>
 <translation id="1873920700418191231">Повторно предоставяне на разрешенията за <ph name="WEBSITE" /></translation>
@@ -3203,7 +3202,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3828953470056652895">Прочетох и приемам <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Общите условия на Google Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Споделено SMB хранилище</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Администраторът ви включи 1 потенциално опасно разширение}other{Администраторът ви включи {NUM_EXTENSIONS} потенциално опасни разширения}}</translation>
-<translation id="3831436149286513437">Предложения за търсене в Google Диск</translation>
 <translation id="3834728400518755610">Промяната в настройката за микрофона изисква изключване на Linux. Изключете Linux, за да продължите.</translation>
 <translation id="3834775135533257713">Приложението „<ph name="TO_INSTALL_APP_NAME" />“ не можа да бъде добавено поради несъвместимост с/ъс „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="3835904559946595746">Резервното копие на Linux не бе възстановено</translation>

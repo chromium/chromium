@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Копче „Продолжете со патувањето“, притиснете Enter за да продолжите со патувањето и да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="1101672080107056897">Грешка во дејството</translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Изберете дозвола за <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Антиквитети и колекционерски предмети</translation>
@@ -1315,6 +1316,7 @@
 <translation id="4223404254440398437">Микрофонот не е дозволен</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Обидете се да извршите дијагностика на мрежата<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Може да прашува за да ја користи и преместува камерата</translation>
+<translation id="4231448684371260244">8 x 13 in</translation>
 <translation id="4235360514405112390">Важечки</translation>
 <translation id="4250431568374086873">Врската со овој сајт не е потполно безбедна</translation>
 <translation id="4250680216510889253">Не</translation>
@@ -2016,6 +2018,7 @@
 <translation id="5992691462791905444">Инженерско Z-превиткување</translation>
 <translation id="5992805036496113940">Видете ги податоците што се користат за да ви се прикажуваат реклами</translation>
 <translation id="5995727681868049093">Управувајте со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
+<translation id="5996887213716993070"><ph name="FIELD" /> не може да биде празно</translation>
 <translation id="5997247540087773573">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. За да ја задржите безбедноста на сметките, Google Password Manager препорачува веднаш да ја промените и да ги проверите зачуваните лозинки.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултати за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6005765687956866568">Автоматски пополнетите податоци се избришани од формуларот</translation>
@@ -2755,6 +2758,7 @@
 <translation id="7766518757692125295">Престилка</translation>
 <translation id="7773005668374414287">Ист редослед со лицето нагоре</translation>
 <translation id="7785790577395078482">овој таблет</translation>
+<translation id="7786368602962652765">Задолжително поле е празно. Пополнете го пред да зачувате.</translation>
 <translation id="7790488044432570133">Сајтовите што ги посетувате може да побараат податоци од Chrome за да им помогнат да ја измерат изведбата на нивните реклами. Chrome им дозволува на сајтовите да прибираат ограничени типови податоци, како што е делот од денот кога ви била прикажана рекламата.</translation>
 <translation id="7791011319128895129">Необјавено</translation>
 <translation id="7791196057686275387">Бала</translation>
@@ -3186,6 +3190,7 @@
 <translation id="8899807382908246773">Нападни реклами</translation>
 <translation id="8903921497873541725">Зумирај</translation>
 <translation id="890493561996401738">Копче за отстранување предлог, притиснете Enter за да отстраните, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="8910898109640902752">8 x 10 in</translation>
 <translation id="8912362522468806198">Сметка на Google</translation>
 <translation id="8913778647360618320">Копче „Управувајте со начините на плаќање“, притиснете Enter за да управувате со податоците за плаќањата и кредитната картичка во поставките за Chrome</translation>
 <translation id="8922013791253848639">Секогаш дозволувај реклами на сајтов</translation>

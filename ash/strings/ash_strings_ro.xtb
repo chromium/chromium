@@ -133,6 +133,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="163517899691012366">Notificările sunt dezactivate când se activează funcția Nu deranja</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispozitive</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
+<translation id="1647986356840967552">Pagina anterioară</translation>
 <translation id="1654477262762802994">Începe o interogare vocală</translation>
 <translation id="1668469839109562275">Rețea VPN încorporată</translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="397726367135689299">Încărcarea bateriei poate să nu fie fiabilă.</translation>
 <translation id="3977512764614765090">Nivelul bateriei este <ph name="PERCENTAGE" /> % și se încarcă.</translation>
+<translation id="3984536049089846927">Pagina următoare</translation>
 <translation id="3986082989454912832">Răspunde</translation>
 <translation id="3995138139523574647">Dispozitiv USB-C (portul din dreapta spate)</translation>
 <translation id="40062176907008878">Scriere de mână</translation>
@@ -731,6 +733,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4895488851634969361">Bateria este încărcată complet.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="491504982845934899">Activează după configurarea dispozitivului <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> folosește momentan camera foto</translation>
@@ -1327,6 +1330,7 @@ Instalare nouă</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8131994907636310308">Închide notificarea toast de sortare</translation>
 <translation id="8132793192354020517">Conectat la <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Activează după configurare</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8142441511840089262">Dublu clic</translation>
 <translation id="8142699993796781067">Rețea privată</translation>

@@ -1004,7 +1004,6 @@
 <translation id="1869433484041798909">ಬುಕ್‌ಮಾರ್ಕ್ ಬಟನ್</translation>
 <translation id="1871098866036088250">Chrome ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="187145082678092583">ಕಡಿಮೆ ಆ್ಯಪ್‌ಗಳು</translation>
-<translation id="1871463148436682760">ಚೆನ್ನಾಗಿ ನಿರ್ವಹಿಸಿದ್ದೀರಿ!</translation>
 <translation id="1871534214638631766">ಕಂಟೆಂಟ್ ಮೇಲೆ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಅಥವಾ ದೀರ್ಘಕಾಲ ಒತ್ತಿಹಿಡಿದಾಗ, ಕಂಟೆಂಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1871615898038944731">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅಪ್‌ ಟು ಡೇಟ್‌ ಆಗಿದೆ</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> ಗಾಗಿ ಪುನಃ ಅನುಮತಿಗಳನ್ನು ನೀಡಿ</translation>
@@ -3206,7 +3205,6 @@
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK2" /> ಮತ್ತು <ph name="BEGIN_LINK3" />Play ಸೇವಾ ನಿಅಯಮಗಳನ್ನು<ph name="END_LINK3" /> ನಾನು ಓದಿದ್ದೇನೆ ಮತ್ತು ಅವುಗಳಿಗೆ ಸಮ್ಮತಿಸುತ್ತೇನೆ.</translation>
 <translation id="3829765597456725595">SMB ಫೈಲ್‌ ಹಂಚಿಕೆ</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು, 1 ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಯನ್ನು ಪುನಃ ಆನ್ ಮಾಡಿದ್ದಾರೆ}one{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು, {NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಯನ್ನು ಪುನಃ ಆನ್ ಮಾಡಿದ್ದಾರೆ}other{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು, {NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಯನ್ನು ಪುನಃ ಆನ್ ಮಾಡಿದ್ದಾರೆ}}</translation>
-<translation id="3831436149286513437">Google ಡ್ರೈವ್ ಹುಡುಕಾಟ ಸಲಹೆಗಳು</translation>
 <translation id="3834728400518755610">ಮೈಕ್ರೊಫೋನ್ ಸೆಟ್ಟಿಂಗ್‌ನಲ್ಲಿನ ಬದಲಾವಣೆಗೆ Linux ಅನ್ನು ಶಟ್‌ಡೌನ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ಮುಂದುವರಿಯಲು Linux ಅನ್ನು ಶಟ್‌ಡೌನ್ ಮಾಡಿ.</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" ಜೊತೆಗಿನ ಘರ್ಷಣೆಯ ಕಾರಣ "<ph name="TO_INSTALL_APP_NAME" />" ಅಪ್ಲಿಕೇಶನ್‌ ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="3835904559946595746">Linux ಬ್ಯಾಕಪ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>

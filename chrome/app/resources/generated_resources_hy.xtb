@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Android հավելվածները գործարկելու համար ազատեք սկավառակի տարածքը:</translation>
 <translation id="1033780634303702874">Մուտք գործել ձեր հաջորդական սարքեր</translation>
 <translation id="1034484273907870301">Ներդիրների մանրապատկերների հատված պլանշետի ռեժիմի համար</translation>
+<translation id="1035875743511577452">Սեղմեք «Փոխել թեման»՝ նկարիչների ստեղծագործություններից, բնությունից և այլ աղբյուրներից ոգեշնչված թեմաներ ուսումնասիրելու համար</translation>
 <translation id="1036348656032585052">Անջատել</translation>
 <translation id="1036511912703768636">Մտնել այս USB սարքերից ցանկացածը</translation>
 <translation id="1038168778161626396">Միայն կոդավորում</translation>
@@ -1000,7 +1001,6 @@
 <translation id="1869433484041798909">Էջանշման կոճակ</translation>
 <translation id="1871098866036088250">Բացել Chrome դիտարկիչում</translation>
 <translation id="187145082678092583">Ավելի քիչ հավելվածներ</translation>
-<translation id="1871463148436682760">Պատրա՛ստ է</translation>
 <translation id="1871534214638631766">Ցույց տալ առնչվող տեղեկություններ՝ բովանդակության վրա երկար սեղմելու կամ մկնիկի աջ կոճակը սեղմելու դեպքում</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> սարքը թարմացված է</translation>
 <translation id="1873920700418191231">Նորից թույլտվություններ տրամադրել <ph name="WEBSITE" /> կայքի համար</translation>
@@ -1379,6 +1379,7 @@
 <translation id="2203088913459920044">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և հատուկ նշաններ</translation>
 <translation id="220321590587754225">Չհաջողվեց միանալ։ Նորից փորձեք։</translation>
 <translation id="2203903197029773650">«<ph name="BRAND" />» կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
+<translation id="2204020417499639567">Էլ. հասցեի դաշտը լրացված է։</translation>
 <translation id="2204034823255629767">Կարդալ և փոխել այն ամենն, ինչ դուք մուտքագրում եք</translation>
 <translation id="2204387456724731099">Չհաջողվեց թարգմանել ընտրված տեքստը</translation>
 <translation id="2210462644007531147">Չհաջողվեց ավարտել տեղադրումը</translation>
@@ -1833,6 +1834,7 @@
 <translation id="2603355571917519942">Voice Match-ը պատրաստ է</translation>
 <translation id="2604129989323098489">Կայքը սովորաբար ուղարկում է ձեր էկրանների մասին տեղեկությունների հարցում, որպեսզի կարողանա խելացի կերպով բացել և տեղադրել պատուհաններ, օրինակ՝ կողք կողքի ցույց տալ փաստաթղթեր կամ լիաէկրան բովանդակություն</translation>
 <translation id="2604255671529671813">Ցանցի միացման սխալ</translation>
+<translation id="2604805099836652105">«<ph name="ADDRESS_LABEL" />» հասցեի ձևը լրացված է։</translation>
 <translation id="2605668923777146443">Better Together ռեժիմի ընտրանքները տեսնելու համար անցեք <ph name="LINK_BEGIN" />Կարգավորումներ<ph name="LINK_END" />։</translation>
 <translation id="2606246518223360146">Կցել տվյալները</translation>
 <translation id="2606454609872547359">Ոչ, շարունակել առանց ChromeVox-ի</translation>
@@ -2424,6 +2426,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Չհաջողվեց ստեղծել տվյալների գրացուցակը</translation>
 <translation id="3124111068741548686">USER նկարագրիչներ</translation>
+<translation id="3124332159330678621">Անհատականացրեք Chrome-ը՝ ձեր դիտարկիչին նոր տեսք հաղորդելու համար</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Լիցքավորման և աշխատանքի հետ կապված խնդիրներից խուսափելու համար օգտագործեք համատեղելի Dell կամ USB Type-C հոսանքի ադապտեր:</translation>
 <translation id="3127862849166875294">Սկավառակի չափի փոխում Լինուքսում</translation>
@@ -3049,6 +3052,7 @@
 <translation id="3713091615825314967">Ինքնաթարմացումը միացված է:</translation>
 <translation id="371370241367527062">Առջևի խոսափող</translation>
 <translation id="3714195043138862580">Այս դեմո սարքի տրամադրումը չեղարկվել է։</translation>
+<translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> քարտի ձևը լրացված է։</translation>
 <translation id="3719826155360621982">Գլխավոր էջ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
@@ -3194,7 +3198,6 @@
 <translation id="3828953470056652895">Ես կարդացել և ընդունում եմ <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />Play-ի օգտագործման պայմանները<ph name="END_LINK3" />։</translation>
 <translation id="3829765597456725595">SMB ցանցային պահեստ</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Ձեր ադմինիստրատորը նորից 1 վտանգավոր ընդլայնում է միացրել}one{Ձեր ադմինիստրատորը նորից {NUM_EXTENSIONS} վտանգավոր ընդլայնում է միացրել}other{Ձեր ադմինիստրատորը նորից {NUM_EXTENSIONS} վտանգավոր ընդլայնում է միացրել}}</translation>
-<translation id="3831436149286513437">Google Drive-ի որոնման առաջարկներ</translation>
 <translation id="3834728400518755610">Խոսափողի կարգավորման փոփոխությունից հետո անհրաժեշտ է անջատել Լինուքսը։ Շարունակելու համար անջատեք Լինուքսը։</translation>
 <translation id="3834775135533257713">Չհաջողվեց ավելացնել «<ph name="TO_INSTALL_APP_NAME" />» հավելվածը, քանի որ այն հակասում է «<ph name="INSTALLED_APP_NAME" />» հավելվածին:</translation>
 <translation id="3835904559946595746">Չհաջողվեց վերականգնել Լինուքսի պահուստավորված տվյալները</translation>
@@ -3656,6 +3659,7 @@
 <translation id="426652736638196239">IBAN-ը կպահվի միայն այս սարքում</translation>
 <translation id="4266679478228765574">Եթե պանակները ջնջեք, կհեռացվի միայն դրանց հասանելիությունը։ Ֆայլերը կպահպանվեն։</translation>
 <translation id="4267455501101322486">Ուսումնական ռեսուրսներից օգտվելու համար խնդրեք ծնողին, որ թույլատրի ձեզ հաշիվ ավելացել</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{Գաղտնաբառեր չեն գտնվել}=1{Գտնվել է 1 արդյունք}one{Գտնվել է {COUNT} արդյունք}other{Գտնվել է {COUNT} արդյունք}}</translation>
 <translation id="4267924571297947682">Ծնողից թույլտվություն խնդրեք</translation>
 <translation id="4267953847983678297">Ավտոմատ միանալ բջջային ցանցին</translation>
 <translation id="4268025649754414643">Բանալիների կոդավորում</translation>
@@ -3936,6 +3940,7 @@
 <translation id="4522890784888918985">Դուստր հաշիվները չեն աջակցվում</translation>
 <translation id="4523876148417776526">Կայքերի ցուցակները (XML ձևաչափով) դեռ չեն բեռնվել։</translation>
 <translation id="4524832533047962394">Օպերացիոն համակարգի այս տարբերակը չի աջակցում գրանցման տրամադրված ռեժիմը: Թարմացրեք տարբերակը:</translation>
+<translation id="4526853756266614740">Ընտրեք պատկեր, և թեման ակնթարթորեն կկիրառվի</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4527929807707405172">Միացնել հետադարձ ոլորումը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Թարգմանության առաջարկ</translation>
@@ -4235,6 +4240,7 @@
 <translation id="4800839971935185386">Դիտեք անվան և պատկերակի փոփոխությունները</translation>
 <translation id="4801448226354548035">Թաքցնել հաշիվները</translation>
 <translation id="4801512016965057443">Թույլ տալ բջջային տվյալների ռոումինգը</translation>
+<translation id="4804311503028830356">Սեղմեք հետ սլաքը՝ այլ տարբերակներ ուսումնասիրելու համար</translation>
 <translation id="4804818685124855865">Անջատել</translation>
 <translation id="4804827417948292437">Ավոկադո</translation>
 <translation id="4806457879608775995">Ծանոթացեք այս պայմաններին և կառավարեք ձեր հաշվի տվյալները</translation>
@@ -8115,6 +8121,7 @@
 <translation id="8358912028636606457">Ներդիրի ձայնի հեռարձակումն այս սարքում չի աջակցվում:</translation>
 <translation id="835951711479681002">Պահել իմ Google հաշվում</translation>
 <translation id="8360140320636871023">Անհատականացրեք ձեր էկրանի թեման</translation>
+<translation id="8360267485906769442">«Կարծիք հայտնել» կոճակ</translation>
 <translation id="8363095875018065315">կայուն</translation>
 <translation id="8363142353806532503">Խոսափողի օգտագործումն արգելված է</translation>
 <translation id="8366396658833131068">Ցանցի կապակցումը վերականգնվել է: Kiosk հավելվածը գործարկելու համար ընտրեք այլ ցանց կամ սեղմեք «Շարունակել» կոճակը:</translation>
@@ -8261,6 +8268,7 @@
 <translation id="8498214519255567734">Թույլ է տալիս ավելի հանգիստ նայել էկրանին և կարդալ թույլ լուսավորության պայմաններում</translation>
 <translation id="8498395510292172881">Շարունակեք կարդալ Chrome-ում</translation>
 <translation id="8499083585497694743">Միացնել խոսափողը</translation>
+<translation id="8499526927826495298">Ուղարկել <ph name="BEGIN_LINK1" />ինքնալրացման մետատվյալները<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Google Play-ից հավելվածներ օգտագործելու համար նախ պետք է վերականգնեք ձեր հավելվածները: Որոշ տվյալներ հնարավոր է չպահպանվեն:</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="850382998924680137">Դիտել եք այսօր</translation>

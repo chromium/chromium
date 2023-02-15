@@ -2159,6 +2159,7 @@ Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarla
 
         Bu politikanın önceden yayınlanmış politikalar üzerinde bir etkisi yoktur.</translation>
 <translation id="3002067315837777719">Telefon Merkezi bildirimlerinin etkinleştirilmesine izin verme</translation>
+<translation id="3010907817113180883">Milisaniye olarak cihaz etkinliği sinyalini toplama hızı.</translation>
 <translation id="3017578958356048910">PDF görüntüleyici, PDF'lere not ekleyebilir.</translation>
 <translation id="3020623128585817424">Başlangıçta varsayılan tarayıcı kontrolünü devre dışı bırak</translation>
 <translation id="3020953534071988875">Bu politika yapılandırıldığında <ph name="PRODUCT_NAME" /> içindeki Gizli profiller ve Misafir profilleri için ambiyans kimlik doğrulamasına izin verilir/verilmez.
@@ -4470,6 +4471,10 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 
       Bu politika bir hesapta <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> değerine ayarlanırsa o hesabın yalnızca birincil hesap olarak oturum açmasına izin verilir. Hesabın ikincil hesap olarak oturum açmasına izin verilmez.</translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
+<translation id="5235607513961923779">İlişkili kullanıcılar için kayıtlı cihazlardaki cihaz etkinliği durumunu raporlar.
+
+      Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa cihaz etkinliği durumu raporlanmaz.
+      Politika, Etkin değerine ayarlanırsa cihaz etkinliği durumu sunucuya raporlanır ve böylece, kullanıcı ilişkili olduğu sürece cihazın çevrimdışı olup olmadığını algılamasını sağlar.</translation>
 <translation id="5238275681097851753">Belirli <ph name="FLASH_PLUGIN_NAME" /> içeriklerinin engellenmesine izin ver</translation>
 <translation id="5238976843489093540">Hızlı Eşleme'yi (hızlı Bluetooth eşleme) etkinleştirmeye zorla.</translation>
 <translation id="52393120393725840">Politika, Etkin değerine ayarlanırsa kullanıcılar, <ph name="PRODUCT_NAME" /> ürününün, şifreleri hatırlayıp bir sitede tekrar oturum açtıklarında şifreleri sunmasını sağlayabilirler.
@@ -7320,6 +7325,7 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 
       Öneri: Boşta kaldığında ekranı kilitlemek için askıya alındığında ekran kilidini etkinleştirin ve boşta kalma gecikmesi ile ilgili süre dolduğunda <ph name="PRODUCT_OS_NAME" /> tarafından askıya alma işlemi yapılacak şekilde ayarlayın. Bu politikayı yalnızca ekran kilitleme işleminin askıya alma işleminden epey önce olması istendiğinde veya boşta kalma durumunda askıya alma işleminin yapılmasını istemediğinizde kullanın.</translation>
 <translation id="7895553628261067384">Uzaktan erişim</translation>
+<translation id="7898807590879163195">Cihaz etkinliği sinyalini devre dışı bırak</translation>
 <translation id="789975630884141379">Önerilen içeriği etkinleştir</translation>
 <translation id="7899952578398457262">Yönetilmeyen cihazlarda cihaz sinyallerini paylaşmak için yönetilen kullanıcılardan izin isteyerek erişim elde et</translation>
 <translation id="7900469325540540107">Kurumsal profil oluştururken tarama verilerini varsayılan olarak sakla</translation>
@@ -7921,6 +7927,9 @@ cihazın klavye arka ışığı rengi varsayılan olarak ayarlanır.</translatio
       Bu politika devre dışı bırakılır veya ayarlanmazsa yalnızca normal yerel profiller kullanılır.</translation>
 <translation id="8417305981081876834">Kilit ekranı PIN'inin maksimum uzunluğunu ayarla</translation>
 <translation id="841977920223099909">Şifre koruma uyarısı tetikleyicisi</translation>
+<translation id="8419965165591256432">İlişkili kullanıcılar için kayıtlı cihazlardaki cihaz etkinliği durumunun toplanma hızı. İzin verilen minimum sıklık 1 dakikadır.
+
+      Ayarlanmazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
 <translation id="8420426128163801949">Kullanıcıların Bluetooth'u açıp kapatmalarına izin ver</translation>
 <translation id="8422658829373743789">Devre dışı bırakılan form kontrollerinde etkinlik göndermeyle ilgili yeni davranışı kontrol et</translation>
 <translation id="8422866312638683210">Politika ayarlanırsa <ph name="PRODUCT_NAME" />, kendini <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> hizmetine kaydettirmeye çalışır. Bu politikanın değeri, <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hizmetinden alabileceğiniz kayıt jetonudur.
@@ -8614,6 +8623,7 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
 <translation id="9076477053438828079">Kullanıcı adlarını ve fotoğrafları her zaman göster</translation>
 <translation id="9077227880520270584">Cihaz yerel hesabına otomatik giriş zamanlayıcısı</translation>
 <translation id="9079531125758468956">İlk çalıştırmada yer işaretlerinin içe aktarılmasını devre dışı bırak</translation>
+<translation id="9084038227968802480">Cihaz etkinliği sinyali raporlamasını etkinleştir</translation>
 <translation id="9084985621503260744">Video etkinliğinin güç yönetimini etkileyip etkilemeyeceğini belirtme</translation>
 <translation id="9087434639296483430">Kayıtlı cihazlarda, başarısız giriş denemeleri de dahil olmak üzere kullanıcıların giriş/çıkış etkinliklerini raporla.
 
@@ -8817,6 +8827,7 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
       Politika, Devre Dışı değerine ayarlanırsa arka plan modu kapatılır.
 
       Bu politikayı ayarlarsanız kullanıcılar tarayıcı ayarlarında değiştiremez. Politika ayarlanmazsa arka plan modu başta kapalı olur, ancak kullanıcılar bunu değiştirebilir.</translation>
+<translation id="981245424658084931">Cihaz etkinliği sinyalini etkinleştir</translation>
 <translation id="981346395360763138">Google konum hizmetleri devre dışı</translation>
 <translation id="982497069985795632">Yazım denetimini etkinleştir</translation>
 <translation id="983256325512298435">Listelenen kaynaklardan kullanıcıya sormadan harici uygulama başlatabilecek protokollerin bir listesini tanımlayın</translation>

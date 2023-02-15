@@ -139,6 +139,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> منسلک نہیں ہے۔</translation>
 <translation id="1677582821739292812">کوئی آپ کی اسکرین پر دیکھ رہا ہے</translation>
+<translation id="1683399938733266832">‏CPU کا موجودہ استعمال: %<ph name="CPU_USEAGE" /></translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ٹائمر · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">‏IPv6 پتہ: <ph name="ADDRESS" /></translation>
@@ -381,6 +382,7 @@
 <translation id="3051189971848907985">پروفائل کا نام تبدیل ہو رہا ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="3055162170959710888">آپ نے اس آلہ کو آج <ph name="USED_TIME" /> تک استعمال کیا ہے</translation>
 <translation id="3062298103034426069">تعاون یافتہ نہیں ہے</translation>
+<translation id="3068622547379332530">ورژن <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">شیلف بائیں ہے</translation>
 <translation id="3077734595579995578">شفٹ</translation>
 <translation id="3081696990447829002">مینو کو پھیلائیں</translation>
@@ -579,6 +581,7 @@
 <translation id="4123259114412175274">‏اپنے Chromebook کو غیر مقفل کرنے کے لے یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے</translation>
 <translation id="4125970834901680537">ٹیبلیٹ وضع میں ایپس کی سلسلہ بندی نہیں کی جا سکتی۔ لیپ ٹاپ وضع میں دوبارہ کوشش کریں۔</translation>
 <translation id="4129129681837227511">اپنی مقفل اسکرین پر اطلاعات دیکھنے کیلئے، ترتیب تبدیل کرنے کیلئے غیر مقفل کریں</translation>
+<translation id="4131973331381812765">‏درجہ حرارت: ‎°C<ph name="TEMPERATURE" /> - موجودہ رفتار: GHz<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /></translation>
 <translation id="4136724716305260864">طلوع آفتاب تک آن کریں</translation>
 <translation id="4146833061457621061">موسیقی چلائیں</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
@@ -733,6 +736,7 @@
 <translation id="4895488851634969361">بیٹری بھری ہوئی ہے۔</translation>
 <translation id="490375751687810070">عمودی</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
+<translation id="491504982845934899">آلہ سیٹ اپ کرنے کے بعد <ph name="NETWORK_NAME" /> کو فعال کریں</translation>
 <translation id="4917385247580444890">مضبوط</translation>
 <translation id="4918086044614829423">قبول کریں</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> فی الحال آپ کا کیمرا استعمال کر رہی ہے</translation>
@@ -1328,6 +1332,7 @@
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8131994907636310308">ترتیب دینے والے ٹوسٹ کو بند کریں</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> سے منسلک ہو گیا</translation>
+<translation id="8138705869659070104">آلہ سیٹ اپ کرنے کے بعد فعال کریں</translation>
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>
 <translation id="8142441511840089262">دو بار کلک کریں</translation>
 <translation id="8142699993796781067">نجی نیٹ ورک</translation>

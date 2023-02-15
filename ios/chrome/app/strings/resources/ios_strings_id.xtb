@@ -40,6 +40,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1207113853726624428">Penelusuran Baru</translation>
 <translation id="1209206284964581585">Sembunyikan untuk saat ini</translation>
 <translation id="1219674500290482172">Tidak dapat terhubung ke internet.</translation>
+<translation id="1226238226094914652">Sandi di Semua Perangkat Anda</translation>
 <translation id="122699739164161391">Tutup Semua Tab</translation>
 <translation id="1229222343402087523">Telusuri ${searchPhrase} di Chrome</translation>
 <translation id="1242044645101871359">Login Lagi</translation>
@@ -205,6 +206,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2529021024822217800">Buka Semua</translation>
 <translation id="2556092377360758201">Tidak Ada Perlindungan (tidak direkomendasikan)</translation>
 <translation id="2562041823070056534">Mengirim ke <ph name="DEVICE_NAME" />...</translation>
+<translation id="2576499762020411840">Simpan dan Gunakan Sandi di Akun Google Anda</translation>
 <translation id="2578571896248130439">Kirim Halaman</translation>
 <translation id="2584132361465095047">Tambahkan Akun…</translation>
 <translation id="2600682495497606169">Hapus Cookie Situs</translation>
@@ -410,6 +412,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4063300985191096908">Buka Feed</translation>
 <translation id="408404951701638773">Kotak penelusuran kini lebih mudah dijangkau</translation>
 <translation id="4092655288299341041">Tampilkan Bantuan</translation>
+<translation id="4101942614374785540">Sandi kini disimpan di Akun Google Anda (<ph name="ACCOUNT" />). Anda dapat menggunakannya di perangkat mana pun yang Anda gunakan untuk login. Untuk menonaktifkannya, buka <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Mendeteksi dan memberikan peringatan terkait peristiwa berbahaya ketika terjadi.</translation>
 <translation id="411254640334432676">Download gagal.</translation>
 <translation id="4112644173421521737">Telusuri</translation>
@@ -693,6 +696,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6184086493125982861">Tampilkan Tab</translation>
 <translation id="6187302354554850004">Sinkron terakhir: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Belum dibaca</translation>
+<translation id="6193424046394092997">{count,plural, =1{Di-bookmark ke {title}}other{Di-bookmark ke {title}}}</translation>
 <translation id="6196207969502475924">Penelusuran Suara</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Tutup {COUNT} Tab}other{Tutup {COUNT} Tab}}</translation>
 <translation id="6219550825416862075">Selamat Datang Kembali</translation>
@@ -838,6 +842,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7062545763355031412">Terima dan berganti akun</translation>
 <translation id="7080806333218412752">Mengirimkan URL ke Safe Browsing untuk memeriksanya. Juga mengirimkan sedikit contoh halaman, download, aktivitas ekstensi, dan informasi sistem untuk membantu menemukan ancaman baru. Menautkan sementara data ini ke Akun Google Anda saat login, untuk melindungi Anda ketika menggunakan berbagai aplikasi Google.</translation>
+<translation id="7083860864742905105">Jika diaktifkan, sandi akan disimpan di <ph name="ACCOUNT" />. Jika dinonaktifkan, sandi hanya akan disimpan di perangkat ini.</translation>
 <translation id="7095110968493193530">Ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Tab Terbaru</translation>
 <translation id="7102005569666697658">Mendownload… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7756478488453921771">Menu → Setelan → Metode Pembayaran</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
 <translation id="7772032839648071052">Konfirmasi frasa sandi</translation>
+<translation id="777572173400717978">{count,plural, =1{Di-bookmark}other{Di-bookmark}}</translation>
 <translation id="7781011649027948662">Terjemahkan Halaman?</translation>
 <translation id="7781069478569868053">Halaman Tab Baru</translation>
 <translation id="7781829728241885113">Kemarin</translation>

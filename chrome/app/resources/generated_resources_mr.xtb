@@ -1009,7 +1009,6 @@
 <translation id="1869433484041798909">बुकमार्क बटण</translation>
 <translation id="1871098866036088250">Chrome ब्राउझरमध्ये उघडा</translation>
 <translation id="187145082678092583">काही अ‍ॅप्स</translation>
-<translation id="1871463148436682760">चांगल्या प्रकारे पूर्ण केले!</translation>
 <translation id="1871534214638631766">तुम्ही आशयावर राइट क्लिक करता किंवा दाबून ठेवता तेव्हा त्यासंबंधित माहिती दाखवा</translation>
 <translation id="1871615898038944731">तुमचे <ph name="DEVICE_TYPE" /> अद्ययावत आहे</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> साठी पुन्हा परवानग्यांना अनुमती द्या</translation>
@@ -3206,7 +3205,6 @@
 <translation id="3828953470056652895">मी <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome आणि ChromeOS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> व <ph name="BEGIN_LINK3" />Play सेवा अटी<ph name="END_LINK3" /> वाचल्या आहेत आणि सहमती दर्शवत आहे.</translation>
 <translation id="3829765597456725595">SMB फाइल शेअर</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{हानीकारक असू शकणारे एक एक्स्टेंशन तुमच्या अ‍ॅडमिनिस्ट्रेटरने पुन्हा सुरू केले}other{हानीकारक असू शकणारी {NUM_EXTENSIONS} एक्स्टेंशन तुमच्या अ‍ॅडमिनिस्ट्रेटरने पुन्हा सुरू केली}}</translation>
-<translation id="3831436149286513437">Google ड्राइव्ह शोध सूचना</translation>
 <translation id="3834728400518755610">मायक्रोफोन सेटिंगमधील बदलासाठी Linux बंद करणे आवश्यक आहे. पुढे जाण्यासाठी Linux बंद करा.</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" सह संघर्ष असल्याने "<ph name="TO_INSTALL_APP_NAME" />" मध्ये ॲप्स जोडणे शक्य झाले नाही.</translation>
 <translation id="3835904559946595746">Linux चा बॅकअप रिस्टोअर करता आला नाही</translation>

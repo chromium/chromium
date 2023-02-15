@@ -733,6 +733,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4895488851634969361">Pil dolu.</translation>
 <translation id="490375751687810070">Dikey</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> pil</translation>
+<translation id="491504982845934899"><ph name="NETWORK_NAME" /> ağını, cihaz kurulumundan sonra etkinleştirin</translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4918086044614829423">Kabul et</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> şu anda kameranızı kullanıyor</translation>
@@ -1329,6 +1330,7 @@ Yeni yüklenmiş</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8131994907636310308">Sıralama kısa iletisini kapat</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> ağına bağlanıldı</translation>
+<translation id="8138705869659070104">Cihaz kurulumundan sonra etkinleştirin</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8142441511840089262">Çift tıklama</translation>
 <translation id="8142699993796781067">Özel ağ</translation>

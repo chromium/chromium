@@ -995,7 +995,6 @@
 <translation id="1869433484041798909">Бетбелгі түймесі</translation>
 <translation id="1871098866036088250">Chrome браузерінде ашу</translation>
 <translation id="187145082678092583">Азырақ қолданба</translation>
-<translation id="1871463148436682760">Бәрекелді!</translation>
 <translation id="1871534214638631766">Тінтуірдің оң жақ пернесін басқанда немесе контентті ұзақ басқанда, қатысты ақпаратты көрсету</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> құрылғысы әлдеқашан жаңартылған</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> үшін рұқсаттарды қайта беру</translation>
@@ -3189,7 +3188,6 @@
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарын<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome мен ChromeOS Қосымша қызмет көрсету шарттарын<ph name="END_LINK2" /> және <ph name="BEGIN_LINK3" />Play Қызмет көрсету шарттарын<ph name="END_LINK3" /> оқып шықтым және оларға келісемін.</translation>
 <translation id="3829765597456725595">SMB ортақ каталогі</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Әкімшіңіз зиянды болуы мүмкін 1 кеңейтімді қайта қосты.}other{Әкімшіңіз зиянды болуы мүмкін {NUM_EXTENSIONS} кеңейтімді қайта қосты.}}</translation>
-<translation id="3831436149286513437">Google Drive іздеу ұсыныстары</translation>
 <translation id="3834728400518755610">Микрофонның параметріне өзгеріс енгізілгендіктен, Linux жүйесін өшіру қажет. Жалғастыру үшін Linux жүйесін өшіріңіз.</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" қолданбасы қосылмады, себебі ол "<ph name="INSTALLED_APP_NAME" />" қолданбасымен қайшы.</translation>
 <translation id="3835904559946595746">Linux сақтық көшірмесін қалпына келтіру мүмкін емес</translation>

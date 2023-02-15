@@ -736,6 +736,7 @@ Koble enheten til strøm.</translation>
 <translation id="4895488851634969361">Batteriet er fullt.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
+<translation id="491504982845934899">Aktiver etter enhetsoppsett <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> bruker kameraet ditt for øyeblikket</translation>
@@ -1332,6 +1333,7 @@ Nylig installert</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8131994907636310308">Lukk brukervarsel om sortering</translation>
 <translation id="8132793192354020517">Koblet til <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Aktiver etter enhetsoppsett</translation>
 <translation id="813913629614996137">Initialiserer …</translation>
 <translation id="8142441511840089262">Dobbeltklikk</translation>
 <translation id="8142699993796781067">Privat nettverk</translation>

@@ -133,6 +133,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="163517899691012366">Kui funktsioon Mitte segada on sisse lülitatud, on märguanded vaigistatud</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> seadet</translation>
 <translation id="1639239467298939599">Laadimine</translation>
+<translation id="1647986356840967552">Eelmine leht</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
 <translation id="1668469839109562275">Sisseehitatud VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tühjenemiseni</translation>
@@ -556,6 +557,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="397726367135689299">Aku laadimine võib olla ebausaldusväärne.</translation>
 <translation id="3977512764614765090">Aku laetuse tase on <ph name="PERCENTAGE" />% ja seda laetakse.</translation>
+<translation id="3984536049089846927">Järgmine leht</translation>
 <translation id="3986082989454912832">Vasta</translation>
 <translation id="3995138139523574647">C-tüüpi USB-seade (tagumine parempoolne port)</translation>
 <translation id="40062176907008878">Käsitsi kirjutamine</translation>

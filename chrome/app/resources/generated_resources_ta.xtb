@@ -1010,7 +1010,6 @@
 <translation id="1869433484041798909">புக்மார்க் பட்டன்</translation>
 <translation id="1871098866036088250">Chrome உலாவியில் திற</translation>
 <translation id="187145082678092583">சில ஆப்ஸ்</translation>
-<translation id="1871463148436682760">முடிந்தது!</translation>
 <translation id="1871534214638631766">உள்ளடக்கத்தில் வலது கிளிக் செய்யும்போதோ நீண்ட நேரம் அழுத்தும்போதோ தொடர்புடைய தகவலைக் காட்டும்</translation>
 <translation id="1871615898038944731">உங்கள் <ph name="DEVICE_TYPE" /> புதுப்பித்த நிலையில் உள்ளது</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> இணையதளத்திற்கு மீண்டும் அனுமதிகளை வழங்கும்</translation>
@@ -3207,7 +3206,6 @@
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />Play சேவை விதிமுறைகள்<ph name="END_LINK3" /> ஆகியவற்றைப் படித்துவிட்டேன், அவற்றை ஏற்கிறேன்.</translation>
 <translation id="3829765597456725595">SMB ஃபைல் பகிர்வு</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{தீங்கிழைக்கச் சாத்தியமுள்ள 1 நீட்டிப்பை உங்கள் நிர்வாகி மீண்டும் இயக்கியுள்ளார்}other{தீங்கிழைக்கச் சாத்தியமுள்ள {NUM_EXTENSIONS} நீட்டிப்புகளை உங்கள் நிர்வாகி மீண்டும் இயக்கியுள்ளார்}}</translation>
-<translation id="3831436149286513437">Google இயக்ககத் தேடல் பரிந்துரைகள்</translation>
 <translation id="3834728400518755610">மைக்ரோஃபோன் அமைப்பில் செய்த மாற்றத்தைச் செயல்படுத்த Linuxஸை ஷட்-டவுன் செய்ய வேண்டும். தொடர, Linuxஸை ஷட்-டவுன் செய்யவும்.</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ஆப்ஸ் "<ph name="INSTALLED_APP_NAME" />" உடன் முரண்படுவதால், அதைச் சேர்க்க முடியவில்லை.</translation>
 <translation id="3835904559946595746">Linux காப்புப் பிரதியை மீட்டெடுக்க முடியவில்லை</translation>
@@ -8130,6 +8128,7 @@
 <translation id="8358912028636606457">இந்தச் சாதனத்தில் தாவல் ஆடியோவை அனுப்ப இயலாது.</translation>
 <translation id="835951711479681002">உங்கள் Google கணக்கில் சேமியுங்கள்</translation>
 <translation id="8360140320636871023">டிஸ்ப்ளே தீமினைப் பிரத்தியேகமாக்குதல்</translation>
+<translation id="8360267485906769442">கருத்தை அனுப்புவதற்கான பட்டன்</translation>
 <translation id="8363095875018065315">நிலையானது</translation>
 <translation id="8363142353806532503">மைக்ரோஃபோன் தடுக்கப்பட்டது</translation>
 <translation id="8366396658833131068">உங்கள் நெட்வொர்க் இணைப்பு மீட்டெடுக்கப்பட்டது. உங்கள் கியோஸ்க் பயன்பாட்டைத் தொடங்க, வேறு நெட்வொர்க்கைத் தேர்ந்தெடுக்கவும் அல்லது கீழேயுள்ள 'தொடரவும்' பட்டனை அழுத்தவும்.</translation>
