@@ -502,7 +502,7 @@ grit_output_dir: See |output_dir| in grit(). Optional parameter, defaults to
 
 #### **Example**
 ```
-import("//chrome/browser/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
   grd_prefix = "dummy-webui"

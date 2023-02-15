@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/chrome_build.gni")
-import("//chrome/browser/resources/tools/build_webui.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(toolkit_views)

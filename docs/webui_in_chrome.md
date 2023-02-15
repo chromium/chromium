@@ -114,7 +114,7 @@ from which the template will be imported.
 
 `chrome/browser/resources/hello_world/BUILD.gn`
 ```py
-import("//chrome/browser/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
   grd_prefix = "hello_world"
