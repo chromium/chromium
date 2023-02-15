@@ -13,6 +13,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -163,7 +164,7 @@ class TraceEventTestFixture : public testing::Test {
 
   void SetUp() override {
     const char* name = PlatformThread::GetName();
-    old_thread_name_ = name ? strdup(name) : nullptr;
+    old_thread_name_ = name ? name : "";
 
     TraceLog::ResetForTesting();
     TraceLog* tracelog = TraceLog::GetInstance();
@@ -175,14 +176,12 @@ class TraceEventTestFixture : public testing::Test {
   void TearDown() override {
     if (TraceLog::GetInstance())
       EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-    PlatformThread::SetName(old_thread_name_ ? old_thread_name_.get() : "");
-    free(old_thread_name_);
-    old_thread_name_ = nullptr;
+    PlatformThread::SetName(old_thread_name_);
     // We want our singleton torn down after each test.
     TraceLog::ResetForTesting();
   }
 
-  raw_ptr<char> old_thread_name_;
+  std::string old_thread_name_;
   Value::List trace_parsed_;
   TraceResultBuffer trace_buffer_;
   TraceResultBuffer::SimpleOutput json_output_;
