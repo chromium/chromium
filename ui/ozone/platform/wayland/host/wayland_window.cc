@@ -1016,7 +1016,7 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     // window has been applied.
     SetWindowGeometry(pending_bounds_dip.size());
     AckConfigure(serial);
-    root_surface()->Commit();
+    connection()->Flush();
   } else if (!pending_configures_.empty() &&
              pending_bounds_dip.size() ==
                  pending_configures_.back().bounds_dip.size()) {

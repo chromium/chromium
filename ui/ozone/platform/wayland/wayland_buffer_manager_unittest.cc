@@ -1385,9 +1385,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
           EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(1);
           EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
           EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
-          // Commit() can be called a second time as part of the configure->ack
-          // sequence.
-          EXPECT_CALL(*mock_surface, Commit()).Times(testing::Between(1, 2));
+          EXPECT_CALL(*mock_surface, Commit()).Times(1);
         });
 
     ActivateSurface(temp_window_surface_id);
