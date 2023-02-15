@@ -16,48 +16,45 @@ namespace network_time {
 
 // Update as follows:
 //
-// curl -i http://clients2.google.com/time/1/current?cup2key=6:123123123
+// curl -i "http://clients2.google.com/time/1/current?cup2key=7:123123123"
 //
-// where 6 is the key version and 123123123 is the nonce.  Copy the response
+// where 7 is the key version and 123123123 is the nonce.  Copy the response
 // and the x-cup-server-proof header into |kGoodTimeResponseBody| and
 // |kGoodTimeResponseServerProofHeader| respectively, and the
 // 'current_time_millis' value of the response into
 // |kGoodTimeResponseHandlerJsTime|.  Do this five times, so that the five
 // requests appear in order below.
 const char* kGoodTimeResponseBody[] = {
-    ")]}'\n{\"current_time_millis\":1652339069759,\"server_nonce\":7."
-    "29375327039265E-230}",
-    ")]}'\n{\"current_time_millis\":1652339136683,\"server_nonce\":1."
-    "4794255040588188E-23}",
-    ")]}'\n{\"current_time_millis\":1652339231311,\"server_nonce\":-4."
-    "419622990529329E127}",
-    ")]}'\n{\"current_time_millis\":1652339325263,\"server_nonce\":6."
-    "315542071193776E16}",
-    ")]}'\n{\"current_time_millis\":1652339380058,\"server_nonce\":-3."
-    "8130598030275436E-131}"};
+    ")]}'\n{\"current_time_millis\":1676407030473,\"server_nonce\":-7."
+    "963518832647831E9}",
+    ")]}'\n{\"current_time_millis\":1676407054804,\"server_nonce\":2."
+    "660379914224199E64}",
+    ")]}'\n{\"current_time_millis\":1676407071199,\"server_nonce\":5."
+    "150419571081495E-301}",
+    ")]}'\n{\"current_time_millis\":1676407085288,\"server_nonce\":-2."
+    "3616379802443122E-151}",
+    ")]}'\n{\"current_time_millis\":1676407147062,\"server_nonce\":2."
+    "848761209101163E-158}"};
 
 const char* kGoodTimeResponseServerProofHeader[] = {
-    "3046022100ab673cb907cd0c9139da0d50ada4c3326929d455e46f8f797f0a8c511ef"
-    "6881b02210091b0f77f463578b7c0be36d42f053de34e486eba8c0526f9f115f80c80"
-    "7a5ce4:"
-    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "30440220139b1710412e68cf445d39234158943efee3e2b27859b97582b478af7dcf6"
-    "e85022004d9d7c432aae15a5207a18e25ae345675348767f784b7d3b07920b64a2ead"
-    "c3:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "3044022017d2ae7bf4507b18badd735629f1c44f1f024c88aeb271e4d52e6a849cb22"
-    "7a3022052c1223d65b4488ccb47f2c882f249c91541a55b99752f4f487a3e6abc5194"
-    "10:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "30450221009b8db5fe3000e6e0b696baf8d42d40d7b4ff9757c84b49cdd6d85fa39cd"
-    "0fca2022005144ed3eeb95707e3bc9e7369d8bd475b5d2f50ac98e5c56160bc9b1f1f"
-    "d36a:"
-    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "3046022100ec690467b5eb550e6b91ec65810d942ed859d3dd6f966f72c9489679825"
-    "81cf8022100b2a54d11217ba6a75576e6db02f5293a70fd4bc27b02f0bda46e60f98a"
-    "b05785:"
-    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"};
+    "304402200b875bcd9391c08c319504ea4cac3703b58f50797c99ed008068d232c62f0"
+    "86802207babace8807a911ef7af424abdadac5ba118b06d1c68ddbe6c79e0f36da972"
+    "18:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "30450220600b8b15525d52aa939f8174a24b63d3eb2b7543cf1d3a36eabd572518ec5"
+    "118022100d6e79c05701e981308d22e95f945a4a1b7cc2b2ce9c67b87fbec44e3d4b2"
+    "c4a5:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "3045022100f78429f21c9b5e4db283b7b4a81d2f91f51969aae4e9960edf0b82f21c3"
+    "7c84a02200aa5e9e56bbf3cb16441355759425a31b0052fb371dfcb972d127cf185fe"
+    "5424:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "3045022015af65192d3f5024e068cee411b29c6c9093c159a6f5b7e7e8b9726a7eca3"
+    "fa30221008dd1d69dc5e3cf364bb69366b3cc434a057fdf2c52475d92492eaca45f4b"
+    "2ecf:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "3045022100ca8b4a4af0bfacdcbb589ee8d0a7fb0e20e618bcf380c775e0aa573ef9d"
+    "12f300220367ac76938af4b630d8c8ddef72b0c1e59630f505b110a1f3b18cd42229e"
+    "4035:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"};
 
 const double kGoodTimeResponseHandlerJsTime[] = {
-    1652339069759, 1652339136683, 1652339231311, 1652339325263, 1652339380058};
+    1676407030473, 1676407054804, 1676407071199, 1676407085288, 1676407147062};
 
 std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
     const net::test_server::HttpRequest& request) {
