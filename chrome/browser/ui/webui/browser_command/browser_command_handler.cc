@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/performance_manager/public/features.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -96,6 +97,13 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kNoOpCommand:
       can_execute = true;
       break;
+    case Command::kOpenPerformanceSettings:
+      can_execute =
+          base::FeatureList::IsEnabled(
+              performance_manager::features::kBatterySaverModeAvailable) ||
+          base::FeatureList::IsEnabled(
+              performance_manager::features::kHighEfficiencyModeAvailable);
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -159,6 +167,10 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       break;
     case Command::kNoOpCommand:
       // Nothing to do.
+      break;
+    case Command::kOpenPerformanceSettings:
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)),
+                    disposition);
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;

@@ -23,6 +23,7 @@ enum Command {
   kStartTabGroupTutorial = 5,
   kOpenPasswordManager = 6,
   kNoOpCommand = 7,
+  kOpenPerformanceSettings = 8,
 };
 
 // Click information needed to determine user's desired window disposition using

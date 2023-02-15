@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/performance_manager/public/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -49,6 +50,7 @@ std::vector<Command> supported_commands = {
     Command::kStartTabGroupTutorial,
     Command::kOpenPasswordManager,
     Command::kNoOpCommand,
+    Command::kOpenPerformanceSettings,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -497,4 +499,63 @@ TEST_F(BrowserCommandHandlerTest, OpenPasswordManagerCommand) {
                   GURL(chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage)),
                   DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(Command::kOpenPasswordManager, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenPerformanceSettings) {
+  {
+    // Cannot open performance settings if the features enabling the page are
+    // not enabled.
+    base::test::ScopedFeatureList disabled;
+    disabled.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            {performance_manager::features::kBatterySaverModeAvailable},
+            {performance_manager::features::kHighEfficiencyModeAvailable}});
+    EXPECT_FALSE(CanExecuteCommand(Command::kOpenPerformanceSettings));
+  }
+  {
+    // Can open the performance settings if at least one feature is enabled.
+    base::test::ScopedFeatureList battery_saver;
+    battery_saver.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{performance_manager::features::
+                                   kBatterySaverModeAvailable,
+                               {}}},
+        /*disabled_features=*/{
+            {performance_manager::features::kHighEfficiencyModeAvailable}});
+    EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
+  }
+  {
+    // Can open the performance settings if at least one feature is enabled.
+    base::test::ScopedFeatureList high_efficiency;
+    high_efficiency.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{performance_manager::features::
+                                   kHighEfficiencyModeAvailable,
+                               {}}},
+        /*disabled_features=*/{
+            {performance_manager::features::kBatterySaverModeAvailable}});
+    EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
+  }
+  {
+    // Can open with both features enabled.
+    base::test::ScopedFeatureList enabled;
+    enabled.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{performance_manager::features::kBatterySaverModeAvailable, {}},
+         {performance_manager::features::kHighEfficiencyModeAvailable, {}}},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
+
+    // Confirm executing the command works.
+    ClickInfoPtr info = ClickInfo::New();
+    info->middle_button = true;
+    info->meta_key = true;
+    // The OpenPassswordManager command opens a new settings window with the
+    // password manager and the correct disposition.
+    EXPECT_CALL(
+        *command_handler_,
+        NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)),
+                      DispositionFromClick(*info)));
+    EXPECT_TRUE(
+        ExecuteCommand(Command::kOpenPerformanceSettings, std::move(info)));
+  }
 }
