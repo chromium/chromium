@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -55,9 +54,6 @@ public class VoiceRecognitionUtil {
             return sIsVoiceSearchEnabledForTesting.booleanValue();
         }
 
-        assert LibraryLoader.getInstance().isInitialized()
-            : "Premature call to check VoiceSearch eligibility may not return reliable information";
-
         if (androidPermissionDelegate == null) return false;
         if (!androidPermissionDelegate.hasPermission(Manifest.permission.RECORD_AUDIO)
                 && !androidPermissionDelegate.canRequestPermission(
@@ -84,9 +80,6 @@ public class VoiceRecognitionUtil {
      * @return true if the Enterprise policies permit execution of a voice search.
      */
     public static boolean isVoiceSearchPermittedByPolicy(boolean strictPolicyCheck) {
-        assert LibraryLoader.getInstance().isInitialized()
-            : "Premature call to check VoiceSearch eligibility may not return reliable information";
-
         if (sVoiceSearchAudioCapturePolicyFlag.isEnabled()) {
             // If the PrefService isn't initialized yet we won't know here whether or not voice
             // search is allowed by policy. In that case, treat voice search as enabled but check
@@ -109,6 +102,11 @@ public class VoiceRecognitionUtil {
     @VisibleForTesting
     public static void setIsVoiceSearchEnabledForTesting(@Nullable Boolean isVoiceSearchEnabled) {
         sIsVoiceSearchEnabledForTesting = isVoiceSearchEnabled;
+    }
+
+    @VisibleForTesting
+    static void setHasRecognitionIntentHandlerForTesting(@Nullable Boolean hasIntentHandler) {
+        sHasRecognitionIntentHandler = hasIntentHandler;
     }
 
     /** Returns the PrefService for the active Profile, or null if no profile has been loaded. */
