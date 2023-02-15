@@ -505,6 +505,54 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       CommitTextWhileHandlingKeyEventTriggersWebEvents) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kSetCompositionMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+  InputEventListener event_listener =
+      ListenForInputEvents(GetActiveWebContents(browser()), id);
+
+  SendKeyEventAsync(
+      input_method_async_waiter,
+      CreateKeyPressEvent(ui::DomKey::FromCharacter('.'), ui::DomCode::PERIOD),
+      base::BindOnce(
+          [](InputMethodTestInterfaceAsyncWaiter& input_method_async_waiter) {
+            input_method_async_waiter.CommitText("。");
+            return true;
+          }));
+  SendKeyEventSync(input_method_async_waiter,
+                   CreateKeyReleaseEvent(ui::DomKey::FromCharacter('.'),
+                                         ui::DomCode::PERIOD));
+
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyDownEvent(".", "Period", 190));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyPressEvent("。", "Period", 12290));
+  EXPECT_THAT(
+      event_listener.WaitForMessage(),
+      IsBeforeInputEvent("insertText", "。", CompositionState::kNotComposing));
+  EXPECT_THAT(
+      event_listener.WaitForMessage(),
+      IsInputEvent("insertText", "。", CompositionState::kNotComposing));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyUpEvent(".", "Period", 190));
+  EXPECT_FALSE(event_listener.HasMessages());
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "。", gfx::Range(1)));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                        SetCompositionInsertsCompositionInEmptyInputField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
@@ -722,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
-                       SetCompositionWhileHandlingKeyEvent) {
+                       SetCompositionWhileHandlingKeyEventTriggersWebEvents) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
@@ -737,6 +785,8 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
       input_method.get());
   input_method_async_waiter.WaitForFocus();
+  InputEventListener event_listener =
+      ListenForInputEvents(GetActiveWebContents(browser()), id);
 
   SendKeyEventAsync(
       input_method_async_waiter,
@@ -750,6 +800,18 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
       input_method_async_waiter,
       CreateKeyReleaseEvent(ui::DomKey::FromCharacter('g'), ui::DomCode::US_G));
 
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyDownEvent("Process", "KeyG", 229));
+  EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionStartEvent());
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsBeforeInputEvent("insertCompositionText", "ㅎ",
+                                 CompositionState::kComposing));
+  EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionUpdateEvent("ㅎ"));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsInputEvent("insertCompositionText", "ㅎ",
+                           CompositionState::kComposing));
+  EXPECT_THAT(event_listener.WaitForMessage(), IsKeyUpEvent("g", "KeyG", 71));
+  EXPECT_FALSE(event_listener.HasMessages());
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "ㅎ", gfx::Range(1)));
 }

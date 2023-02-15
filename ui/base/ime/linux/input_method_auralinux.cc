@@ -641,7 +641,9 @@ bool InputMethodAuraLinux::NeedInsertChar(
 
 ui::EventDispatchDetails InputMethodAuraLinux::SendFakeProcessKeyEvent(
     ui::KeyEvent* event) const {
-  KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY, event->flags());
+  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY, event->code(),
+                         event->flags(), ui::DomKey::PROCESS,
+                         event->time_stamp());
   ui::EventDispatchDetails details = DispatchKeyEventPostIME(&key_event);
   if (key_event.stopped_propagation())
     event->StopPropagation();
