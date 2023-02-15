@@ -27,6 +27,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/intent_helper/chrome_arc_settings_app_delegate.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
@@ -176,6 +177,9 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // Retrieves Chrome's state for the settings that need to be synced on each
   // Android boot and send it to Android.
   void SyncBootTimeSettings() const;
+  // Sync delegates. To avoid dependency issue we use delegate design pattern
+  // to access chrome from ash.
+  void SyncAppDelegates() const;
   // Retrieves Chrome's state for the settings that need to be synced on each
   // Android boot after AppInstance is ready and send it to Android.
   void SyncAppTimeSettings();
@@ -202,6 +206,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncTimeZone() const;
   void SyncTimeZoneByGeolocation() const;
   void SyncUse24HourClock() const;
+  void SyncUserGeolocation() const;
 
   // Resets Android's font scale to the default value.
   void ResetFontScaleToDefault() const;
@@ -280,6 +285,8 @@ ArcSettingsServiceImpl::ArcSettingsServiceImpl(
   // Note: if App connection is already established, OnConnectionReady()
   // is synchronously called, so that initial sync is done in the method.
   arc_bridge_service_->app()->AddObserver(this);
+
+  SyncAppDelegates();
 }
 
 ArcSettingsServiceImpl::~ArcSettingsServiceImpl() {
@@ -316,6 +323,8 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
     SyncAccessibilityVirtualKeyboardEnabled();
   } else if (pref_name == ash::prefs::kDockedMagnifierEnabled) {
     SyncDockedMagnifierEnabled();
+  } else if (pref_name == ash::prefs::kUserGeolocationAllowed) {
+    SyncUserGeolocation();
   } else if (pref_name == ::language::prefs::kApplicationLocale ||
              pref_name == ::language::prefs::kPreferredLanguages) {
     SyncLocale();
@@ -414,6 +423,7 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   AddPrefToObserve(ash::prefs::kAccessibilitySwitchAccessEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityVirtualKeyboardEnabled);
   AddPrefToObserve(ash::prefs::kDockedMagnifierEnabled);
+  AddPrefToObserve(ash::prefs::kUserGeolocationAllowed);
   AddPrefToObserve(::prefs::kResolveTimezoneByGeolocationMethod);
   AddPrefToObserve(::prefs::kSystemProxyUserTrafficHostAndPort);
   AddPrefToObserve(::prefs::kUse24HourClock);
@@ -478,6 +488,11 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   // https://crbug.com/955071
   ResetFontScaleToDefault();
   ResetPageZoomToDefault();
+}
+
+void ArcSettingsServiceImpl::SyncAppDelegates() const {
+  ArcIntentHelperBridge::SetArcSettingsAppDelegate(
+      std::make_unique<ChromeArcSettingsAppDelegate>(profile_));
 }
 
 void ArcSettingsServiceImpl::SyncAppTimeSettings() {
@@ -760,6 +775,16 @@ void ArcSettingsServiceImpl::SyncGIOBetaEnabled() const {
   SendBoolValueSettingsBroadcast(
       ash::features::IsArcInputOverlayBetaEnabled(), /*managed=*/false,
       "org.chromium.arc.intent_helper.ACTION_SET_GIO_BETA_ENABLED");
+}
+
+void ArcSettingsServiceImpl::SyncUserGeolocation() const {
+  // We are purposefully not calling SyncUserGeolocation() at boot,
+  // as we sync this property from Android. We might need to sync
+  // in case of disable but not in case of enable (default).
+
+  SendBoolPrefSettingsBroadcast(
+      ash::prefs::kUserGeolocationAllowed,
+      "org.chromium.arc.intent_helper.SET_USER_GEOLOCATION");
 }
 
 void ArcSettingsServiceImpl::SyncConsumerAutoUpdateToggle() const {

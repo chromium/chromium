@@ -30,6 +30,7 @@ namespace arc {
 
 class AdaptiveIconDelegate;
 class ArcBridgeService;
+class ArcSettingsAppDelegate;
 class ControlCameraAppDelegate;
 class IntentFilter;
 class OpenUrlDelegate;
@@ -66,6 +67,9 @@ class ArcIntentHelperBridge : public KeyedService,
   static void SetOpenUrlDelegate(OpenUrlDelegate* delegate);
 
   static void SetControlCameraAppDelegate(ControlCameraAppDelegate* delegate);
+
+  static void SetArcSettingsAppDelegate(
+      std::unique_ptr<ArcSettingsAppDelegate> delegate);
 
   // Sets the Delegate instance.
   void SetDelegate(std::unique_ptr<Delegate> delegate);
@@ -135,6 +139,9 @@ class ArcIntentHelperBridge : public KeyedService,
       arc::mojom::IntentHelperInstance::HandleCameraResultCallback callback);
 
   void SendNewCaptureBroadcast(bool is_video, std::string file_path);
+
+  void OnAndroidSettingChange(arc::mojom::AndroidSetting setting,
+                              bool is_enabled) override;
 
   // Filters out handlers that belong to the intent_helper apk and returns
   // a new array.

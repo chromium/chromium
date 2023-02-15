@@ -59,6 +59,8 @@ class FakeIntentHelperHost : public mojom::IntentHelperHost {
                            arc::mojom::LaunchIntentPtr intent) override;
   void OnOpenGlobalActions() override;
   void OnCloseSystemDialogs() override;
+  void OnAndroidSettingChange(arc::mojom::AndroidSetting setting,
+                              bool is_enabled) override;
 
  private:
   // The connection holder must outlive |this| object.

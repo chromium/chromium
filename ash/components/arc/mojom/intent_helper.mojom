@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 50
+// Next MinVersion: 51
 
 module arc.mojom;
 
@@ -274,6 +274,13 @@ enum SupportedLinkChangeSource {
   kUserPreference,
 };
 
+// Android setting that we want to relay back to update Chrome setting.
+[Extensible]
+enum AndroidSetting {
+  [Default] kUnknown = 0,
+  kGeoLocation,
+};
+
 // Interface to interact with a custom tab.
 // Close the interface pointer to close the custom tab.
 // Next method ID: 1
@@ -284,7 +291,7 @@ interface CustomTabSession {
 
 // Handles intents from ARC in Chrome.
 // Deprecated method ID: 4, 9, 10, 16, 18
-// Next method ID: 23
+// Next method ID: 24
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.
   [MinVersion=3] OnIconInvalidated@1(string package_name);
@@ -389,6 +396,10 @@ interface IntentHelperHost {
 
   // Close any dialogs opened from ARC.
   [MinVersion=49] OnCloseSystemDialogs@22();
+
+  // Relay android setting to Chrome.
+  [MinVersion=50] OnAndroidSettingChange@23(
+      AndroidSetting setting, bool is_enabled);
 };
 
 // Sends intents to ARC on behalf of Chrome.

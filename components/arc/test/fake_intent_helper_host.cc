@@ -58,5 +58,8 @@ void FakeIntentHelperHost::OnOpenAppWithIntent(
     arc::mojom::LaunchIntentPtr intent) {}
 void FakeIntentHelperHost::OnOpenGlobalActions() {}
 void FakeIntentHelperHost::OnCloseSystemDialogs() {}
+void FakeIntentHelperHost::OnAndroidSettingChange(
+    arc::mojom::AndroidSetting setting,
+    bool is_enabled) {}
 
 }  // namespace arc

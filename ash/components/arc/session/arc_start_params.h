@@ -107,6 +107,9 @@ struct StartParams {
 
   // Flag that indicates whether ARCVM uses virtio-blk for /data.
   bool use_virtio_blk_data = false;
+
+  // Flag to enable Privacy Hub for chrome.
+  bool enable_privacy_hub_for_chrome = false;
 };
 
 }  // namespace arc

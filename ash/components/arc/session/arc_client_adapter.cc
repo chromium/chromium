@@ -86,6 +86,8 @@ ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
       params.enable_consumer_auto_update_toggle);
   request.set_enable_notifications_refresh(params.enable_notifications_refresh);
   request.set_enable_tts_caching(params.enable_tts_caching);
+  request.set_enable_privacy_hub_for_chrome(
+      params.enable_privacy_hub_for_chrome);
   return request;
 }
 

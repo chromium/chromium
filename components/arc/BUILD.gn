@@ -10,6 +10,7 @@ static_library("arc") {
     "intent_helper/arc_intent_helper_bridge.cc",
     "intent_helper/arc_intent_helper_bridge.h",
     "intent_helper/arc_intent_helper_observer.h",
+    "intent_helper/arc_settings_app_delegate.h",
     "intent_helper/control_camera_app_delegate.h",
     "intent_helper/custom_tab.cc",
     "intent_helper/custom_tab.h",

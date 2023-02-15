@@ -442,6 +442,8 @@ source_set("ash") {
     "arc/intent_helper/arc_intent_helper_mojo_ash.h",
     "arc/intent_helper/arc_settings_service.cc",
     "arc/intent_helper/arc_settings_service.h",
+    "arc/intent_helper/chrome_arc_settings_app_delegate.cc",
+    "arc/intent_helper/chrome_arc_settings_app_delegate.h",
     "arc/intent_helper/custom_tab_session_impl.cc",
     "arc/intent_helper/custom_tab_session_impl.h",
     "arc/intent_helper/factory_reset_delegate.cc",

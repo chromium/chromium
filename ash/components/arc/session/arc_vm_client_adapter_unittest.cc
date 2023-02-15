@@ -2304,6 +2304,34 @@ TEST_F(ArcVmClientAdapterTest,
       request.mini_instance_request().enable_consumer_auto_update_toggle());
 }
 
+TEST_F(ArcVmClientAdapterTest, StartArc_EnablePrivacyHubForChrome_Default) {
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().enable_privacy_hub_for_chrome());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartArc_EnablePrivacyHubForChrome_Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.mini_instance_request().enable_privacy_hub_for_chrome());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartArc_EnablePrivacyHubForChrome_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kCrosPrivacyHub);
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().enable_privacy_hub_for_chrome());
+}
+
 // Test that the value of swappiness is default value when kGuestZram is
 // disabled.
 TEST_F(ArcVmClientAdapterTest, ArcGuestZramDisabledSwappiness) {
