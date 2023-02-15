@@ -59,8 +59,6 @@ if (cros_sdk_version != "") {
     _symlinks = [
       # Tast harness & test data.
       rebase_path("${_cache_path_prefix}+autotest_server_package.tar.bz2"),
-      rebase_path("${_cache_path_prefix}+chromeos-base/tast-cmd"),
-      rebase_path("${_cache_path_prefix}+chromeos-base/tast-remote-tests-cros"),
 
       # Binutils (and other toolchain tools) used to deploy Chrome to the device.
       rebase_path(
@@ -331,27 +329,23 @@ template("generate_runner_script") {
 
         if (is_tast) {
           # Add tast sdk items.
-          _sdk_data += [
-            _symlink_targets[0],
-            _symlink_targets[1],
-            _symlink_targets[2],
-          ]
+          _sdk_data += [ _symlink_targets[0] ]
         }
         if (deploy_chrome) {
           # To deploy chrome to the VM, it needs to be stripped down to fit into
           # the VM. This is done by using binutils in the toolchain. So add the
           # toolchain to the data.
           _sdk_data += [
-            _symlink_targets[3],
-            _symlink_targets[4],
+            _symlink_targets[1],
+            _symlink_targets[2],
           ]
         }
         if (_cros_is_vm) {
           # Add vm sdk items.
           _sdk_data += [
+            _symlink_targets[3],
+            _symlink_targets[4],
             _symlink_targets[5],
-            _symlink_targets[6],
-            _symlink_targets[7],
           ]
         }
       }
