@@ -86,7 +86,10 @@ void AmbientMultiScreenMetricsRecorder::AnimationFramePainted(
                           *largest_timestamp_offset);
       break;
     case AmbientTheme::kSlideshow:
-      LOG(DFATAL) << "Should not be recording animation metrics for slideshow";
+    case AmbientTheme::kVideoNewMexico:
+    case AmbientTheme::kVideoClouds:
+      LOG(DFATAL) << "Should not be recording animation metrics for "
+                  << ToString(theme_);
       break;
   }
 #undef MUTLISCREEN_OFFSET_NAME
