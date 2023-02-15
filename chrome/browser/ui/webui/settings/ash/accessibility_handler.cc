@@ -14,23 +14,28 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/manifest_handlers/options_page_info.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 
 namespace ash::settings {
 namespace {
@@ -157,9 +162,30 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
           extension_id, extensions::ExtensionRegistry::ENABLED);
   if (!extension)
     return;
-  extensions::ExtensionTabUtil::OpenOptionsPage(
-      extension,
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()));
+
+  if (crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    extensions::ExtensionTabUtil::OpenOptionsPage(
+        extension,
+        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()));
+  } else {
+    // Lacros is the only browser, so open the options page in an Ash app window
+    // instead of a regular Ash browser window.
+    DCHECK(extensions::OptionsPageInfo::ShouldOpenInTab(extension));
+    GURL url = extensions::OptionsPageInfo::GetOptionsPage(extension);
+    // NOTE: If unexpectedly the primary user profile does not yet exist,
+    // profile below will be nullptr and LaunchSystemWebAppAsync will (in
+    // release builds) only record a trace.
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+            user_manager::UserManager::Get()->GetPrimaryUser()));
+    ash::SystemAppLaunchParams launch_params;
+    launch_params.url = url;
+    int64_t display_id =
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+    ash::LaunchSystemWebAppAsync(
+        profile, ash::SystemWebAppType::OS_URL_HANDLER, launch_params,
+        std::make_unique<apps::WindowInfo>(display_id));
+  }
 }
 
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {

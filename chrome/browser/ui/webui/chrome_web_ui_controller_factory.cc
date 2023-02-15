@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -111,6 +112,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "chrome/browser/ui/webui/nacl_ui.h"
@@ -1528,28 +1530,45 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(chrome::kOsUIConnectivityDiagnosticsAppURL),
         GURL(chrome::kOsUIDiagnosticsAppURL),
         GURL(chrome::kOsUIFirmwareUpdaterAppURL),
-        GURL(chrome::kOsUIPrintManagementAppURL), GURL(chrome::kOsUIRestartURL),
+        GURL(chrome::kOsUIPrintManagementAppURL),
         GURL(chrome::kOsUIScanningAppURL), GURL(chrome::kChromeUISetTimeURL),
         GURL(chrome::kChromeUIOSSettingsURL), GURL(chrome::kOsUISettingsURL),
-        GURL(chrome::kOsUISettingsURL), GURL(chrome::kOsUISignInInternalsURL),
-        GURL(chrome::kChromeUISlowURL), GURL(chrome::kChromeUISmbShareURL),
-        GURL(chrome::kOsUISyncInternalsURL), GURL(chrome::kOsUISysInternalsUrl),
-        GURL(chrome::kChromeUITermsURL), GURL(chrome::kOsUITermsURL),
-        GURL(chrome::kChromeUIUserImageURL), GURL(chrome::kChromeUIVersionURL),
-        GURL(chrome::kOsUIVersionURL), GURL(chrome::kChromeUIVmUrl),
-        GURL(chrome::kOsUISystemURL), GURL(chrome::kOsUIHelpAppURL),
-        GURL(chrome::kOsUINetExportURL),
+        GURL(chrome::kOsUISignInInternalsURL), GURL(chrome::kChromeUISlowURL),
+        GURL(chrome::kChromeUISmbShareURL), GURL(chrome::kOsUISyncInternalsURL),
+        GURL(chrome::kOsUISysInternalsUrl), GURL(chrome::kChromeUITermsURL),
+        GURL(chrome::kOsUITermsURL), GURL(chrome::kChromeUIUserImageURL),
+        GURL(chrome::kChromeUIVersionURL), GURL(chrome::kOsUIVersionURL),
+        GURL(chrome::kChromeUIVmUrl), GURL(chrome::kOsUISystemURL),
+        GURL(chrome::kOsUIHelpAppURL), GURL(chrome::kOsUINetExportURL),
         GURL(chrome::kOsUILauncherInternalsURL),
         GURL(chrome::kOsUIExtensionsInternalsURL),
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-        // IME extension's Japanese options page. Opened in an Ash app window by
-        // InputMethodPrivateOpenOptionsPageFunction when Lacros is the only
+        // IME extension's Japanese options page. Opened via OS_URL_HANDLER SWA
+        // by InputMethodPrivateOpenOptionsPageFunction when Lacros is the only
         // browser.
         // TODO(b/250997017): Remove this once the Japanese options are
         // in-settings.
-        GURL(extensions::kIMEJPOptionsURL)
+        GURL(extensions::kIMEJPOptionsURL),
+
+        // Option pages of accessibility extensions. Opened via OS_URL_HANDLER
+        // SWA by ash::settings::AccessibilityHandler when Lacros is the only
+        // browser.
+        GURL(base::StrCat({extensions::kExtensionScheme,
+                           url::kStandardSchemeSeparator,
+                           extension_misc::kChromeVoxExtensionId,
+                           extension_misc::kChromeVoxOptionsPath})),
+        GURL(base::StrCat({extensions::kExtensionScheme,
+                           url::kStandardSchemeSeparator,
+                           extension_misc::kEspeakSpeechSynthesisExtensionId,
+                           extension_misc::kEspeakSpeechSynthesisOptionsPath})),
+        GURL(base::StrCat({extensions::kExtensionScheme,
+                           url::kStandardSchemeSeparator,
+                           extension_misc::kGoogleSpeechSynthesisExtensionId,
+                           extension_misc::kGoogleSpeechSynthesisOptionsPath})),
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   };
+
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::vector<GURL>{GURL(chrome::kChromeUIAboutURL),
                            GURL(chrome::kChromeUIComponentsUrl),

@@ -92,6 +92,7 @@ const char kAccessibilityCommonGuestManifestFilename[] =
 const char kChromeVoxExtensionPath[] = "chromeos/accessibility";
 const char kChromeVoxManifestFilename[] = "chromevox_manifest.json";
 const char kChromeVoxGuestManifestFilename[] = "chromevox_manifest_guest.json";
+const char kChromeVoxOptionsPath[] = "/chromevox/options/options.html";
 const char kEnhancedNetworkTtsExtensionId[] =
     "jacnkoglebceckolkoapelihnglgaicd";
 const char kEnhancedNetworkTtsExtensionPath[] = "chromeos/accessibility";
@@ -115,10 +116,12 @@ const char kEspeakSpeechSynthesisExtensionPath[] =
     "/usr/share/chromeos-assets/speech_synthesis/espeak-ng";
 const char kEspeakSpeechSynthesisExtensionId[] =
     "dakbfdmgjiabojdgbiljlhgjbokobjpg";
+const char kEspeakSpeechSynthesisOptionsPath[] = "/options.html";
 const char kGoogleSpeechSynthesisExtensionPath[] =
     "/usr/share/chromeos-assets/speech_synthesis/patts";
 const char kGoogleSpeechSynthesisExtensionId[] =
     "gjjabgpgjpampikjhjpfhneeoapjbjaf";
+const char kGoogleSpeechSynthesisOptionsPath[] = "/options.html";
 const char kHelpAppExtensionId[] = "honijodknafkokifofgiaalefdiedpko";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -132,4 +135,5 @@ const char kAppStateReadyToRun[] = "ready_to_run";
 const char kMediaFileSystemPathPart[] = "_";
 const char kExtensionRequestTimestamp[] = "timestamp";
 const char kExtensionWorkflowJustification[] = "justification";
+
 }  // namespace extension_misc

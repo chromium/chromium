@@ -189,6 +189,8 @@ extern const char kChromeVoxExtensionPath[];
 extern const char kChromeVoxManifestFilename[];
 // The guest manifest filename of the ChromeVox extension.
 extern const char kChromeVoxGuestManifestFilename[];
+// The path to the ChromeVox extension's options page.
+extern const char kChromeVoxOptionsPath[];
 // The extension id of the Enhanced network TTS engine extension.
 extern const char kEnhancedNetworkTtsExtensionId[];
 // Path to preinstalled Enhanced network TTS engine extension (relative to
@@ -225,10 +227,14 @@ extern const char kFirstRunDialogId[];
 extern const char kGoogleSpeechSynthesisExtensionPath[];
 // The extension id of the Google speech synthesis extension.
 extern const char kGoogleSpeechSynthesisExtensionId[];
+// The path to the Google speech synthesis extension's options page.
+extern const char kGoogleSpeechSynthesisOptionsPath[];
 // Path to preinstalled eSpeak-NG speech synthesis extension.
 extern const char kEspeakSpeechSynthesisExtensionPath[];
 // The extension id of the eSpeak-NG speech synthesis extension.
 extern const char kEspeakSpeechSynthesisExtensionId[];
+// The path to the eSpeak-NG speech synthesis extension's options page.
+extern const char kEspeakSpeechSynthesisOptionsPath[];
 // The extension id of official HelpApp extension.
 extern const char kHelpAppExtensionId[];
 #endif
