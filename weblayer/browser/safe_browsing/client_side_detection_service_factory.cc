@@ -48,7 +48,9 @@ KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new safe_browsing::ClientSideDetectionService(
       std::make_unique<WebLayerClientSideDetectionServiceDelegate>(
-          static_cast<BrowserContextImpl*>(context)));
+          static_cast<BrowserContextImpl*>(context)),
+      /*opt_guide=*/nullptr,
+      /*background_task_runner=*/nullptr);
 }
 
 content::BrowserContext*

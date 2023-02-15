@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/common/chrome_paths.h"
@@ -14,6 +15,7 @@
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_test.h"
@@ -63,7 +65,19 @@ using ::testing::_;
 using ::testing::ReturnRef;
 using ::testing::StrictMock;
 
-class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
+class ClientSideDetectionServiceBrowserTest
+    : public PlatformBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ClientSideDetectionServiceBrowserTest() {
+    if (ShouldEnableCacao()) {
+      feature_list_.InitAndEnableFeature(
+          kClientSideDetectionModelOptimizationGuide);
+    }
+  }
+
+  bool ShouldEnableCacao() { return GetParam(); }
+
  protected:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -91,9 +105,15 @@ class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
 
     return waiter;
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientSideDetectionServiceBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
                        ModelUpdatesPropagated) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -103,6 +123,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   // Update the model and wait for confirmation
   {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
     std::unique_ptr<PhishingModelWaiter> waiter =
         CreatePhishingModelWaiter(rph);
 
@@ -114,11 +136,38 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     model.set_max_words_per_term(0);
     std::string model_str;
     model.SerializeToString(&model_str);
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kProtobuf);
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting(model_str);
-    ClientSidePhishingModel::GetInstance()->NotifyCallbacksOfUpdateForTesting();
 
+    if (base::FeatureList::IsEnabled(
+            kClientSideDetectionModelOptimizationGuide)) {
+      safe_browsing::ClientSideDetectionService* csd_service =
+          ClientSideDetectionServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+      base::FilePath model_file_path;
+      ASSERT_TRUE(
+          base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
+      model_file_path = model_file_path.AppendASCII("safe_browsing")
+                            .AppendASCII("client_model.pb");
+
+      base::FilePath additional_files_path;
+      ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA,
+                                         &additional_files_path));
+
+#if BUILDFLAG(IS_ANDROID)
+      additional_files_path = additional_files_path.AppendASCII("safe_browsing")
+                                  .AppendASCII("visual_model_android.tflite");
+#else
+      additional_files_path = additional_files_path.AppendASCII("safe_browsing")
+                                  .AppendASCII("visual_model_desktop.tflite");
+#endif
+      csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
+                                                     additional_files_path);
+    } else {
+      ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
+          CSDModelType::kProtobuf);
+      ClientSidePhishingModel::GetInstance()->SetModelStrForTesting(model_str);
+      ClientSidePhishingModel::GetInstance()
+          ->NotifyCallbacksOfUpdateForTesting();
+    }
     run_loop.Run();
   }
 
@@ -150,11 +199,16 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
     ClientPhishingRequest request;
     ASSERT_TRUE(request.ParseFromString(verdict));
-    EXPECT_EQ(123, request.model_version());
+    if (!base::FeatureList::IsEnabled(
+            kClientSideDetectionModelOptimizationGuide)) {
+      EXPECT_EQ(123, request.model_version());
+    } else {
+      EXPECT_EQ(27, request.model_version());  // Example model file version
+    }
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
                        TfLiteClassification) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -217,14 +271,32 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
     std::string model_str;
     model.SerializeToString(&model_str);
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kProtobuf);
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting(model_str);
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        std::move(tflite_model));
-    ClientSidePhishingModel::GetInstance()->NotifyCallbacksOfUpdateForTesting();
 
-    run_loop.Run();
+    if (!base::FeatureList::IsEnabled(
+            kClientSideDetectionModelOptimizationGuide)) {
+      ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
+          CSDModelType::kProtobuf);
+      ClientSidePhishingModel::GetInstance()->SetModelStrForTesting(model_str);
+      ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
+          std::move(tflite_model));
+      ClientSidePhishingModel::GetInstance()
+          ->NotifyCallbacksOfUpdateForTesting();
+
+      run_loop.Run();
+    } else {
+      safe_browsing::ClientSideDetectionService* csd_service =
+          ClientSideDetectionServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+      base::FilePath model_file_path;
+      ASSERT_TRUE(
+          base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
+      model_file_path = model_file_path.AppendASCII("safe_browsing")
+                            .AppendASCII("client_model.pb");
+
+      csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
+                                                     tflite_path);
+      run_loop.Run();
+    }
   }
 
   // Check that the update was successful
@@ -255,7 +327,12 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
     ClientPhishingRequest request;
     ASSERT_TRUE(request.ParseFromString(verdict));
-    EXPECT_EQ(123, request.model_version());
+    if (!base::FeatureList::IsEnabled(
+            kClientSideDetectionModelOptimizationGuide)) {
+      EXPECT_EQ(123, request.model_version());
+    } else {
+      EXPECT_EQ(27, request.model_version());  // Example model file version
+    }
   }
 }
 

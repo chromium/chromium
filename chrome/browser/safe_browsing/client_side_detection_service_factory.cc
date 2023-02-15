@@ -5,6 +5,12 @@
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 
 #include "base/command_line.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
@@ -37,8 +43,23 @@ ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
 KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+
+  auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(context));
+
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide) &&
+      !opt_guide) {
+    return nullptr;
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+
   return new ClientSideDetectionService(
-      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile),
+      opt_guide, background_task_runner);
 }
 
 }  // namespace safe_browsing

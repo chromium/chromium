@@ -36,7 +36,8 @@ using ::testing::StrictMock;
 
 class FakeClientSideDetectionService : public ClientSideDetectionService {
  public:
-  FakeClientSideDetectionService() : ClientSideDetectionService(nullptr) {}
+  FakeClientSideDetectionService()
+      : ClientSideDetectionService(nullptr, nullptr, nullptr) {}
 
   void SendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,

@@ -42,6 +42,7 @@
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/component_updater/url_param_filter_remover.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -207,7 +208,12 @@ void RegisterComponentsForUpdate() {
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
 
-  RegisterClientSidePhishingComponent(cus);
+  // OptimizationGuide provides the model through their services, so if the
+  // flag is false, a registration to CSD-Phishing component is needed
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kClientSideDetectionModelOptimizationGuide)) {
+    RegisterClientSidePhishingComponent(cus);
+  }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS)
   RegisterScreenAIComponent(cus, g_browser_process->local_state());

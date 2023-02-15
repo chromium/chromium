@@ -26,10 +26,12 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model_optimization_guide.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
@@ -72,7 +74,10 @@ class ClientSideDetectionService
     GetSafeBrowsingURLLoaderFactory() = 0;
   };
 
-  explicit ClientSideDetectionService(std::unique_ptr<Delegate> delegate);
+  ClientSideDetectionService(
+      std::unique_ptr<Delegate> delegate,
+      optimization_guide::OptimizationGuideModelProvider* opt_guide,
+      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
 
   ClientSideDetectionService(const ClientSideDetectionService&) = delete;
   ClientSideDetectionService& operator=(const ClientSideDetectionService&) =
@@ -156,6 +161,12 @@ class ClientSideDetectionService
 
   // Returns a WeakPtr for this service.
   base::WeakPtr<ClientSideDetectionService> GetWeakPtr();
+
+  bool IsModelAvailable();
+
+  // For testing the model in browser test
+  void SetModelAndVisualTfLiteForTesting(const base::FilePath& model,
+                                         const base::FilePath& visual_tf_lite);
 
  private:
   friend class ClientSideDetectionServiceTest;
@@ -262,6 +273,11 @@ class ClientSideDetectionService
   std::unique_ptr<Delegate> delegate_;
 
   base::CallbackListSubscription update_model_subscription_;
+
+  std::unique_ptr<ClientSidePhishingModelOptimizationGuide>
+      client_side_phishing_model_optimization_guide_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to asynchronously call the callbacks for
   // SendClientReportPhishingRequest.

@@ -3,6 +3,8 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/history/core/browser",
   "+components/no_state_prefetch/browser",
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
   "+components/page_info",
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",

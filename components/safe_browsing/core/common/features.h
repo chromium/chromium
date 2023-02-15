@@ -253,5 +253,9 @@ std::string GetClientSideDetectionTag();
 // feature flag.
 std::string GetFileTypePoliciesTag();
 
+// Enables OptimizationGuide to deliver the client side phishing model instead
+// of through component updater.
+BASE_DECLARE_FEATURE(kClientSideDetectionModelOptimizationGuide);
+
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

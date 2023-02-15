@@ -743,6 +743,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OptimizationGuide.ModelFetchTime" units="ms"
+    expires_after="2024-01-12">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration of model fetch time after the OptimizationGuide Model
+    Observer for CSD-Phishing is registered on user session start.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.PhishingDetectionDuration" units="ms"
     expires_after="2023-07-09">
   <owner>drubery@chromium.org</owner>

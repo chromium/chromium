@@ -9,6 +9,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -17,12 +20,17 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model_optimization_guide.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -75,11 +83,21 @@ ClientSideDetectionService::CacheState::CacheState(bool phish, base::Time time)
     : is_phishing(phish), timestamp(time) {}
 
 ClientSideDetectionService::ClientSideDetectionService(
-    std::unique_ptr<Delegate> delegate)
+    std::unique_ptr<Delegate> delegate,
+    optimization_guide::OptimizationGuideModelProvider* opt_guide,
+    const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
     : delegate_(std::move(delegate)) {
   // delegate and prefs can be null in unit tests.
   if (!delegate_ || !delegate_->GetPrefs()) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide) &&
+      opt_guide && background_task_runner) {
+    client_side_phishing_model_optimization_guide_ =
+        std::make_unique<ClientSidePhishingModelOptimizationGuide>(
+            opt_guide, background_task_runner);
   }
 
   url_loader_factory_ = delegate_->GetSafeBrowsingURLLoaderFactory();
@@ -109,6 +127,7 @@ void ClientSideDetectionService::Shutdown() {
   url_loader_factory_.reset();
   delegate_.reset();
   enabled_ = false;
+  client_side_phishing_model_optimization_guide_.reset();
 }
 
 void ClientSideDetectionService::OnPrefsUpdated() {
@@ -124,11 +143,22 @@ void ClientSideDetectionService::OnPrefsUpdated() {
   extended_reporting_ = extended_reporting;
 
   if (enabled_) {
-    update_model_subscription_ =
-        ClientSidePhishingModel::GetInstance()->RegisterCallback(
-            base::BindRepeating(
-                &ClientSideDetectionService::SendModelToRenderers,
-                base::Unretained(this)));
+    if (!base::FeatureList::IsEnabled(
+            kClientSideDetectionModelOptimizationGuide)) {
+      update_model_subscription_ =
+          ClientSidePhishingModel::GetInstance()->RegisterCallback(
+              base::BindRepeating(
+                  &ClientSideDetectionService::SendModelToRenderers,
+                  base::Unretained(this)));
+    } else {
+      if (client_side_phishing_model_optimization_guide_) {
+        update_model_subscription_ =
+            client_side_phishing_model_optimization_guide_->RegisterCallback(
+                base::BindRepeating(
+                    &ClientSideDetectionService::SendModelToRenderers,
+                    weak_factory_.GetWeakPtr()));
+      }
+    }
   } else {
     // Invoke pending callbacks with a false verdict.
     for (auto& client_phishing_report : client_phishing_reports_) {
@@ -420,19 +450,42 @@ GURL ClientSideDetectionService::GetClientReportUrl(
 }
 
 const std::string& ClientSideDetectionService::GetModelStr() {
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide)) {
+    return client_side_phishing_model_optimization_guide_->GetModelStr();
+  }
+
   return ClientSidePhishingModel::GetInstance()->GetModelStr();
 }
 
 CSDModelType ClientSideDetectionService::GetModelType() {
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide)) {
+    return static_cast<CSDModelType>(
+        client_side_phishing_model_optimization_guide_->GetModelType());
+  }
+
   return ClientSidePhishingModel::GetInstance()->GetModelType();
 }
 
 base::ReadOnlySharedMemoryRegion
 ClientSideDetectionService::GetModelSharedMemoryRegion() {
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide)) {
+    return client_side_phishing_model_optimization_guide_
+        ->GetModelSharedMemoryRegion();
+  }
+
   return ClientSidePhishingModel::GetInstance()->GetModelSharedMemoryRegion();
 }
 
 const base::File& ClientSideDetectionService::GetVisualTfLiteModel() {
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide)) {
+    return client_side_phishing_model_optimization_guide_
+        ->GetVisualTfLiteModel();
+  }
+
   return ClientSidePhishingModel::GetInstance()->GetVisualTfLiteModel();
 }
 
@@ -469,6 +522,25 @@ void ClientSideDetectionService::SetPhishingModel(
 base::WeakPtr<ClientSideDetectionService>
 ClientSideDetectionService::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+bool ClientSideDetectionService::IsModelAvailable() {
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide)) {
+    return client_side_phishing_model_optimization_guide_ &&
+           client_side_phishing_model_optimization_guide_->IsEnabled();
+  } else {
+    return ClientSidePhishingModel::GetInstance()->IsEnabled();
+  }
+}
+
+// IN-TEST
+void ClientSideDetectionService::SetModelAndVisualTfLiteForTesting(
+    const base::FilePath& model,
+    const base::FilePath& visual_tf_lite) {
+  client_side_phishing_model_optimization_guide_
+      ->SetModelAndVisualTfLiteForTesting(  // IN-TEST
+          model, visual_tf_lite);
 }
 
 }  // namespace safe_browsing
