@@ -6,6 +6,9 @@
 
 #include "base/guid.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -68,6 +71,16 @@ class IBANManagerTest : public testing::Test {
     return iban;
   }
 
+  // Adds an IBAN focused field to the suggestions context.
+  SuggestionsContext GetIbanFocusedSuggestionsContext(
+      AutofillField& autofill_field,
+      autofill::ServerFieldType type = IBAN_VALUE) {
+    SuggestionsContext context;
+    autofill_field.SetTypeTo(AutofillType(type));
+    context.focused_field = &autofill_field;
+    return context;
+  }
+
   // Sets up the TestPersonalDataManager with an IBAN and corresponding
   // suggestion.
   Suggestion SetUpIBANAndSuggestion(base::StringPiece16 value,
@@ -90,8 +103,8 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
   Suggestion iban_suggestion_1 =
       SetUpIBANAndSuggestion(kIbanValue_1, kNickname_1);
 
-  SuggestionsContext context;
-  FormFieldData test_field;
+  AutofillField test_field;
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Setting up mock to verify that the handler is returned a list of
   // iban-based suggestions and the iban details line.
@@ -119,9 +132,9 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_NoSuggestion) {
   Suggestion iban_suggestion_1 =
       SetUpIBANAndSuggestion(kIbanValue_1, kNickname_1);
 
-  SuggestionsContext context;
-  FormFieldData test_field;
+  AutofillField test_field;
   test_field.value = std::u16string(kIbanValue_0);
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Setting up mock to verify that the handler is not returned any iban-based
   // suggestions as the field already contains an iban.
@@ -148,9 +161,9 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
   Suggestion iban_suggestion_1 =
       SetUpIBANAndSuggestion(kIbanValue_2, kNickname_1);
 
-  SuggestionsContext context;
-  FormFieldData test_field;
+  AutofillField test_field;
   test_field.value = u"CH56";
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Setting up mock to verify that the handler is returned a list of
   // iban-based suggestions whose prefixes match `prefix_`. Both values should
@@ -216,11 +229,31 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
 TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
   IBAN iban_0 = SetUpIBAN(kIbanValue_0, kNickname_0);
   iban_manager_.SetOffTheRecordForTesting(true);
-  SuggestionsContext context;
-  FormFieldData test_field;
+  AutofillField test_field;
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Setting up mock to verify that suggestions returning is not triggered if
   // the user is off the record.
+  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
+
+  // Simulate request for suggestions.
+  EXPECT_FALSE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
+      /*context=*/context));
+}
+
+TEST_F(IBANManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
+  IBAN iban_0 = SetUpIBAN(kIbanValue_0, kNickname_0);
+
+  AutofillField test_field;
+  test_field.value = std::u16string(kIbanValue_0);
+  // Set the field type to any type than "IBAN_VALUE".
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(
+      test_field, CREDIT_CARD_VERIFICATION_CODE);
+
+  // Setting up mock to verify that suggestions returning is not triggered if
+  // we are not focused on an IBAN field.
   EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
 
   // Simulate request for suggestions.

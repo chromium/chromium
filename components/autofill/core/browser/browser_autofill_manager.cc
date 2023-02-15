@@ -1177,6 +1177,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // due to an unrecognized autocomplete attribute. Note that in the context
     // of Autofill, the popup for credit card related fields is not getting
     // suppressed due to an unrecognized autocomplete attribute.
+    // TODO(crbug.com/1344590): Revisit here to see whether we should offer IBAN
+    // filling for fields with unrecognized autocomplete attribute
     if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
       return false;
     }

@@ -26,6 +26,14 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     const AutofillClient& client,
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
+  // The field is eligible only if it's focused on an IBAN field.
+  bool field_is_eligible =
+      context.focused_field &&
+      context.focused_field->Type().GetStorableType() == IBAN_VALUE;
+  if (!field_is_eligible) {
+    return false;
+  }
+
   if (!is_off_the_record_ && personal_data_manager_) {
     std::vector<IBAN*> ibans = personal_data_manager_->GetLocalIBANs();
     if (!ibans.empty()) {
