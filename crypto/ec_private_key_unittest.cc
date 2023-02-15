@@ -50,14 +50,6 @@ TEST(ECPrivateKeyUnitTest, InitRandomTest) {
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(privkey);
   ASSERT_TRUE(keypair_copy);
   ExpectKeysEqual(keypair.get(), keypair_copy.get());
-
-  // Re-import as an EncryptedPrivateKeyInfo with kPassword1.
-  std::vector<uint8_t> encrypted_privkey;
-  EXPECT_TRUE(keypair->ExportEncryptedPrivateKey(&encrypted_privkey));
-  keypair_copy = crypto::ECPrivateKey::CreateFromEncryptedPrivateKeyInfo(
-      encrypted_privkey);
-  ASSERT_TRUE(keypair_copy);
-  ExpectKeysEqual(keypair.get(), keypair_copy.get());
 }
 
 TEST(ECPrivateKeyUnitTest, Copy) {

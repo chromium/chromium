@@ -157,11 +157,6 @@ NET_EXPORT bool GetValidityTimes(CERTCertificate* cert,
 // (all zero) fingerprint on failure.
 NET_EXPORT SHA256HashValue CalculateFingerprint256(CERTCertificate* cert);
 
-// Behaves like `CERT_GetCertIsPerm` in NSS. This function's type signature
-// mirrors the NSS function so call sites can be easily replaced when
-// https://crbug.com/1365414 is resolved.
-NET_EXPORT SECStatus GetCertIsPerm(const CERTCertificate* cert, PRBool* isperm);
-
 }  // namespace net::x509_util
 
 #endif  // NET_CERT_X509_UTIL_NSS_H_

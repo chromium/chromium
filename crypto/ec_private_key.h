@@ -59,14 +59,6 @@ class CRYPTO_EXPORT ECPrivateKey {
   // Exports the private key to a PKCS #8 PrivateKeyInfo block.
   bool ExportPrivateKey(std::vector<uint8_t>* output) const;
 
-  // Exports the private key as an ASN.1-encoded PKCS #8 EncryptedPrivateKeyInfo
-  // block wth empty password. This was historically used as a workaround for
-  // NSS API deficiencies and does not provide security.
-  //
-  // This function is deprecated. Use ExportPrivateKey for new code. See
-  // https://crbug.com/603319.
-  bool ExportEncryptedPrivateKey(std::vector<uint8_t>* output) const;
-
   // Exports the public key to an X.509 SubjectPublicKeyInfo block.
   bool ExportPublicKey(std::vector<uint8_t>* output) const;
 

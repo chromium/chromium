@@ -65,7 +65,7 @@ bool ImportCACerts(PK11SlotInfo* slot,
   // already and use that, but CERT_NewTempCertificate actually does that
   // itself, so we skip it here.
   PRBool root_is_perm;
-  if (net::x509_util::GetCertIsPerm(root, &root_is_perm) != SECSuccess) {
+  if (CERT_GetCertIsPerm(root, &root_is_perm) != SECSuccess) {
     LOG(ERROR) << "CERT_GetCertIsPerm failed with error " << PORT_GetError();
     return false;
   }
@@ -124,7 +124,7 @@ bool ImportCACerts(PK11SlotInfo* slot,
     }
 
     PRBool cert_is_perm;
-    if (net::x509_util::GetCertIsPerm(cert, &cert_is_perm) != SECSuccess) {
+    if (CERT_GetCertIsPerm(cert, &cert_is_perm) != SECSuccess) {
       LOG(ERROR) << "CERT_GetCertIsPerm failed with error " << PORT_GetError();
       return false;
     }

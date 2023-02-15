@@ -1227,8 +1227,8 @@ void RemoveCertificateWithDB(std::unique_ptr<RemoveCertificateState> state,
   net::ScopedCERTCertificate nss_cert =
       net::x509_util::CreateCERTCertificateFromX509Certificate(
           state->certificate_.get());
-  if (!nss_cert || net::x509_util::GetCertIsPerm(
-                       nss_cert.get(), &certificate_found) != SECSuccess) {
+  if (!nss_cert ||
+      CERT_GetCertIsPerm(nss_cert.get(), &certificate_found) != SECSuccess) {
     state->OnError(FROM_HERE, Status::kNetErrorCertificateInvalid);
     return;
   }

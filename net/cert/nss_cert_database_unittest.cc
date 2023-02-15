@@ -64,7 +64,7 @@ std::string GetSubjectCN(CERTCertificate* cert) {
 
 bool GetCertIsPerm(const CERTCertificate* cert) {
   PRBool is_perm;
-  CHECK_EQ(x509_util::GetCertIsPerm(cert, &is_perm), SECSuccess);
+  CHECK_EQ(CERT_GetCertIsPerm(cert, &is_perm), SECSuccess);
   return is_perm != PR_FALSE;
 }
 

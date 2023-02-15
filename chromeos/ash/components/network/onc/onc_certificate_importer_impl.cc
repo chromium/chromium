@@ -141,7 +141,7 @@ bool CertificateImporterImpl::StoreServerOrCaCertificateUserInitiated(
       net::x509_util::CreateCERTCertificateFromX509Certificate(
           certificate.certificate().get());
   if (!x509_cert ||
-      net::x509_util::GetCertIsPerm(x509_cert.get(), &is_perm) != SECSuccess) {
+      CERT_GetCertIsPerm(x509_cert.get(), &is_perm) != SECSuccess) {
     NET_LOG(ERROR) << "Unable to create certificate: " << certificate.guid();
     return false;
   }

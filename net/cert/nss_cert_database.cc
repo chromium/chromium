@@ -434,7 +434,6 @@ bool NSSCertDatabase::IsReadOnly(const CERTCertificate* cert) {
 }
 
 // static
-DISABLE_CFI_DLSYM
 bool NSSCertDatabase::IsHardwareBacked(const CERTCertificate* cert) {
   PK11SlotInfo* slot = cert->slot;
   if (!slot)
@@ -446,20 +445,15 @@ bool NSSCertDatabase::IsHardwareBacked(const CERTCertificate* cert) {
   // TPM does not support the key algorithm. Chaps sets a kKeyInSoftware
   // attribute to true for private keys that aren't wrapped by the TPM.
   if (crypto::IsSlotProvidedByChaps(slot)) {
-    static PK11HasAttributeSetFunction pk11_has_attribute_set =
-        reinterpret_cast<PK11HasAttributeSetFunction>(
-            dlsym(RTLD_DEFAULT, "PK11_HasAttributeSet"));
-    if (pk11_has_attribute_set) {
-      constexpr CK_ATTRIBUTE_TYPE kKeyInSoftware = CKA_VENDOR_DEFINED + 5;
-      SECKEYPrivateKey* private_key = PK11_FindPrivateKeyFromCert(
-          slot, const_cast<CERTCertificate*>(cert), nullptr);
-      // PK11_HasAttributeSet returns true if the object in the given slot has
-      // the attribute set to true. Otherwise it returns false.
-      if (private_key &&
-          pk11_has_attribute_set(slot, private_key->pkcs11ID, kKeyInSoftware,
-                                 /*haslock=*/PR_FALSE)) {
-        return false;
-      }
+    constexpr CK_ATTRIBUTE_TYPE kKeyInSoftware = CKA_VENDOR_DEFINED + 5;
+    SECKEYPrivateKey* private_key = PK11_FindPrivateKeyFromCert(
+        slot, const_cast<CERTCertificate*>(cert), nullptr);
+    // PK11_HasAttributeSet returns true if the object in the given slot has
+    // the attribute set to true. Otherwise it returns false.
+    if (private_key &&
+        PK11_HasAttributeSet(slot, private_key->pkcs11ID, kKeyInSoftware,
+                             /*haslock=*/PR_FALSE)) {
+      return false;
     }
     // All keys in chaps without the attribute are hardware backed.
     return true;
