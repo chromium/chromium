@@ -45,6 +45,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/native_widget_private.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
@@ -495,8 +496,14 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
 
   EXPECT_TRUE(view->IsDrawn());
   EXPECT_EQ(0, view->paint_count());
-  widget->Show();
-  base::RunLoop().RunUntilIdle();
+
+  {
+    views::test::PropertyWaiter visibility_waiter(
+        base::BindRepeating(&Widget::IsVisible, base::Unretained(widget)),
+        true);
+    widget->Show();
+    EXPECT_TRUE(visibility_waiter.Wait());
+  }
 
   EXPECT_EQ(1, observer.gained_visible_count());
   EXPECT_EQ(0, observer.lost_visible_count());
@@ -511,8 +518,13 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   // First try performMiniaturize:, which requires a minimize button. Note that
   // Cocoa just blocks the UI thread during the animation, so no need to do
   // anything fancy to wait for it finish.
-  [ns_window performMiniaturize:nil];
-  base::RunLoop().RunUntilIdle();
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        true);
+    [ns_window performMiniaturize:nil];
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
 
   EXPECT_TRUE(widget->IsMinimized());
   EXPECT_FALSE(widget->IsVisible());  // Minimizing also makes things invisible.
@@ -526,8 +538,13 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   // button is highlighted for performMiniaturize.
   EXPECT_EQ(1, view->paint_count());
 
-  [ns_window deminiaturize:nil];
-  base::RunLoop().RunUntilIdle();
+  {
+    views::test::PropertyWaiter deminimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        false);
+    [ns_window deminiaturize:nil];
+    EXPECT_TRUE(deminimize_waiter.Wait());
+  }
 
   EXPECT_FALSE(widget->IsMinimized());
   EXPECT_TRUE(widget->IsVisible());
@@ -538,8 +555,13 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   view->WaitForPaintCount(2);  // A single paint when deminiaturizing.
   EXPECT_FALSE([ns_window isMiniaturized]);
 
-  widget->Minimize();
-  base::RunLoop().RunUntilIdle();
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        true);
+    widget->Minimize();
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
 
   EXPECT_TRUE(widget->IsMinimized());
   EXPECT_TRUE([ns_window isMiniaturized]);
@@ -548,8 +570,13 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   EXPECT_EQ(restored_bounds, widget->GetRestoredBounds());
   EXPECT_EQ(2, view->paint_count());  // No paint when miniaturizing.
 
-  widget->Restore();  // If miniaturized, should deminiaturize.
-  base::RunLoop().RunUntilIdle();
+  {
+    views::test::PropertyWaiter deminimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        false);
+    widget->Restore();  // If miniaturized, should deminiaturize.
+    EXPECT_TRUE(deminimize_waiter.Wait());
+  }
 
   EXPECT_FALSE(widget->IsMinimized());
   EXPECT_FALSE([ns_window isMiniaturized]);
@@ -558,8 +585,13 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   EXPECT_EQ(restored_bounds, widget->GetRestoredBounds());
   view->WaitForPaintCount(3);
 
-  widget->Restore();  // If not miniaturized, does nothing.
-  base::RunLoop().RunUntilIdle();
+  {
+    views::test::PropertyWaiter deminimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        false);
+    widget->Restore();  // If not miniaturized, does nothing.
+    EXPECT_TRUE(deminimize_waiter.Wait());
+  }
 
   EXPECT_FALSE(widget->IsMinimized());
   EXPECT_FALSE([ns_window isMiniaturized]);
