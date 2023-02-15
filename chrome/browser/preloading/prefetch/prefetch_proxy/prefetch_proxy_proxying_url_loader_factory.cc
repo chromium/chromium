@@ -522,13 +522,6 @@ void PrefetchProxyProxyingURLLoaderFactory::
         const GURL& url,
         network::mojom::URLResponseHeadPtr head,
         const network::URLLoaderCompletionStatus& status) {
-  base::UmaHistogramSparse("PrefetchProxy.Prefetch.Subresources.NetError",
-                           std::abs(status.error_code));
-  if (head && head->headers) {
-    base::UmaHistogramSparse("PrefetchProxy.Prefetch.Subresources.RespCode",
-                             head->headers->response_code());
-  }
-
   metrics_observer_->OnResourceFetchComplete(url, std::move(head), status);
 }
 
@@ -536,8 +529,6 @@ void PrefetchProxyProxyingURLLoaderFactory::RecordSubresourceMetricsAfterClick(
     const GURL& url,
     network::mojom::URLResponseHeadPtr head,
     const network::URLLoaderCompletionStatus& status) {
-  UMA_HISTOGRAM_BOOLEAN("PrefetchProxy.AfterClick.Subresources.UsedCache",
-                        status.exists_in_cache);
   metrics_observer_->OnResourceUsedFromCache(url);
 }
 

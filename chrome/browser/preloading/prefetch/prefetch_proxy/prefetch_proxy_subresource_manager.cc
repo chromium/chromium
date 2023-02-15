@@ -22,8 +22,6 @@ PrefetchProxySubresourceManager::~PrefetchProxySubresourceManager() {
     nsp_handle_->SetObserver(nullptr);
     nsp_handle_->OnCancel();
   }
-  UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.Subresources.Quantity",
-                           successfully_loaded_subresources_.size());
 }
 
 void PrefetchProxySubresourceManager::ManageNoStatePrefetch(

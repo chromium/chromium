@@ -3136,15 +3136,6 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
                              kSRPClickPrefetchStatusName));
-
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Subresources.NetError", net::OK, 2);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Subresources.Quantity", 4, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Subresources.RespCode", 200, 2);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.AfterClick.Subresources.UsedCache", true, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
@@ -3586,10 +3577,6 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 
   // Navigate to the predicted site.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
-
-  // Checks that only one resource was used from cache.
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.AfterClick.Subresources.UsedCache", true, 1);
 
   // Navigate again to trigger UKM recording.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -4283,18 +4270,6 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
                              kSRPClickPrefetchStatusName));
-
-  // In addition to "prefetch.js" and "prefetch-redirect-start.js",
-  // "favicon.ico" is also counted here, because the favicon loading is
-  // triggered from `FrameLoader::DidFinishNavigation()` at the end of NSP.
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Subresources.NetError", net::OK, 3);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Subresources.Quantity", 4, 1);
-  histogram_tester.ExpectBucketCount(
-      "PrefetchProxy.Prefetch.Subresources.RespCode", 200, 2);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.AfterClick.Subresources.UsedCache", true, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,

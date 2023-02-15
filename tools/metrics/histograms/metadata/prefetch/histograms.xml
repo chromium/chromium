@@ -117,17 +117,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrefetchProxy.AfterClick.Subresources.UsedCache"
-    enum="BooleanCacheHit" expires_after="2021-12-26">
-  <owner>curranmax@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <summary>
-    Records whether a previously prefetched subresource from an Isolated
-    Prerender was served from cache when its page was later navigated to.
-  </summary>
-</histogram>
-
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheEntryAge.{PrefetchProxyCanaryCheckerClient}"
     units="hours" expires_after="2023-04-25">
@@ -430,40 +419,6 @@ chromium-metrics-reviews@google.com.
     URL loader. It is recorded when the streaming URL loader is deleted which
     can be when: 1) the URL loader is canceled, 2) the URL loader completed
     serving the prefetch, or 3) the prefetch was deleted and not used.
-  </summary>
-</histogram>
-
-<histogram name="PrefetchProxy.Prefetch.Subresources.NetError"
-    enum="NetErrorCodes" expires_after="2023-04-25">
-  <owner>curranmax@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <summary>
-    Records the net error encountered when prefetching a single subresource
-    during Isolated Prerenders.
-  </summary>
-</histogram>
-
-<histogram name="PrefetchProxy.Prefetch.Subresources.Quantity" units="count"
-    expires_after="2021-06-20">
-  <owner>curranmax@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <summary>
-    Records the number of subresources that were NoStatePrefetch'd during an
-    Isolated Prerender. Recorded once for each page that is NoStatePrefetch'd
-    during Isolated Prerenders.
-  </summary>
-</histogram>
-
-<histogram name="PrefetchProxy.Prefetch.Subresources.RespCode"
-    enum="HttpResponseCode" expires_after="2021-06-20">
-  <owner>curranmax@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <summary>
-    Records the HTTP response code encountered when prefetching a single
-    subresource during Isolated Prerenders.
   </summary>
 </histogram>
 
