@@ -162,6 +162,10 @@ bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
          kEnrollmentMandatoryOption;
 }
 
+bool BrowserDMTokenStorageLinux::CanInitEnrollmentToken() const {
+  return true;
+}
+
 BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageLinux::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {

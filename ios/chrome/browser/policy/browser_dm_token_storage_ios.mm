@@ -121,6 +121,10 @@ bool BrowserDMTokenStorageIOS::InitEnrollmentErrorOption() {
   return false;
 }
 
+bool BrowserDMTokenStorageIOS::CanInitEnrollmentToken() const {
+  return true;
+}
+
 BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageIOS::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {

@@ -47,6 +47,10 @@ bool BrowserDMTokenStorageFuchsia::InitEnrollmentErrorOption() {
   return false;
 }
 
+bool BrowserDMTokenStorageFuchsia::CanInitEnrollmentToken() const {
+  return true;
+}
+
 BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageFuchsia::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {

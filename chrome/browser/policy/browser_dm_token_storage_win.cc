@@ -231,6 +231,10 @@ bool BrowserDMTokenStorageWin::InitEnrollmentErrorOption() {
   return InstallUtil::ShouldCloudManagementBlockOnFailure();
 }
 
+bool BrowserDMTokenStorageWin::CanInitEnrollmentToken() const {
+  return true;
+}
+
 BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageWin::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {

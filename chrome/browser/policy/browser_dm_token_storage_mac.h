@@ -30,6 +30,7 @@ class BrowserDMTokenStorageMac : public BrowserDMTokenStorage::Delegate {
   std::string InitEnrollmentToken() override;
   std::string InitDMToken() override;
   bool InitEnrollmentErrorOption() override;
+  bool CanInitEnrollmentToken() const override;
   BrowserDMTokenStorage::StoreTask SaveDMTokenTask(
       const std::string& token,
       const std::string& client_id) override;

@@ -68,8 +68,7 @@ void BrowserDMTokenStorage::SetDelegate(std::unique_ptr<Delegate> delegate) {
   BrowserDMTokenStorage::Get()->delegate_ = std::move(delegate);
 }
 
-BrowserDMTokenStorage::BrowserDMTokenStorage()
-    : is_initialized_(false), dm_token_(CreateEmptyToken()) {
+BrowserDMTokenStorage::BrowserDMTokenStorage() : dm_token_(CreateEmptyToken()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // We don't call InitIfNeeded() here so that the global instance can be
@@ -151,10 +150,27 @@ void BrowserDMTokenStorage::InitIfNeeded() {
                        "test, you may need to add an instance of "
                        "FakeBrowserDMTokenStorage to the test fixture.";
 
-  if (is_initialized_)
+  if (is_initialized_) {
+    // TODO(crbug/1416651): Ideally we would execute this initialization
+    // based on an event we listen to. However, because this may happen so
+    // early, we don't have any place where we can hook this. We should find
+    // a better solution in the future.
+    if (is_init_enrollment_token_skipped_) {
+      is_init_enrollment_token_skipped_ = !delegate_->CanInitEnrollmentToken();
+      enrollment_token_ = delegate_->InitEnrollmentToken();
+    }
     return;
+  }
 
   is_initialized_ = true;
+
+  // The enrollment token initialization may not be possible on the first call
+  // to `InitIfNeeded` on all platforms. `CanInitEnrollmentToken` will return
+  // false if this was the case to try initializing the token on the next call
+  // to `InitIfNeeded` and avoid returning an empty token when
+  // `RetrieveEnnrollmentToken' is called. It returns true on platforms that do
+  // not have this problem.
+  is_init_enrollment_token_skipped_ = !delegate_->CanInitEnrollmentToken();
 
   // When CBCM is not enabled, set the DM token to empty directly withtout
   // actually read it.
@@ -190,7 +206,6 @@ void BrowserDMTokenStorage::InitIfNeeded() {
 
   enrollment_token_ = delegate_->InitEnrollmentToken();
   DVLOG(1) << "Enrollment token = " << enrollment_token_;
-  DVLOG_POLICY(1, CBCM_ENROLLMENT) << "Initializing the DMTokenStorage.";
 
   std::string init_dm_token = delegate_->InitDMToken();
   if (init_dm_token.empty()) {

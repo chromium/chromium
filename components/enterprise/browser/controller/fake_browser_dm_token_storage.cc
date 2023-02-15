@@ -111,6 +111,10 @@ bool FakeBrowserDMTokenStorage::MockDelegate::InitEnrollmentErrorOption() {
   return enrollment_error_option_;
 }
 
+bool FakeBrowserDMTokenStorage::MockDelegate::CanInitEnrollmentToken() const {
+  return true;
+}
+
 BrowserDMTokenStorage::StoreTask
 FakeBrowserDMTokenStorage::MockDelegate::SaveDMTokenTask(
     const std::string& token,
