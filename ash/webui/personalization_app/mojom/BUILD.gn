@@ -35,6 +35,10 @@ mojom("mojom") {
           cpp = "::backdrop::Collection"
         },
         {
+          mojom = "ash.personalization_app.mojom.CurrentWallpaperDescription"
+          cpp = "::backdrop::Image::Description"
+        },
+        {
           mojom = "ash.personalization_app.mojom.WallpaperImage"
           cpp = "::backdrop::Image"
         },

@@ -452,7 +452,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
 
       NotifyWallpaperChanged(
           ash::personalization_app::mojom::CurrentWallpaper::New(
-              std::move(attribution), info->layout, info->type, key));
+              std::move(attribution), info->layout, info->type, key,
+              /*description=*/absl::nullopt));
 
       return;
     }
@@ -473,7 +474,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
           ash::personalization_app::mojom::CurrentWallpaper::New(
               /*attribution=*/std::vector<std::string>(), info->layout,
               info->type,
-              /*key=*/base::UnguessableToken::Create().ToString()));
+              /*key=*/base::UnguessableToken::Create().ToString(),
+              /*description=*/absl::nullopt));
       return;
     case ash::WallpaperType::kCount:
       break;
@@ -486,7 +488,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
       /*attribution=*/std::vector<std::string>(), info->layout,
       ash::WallpaperType::kOneShot,
-      /*key=*/base::UnguessableToken::Create().ToString()));
+      /*key=*/base::UnguessableToken::Create().ToString(),
+      /*description=*/absl::nullopt));
 
   // Continue to record data on how frequently this happens.
   SCOPED_CRASH_KEY_STRING32(
@@ -993,7 +996,7 @@ void PersonalizationAppWallpaperProviderImpl::FindAttribution(
     NotifyWallpaperChanged(
         ash::personalization_app::mojom::CurrentWallpaper::New(
             /*attribution=*/std::vector<std::string>(), info.layout, info.type,
-            GetOnlineWallpaperKey(info)));
+            GetOnlineWallpaperKey(info), /*description=*/absl::nullopt));
 
     return;
   }
@@ -1004,12 +1007,12 @@ void PersonalizationAppWallpaperProviderImpl::FindAttribution(
           collections->at(current_index).collection_id());
 
   wallpaper_attribution_info_fetcher_->Start(base::BindOnce(
-      &PersonalizationAppWallpaperProviderImpl::FindAttributionInCollection,
+      &PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection,
       attribution_weak_ptr_factory_.GetWeakPtr(), info, current_index,
       collections));
 }
 
-void PersonalizationAppWallpaperProviderImpl::FindAttributionInCollection(
+void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
     const ash::WallpaperInfo& info,
     std::size_t current_index,
     const absl::optional<std::vector<backdrop::Collection>>& collections,
@@ -1035,12 +1038,14 @@ void PersonalizationAppWallpaperProviderImpl::FindAttributionInCollection(
 
   if (backend_image) {
     std::vector<std::string> attributions;
-    for (const auto& attr : backend_image->attribution())
+    for (const auto& attr : backend_image->attribution()) {
       attributions.push_back(attr.text());
+    }
     NotifyWallpaperChanged(
         ash::personalization_app::mojom::CurrentWallpaper::New(
             attributions, info.layout, info.type,
-            /*key=*/base::NumberToString(backend_image->asset_id())));
+            /*key=*/base::NumberToString(backend_image->asset_id()),
+            backend_image->description()));
     wallpaper_attribution_info_fetcher_.reset();
     return;
   }
@@ -1051,7 +1056,7 @@ void PersonalizationAppWallpaperProviderImpl::FindAttributionInCollection(
     NotifyWallpaperChanged(
         ash::personalization_app::mojom::CurrentWallpaper::New(
             /*attribution=*/std::vector<std::string>(), info.layout, info.type,
-            GetOnlineWallpaperKey(info)));
+            GetOnlineWallpaperKey(info), /*description=*/absl::nullopt));
     wallpaper_attribution_info_fetcher_.reset();
     return;
   }
@@ -1059,7 +1064,7 @@ void PersonalizationAppWallpaperProviderImpl::FindAttributionInCollection(
   auto fetcher = std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
       collections->at(current_index).collection_id());
   fetcher->Start(base::BindOnce(
-      &PersonalizationAppWallpaperProviderImpl::FindAttributionInCollection,
+      &PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection,
       attribution_weak_ptr_factory_.GetWeakPtr(), info, current_index,
       collections));
   // resetting the previous fetcher last because the current method is bound
@@ -1096,7 +1101,8 @@ void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
   // wallpaper, so use |location| in such cases for backwards compatibility.
   NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
       attribution, info.layout, info.type,
-      /*key=*/info.dedup_key.value_or(info.location)));
+      /*key=*/info.dedup_key.value_or(info.location),
+      /*description=*/absl::nullopt));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SetMinimizedWindowStateForPreview(

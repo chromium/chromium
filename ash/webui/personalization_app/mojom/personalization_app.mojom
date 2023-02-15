@@ -185,6 +185,11 @@ struct SetDailyRefreshResponse {
   bool force_refresh;
 };
 
+struct CurrentWallpaperDescription {
+  string title;
+  string content;
+};
+
 // Represents the currently selected wallpaper image.
 struct CurrentWallpaper {
   // Attribution text such as "Photo by John Doe" or the file name of the local
@@ -200,6 +205,11 @@ struct CurrentWallpaper {
   // A unique identifier for the image. This is used to identify which
   // |WallpaperImage| or local image the user has selected.
   string key;
+
+  // Extra description content about the image. Currently only supplied for
+  // images supplied by backdrop server with type
+  // `WallpaperType::{kDaily, kOnline}`.
+  CurrentWallpaperDescription? description;
 };
 
 // Receives updated wallpaper information whenever it is changed.

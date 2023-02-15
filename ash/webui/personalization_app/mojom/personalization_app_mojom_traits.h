@@ -69,6 +69,21 @@ struct StructTraits<
 };
 
 template <>
+struct StructTraits<
+    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
+    backdrop::Image::Description> {
+  static const std::string& title(
+      const backdrop::Image::Description& description);
+  static const std::string& content(
+      const backdrop::Image::Description& description);
+
+  static bool Read(
+      ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView data,
+      backdrop::Image::Description* out);
+  static bool IsNull(const backdrop::Image::Description& description);
+};
+
+template <>
 struct StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
                     backdrop::Image> {
   static GURL url(const backdrop::Image& image);

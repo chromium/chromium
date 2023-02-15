@@ -12,11 +12,13 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../common/icons.html.js';
 import '../../css/wallpaper.css.js';
+import '../../css/cros_button_style.css.js';
+import './info_svg_element.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {CurrentWallpaper, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
+import {isGooglePhotosSharedAlbumsEnabled, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
@@ -90,11 +92,18 @@ export class WallpaperSelected extends WithPersonalizationStore {
         computed: 'computeShowImage_(image_, isLoading_)',
       },
 
-      showWallpaperOptions_: {
+      shouldShowLayoutOptions_: {
         type: Boolean,
         computed:
-            'computeShowWallpaperOptions_(image_, path, googlePhotosAlbumId)',
+            'computeShouldShowLayoutOptions_(image_, path, googlePhotosAlbumId)',
       },
+
+      shouldShowDescriptionButton_: {
+        type: Boolean,
+        computed: 'computeShouldShowDescriptionButton_(image_)',
+      },
+
+      shouldShowDescriptionDialog_: Boolean,
 
       showCollectionOptions_: {
         type: Boolean,
@@ -163,7 +172,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private hasError_: boolean;
   private shouldShowDailyRefreshConfirmationDialog_: boolean;
   private showImage_: boolean;
-  private showWallpaperOptions_: boolean;
+  private shouldShowLayoutOptions_: boolean;
+  private shouldShowDescriptionButton_: boolean;
+  private shouldShowDescriptionDialog_: boolean;
   private showCollectionOptions_: boolean;
   private showRefreshButton_: boolean;
   private dailyRefreshIcon_: string;
@@ -237,7 +248,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
     return [];
   }
 
-  private computeShowWallpaperOptions_(
+  private computeShouldShowLayoutOptions_(
       image: CurrentWallpaper|null, path: string,
       googlePhotosAlbumId: string): boolean {
     return !!image &&
@@ -245,6 +256,10 @@ export class WallpaperSelected extends WithPersonalizationStore {
               path === Paths.LOCAL_COLLECTION ||
           (image.type === WallpaperType.kOnceGooglePhotos &&
            path === Paths.GOOGLE_PHOTOS_COLLECTION && !googlePhotosAlbumId)));
+  }
+
+  private computeShouldShowDescriptionButton_(image: CurrentWallpaper|null) {
+    return isPersonalizationJellyEnabled() && !!image?.description;
   }
 
   private computeShowCollectionOptions_(path: string): boolean {
@@ -372,13 +387,27 @@ export class WallpaperSelected extends WithPersonalizationStore {
         this.googlePhotosAlbumId!, getWallpaperProvider(), this.getStore());
   }
 
-  private closeDialog_() {
+  private showDescriptionDialog_() {
+    assert(
+        isPersonalizationJellyEnabled(),
+        'description dialog only available if personalization jelly enabled');
+    assert(
+        this.shouldShowDescriptionButton_,
+        'description dialog can only be opened if button is visible');
+    this.shouldShowDescriptionDialog_ = true;
+  }
+
+  private closeDescriptionDialog_() {
+    this.shouldShowDescriptionDialog_ = false;
+  }
+
+  private closeDailyRefreshConfirmationDialog_() {
     this.shouldShowDailyRefreshConfirmationDialog_ = false;
   }
 
   private onClickProceed_() {
     this.enableGooglePhotosAlbumDailyRefresh_();
-    this.closeDialog_();
+    this.closeDailyRefreshConfirmationDialog_();
   }
 
   private onClickUpdateDailyRefreshWallpaper_() {

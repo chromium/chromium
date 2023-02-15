@@ -1,4 +1,4 @@
-<style include="wallpaper common">
+<style include="wallpaper common cros-button-style">
   #container {
     border-bottom: 1px solid var(--cros-separator-color);
     box-sizing: border-box;
@@ -42,11 +42,16 @@
   }
 
   #buttonContainer {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 8px;
     grid-area: buttons;
+    justify-content: flex-start;
   }
 
   #wallpaperOptions .text,
-  #collectionOptions .text {
+  #collectionOptions .text,
+  #descriptionOptions .text {
     margin-inline-start: 8px;
   }
 
@@ -64,11 +69,12 @@
     margin-inline-start: 8px;
   }
 
-  cr-dialog::part(dialog) {
+  #dailyRefreshDialog::part(dialog) {
     min-width: 288px;
     width: 288px;
   }
 
+  /* TODO(b/268566678) use existing cr-button.primary styles */
   #dialogProceedButton {
     background-color: var(--cros-button-background-color-primary);
     border: 0;
@@ -82,6 +88,17 @@
   #dialogProceedButton:active {
     box-shadow: 0 1px 2px rgba(66, 133, 244, 0.3), 0 1px 3px rgba(66, 133, 244, 0.15);
   }
+
+  #descriptionDialog h3[slot='title'],
+  #descriptionDialog p[slot='body'] {
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  info-svg::part(path) {
+    fill: var(--text-color);
+  }
+
 </style>
 <header id="container" class$="[[getContainerClass_(isLoading_, showImage_)]]">
   <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
@@ -111,7 +128,7 @@
       </dom-repeat>
     </h2>
     <div id="buttonContainer">
-      <template is="dom-if" if="[[showWallpaperOptions_]]">
+      <template is="dom-if" if="[[shouldShowLayoutOptions_]]">
         <div id="wallpaperOptions">
           <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
               aria-pressed$="[[getFillAriaPressed_(image_)]]">
@@ -145,20 +162,43 @@
           </cr-button>
         </div>
       </template>
+      <template is="dom-if" if="[[shouldShowDescriptionButton_]]" restamp>
+        <div id="descriptionOptions">
+          <cr-button on-click="showDescriptionDialog_">
+            <info-svg></info-svg>
+            <div class="text">$i18n{descriptionDialogOpen}</div>
+          </cr-button>
+        </div>
+      </template>
     </div>
     <template is="dom-if" if="[[shouldShowDailyRefreshConfirmationDialog_]]" restamp>
-      <cr-dialog id="dialog" on-close="closeDialog_" show-on-attach>
+      <cr-dialog id="dailyRefreshDialog" on-close="closeDailyRefreshConfirmationDialog_" show-on-attach>
         <div slot="title">[temp]Shared albums can be updated by other users</div>
         <div slot="body">
           [temp]Photos in shared albums can be updated by other users. Change
           daily might show wallpapers not currently in the album
         </div>
         <div slot="button-container">
-          <cr-button id="dialogCancelButton" on-click="closeDialog_">
-            Cancel
+          <cr-button id="dialogCancelButton" on-click="closeDailyRefreshConfirmationDialog_">
+            [temp]Cancel
           </cr-button>
           <cr-button id="dialogProceedButton" on-click="onClickProceed_">
-            Proceed
+            [temp]Proceed
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>
+    <template is="dom-if" if="[[shouldShowDescriptionDialog_]]" restamp>
+      <cr-dialog id="descriptionDialog" on-close="closeDescriptionDialog_" show-on-attach>
+        <template is="dom-if" if="[[image_.description.title]]">
+          <h3 slot="title">[[image_.description.title]]</h3>
+        </template>
+        <template is="dom-if" if="[[image_.description.content]]">
+          <p slot="body" id="descriptionDialogBody">[[image_.description.content]]</p>
+        </template>
+        <div slot="button-container">
+          <cr-button class="primary" id="dialogCloseButton" on-click="closeDescriptionDialog_">
+            $i18n{descriptionDialogClose}
           </cr-button>
         </div>
       </cr-dialog>

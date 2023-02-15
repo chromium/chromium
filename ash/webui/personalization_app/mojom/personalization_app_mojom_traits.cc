@@ -219,6 +219,38 @@ bool StructTraits<ash::personalization_app::mojom::WallpaperCollectionDataView,
            collection.preview_size() > 0);
 }
 
+const std::string& StructTraits<
+    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
+    backdrop::Image::Description>::title(const backdrop::Image::Description&
+                                             description) {
+  return description.title();
+}
+
+const std::string& StructTraits<
+    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
+    backdrop::Image::Description>::content(const backdrop::Image::Description&
+                                               description) {
+  return description.content();
+}
+
+// Default to false as we don't ever need to convert back to
+// `Backdrop::Image::Description`
+bool StructTraits<
+    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
+    backdrop::Image::Description>::
+    Read(ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView
+             data,
+         backdrop::Image::Description* out) {
+  return false;
+}
+
+bool StructTraits<
+    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
+    backdrop::Image::Description>::IsNull(const backdrop::Image::Description&
+                                              description) {
+  return !description.has_content() && !description.has_title();
+}
+
 GURL StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
                   backdrop::Image>::url(const backdrop::Image& image) {
   return GURL(image.image_url());

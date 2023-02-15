@@ -469,9 +469,10 @@ suite('GooglePhotosPhotosTest', function() {
     personalizationStore.data.wallpaper.pendingSelected = null;
     personalizationStore.data.wallpaper.currentSelected = {
       attribution: [],
+      description: undefined,
+      key: photo.id,
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
-      key: photo.id,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosElement);
@@ -494,9 +495,10 @@ suite('GooglePhotosPhotosTest', function() {
     personalizationStore.data.wallpaper.pendingSelected = null;
     personalizationStore.data.wallpaper.currentSelected = {
       attribution: [],
+      description: undefined,
+      key: anotherPhoto.dedupKey!,
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
-      key: anotherPhoto.dedupKey!,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosElement);
@@ -520,9 +522,10 @@ suite('GooglePhotosPhotosTest', function() {
     personalizationStore.data.wallpaper.pendingSelected = null;
     personalizationStore.data.wallpaper.currentSelected = {
       attribution: [],
+      description: undefined,
+      key: '//foo',
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kCustomized,
-      key: '//foo',
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosElement);

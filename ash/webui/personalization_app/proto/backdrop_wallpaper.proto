@@ -45,6 +45,17 @@ message Image {
 
   // The type of this image in the unit.
   optional ImageType image_type = 7;
+
+  message Description {
+    // A title for this image, e.g. "Artwork by [Artist]".
+    optional string title = 1;
+    // Detailed description text for this image.
+    optional string content = 2;
+  }
+
+  // Supplemental description of the image.
+  // TODO(b/250617579) replace with real value.
+  optional Description description = 100;
 }
 
 // A logical grouping of images e.g. landscapes or space photography.

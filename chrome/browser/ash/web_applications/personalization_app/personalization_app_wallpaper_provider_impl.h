@@ -256,7 +256,7 @@ class PersonalizationAppWallpaperProviderImpl
       const ash::WallpaperInfo& info,
       const absl::optional<std::vector<backdrop::Collection>>& collections);
 
-  void FindAttributionInCollection(
+  void FindImageMetadataInCollection(
       const ash::WallpaperInfo& info,
       std::size_t current_index,
       const absl::optional<std::vector<backdrop::Collection>>& collections,

@@ -916,10 +916,11 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     const pendingSelected = personalizationStore.data.wallpaper.pendingSelected;
     assertEquals(pendingSelected, image);
     personalizationStore.data.wallpaper.currentSelected = {
-      key: getImageKey(image)!,
-      type: getImageType(image),
       attribution: [],
+      description: undefined,
+      key: getImageKey(image)!,
       layout: WallpaperLayout.kCenterCropped,
+      type: getImageType(image),
     };
     personalizationStore.data.wallpaper.pendingSelected = null;
 
