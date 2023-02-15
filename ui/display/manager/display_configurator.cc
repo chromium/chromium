@@ -779,7 +779,7 @@ void DisplayConfigurator::ForceInitialConfigure() {
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, GetRequestedPowerState(),
       kSetDisplayPowerForceProbe, kRefreshRateThrottleDisabled,
-      /*new_vrr_state=*/false, /*force_configure=*/true, kConfigurationTypeFull,
+      GetRequestedVrrState(), /*force_configure=*/true, kConfigurationTypeFull,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
   configuration_task_->Run();
@@ -1055,7 +1055,7 @@ void DisplayConfigurator::RunPendingConfiguration() {
       requested_display_state_, pending_power_state_, pending_power_flags_,
       pending_refresh_rate_throttle_state_.value_or(
           kRefreshRateThrottleDisabled),
-      /*new_vrr_state=*/false, force_configure_, configuration_type,
+      GetRequestedVrrState(), force_configure_, configuration_type,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -1066,6 +1066,7 @@ void DisplayConfigurator::RunPendingConfiguration() {
   has_pending_power_state_ = false;
   requested_display_state_ = MULTIPLE_DISPLAY_STATE_INVALID;
   pending_refresh_rate_throttle_state_ = absl::nullopt;
+  pending_vrr_state_ = absl::nullopt;
 
   DCHECK(in_progress_configuration_callbacks_.empty());
   in_progress_configuration_callbacks_.swap(queued_configuration_callbacks_);
@@ -1090,6 +1091,7 @@ void DisplayConfigurator::OnConfigured(
   if (success) {
     current_display_state_ = new_display_state;
     UpdatePowerState(new_power_state);
+    current_vrr_state_ = new_vrr_state_;
   }
 
   configuration_task_.reset();
@@ -1145,6 +1147,18 @@ bool DisplayConfigurator::HasPendingFullConfiguration() const {
   if (has_pending_power_state_)
     return true;
 
+  // Schedule if there is a request to change the VRR enabled state.
+  if (ShouldConfigureVrr()) {
+    return true;
+  }
+
+  // TODO(b/221220344): Remove after seamless modesets are fixed.
+  // Schedule if the conditions for seamless configuration are met and VRR is
+  // currently enabled on the internal display.
+  if (HasPendingSeamlessConfiguration() && IsVrrEnabledOnInternalDisplay()) {
+    return true;
+  }
+
   return false;
 }
 
@@ -1186,6 +1200,54 @@ void DisplayConfigurator::NotifyPowerStateObservers() {
 
 bool DisplayConfigurator::IsDisplayOn() const {
   return current_power_state_ != chromeos::DISPLAY_POWER_ALL_OFF;
+}
+
+void DisplayConfigurator::SetVrrEnabled(bool enable_vrr) {
+  if (current_vrr_state_ == enable_vrr) {
+    return;
+  }
+
+  pending_vrr_state_ = enable_vrr;
+
+  if (!configure_timer_.IsRunning()) {
+    RunPendingConfiguration();
+  }
+}
+
+bool DisplayConfigurator::GetRequestedVrrState() const {
+  return pending_vrr_state_.value_or(current_vrr_state_);
+}
+
+bool DisplayConfigurator::ShouldConfigureVrr() const {
+  if (!pending_vrr_state_.has_value()) {
+    return false;
+  }
+
+  for (const auto* display : cached_displays_) {
+    if (!display->IsVrrCapable()) {
+      continue;
+    }
+
+    if (display->IsVrrEnabled() != pending_vrr_state_.value()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool DisplayConfigurator::IsVrrEnabledOnInternalDisplay() const {
+  const DisplaySnapshot* internal_display;
+  for (const auto* display : cached_displays_) {
+    if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
+      internal_display = display;
+      break;
+    }
+  }
+
+  return internal_display != nullptr &&
+         internal_display->current_mode() != nullptr &&
+         internal_display->IsVrrEnabled();
 }
 
 }  // namespace display

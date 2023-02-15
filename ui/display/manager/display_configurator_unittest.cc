@@ -257,6 +257,8 @@ class DisplayConfiguratorTest : public testing::Test {
                       .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
                       .SetBaseConnectorId(kEdpConnectorId)
                       .SetIsAspectPreservingScaling(true)
+                      .SetVariableRefreshRateState(kVrrDisabled)
+                      .SetVerticalDisplayRangeLimits(gfx::Range())
                       .Build();
 
     outputs_[1] = FakeDisplaySnapshot::Builder()
@@ -267,6 +269,7 @@ class DisplayConfiguratorTest : public testing::Test {
                       .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
                       .SetBaseConnectorId(kSecondConnectorId)
                       .SetIsAspectPreservingScaling(true)
+                      .SetVariableRefreshRateState(kVrrNotCapable)
                       .Build();
 
     outputs_[2] = FakeDisplaySnapshot::Builder()
@@ -276,6 +279,7 @@ class DisplayConfiguratorTest : public testing::Test {
                       .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
                       .SetBaseConnectorId(kThirdConnectorId)
                       .SetIsAspectPreservingScaling(true)
+                      .SetVariableRefreshRateState(kVrrNotCapable)
                       .Build();
 
     UpdateOutputs(2, false);
@@ -1971,6 +1975,415 @@ TEST_F(DisplayConfiguratorTest, PowerStateChange) {
   EXPECT_EQ(CALLBACK_NOT_CALLED, config_waiter_.callback_result());
   EXPECT_EQ(1, observer_.num_power_state_changes());
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON, observer_.latest_power_state());
+}
+
+TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_SingleDisplay) {
+  InitWithOutputs(&small_mode_);
+  // Set up display with HRR native mode and eligible throttle candidate mode.
+  std::vector<std::unique_ptr<const DisplayMode>> modes;
+  modes.push_back(MakeDisplayMode(1366, 768, false, 120.0));
+  modes.push_back(MakeDisplayMode(1366, 768, false, 60.0));
+  outputs_[0] = FakeDisplaySnapshot::Builder()
+                    .SetId(kDisplayIds[0])
+                    .SetNativeMode(modes[0]->Clone())
+                    .SetCurrentMode(modes[0]->Clone())
+                    .AddMode(modes[1]->Clone())
+                    .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                    .SetBaseConnectorId(kEdpConnectorId)
+                    .SetIsAspectPreservingScaling(true)
+                    .Build();
+  state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
+  UpdateOutputs(1, true);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  log_->GetActionsAndClear();
+  observer_.Reset();
+
+  // Set throttle state noop.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleDisabled);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(0, observer_.num_changes());
+  EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
+
+  // Set throttle state enabled.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleEnabled);
+  EXPECT_EQ(60.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(1, observer_.num_changes());
+  EXPECT_EQ(JoinActions(kTestModesetStr, kSeamlessModesetStr,
+                        GetCrtcAction({outputs_[0]->display_id(),
+                                       gfx::Point(0, 0), modes[1].get()})
+                            .c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        kSeamlessModesetStr,
+                        GetCrtcAction({outputs_[0]->display_id(),
+                                       gfx::Point(0, 0), modes[1].get()})
+                            .c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
+  observer_.Reset();
+
+  // Set throttle state disabled.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleDisabled);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(1, observer_.num_changes());
+  EXPECT_EQ(JoinActions(kTestModesetStr, kSeamlessModesetStr,
+                        GetCrtcAction({outputs_[0]->display_id(),
+                                       gfx::Point(0, 0), modes[0].get()})
+                            .c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        kSeamlessModesetStr,
+                        GetCrtcAction({outputs_[0]->display_id(),
+                                       gfx::Point(0, 0), modes[0].get()})
+                            .c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
+}
+
+TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_MultipleDisplays) {
+  InitWithOutputs(&small_mode_, &big_mode_);
+  // Set up each display with HRR native mode and eligible throttle candidate
+  // mode.
+  std::vector<std::unique_ptr<const DisplayMode>> modes;
+  modes.push_back(MakeDisplayMode(1366, 768, false, 120.0));
+  modes.push_back(MakeDisplayMode(1366, 768, false, 60.0));
+  outputs_[0] = FakeDisplaySnapshot::Builder()
+                    .SetId(kDisplayIds[0])
+                    .SetNativeMode(modes[0]->Clone())
+                    .SetCurrentMode(modes[0]->Clone())
+                    .AddMode(modes[1]->Clone())
+                    .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                    .SetBaseConnectorId(kEdpConnectorId)
+                    .SetIsAspectPreservingScaling(true)
+                    .Build();
+  // External display should never be throttled irregardless of its modes.
+  outputs_[1] = FakeDisplaySnapshot::Builder()
+                    .SetId(kDisplayIds[1])
+                    .SetNativeMode(modes[0]->Clone())
+                    .SetCurrentMode(modes[0]->Clone())
+                    .AddMode(modes[1]->Clone())
+                    .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
+                    .SetBaseConnectorId(kSecondConnectorId)
+                    .SetIsAspectPreservingScaling(true)
+                    .Build();
+  state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
+  UpdateOutputs(2, true);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(120.0f, outputs_[1]->current_mode()->refresh_rate());
+  log_->GetActionsAndClear();
+  observer_.Reset();
+
+  // Set throttle state noop.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleDisabled);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(120.0f, outputs_[1]->current_mode()->refresh_rate());
+  EXPECT_EQ(0, observer_.num_changes());
+  EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
+
+  // Set throttle state enabled.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleEnabled);
+  EXPECT_EQ(60.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(120.0f, outputs_[1]->current_mode()->refresh_rate());
+  EXPECT_EQ(1, observer_.num_changes());
+  int vertical_offset = outputs_[0]->native_mode()->size().height() +
+                        DisplayConfigurator::kVerticalGap;
+  EXPECT_EQ(JoinActions(
+                kTestModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[1].get()})
+                    .c_str(),
+                GetCrtcAction({outputs_[1]->display_id(),
+                               gfx::Point(0, vertical_offset), modes[0].get()})
+                    .c_str(),
+                kModesetOutcomeSuccess, kCommitModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[1].get()})
+                    .c_str(),
+                GetCrtcAction({outputs_[1]->display_id(),
+                               gfx::Point(0, vertical_offset), modes[0].get()})
+                    .c_str(),
+                kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
+  observer_.Reset();
+
+  // Set throttle state disabled.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleDisabled);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(120.0f, outputs_[1]->current_mode()->refresh_rate());
+  EXPECT_EQ(1, observer_.num_changes());
+  EXPECT_EQ(JoinActions(
+                kTestModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[0].get()})
+                    .c_str(),
+                GetCrtcAction({outputs_[1]->display_id(),
+                               gfx::Point(0, vertical_offset), modes[0].get()})
+                    .c_str(),
+                kModesetOutcomeSuccess, kCommitModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[0].get()})
+                    .c_str(),
+                GetCrtcAction({outputs_[1]->display_id(),
+                               gfx::Point(0, vertical_offset), modes[0].get()})
+                    .c_str(),
+                kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
+}
+
+TEST_F(DisplayConfiguratorTest, SetVrrEnabled) {
+  InitWithOutputs(&small_mode_);
+  UpdateOutputs(2, true);
+  EXPECT_FALSE(outputs_[0]->IsVrrEnabled());
+  EXPECT_FALSE(outputs_[1]->IsVrrEnabled());
+  log_->GetActionsAndClear();
+  observer_.Reset();
+
+  // Set VRR noop.
+  configurator_.SetVrrEnabled(false);
+  EXPECT_EQ(0, observer_.num_changes());
+  EXPECT_FALSE(outputs_[0]->IsVrrEnabled());
+  EXPECT_FALSE(outputs_[1]->IsVrrEnabled());
+  EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
+
+  // Set VRR enabled.
+  configurator_.SetVrrEnabled(true);
+  EXPECT_EQ(1, observer_.num_changes());
+  EXPECT_TRUE(outputs_[0]->IsVrrEnabled());
+  EXPECT_FALSE(outputs_[1]->IsVrrEnabled());
+  int vertical_offset = outputs_[0]->native_mode()->size().height() +
+                        DisplayConfigurator::kVerticalGap;
+  EXPECT_EQ(JoinActions(
+                kTestModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               outputs_[0]->native_mode(), /*enable_vrr=*/true})
+                    .c_str(),
+                GetCrtcAction(
+                    {outputs_[1]->display_id(), gfx::Point(0, vertical_offset),
+                     outputs_[1]->native_mode(), /*enable_vrr=*/false})
+                    .c_str(),
+                kModesetOutcomeSuccess, kCommitModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               outputs_[0]->native_mode(), /*enable_vrr=*/true})
+                    .c_str(),
+                GetCrtcAction(
+                    {outputs_[1]->display_id(), gfx::Point(0, vertical_offset),
+                     outputs_[1]->native_mode(), /*enable_vrr=*/false})
+                    .c_str(),
+                kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
+  observer_.Reset();
+
+  // Set VRR disabled.
+  configurator_.SetVrrEnabled(false);
+  EXPECT_EQ(1, observer_.num_changes());
+  EXPECT_FALSE(outputs_[0]->IsVrrEnabled());
+  EXPECT_FALSE(outputs_[1]->IsVrrEnabled());
+  EXPECT_EQ(
+      JoinActions(
+          kTestModesetStr,
+          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                         outputs_[0]->native_mode(), /*enable_vrr=*/false})
+              .c_str(),
+          GetCrtcAction({outputs_[1]->display_id(),
+                         gfx::Point(0, vertical_offset),
+                         outputs_[1]->native_mode(), /*enable_vrr=*/false})
+              .c_str(),
+          kModesetOutcomeSuccess, kCommitModesetStr,
+          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                         outputs_[0]->native_mode(), /*enable_vrr=*/false})
+              .c_str(),
+          GetCrtcAction({outputs_[1]->display_id(),
+                         gfx::Point(0, vertical_offset),
+                         outputs_[1]->native_mode(), /*enable_vrr=*/false})
+              .c_str(),
+          kModesetOutcomeSuccess, nullptr),
+      log_->GetActionsAndClear());
+}
+
+TEST_F(DisplayConfiguratorTest, SetVrrEnabled_NotCapable) {
+  outputs_[0]->set_variable_refresh_rate_state(kVrrNotCapable);
+  InitWithOutputs(&small_mode_);
+  UpdateOutputs(2, true);
+  EXPECT_FALSE(outputs_[0]->IsVrrEnabled());
+  EXPECT_FALSE(outputs_[1]->IsVrrEnabled());
+  log_->GetActionsAndClear();
+  observer_.Reset();
+
+  configurator_.SetVrrEnabled(true);
+  EXPECT_EQ(0, observer_.num_changes());
+  EXPECT_FALSE(outputs_[0]->IsVrrEnabled());
+  EXPECT_FALSE(outputs_[1]->IsVrrEnabled());
+  EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
+}
+
+TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_VrrEnabled) {
+  InitWithOutputs(&small_mode_);
+  // Set up display with HRR native mode and eligible throttle candidate mode.
+  std::vector<std::unique_ptr<const DisplayMode>> modes;
+  modes.push_back(MakeDisplayMode(1366, 768, false, 120.0));
+  modes.push_back(MakeDisplayMode(1366, 768, false, 60.0));
+  outputs_[0] = FakeDisplaySnapshot::Builder()
+                    .SetId(kDisplayIds[0])
+                    .SetNativeMode(modes[0]->Clone())
+                    .SetCurrentMode(modes[0]->Clone())
+                    .AddMode(modes[1]->Clone())
+                    .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                    .SetBaseConnectorId(kEdpConnectorId)
+                    .SetIsAspectPreservingScaling(true)
+                    .SetVariableRefreshRateState(kVrrDisabled)
+                    .SetVerticalDisplayRangeLimits(gfx::Range())
+                    .Build();
+  state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
+  UpdateOutputs(1, true);
+  // Enable VRR on internal display.
+  configurator_.SetVrrEnabled(true);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_TRUE(outputs_[0]->IsVrrEnabled());
+  log_->GetActionsAndClear();
+  observer_.Reset();
+
+  // Set throttle state enabled.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleEnabled);
+  EXPECT_EQ(60.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(1, observer_.num_changes());
+  // As long as VRR is enabled, throttling should trigger full (not seamless)
+  // modesets.
+  EXPECT_EQ(
+      JoinActions(kTestModesetStr,
+                  GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                                 modes[1].get(), /*enable_vrr=*/true})
+                      .c_str(),
+                  kModesetOutcomeSuccess, kCommitModesetStr,
+                  GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                                 modes[1].get(), /*enable_vrr=*/true})
+                      .c_str(),
+                  kModesetOutcomeSuccess, nullptr),
+      log_->GetActionsAndClear());
+  observer_.Reset();
+
+  // Set throttle state disabled.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleDisabled);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(1, observer_.num_changes());
+  // As long as VRR is enabled, unthrottling should trigger full (not seamless)
+  // modesets.
+  EXPECT_EQ(
+      JoinActions(kTestModesetStr,
+                  GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                                 modes[0].get(), /*enable_vrr=*/true})
+                      .c_str(),
+                  kModesetOutcomeSuccess, kCommitModesetStr,
+                  GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                                 modes[0].get(), /*enable_vrr=*/true})
+                      .c_str(),
+                  kModesetOutcomeSuccess, nullptr),
+      log_->GetActionsAndClear());
+}
+
+TEST_F(DisplayConfiguratorTest,
+       RefreshRateThrottle_VrrEnabledOnExternalDisplay) {
+  InitWithOutputs(&small_mode_, &big_mode_);
+  // Set up each display with HRR native mode and eligible throttle candidate
+  // mode.
+  std::vector<std::unique_ptr<const DisplayMode>> modes;
+  modes.push_back(MakeDisplayMode(1366, 768, false, 120.0));
+  modes.push_back(MakeDisplayMode(1366, 768, false, 60.0));
+  outputs_[0] = FakeDisplaySnapshot::Builder()
+                    .SetId(kDisplayIds[0])
+                    .SetNativeMode(modes[0]->Clone())
+                    .SetCurrentMode(modes[0]->Clone())
+                    .AddMode(modes[1]->Clone())
+                    .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                    .SetBaseConnectorId(kEdpConnectorId)
+                    .SetIsAspectPreservingScaling(true)
+                    .SetVariableRefreshRateState(kVrrNotCapable)
+                    .Build();
+  outputs_[1] = FakeDisplaySnapshot::Builder()
+                    .SetId(kDisplayIds[1])
+                    .SetNativeMode(big_mode_.Clone())
+                    .SetCurrentMode(big_mode_.Clone())
+                    .AddMode(small_mode_.Clone())
+                    .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
+                    .SetBaseConnectorId(kSecondConnectorId)
+                    .SetIsAspectPreservingScaling(true)
+                    .SetVariableRefreshRateState(kVrrDisabled)
+                    .SetVerticalDisplayRangeLimits(gfx::Range())
+                    .Build();
+  state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
+  UpdateOutputs(2, true);
+  // Enable VRR when only the external display is VRR-capable.
+  configurator_.SetVrrEnabled(true);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(60.0f, outputs_[1]->current_mode()->refresh_rate());
+  EXPECT_FALSE(outputs_[0]->IsVrrEnabled());
+  EXPECT_TRUE(outputs_[1]->IsVrrEnabled());
+  log_->GetActionsAndClear();
+  observer_.Reset();
+
+  // Set throttle state enabled.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleEnabled);
+  EXPECT_EQ(60.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(60.0f, outputs_[1]->current_mode()->refresh_rate());
+  EXPECT_EQ(1, observer_.num_changes());
+  int vertical_offset = outputs_[0]->native_mode()->size().height() +
+                        DisplayConfigurator::kVerticalGap;
+  // Throttling should be unaffected by the external display VRR state and still
+  // result in seamless modesets.
+  EXPECT_EQ(JoinActions(
+                kTestModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[1].get(), /*enable_vrr=*/false})
+                    .c_str(),
+                GetCrtcAction({outputs_[1]->display_id(),
+                               gfx::Point(0, vertical_offset), &big_mode_,
+                               /*enable_vrr=*/true})
+                    .c_str(),
+                kModesetOutcomeSuccess, kCommitModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[1].get(), /*enable_vrr=*/false})
+                    .c_str(),
+                GetCrtcAction({outputs_[1]->display_id(),
+                               gfx::Point(0, vertical_offset), &big_mode_,
+                               /*enable_vrr=*/true})
+                    .c_str(),
+                kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
+  observer_.Reset();
+
+  // Set throttle state disabled.
+  configurator_.MaybeSetRefreshRateThrottleState(outputs_[0]->display_id(),
+                                                 kRefreshRateThrottleDisabled);
+  EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
+  EXPECT_EQ(60.0f, outputs_[1]->current_mode()->refresh_rate());
+  EXPECT_EQ(1, observer_.num_changes());
+  // Unthrottling should be unaffected by the external display VRR state and
+  // still result in seamless modesets.
+  EXPECT_EQ(JoinActions(
+                kTestModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[0].get(), /*enable_vrr=*/false})
+                    .c_str(),
+                GetCrtcAction({outputs_[1]->display_id(),
+                               gfx::Point(0, vertical_offset), &big_mode_,
+                               /*enable_vrr=*/true})
+                    .c_str(),
+                kModesetOutcomeSuccess, kCommitModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[0].get(), /*enable_vrr=*/false})
+                    .c_str(),
+                GetCrtcAction({outputs_[1]->display_id(),
+                               gfx::Point(0, vertical_offset), &big_mode_,
+                               /*enable_vrr=*/true})
+                    .c_str(),
+                kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
 }
 
 class DisplayConfiguratorMultiMirroringTest : public DisplayConfiguratorTest {

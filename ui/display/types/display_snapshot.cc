@@ -197,6 +197,7 @@ void DisplaySnapshot::AddIndexToDisplayId() {
 }
 
 bool DisplaySnapshot::IsVrrCapable() const {
+  // TODO(b/221220344): Add check that vertical limits are valid.
   return variable_refresh_rate_state_ != display::kVrrNotCapable &&
          vertical_display_range_limits_.has_value();
 }

@@ -89,6 +89,10 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // Returns a display state based on the power state.
   MultipleDisplayState ChooseDisplayState() const;
 
+  // Returns whether a display configuration is required to meet the desired
+  // variable refresh rate setting.
+  bool ShouldConfigureVrr() const;
+
   NativeDisplayDelegate* delegate_;       // Not owned.
   DisplayLayoutManager* layout_manager_;  // Not owned.
 

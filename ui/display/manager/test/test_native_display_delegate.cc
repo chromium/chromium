@@ -19,15 +19,15 @@ namespace display::test {
 std::string GetModesetFlag(uint32_t flag) {
   std::string flags_str;
   if (flag & kTestModeset)
-    flags_str = base::StrCat({flags_str, kTestModesetStr, ", "});
+    flags_str = base::StrCat({flags_str, kTestModesetStr, ","});
   if (flag & kCommitModeset)
-    flags_str = base::StrCat({flags_str, kCommitModesetStr, ", "});
+    flags_str = base::StrCat({flags_str, kCommitModesetStr, ","});
   if (flag & kSeamlessModeset)
-    flags_str = base::StrCat({flags_str, kSeamlessModesetStr, ", "});
+    flags_str = base::StrCat({flags_str, kSeamlessModesetStr, ","});
 
-  // Remove trailing comma and space.
+  // Remove trailing comma.
   if (!flags_str.empty())
-    flags_str.resize(flags_str.size() - 2);
+    flags_str.resize(flags_str.size() - 1);
   return flags_str;
 }
 

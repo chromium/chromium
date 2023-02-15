@@ -245,6 +245,10 @@ bool UpdateDisplayConfigurationTask::ShouldConfigure() const {
       InternalDisplayThrottled(cached_displays_))
     return true;
 
+  if (ShouldConfigureVrr()) {
+    return true;
+  }
+
   return false;
 }
 
@@ -270,6 +274,20 @@ MultipleDisplayState UpdateDisplayConfigurationTask::ChooseDisplayState()
   if (!state_controller)
     return MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED;
   return state_controller->GetStateForDisplayIds(cached_displays_);
+}
+
+bool UpdateDisplayConfigurationTask::ShouldConfigureVrr() const {
+  for (const DisplaySnapshot* display : cached_displays_) {
+    if (!display->IsVrrCapable()) {
+      continue;
+    }
+
+    if (display->IsVrrEnabled() != new_vrr_state_) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace display
