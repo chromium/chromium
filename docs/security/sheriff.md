@@ -341,7 +341,8 @@ was filed using the Security template):
 * **Security_Severity** - your responsibility as Sheriff.
 * **FoundIn** - your responsibility as Sheriff.
 * **reward_to** - if the bug was filed internally on behalf of somebody
-  external. This is also very important; please check.
+  external (for instance, a @chromium.org email reporting "I'm filing this on
+  behalf of" and the like). This is also very important; please check.
 
 You can expect Sheriffbot to fill in lots of other labels; for example,
 the `M-` label to indicate the target milestone. It's best to allow
@@ -443,20 +444,11 @@ If you find a vulnerability in a Permission API and need to use the Global
 Permissions Kill Switch, then follow [the
 instructions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U)
 
-### Wrap Up The Fixed Issue
+### Wrapping Up The Fixed Issue
 
-1. For any **Security_Severity-**{**Critical**, **High**, **Medium**} bugs that
-  **Security_Impact-**{**Beta**, **Stable**}, add **Merge-Requested** so that
-  the fix gets merged into the next release. Exercise discretion according to
-  security severity and risk associated with the bug fix; you can ask the patch
-  author whether any risky code paths are affected. The actual merging and
-  drafting of release notes is taken care of by the [security release management
-  role](https://www.chromium.org/Home/chromium-security/security-release-management).
-1. Chrome's [Vulnerability Rewards
-  Program](https://www.google.com/about/appsecurity/chrome-rewards/index.html)
-  TPM adds the **reward-topanel** label by mass modification, but **do** label
-  any bugs reported by a @chromium.org email that should be rewarded (e.g. "I'm
-  filing this on behalf of" or the like).
+1. Check with the developer that the issue can be closed as Fixed to allow
+   Sheriffbot to add the appropriate merge-review labels based on
+   Security_Severity and Security_Impact.
 
 ## End Of Rotation
 
