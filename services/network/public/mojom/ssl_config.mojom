@@ -5,8 +5,6 @@
 module network.mojom;
 
 enum SSLVersion {
-  kTLS1,
-  kTLS11,
   kTLS12,
   kTLS13,
 };

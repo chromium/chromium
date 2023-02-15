@@ -345,8 +345,6 @@ TEST_F(NetworkServiceSSLConfigServiceTest, SSLVersion) {
     mojom::SSLVersion mojo_ssl_version;
     int net_ssl_version;
   } kVersionTable[] = {
-      {mojom::SSLVersion::kTLS1, net::SSL_PROTOCOL_VERSION_TLS1},
-      {mojom::SSLVersion::kTLS11, net::SSL_PROTOCOL_VERSION_TLS1_1},
       {mojom::SSLVersion::kTLS12, net::SSL_PROTOCOL_VERSION_TLS1_2},
       {mojom::SSLVersion::kTLS13, net::SSL_PROTOCOL_VERSION_TLS1_3},
   };

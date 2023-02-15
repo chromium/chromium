@@ -176,56 +176,6 @@ TEST_F(SSLConfigServiceManagerTest, NoCommandLinePrefs) {
       local_state_store->GetString(prefs::kSSLVersionMax, &version_max_str));
 }
 
-// Tests that "ssl3" is not treated as a valid minimum version.
-TEST_F(SSLConfigServiceManagerTest, NoSSL3) {
-  scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
-
-  TestingPrefServiceSimple local_state;
-  local_state.SetUserPref(prefs::kSSLVersionMin,
-                          std::make_unique<base::Value>("ssl3"));
-  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
-
-  std::unique_ptr<SSLConfigServiceManager> config_manager =
-      SetUpConfigServiceManager(&local_state);
-
-  // The command-line option must not have been honored.
-  // TODO(mmenke):  SSL3 no longer even has an enum value. Does this test
-  // matter?
-  EXPECT_LE(network::mojom::SSLVersion::kTLS1, initial_config_->version_min);
-}
-
-// Tests that "tls1" is not treated as a valid minimum version.
-TEST_F(SSLConfigServiceManagerTest, NoTLS10) {
-  scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
-
-  TestingPrefServiceSimple local_state;
-  local_state.SetUserPref(prefs::kSSLVersionMin,
-                          std::make_unique<base::Value>("tls1"));
-  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
-
-  std::unique_ptr<SSLConfigServiceManager> config_manager =
-      SetUpConfigServiceManager(&local_state);
-
-  // The command-line option must not have been honored.
-  EXPECT_LE(network::mojom::SSLVersion::kTLS12, initial_config_->version_min);
-}
-
-// Tests that "tls1.1" is not treated as a valid minimum version.
-TEST_F(SSLConfigServiceManagerTest, NoTLS11) {
-  scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
-
-  TestingPrefServiceSimple local_state;
-  local_state.SetUserPref(prefs::kSSLVersionMin,
-                          std::make_unique<base::Value>("tls1.1"));
-  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
-
-  std::unique_ptr<SSLConfigServiceManager> config_manager =
-      SetUpConfigServiceManager(&local_state);
-
-  // The command-line option must not have been honored.
-  EXPECT_LE(network::mojom::SSLVersion::kTLS12, initial_config_->version_min);
-}
-
 // Tests that SSLVersionMin correctly sets the minimum version.
 TEST_F(SSLConfigServiceManagerTest, SSLVersionMin) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());

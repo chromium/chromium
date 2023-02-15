@@ -26,6 +26,7 @@
 #include "net/ssl/openssl_ssl_util.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -966,8 +967,9 @@ void SSLServerContextImpl::Init() {
 
   SSL_CTX_set_early_data_enabled(ssl_ctx_.get(),
                                  ssl_server_config_.early_data_enabled);
-  DCHECK_LT(SSL3_VERSION, ssl_server_config_.version_min);
-  DCHECK_LT(SSL3_VERSION, ssl_server_config_.version_max);
+  // TLS versions before TLS 1.2 are no longer supported.
+  CHECK_LE(TLS1_2_VERSION, ssl_server_config_.version_min);
+  CHECK_LE(TLS1_2_VERSION, ssl_server_config_.version_max);
   CHECK(SSL_CTX_set_min_proto_version(ssl_ctx_.get(),
                                       ssl_server_config_.version_min));
   CHECK(SSL_CTX_set_max_proto_version(ssl_ctx_.get(),

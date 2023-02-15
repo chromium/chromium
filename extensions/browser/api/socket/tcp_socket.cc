@@ -32,13 +32,13 @@ namespace {
 // Returns true if successfully parsed the SSL protocol version that is
 // represented by a string. Returns false if |version_str| is invalid.
 bool SSLProtocolVersionFromString(const std::string& version_str,
-                                  network::mojom::SSLVersion* version_out) {
-  if (version_str == "tls1") {
-    *version_out = network::mojom::SSLVersion::kTLS1;
-    return true;
-  }
-  if (version_str == "tls1.1") {
-    *version_out = network::mojom::SSLVersion::kTLS11;
+                                  network::mojom::SSLVersion* version_out,
+                                  bool is_min_version) {
+  // TLS 1.0 and 1.1 are no longer supported. For compatibility, when set as a
+  // minimum version, we clamp to TLS 1.2. When set as a maximum version, they
+  // are treated as invalid.
+  if (is_min_version && (version_str == "tls1" || version_str == "tls1.1")) {
+    *version_out = network::mojom::SSLVersion::kTLS12;
     return true;
   }
   if (version_str == "tls1.2") {
@@ -458,12 +458,12 @@ void TCPSocket::UpgradeToTLS(api::socket::SecureOptions* options,
     bool has_version_max = false;
     api::socket::TLSVersionConstraints& versions = *options->tls_version;
     if (versions.min) {
-      has_version_min =
-          SSLProtocolVersionFromString(*versions.min, &version_min);
+      has_version_min = SSLProtocolVersionFromString(
+          *versions.min, &version_min, /*is_min_version=*/true);
     }
     if (versions.max) {
-      has_version_max =
-          SSLProtocolVersionFromString(*versions.max, &version_max);
+      has_version_max = SSLProtocolVersionFromString(
+          *versions.max, &version_max, /*is_min_version=*/false);
     }
     if (has_version_min)
       mojo_socket_options->version_min = version_min;

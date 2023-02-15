@@ -11,10 +11,6 @@ namespace mojo {
 
 int MojoSSLVersionToNetSSLVersion(network::mojom::SSLVersion mojo_version) {
   switch (mojo_version) {
-    case network::mojom::SSLVersion::kTLS1:
-      return net::SSL_PROTOCOL_VERSION_TLS1;
-    case network::mojom::SSLVersion::kTLS11:
-      return net::SSL_PROTOCOL_VERSION_TLS1_1;
     case network::mojom::SSLVersion::kTLS12:
       return net::SSL_PROTOCOL_VERSION_TLS1_2;
     case network::mojom::SSLVersion::kTLS13:

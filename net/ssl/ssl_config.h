@@ -15,21 +15,12 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/next_proto.h"
-#include "net/ssl/ssl_private_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
-// Various TLS/SSL ProtocolVersion values encoded as uint16_t
-//      struct {
-//          uint8_t major;
-//          uint8_t minor;
-//      } ProtocolVersion;
-// The most significant byte is |major|, and the least significant byte
-// is |minor|.
+// Supported TLS ProtocolVersion values encoded as uint16_t.
 enum {
-  SSL_PROTOCOL_VERSION_TLS1 = 0x0301,
-  SSL_PROTOCOL_VERSION_TLS1_1 = 0x0302,
   SSL_PROTOCOL_VERSION_TLS1_2 = 0x0303,
   SSL_PROTOCOL_VERSION_TLS1_3 = 0x0304,
 };

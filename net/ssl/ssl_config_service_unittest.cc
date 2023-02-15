@@ -53,8 +53,8 @@ class MockSSLConfigServiceObserver : public SSLConfigService::Observer {
 
 TEST(SSLConfigServiceTest, NoChangesWontNotifyObservers) {
   SSLContextConfig initial_config;
-  initial_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  initial_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  initial_config.version_min = SSL_PROTOCOL_VERSION_TLS1_2;
+  initial_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
 
   MockSSLConfigService mock_service(initial_config);
   MockSSLConfigServiceObserver observer;
@@ -68,8 +68,8 @@ TEST(SSLConfigServiceTest, NoChangesWontNotifyObservers) {
 
 TEST(SSLConfigServiceTest, ForceNotificationNotifiesObservers) {
   SSLContextConfig initial_config;
-  initial_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  initial_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  initial_config.version_min = SSL_PROTOCOL_VERSION_TLS1_2;
+  initial_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
 
   MockSSLConfigService mock_service(initial_config);
   MockSSLConfigServiceObserver observer;
@@ -83,19 +83,22 @@ TEST(SSLConfigServiceTest, ForceNotificationNotifiesObservers) {
 
 TEST(SSLConfigServiceTest, ConfigUpdatesNotifyObservers) {
   SSLContextConfig initial_config;
-  initial_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  initial_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  initial_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
 
   MockSSLConfigService mock_service(initial_config);
   MockSSLConfigServiceObserver observer;
   mock_service.AddObserver(&observer);
 
   // Test that changing the SSL version range triggers updates.
-  initial_config.version_min = SSL_PROTOCOL_VERSION_TLS1_1;
+  initial_config.version_min = SSL_PROTOCOL_VERSION_TLS1_3;
   EXPECT_CALL(observer, OnSSLContextConfigChanged()).Times(1);
   mock_service.SetSSLContextConfig(initial_config);
 
-  initial_config.version_max = SSL_PROTOCOL_VERSION_TLS1_1;
+  initial_config.version_min = SSL_PROTOCOL_VERSION_TLS1_2;
+  EXPECT_CALL(observer, OnSSLContextConfigChanged()).Times(1);
+  mock_service.SetSSLContextConfig(initial_config);
+
+  initial_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
   EXPECT_CALL(observer, OnSSLContextConfigChanged()).Times(1);
   mock_service.SetSSLContextConfig(initial_config);
 

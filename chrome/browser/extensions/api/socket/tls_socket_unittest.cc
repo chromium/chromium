@@ -178,7 +178,7 @@ TEST_F(TLSSocketTest, UpgradeToTLSWhilePendingRead) {
   EXPECT_EQ(net_error, net::ERR_FAILED);
 }
 
-TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptions) {
+TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS12) {
   // Mock data are not consumed. These are here so that net::StreamSocket::Read
   // is always pending and blocked on the write. Otherwise, mock socket data
   // will complains that there aren't any data to read.
@@ -189,7 +189,7 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptions) {
       net::MockWrite(net::ASYNC, kTestMsg, kTestMsgLength, 0)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
-  ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_1;
+  ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
   ssl_socket.expected_ssl_version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
   mock_client_socket_factory()->AddSSLSocketDataProvider(&ssl_socket);
@@ -197,7 +197,7 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptions) {
   auto socket = CreateTCPSocket();
   api::socket::SecureOptions options;
   options.tls_version.emplace();
-  options.tls_version->min = "tls1.1";
+  options.tls_version->min = "tls1.2";
   options.tls_version->max = "tls1.2";
 
   UpgradeToTLSFuture upgrade_future;
@@ -235,6 +235,64 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS13) {
   socket->UpgradeToTLS(&options, upgrade_future.GetCallback());
   auto [net_error, tls_socket, local_addr, peer_addr, receive_handle,
         send_handle] = upgrade_future.Take();
+  EXPECT_EQ(net_error, net::OK);
+  EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
+}
+
+// Test that the API maps minimum versions of TLS 1.0, a no longer supported
+// protocol, to TLS 1.2.
+TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS10) {
+  // Mock data are not consumed. These are here so that net::StreamSocket::Read
+  // is always pending and blocked on the write. Otherwise, mock socket data
+  // will complains that there aren't any data to read.
+  const net::MockRead kReads[] = {
+      net::MockRead(net::ASYNC, kTestMsg, kTestMsgLength, 1),
+      net::MockRead(net::ASYNC, net::OK, 2)};
+  const net::MockWrite kWrites[] = {
+      net::MockWrite(net::ASYNC, kTestMsg, kTestMsgLength, 0)};
+  net::SequencedSocketData data_provider(kReads, kWrites);
+  net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
+  ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
+  mock_client_socket_factory()->AddSSLSocketDataProvider(&ssl_socket);
+
+  auto socket = CreateTCPSocket();
+  api::socket::SecureOptions options;
+  options.tls_version.emplace();
+  options.tls_version->min = "tls1";
+
+  UpgradeToTLSFuture upgrade_future;
+  socket->UpgradeToTLS(&options, upgrade_future.GetCallback());
+  int net_error = std::get<0>(upgrade_future.Take());
+  EXPECT_EQ(net_error, net::OK);
+  EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
+}
+
+// Test that the API maps minimum versions of TLS 1.1, a no longer supported
+// protocol, to TLS 1.2.
+TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS11) {
+  // Mock data are not consumed. These are here so that net::StreamSocket::Read
+  // is always pending and blocked on the write. Otherwise, mock socket data
+  // will complains that there aren't any data to read.
+  const net::MockRead kReads[] = {
+      net::MockRead(net::ASYNC, kTestMsg, kTestMsgLength, 1),
+      net::MockRead(net::ASYNC, net::OK, 2)};
+  const net::MockWrite kWrites[] = {
+      net::MockWrite(net::ASYNC, kTestMsg, kTestMsgLength, 0)};
+  net::SequencedSocketData data_provider(kReads, kWrites);
+  net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
+  ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
+  mock_client_socket_factory()->AddSSLSocketDataProvider(&ssl_socket);
+
+  auto socket = CreateTCPSocket();
+  api::socket::SecureOptions options;
+  options.tls_version.emplace();
+  options.tls_version->min = "tls1.1";
+
+  UpgradeToTLSFuture upgrade_future;
+  socket->UpgradeToTLS(&options, upgrade_future.GetCallback());
+  int net_error = std::get<0>(upgrade_future.Take());
   EXPECT_EQ(net_error, net::OK);
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
 }

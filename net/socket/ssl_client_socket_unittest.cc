@@ -2387,70 +2387,34 @@ TEST_F(SSLClientSocketTest, CipherSuiteDisables) {
   EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
 }
 
-// Test that TLS 1.0 and 1.1 are no longer supported.
+// Test that TLS versions prior to TLS 1.2 cannot be configured in
+// SSLClientSocket.
 TEST_F(SSLClientSocketTest, LegacyTLSVersions) {
-  const struct {
-    uint16_t server_version;
-    absl::optional<uint16_t> client_version_min;
-    bool feature = true;
-    bool expect_error;
-  } kTests[] = {
-      // By default, TLS 1.0 and 1.1 should be disabled and will not be
-      // negotiated.
-      {.server_version = SSL_PROTOCOL_VERSION_TLS1, .expect_error = true},
-      {.server_version = SSL_PROTOCOL_VERSION_TLS1_1, .expect_error = true},
-      {.server_version = SSL_PROTOCOL_VERSION_TLS1,
-       .feature = false,
-       .expect_error = true},
-      {.server_version = SSL_PROTOCOL_VERSION_TLS1_1,
-       .feature = false,
-       .expect_error = true},
+  // Start a server, just so the underlying socket can connect somewhere, but it
+  // will fail before talking to the server, so it is fine that the server does
+  // not speak these versions.
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
 
-      // Even if enabled at the client, TLS 1.0 and 1.1 should be disabled.
-      {.server_version = SSL_PROTOCOL_VERSION_TLS1,
-       .client_version_min = SSL_PROTOCOL_VERSION_TLS1,
-       .expect_error = true},
-      {.server_version = SSL_PROTOCOL_VERSION_TLS1_1,
-       .client_version_min = SSL_PROTOCOL_VERSION_TLS1,
-       .expect_error = true},
+  // Although we don't have `SSL_PROTOCOL_VERSION_*` constants for SSL 3.0
+  // through TLS 1.1, these values are just passed through to the BoringSSL API,
+  // which means the underlying protocol version numbers can be used here.
+  //
+  // TODO(https://crbug.com/1416295): Ideally SSLConfig would just take an enum,
+  // at which point this test can be removed.
+  for (uint16_t version : {SSL3_VERSION, TLS1_VERSION, TLS1_1_VERSION}) {
+    SCOPED_TRACE(version);
 
-      // If `kSSLMinVersionAtLeastTLS12` is disabled, the `version_min` setting
-      // should take effect.
-      {.server_version = SSL_PROTOCOL_VERSION_TLS1,
-       .client_version_min = SSL_PROTOCOL_VERSION_TLS1,
-       .feature = false,
-       .expect_error = false},
-      {.server_version = SSL_PROTOCOL_VERSION_TLS1_1,
-       .client_version_min = SSL_PROTOCOL_VERSION_TLS1,
-       .feature = false,
-       .expect_error = false},
-  };
-  for (const auto& test : kTests) {
-    base::test::ScopedFeatureList feature_list;
-    if (!test.feature) {
-      // TODO(https://crbug.com/1376584): When this feature is removed, this
-      // test can be simplified.
-      feature_list.InitAndDisableFeature(features::kSSLMinVersionAtLeastTLS12);
-    }
-
-    SSLServerConfig config;
-    config.version_max = test.server_version;
-    config.version_min = test.server_version;
-    ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, config));
+    SSLConfig config;
+    config.version_min_override = version;
     int rv;
+    ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+    EXPECT_THAT(rv, IsError(ERR_UNEXPECTED));
 
-    if (test.client_version_min) {
-      SSLContextConfig client_context_config;
-      client_context_config.version_min = *test.client_version_min;
-      ssl_config_service_->UpdateSSLConfigAndNotify(client_context_config);
-    }
-
-    ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
-    if (test.expect_error) {
-      EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-    } else {
-      EXPECT_THAT(rv, IsOk());
-    }
+    config.version_min_override = absl::nullopt;
+    config.version_max_override = version;
+    ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+    EXPECT_THAT(rv, IsError(ERR_UNEXPECTED));
   }
 }
 
@@ -5304,13 +5268,6 @@ struct SSLHandshakeDetailsParams {
 };
 
 const SSLHandshakeDetailsParams kSSLHandshakeDetailsParams[] = {
-    // TLS 1.0 and 1.1 never do False Start.
-    {false /* no ALPN */, false /* no early data */, SSL_PROTOCOL_VERSION_TLS1,
-     SSLHandshakeDetails::kTLS12Full, SSLHandshakeDetails::kTLS12Resume},
-    {false /* no ALPN */, false /* no early data */,
-     SSL_PROTOCOL_VERSION_TLS1_1, SSLHandshakeDetails::kTLS12Full,
-     SSLHandshakeDetails::kTLS12Resume},
-
     // TLS 1.2 does False Start if ALPN is enabled.
     {false /* no ALPN */, false /* no early data */,
      SSL_PROTOCOL_VERSION_TLS1_2, SSLHandshakeDetails::kTLS12Full,
@@ -5335,16 +5292,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ValuesIn(kSSLHandshakeDetailsParams));
 
 TEST_P(SSLHandshakeDetailsTest, Metrics) {
-  // TLS 1.0 and 1.1 are unreachable by default.
-  // TODO(https://crbug.com/1376584): When this feature is removed, just delete
-  // the TLS 1.0 and 1.1 test cases.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSSLMinVersionAtLeastTLS12);
-
   // Enable all test features in the server.
   SSLServerConfig server_config;
-  server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
   server_config.early_data_enabled = true;
   server_config.alpn_protos = {kProtoHTTP11};
   ASSERT_TRUE(
@@ -5365,12 +5314,6 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
 
   SSLVersion version;
   switch (GetParam().version) {
-    case SSL_PROTOCOL_VERSION_TLS1:
-      version = SSL_CONNECTION_VERSION_TLS1;
-      break;
-    case SSL_PROTOCOL_VERSION_TLS1_1:
-      version = SSL_CONNECTION_VERSION_TLS1_1;
-      break;
     case SSL_PROTOCOL_VERSION_TLS1_2:
       version = SSL_CONNECTION_VERSION_TLS1_2;
       break;
