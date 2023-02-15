@@ -280,8 +280,6 @@ crypto_sources = [
   "src/crypto/x509v3/v3_lib.c",
   "src/crypto/x509v3/v3_ncons.c",
   "src/crypto/x509v3/v3_ocsp.c",
-  "src/crypto/x509v3/v3_pci.c",
-  "src/crypto/x509v3/v3_pcia.c",
   "src/crypto/x509v3/v3_pcons.c",
   "src/crypto/x509v3/v3_pmaps.c",
   "src/crypto/x509v3/v3_prn.c",
@@ -586,6 +584,7 @@ crypto_sources_linux_x86_64 = [
   "linux-x86_64/crypto/fipsmodule/x86_64-mont-linux.S",
   "linux-x86_64/crypto/fipsmodule/x86_64-mont5-linux.S",
   "linux-x86_64/crypto/test/trampoline-x86_64-linux.S",
+  "src/crypto/hrss/asm/poly_rq_mul.S",
 ]
 
 crypto_sources_win_aarch64 = [
