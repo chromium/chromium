@@ -9,6 +9,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
+#include "services/network/attribution/attribution_attestation_mediator.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "url/gurl.h"
@@ -89,6 +90,12 @@ std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
   key_commitment_getter->Set(std::move(map));
 
   return key_commitment_getter;
+}
+
+AttributionAttestationMediator CreateTestAttestationMediator(
+    TrustTokenKeyCommitments* trust_token_key_commitments) {
+  return AttributionAttestationMediator(trust_token_key_commitments,
+                                        std::make_unique<FakeCryptographer>());
 }
 
 }  // namespace network

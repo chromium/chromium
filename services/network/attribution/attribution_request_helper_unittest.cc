@@ -7,10 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
+#include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -21,26 +24,32 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
 
 class AttributionRequestHelperTest : public testing::Test {
  protected:
+  static constexpr char kTestBlindSignature[] = "blind-signature";
+  enum WithAttestationHeader {
+    kYes,
+    kNo,
+  };
+
   void SetUp() override {
     trust_token_key_commitments_ = CreateTestTrustTokenKeyCommitments(
         /*key=*/"any-key",
         /*protocol_version=*/mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb,
         /*issuer_url=*/example_valid_request_url_);
 
-    auto fake_cryptographer = std::make_unique<FakeCryptographer>();
-
-    auto mediator = std::make_unique<AttributionAttestationMediator>(
-        trust_token_key_commitments_.get(), std::move(fake_cryptographer));
     net::HttpRequestHeaders request_headers;
     request_headers.SetHeader("Attribution-Reporting-Eligible", "trigger");
-    helper_ = AttributionRequestHelper::CreateForTesting(request_headers,
-                                                         std::move(mediator));
+    helper_ = AttributionRequestHelper::CreateForTesting(
+        request_headers,
+        /*create_mediator=*/base::BindRepeating(
+            &CreateTestAttestationMediator,
+            trust_token_key_commitments_.get()));
 
     context_ = net::CreateTestURLRequestContextBuilder()->Build();
   }
@@ -63,22 +72,87 @@ class AttributionRequestHelperTest : public testing::Test {
     return request;
   }
 
+  net::RedirectInfo CreateRedirectInfo(const net::URLRequest& request,
+                                       const GURL& to_url) {
+    // We only care about the `new_location`, other properties are set to look
+    // valid but are of no importance to the tests using the helper method.
+    return net::RedirectInfo::ComputeRedirectInfo(
+        /*original_method=*/request.method(), /*original_url=*/request.url(),
+        /*original_site_for_cookies=*/request.site_for_cookies(),
+        /*original_first_party_url_policy=*/
+        net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT,
+        /*original_referrer_policy=*/request.referrer_policy(),
+        /*original_referrer=*/request.referrer(),
+        /*http_status_code=*/net::HTTP_FOUND,
+        /*new_location=*/to_url, /*referrer_policy_header=*/absl::nullopt,
+        /*insecure_scheme_was_upgraded=*/false, /*copy_fragment=*/false,
+        /*is_signed_exchange_fallback_redirect=*/false);
+  }
+
+  mojom::URLResponseHeadPtr CreateResponse(WithAttestationHeader with) {
+    auto response = mojom::URLResponseHead::New();
+    response->response_time = base::Time::Now();
+    response->headers = net::HttpResponseHeaders::TryToCreate("");
+    if (with == WithAttestationHeader::kYes) {
+      response->headers->AddHeader(
+          AttributionAttestationMediator::kTriggerAttestationHeader,
+          kTestBlindSignature);
+    }
+
+    return response;
+  }
+
   void RunBeginWith(net::URLRequest& request) {
     base::RunLoop run_loop;
     helper_->Begin(request, run_loop.QuitClosure());
     run_loop.Run();
   }
 
-  void RunFinalizeWith(mojom::URLResponseHead& response) {
+  void RunRedirectWith(net::URLRequest& request,
+                       mojom::URLResponseHeadPtr response,
+                       const ::net::RedirectInfo& redirect_info,
+                       bool expect_trigger_attestation) {
+    base::RunLoop run_loop;
+    auto expected_response_time = response->response_time;
+    helper_->OnReceiveRedirect(
+        request, std::move(response), redirect_info,
+        base::BindLambdaForTesting([&run_loop, expected_response_time,
+                                    expect_trigger_attestation](
+                                       mojom::URLResponseHeadPtr response) {
+          EXPECT_EQ(expected_response_time, response->response_time);
+          if (expect_trigger_attestation) {
+            ASSERT_TRUE(response->trigger_attestation);
+            EXPECT_TRUE(FakeCryptographer::IsToken(
+                response->trigger_attestation->token(), kTestBlindSignature));
+          } else {
+            ASSERT_FALSE(response->trigger_attestation);
+          }
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  void RunFinalizeWith(mojom::URLResponseHead& response,
+                       bool expect_trigger_attestation) {
     base::RunLoop run_loop;
     helper_->Finalize(response, run_loop.QuitClosure());
     run_loop.Run();
+
+    if (expect_trigger_attestation) {
+      ASSERT_TRUE(response.trigger_attestation);
+      EXPECT_TRUE(FakeCryptographer::IsToken(
+          response.trigger_attestation->token(), kTestBlindSignature));
+    } else {
+      ASSERT_FALSE(response.trigger_attestation);
+    }
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<AttributionRequestHelper> helper_;
   GURL example_valid_request_url_ =
       GURL("https://reporting-origin.example/test/path/#123");
+  GURL example_not_registered_url =
+      GURL("https://not-registered-origin.example/path/123#foo");
 
  private:
   std::unique_ptr<net::URLRequestContext> context_;
@@ -129,10 +203,136 @@ TEST_F(AttributionRequestHelperTest, Begin_NoDestinationOnTheRequest) {
 
 TEST_F(AttributionRequestHelperTest, Begin_NoHeadersReturned) {
   std::unique_ptr<net::URLRequest> request = CreateTestUrlRequestFrom(
-      /*to_url=*/GURL("https://not-registered-origin.example/path/123#foo"),
+      /*to_url=*/example_not_registered_url,
       /*from_url=*/GURL("https://origin.example/path/123#foo"));
 
   RunBeginWith(*request);
+
+  EXPECT_TRUE(request->extra_request_headers().IsEmpty());
+}
+
+// Should handle multiple successful redirections were headers are added and
+// responses parsed to return multiple trigger_attestations.
+TEST_F(AttributionRequestHelperTest, Redirect_Headers_Headers_Headers) {
+  std::unique_ptr<net::URLRequest> request = CreateTestUrlRequestFrom(
+      /*to_url=*/example_valid_request_url_,
+      /*from_url=*/GURL("https://origin.example/path/123#foo"));
+
+  RunBeginWith(*request);
+  std::string first_request_header;
+  request->extra_request_headers().GetHeader(
+      AttributionAttestationMediator::kTriggerAttestationHeader,
+      &first_request_header);
+
+  RunRedirectWith(
+      *request, CreateResponse(WithAttestationHeader::kYes),
+      CreateRedirectInfo(*request, /*to_url=*/example_valid_request_url_),
+      /*expect_trigger_attestation=*/true);
+  std::string second_request_header;
+  request->extra_request_headers().GetHeader(
+      AttributionAttestationMediator::kTriggerAttestationHeader,
+      &second_request_header);
+  EXPECT_NE(first_request_header, second_request_header);
+
+  RunRedirectWith(
+      *request, CreateResponse(WithAttestationHeader::kYes),
+      CreateRedirectInfo(*request, /*to_url=*/example_valid_request_url_),
+      /*expect_trigger_attestation=*/true);
+  std::string third_request_header;
+  request->extra_request_headers().GetHeader(
+      AttributionAttestationMediator::kTriggerAttestationHeader,
+      &third_request_header);
+  EXPECT_NE(second_request_header, third_request_header);
+
+  RunFinalizeWith(*CreateResponse(WithAttestationHeader::kYes),
+                  /*expect_trigger_attestation=*/true);
+}
+
+// Should be able to have a redirect with attestation following one to an
+// origin that was not registered as an issuer.
+TEST_F(AttributionRequestHelperTest, Redirect_Headers_NoHeaders_Headers) {
+  std::unique_ptr<net::URLRequest> request = CreateTestUrlRequestFrom(
+      /*to_url=*/example_valid_request_url_,
+      /*from_url=*/GURL("https://origin.example/path/123#foo"));
+
+  RunBeginWith(*request);
+
+  RunRedirectWith(*request,
+                  /*response=*/CreateResponse(WithAttestationHeader::kYes),
+                  /*redirect_info=*/
+                  CreateRedirectInfo(*request, example_not_registered_url),
+                  /*expect_trigger_attestation=*/true);
+  RunRedirectWith(*request,
+                  /*response=*/CreateResponse(WithAttestationHeader::kNo),
+                  /*redirect_info=*/
+                  CreateRedirectInfo(*request, example_valid_request_url_),
+                  /*expect_trigger_attestation=*/false);
+
+  RunFinalizeWith(*CreateResponse(WithAttestationHeader::kYes),
+                  /*expect_trigger_attestation=*/true);
+}
+
+// Should support attesting a redirection response even if the initial request
+// did not need attestation.
+TEST_F(AttributionRequestHelperTest, Redirect_NoHeaders_Headers) {
+  std::unique_ptr<net::URLRequest> request = CreateTestUrlRequestFrom(
+      /*to_url=*/example_not_registered_url,
+      /*from_url=*/GURL("https://origin.example/path/123#foo"));
+
+  RunBeginWith(*request);
+
+  ASSERT_FALSE(request->extra_request_headers().HasHeader(
+      AttributionAttestationMediator::kTriggerAttestationHeader));
+
+  RunRedirectWith(*request, CreateResponse(WithAttestationHeader::kNo),
+                  CreateRedirectInfo(*request, example_valid_request_url_),
+                  /*expect_trigger_attestation=*/false);
+
+  // Should add the attestation headers even if no headers were added on the
+  // first request.
+  ASSERT_TRUE(request->extra_request_headers().HasHeader(
+      AttributionAttestationMediator::kTriggerAttestationHeader));
+
+  RunFinalizeWith(*CreateResponse(WithAttestationHeader::kYes),
+                  /*expect_trigger_attestation=*/true);
+}
+
+// Should avoid leaking attestation headers to redirection requests when an
+// initial request needed attestation but the redirection request does not.
+TEST_F(AttributionRequestHelperTest, Redirect_Headers_NoHeaders) {
+  std::unique_ptr<net::URLRequest> request = CreateTestUrlRequestFrom(
+      /*to_url=*/example_valid_request_url_,
+      /*from_url=*/GURL("https://origin.example/path/123#foo"));
+
+  RunBeginWith(*request);
+  ASSERT_TRUE(request->extra_request_headers().HasHeader(
+      AttributionAttestationMediator::kTriggerAttestationHeader));
+
+  RunRedirectWith(*request,
+                  /*response=*/CreateResponse(WithAttestationHeader::kYes),
+                  /*redirect_info=*/
+                  CreateRedirectInfo(*request, example_not_registered_url),
+                  /*expect_trigger_attestation=*/true);
+
+  // Should have removed the headers added on the first request
+  ASSERT_FALSE(request->extra_request_headers().HasHeader(
+      AttributionAttestationMediator::kTriggerAttestationHeader));
+
+  RunFinalizeWith(*CreateResponse(WithAttestationHeader::kNo),
+                  /*expect_trigger_attestation=*/false);
+}
+
+TEST_F(AttributionRequestHelperTest, Redirect_NoDestinationOnTheRequest) {
+  std::unique_ptr<net::URLRequest> request =
+      CreateTestUrlRequest(/*to_url=*/example_valid_request_url_);
+
+  RunBeginWith(*request);
+
+  RunRedirectWith(*request,
+                  /*response=*/CreateResponse(WithAttestationHeader::kYes),
+                  /*redirect_info=*/
+                  CreateRedirectInfo(*request, example_not_registered_url),
+                  /*expect_trigger_attestation=*/false);
 
   EXPECT_TRUE(request->extra_request_headers().IsEmpty());
 }
@@ -144,29 +344,15 @@ TEST_F(AttributionRequestHelperTest, Finalize_AttestationTokenAdded) {
 
   RunBeginWith(*request);
 
-  mojom::URLResponseHeadPtr response_head = mojom::URLResponseHead::New();
-  response_head->headers = net::HttpResponseHeaders::TryToCreate("");
-  response_head->headers->AddHeader(
-      AttributionAttestationMediator::kTriggerAttestationHeader,
-      "blind-signature");
-
-  RunFinalizeWith(*response_head);
-
-  ASSERT_TRUE(response_head->trigger_attestation);
-  EXPECT_TRUE(FakeCryptographer::IsToken(
-      response_head->trigger_attestation->token(), "blind-signature"));
+  RunFinalizeWith(*CreateResponse(WithAttestationHeader::kYes),
+                  /*expect_trigger_attestation=*/true);
 }
 
 TEST_F(AttributionRequestHelperTest, Finalize_NotBegun) {
-  mojom::URLResponseHeadPtr response_head = mojom::URLResponseHead::New();
-  response_head->headers = net::HttpResponseHeaders::TryToCreate("");
-  response_head->headers->AddHeader(
-      AttributionAttestationMediator::kTriggerAttestationHeader,
-      "blind-signature");
-
-  RunFinalizeWith(*response_head);
-
-  EXPECT_FALSE(response_head->trigger_attestation);
+  // We add attestation header on the response, they should be ignored as the
+  // operation had not been started.
+  RunFinalizeWith(*CreateResponse(WithAttestationHeader::kYes),
+                  /*expect_trigger_attestation=*/false);
 }
 
 struct CreateIfNeededTestCase {
@@ -190,8 +376,9 @@ TEST_F(AttributionRequestHelperTest, CreateIfNeeded) {
     net::HttpRequestHeaders request_headers;
     request_headers.SetHeader(test_case.header_name, test_case.header_value);
 
-    auto instance = AttributionRequestHelper::CreateIfNeeded(
-        request_headers, key_commitment.get());
+    auto instance = AttributionRequestHelper::CreateForTesting(
+        request_headers, /*create_mediator=*/base::BindRepeating(
+            &CreateTestAttestationMediator, key_commitment.get()));
     bool instance_created = !!instance;
     EXPECT_EQ(instance_created, test_case.expect_instance_to_be_created);
   }

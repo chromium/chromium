@@ -11,13 +11,16 @@
 #include "base/functional/callback_forward.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
 
 class URLRequest;
 class HttpRequestHeaders;
+struct RedirectInfo;
 
 }  // namespace net
 
@@ -44,44 +47,80 @@ class AttributionRequestHelper {
       const TrustTokenKeyCommitmentGetter* key_commitment_getter);
 
   // Test methods which allows to instantiate an AttributionRequestHelper with
-  // dependency injection (i.e. `CreateIfNeeded` instantiates an
-  // `AttributionAttestationMediator`, this method receives it).
+  // dependency injection (i.e. `CreateIfNeeded` builds `create_mediator` , this
+  // method receives it).
   static std::unique_ptr<AttributionRequestHelper> CreateForTesting(
       const net::HttpRequestHeaders& request_headers,
-      std::unique_ptr<AttributionAttestationMediator>);
+      base::RepeatingCallback<AttributionAttestationMediator()>
+          create_mediator);
 
   ~AttributionRequestHelper();
   AttributionRequestHelper(const AttributionRequestHelper&) = delete;
   AttributionRequestHelper& operator=(const AttributionRequestHelper&) = delete;
 
   // Orchestrates trigger attestation by calling the attribution attestation
-  // mediator and optionally adding headers on the `request`.
+  // mediator and optionally adding headers on the `request`. Externally, it
+  // will be called once per request. Internally, on redirection, it will be
+  // called by `OnReceivedRedirect`.
   void Begin(net::URLRequest& request, base::OnceClosure done);
+
+  // Orchestrates attestation on a redirection request by `Finalize`.ing an
+  // initial request and `Begin`.ing the attestation process on the redirection
+  // request. A trigger_attestation property might be added to the `response`.
+  // Attestation headers will potentially be added or removed from the
+  // `request`.
+  void OnReceiveRedirect(
+      net::URLRequest& request,
+      mojom::URLResponseHeadPtr response,
+      const net::RedirectInfo& redirect_info,
+      base::OnceCallback<void(mojom::URLResponseHeadPtr response)> done);
 
   // Orchestrates attestation by calling the attribution attestation mediator
   // with the `response`'s headers. If an attestation header is present, it will
-  // be processed and removed from the response. A trigger_attestation property
-  // might be added to the response.
+  // be processed and removed from the `response`. A trigger_attestation
+  // property might be added to the `response`. Externally, it will be called at
+  // most once per request. Internally, it might be called on redirection by
+  // `OnReceivedRedirect`.
   void Finalize(mojom::URLResponseHead& response, base::OnceClosure done);
 
  private:
-  explicit AttributionRequestHelper(
-      std::unique_ptr<AttributionAttestationMediator> mediator);
+  struct AttestationOperation {
+    explicit AttestationOperation(
+        const base::RepeatingCallback<AttributionAttestationMediator()>&
+            create_mediator);
+    ~AttestationOperation();
 
-  // Generates a message by concatenating a trigger`s `destination_origin` and
-  // the `aggregatable_report_id_`.
-  std::string GenerateTriggerAttestationMessage(
-      const url::Origin& destination_origin);
+    // Returns the message associated to this atttestation operation. It is
+    // represented by concatenating a trigger`s `destination_origin` and the
+    // `aggregatable_report_id`.
+    std::string Message(const url::Origin& destination_origin);
+
+    // TODO(https://crbug.com/1406645): use explicitly spec compliant structure
+    base::GUID aggregatable_report_id;
+
+    AttributionAttestationMediator mediator;
+  };
+
+  explicit AttributionRequestHelper(
+      base::RepeatingCallback<AttributionAttestationMediator()>
+          create_mediator);
 
   // Continuation of `Begin` after asynchronous
   // mediator_::GetHeadersForAttestation concludes.
   //
-  // `url_requests` and `done` are `Begin`'s parameters, passed on to the
+  // `request` and `done` are `Begin`'s parameters, passed on to the
   // continuation. `maybe_headers` are headers optionally returned by the
   // attribution attestation mediator that wil be added to the request.
-  void OnDoneGettingHeaders(net::URLRequest& url_request,
+  void OnDoneGettingHeaders(net::URLRequest& request,
                             base::OnceClosure done,
                             net::HttpRequestHeaders headers);
+
+  // Continuation of `Redirect` after asynchronous call to `Finalize. `request`
+  // and `done` are `Redirect`'s parameters, passed on to the continuation.
+  void OnDoneFinalizingResponseFromRedirect(
+      net::URLRequest& request,
+      const net::RedirectInfo& redirect_info,
+      base::OnceClosure done);
 
   // Continuation of `Finalize` after asynchronous
   // mediator_::ProcessAttestationToGetToken concludes.
@@ -94,17 +133,15 @@ class AttributionRequestHelper {
       base::OnceClosure done,
       absl::optional<std::string> maybe_redemption_token);
 
-  // The id for a potential future aggregatable report. It is eagerly generated
-  // in this class to be embedded in the attestation message.
-  // TODO(1406645): use explicitly spec compliant structure
-  base::GUID aggregatable_report_id_;
+  // A mediator can perform a single attesation operation. Each redirect does an
+  // attestation. We use this callback to generate a new mediator instance per
+  // attestation operation.
+  base::RepeatingCallback<AttributionAttestationMediator()> create_mediator_;
 
-  std::unique_ptr<AttributionAttestationMediator> mediator_;
-
-  // Set to true when headers are added as part of `Begin`. This indicates that
-  // the response is to be parsed on `Finalize`. If still false when `Finalize`
-  // is called, we can return early.
-  bool set_attestation_headers_ = false;
+  // One request can lead to multiple attestation operations as each redirect
+  // requires a distinct operation. `attestation_operation_` will be defined
+  // when an operation is undergoing.
+  std::unique_ptr<AttestationOperation> attestation_operation_;
 
   base::WeakPtrFactory<AttributionRequestHelper> weak_ptr_factory_{this};
 };

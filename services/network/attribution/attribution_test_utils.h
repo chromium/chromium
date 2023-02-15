@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_TEST_UTILS_H_
 #define SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_TEST_UTILS_H_
 
+#include <memory>
 #include <set>
 #include <string>
 
@@ -77,6 +78,9 @@ class FakeCryptographer : public AttributionAttestationMediator::Cryptographer {
   bool should_fail_begin_issuance_ = false;
   bool should_fail_confirm_issuance_ = false;
 };
+
+AttributionAttestationMediator CreateTestAttestationMediator(
+    TrustTokenKeyCommitments*);
 
 std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
     std::string key,
