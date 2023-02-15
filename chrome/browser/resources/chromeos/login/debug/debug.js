@@ -1555,7 +1555,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
         },
       ],
     },
-
+    {
+      id: 'touchpad-scroll',
+      kind: ScreenKind.NORMAL,
+    },
     {
       id: 'marketing-opt-in',
       kind: ScreenKind.NORMAL,
