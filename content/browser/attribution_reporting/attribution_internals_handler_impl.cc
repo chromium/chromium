@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -207,11 +209,19 @@ void ForwardReportsToWebUI(
 
 AttributionInternalsHandlerImpl::AttributionInternalsHandlerImpl(
     WebUI* web_ui,
-    mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver)
-    : web_ui_(web_ui), receiver_(this, std::move(receiver)) {
-  observers_.set_disconnect_handler(base::BindRepeating(
-      &AttributionInternalsHandlerImpl::OnObserverDisconnected,
-      base::Unretained(this)));
+    mojo::PendingRemote<attribution_internals::mojom::Observer> observer,
+    mojo::PendingReceiver<attribution_internals::mojom::Handler> handler)
+    : web_ui_(web_ui),
+      observer_(std::move(observer)),
+      handler_(this, std::move(handler)) {
+  DCHECK(web_ui_);
+  if (auto* manager =
+          AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
+    manager_observation_.Observe(manager);
+    observer_.set_disconnect_handler(
+        base::BindOnce(&AttributionInternalsHandlerImpl::OnObserverDisconnected,
+                       base::Unretained(this)));
+  }
 }
 
 AttributionInternalsHandlerImpl::~AttributionInternalsHandlerImpl() = default;
@@ -281,34 +291,13 @@ void AttributionInternalsHandlerImpl::ClearStorage(
   }
 }
 
-void AttributionInternalsHandlerImpl::AddObserver(
-    mojo::PendingRemote<attribution_internals::mojom::Observer> observer,
-    attribution_internals::mojom::Handler::AddObserverCallback callback) {
-  if (AttributionManager* manager =
-          AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
-    observers_.Add(std::move(observer));
-
-    if (!manager_observation_.IsObservingSource(manager)) {
-      manager_observation_.Observe(manager);
-    }
-
-    std::move(callback).Run(true);
-  } else {
-    std::move(callback).Run(false);
-  }
-}
-
 void AttributionInternalsHandlerImpl::OnSourcesChanged() {
-  for (auto& observer : observers_) {
-    observer->OnSourcesChanged();
-  }
+  observer_->OnSourcesChanged();
 }
 
 void AttributionInternalsHandlerImpl::OnReportsChanged(
     AttributionReport::Type report_type) {
-  for (auto& observer : observers_) {
-    observer->OnReportsChanged(report_type);
-  }
+  observer_->OnReportsChanged(report_type);
 }
 
 namespace {
@@ -346,9 +335,7 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
   web_ui_source->status =
       attribution_internals::mojom::SourceStatus::NewStoreSourceResult(result);
 
-  for (auto& observer : observers_) {
-    observer->OnSourceHandled(web_ui_source.Clone());
-  }
+  observer_->OnSourceHandled(std::move(web_ui_source));
 }
 
 void AttributionInternalsHandlerImpl::OnReportSent(
@@ -373,11 +360,8 @@ void AttributionInternalsHandlerImpl::OnReportSent(
       break;
   }
 
-  auto web_report = WebUIReport(report, is_debug_report, std::move(status));
-
-  for (auto& observer : observers_) {
-    observer->OnReportSent(web_report.Clone());
-  }
+  observer_->OnReportSent(
+      WebUIReport(report, is_debug_report, std::move(status)));
 }
 
 void AttributionInternalsHandlerImpl::OnDebugReportSent(
@@ -397,9 +381,7 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
           : attribution_internals::mojom::DebugReportStatus::NewNetworkError(
                 net::ErrorToShortString(status));
 
-  for (auto& observer : observers_) {
-    observer->OnDebugReportSent(web_report.Clone());
-  }
+  observer_->OnDebugReportSent(std::move(web_report));
 }
 
 // TODO(crbug/1351843): Consider surfacing this error in devtools instead of
@@ -420,9 +402,7 @@ void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
   web_ui_source->status =
       attribution_internals::mojom::SourceStatus::NewJsonError(error);
 
-  for (auto& observer : observers_) {
-    observer->OnSourceHandled(web_ui_source.Clone());
-  }
+  observer_->OnSourceHandled(std::move(web_ui_source));
 }
 
 namespace {
@@ -521,9 +501,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
       GetWebUITriggerStatus(result.aggregatable_status());
   web_ui_trigger->attestation = trigger.attestation();
 
-  for (auto& observer : observers_) {
-    observer->OnTriggerHandled(web_ui_trigger.Clone());
-  }
+  observer_->OnTriggerHandled(std::move(web_ui_trigger));
 
   if (const absl::optional<AttributionReport>& report =
           result.replaced_event_level_report()) {
@@ -532,24 +510,17 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
         AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
     DCHECK(result.new_event_level_report().has_value());
 
-    auto web_ui_report =
+    observer_->OnReportDropped(
         WebUIReport(*report, /*is_debug_report=*/false,
                     ReportStatus::NewReplacedByHigherPriorityReport(
                         result.new_event_level_report()
                             ->external_report_id()
-                            .AsLowercaseString()));
-
-    for (auto& observer : observers_) {
-      observer->OnReportDropped(web_ui_report.Clone());
-    }
+                            .AsLowercaseString())));
   }
 }
 
-void AttributionInternalsHandlerImpl::OnObserverDisconnected(
-    mojo::RemoteSetElementId) {
-  if (observers_.empty()) {
-    manager_observation_.Reset();
-  }
+void AttributionInternalsHandlerImpl::OnObserverDisconnected() {
+  manager_observation_.Reset();
 }
 
 }  // namespace content

@@ -15,8 +15,9 @@
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -41,7 +42,8 @@ class AttributionInternalsHandlerImpl
  public:
   AttributionInternalsHandlerImpl(
       WebUI* web_ui,
-      mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver);
+      mojo::PendingRemote<attribution_internals::mojom::Observer>,
+      mojo::PendingReceiver<attribution_internals::mojom::Handler>);
   AttributionInternalsHandlerImpl(const AttributionInternalsHandlerImpl&) =
       delete;
   AttributionInternalsHandlerImpl& operator=(
@@ -66,10 +68,6 @@ class AttributionInternalsHandlerImpl
                        callback) override;
   void ClearStorage(attribution_internals::mojom::Handler::ClearStorageCallback
                         callback) override;
-  void AddObserver(
-      mojo::PendingRemote<attribution_internals::mojom::Observer> observer,
-      attribution_internals::mojom::Handler::AddObserverCallback callback)
-      override;
 
  private:
   // AttributionObserver:
@@ -96,13 +94,13 @@ class AttributionInternalsHandlerImpl
       AttributionSourceType,
       attribution_reporting::mojom::SourceRegistrationError) override;
 
-  void OnObserverDisconnected(mojo::RemoteSetElementId);
+  void OnObserverDisconnected();
 
   raw_ptr<WebUI> web_ui_;
 
-  mojo::Receiver<attribution_internals::mojom::Handler> receiver_;
+  mojo::Remote<attribution_internals::mojom::Observer> observer_;
 
-  mojo::RemoteSet<attribution_internals::mojom::Observer> observers_;
+  mojo::Receiver<attribution_internals::mojom::Handler> handler_;
 
   base::ScopedObservation<AttributionManager, AttributionObserver>
       manager_observation_{this};

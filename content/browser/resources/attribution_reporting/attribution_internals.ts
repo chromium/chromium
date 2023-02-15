@@ -10,7 +10,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {TriggerAttestation} from './attribution.mojom-webui.js';
-import {Handler, HandlerInterface, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
@@ -555,7 +555,7 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
   constructor(
       cols: Array<Column<T>>, showDebugReportsContainer: HTMLElement,
       private readonly sendReportsButton: HTMLButtonElement,
-      private readonly remote: HandlerInterface) {
+      private readonly handler: HandlerInterface) {
     super(
         commonReportTableColumns<T>().concat(cols),
         5,  // Sort by report time by default; the extra column is added below
@@ -657,7 +657,7 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     this.sendReportsButton.disabled = true;
     this.sendReportsButton.innerText = 'Sending...';
 
-    this.remote.sendReports(ids).then(() => {
+    this.handler.sendReports(ids).then(() => {
       this.sendReportsButton.innerText = previousText;
     });
   }
@@ -935,20 +935,20 @@ class AttributionInternals implements ObserverInterface {
   private readonly eventLevelReports: EventLevelReportTableModel;
   private readonly aggregatableReports: AggregatableAttributionReportTableModel;
 
-  private readonly remote = Handler.getRemote();
+  private readonly handler = new HandlerRemote();
 
   constructor() {
     this.eventLevelReports = new EventLevelReportTableModel(
         document.querySelector<HTMLButtonElement>('#show-debug-event-reports')!,
         document.querySelector<HTMLButtonElement>('#send-reports')!,
-        this.remote);
+        this.handler);
 
     this.aggregatableReports = new AggregatableAttributionReportTableModel(
         document.querySelector<HTMLButtonElement>(
             '#show-debug-aggregatable-reports')!,
         document.querySelector<HTMLButtonElement>('#send-aggregatable-reports')!
         ,
-        this.remote);
+        this.handler);
 
     installUnreadIndicator(
         this.sources, document.querySelector<HTMLElement>('#sources-tab')!);
@@ -997,8 +997,9 @@ class AttributionInternals implements ObserverInterface {
         .querySelector<AttributionInternalsTableElement<DebugReport>>(
             '#debugReportTable')!.setModel(this.debugReports);
 
-    this.remote.addObserver(
-        new ObserverReceiver(this).$.bindNewPipeAndPassRemote());
+    Factory.getRemote().create(
+        new ObserverReceiver(this).$.bindNewPipeAndPassRemote(),
+        this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   onSourcesChanged() {
@@ -1051,11 +1052,11 @@ class AttributionInternals implements ObserverInterface {
     this.eventLevelReports.clear();
     this.aggregatableReports.clear();
     this.debugReports.clear();
-    this.remote.clearStorage();
+    this.handler.clearStorage();
   }
 
   refresh() {
-    this.remote.isAttributionReportingEnabled().then((response) => {
+    this.handler.isAttributionReportingEnabled().then((response) => {
       const featureStatusContent =
           document.querySelector<HTMLElement>('#feature-status-content')!;
       featureStatusContent.innerText =
@@ -1079,14 +1080,14 @@ class AttributionInternals implements ObserverInterface {
   }
 
   private updateSources() {
-    this.remote.getActiveSources().then((response) => {
+    this.handler.getActiveSources().then((response) => {
       this.sources.setStoredSources(
           response.sources.map((mojo) => new Source(mojo)));
     });
   }
 
   private updateReports(reportType: ReportType) {
-    this.remote.getReports(reportType).then((response) => {
+    this.handler.getReports(reportType).then((response) => {
       switch (reportType) {
         case ReportType.kEventLevel:
           this.eventLevelReports.setStoredReports(

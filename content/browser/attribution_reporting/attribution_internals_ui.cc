@@ -49,9 +49,16 @@ void AttributionInternalsUI::WebUIRenderFrameCreated(RenderFrameHost* rfh) {
 }
 
 void AttributionInternalsUI::BindInterface(
-    mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver) {
+    mojo::PendingReceiver<attribution_internals::mojom::Factory> factory) {
+  factory_.reset();
+  factory_.Bind(std::move(factory));
+}
+
+void AttributionInternalsUI::Create(
+    mojo::PendingRemote<attribution_internals::mojom::Observer> observer,
+    mojo::PendingReceiver<attribution_internals::mojom::Handler> handler) {
   ui_handler_ = std::make_unique<AttributionInternalsHandlerImpl>(
-      web_ui(), std::move(receiver));
+      web_ui(), std::move(observer), std::move(handler));
 }
 
 }  // namespace content

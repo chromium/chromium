@@ -7,11 +7,13 @@
 
 #include <memory>
 
-#include "content/browser/attribution_reporting/attribution_internals.mojom-forward.h"
+#include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 
@@ -30,7 +32,8 @@ class AttributionInternalsUIConfig
 };
 
 // WebUI which handles serving the chrome://attribution-internals page.
-class AttributionInternalsUI : public WebUIController {
+class AttributionInternalsUI : public WebUIController,
+                               public attribution_internals::mojom::Factory {
  public:
   explicit AttributionInternalsUI(WebUI* web_ui);
   AttributionInternalsUI(const AttributionInternalsUI&) = delete;
@@ -43,10 +46,17 @@ class AttributionInternalsUI : public WebUIController {
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
   void BindInterface(
-      mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver);
+      mojo::PendingReceiver<attribution_internals::mojom::Factory>);
 
  private:
+  // attribution_internals::mojom::Factory:
+  void Create(
+      mojo::PendingRemote<attribution_internals::mojom::Observer>,
+      mojo::PendingReceiver<attribution_internals::mojom::Handler>) override;
+
   std::unique_ptr<AttributionInternalsHandlerImpl> ui_handler_;
+
+  mojo::Receiver<attribution_internals::mojom::Factory> factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

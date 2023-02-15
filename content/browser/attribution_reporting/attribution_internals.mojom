@@ -235,7 +235,11 @@ interface Handler {
   // Deletes all persisted data for the attribution reporting API, returning when the
   // operation has been completed.
   ClearStorage() => ();
+};
 
-  // Registers an observer to be notified of attribution reporting events.
-  AddObserver(pending_remote<Observer> observer) => (bool success);
+// Factory for Observer and Handler.
+interface Factory {
+  // Binds the observer and handler.
+  Create(pending_remote<Observer> observer,
+         pending_receiver<Handler> handler);
 };

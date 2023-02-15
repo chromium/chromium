@@ -1132,7 +1132,7 @@ void PopulateBinderMapWithContext(
   RegisterWebUIControllerInterfaceBinder<
       aggregation_service_internals::mojom::Handler,
       AggregationServiceInternalsUI>(map);
-  RegisterWebUIControllerInterfaceBinder<attribution_internals::mojom::Handler,
+  RegisterWebUIControllerInterfaceBinder<attribution_internals::mojom::Factory,
                                          AttributionInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::IdbInternalsHandler,
                                          IndexedDBInternalsUI>(map);
