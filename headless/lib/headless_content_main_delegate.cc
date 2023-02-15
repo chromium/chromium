@@ -179,7 +179,8 @@ absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   // Use software rendering by default, but don't mess with gl and angle
   // switches if user is overriding them.
   if (!command_line->HasSwitch(::switches::kUseGL) &&
-      !command_line->HasSwitch(::switches::kUseANGLE)) {
+      !command_line->HasSwitch(::switches::kUseANGLE) &&
+      !command_line->HasSwitch(switches::kEnableGPU)) {
     command_line->AppendSwitchASCII(::switches::kUseGL,
                                     gl::kGLImplementationANGLEName);
     command_line->AppendSwitchASCII(

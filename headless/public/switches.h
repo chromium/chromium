@@ -24,6 +24,7 @@ HEADLESS_EXPORT extern const char kDisablePDFTagging[];
 HEADLESS_EXPORT extern const char kDiskCacheDir[];
 HEADLESS_EXPORT extern const char kEnableBeginFrameControl[];
 HEADLESS_EXPORT extern const char kEnableCrashReporter[];
+HEADLESS_EXPORT extern const char kEnableGPU[];
 HEADLESS_EXPORT extern const char kExplicitlyAllowedPorts[];
 HEADLESS_EXPORT extern const char kFontRenderHinting[];
 HEADLESS_EXPORT extern const char kIncognito[];

@@ -45,6 +45,15 @@ const char kEnableBeginFrameControl[] = "enable-begin-frame-control";
 // Enable crash reporter for headless.
 const char kEnableCrashReporter[] = "enable-crash-reporter";
 
+// Enable hardware GPU support.
+// Headless uses swiftshader by default for consistency across headless
+// environments. This flag just turns forcing of swiftshader off and lets
+// us revert to regular driver selection logic. Alternatively, specific
+// drivers may be forced with --use-gl or --use-angle. Nethier approach
+// guarantees that hardware GPU support will be enabled, as this is still
+// conditional on headless having access to X display etc.
+const char kEnableGPU[] = "enable-gpu";
+
 // Allows overriding the list of restricted ports by passing a comma-separated
 // list of port numbers.
 const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
