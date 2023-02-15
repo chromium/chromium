@@ -70,7 +70,7 @@ export class DownloadHandler {
     // Populate downloadItemData_.
     // Retrieve 20 most recent downloads sorted by most recent start time.
     chrome.downloads.search(
-        {orderBy: ['-startTime'], limit: DownloadHandler.FILE_LIMIT_},
+        {orderBy: ['-startTime'], limit: FILE_LIMIT},
         results => DownloadHandler.instance.populateDownloadItemData_(results));
 
     // Note: No event listener for chrome.downloads.onCreated because
@@ -101,7 +101,7 @@ export class DownloadHandler {
    * @private
    */
   notifyProgressResults_(results) {
-    if (!results || (results.length !== 1)) {
+    if (results?.length !== 1) {
       return;
     }
     // Results should have only one item because IDs are unique.
@@ -119,7 +119,7 @@ export class DownloadHandler {
     // as reasonable milestones before giving an update.
     const score = percentDelta + (5 / 3) * timeDelta;
     // Only report downloads that have scores above the threshold value.
-    if (score > DownloadHandler.UPDATE_THRESHOLD_) {
+    if (score > UPDATE_THRESHOLD) {
       // Update state.
       storedItem.time = Date.now();
       storedItem.percentComplete = percentComplete;
@@ -185,7 +185,7 @@ export class DownloadHandler {
 
     // New download if we're not tracking the item and if the filename was
     // previously empty.
-    if (!storedItem && name && (name.previous === '')) {
+    if (!storedItem && name?.previous === '') {
       this.startTrackingDownload_(delta);
 
       // Speech and braille output.
@@ -221,8 +221,7 @@ export class DownloadHandler {
       } else {
         // Download resumed.
         storedItem.notifyProgressId = setInterval(
-            () => this.notifyProgress_(id),
-            DownloadHandler.INTERVAL_TIME_MILLISECONDS_);
+            () => this.notifyProgress_(id), INTERVAL_TIME_MILLISECONDS);
         storedItem.time = Date.now();
       }
       // Speech and braille output.
@@ -239,14 +238,9 @@ export class DownloadHandler {
       return;
     }
 
-    for (let i = 0; i < results.length; ++i) {
-      const item = results[i];
-      const state = item.state;
-      if (!state) {
-        continue;
-      }
+    for (const item of results) {
       // If download is in progress, start tracking it.
-      if (state === DownloadState.IN_PROGRESS) {
+      if (item.state === DownloadState.IN_PROGRESS) {
         this.startTrackingDownload_(item);
       }
     }
@@ -279,11 +273,10 @@ export class DownloadHandler {
       return;
     }
 
-    const fullPath = (item.filename.current || item.filename);
+    const fullPath = item.filename.current ?? item.filename;
     const fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1);
-    const notifyProgressId = setInterval(
-        () => this.notifyProgress_(id),
-        DownloadHandler.INTERVAL_TIME_MILLISECONDS_);
+    const notifyProgressId =
+        setInterval(() => this.notifyProgress_(id), INTERVAL_TIME_MILLISECONDS);
     let percentComplete = 0;
     if (item.bytesReceived && item.totalBytes) {
       percentComplete =
@@ -295,26 +288,25 @@ export class DownloadHandler {
   }
 }
 
+/** @type {DownloadHandler} */
+DownloadHandler.instance;
+
+// Local to module.
+
 /**
  * Threshold value used when determining whether to report an update to user.
  * @const {number}
- * @private
  */
-DownloadHandler.UPDATE_THRESHOLD_ = 100;
+const UPDATE_THRESHOLD = 100;
 
 /**
  * The limit for the number of results we receive when querying for downloads.
  * @const {number}
- * @private
  */
-DownloadHandler.FILE_LIMIT_ = 20;
+const FILE_LIMIT = 20;
 
 /**
  * The time interval, in milliseconds, for calling notifyProgress.
  * @const {number}
- * @private
  */
-DownloadHandler.INTERVAL_TIME_MILLISECONDS_ = 10000;
-
-/** @type {DownloadHandler} */
-DownloadHandler.instance;
+const INTERVAL_TIME_MILLISECONDS = 10000;
