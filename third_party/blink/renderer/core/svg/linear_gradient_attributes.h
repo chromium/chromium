@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/svg/gradient_attributes.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -31,43 +30,22 @@ struct LinearGradientAttributes : GradientAttributes {
 
  public:
   LinearGradientAttributes()
-      : x1_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kWidth)),
-        y1_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kHeight)),
-        x2_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kWidth)),
-        y2_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kHeight)),
-        x1_set_(false),
-        y1_set_(false),
-        x2_set_(false),
-        y2_set_(false) {
-    x2_->SetValueAsString("100%");
-  }
+      : x1_(nullptr), y1_(nullptr), x2_(nullptr), y2_(nullptr) {}
 
-  SVGLength* X1() const { return x1_.Get(); }
-  SVGLength* Y1() const { return y1_.Get(); }
-  SVGLength* X2() const { return x2_.Get(); }
-  SVGLength* Y2() const { return y2_.Get(); }
+  const SVGLength* X1() const { return x1_.Get(); }
+  const SVGLength* Y1() const { return y1_.Get(); }
+  const SVGLength* X2() const { return x2_.Get(); }
+  const SVGLength* Y2() const { return y2_.Get(); }
 
-  void SetX1(SVGLength* value) {
-    x1_ = value;
-    x1_set_ = true;
-  }
-  void SetY1(SVGLength* value) {
-    y1_ = value;
-    y1_set_ = true;
-  }
-  void SetX2(SVGLength* value) {
-    x2_ = value;
-    x2_set_ = true;
-  }
-  void SetY2(SVGLength* value) {
-    y2_ = value;
-    y2_set_ = true;
-  }
+  void SetX1(const SVGLength* value) { x1_ = value; }
+  void SetY1(const SVGLength* value) { y1_ = value; }
+  void SetX2(const SVGLength* value) { x2_ = value; }
+  void SetY2(const SVGLength* value) { y2_ = value; }
 
-  bool HasX1() const { return x1_set_; }
-  bool HasY1() const { return y1_set_; }
-  bool HasX2() const { return x2_set_; }
-  bool HasY2() const { return y2_set_; }
+  bool HasX1() const { return x1_; }
+  bool HasY1() const { return y1_; }
+  bool HasX2() const { return x2_; }
+  bool HasY2() const { return y2_; }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(x1_);
@@ -78,16 +56,10 @@ struct LinearGradientAttributes : GradientAttributes {
 
  private:
   // Properties
-  Member<SVGLength> x1_;
-  Member<SVGLength> y1_;
-  Member<SVGLength> x2_;
-  Member<SVGLength> y2_;
-
-  // Property states
-  bool x1_set_ : 1;
-  bool y1_set_ : 1;
-  bool x2_set_ : 1;
-  bool y2_set_ : 1;
+  Member<const SVGLength> x1_;
+  Member<const SVGLength> y1_;
+  Member<const SVGLength> x2_;
+  Member<const SVGLength> y2_;
 };
 
 }  // namespace blink

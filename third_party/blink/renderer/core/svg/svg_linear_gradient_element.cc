@@ -134,6 +134,25 @@ LinearGradientAttributes SVGLinearGradientElement::CollectGradientAttributes()
     if (visited.Contains(current))
       break;
   }
+
+  // Fill out any ("complex") empty fields with values from this element (where
+  // these values should equal the initial values).
+  if (!attributes.HasX1()) {
+    attributes.SetX1(x1()->CurrentValue());
+  }
+  if (!attributes.HasY1()) {
+    attributes.SetY1(y1()->CurrentValue());
+  }
+  if (!attributes.HasX2()) {
+    attributes.SetX2(x2()->CurrentValue());
+  }
+  if (!attributes.HasY2()) {
+    attributes.SetY2(y2()->CurrentValue());
+  }
+  DCHECK(attributes.X1());
+  DCHECK(attributes.Y1());
+  DCHECK(attributes.X2());
+  DCHECK(attributes.Y2());
   return attributes;
 }
 

@@ -154,13 +154,35 @@ RadialGradientAttributes SVGRadialGradientElement::CollectGradientAttributes()
       break;
   }
 
-  // Handle default values for fx/fy
-  if (!attributes.HasFx())
+  // Fill out any ("complex") empty fields with values from this element (where
+  // these values should equal the initial values).
+  if (!attributes.HasCx()) {
+    attributes.SetCx(cx()->CurrentValue());
+  }
+  if (!attributes.HasCy()) {
+    attributes.SetCy(cy()->CurrentValue());
+  }
+  if (!attributes.HasR()) {
+    attributes.SetR(r()->CurrentValue());
+  }
+  DCHECK(attributes.Cx());
+  DCHECK(attributes.Cy());
+  DCHECK(attributes.R());
+
+  // Handle default values for fx/fy (after applying any default values for
+  // cx/cy).
+  if (!attributes.HasFx()) {
     attributes.SetFx(attributes.Cx());
-
-  if (!attributes.HasFy())
+  }
+  if (!attributes.HasFy()) {
     attributes.SetFy(attributes.Cy());
-
+  }
+  if (!attributes.HasFr()) {
+    attributes.SetFr(fr()->CurrentValue());
+  }
+  DCHECK(attributes.Fx());
+  DCHECK(attributes.Fy());
+  DCHECK(attributes.Fr());
   return attributes;
 }
 

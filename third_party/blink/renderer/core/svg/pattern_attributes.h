@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -35,32 +34,23 @@ class PatternAttributes final {
 
  public:
   PatternAttributes()
-      : x_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kWidth)),
-        y_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kHeight)),
-        width_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kWidth)),
-        height_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kHeight)),
-        view_box_(),
-        preserve_aspect_ratio_(MakeGarbageCollected<SVGPreserveAspectRatio>()),
-        pattern_units_(SVGUnitTypes::kSvgUnitTypeObjectboundingbox),
-        pattern_content_units_(SVGUnitTypes::kSvgUnitTypeUserspaceonuse),
+      : x_(nullptr),
+        y_(nullptr),
+        width_(nullptr),
+        height_(nullptr),
+        preserve_aspect_ratio_(nullptr),
         pattern_content_element_(nullptr),
-        x_set_(false),
-        y_set_(false),
-        width_set_(false),
-        height_set_(false),
         view_box_set_(false),
-        preserve_aspect_ratio_set_(false),
         pattern_units_set_(false),
         pattern_content_units_set_(false),
-        pattern_transform_set_(false),
-        pattern_content_element_set_(false) {}
+        pattern_transform_set_(false) {}
 
-  SVGLength* X() const { return x_.Get(); }
-  SVGLength* Y() const { return y_.Get(); }
-  SVGLength* Width() const { return width_.Get(); }
-  SVGLength* Height() const { return height_.Get(); }
+  const SVGLength* X() const { return x_.Get(); }
+  const SVGLength* Y() const { return y_.Get(); }
+  const SVGLength* Width() const { return width_.Get(); }
+  const SVGLength* Height() const { return height_.Get(); }
   gfx::RectF ViewBox() const { return view_box_; }
-  SVGPreserveAspectRatio* PreserveAspectRatio() const {
+  const SVGPreserveAspectRatio* PreserveAspectRatio() const {
     return preserve_aspect_ratio_.Get();
   }
   SVGUnitTypes::SVGUnitType PatternUnits() const { return pattern_units_; }
@@ -72,66 +62,43 @@ class PatternAttributes final {
     return pattern_content_element_;
   }
 
-  void SetX(SVGLength* value) {
-    x_ = value;
-    x_set_ = true;
-  }
-
-  void SetY(SVGLength* value) {
-    y_ = value;
-    y_set_ = true;
-  }
-
-  void SetWidth(SVGLength* value) {
-    width_ = value;
-    width_set_ = true;
-  }
-
-  void SetHeight(SVGLength* value) {
-    height_ = value;
-    height_set_ = true;
-  }
-
+  void SetX(const SVGLength* value) { x_ = value; }
+  void SetY(const SVGLength* value) { y_ = value; }
+  void SetWidth(const SVGLength* value) { width_ = value; }
+  void SetHeight(const SVGLength* value) { height_ = value; }
   void SetViewBox(const gfx::RectF& value) {
     view_box_ = value;
     view_box_set_ = true;
   }
-
-  void SetPreserveAspectRatio(SVGPreserveAspectRatio* value) {
+  void SetPreserveAspectRatio(const SVGPreserveAspectRatio* value) {
     preserve_aspect_ratio_ = value;
-    preserve_aspect_ratio_set_ = true;
   }
-
   void SetPatternUnits(SVGUnitTypes::SVGUnitType value) {
     pattern_units_ = value;
     pattern_units_set_ = true;
   }
-
   void SetPatternContentUnits(SVGUnitTypes::SVGUnitType value) {
     pattern_content_units_ = value;
     pattern_content_units_set_ = true;
   }
-
   void SetPatternTransform(const AffineTransform& value) {
     pattern_transform_ = value;
     pattern_transform_set_ = true;
   }
-
-  void SetPatternContentElement(const SVGPatternElement* value) {
+  void SetPatternContentElement(const SVGPatternElement& value) {
     pattern_content_element_ = value;
-    pattern_content_element_set_ = true;
   }
 
-  bool HasX() const { return x_set_; }
-  bool HasY() const { return y_set_; }
-  bool HasWidth() const { return width_set_; }
-  bool HasHeight() const { return height_set_; }
+  bool HasX() const { return x_; }
+  bool HasY() const { return y_; }
+  bool HasWidth() const { return width_; }
+  bool HasHeight() const { return height_; }
   bool HasViewBox() const { return view_box_set_; }
-  bool HasPreserveAspectRatio() const { return preserve_aspect_ratio_set_; }
+  bool HasPreserveAspectRatio() const { return preserve_aspect_ratio_; }
   bool HasPatternUnits() const { return pattern_units_set_; }
   bool HasPatternContentUnits() const { return pattern_content_units_set_; }
   bool HasPatternTransform() const { return pattern_transform_set_; }
-  bool HasPatternContentElement() const { return pattern_content_element_set_; }
+  bool HasPatternContentElement() const { return pattern_content_element_; }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(x_);
@@ -144,28 +111,24 @@ class PatternAttributes final {
 
  private:
   // Properties
-  Member<SVGLength> x_;
-  Member<SVGLength> y_;
-  Member<SVGLength> width_;
-  Member<SVGLength> height_;
+  Member<const SVGLength> x_;
+  Member<const SVGLength> y_;
+  Member<const SVGLength> width_;
+  Member<const SVGLength> height_;
   gfx::RectF view_box_;
-  Member<SVGPreserveAspectRatio> preserve_aspect_ratio_;
-  SVGUnitTypes::SVGUnitType pattern_units_;
-  SVGUnitTypes::SVGUnitType pattern_content_units_;
+  Member<const SVGPreserveAspectRatio> preserve_aspect_ratio_;
+  SVGUnitTypes::SVGUnitType pattern_units_ =
+      SVGUnitTypes::kSvgUnitTypeObjectboundingbox;
+  SVGUnitTypes::SVGUnitType pattern_content_units_ =
+      SVGUnitTypes::kSvgUnitTypeUserspaceonuse;
   AffineTransform pattern_transform_;
   Member<const SVGPatternElement> pattern_content_element_;
 
   // Property states
-  bool x_set_ : 1;
-  bool y_set_ : 1;
-  bool width_set_ : 1;
-  bool height_set_ : 1;
   bool view_box_set_ : 1;
-  bool preserve_aspect_ratio_set_ : 1;
   bool pattern_units_set_ : 1;
   bool pattern_content_units_set_ : 1;
   bool pattern_transform_set_ : 1;
-  bool pattern_content_element_set_ : 1;
 };
 
 }  // namespace blink

@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/svg/gradient_attributes.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -31,61 +30,33 @@ struct RadialGradientAttributes final : GradientAttributes {
 
  public:
   RadialGradientAttributes()
-      : cx_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kWidth)),
-        cy_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kHeight)),
-        r_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kOther)),
-        fx_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kWidth)),
-        fy_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kHeight)),
-        fr_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kOther)),
-        cx_set_(false),
-        cy_set_(false),
-        r_set_(false),
-        fx_set_(false),
-        fy_set_(false),
-        fr_set_(false) {
-    cx_->SetValueAsString("50%");
-    cy_->SetValueAsString("50%");
-    r_->SetValueAsString("50%");
-  }
+      : cx_(nullptr),
+        cy_(nullptr),
+        r_(nullptr),
+        fx_(nullptr),
+        fy_(nullptr),
+        fr_(nullptr) {}
 
-  SVGLength* Cx() const { return cx_.Get(); }
-  SVGLength* Cy() const { return cy_.Get(); }
-  SVGLength* R() const { return r_.Get(); }
-  SVGLength* Fx() const { return fx_.Get(); }
-  SVGLength* Fy() const { return fy_.Get(); }
-  SVGLength* Fr() const { return fr_.Get(); }
+  const SVGLength* Cx() const { return cx_.Get(); }
+  const SVGLength* Cy() const { return cy_.Get(); }
+  const SVGLength* R() const { return r_.Get(); }
+  const SVGLength* Fx() const { return fx_.Get(); }
+  const SVGLength* Fy() const { return fy_.Get(); }
+  const SVGLength* Fr() const { return fr_.Get(); }
 
-  void SetCx(SVGLength* value) {
-    cx_ = value;
-    cx_set_ = true;
-  }
-  void SetCy(SVGLength* value) {
-    cy_ = value;
-    cy_set_ = true;
-  }
-  void SetR(SVGLength* value) {
-    r_ = value;
-    r_set_ = true;
-  }
-  void SetFx(SVGLength* value) {
-    fx_ = value;
-    fx_set_ = true;
-  }
-  void SetFy(SVGLength* value) {
-    fy_ = value;
-    fy_set_ = true;
-  }
-  void SetFr(SVGLength* value) {
-    fr_ = value;
-    fr_set_ = true;
-  }
+  void SetCx(const SVGLength* value) { cx_ = value; }
+  void SetCy(const SVGLength* value) { cy_ = value; }
+  void SetR(const SVGLength* value) { r_ = value; }
+  void SetFx(const SVGLength* value) { fx_ = value; }
+  void SetFy(const SVGLength* value) { fy_ = value; }
+  void SetFr(const SVGLength* value) { fr_ = value; }
 
-  bool HasCx() const { return cx_set_; }
-  bool HasCy() const { return cy_set_; }
-  bool HasR() const { return r_set_; }
-  bool HasFx() const { return fx_set_; }
-  bool HasFy() const { return fy_set_; }
-  bool HasFr() const { return fr_set_; }
+  bool HasCx() const { return cx_; }
+  bool HasCy() const { return cy_; }
+  bool HasR() const { return r_; }
+  bool HasFx() const { return fx_; }
+  bool HasFy() const { return fy_; }
+  bool HasFr() const { return fr_; }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(cx_);
@@ -98,20 +69,12 @@ struct RadialGradientAttributes final : GradientAttributes {
 
  private:
   // Properties
-  Member<SVGLength> cx_;
-  Member<SVGLength> cy_;
-  Member<SVGLength> r_;
-  Member<SVGLength> fx_;
-  Member<SVGLength> fy_;
-  Member<SVGLength> fr_;
-
-  // Property states
-  bool cx_set_ : 1;
-  bool cy_set_ : 1;
-  bool r_set_ : 1;
-  bool fx_set_ : 1;
-  bool fy_set_ : 1;
-  bool fr_set_ : 1;
+  Member<const SVGLength> cx_;
+  Member<const SVGLength> cy_;
+  Member<const SVGLength> r_;
+  Member<const SVGLength> fx_;
+  Member<const SVGLength> fy_;
+  Member<const SVGLength> fr_;
 };
 
 }  // namespace blink
