@@ -18,8 +18,6 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
-#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
@@ -36,16 +34,11 @@ enum class InstallResultCode;
 enum class UninstallResultCode;
 }  // namespace webapps
 
-namespace web_app {
-class WebAppProvider;
-}  // namespace web_app
-
 namespace ash {
 
 class ApkWebAppService : public KeyedService,
                          public ApkWebAppInstaller::Owner,
                          public ArcAppListPrefs::Observer,
-                         public web_app::WebAppInstallManagerObserver,
                          public apps::AppRegistryCache::Observer,
                          public crosapi::WebAppServiceAsh::Observer {
  public:
@@ -70,8 +63,8 @@ class ApkWebAppService : public KeyedService,
         arc::mojom::WebAppInfoPtr web_app_info,
         WebAppInstallCallback callback) = 0;
 
-    // Tells Lacros to remove a web app install source "ARC" for a web app with
-    // ID |web_app_id|. If no other sources left, the web app will be
+    // Tells Lacros to remove a web app install source "ARC" for a web app
+    // with ID |web_app_id|. If no other sources left, the web app will be
     // uninstalled. Does nothing if Lacros is not connected.
     virtual void MaybeUninstallWebAppInLacros(
         const web_app::AppId& web_app_id) = 0;
@@ -130,9 +123,20 @@ class ApkWebAppService : public KeyedService,
     return test_delegate_ ? *test_delegate_ : *real_delegate_;
   }
 
-  // Uninstalls a web app with id |web_app_id| iff it was installed via calling
-  // ApkWebAppInstaller::Install().
-  void UninstallWebApp(const web_app::AppId& web_app_id);
+  // Starts installation of a web app with the given `web_app_info`. Will first
+  // load an icon from the ARC app with the given `package_name`. Does nothing
+  // if ARC is not started, or if Lacros is enabled and not connected.
+  void MaybeInstallWebApp(const std::string& package_name,
+                          arc::mojom::WebAppInfoPtr web_app_info);
+
+  // Removes the ARC install source from the web app with the given
+  // `web_app_id`. If there are no other sources left, the web app will be
+  // uninstalled. Does nothing if Lacros is enabled and not connected.
+  void MaybeUninstallWebApp(const web_app::AppId& web_app_id);
+
+  // Uninstalls the ARC package with the given `package_name`. Does nothing if
+  // ARC is not started.
+  void MaybeUninstallArcPackage(const std::string& package_name);
 
   // If the app has updated from a web app to Android app or vice-versa,
   // this function pins the new app in the old app's place on the shelf if it
@@ -150,10 +154,6 @@ class ApkWebAppService : public KeyedService,
                         bool uninstalled) override;
   void OnPackageListInitialRefreshed() override;
   void OnArcAppListPrefsDestroyed() override;
-
-  // web_app::WebAppInstallManagerObserver overrides.
-  void OnWebAppWillBeUninstalled(const web_app::AppId& web_app_id) override;
-  void OnWebAppInstallManagerDestroyed() override;
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -183,16 +183,12 @@ class ApkWebAppService : public KeyedService,
 
   Profile* profile_;
   ArcAppListPrefs* arc_app_list_prefs_;
-  web_app::WebAppProvider* provider_{nullptr};
 
   // Delegate implementation used in production.
   std::unique_ptr<Delegate> real_delegate_;
   // And override delegate implementation for tests. See |GetDelegate()|.
   raw_ptr<Delegate> test_delegate_;
 
-  base::ScopedObservation<web_app::WebAppInstallManager,
-                          web_app::WebAppInstallManagerObserver>
-      install_manager_observer_{this};
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};

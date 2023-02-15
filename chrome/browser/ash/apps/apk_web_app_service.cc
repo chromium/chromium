@@ -99,6 +99,7 @@ class ApkWebAppServiceDelegateImpl : public ApkWebAppService::Delegate,
   void MaybeInstallWebAppInLacros(const std::string& package_name,
                                   arc::mojom::WebAppInfoPtr web_app_info,
                                   WebAppInstallCallback callback) override {
+    DCHECK(web_app::IsWebAppsCrosapiEnabled());
     auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
         arc_app_list_prefs_->app_connection_holder(), GetPackageIcon);
     if (!instance) {
@@ -113,6 +114,7 @@ class ApkWebAppServiceDelegateImpl : public ApkWebAppService::Delegate,
   }
 
   void MaybeUninstallWebAppInLacros(const web_app::AppId& web_app_id) override {
+    DCHECK(web_app::IsWebAppsCrosapiEnabled());
     if (crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
             crosapi::CrosapiManager::Get()
                 ->crosapi_ash()
@@ -169,12 +171,17 @@ ApkWebAppService::ApkWebAppService(Profile* profile, Delegate* test_delegate)
       test_delegate_(test_delegate) {
   DCHECK(web_app::AreWebAppsEnabled(profile));
 
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    apps::AppRegistryCache& app_registry_cache =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->AppRegistryCache();
-    app_registry_cache_observer_.Observe(&app_registry_cache);
+  apps::AppRegistryCache& app_registry_cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  app_registry_cache_observer_.Observe(&app_registry_cache);
 
+  // Can be null in tests.
+  arc_app_list_prefs_ = ArcAppListPrefs::Get(profile);
+  if (arc_app_list_prefs_) {
+    arc_app_list_prefs_observer_.Observe(arc_app_list_prefs_);
+  }
+
+  if (web_app::IsWebAppsCrosapiEnabled()) {
     // null in unit tests
     if (auto* browser_manager = crosapi::BrowserManager::Get()) {
       keep_alive_ = browser_manager->KeepAlive(
@@ -184,17 +191,6 @@ ApkWebAppService::ApkWebAppService(Profile* profile, Delegate* test_delegate)
     crosapi::WebAppServiceAsh* web_app_service_ash =
         crosapi::CrosapiManager::Get()->crosapi_ash()->web_app_service_ash();
     web_app_service_observer_.Observe(web_app_service_ash);
-  }
-
-  // Can be null in tests.
-  arc_app_list_prefs_ = ArcAppListPrefs::Get(profile);
-  if (arc_app_list_prefs_)
-    arc_app_list_prefs_observer_.Observe(arc_app_list_prefs_);
-
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    provider_ = web_app::WebAppProvider::GetForWebApps(profile);
-    DCHECK(provider_);
-    install_manager_observer_.Observe(&provider_->install_manager());
   }
 }
 
@@ -230,15 +226,9 @@ bool ApkWebAppService::IsWebOnlyTwaDeprecated(const web_app::AppId& app_id) {
 
 bool ApkWebAppService::IsWebAppInstalledFromArc(
     const web_app::AppId& web_app_id) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    // The web app will only be in prefs under this key if it was installed from
-    // ARC++.
-    return WebAppToApks().FindDict(web_app_id) != nullptr;
-  } else {
-    web_app::WebAppRegistrar& registrar = provider_->registrar_unsafe();
-    const web_app::WebApp* app = registrar.GetAppById(web_app_id);
-    return app ? app->IsWebAppStoreInstalledApp() : false;
-  }
+  // The web app will only be in prefs under this key if it was installed from
+  // ARC++.
+  return WebAppToApks().FindDict(web_app_id) != nullptr;
 }
 
 bool ApkWebAppService::IsWebAppShellPackage(const std::string& package_name) {
@@ -333,17 +323,59 @@ void ApkWebAppService::SetWebAppUninstalledCallbackForTesting(
   web_app_uninstalled_callback_ = std::move(web_app_uninstalled_callback);
 }
 
-void ApkWebAppService::UninstallWebApp(const web_app::AppId& web_app_id) {
-  DCHECK(!web_app::IsWebAppsCrosapiEnabled());
+void ApkWebAppService::MaybeInstallWebApp(
+    const std::string& package_name,
+    arc::mojom::WebAppInfoPtr web_app_info) {
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    GetDelegate().MaybeInstallWebAppInLacros(
+        package_name, std::move(web_app_info),
+        base::BindOnce(&ApkWebAppService::OnDidFinishInstall,
+                       weak_ptr_factory_.GetWeakPtr(), package_name));
+    return;
+  }
+
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_app_list_prefs_->app_connection_holder(), GetPackageIcon);
+  if (!instance) {
+    return;
+  }
+
+  instance->GetPackageIcon(
+      package_name, kDefaultIconSize, /*normalize=*/false,
+      base::BindOnce(&ApkWebAppService::OnDidGetWebAppIcon,
+                     weak_ptr_factory_.GetWeakPtr(), package_name,
+                     std::move(web_app_info)));
+}
+
+void ApkWebAppService::MaybeUninstallWebApp(const web_app::AppId& web_app_id) {
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    GetDelegate().MaybeUninstallWebAppInLacros(web_app_id);
+    return;
+  }
+
   if (!IsWebAppInstalledFromArc(web_app_id)) {
     // Do not uninstall a web app that was not installed via ApkWebAppInstaller.
     return;
   }
 
-  DCHECK(provider_);
-  provider_->install_finalizer().UninstallExternalWebApp(
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  DCHECK(provider);
+  provider->install_finalizer().UninstallExternalWebApp(
       web_app_id, web_app::WebAppManagement::kWebAppStore,
       webapps::WebappUninstallSource::kArc, base::DoNothing());
+}
+
+void ApkWebAppService::MaybeUninstallArcPackage(
+    const std::string& package_name) {
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    GetDelegate().MaybeUninstallPackageInArc(package_name);
+    return;
+  }
+
+  if (auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+          arc_app_list_prefs_->app_connection_holder(), UninstallPackage)) {
+    instance->UninstallPackage(package_name);
+  }
 }
 
 void ApkWebAppService::UpdateShelfPin(
@@ -410,178 +442,33 @@ void ApkWebAppService::Shutdown() {
 
 void ApkWebAppService::OnPackageInstalled(
     const arc::mojom::ArcPackageInfo& package_info) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    SyncArcAndWebApps();
-    return;
-  }
-
-  // Automatically generated WebAPKs have their lifecycle managed by
-  // WebApkManager and do not need to be considered here.
-  if (base::StartsWith(package_info.package_name,
-                       kGeneratedWebApkPackagePrefix)) {
-    return;
-  }
-
-  // This method is called when a) new packages are installed, and b) existing
-  // packages are updated. In (b), there are two cases to handle: the package
-  // could previously have been an Android app and has now become a web app, and
-  // vice-versa.
-  absl::optional<std::string> web_app_id =
-      GetWebAppIdForPackageName(package_info.package_name);
-
-  bool was_previously_web_app = web_app_id.has_value();
-  bool is_now_web_app = !package_info.web_app_info.is_null();
-
-  // The previous and current states match.
-  if (is_now_web_app == was_previously_web_app) {
-    if (is_now_web_app) {
-      DCHECK(web_app_id);
-      if (package_info.web_app_info->is_web_only_twa !=
-          IsWebOnlyTwa(*web_app_id)) {
-        UpdatePackageInfo(*web_app_id, package_info.web_app_info);
-      }
-    }
-    return;
-  }
-
-  // Only call this function if there has been a state change from web app to
-  // Android app or vice-versa.
-  UpdateShelfPin(package_info.package_name, package_info.web_app_info);
-
-  if (was_previously_web_app) {
-    // The package was a web app, but now isn't. Remove the web app.
-    OnPackageRemoved(package_info.package_name, true /* uninstalled */);
-    return;
-  }
-
-  // The package is a web app but we don't have a corresponding browser-side
-  // artifact. Install it.
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_app_list_prefs_->app_connection_holder(), GetPackageIcon);
-  if (!instance)
-    return;
-
-  instance->GetPackageIcon(
-      package_info.package_name, kDefaultIconSize, /*normalize=*/false,
-      base::BindOnce(&ApkWebAppService::OnDidGetWebAppIcon,
-                     weak_ptr_factory_.GetWeakPtr(), package_info.package_name,
-                     package_info.web_app_info.Clone()));
+  SyncArcAndWebApps();
 }
 
 void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
                                         bool uninstalled) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    absl::optional<std::string> web_app_id =
-        GetWebAppIdForPackageName(package_name);
-    if (web_app_id) {
-      const base::Value::Dict* app_dict = WebAppToApks().FindDict(*web_app_id);
-      if (app_dict && app_dict->FindBool(kShouldRemoveKey).value_or(false)) {
-        // This package removal was triggered by web app removal, so cleanup and
-        // do not kick off the uninstallation loop again.
-        ScopedDictPrefUpdate(profile_->GetPrefs(), kWebAppToApkDictPref)
-            ->Remove(*web_app_id);
-      } else {
-        // Package was removed by the user in ARC.
-        SyncArcAndWebApps();
-      }
-    }
-    return;
-  }
-
-  // Called when an Android package is uninstalled. The package may be
-  // associated with an installed web app. If it is, there are 2 potential
-  // cases:
-  // 1) The user has uninstalled the web app already (e.g. via the
-  // launcher), which has called OnWebAppWillBeUninstalled() below and triggered
-  // the uninstallation of the Android package.
-  //
-  // In this case, OnWebAppWillBeUninstalled() will have removed the associated
-  // web_app_id from the pref dict before triggering uninstallation, so this
-  // method will do nothing.
-  //
-  // 2) The user has uninstalled the Android package in ARC (e.g. via the Play
-  // Store app).
-  //
-  // In this case, the web app is *not yet* uninstalled when this method is
-  // called, so the associated web_app_id is in the pref dict, and this method
-  // will trigger the uninstallation of the web app. Similarly, this method
-  // removes the associated web_app_id before triggering uninstallation, so
-  // OnWebAppWillBeUninstalled() will do nothing.
-
-  // Search the pref dict for any |web_app_id| that has a value matching the
-  // provided package name. We need to uninstall that |web_app_id|.
   absl::optional<std::string> web_app_id =
       GetWebAppIdForPackageName(package_name);
-  if (!web_app_id) {
-    return;
+  if (web_app_id) {
+    const base::Value::Dict* app_dict = WebAppToApks().FindDict(*web_app_id);
+    if (app_dict && app_dict->FindBool(kShouldRemoveKey).value_or(false)) {
+      // This package removal was triggered by web app removal, so cleanup and
+      // do not kick off the uninstallation loop again.
+      ScopedDictPrefUpdate(profile_->GetPrefs(), kWebAppToApkDictPref)
+          ->Remove(*web_app_id);
+    } else {
+      // Package was removed by the user in ARC.
+      SyncArcAndWebApps();
+    }
   }
-
-  // Remove |web_app_id| so that we don't start an uninstallation loop.
-  ScopedDictPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
-  web_apps_to_apks->Remove(*web_app_id);
-  UninstallWebApp(*web_app_id);
 }
 
 void ApkWebAppService::OnPackageListInitialRefreshed() {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    SyncArcAndWebApps();
-    return;
-  }
-
-  // Scan through the list of apps to see if any were uninstalled while ARC
-  // wasn't running.
-
-  // If ARC isn't unavailable, it's not going to become available since we're
-  // occupying the UI thread. We'll try again later.
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_app_list_prefs_->app_connection_holder(), UninstallPackage);
-  if (!instance)
-    return;
-
-  std::map<std::string, std::string> app_ids_and_packages_to_remove;
-  for (const auto [web_app_id, web_app_info_value] : WebAppToApks()) {
-    // If we don't need to uninstall the package, move along.
-    if (!web_app_info_value.GetDict()
-             .FindBool(kShouldRemoveKey)
-             .value_or(false)) {
-      continue;
-    }
-
-    if (const std::string* package_name =
-            web_app_info_value.GetDict().FindString(kPackageNameKey)) {
-      app_ids_and_packages_to_remove.insert({web_app_id, *package_name});
-    } else {
-      // Without a package name, the dictionary isn't useful, so drop it from
-      // prefs without uninstalling.
-      app_ids_and_packages_to_remove.insert({web_app_id, ""});
-    }
-  }
-
-  // Remove the web app id from prefs before uninstalling, otherwise the
-  // corresponding call to OnPackageRemoved will start an uninstallation cycle.
-  ScopedDictPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
-  for (const auto& app_id_and_package_name : app_ids_and_packages_to_remove) {
-    web_apps_to_apks->Remove(app_id_and_package_name.first);
-    const std::string& package_name = app_id_and_package_name.second;
-    if (!package_name.empty()) {
-      instance->UninstallPackage(package_name);
-    }
-  }
+  SyncArcAndWebApps();
 }
 
 void ApkWebAppService::OnArcAppListPrefsDestroyed() {
   arc_app_list_prefs_observer_.Reset();
-}
-
-void ApkWebAppService::OnWebAppWillBeUninstalled(
-    const web_app::AppId& web_app_id) {
-  MaybeRemoveArcPackageForWebApp(web_app_id);
-}
-
-void ApkWebAppService::OnWebAppInstallManagerDestroyed() {
-  install_manager_observer_.Reset();
 }
 
 void ApkWebAppService::OnAppUpdate(const apps::AppUpdate& update) {
@@ -611,36 +498,25 @@ void ApkWebAppService::MaybeRemoveArcPackageForWebApp(
     const web_app::AppId& web_app_id) {
   absl::optional<std::string> package_name =
       GetPackageNameForWebApp(web_app_id);
+  std::string removed_package_name;
+
   if (package_name) {
     ScopedDictPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
                                           kWebAppToApkDictPref);
-    if (web_app::IsWebAppsCrosapiEnabled()) {
-      std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
-          arc_app_list_prefs_->GetPackage(*package_name);
-      if (package && package->web_app_info) {
-        // Mark for removal and kick off the sync.
-        web_apps_to_apks->EnsureDict(web_app_id)->Set(kShouldRemoveKey, true);
-        SyncArcAndWebApps();
-      } else {
-        // 1) ARC package was already removed and triggered web app
-        //    uninstallation, so there is nothing to remove.
-        // 2) ARC package is no longer a web app.
-        //
-        // In either case we clean up the prefs and finish.
-        web_apps_to_apks->Remove(web_app_id);
-      }
+    std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
+        arc_app_list_prefs_->GetPackage(*package_name);
+    if (package && package->web_app_info) {
+      // Mark for removal and kick off the sync.
+      web_apps_to_apks->EnsureDict(web_app_id)->Set(kShouldRemoveKey, true);
+      SyncArcAndWebApps();
+      removed_package_name = *package_name;
     } else {
-      if (auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-              arc_app_list_prefs_->app_connection_holder(), UninstallPackage)) {
-        // Remove the web app id from prefs, otherwise the corresponding call to
-        // OnPackageRemoved will start an uninstallation cycle.
-        web_apps_to_apks->Remove(web_app_id);
-        instance->UninstallPackage(*package_name);
-      } else {
-        // Set that the app should be removed next time the ARC container is
-        // ready.
-        web_apps_to_apks->EnsureDict(web_app_id)->Set(kShouldRemoveKey, true);
-      }
+      // 1) ARC package was already removed and triggered web app
+      //    uninstallation, so there is nothing to remove.
+      // 2) ARC package is no longer a web app.
+      //
+      // In either case we clean up the prefs and finish.
+      web_apps_to_apks->Remove(web_app_id);
     }
   }
 
@@ -649,7 +525,7 @@ void ApkWebAppService::MaybeRemoveArcPackageForWebApp(
   if (web_app_uninstalled_callback_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(web_app_uninstalled_callback_),
-                                  package_name.value_or(""), web_app_id));
+                                  removed_package_name, web_app_id));
   }
 }
 
@@ -726,8 +602,6 @@ const base::Value::Dict& ApkWebAppService::WebAppToApks() const {
 }
 
 void ApkWebAppService::SyncArcAndWebApps() {
-  DCHECK(web_app::IsWebAppsCrosapiEnabled());
-
   // Check that we have the initial state of both ARC packages and installed web
   // apps before attempting to reconcile installation state.
   apps::AppRegistryCache& app_registry_cache =
@@ -790,16 +664,13 @@ void ApkWebAppService::SyncArcAndWebApps() {
       UpdateShelfPin(package_name, package->web_app_info);
       // The package is a web app but we don't have a corresponding browser-side
       // artifact. Install it.
-      GetDelegate().MaybeInstallWebAppInLacros(
-          package->package_name, std::move(package->web_app_info),
-          base::BindOnce(&ApkWebAppService::OnDidFinishInstall,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         package->package_name));
+      MaybeInstallWebApp(package->package_name,
+                         std::move(package->web_app_info));
     } else if (was_web_app && !is_web_app) {
       UpdateShelfPin(package_name, package->web_app_info);
       // The package was a web app, but now isn't. Remove the web app.
       DCHECK(web_app_id);
-      GetDelegate().MaybeUninstallWebAppInLacros(*web_app_id);
+      MaybeUninstallWebApp(*web_app_id);
     } else if (was_web_app && is_web_app) {
       // The previous and current states match AND the package is a web app.
       // TODO(crbug/1329727): remove this block when
@@ -838,10 +709,10 @@ void ApkWebAppService::SyncArcAndWebApps() {
     }
   }
   for (const std::string& package_name : arc_apps_to_uninstall) {
-    GetDelegate().MaybeUninstallPackageInArc(package_name);
+    MaybeUninstallArcPackage(package_name);
   }
   for (const std::string& web_app_id : web_apps_to_uninstall) {
-    GetDelegate().MaybeUninstallWebAppInLacros(web_app_id);
+    MaybeUninstallWebApp(web_app_id);
   }
 }
 
