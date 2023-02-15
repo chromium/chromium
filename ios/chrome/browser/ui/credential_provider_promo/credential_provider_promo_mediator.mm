@@ -9,6 +9,7 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
@@ -33,6 +34,9 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 // The PrefService used by this mediator.
 @property(nonatomic, assign) PrefService* prefService;
 
+// Local state is used to check promo trigger requirements.
+@property(nonatomic, assign) PrefService* localState;
+
 // Indicates whether the 'first step' or 'learn more' version of the promo is
 // being presented.
 @property(nonatomic, assign) CredentialProviderPromoContext promoContext;
@@ -45,17 +49,26 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 @implementation CredentialProviderPromoMediator
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService {
+                          prefService:(PrefService*)prefService
+                           localState:(PrefService*)localState {
   if (self = [super init]) {
     _prefService = prefService;
     _promosManager = promosManager;
+    _localState = localState;
   }
   return self;
 }
 
-- (BOOL)canShowCredentialProviderPromo {
-  // TODO(crbug.com/1392116): check for user action and impression counts
-  return IsCredentialProviderExtensionPromoEnabled() &&
+- (BOOL)canShowCredentialProviderPromoWithTrigger:
+            (CredentialProviderPromoTrigger)trigger
+                                        promoSeen:
+                                            (BOOL)promoSeenInCurrentSession {
+  BOOL impressionLimitMet =
+      self.localState->GetBoolean(
+          prefs::kIosCredentialProviderPromoStopPromo) ||
+      (promoSeenInCurrentSession &&
+       trigger != CredentialProviderPromoTrigger::RemindMeLater);
+  return !impressionLimitMet && IsCredentialProviderExtensionPromoEnabled() &&
          !password_manager_util::IsCredentialProviderEnabledOnStartup(
              self.prefService);
 }

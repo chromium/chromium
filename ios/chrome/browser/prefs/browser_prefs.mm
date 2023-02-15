@@ -262,6 +262,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName,
                                 -1);
+
+  registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoStopPromo,
+                                false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

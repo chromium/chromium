@@ -25,6 +25,7 @@ class PromosManager;
 // PromosManager, presenter, and PrefService.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                           prefService:(PrefService*)prefService
+                           localState:(PrefService*)localState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -33,7 +34,10 @@ class PromosManager;
 
 // Returns YES if the user conditions are met to present the Credential
 // Provider Promo.
-- (BOOL)canShowCredentialProviderPromo;
+- (BOOL)canShowCredentialProviderPromoWithTrigger:
+            (CredentialProviderPromoTrigger)trigger
+                                        promoSeen:
+                                            (BOOL)promoSeenInCurrentSession;
 
 // Configures the consumer.
 - (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger

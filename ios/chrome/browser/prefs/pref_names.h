@@ -24,6 +24,7 @@ extern const char kFirstFollowUIShownCount[];
 extern const char kHttpServerProperties[];
 extern const char kIncognitoModeAvailability[];
 extern const char kIncognitoInterstitialEnabled[];
+extern const char kIosCredentialProviderPromoStopPromo[];
 extern const char kIosBookmarkCachedFolderId[];
 extern const char kIosBookmarkCachedTopMostRow[];
 extern const char kIosBookmarkFolderDefault[];

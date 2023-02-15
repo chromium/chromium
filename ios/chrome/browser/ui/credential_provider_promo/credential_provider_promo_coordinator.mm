@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
 
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
@@ -36,6 +38,10 @@
 // being presented.
 @property(nonatomic, assign) CredentialProviderPromoContext promoContext;
 
+// Indicates whether the user has already seen the promo in the current
+// app session.
+@property(nonatomic, assign) BOOL promoSeenInCurrentSession;
+
 @end
 
 @implementation CredentialProviderPromoCoordinator
@@ -46,7 +52,8 @@
                    forProtocol:@protocol(CredentialProviderPromoCommands)];
   self.mediator = [[CredentialProviderPromoMediator alloc]
       initWithPromosManager:GetApplicationContext()->GetPromosManager()
-                prefService:self.browser->GetBrowserState()->GetPrefs()];
+                prefService:self.browser->GetBrowserState()->GetPrefs()
+                 localState:GetApplicationContext()->GetLocalState()];
 }
 
 - (void)stop {
@@ -66,7 +73,10 @@
     (CredentialProviderPromoTrigger)trigger {
   // If the user is not eligible to be shown the promo, or the VC is already
   // being presented, return early.
-  if (![self.mediator canShowCredentialProviderPromo] ||
+  if (![self.mediator
+          canShowCredentialProviderPromoWithTrigger:trigger
+                                          promoSeen:
+                                              self.promoSeenInCurrentSession] ||
       [self.viewController isBeingPresented]) {
     return;
   }
@@ -83,6 +93,7 @@
   [topViewController presentViewController:self.viewController
                                   animated:YES
                                 completion:nil];
+  self.promoSeenInCurrentSession = YES;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -103,6 +114,8 @@
 
 - (void)confirmationAlertSecondaryAction {
   [self hidePromo];
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kIosCredentialProviderPromoStopPromo, true);
 }
 
 - (void)confirmationAlertTertiaryAction {
