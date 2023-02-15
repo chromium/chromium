@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
 import com.zpj.fragmentation.dialog.ZDialog;
@@ -18,12 +19,15 @@ import org.chromium.chrome.R;
 public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
 
+    private final ArkCompositorViewHolder mViewHolder;
     private final View mBrowserLayout;
     private final View mLauncherLayout;
     private final TabSwitcherLayout mTabSwitcherLayout;
     private final SwitcherRecyclerLayout mSwitcher;
 
     public TabSwitcherManager(View view) {
+        mViewHolder = view.findViewById(R.id.compositor_view_holder);
+        mViewHolder.setRootView(view);
         mLauncherLayout = view.findViewById(R.id.launcher_layout);
         mBrowserLayout = view.findViewById(R.id.browser_layout);
         mTabSwitcherLayout = view.findViewById(R.id.tab_switcher_layout);
@@ -60,6 +64,14 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     public SwitcherRecyclerLayout getSwitcher() {
         return mSwitcher;
+    }
+
+    public ArkCompositorViewHolder getCompositorViewHolder() {
+        return mViewHolder;
+    }
+
+    public View getBrowserLayout() {
+        return mBrowserLayout;
     }
 
     public TabSwitcherLayout getTabSwitcherLayout() {
@@ -139,7 +151,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public boolean isInBrowser() {
-        return isVisible(mTabSwitcherLayout) && !isVisible(mTabSwitcherLayout.getSwitcher());
+        return isVisible(mBrowserLayout);
     }
 
     public boolean isInLauncher() {
@@ -178,10 +190,17 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         if (isInTabSwitcher()) {
             mSwitcher.close();
             return true;
-        } else if (!isInLauncher()) {
-            goToLauncher();
+        } else if (isInBrowser()) {
+            if (mViewHolder != null && mViewHolder.onBackPressed()) {
+                return true;
+            }
+            goToTabSwitcher();
             return true;
         }
+//        else if (!isInLauncher()) {
+//            goToLauncher();
+//            return true;
+//        }
         return false;
     }
 

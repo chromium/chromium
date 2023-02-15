@@ -1,11 +1,13 @@
 package com.ark.browser.tab;
 
+import android.graphics.Color;
 import android.text.TextUtils;
 
 import androidx.annotation.Keep;
 import androidx.core.util.AtomicFile;
 
 import com.ark.browser.core.utils.ArkIdManager;
+import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -153,14 +155,22 @@ public class PageInfo {
 
     public void setFromMerge(Boolean fromMerge) {
         this.fromMerge = fromMerge;
+        saveOnIdle();
     }
 
     public int getThemeColor() {
+        if (themeColor == 0) {
+            return AppConfig.isNightMode() ? Color.BLACK : Color.WHITE;
+        }
         return themeColor;
     }
 
     public void setThemeColor(int themeColor) {
+        if (this.themeColor == themeColor) {
+            return;
+        }
         this.themeColor = themeColor;
+        saveOnIdle();
     }
 
     public String getUrl() {
@@ -199,6 +209,14 @@ public class PageInfo {
                 ", url='" + url + '\'' +
                 ", title='" + title + '\'' +
                 '}';
+    }
+
+    private void saveOnIdle() {
+        ThreadPool.postIdle(this::save);
+    }
+
+    private void postSave() {
+        ThreadPool.postOnUIThread(this::save);
     }
 
     private void save() {

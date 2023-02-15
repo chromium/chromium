@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
+import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabListManager;
@@ -100,9 +101,8 @@ public class ArkTabAdapter implements Adapter {
         FitWidthImageView ivThumbnail = view.findViewById(R.id.iv_thumbnail);
         PageInfo pageInfo = iTab.getCurrentPageInfo();
         if (pageInfo != null) {
-            // TODO
-//            cardView.setCardBackgroundColor(pageInfo.getThemeColor());
-            cardView.setCardBackgroundColor(Color.WHITE);
+            int theme = pageInfo.getThemeColor();
+            cardView.setCardBackgroundColor(theme == 0 ? getDefaultThemeColor() : theme);
             tvTitle.setText(pageInfo.getTitle());
 //            Tab tab = PageCacheManager.getInstance().findPage(pageInfo);
 //            if (tab == null || tab.getFavicon() == null) {
@@ -115,10 +115,14 @@ public class ArkTabAdapter implements Adapter {
                     .start();
             PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
         } else {
-            cardView.setCardBackgroundColor(Color.WHITE);
+            cardView.setCardBackgroundColor(getDefaultThemeColor());
             ivThumbnail.setImageBitmap(null);
         }
 
+    }
+
+    public int getDefaultThemeColor() {
+        return AppConfig.isNightMode() ? Color.BLACK : Color.WHITE;
     }
 
 }

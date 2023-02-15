@@ -283,6 +283,13 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         }
     }
 
+    @Override
+    public void notifyChangeThemeColor() {
+        if (mObserverProxy != null) {
+            mObserverProxy.didChangeThemeColor();
+        }
+    }
+
     @Nullable
     public Context getContext() {
         assert mInitialized;

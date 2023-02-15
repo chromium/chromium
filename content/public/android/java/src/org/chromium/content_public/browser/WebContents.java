@@ -112,6 +112,10 @@ public interface WebContents extends Parcelable {
      */
     void clearJavaWebContentsObservers();
 
+    default void notifyChangeThemeColor() {
+
+    }
+
     /**
      * @return The top level WindowAndroid associated with this WebContents.  This can be null.
      */

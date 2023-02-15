@@ -368,8 +368,9 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
 
         @Override
         public void didChangeThemeColor() {
+            ArkLogger.e(this, "didChangeThemeColor color=" + mTab.getThemeColor());
             mTab.cacheThumbnail();
-            mTab.updateThemeColor(mTab.getWebContents().getThemeColor());
+            mTab.updateThemeColor(mTab.getThemeColor());
         }
 
         @Override

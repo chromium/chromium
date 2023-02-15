@@ -556,6 +556,11 @@ public class SmartSearchPanel extends FrameLayout {
                 }
 
                 @Override
+                public void didThemeColorChanged(int color) {
+
+                }
+
+                @Override
                 public void onPageAttached(@NonNull Tab page) {
 
                 }

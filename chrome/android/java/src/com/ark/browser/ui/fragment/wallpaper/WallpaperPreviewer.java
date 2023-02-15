@@ -44,7 +44,7 @@ public class WallpaperPreviewer extends ImageViewerDialogFragment<String> {
         TextView sureBtn = view.findViewById(R.id.btn_sure);
         mSearchBar = findViewById(R.id.search_bar);
 
-        int cellHeight = ScreenUtils.getScreenHeight() / 7;
+        int cellHeight = ScreenUtils.getScreenHeight() / 8;
 
         ViewGroup.LayoutParams params = mSearchBar.getLayoutParams();
         if (params != null) {

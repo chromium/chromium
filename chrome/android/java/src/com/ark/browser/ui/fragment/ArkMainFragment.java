@@ -213,19 +213,20 @@ public class ArkMainFragment extends BaseFragment implements
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
 
-        mViewHolder = findViewById(R.id.compositor_view_holder);
-//        ViewGroup rootView = (ViewGroup) _mActivity.getWindow().getDecorView().getRootView();
-        // If the UI was inflated on a background thread, then the CompositorView may not have been
-        // fully initialized yet as that may require the creation of a handler which is not allowed
-        // outside the UI thread. This call should fully initialize the CompositorView if it hasn't
-        // been yet.
-        mViewHolder.setRootView(view);
-
-        getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
+//        mViewHolder = findViewById(R.id.compositor_view_holder);
+////        ViewGroup rootView = (ViewGroup) _mActivity.getWindow().getDecorView().getRootView();
+//        // If the UI was inflated on a background thread, then the CompositorView may not have been
+//        // fully initialized yet as that may require the creation of a handler which is not allowed
+//        // outside the UI thread. This call should fully initialize the CompositorView if it hasn't
+//        // been yet.
+//        mViewHolder.setRootView(view);
 
         //    private ProgressBar mProgressBar;
         //    private EditText mUrlBar;
         mSwitcherManager = new TabSwitcherManager(view);
+        mViewHolder = mSwitcherManager.getCompositorViewHolder();
+
+        getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
 
         BottomControlBar bottomControlBar = findViewById(R.id.bottom_control_bar);
         bottomControlBar.setSwitcherManager(mSwitcherManager);
@@ -258,13 +259,7 @@ public class ArkMainFragment extends BaseFragment implements
             return true;
         }
 
-        if (mViewHolder != null && mViewHolder.onBackPressed()) {
-            return true;
-        }
-
         new ExitDialog().show(context);
-
-
         return true;
     }
 
@@ -342,6 +337,11 @@ public class ArkMainFragment extends BaseFragment implements
                     return TabListManager.getInstance().getCurrentTabList();
                 }
                 return TabListManager.getInstance().getTabGroup(current.isIncognito());
+            }
+
+            @Override
+            public void didThemeColorChanged(int color) {
+                mSwitcherManager.getBrowserLayout().setBackgroundColor(color);
             }
 
             @Override

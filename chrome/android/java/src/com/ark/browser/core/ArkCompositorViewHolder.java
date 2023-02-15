@@ -176,6 +176,10 @@ public class ArkCompositorViewHolder extends FrameLayout
         @Override
         public void onDidChangeThemeColor(Tab tab, int color) {
             mLayoutManager.initLayoutTabFromHost(tab.getId());
+            ArkLogger.e(this, "onDidChangeThemeColor color=" + color);
+            if (mCallback != null) {
+                mCallback.didThemeColorChanged(color);
+            }
         }
 
         @Override
@@ -1815,6 +1819,8 @@ public class ArkCompositorViewHolder extends FrameLayout
 //        boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url);
 
         ITabGroup getTabList(Tab current);
+
+        void didThemeColorChanged(int color);
 
         void onPageAttached(@NonNull Tab page);
 

@@ -583,6 +583,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public int getThemeColor() {
+        if (mArkWeb != null) {
+            return mArkWeb.getPageInfo().getThemeColor();
+        }
         return mThemeColor;
     }
 
@@ -839,6 +842,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             // Updating the timestamp has to happen after the showInternal() call since subclasses
             // may use it for logging.
             mTabInfo.accessTime = System.currentTimeMillis();
+
+            notiFyThemeColorChanged();
         } finally {
             TraceEvent.end("Tab.show");
         }
@@ -1163,8 +1168,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     void updateThemeColor(int themeColor) {
         if (mThemeColor == themeColor) return;
         mThemeColor = themeColor;
+        notiFyThemeColorChanged();
+    }
+
+    void notiFyThemeColorChanged() {
         RewindableIterator<TabObserver> observers = getTabObservers();
-        while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, themeColor);
+        while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, mThemeColor);
     }
 
     public void updateTitle() {

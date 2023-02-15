@@ -1,5 +1,7 @@
 package com.ark.browser.core;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
@@ -8,12 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.core.utils.ContentUtils;
+import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.ArkTabViewAndroidDelegate;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.core.IPage;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -35,6 +41,7 @@ import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -91,6 +98,13 @@ public class ArkWebContents {
                             mFinishLoad = false;
                             mStartLoad = true;
                             super.didStartLoading(url);
+                            updateThemeColor();
+                        }
+
+                        @Override
+                        public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl, int frameLifecycleState) {
+                            super.didFailLoad(isInPrimaryMainFrame, errorCode, failingUrl, frameLifecycleState);
+                            updateThemeColor();
                         }
 
                         @Override
@@ -98,6 +112,13 @@ public class ArkWebContents {
                             mStartLoad = true;
                             mFinishLoad = true;
                             super.didFinishLoad(rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
+                            updateThemeColor();
+                        }
+
+                        @Override
+                        public void didFirstVisuallyNonEmptyPaint() {
+                            super.didFirstVisuallyNonEmptyPaint();
+                            updateThemeColor();
                         }
                     };
                 }
@@ -269,6 +290,8 @@ public class ArkWebContents {
                 delegate, cv, tab.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
 
         mWebContents.setImportance(mImportance);
+
+        updateThemeColor();
     }
 
     public void detach(ArkTabImpl tab) {
@@ -310,6 +333,21 @@ public class ArkWebContents {
 
         loadUrl(params);
         return Tab.TabLoadStatus.DEFAULT_PAGE_LOAD;
+    }
+
+    public int getDefaultThemeColor() {
+        return AppConfig.isNightMode() ? Color.BLACK : Color.WHITE;
+    }
+
+    public void updateThemeColor() {
+        PageSnapshotManager.getInstance().loadSnapshot(getId(), bitmap -> {
+            int themeColor = bitmap == null
+                    ? (mPageInfo.getThemeColor() == 0
+                    ? getDefaultThemeColor() : mPageInfo.getThemeColor())
+                    : bitmap.getPixel(1, 1);
+            mPageInfo.setThemeColor(themeColor);
+            mWebContents.notifyChangeThemeColor();
+        });
     }
 
 //    public void addOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
