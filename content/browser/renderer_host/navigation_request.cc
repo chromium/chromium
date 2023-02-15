@@ -1440,15 +1440,13 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           navigation_request->ComputeFencedFrameNonce());
   url::Origin top_level_origin =
       render_frame_host->ComputeTopFrameOrigin(origin);
-  // If the `nonce` is set the `top_level_site` must be the same as `origin` and
-  // the `ancestor_chain_bit` must be kCrossSite.
-  // TODO(https://crbug.com/1410254): Cleanup this logic.
   if (nonce) {
+    // If the nonce isn't null, we can use the simpler form of the constructor.
     navigation_request->commit_params_->storage_key =
-        blink::StorageKey::CreateWithOptionalNonce(
-            origin, net::SchemefulSite(origin), base::OptionalToPtr(nonce),
-            blink::mojom::AncestorChainBit::kCrossSite);
+        blink::StorageKey::CreateWithNonce(origin, *nonce);
   } else {
+    // Otherwise we need to derive the top_level_site and ancestor_chain_bit.
+    // TODO(https://crbug.com/1410254): Cleanup this logic.
     net::SchemefulSite top_level_site(top_level_origin);
     navigation_request->commit_params_->storage_key =
         blink::StorageKey::CreateWithOptionalNonce(

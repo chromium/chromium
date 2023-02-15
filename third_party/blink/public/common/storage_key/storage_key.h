@@ -80,10 +80,8 @@ class BLINK_COMMON_EXPORT StorageKey {
   // (1C) Construct for an ephemeral browsing context with a nonce.
   // This is a common entry point when constructing a context, and callsites
   // generally must branch and call Create() if a nonce isn't set.
-  // TODO(crbug.com/1410254): Rename this to CreateWithNonce().
-  static StorageKey CreateWithNonceForTesting(
-      const url::Origin& origin,
-      const base::UnguessableToken& nonce);
+  static StorageKey CreateWithNonce(const url::Origin& origin,
+                                    const base::UnguessableToken& nonce);
 
   // (1D) Construct for a specific first or third party context.
   // This is a common entry point when constructing a context, and callsites

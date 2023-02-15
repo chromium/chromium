@@ -49,11 +49,11 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
             url::Origin::Create(GURL("http://sub2.example.com")),
             url::Origin::Create(GURL("https://example.com"))),
         StorageKey::CreateFirstParty(url::Origin()),
-        StorageKey::CreateWithNonceForTesting(
+        StorageKey::CreateWithNonce(
             url::Origin::Create(GURL("https://.example.com")),
             base::UnguessableToken::Create()),
-        StorageKey::CreateWithNonceForTesting(url::Origin(),
-                                              base::UnguessableToken::Create()),
+        StorageKey::CreateWithNonce(url::Origin(),
+                                    base::UnguessableToken::Create()),
         StorageKey::CreateWithOptionalNonce(
             url::Origin::Create(GURL("http://sub2.example.com")),
             net::SchemefulSite(

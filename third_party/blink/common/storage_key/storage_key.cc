@@ -493,9 +493,8 @@ StorageKey StorageKey::CreateFirstParty(const url::Origin& origin) {
 }
 
 // static
-StorageKey StorageKey::CreateWithNonceForTesting(
-    const url::Origin& origin,
-    const base::UnguessableToken& nonce) {
+StorageKey StorageKey::CreateWithNonce(const url::Origin& origin,
+                                       const base::UnguessableToken& nonce) {
   // The AncestorChainBit is not applicable to StorageKeys with a non-empty
   // nonce, so they are initialized to be kCrossSite.
   return StorageKey(origin, net::SchemefulSite(origin), &nonce,

@@ -19,17 +19,6 @@ BlinkStorageKey::BlinkStorageKey()
                       nullptr,
                       mojom::blink::AncestorChainBit::kCrossSite) {}
 
-// The AncestorChainBit is not applicable to StorageKeys with a non-empty
-// nonce, so they are initialized to be kCrossSite.
-BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                                 const base::UnguessableToken* nonce)
-    : BlinkStorageKey(origin,
-                      BlinkSchemefulSite(origin),
-                      nonce,
-                      nonce || origin->IsOpaque()
-                          ? mojom::blink::AncestorChainBit::kCrossSite
-                          : mojom::blink::AncestorChainBit::kSameSite) {}
-
 BlinkStorageKey::BlinkStorageKey(
     scoped_refptr<const SecurityOrigin> origin,
     const BlinkSchemefulSite& top_level_site,
@@ -85,8 +74,8 @@ BlinkStorageKey BlinkStorageKey::CreateFirstParty(
 BlinkStorageKey BlinkStorageKey::CreateWithNonce(
     scoped_refptr<const SecurityOrigin> origin,
     const base::UnguessableToken& nonce) {
-  DCHECK(!nonce.is_empty());
-  return BlinkStorageKey(std::move(origin), &nonce);
+  return BlinkStorageKey(origin, BlinkSchemefulSite(origin), &nonce,
+                         mojom::blink::AncestorChainBit::kCrossSite);
 }
 
 // static

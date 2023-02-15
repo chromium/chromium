@@ -156,9 +156,6 @@ class PLATFORM_EXPORT BlinkStorageKey {
   bool ExactMatchForTesting(const blink::BlinkStorageKey& other) const;
 
  private:
-  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                  const base::UnguessableToken* nonce);
-
   scoped_refptr<const SecurityOrigin> origin_;
   BlinkSchemefulSite top_level_site_;
   // Stores the value `top_level_site_` would have had if

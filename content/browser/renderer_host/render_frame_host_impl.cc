@@ -4098,13 +4098,9 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
 blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     const url::Origin& new_rfh_origin,
     const base::UnguessableToken* nonce) {
-  // If the nonce is set the `top_level_site` must be the same as
-  // `new_rfh_origin` and the `ancestor_chain_bit` must be kCrossSite.
-  // TODO(https://crbug.com/1410254): Cleanup this logic.
   if (nonce) {
-    return blink::StorageKey::CreateWithOptionalNonce(
-        new_rfh_origin, net::SchemefulSite(new_rfh_origin), nonce,
-        blink::mojom::AncestorChainBit::kCrossSite);
+    // If the nonce isn't null, we can use the simpler form of the constructor.
+    return blink::StorageKey::CreateWithNonce(new_rfh_origin, *nonce);
   }
 
   std::vector<RenderFrameHostImpl*> ancestor_chain;

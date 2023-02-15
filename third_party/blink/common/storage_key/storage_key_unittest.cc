@@ -95,25 +95,25 @@ TEST_F(StorageKeyTest, EquivalenceUnpartitioned) {
       {StorageKey::CreateFirstParty(origin4),
        StorageKey::CreateFirstParty(origin4), true},
       // StorageKeys made from the same origin and nonce are equivalent.
-      {StorageKey::CreateWithNonceForTesting(origin1, nonce1),
-       StorageKey::CreateWithNonceForTesting(origin1, nonce1), true},
-      {StorageKey::CreateWithNonceForTesting(origin1, nonce2),
-       StorageKey::CreateWithNonceForTesting(origin1, nonce2), true},
-      {StorageKey::CreateWithNonceForTesting(origin2, nonce1),
-       StorageKey::CreateWithNonceForTesting(origin2, nonce1), true},
+      {StorageKey::CreateWithNonce(origin1, nonce1),
+       StorageKey::CreateWithNonce(origin1, nonce1), true},
+      {StorageKey::CreateWithNonce(origin1, nonce2),
+       StorageKey::CreateWithNonce(origin1, nonce2), true},
+      {StorageKey::CreateWithNonce(origin2, nonce1),
+       StorageKey::CreateWithNonce(origin2, nonce1), true},
       // StorageKeys made from different origins are not equivalent.
       {StorageKey::CreateFirstParty(origin1),
        StorageKey::CreateFirstParty(origin2), false},
       {StorageKey::CreateFirstParty(origin3),
        StorageKey::CreateFirstParty(origin4), false},
-      {StorageKey::CreateWithNonceForTesting(origin1, nonce1),
-       StorageKey::CreateWithNonceForTesting(origin2, nonce1), false},
+      {StorageKey::CreateWithNonce(origin1, nonce1),
+       StorageKey::CreateWithNonce(origin2, nonce1), false},
       // StorageKeys made from different nonces are not equivalent.
-      {StorageKey::CreateWithNonceForTesting(origin1, nonce1),
-       StorageKey::CreateWithNonceForTesting(origin1, nonce2), false},
+      {StorageKey::CreateWithNonce(origin1, nonce1),
+       StorageKey::CreateWithNonce(origin1, nonce2), false},
       // StorageKeys made from different origins and nonce are not equivalent.
-      {StorageKey::CreateWithNonceForTesting(origin1, nonce1),
-       StorageKey::CreateWithNonceForTesting(origin2, nonce2), false},
+      {StorageKey::CreateWithNonce(origin1, nonce1),
+       StorageKey::CreateWithNonce(origin2, nonce2), false},
       // When storage partitioning is disabled, the top-level site isn't taken
       // into account for equivalence.
       {StorageKey::CreateForTesting(origin1, origin2),
@@ -293,7 +293,7 @@ TEST_F(StorageKeyTest, SerializeNonce) {
     const url::Origin origin =
         url::Origin::Create(GURL(test.origin_and_nonce.first));
     const base::UnguessableToken& nonce = test.origin_and_nonce.second;
-    StorageKey key = StorageKey::CreateWithNonceForTesting(origin, nonce);
+    StorageKey key = StorageKey::CreateWithNonce(origin, nonce);
     EXPECT_EQ(test.expected_serialization, key.Serialize());
   }
 }
@@ -489,7 +489,7 @@ TEST_F(StorageKeyTest, SerializeDeserializeNonce) {
     url::Origin origin = url::Origin::Create(GURL(test.origin));
     const base::UnguessableToken& nonce = test.nonce;
 
-    StorageKey key = StorageKey::CreateWithNonceForTesting(origin, nonce);
+    StorageKey key = StorageKey::CreateWithNonce(origin, nonce);
     std::string key_string = key.Serialize();
     std::string key_string_for_local_storage = key.SerializeForLocalStorage();
     absl::optional<StorageKey> key_deserialized =
@@ -606,19 +606,19 @@ TEST_F(StorageKeyTest, DeserializeNonces) {
         },
         {
             "https://example.com/^11^20",
-            blink::StorageKey::CreateWithNonceForTesting(
+            blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(GURL("https://example.com/")),
                 base::UnguessableToken::CreateForTesting(1ULL, 0ULL)),
         },
         {
             "https://example.com/^10^21",
-            blink::StorageKey::CreateWithNonceForTesting(
+            blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(GURL("https://example.com/")),
                 base::UnguessableToken::CreateForTesting(0ULL, 1ULL)),
         },
         {
             "https://example.com/^11^21",
-            blink::StorageKey::CreateWithNonceForTesting(
+            blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(GURL("https://example.com/")),
                 base::UnguessableToken::CreateForTesting(1ULL, 1ULL)),
         },
@@ -779,7 +779,7 @@ TEST_F(StorageKeyTest, IsThirdPartyContext) {
                     {kOrigin, kOrigin, true, true}};
   for (const auto& test_case : test_cases) {
     if (test_case.has_nonce) {
-      StorageKey key = StorageKey::CreateWithNonceForTesting(
+      StorageKey key = StorageKey::CreateWithNonce(
           test_case.origin, base::UnguessableToken::Create());
       EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
       EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
@@ -834,8 +834,8 @@ TEST_F(StorageKeyTest, ToNetSiteForCookies) {
   for (const auto& test_case : test_cases) {
     net::SchemefulSite got_site;
     if (test_case.has_nonce) {
-      got_site = StorageKey::CreateWithNonceForTesting(
-                     test_case.origin, base::UnguessableToken::Create())
+      got_site = StorageKey::CreateWithNonce(test_case.origin,
+                                             base::UnguessableToken::Create())
                      .ToNetSiteForCookies()
                      .site();
     } else {
@@ -912,7 +912,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
              url::Origin::Create(GURL("https://www.foo.com")),
              url::Origin::Create(GURL("https://www.bar.com"))),
          absl::nullopt},
-        {StorageKey::CreateWithNonceForTesting(
+        {StorageKey::CreateWithNonce(
              url::Origin::Create(GURL("https://www.example.com")), nonce),
          absl::nullopt},
     };
@@ -933,7 +933,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
     TestCase test_cases[] = {
         {StorageKey::CreateFromStringForTesting("https://www.example.com"),
          absl::nullopt},
-        {StorageKey::CreateWithNonceForTesting(
+        {StorageKey::CreateWithNonce(
              url::Origin::Create(GURL("https://www.example.com")), nonce),
          net::CookiePartitionKey::FromURLForTesting(GURL("https://example.com"),
                                                     nonce)},
@@ -960,7 +960,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
              url::Origin::Create(GURL("https://www.bar.com"))),
          net::CookiePartitionKey::FromURLForTesting(
              GURL("https://subdomain.bar.com"))},
-        {StorageKey::CreateWithNonceForTesting(
+        {StorageKey::CreateWithNonce(
              url::Origin::Create(GURL("https://www.example.com")), nonce),
          net::CookiePartitionKey::FromURLForTesting(
              GURL("https://www.example.com"), nonce)},

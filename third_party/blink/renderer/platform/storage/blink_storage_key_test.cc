@@ -148,8 +148,8 @@ TEST(BlinkStorageKeyTest, StorageKeyRoundTripConversion) {
         StorageKey::CreateFirstParty(url_origin2),
         StorageKey::CreateFirstParty(url_origin3),
         StorageKey::CreateFirstParty(url_origin4),
-        StorageKey::CreateWithNonceForTesting(url_origin1, nonce),
-        StorageKey::CreateWithNonceForTesting(url_origin2, nonce),
+        StorageKey::CreateWithNonce(url_origin1, nonce),
+        StorageKey::CreateWithNonce(url_origin2, nonce),
         StorageKey::CreateWithOptionalNonce(
             url_origin1, net::SchemefulSite(url_origin2), nullptr,
             blink::mojom::AncestorChainBit::kCrossSite),

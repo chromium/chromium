@@ -494,8 +494,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   // Keys with nonces should always be gettable.
   GURL origin7 = GURL("https://example.org");
   base::UnguessableToken token = base::UnguessableToken::Create();
-  blink::StorageKey key7 = blink::StorageKey::CreateWithNonceForTesting(
-      url::Origin::Create(origin7), token);
+  blink::StorageKey key7 =
+      blink::StorageKey::CreateWithNonce(url::Origin::Create(origin7), token);
   RegistrationData data7;
   data7.registration_id = 789;
   data7.scope = URL(origin7, "/hoge");
@@ -833,7 +833,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data7;
   data7.registration_id = 700;
   data7.scope = URL(origin7, "/hoge");
-  data7.key = blink::StorageKey::CreateWithNonceForTesting(
+  data7.key = blink::StorageKey::CreateWithNonce(
       url::Origin::Create(data7.scope), token);
   data7.script = URL(origin7, "/script7.js");
   data7.version_id = 7000;

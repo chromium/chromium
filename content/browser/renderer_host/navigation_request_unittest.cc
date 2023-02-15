@@ -705,7 +705,7 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
   child_document =
       static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
   EXPECT_TRUE(child_document->IsCredentialless());
-  EXPECT_EQ(blink::StorageKey::CreateWithNonceForTesting(
+  EXPECT_EQ(blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(kUrl),
                 child_document->GetMainFrame()->credentialless_iframes_nonce()),
             child_document->storage_key());
