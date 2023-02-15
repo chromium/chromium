@@ -209,8 +209,8 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
   // Called prior WillRedirectRequest() to allow throttles to restart the URL
   // load by calling delegate_->RestartWithFlags().
   //
-  // Having this method separate from WillProcessResponse() ensures that
-  // WillProcessResponse() is called at most once per redirect even in the
+  // Having this method separate from WillRedirectRequest() ensures that
+  // WillRedirectRequest() is called at most once per redirect even in the
   // presence of restarts.
   //
   // Note: restarting with the url reset triggers an internal redirect, which
