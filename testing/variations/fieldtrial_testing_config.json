@@ -4679,6 +4679,21 @@
             ]
         }
     ],
+    "EnableShoppingListIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShoppingList"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableWatchdogReportOnlyModeOnGpuInit": [
         {
             "platforms": [
