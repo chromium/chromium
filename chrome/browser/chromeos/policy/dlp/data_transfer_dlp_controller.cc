@@ -224,7 +224,7 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
                             &src_pattern, &dst_pattern, &rule_metadata);
 
   MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
-                   /*is_clipboard_event=*/true);
+                   /*is_clipboard_event=*/true, rule_metadata);
 
   bool notify_on_paste = ShouldNotifyOnPaste(data_dst);
 
@@ -243,13 +243,13 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
         if (notify_on_paste) {
           ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
                       DlpRulesManager::Level::kWarn,
-                      /*is_clipboard_event=*/true);
+                      /*is_clipboard_event=*/true, rule_metadata);
 
           auto reporting_cb = base::BindRepeating(
               &DataTransferDlpController::ReportWarningProceededEvent,
               weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
               base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
-              /*is_clipboard_event=*/true);
+              /*is_clipboard_event=*/true, rule_metadata);
 
           WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
         }
@@ -259,13 +259,13 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
                  !ShouldPasteOnWarn(data_dst)) {
         ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
                     DlpRulesManager::Level::kWarn,
-                    /*is_clipboard_event=*/true);
+                    /*is_clipboard_event=*/true, rule_metadata);
 
         auto reporting_cb = base::BindRepeating(
             &DataTransferDlpController::ReportWarningProceededEvent,
             weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
             base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
-            /*is_clipboard_event=*/true);
+            /*is_clipboard_event=*/true, rule_metadata);
 
         WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
         is_read_allowed = false;
@@ -320,7 +320,7 @@ void DataTransferDlpController::PasteIfAllowed(
       ReportWarningProceededEvent(base::OptionalFromPtr(data_src),
                                   base::OptionalFromPtr(data_dst), src_pattern,
                                   dst_pattern,
-                                  /*is_clipboard_event=*/true);
+                                  /*is_clipboard_event=*/true, rule_metadata);
     }
     std::move(paste_cb).Run(true);
   } else if (ShouldCancelOnWarn(data_dst)) {
@@ -328,13 +328,14 @@ void DataTransferDlpController::PasteIfAllowed(
   } else {
     if (ShouldNotifyOnPaste(data_dst)) {
       ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
-                  DlpRulesManager::Level::kWarn, /*is_clipboard_event=*/true);
+                  DlpRulesManager::Level::kWarn, /*is_clipboard_event=*/true,
+                  rule_metadata);
 
       auto reporting_cb = base::BindOnce(
           &DataTransferDlpController::ReportWarningProceededEvent,
           weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
           base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
-          /*is_clipboard_event=*/true);
+          /*is_clipboard_event=*/true, rule_metadata);
 
       auto report_and_paste_cb =
           base::BindOnce(&MaybeReportWarningProceededEventAndPaste,
@@ -363,7 +364,7 @@ void DataTransferDlpController::DropIfAllowed(
       &dst_pattern, &rule_metadata);
 
   MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
-                   /*is_clipboard_event*/ false);
+                   /*is_clipboard_event*/ false, rule_metadata);
 
   switch (level) {
     case DlpRulesManager::Level::kBlock:
@@ -483,16 +484,19 @@ void DataTransferDlpController::ReportEvent(
     const std::string& src_pattern,
     const std::string& dst_pattern,
     DlpRulesManager::Level level,
-    bool is_clipboard_event) {
+    bool is_clipboard_event,
+    const DlpRulesManager::RuleMetadata& rule_metadata) {
   auto* reporting_manager = dlp_rules_manager_.GetReportingManager();
-  if (!reporting_manager)
+  if (!reporting_manager) {
     return;
+  }
 
   if (is_clipboard_event) {
     base::TimeTicks curr_time = base::TimeTicks::Now();
     if (ShouldSkipReporting(data_src, data_dst, /*is_warning_proceeded=*/false,
-                            curr_time))
+                            curr_time)) {
       return;
+    }
     last_reported_.data_src =
         base::OptionalFromPtr<ui::DataTransferEndpoint>(data_src);
     last_reported_.data_dst =
@@ -508,25 +512,28 @@ void DataTransferDlpController::ReportEvent(
     case ui::EndpointType::kCrostini:
       reporting_manager->ReportEvent(
           src_pattern, DlpRulesManager::Component::kCrostini,
-          DlpRulesManager::Restriction::kClipboard, level);
+          DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
+          rule_metadata.obfuscated_id);
       break;
 
     case ui::EndpointType::kPluginVm:
       reporting_manager->ReportEvent(
           src_pattern, DlpRulesManager::Component::kPluginVm,
-          DlpRulesManager::Restriction::kClipboard, level);
+          DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
+          rule_metadata.obfuscated_id);
       break;
 
     case ui::EndpointType::kArc:
       reporting_manager->ReportEvent(
           src_pattern, DlpRulesManager::Component::kArc,
-          DlpRulesManager::Restriction::kClipboard, level);
+          DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
+          rule_metadata.obfuscated_id);
       break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     default:
-      reporting_manager->ReportEvent(src_pattern, dst_pattern,
-                                     DlpRulesManager::Restriction::kClipboard,
-                                     level);
+      reporting_manager->ReportEvent(
+          src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard,
+          level, rule_metadata.name, rule_metadata.obfuscated_id);
       break;
   }
 }
@@ -537,11 +544,12 @@ void DataTransferDlpController::MaybeReportEvent(
     const std::string& src_pattern,
     const std::string& dst_pattern,
     DlpRulesManager::Level level,
-    bool is_clipboard_event) {
+    bool is_clipboard_event,
+    const DlpRulesManager::RuleMetadata& rule_metadata) {
   if (level == DlpRulesManager::Level::kReport ||
       level == DlpRulesManager::Level::kBlock) {
     ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
-                is_clipboard_event);
+                is_clipboard_event, rule_metadata);
   }
 }
 
@@ -550,7 +558,8 @@ void DataTransferDlpController::ReportWarningProceededEvent(
     const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
     const std::string& src_pattern,
     const std::string& dst_pattern,
-    bool is_clipboard_event) {
+    bool is_clipboard_event,
+    const DlpRulesManager::RuleMetadata& rule_metadata) {
   auto* reporting_manager = dlp_rules_manager_.GetReportingManager();
 
   if (!reporting_manager) {
@@ -580,7 +589,8 @@ void DataTransferDlpController::ReportWarningProceededEvent(
     NOTREACHED();
   } else {
     reporting_manager->ReportWarningProceededEvent(
-        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard);
+        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard,
+        rule_metadata.name, rule_metadata.obfuscated_id);
   }
 }
 

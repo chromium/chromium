@@ -40,6 +40,8 @@ namespace policy {
 namespace {
 const char kCompanyPattern[] = "company.com";
 const char kFilename[] = "example.txt";
+const char kRuleName[] = "ruleName";
+const char kRuleId[] = "obfuscatedId";
 }  // namespace
 
 class DlpReportingManagerTest : public testing::Test {
@@ -59,7 +61,7 @@ class DlpReportingManagerTest : public testing::Test {
       unsigned int event_number) {
     manager_.ReportEvent(kCompanyPattern, rule_component,
                          DlpRulesManager::Restriction::kClipboard,
-                         DlpRulesManager::Level::kBlock);
+                         DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
 
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].source().url(), kCompanyPattern);
@@ -68,6 +70,8 @@ class DlpReportingManagerTest : public testing::Test {
     EXPECT_EQ(events_[event_number].restriction(),
               DlpPolicyEvent_Restriction_CLIPBOARD);
     EXPECT_EQ(events_[event_number].mode(), DlpPolicyEvent_Mode_BLOCK);
+    EXPECT_EQ(events_[event_number].triggered_rule_name(), kRuleName);
+    EXPECT_EQ(events_[event_number].triggered_rule_id(), kRuleId);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -81,7 +85,7 @@ class DlpReportingManagerTest : public testing::Test {
                                /*browser_restart=*/false, is_child);
     manager_.ReportEvent(kCompanyPattern,
                          DlpRulesManager::Restriction::kPrinting,
-                         DlpRulesManager::Level::kBlock);
+                         DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].user_type(), DlpUserType);
     user_manager->RemoveUserFromList(account_id);
@@ -100,7 +104,7 @@ class DlpReportingManagerTest : public testing::Test {
                                unsigned int event_number) {
     manager_.ReportEvent(kCompanyPattern,
                          DlpRulesManager::Restriction::kPrinting,
-                         DlpRulesManager::Level::kBlock);
+                         DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].user_type(), dlp_user_type);
   }
@@ -116,7 +120,7 @@ class DlpReportingManagerTest : public testing::Test {
 
 TEST_F(DlpReportingManagerTest, ReportEvent) {
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock);
+                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 1u);
@@ -124,13 +128,15 @@ TEST_F(DlpReportingManagerTest, ReportEvent) {
   EXPECT_FALSE(events_[0].has_destination());
   EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_PRINTING);
   EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
+  EXPECT_EQ(events_[0].triggered_rule_name(), kRuleName);
+  EXPECT_EQ(events_[0].triggered_rule_id(), kRuleId);
 }
 
 TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
   const std::string dst_pattern = "*";
   manager_.ReportEvent(kCompanyPattern, dst_pattern,
                        DlpRulesManager::Restriction::kClipboard,
-                       DlpRulesManager::Level::kBlock);
+                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 1u);
@@ -139,6 +145,8 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
   EXPECT_FALSE(events_[0].destination().has_component());
   EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_CLIPBOARD);
   EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
+  EXPECT_EQ(events_[0].triggered_rule_name(), kRuleName);
+  EXPECT_EQ(events_[0].triggered_rule_id(), kRuleId);
 }
 
 TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
@@ -160,16 +168,31 @@ TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
   EXPECT_EQ(manager_.events_reported(), 6u);
 }
 
+TEST_F(DlpReportingManagerTest, ReportEventWithoutNameAndRuleId) {
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+                       DlpRulesManager::Level::kBlock, std::string(),
+                       std::string());
+
+  EXPECT_EQ(manager_.events_reported(), 1u);
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
+  EXPECT_FALSE(events_[0].has_destination());
+  EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_PRINTING);
+  EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
+  EXPECT_FALSE(events_[0].has_triggered_rule_name());
+  EXPECT_FALSE(events_[0].has_triggered_rule_id());
+}
+
 TEST_F(DlpReportingManagerTest, MetricsReported) {
   base::HistogramTester histogram_tester;
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock);
+                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
   manager_.ReportEvent(kCompanyPattern,
                        DlpRulesManager::Restriction::kScreenshot,
-                       DlpRulesManager::Level::kReport);
+                       DlpRulesManager::Level::kReport, kRuleName, kRuleId);
   manager_.ReportEvent(kCompanyPattern,
                        DlpRulesManager::Restriction::kUnknownRestriction,
-                       DlpRulesManager::Level::kWarn);
+                       DlpRulesManager::Level::kWarn, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 3u);
   EXPECT_EQ(events_.size(), 3u);
@@ -265,7 +288,7 @@ TEST_F(DlpReportingManagerTest, UserType) {
 TEST_F(DlpReportingManagerTest, CreateEventWithUnknownRestriction) {
   DlpPolicyEvent event = policy::CreateDlpPolicyEvent(
       kCompanyPattern, DlpRulesManager::Restriction::kUnknownRestriction,
-      DlpRulesManager::Level::kNotSet);
+      kRuleName, kRuleId, DlpRulesManager::Level::kNotSet);
   EXPECT_EQ(event.source().url(), kCompanyPattern);
   EXPECT_FALSE(event.has_destination());
   EXPECT_EQ(event.restriction(),
@@ -275,7 +298,7 @@ TEST_F(DlpReportingManagerTest, CreateEventWithUnknownRestriction) {
 
 TEST_F(DlpReportingManagerTest, CreateEventForFilesRestriction) {
   auto event_builder = DlpPolicyEventBuilder::Event(
-      kCompanyPattern, DlpRulesManager::Restriction::kFiles,
+      kCompanyPattern, kRuleName, kRuleId, DlpRulesManager::Restriction::kFiles,
       DlpRulesManager::Level::kAllow);
   event_builder->SetContentName(kFilename);
 
@@ -286,14 +309,28 @@ TEST_F(DlpReportingManagerTest, CreateEventForFilesRestriction) {
   EXPECT_EQ(event.restriction(), DlpPolicyEvent_Restriction_FILES);
   EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_UNDEFINED_MODE);
   EXPECT_EQ(event.content_name(), kFilename);
+  EXPECT_EQ(event.triggered_rule_name(), kRuleName);
+  EXPECT_EQ(event.triggered_rule_id(), kRuleId);
+}
+
+TEST_F(DlpReportingManagerTest, CreateEventWithEmptyRuleMetadata) {
+  auto event_builder = DlpPolicyEventBuilder::Event(
+      kCompanyPattern, std::string(), std::string(),
+      DlpRulesManager::Restriction::kPrinting, DlpRulesManager::Level::kBlock);
+
+  DlpPolicyEvent event = event_builder->Create();
+  EXPECT_EQ(event.source().url(), kCompanyPattern);
+  EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_BLOCK);
+  EXPECT_FALSE(event.has_triggered_rule_name());
+  EXPECT_FALSE(event.has_triggered_rule_id());
 }
 
 TEST_F(DlpReportingManagerTest, Timestamp) {
   const base::Time lower_bound = base::Time::Now();
 
   DlpPolicyEvent event = policy::CreateDlpPolicyEvent(
-      kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-      DlpRulesManager::Level::kBlock);
+      kCompanyPattern, DlpRulesManager::Restriction::kPrinting, kRuleName,
+      kRuleId, DlpRulesManager::Level::kBlock);
 
   ASSERT_TRUE(event.has_timestamp_micro());
   const base::TimeDelta time_since_epoch =
@@ -312,7 +349,7 @@ TEST_F(DlpReportingManagerTest, ReportEventError) {
   manager_.SetReportQueueForTest(std::move(report_queue));
 
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock);
+                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
   EXPECT_EQ(manager_.events_reported(), 0u);
   EXPECT_EQ(events_.size(), 0u);
 }
@@ -336,7 +373,7 @@ TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
   manager_.SetReportQueueForTest(std::move(report_queue));
 
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                       DlpRulesManager::Level::kBlock);
+                       DlpRulesManager::Level::kBlock, kRuleName, kRuleId);
 
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 0u);

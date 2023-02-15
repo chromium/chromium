@@ -260,6 +260,7 @@ class DlpFilesController {
       std::vector<FileDaemonInfo> restricted_files_sources,
       std::vector<FileDaemonInfo> warned_files_sources,
       std::vector<std::string> warned_src_patterns,
+      std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
       const DlpFileDestination& dst,
       const absl::optional<std::string>& dst_pattern,
       FileAction files_action,
@@ -291,6 +292,7 @@ class DlpFilesController {
                         const std::string& source_pattern,
                         const DlpFileDestination& dst,
                         const absl::optional<std::string>& dst_pattern,
+                        const DlpRulesManager::RuleMetadata& rule_metadata,
                         absl::optional<DlpRulesManager::Level> level);
 
   // Closes warning dialog if `response` has error.

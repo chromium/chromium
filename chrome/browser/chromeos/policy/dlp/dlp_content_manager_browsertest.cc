@@ -130,8 +130,9 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
                    size_t count) {
     EXPECT_EQ(events_.size(), count);
     for (size_t i = 0; i < count; ++i) {
-      EXPECT_THAT(events_[i], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                                  kSrcPattern, restriction, level)));
+      EXPECT_THAT(events_[i],
+                  IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                      kSrcPattern, restriction, kRuleName, kRuleId, level)));
     }
   }
 
@@ -379,6 +380,8 @@ class DlpContentManagerReportingBrowserTest
     DlpPolicyEvent event;
     EXPECT_TRUE(event.ParseFromString(record.data()));
     EXPECT_EQ(event.source().url(), kSrcPattern);
+    EXPECT_EQ(event.triggered_rule_name(), kRuleName);
+    EXPECT_EQ(event.triggered_rule_id(), kRuleId);
     EXPECT_THAT(event, IsDlpPolicyEvent(expectedEvent));
   }
 
@@ -476,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   // Sets an action to execute when an event arrives to a storage module.
   SetAddRecordCheck(
       CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                           DlpRulesManager::Level::kBlock),
+                           kRuleName, kRuleId, DlpRulesManager::Level::kBlock),
       /*times=*/2);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
@@ -526,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   SetupReportQueue();
   SetAddRecordCheck(
       CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                           DlpRulesManager::Level::kReport),
+                           kRuleName, kRuleId, DlpRulesManager::Level::kReport),
       /*times=*/2);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
@@ -575,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
 
   SetAddRecordCheck(
       CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                           DlpRulesManager::Level::kWarn),
+                           kRuleName, kRuleId, DlpRulesManager::Level::kWarn),
       /*times=*/1);
 
   MockPrintManager* print_manager = GetPrintManager(web_contents);
@@ -595,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
 
   SetAddRecordCheck(
       CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                           DlpRulesManager::Level::kWarn),
+                           kRuleName, kRuleId, DlpRulesManager::Level::kWarn),
       /*times=*/1);
 
   // Attempt to print again.
@@ -604,7 +607,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(test_storage_module()));
 
   SetAddRecordCheck(CreateDlpPolicyWarningProceededEvent(
-                        kSrcPattern, DlpRulesManager::Restriction::kPrinting),
+                        kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                        kRuleName, kRuleId),
                     /*times=*/1);
   EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting()).Times(1);
 
@@ -672,7 +676,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare)));
+                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
+                  kRuleName, kRuleId)));
 
   // The contents should already be cached as allowed by the user, so this
   // should not trigger a new warning.

@@ -259,10 +259,11 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReportingVideoCapture) {
   ASSERT_FALSE(test_api.IsVideoRecordingInProgress());
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kReport)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kReport)));
 
   // Repeat, should emit the second reporting event.
   StartVideoRecording();
@@ -276,10 +277,11 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReportingVideoCapture) {
   ASSERT_FALSE(test_api.IsVideoRecordingInProgress());
 
   ASSERT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[1], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kReport)));
+  EXPECT_THAT(
+      events_[1],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kReport)));
 }
 
 // Tests DLP reporting without opening the capture bar.
@@ -305,10 +307,11 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kReport)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kReport)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -339,10 +342,11 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -367,14 +371,16 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 
   ASSERT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
       events_[1],
       policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
-          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId)));
 }
 
 // A regression test for https://crbug.com/1350711 in which a session is started
@@ -422,10 +428,11 @@ IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
@@ -450,10 +457,11 @@ IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
   // Don't send warning proceeded event as the video capture didn't start.
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
@@ -483,10 +491,11 @@ IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -519,14 +528,16 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 
   EXPECT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
       events_[1],
       policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
-          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -581,14 +592,16 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 
   ASSERT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
       events_[1],
       policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
-          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -620,10 +633,11 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -661,14 +675,16 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 
   ASSERT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
       events_[1],
       policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
-          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -691,10 +707,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -729,14 +746,16 @@ IN_PROC_BROWSER_TEST_F(
   loop.Run();
 
   ASSERT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kSrcPattern,
-                              policy::DlpRulesManager::Restriction::kScreenshot,
-                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[0],
+      policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId, policy::DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(
       events_[1],
       policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
-          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot,
+          kRuleName, kRuleId)));
 }
 
 class CaptureModeSettingsBrowserTest : public extensions::ExtensionBrowserTest {

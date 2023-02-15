@@ -63,7 +63,8 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
       const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
       const std::string& src_pattern,
       const std::string& dst_pattern,
-      bool is_clipboard_event);
+      bool is_clipboard_event,
+      const DlpRulesManager::RuleMetadata& rule_metadata);
 
  private:
   virtual void NotifyBlockedPaste(
@@ -103,14 +104,16 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                    const std::string& src_pattern,
                    const std::string& dst_pattern,
                    DlpRulesManager::Level level,
-                   bool is_clipboard_event);
+                   bool is_clipboard_event,
+                   const DlpRulesManager::RuleMetadata& rule_metadata);
 
   void MaybeReportEvent(const ui::DataTransferEndpoint* const data_src,
                         const ui::DataTransferEndpoint* const data_dst,
                         const std::string& src_pattern,
                         const std::string& dst_pattern,
                         DlpRulesManager::Level level,
-                        bool is_clipboard_event);
+                        bool is_clipboard_event,
+                        const DlpRulesManager::RuleMetadata& rule_metadata);
 
   // The solution for the issue of sending multiple reporting events for a
   // single user action. When a user triggers a paste (for instance by pressing

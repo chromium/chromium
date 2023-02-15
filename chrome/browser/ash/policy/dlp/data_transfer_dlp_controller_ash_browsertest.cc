@@ -263,10 +263,11 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
       ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
   EXPECT_EQ(std::u16string(), result2);
   ASSERT_EQ(events.size(), 1u);
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kMailUrl, DlpRulesManager::Component::kArc,
-                             DlpRulesManager::Restriction::kClipboard,
-                             DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(events[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kMailUrl, DlpRulesManager::Component::kArc,
+                  DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
+                  DlpRulesManager::Level::kBlock)));
 
   ui::DataTransferEndpoint data_dst3(ui::EndpointType::kCrostini);
   std::u16string result3;
@@ -274,10 +275,11 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
       ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);
   EXPECT_EQ(std::u16string(), result3);
   ASSERT_EQ(events.size(), 2u);
-  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kMailUrl, DlpRulesManager::Component::kCrostini,
-                             DlpRulesManager::Restriction::kClipboard,
-                             DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(events[1],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kMailUrl, DlpRulesManager::Component::kCrostini,
+                  DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
+                  DlpRulesManager::Level::kBlock)));
 }
 
 // Flaky on MSan bots: http://crbug.com/1178328
@@ -316,10 +318,11 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
       ui::ClipboardBuffer::kCopyPaste, &arc_endpoint, &result);
   EXPECT_EQ(kClipboardText116, result);
   ASSERT_EQ(events.size(), 1u);
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kMailUrl, DlpRulesManager::Component::kArc,
-                             DlpRulesManager::Restriction::kClipboard,
-                             DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(events[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kMailUrl, DlpRulesManager::Component::kArc,
+                  DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
+                  DlpRulesManager::Level::kWarn)));
 
   ui::DataTransferEndpoint crostini_endpoint(ui::EndpointType::kCrostini);
   result.clear();
@@ -327,10 +330,11 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
       ui::ClipboardBuffer::kCopyPaste, &crostini_endpoint, &result);
   EXPECT_EQ(kClipboardText116, result);
   ASSERT_EQ(events.size(), 2u);
-  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kMailUrl, DlpRulesManager::Component::kCrostini,
-                             DlpRulesManager::Restriction::kClipboard,
-                             DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(events[1],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kMailUrl, DlpRulesManager::Component::kCrostini,
+                  DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
+                  DlpRulesManager::Level::kWarn)));
 }
 
 }  // namespace policy

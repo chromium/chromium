@@ -70,4 +70,8 @@ message DlpPolicyEvent {
   optional UserType user_type = 7;
   // Currently used for the filename involved in a file event.
   optional string content_name = 8;
+  // Server side name of the triggered rule.
+  optional string triggered_rule_name = 9;
+  // Obfuscated rule id of the triggered rule.
+  optional string triggered_rule_id = 10;
 }

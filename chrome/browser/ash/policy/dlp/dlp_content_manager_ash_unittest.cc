@@ -383,7 +383,7 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenEnforcement) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   src_pattern, DlpRulesManager::Restriction::kPrivacyScreen,
-                  DlpRulesManager::Level::kBlock)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kBlock)));
 
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper_);
   EXPECT_CALL(mock_privacy_screen_helper_, IsSupported())
@@ -412,7 +412,7 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenEnforcement) {
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   src_pattern, DlpRulesManager::Restriction::kPrivacyScreen,
-                  DlpRulesManager::Level::kBlock)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kBlock)));
 
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper_);
   EXPECT_CALL(mock_privacy_screen_helper_, IsSupported())
@@ -446,7 +446,7 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenReported) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   src_pattern, DlpRulesManager::Restriction::kPrivacyScreen,
-                  DlpRulesManager::Level::kReport)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kReport)));
 
   web_contents->WasHidden();
   helper_.ChangeVisibility(web_contents.get());
@@ -459,7 +459,7 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenReported) {
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   src_pattern, DlpRulesManager::Restriction::kPrivacyScreen,
-                  DlpRulesManager::Level::kReport)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kReport)));
 
   helper_.DestroyWebContents(web_contents.get());
   task_environment_.FastForwardBy(helper_.GetPrivacyScreenOffDelay());
@@ -541,7 +541,7 @@ TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kReport)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kReport)));
 
   // WebContents 2 becomes confidential. Expect report event from WebContents 2.
   helper_.ChangeConfidentiality(web_contents2.get(), kScreenshotReported);
@@ -555,7 +555,7 @@ TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kReport)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kReport)));
 
   // Remove confidentiality for both web contents.
   helper_.ChangeConfidentiality(web_contents1.get(), kEmptyRestrictionSet);
@@ -632,7 +632,7 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                  DlpRulesManager::Level::kBlock)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kBlock)));
 
   // Web contents are destroyed: allow.
   helper_.DestroyWebContents(web_contents.get());
@@ -674,10 +674,11 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kPrinting)));
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                  kRuleName, kRuleId)));
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
                         /*total_count=*/1,
                         /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
@@ -691,7 +692,8 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
   EXPECT_EQ(events_.size(), 3u);
   EXPECT_THAT(events_[2],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kPrinting)));
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                  kRuleName, kRuleId)));
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
                         /*total_count=*/2,
                         /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
@@ -745,7 +747,7 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
                         /*total_count=*/1,
                         /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
@@ -759,7 +761,7 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
                         /*total_count=*/2,
                         /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
@@ -815,7 +817,7 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kBlock)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kBlock)));
 
   helper_.DestroyWebContents(web_contents.get());
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
@@ -861,7 +863,7 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckCaptureModeInitRestriction(cb.Get());
@@ -909,7 +911,7 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: since the user previously cancelled, dialog is shown again.
   GetManager()->CheckCaptureModeInitRestriction(cb.Get());
@@ -923,7 +925,7 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
@@ -964,7 +966,7 @@ TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kBlock)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kBlock)));
 
   // Web contents are destroyed: allow.
   helper_.DestroyWebContents(web_contents.get());
@@ -1008,7 +1010,7 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedContinued) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckScreenshotRestriction(area, cb.Get());
@@ -1054,7 +1056,7 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedCancelled) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: since the user previously cancelled, dialog is shown again.
   GetManager()->CheckScreenshotRestriction(area, cb.Get());
@@ -1068,7 +1070,7 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedCancelled) {
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
@@ -1116,7 +1118,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  DlpRulesManager::Level::kBlock)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kBlock)));
 
   // Web contents are destroyed: allow.
   helper_.DestroyWebContents(web_contents.get());
@@ -1167,7 +1169,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckScreenShareRestriction(media_id, kApplicationName,
@@ -1220,7 +1222,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: since the user previously cancelled, dialog is shown again.
   GetManager()->CheckScreenShareRestriction(media_id, kApplicationName,
@@ -1235,7 +1237,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  DlpRulesManager::Level::kWarn)));
+                  kRuleName, kRuleId, DlpRulesManager::Level::kWarn)));
 }
 
 }  // namespace policy

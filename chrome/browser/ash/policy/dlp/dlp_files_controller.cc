@@ -925,6 +925,7 @@ void DlpFilesController::IsFilesTransferRestricted(
   std::vector<DlpConfidentialFile> dialog_files;
   absl::optional<std::string> destination_pattern;
   std::vector<std::string> warned_source_patterns;
+  std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata;
   for (const auto& file : transferred_files) {
     DlpRulesManager::Level level;
     std::string source_pattern;
@@ -936,7 +937,7 @@ void DlpFilesController::IsFilesTransferRestricted(
           &rule_metadata);
       deduplication_dst = DlpFileDestination(dst_component.value());
       MaybeReportEvent(file.inode, file.path, source_pattern, deduplication_dst,
-                       absl::nullopt, level);
+                       absl::nullopt, rule_metadata, level);
     } else {
       // TODO(crbug.com/1286366): Revisit whether passing files paths here
       // make sense.
@@ -948,7 +949,7 @@ void DlpFilesController::IsFilesTransferRestricted(
           &destination_pattern.value(), &rule_metadata);
       deduplication_dst = destination;
       MaybeReportEvent(file.inode, file.path, source_pattern, deduplication_dst,
-                       destination_pattern, level);
+                       destination_pattern, rule_metadata, level);
     }
 
     if (level == DlpRulesManager::Level::kBlock) {
@@ -957,6 +958,7 @@ void DlpFilesController::IsFilesTransferRestricted(
     } else if (level == DlpRulesManager::Level::kWarn) {
       warned_files.push_back(file);
       warned_source_patterns.emplace_back(source_pattern);
+      warned_rules_metadata.emplace_back(rule_metadata);
       if (files_action != FileAction::kDownload) {
         dialog_files.emplace_back(file.path);
       }
@@ -975,12 +977,12 @@ void DlpFilesController::IsFilesTransferRestricted(
   }
 
   warn_dialog_widget_ = warn_notifier_->ShowDlpFilesWarningDialog(
-      base::BindOnce(&DlpFilesController::OnDlpWarnDialogReply,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(restricted_files), std::move(warned_files),
-                     std::move(warned_source_patterns),
-                     std::move(deduplication_dst), destination_pattern,
-                     files_action, std::move(result_callback)),
+      base::BindOnce(
+          &DlpFilesController::OnDlpWarnDialogReply,
+          weak_ptr_factory_.GetWeakPtr(), std::move(restricted_files),
+          std::move(warned_files), std::move(warned_source_patterns),
+          std::move(warned_rules_metadata), std::move(deduplication_dst),
+          destination_pattern, files_action, std::move(result_callback)),
       std::move(dialog_files), dst_component, destination_pattern,
       files_action);
 }
@@ -1070,7 +1072,7 @@ bool DlpFilesController::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   MaybeReportEvent(
       file.inode, file.path, src_pattern,
       DlpFileDestination(DlpRulesManager::Component::kUnknownComponent),
-      absl::nullopt, level);
+      absl::nullopt, rule_metadata, level);
 
   return restricted;
 }
@@ -1094,6 +1096,7 @@ void DlpFilesController::OnDlpWarnDialogReply(
     std::vector<FileDaemonInfo> restricted_files,
     std::vector<FileDaemonInfo> warned_files,
     std::vector<std::string> warned_src_patterns,
+    std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
     const DlpFileDestination& dst,
     const absl::optional<std::string>& dst_pattern,
     FileAction files_action,
@@ -1105,10 +1108,12 @@ void DlpFilesController::OnDlpWarnDialogReply(
                             std::make_move_iterator(warned_files.end()));
   } else {
     DCHECK(warned_files.size() == warned_src_patterns.size());
+    DCHECK(warned_files.size() == warned_rules_metadata.size());
     for (size_t i = 0; i < warned_files.size(); ++i) {
       DlpHistogramEnumeration(dlp::kFileActionWarnProceededUMA, files_action);
       MaybeReportEvent(warned_files[i].inode, warned_files[i].path,
-                       warned_src_patterns[i], dst, dst_pattern, absl::nullopt);
+                       warned_src_patterns[i], dst, dst_pattern,
+                       warned_rules_metadata[i], absl::nullopt);
     }
   }
   std::move(callback).Run(std::move(restricted_files));
@@ -1272,6 +1277,7 @@ void DlpFilesController::MaybeReportEvent(
     const std::string& source_pattern,
     const DlpFileDestination& dst,
     const absl::optional<std::string>& dst_pattern,
+    const DlpRulesManager::RuleMetadata& rule_metadata,
     absl::optional<DlpRulesManager::Level> level) {
   const bool is_warning_proceeded_event = !level.has_value();
 
@@ -1296,10 +1302,11 @@ void DlpFilesController::MaybeReportEvent(
   std::unique_ptr<DlpPolicyEventBuilder> event_builder =
       is_warning_proceeded_event
           ? DlpPolicyEventBuilder::WarningProceededEvent(
-                source_pattern, DlpRulesManager::Restriction::kFiles)
-          : DlpPolicyEventBuilder::Event(source_pattern,
-                                         DlpRulesManager::Restriction::kFiles,
-                                         level.value());
+                source_pattern, rule_metadata.name, rule_metadata.obfuscated_id,
+                DlpRulesManager::Restriction::kFiles)
+          : DlpPolicyEventBuilder::Event(
+                source_pattern, rule_metadata.name, rule_metadata.obfuscated_id,
+                DlpRulesManager::Restriction::kFiles, level.value());
 
   event_builder->SetContentName(path.BaseName().value());
 

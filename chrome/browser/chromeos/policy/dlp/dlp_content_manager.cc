@@ -62,7 +62,9 @@ void ReportEvent(GURL url,
   const std::string src_url = rules_manager->GetSourceUrlPattern(
       url, restriction, level, &rule_metadata);
 
-  reporting_manager->ReportEvent(src_url, restriction, level);
+  reporting_manager->ReportEvent(src_url, restriction, level,
+                                 rule_metadata.name,
+                                 rule_metadata.obfuscated_id);
 }
 
 // Helper method to check whether the restriction level is kBlock.
@@ -497,7 +499,8 @@ void DlpContentManager::ReportWarningProceededEvent(
     DlpRulesManager::RuleMetadata rule_metadata;
     const std::string src_url = rules_manager->GetSourceUrlPattern(
         url, restriction, DlpRulesManager::Level::kWarn, &rule_metadata);
-    reporting_manager->ReportWarningProceededEvent(src_url, restriction);
+    reporting_manager->ReportWarningProceededEvent(
+        src_url, restriction, rule_metadata.name, rule_metadata.obfuscated_id);
   }
 }
 
