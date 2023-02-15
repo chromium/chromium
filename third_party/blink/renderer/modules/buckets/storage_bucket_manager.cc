@@ -71,7 +71,7 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
   }
 
   if (options->hasExpiresNonNull()) {
-    policies->expires = base::Time::FromJavaTime(options->expiresNonNull());
+    policies->expires = base::Time::FromJsTime(options->expiresNonNull());
   }
 
   return policies;
