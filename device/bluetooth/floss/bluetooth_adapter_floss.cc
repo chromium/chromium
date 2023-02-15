@@ -1344,6 +1344,7 @@ void BluetoothAdapterFloss::OnRegisterScanner(
     DBusResult<device::BluetoothUUID> ret) {
   if (!ret.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed RegisterScanner: " << ret.error();
+    scan_session->OnRelease();
     return;
   }
   scan_session->OnRegistered(ret.value());

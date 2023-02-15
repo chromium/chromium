@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -186,6 +187,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
 
   ExportedCallbackManager<ScannerClientObserver>
       exported_scanner_callback_manager_{kScannerCallbackInterfaceName};
+
+  // List of callbacks to register a scanner for once |RegisterScannerCallback|
+  // completes.
+  base::queue<ResponseCallback<device::BluetoothUUID>>
+      pending_register_scanners_;
 
   void RegisterScannerCallback();
 

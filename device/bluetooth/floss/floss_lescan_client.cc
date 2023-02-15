@@ -56,6 +56,11 @@ FlossLEScanClient::~FlossLEScanClient() {
     exported_scanner_callback_manager_.UnexportCallback(
         dbus::ObjectPath(kScannerCallbackPath));
   }
+  while (!pending_register_scanners_.empty()) {
+    std::move(pending_register_scanners_.front())
+        .Run(base::unexpected(Error(kNoCallbackRegistered, "")));
+    pending_register_scanners_.pop();
+  }
 }
 
 void FlossLEScanClient::Init(dbus::Bus* bus,
@@ -110,6 +115,12 @@ void FlossLEScanClient::OnRegisterScannerCallback(DBusResult<uint32_t> ret) {
   }
 
   le_scan_callback_id_ = ret.value();
+
+  while (!pending_register_scanners_.empty()) {
+    CallLEScanMethod<>(std::move(pending_register_scanners_.front()),
+                       adapter::kRegisterScanner, le_scan_callback_id_.value());
+    pending_register_scanners_.pop();
+  }
 }
 
 void FlossLEScanClient::OnUnregisterScannerCallback(DBusResult<bool> ret) {
@@ -121,8 +132,11 @@ void FlossLEScanClient::OnUnregisterScannerCallback(DBusResult<bool> ret) {
 void FlossLEScanClient::RegisterScanner(
     ResponseCallback<device::BluetoothUUID> callback) {
   if (!le_scan_callback_id_) {
-    // callback ID required before registering scanners
-    std::move(callback).Run(base::unexpected(Error(kNoCallbackRegistered, "")));
+    LOG(WARNING) << "RegisterScanner called before callback ID was available. "
+                    "Queueing to register when callback ID is available.";
+
+    // Add to queue to register when callback ID is available
+    pending_register_scanners_.push(std::move(callback));
     return;
   }
 
