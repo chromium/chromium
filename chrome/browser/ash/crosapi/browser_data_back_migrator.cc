@@ -1025,16 +1025,14 @@ bool BrowserDataBackMigrator::MergeSyncDataLevelDB(
         ash_db->NewIterator(leveldb::ReadOptions()));
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
       const std::string key = it->key().ToString();
-      std::string value;
-      status = ash_db->Get(leveldb::ReadOptions(), key, &value);
-      if (!status.ok()) {
-        PLOG(ERROR) << "Failure while reading from Ash Sync Data LevelDB: "
-                    << ash_db_path;
-        return false;
-      }
-
+      const std::string value = it->value().ToString();
       if (browser_data_migrator_util::IsAshOnlySyncDataType(key))
         ash_write_batch.Put(key, value);
+    }
+    if (!it->status().ok()) {
+      PLOG(ERROR) << "Failure while reading from Ash Sync Data LevelDB: "
+                  << ash_db_path;
+      return false;
     }
   }
 
@@ -1045,17 +1043,14 @@ bool BrowserDataBackMigrator::MergeSyncDataLevelDB(
         lacros_db->NewIterator(leveldb::ReadOptions()));
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
       const std::string key = it->key().ToString();
-      std::string value;
-
-      status = lacros_db->Get(leveldb::ReadOptions(), key, &value);
-      if (!status.ok()) {
-        PLOG(ERROR) << "Failure while reading from Lacros Sync Data LevelDB: "
-                    << lacros_db_path;
-        return false;
-      }
-
+      const std::string value = it->value().ToString();
       if (!browser_data_migrator_util::IsAshOnlySyncDataType(key))
         lacros_write_batch.Put(key, value);
+    }
+    if (!it->status().ok()) {
+      PLOG(ERROR) << "Failure while reading from Lacros Sync Data LevelDB: "
+                  << lacros_db_path;
+      return false;
     }
   }
 
