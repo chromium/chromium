@@ -336,8 +336,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NoHomeTabIcons) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, SelectingBestHomeTabIcon) {
-  GURL start_url =
-      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/get_manifest.html?tab_strip_with_large_home_tab_icon.json");
 
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
@@ -362,9 +362,13 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, SelectingBestHomeTabIcon) {
   gfx::ImageSkia favicon = web_app_browser_controller->GetHomeTabIcon();
   const SkBitmap* favicon_bitmap = favicon.bitmap();
 
-  EXPECT_EQ(favicon_bitmap->width(), 192);
-  EXPECT_EQ(favicon_bitmap->height(), 192);
-  EXPECT_EQ(SK_ColorBLUE, favicon_bitmap->getColor(0, 0));
+  EXPECT_EQ(favicon_bitmap->width(), 16);
+  EXPECT_EQ(favicon_bitmap->height(), 16);
+
+  EXPECT_EQ(SkColorSetRGB(13, 9, 155), favicon_bitmap->getColor(0, 0));
+  EXPECT_EQ(SkColorSetRGB(36, 22, 23), favicon_bitmap->getColor(15, 0));
+  EXPECT_EQ(SkColorSetRGB(187, 185, 173), favicon_bitmap->getColor(0, 15));
+  EXPECT_EQ(SkColorSetRGB(65, 240, 80), favicon_bitmap->getColor(15, 15));
 
   EXPECT_EQ(contents->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip->active_index(), 0);

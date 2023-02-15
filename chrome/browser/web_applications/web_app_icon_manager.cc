@@ -308,12 +308,13 @@ TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
 }
 
 // Returns empty SkBitmap if any errors occurred.
-TypedResult<SkBitmap> ReadHomeTabIconFromFileBlocking(
+TypedResult<SkBitmap> ReadHomeTabIconFromFileAndResizeBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const AppId& app_id,
     const GURL& url,
-    int icon_size_px) {
+    int icon_size_px,
+    const SquareSizePx target_icon_size_px) {
   base::FilePath icon_file = GetManifestResourcesOtherIconsFileName(
       web_apps_directory, app_id, url, icon_size_px);
 
@@ -329,6 +330,12 @@ TypedResult<SkBitmap> ReadHomeTabIconFromFileBlocking(
           icon_data.size(), &result.value)) {
     return {.error_log = {CreateError({"Could not decode icon data for file: ",
                                        icon_file.AsUTF8Unsafe()})}};
+  }
+
+  if (result.value.width() != target_icon_size_px) {
+    result.value = skia::ImageOperations::Resize(
+        result.value, skia::ImageOperations::RESIZE_BEST, target_icon_size_px,
+        target_icon_size_px);
   }
 
   return result;
@@ -522,8 +529,9 @@ TypedResult<SkBitmap> ReadHomeTabIconBlocking(
   if (!best_icon.has_value()) {
     result.error_log = {CreateError({"No suitable home tab icon found"})};
   } else {
-    result = ReadHomeTabIconFromFileBlocking(
-        utils, web_apps_directory, app_id, best_icon->src, best_icon->size_px);
+    result = ReadHomeTabIconFromFileAndResizeBlocking(
+        utils, web_apps_directory, app_id, best_icon->src, best_icon->size_px,
+        min_home_tab_icon_size_px);
   }
 
   return result;

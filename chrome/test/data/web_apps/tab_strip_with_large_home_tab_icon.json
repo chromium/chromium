@@ -1,0 +1,27 @@
+{
+  "name": "Manifest with tab strip customizations",
+  "icons": [
+    {
+      "src": "basic-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "get_manifest.html",
+  "display": "standalone",
+  "display_override": [ "tabbed" ],
+  "tab_strip": {
+    "home_tab": {
+      "icons" : [
+        {
+          "src": "pattern3-64.png",
+          "sizes": "200x200 64x64 300x300",
+          "type": "image/png"
+        }
+      ]
+    },
+    "new_tab_button": {
+      "url": "favicon_only.html"
+    }
+  }
+}
