@@ -2,11 +2,92 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
 
-import {Route, Router} from './router.js';
+/** Class for navigable routes. */
+export class Route {
+  depth: number;
+  isNavigableDialog: boolean;
+  section: string;
+  title: string|undefined;
+  parent: Route|null;
+  path: string;
+
+  constructor(path: string, title?: string) {
+    this.path = path;
+    this.title = title;
+    this.parent = null;
+    this.depth = 0;
+
+    /**
+     * Whether this route corresponds to a navigable dialog. Those routes must
+     * belong to a "section".
+     */
+    this.isNavigableDialog = false;
+
+    // Below are all legacy properties to provide compatibility with the old
+    // routing system.
+    this.section = '';
+  }
+
+  /**
+   * Returns a new Route instance that's a child of this route.
+   */
+  createChild(path: string, title?: string): Route {
+    assert(path);
+
+    // |path| extends this route's path if it doesn't have a leading slash.
+    // If it does have a leading slash, it's just set as the child route's path
+    const childPath = path[0] === '/' ? path : `${this.path}/${path}`;
+
+    const route = new Route(childPath, title);
+    route.parent = this;
+    route.section = this.section;
+    route.depth = this.depth + 1;
+    return route;
+  }
+
+  /**
+   * Returns a new Route instance that's a child section of this route.
+   * TODO(tommycli): Remove once we've obsoleted the concept of sections.
+   */
+  createSection(path: string, section: string, title?: string): Route {
+    const route = this.createChild(path, title);
+    route.section = section;
+    return route;
+  }
+
+  /**
+   * Returns the absolute path string for this Route, assuming this function
+   * has been called from within chrome://os-settings.
+   */
+  getAbsolutePath(): string {
+    return window.location.origin + this.path;
+  }
+
+  /**
+   * Returns true if this route matches or is an ancestor of the parameter.
+   */
+  contains(route: Route): boolean {
+    for (let curr: Route|null = route; curr !== null; curr = curr.parent) {
+      if (this === curr) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns true if this route is a subpage of a section.
+   */
+  isSubpage(): boolean {
+    return !this.isNavigableDialog && !!this.parent && !!this.section &&
+        this.parent.section === this.section;
+  }
+}
 
 interface MinimumRoutes {
   BASIC: Route;
@@ -500,25 +581,4 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   return r as OsSettingsRoutes;
 }
 
-/**
- * Returns a router with at least those routes common to OS
- * and browser settings. If the window is not in OS settings (based on
- * loadTimeData) then browser specific routes are added. If the window is
- * OS settings or if Chrome OS is using a consolidated settings page for
- * OS and browser settings then OS specific routes are added.
- */
-function buildRouter(): Router {
-  return new Router(createOsSettingsRoutes());
-}
-
-Router.setInstance(buildRouter());
-
-window.addEventListener('popstate', () => {
-  // On pop state, do not push the state onto the window.history again.
-  const router = Router.getInstance();
-  router.setCurrentRoute(
-      router.getRouteForPath(window.location.pathname) || router.routes.BASIC,
-      new URLSearchParams(window.location.search), true);
-});
-
-export const routes = Router.getInstance().routes;
+export const routes = createOsSettingsRoutes();
