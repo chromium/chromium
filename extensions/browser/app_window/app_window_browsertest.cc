@@ -72,7 +72,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, FrameInsetsForNoFrame) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, ShouldShowStaleContentOnEviction) {
+// Disabled due to flake. https://crbug.com/1416579
+IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest,
+                       DISABLED_ShouldShowStaleContentOnEviction) {
   AppWindow* app_window = CreateTestAppWindow("{}");
   // Make sure that a surface gets embedded in the frame evictor of the
   // DelegateFrameHost.
