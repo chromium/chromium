@@ -71,7 +71,7 @@ if (_build_ios_webkit || _build_mac_webkit) {
         "src/Source/WebKit/WebProcess/WebPage/WebPage.cpp",
         "src/Source/WebCore/Headers.cmake",
         "src/Source/WebKit/UIProcess/WebPageProxy.h",
-        "src/LayoutTests/platform/win/TestExpectations",
+        "src/LayoutTests/platform/wincairo/TestExpectations",
         "src/Source/WebCore/dom/Document.cpp",
         "src/Source/WTF/Scripts/Preferences/UnifiedWebPreferences.yaml",
         "src/Source/WebKit/UIProcess/ios/WKContentViewInteraction.mm",
