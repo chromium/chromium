@@ -49,14 +49,14 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
   DCHECK(local_state);
 
   ScopedListPrefUpdate update(local_state, pref_path);
-  base::Value::List& active_promos = update.Get();
+
   base::StringPiece promo_name = promos_manager::NameForPromo(promo);
 
   // Erase `promo_name` if it already exists in `active_promos`; avoid polluting
   // `active_promos` with duplicate `promo_name` entries.
-  active_promos.EraseValue(base::Value(promo_name));
+  update->EraseValue(base::Value(promo_name));
 
-  active_promos.Append(promo_name);
+  update->Append(promo_name);
 }
 
 }  // namespace
@@ -106,6 +106,7 @@ void PromosManagerImpl::RecordImpression(promos_manager::Promo promo) {
 
   ScopedListPrefUpdate update(local_state_,
                               prefs::kIosPromosManagerImpressions);
+
   update->Append(std::move(impression));
 
   impression_history_ = ImpressionHistory(
@@ -167,17 +168,13 @@ void PromosManagerImpl::DeregisterPromo(promos_manager::Promo promo) {
   ScopedDictPrefUpdate pending_promos_update(
       local_state_, prefs::kIosPromosManagerSingleDisplayPendingPromos);
 
-  base::Value::List& active_promos = active_promos_update.Get();
-  base::Value::List& single_display_promos = single_display_promos_update.Get();
-  base::Value::Dict& pending_promos = pending_promos_update.Get();
-
   base::StringPiece promo_name = promos_manager::NameForPromo(promo);
 
   // Erase `promo_name` from the single-display and continuous-display active
   // promos lists.
-  active_promos.EraseValue(base::Value(promo_name));
-  single_display_promos.EraseValue(base::Value(promo_name));
-  pending_promos.Remove(promo_name);
+  active_promos_update->EraseValue(base::Value(promo_name));
+  single_display_promos_update->EraseValue(base::Value(promo_name));
+  pending_promos_update->Remove(promo_name);
 
   active_promos_ =
       ActivePromos(local_state_->GetList(prefs::kIosPromosManagerActivePromos));
