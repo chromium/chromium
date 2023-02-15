@@ -107,10 +107,7 @@ if (safe_browsing_mode == 1) {
         "//third_party/maldoca:maldoca",
       ]
 
-      defines = [
-        "MALDOCA_IN_CHROMIUM",
-        "MALDOCA_CHROME",
-      ]
+      defines = [ "MALDOCA_CHROME" ]
 
       public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
     }

@@ -231,10 +231,8 @@ source_set("maldoca-ole") {
     "//third_party/zlib/google:zip",
   ]
 
-  public_configs = [
-    ":maldoca_chromium_config",
-    ":maldoca_flags",
-  ]
+  public_configs = [ ":maldoca_chromium_config" ]
+  configs += [ ":maldoca_flags" ]
 }
 
 source_set("maldoca-public-headers") {
@@ -295,10 +293,8 @@ static_library("maldoca") {
 
   include_dirs = [ "//third_party/maldoca/src/" ]
 
-  public_configs = [
-    ":maldoca_chromium_config",
-    ":maldoca_flags",
-  ]
+  public_configs = [ ":maldoca_chromium_config" ]
+  configs += [ ":maldoca_flags" ]
 }
 
 fuzzer_test("process_doc_fuzzer") {
