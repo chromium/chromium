@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -27,7 +28,6 @@
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/common/media_type_converters.h"
@@ -186,15 +186,15 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
       client_remote_(std::move(remote)),
       config_paths_(config_paths),
       primary_language_name_(primary_language_name) {
-  recognition_event_callback_ = media::BindToCurrentLoop(
+  recognition_event_callback_ = base::BindPostTaskToCurrentDefault(
       base::BindRepeating(&SpeechRecognitionRecognizerImpl::OnRecognitionEvent,
                           weak_factory_.GetWeakPtr()));
   language_identification_event_callback_ =
-      media::BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent,
           weak_factory_.GetWeakPtr()));
   speech_recognition_stopped_callback_ =
-      media::BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &SpeechRecognitionRecognizerImpl::OnRecognitionStoppedCallback,
           weak_factory_.GetWeakPtr()));
 

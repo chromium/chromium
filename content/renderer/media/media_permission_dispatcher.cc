@@ -6,8 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
 
@@ -68,10 +68,10 @@ void MediaPermissionDispatcher::HasPermission(
     PermissionStatusCB permission_status_cb) {
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &MediaPermissionDispatcher::HasPermission, weak_ptr_, type,
-            media::BindToCurrentLoop(std::move(permission_status_cb))));
+        FROM_HERE, base::BindOnce(&MediaPermissionDispatcher::HasPermission,
+                                  weak_ptr_, type,
+                                  base::BindPostTaskToCurrentDefault(
+                                      std::move(permission_status_cb))));
     return;
   }
 
@@ -91,10 +91,10 @@ void MediaPermissionDispatcher::RequestPermission(
     PermissionStatusCB permission_status_cb) {
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &MediaPermissionDispatcher::RequestPermission, weak_ptr_, type,
-            media::BindToCurrentLoop(std::move(permission_status_cb))));
+        FROM_HERE, base::BindOnce(&MediaPermissionDispatcher::RequestPermission,
+                                  weak_ptr_, type,
+                                  base::BindPostTaskToCurrentDefault(
+                                      std::move(permission_status_cb))));
     return;
   }
 

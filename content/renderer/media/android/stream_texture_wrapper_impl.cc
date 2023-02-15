@@ -14,7 +14,6 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "media/base/bind_to_current_loop.h"
 
 namespace {
 // Non-member function to allow it to run even after this class is deleted.
@@ -149,7 +148,7 @@ void StreamTextureWrapperImpl::Initialize(
       FROM_HERE,
       base::BindOnce(&StreamTextureWrapperImpl::InitializeOnMainThread,
                      weak_factory_.GetWeakPtr(), received_frame_cb,
-                     media::BindToCurrentLoop(std::move(init_cb))));
+                     base::BindPostTaskToCurrentDefault(std::move(init_cb))));
 }
 
 void StreamTextureWrapperImpl::InitializeOnMainThread(

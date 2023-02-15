@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
@@ -28,7 +29,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/common/content_features.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
 #include "media/capture/video/video_capture_device.h"
@@ -134,9 +134,10 @@ void VideoCaptureManager::EnumerateDevices(
   EmitLogMessage("VideoCaptureManager::EnumerateDevices", 1);
 
   // Pass a timer for UMA histogram collection.
-  video_capture_provider_->GetDeviceInfosAsync(media::BindToCurrentLoop(
-      base::BindOnce(&VideoCaptureManager::OnDeviceInfosReceived, this,
-                     base::ElapsedTimer(), std::move(client_callback))));
+  video_capture_provider_->GetDeviceInfosAsync(
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&VideoCaptureManager::OnDeviceInfosReceived, this,
+                         base::ElapsedTimer(), std::move(client_callback))));
 }
 
 base::UnguessableToken VideoCaptureManager::Open(

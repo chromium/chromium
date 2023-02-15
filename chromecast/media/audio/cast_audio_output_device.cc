@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/audio/audio_io_thread.h"
@@ -24,7 +25,6 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "net/base/io_buffer.h"
 
 namespace chromecast {
@@ -339,7 +339,7 @@ bool CastAudioOutputDevice::SetVolume(double volume) {
 void CastAudioOutputDevice::GetOutputDeviceInfoAsync(
     OutputDeviceInfoCB info_cb) {
   // Always post to avoid the caller being reentrant.
-  ::media::BindToCurrentLoop(
+  base::BindPostTaskToCurrentDefault(
       base::BindOnce(std::move(info_cb), GetOutputDeviceInfo()))
       .Run();
 }

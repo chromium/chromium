@@ -12,9 +12,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_util.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_media_stream_video_track.h"
@@ -469,7 +469,7 @@ void PepperMediaStreamVideoTrackHost::DidConnectPendingHostToResource() {
     return;
   blink::MediaStreamVideoSink::ConnectToTrack(
       track_,
-      media::BindToCurrentLoop(
+      base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&PepperMediaStreamVideoTrackHost::OnVideoFrame,
                               weak_factory_.GetWeakPtr())),
       MediaStreamVideoSink::IsSecure::kNo,

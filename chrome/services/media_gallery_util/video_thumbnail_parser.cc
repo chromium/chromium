@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/media_gallery_util/ipc_data_source.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_thumbnail_decoder.h"
 #include "media/filters/android/video_frame_extractor.h"
@@ -108,5 +108,5 @@ void VideoThumbnailParser::Start(
       FROM_HERE,
       base::BindOnce(
           &ExtractVideoFrameOnMediaThread, data_source_.get(),
-          media::BindToCurrentLoop(std::move(video_frame_callback))));
+          base::BindPostTaskToCurrentDefault(std::move(video_frame_callback))));
 }

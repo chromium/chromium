@@ -5,9 +5,9 @@
 #include "chromeos/components/cdm_factory_daemon/stable_cdm_context_impl.h"
 
 #include "base/functional/callback.h"
+#include "base/task/bind_post_task.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
-#include "media/base/bind_to_current_loop.h"
 
 namespace chromeos {
 
@@ -30,7 +30,7 @@ void StableCdmContextImpl::GetHwKeyData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cdm_context_->GetChromeOsCdmContext()->GetHwKeyData(
       decrypt_config.get(), hw_identifier,
-      media::BindToCurrentLoop(std::move(callback)));
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 void StableCdmContextImpl::RegisterEventCallback(
@@ -38,10 +38,11 @@ void StableCdmContextImpl::RegisterEventCallback(
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Note: we don't need to use media::BindToCurrentLoop() for either |callback|
-  // or the callback we pass to RegisterEventCB() because the documentation for
-  // media::CdmContext::RegisterEventCB() says that "[t]he registered callback
-  // will always be called on the thread where RegisterEventCB() is called."
+  // Note: we don't need to use base::BindPostTaskToCurrentDefault() for either
+  // |callback| or the callback we pass to RegisterEventCB() because the
+  // documentation for media::CdmContext::RegisterEventCB() says that "[t]he
+  // registered callback will always be called on the thread where
+  // RegisterEventCB() is called."
   remote_event_callbacks_.Add(std::move(callback));
   if (!callback_registration_) {
     callback_registration_ = cdm_context_->RegisterEventCB(
@@ -53,14 +54,14 @@ void StableCdmContextImpl::RegisterEventCallback(
 void StableCdmContextImpl::GetHwConfigData(GetHwConfigDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ChromeOsCdmFactory::GetHwConfigData(
-      media::BindToCurrentLoop(std::move(callback)));
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 void StableCdmContextImpl::GetScreenResolutions(
     GetScreenResolutionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ChromeOsCdmFactory::GetScreenResolutions(
-      media::BindToCurrentLoop(std::move(callback)));
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 void StableCdmContextImpl::CdmEventCallback(media::CdmContext::Event event) {

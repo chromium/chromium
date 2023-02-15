@@ -13,13 +13,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/task/bind_post_task.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
@@ -479,7 +479,7 @@ void CdmRegistryImpl::AttemptToFinalizeKeySystemCapability(
   pending_lazy_initializations_.insert({key_system, robustness});
   LazyInitializeCapability(
       key_system, robustness,
-      media::BindToCurrentLoop(base::BindOnce(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
           &CdmRegistryImpl::OnCapabilityInitialized,
           weak_ptr_factory_.GetWeakPtr(), key_system, robustness)));
 }

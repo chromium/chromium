@@ -8,11 +8,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/pepper/pepper_video_capture_host.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 
@@ -46,15 +46,15 @@ void PepperPlatformVideoCapture::StartCapture(
     return;
   blink::WebVideoCaptureImplManager* manager =
       RenderThreadImpl::current()->video_capture_impl_manager();
-  stop_capture_cb_ =
-      manager->StartCapture(session_id_, params,
-                            media::BindToCurrentLoop(base::BindRepeating(
-                                &PepperPlatformVideoCapture::OnStateUpdate,
-                                weak_factory_.GetWeakPtr())),
-                            media::BindToCurrentLoop(base::BindRepeating(
-                                &PepperPlatformVideoCapture::OnFrameReady,
-                                weak_factory_.GetWeakPtr())),
-                            /*crop_version_cb=*/base::DoNothing());
+  stop_capture_cb_ = manager->StartCapture(
+      session_id_, params,
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&PepperPlatformVideoCapture::OnStateUpdate,
+                              weak_factory_.GetWeakPtr())),
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&PepperPlatformVideoCapture::OnFrameReady,
+                              weak_factory_.GetWeakPtr())),
+      /*crop_version_cb=*/base::DoNothing());
 }
 
 void PepperPlatformVideoCapture::StopCapture() {

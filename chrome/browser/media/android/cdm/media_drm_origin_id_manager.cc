@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -27,7 +28,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "media/base/android/media_drm_bridge.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/provision_fetcher.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -498,7 +498,7 @@ void MediaDrmOriginIdManager::StartProvisioningAsync(bool run_in_background) {
       base::BindOnce(&StartProvisioning,
                      std::move(pending_shared_url_loader_factory),
                      provisioning_result_cb_for_testing_,
-                     media::BindToCurrentLoop(base::BindOnce(
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &MediaDrmOriginIdManager::OriginIdProvisioned,
                          weak_factory_.GetWeakPtr()))));
 }

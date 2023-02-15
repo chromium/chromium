@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/bind_post_task.h"
 #include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_devices_permission_checker.h"
@@ -18,7 +19,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/video_capture_device.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -96,7 +96,7 @@ void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
 
   GetPhotoStateCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          media::BindToCurrentLoop(
+          base::BindPostTaskToCurrentDefault(
               base::BindOnce(&ImageCaptureImpl::OnGetPhotoState,
                              weak_factory_.GetWeakPtr(), std::move(callback))),
           mojo::CreateEmptyPhotoState());
@@ -123,7 +123,7 @@ void ImageCaptureImpl::SetPhotoOptions(const std::string& source_id,
 
   SetPhotoOptionsCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          media::BindToCurrentLoop(std::move(callback)), false);
+          base::BindPostTaskToCurrentDefault(std::move(callback)), false);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&SetPhotoOptionsOnIOThread, source_id,
@@ -140,7 +140,7 @@ void ImageCaptureImpl::TakePhoto(const std::string& source_id,
 
   TakePhotoCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          media::BindToCurrentLoop(std::move(callback)),
+          base::BindPostTaskToCurrentDefault(std::move(callback)),
           media::mojom::Blob::New());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

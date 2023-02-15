@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
@@ -18,7 +19,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_mixer.h"
 #include "media/base/limits.h"
 #include "media/mojo/common/media_type_converters.h"
@@ -106,7 +106,7 @@ void AudioSourceFetcherImpl::Start(
         /*output_callback=*/
         base::BindRepeating(&AudioSourceFetcherImpl::OnAudioFinishedConvert,
                             weak_factory_.GetWeakPtr()));
-    resample_callback_ = media::BindToCurrentLoop(
+    resample_callback_ = base::BindPostTaskToCurrentDefault(
         base::BindRepeating(&AudioSourceFetcherImpl::SendAudioToResample,
                             weak_factory_.GetWeakPtr()));
   }
@@ -125,7 +125,7 @@ void AudioSourceFetcherImpl::Start(
   is_started_ = true;
   // Initialize the AudioCapturerSource with |this| as the CaptureCallback,
   // get the parameters for the device ID, then start audio capture.
-  send_audio_callback_ = media::BindToCurrentLoop(base::BindRepeating(
+  send_audio_callback_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService,
       weak_factory_.GetWeakPtr()));
   GetAudioCapturerSource()->Initialize(audio_parameters_, this);

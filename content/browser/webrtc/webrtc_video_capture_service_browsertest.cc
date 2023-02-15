@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,7 +27,6 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
@@ -461,7 +461,7 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
         base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
                            OpenVirtualDeviceInRendererAndWaitForPlaying,
                        base::Unretained(this),
-                       media::BindToCurrentLoop(base::BindOnce(
+                       base::BindPostTaskToCurrentDefault(base::BindOnce(
                            &WebRtcVideoCaptureServiceBrowserTest::
                                ShutDownVirtualDeviceAndContinue,
                            base::Unretained(this), device_exerciser,
@@ -564,11 +564,11 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop run_loop;
   virtual_device_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
-                         AddVirtualDeviceAndStartCapture,
-                     base::Unretained(this), device_exerciser.get(),
-                     media::BindToCurrentLoop(run_loop.QuitClosure())));
+      FROM_HERE, base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
+                                    AddVirtualDeviceAndStartCapture,
+                                base::Unretained(this), device_exerciser.get(),
+                                base::BindPostTaskToCurrentDefault(
+                                    run_loop.QuitClosure())));
   run_loop.Run();
 }
 
@@ -589,11 +589,11 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop run_loop;
   virtual_device_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
-                         AddVirtualDeviceAndStartCapture,
-                     base::Unretained(this), device_exerciser.get(),
-                     media::BindToCurrentLoop(run_loop.QuitClosure())));
+      FROM_HERE, base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
+                                    AddVirtualDeviceAndStartCapture,
+                                base::Unretained(this), device_exerciser.get(),
+                                base::BindPostTaskToCurrentDefault(
+                                    run_loop.QuitClosure())));
   run_loop.Run();
 }
 
@@ -616,11 +616,11 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop run_loop;
   virtual_device_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
-                         AddVirtualDeviceAndStartCapture,
-                     base::Unretained(this), device_exerciser.get(),
-                     media::BindToCurrentLoop(run_loop.QuitClosure())));
+      FROM_HERE, base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
+                                    AddVirtualDeviceAndStartCapture,
+                                base::Unretained(this), device_exerciser.get(),
+                                base::BindPostTaskToCurrentDefault(
+                                    run_loop.QuitClosure())));
   run_loop.Run();
 }
 

@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/buffering_state.h"
-#include "media/base/bind_to_current_loop.h"
 
 namespace chromecast {
 namespace media {
@@ -117,7 +117,7 @@ void BufferingFrameProvider::RequestBufferIfNeeded() {
     return;
 
   is_pending_request_ = true;
-  coded_frame_provider_->Read(::media::BindToCurrentLoop(
+  coded_frame_provider_->Read(base::BindPostTaskToCurrentDefault(
       base::BindOnce(&BufferingFrameProvider::OnNewBuffer, weak_this_)));
 }
 

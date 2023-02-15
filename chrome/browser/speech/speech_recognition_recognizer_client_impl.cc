@@ -11,6 +11,7 @@
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
@@ -21,7 +22,6 @@
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/bind_to_current_loop.h"
 
 namespace {
 
@@ -170,12 +170,12 @@ SpeechRecognitionRecognizerClientImpl::SpeechRecognitionRecognizerClientImpl(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       std::move(options),
-      media::BindToCurrentLoop(base::BindOnce(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
           &SpeechRecognitionRecognizerClientImpl::OnRecognizerBound,
           weak_factory_.GetWeakPtr())));
 
   audio_source_speech_recognition_context_.set_disconnect_handler(
-      media::BindToCurrentLoop(base::BindOnce(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
           &SpeechRecognitionRecognizerClientImpl::OnRecognizerDisconnected,
           weak_factory_.GetWeakPtr())));
 }

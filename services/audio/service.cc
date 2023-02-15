@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/system/system_monitor.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -18,7 +19,6 @@
 #include "build/build_config.h"
 #include "media/audio/aecdump_recording_manager.h"
 #include "media/audio/audio_manager.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/media_buildflags.h"
 #include "services/audio/debug_recording.h"
 #include "services/audio/device_notifier.h"
@@ -176,7 +176,7 @@ void Service::InitializeDeviceMonitor() {
   TRACE_EVENT0("audio", "audio::Service::InitializeDeviceMonitor");
 
   audio_device_listener_mac_ = media::AudioDeviceListenerMac::Create(
-      media::BindToCurrentLoop(base::BindRepeating([] {
+      base::BindPostTaskToCurrentDefault(base::BindRepeating([] {
         if (auto* monitor = base::SystemMonitor::Get())
           monitor->ProcessDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
       })),

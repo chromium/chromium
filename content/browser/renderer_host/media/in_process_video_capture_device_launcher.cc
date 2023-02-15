@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -23,7 +24,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/common/content_features.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
@@ -256,9 +256,10 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   base::OnceClosure start_capture_closure;
   // Use of Unretained |this| is safe, because |done_cb| guarantees that |this|
   // stays alive.
-  ReceiveDeviceCallback after_start_capture_callback = media::BindToCurrentLoop(
-      base::BindOnce(&InProcessVideoCaptureDeviceLauncher::OnDeviceStarted,
-                     base::Unretained(this), callbacks, std::move(done_cb)));
+  ReceiveDeviceCallback after_start_capture_callback =
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &InProcessVideoCaptureDeviceLauncher::OnDeviceStarted,
+          base::Unretained(this), callbacks, std::move(done_cb)));
 
   switch (stream_type) {
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE: {

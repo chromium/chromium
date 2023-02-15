@@ -10,8 +10,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder.h"
 #include "media/base/media_log.h"
 #include "media/base/overlay_info.h"
@@ -97,13 +97,13 @@ bool CodecFactory::IsEncoderSupportKnown() {
 void CodecFactory::NotifyDecoderSupportKnown(base::OnceClosure callback) {
   base::AutoLock lock(supported_profiles_lock_);
   decoder_support_notifier_.Register(
-      media::BindToCurrentLoop(std::move(callback)));
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 void CodecFactory::NotifyEncoderSupportKnown(base::OnceClosure callback) {
   base::AutoLock lock(supported_profiles_lock_);
   encoder_support_notifier_.Register(
-      media::BindToCurrentLoop(std::move(callback)));
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 CodecFactory::Notifier::Notifier() = default;

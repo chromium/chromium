@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
@@ -53,7 +54,6 @@
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/storage_partition_test_helpers.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "media/mojo/buildflags.h"
@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
     // to audio stream owners and they get a chance to notify of stream closure.
     base::RunLoop run_loop;
     GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, media::BindToCurrentLoop(run_loop.QuitClosure()));
+        FROM_HERE, base::BindPostTaskToCurrentDefault(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
     // to audio stream owners and they get a chance to notify of stream closure.
     base::RunLoop run_loop;
     GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, media::BindToCurrentLoop(run_loop.QuitClosure()));
+        FROM_HERE, base::BindPostTaskToCurrentDefault(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
     // to audio stream owners and they get a chance to notify of stream closure.
     base::RunLoop run_loop;
     GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, media::BindToCurrentLoop(run_loop.QuitClosure()));
+        FROM_HERE, base::BindPostTaskToCurrentDefault(run_loop.QuitClosure()));
     run_loop.Run();
   }
 

@@ -8,11 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/cma/base/balanced_media_task_runner_factory.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/media/cma/base/simple_media_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/timestamp_constants.h"
@@ -109,7 +109,7 @@ void DemuxerStreamAdapter::ResetMediaTaskRunner() {
 void DemuxerStreamAdapter::RequestBuffer(ReadCB read_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
   is_pending_demuxer_read_ = true;
-  demuxer_stream_->Read(1, ::media::BindToCurrentLoop(base::BindOnce(
+  demuxer_stream_->Read(1, base::BindPostTaskToCurrentDefault(base::BindOnce(
                                &DemuxerStreamAdapter::OnNewBuffer, weak_this_,
                                std::move(read_cb))));
 }

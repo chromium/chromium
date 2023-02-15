@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/task/bind_post_task.h"
 #include "content/browser/media/capture/aura_window_video_capture_device.h"
 #include "content/public/browser/desktop_media_id.h"
-#include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,7 +53,7 @@ void AuraWindowToMojoDeviceAdapter::GetPhotoState(
     GetPhotoStateCallback callback) {
   media::VideoCaptureDevice::GetPhotoStateCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          media::BindToCurrentLoop(std::move(callback)), nullptr);
+          base::BindPostTaskToCurrentDefault(std::move(callback)), nullptr);
   device_->GetPhotoState(std::move(scoped_callback));
 }
 
@@ -62,14 +62,14 @@ void AuraWindowToMojoDeviceAdapter::SetPhotoOptions(
     SetPhotoOptionsCallback callback) {
   media::mojom::ImageCapture::SetPhotoOptionsCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          media::BindToCurrentLoop(std::move(callback)), false);
+          base::BindPostTaskToCurrentDefault(std::move(callback)), false);
   device_->SetPhotoOptions(std::move(settings), std::move(scoped_callback));
 }
 
 void AuraWindowToMojoDeviceAdapter::TakePhoto(TakePhotoCallback callback) {
   media::mojom::ImageCapture::TakePhotoCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          media::BindToCurrentLoop(std::move(callback)), nullptr);
+          base::BindPostTaskToCurrentDefault(std::move(callback)), nullptr);
   device_->TakePhoto(std::move(scoped_callback));
 }
 

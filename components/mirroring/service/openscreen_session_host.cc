@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -42,7 +43,6 @@
 #include "media/audio/audio_input_device.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/capture/video_capture_types.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/encoding/encoding_support.h"
@@ -433,7 +433,7 @@ void OpenscreenSessionHost::OnNegotiated(
     // thread-hopped from the audio thread, and later thread-hopped again to
     // the encoding thread.
     audio_capturing_callback_ = std::make_unique<AudioCapturingCallback>(
-        media::BindToCurrentLoop(base::BindRepeating(
+        base::BindPostTaskToCurrentDefault(base::BindRepeating(
             &AudioRtpStream::InsertAudio, audio_stream_->AsWeakPtr())),
         base::BindOnce(&OpenscreenSessionHost::ReportAndLogError,
                        weak_factory_.GetWeakPtr(),

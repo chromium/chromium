@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/media/audio/cast_audio_output_device.h"
 #include "content/public/renderer/render_frame.h"
@@ -17,7 +18,6 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
@@ -132,7 +132,7 @@ class NonSwitchableAudioRendererSink
       return;
     }
     // Always post to avoid the caller being reentrant.
-    ::media::BindToCurrentLoop(
+    base::BindPostTaskToCurrentDefault(
         base::BindOnce(std::move(info_cb), GetOutputDeviceInfo()))
         .Run();
   }

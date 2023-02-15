@@ -7,10 +7,10 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/media/cdm/cast_cdm.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_config.h"
 #include "media/base/cdm_key_information.h"
 #include "url/origin.h"
@@ -40,7 +40,7 @@ void CastCdmFactory::Create(
     ::media::CdmCreatedCB cdm_created_cb) {
   // Bound |cdm_created_cb| so we always fire it asynchronously.
   ::media::CdmCreatedCB bound_cdm_created_cb =
-      ::media::BindToCurrentLoop(std::move(cdm_created_cb));
+      base::BindPostTaskToCurrentDefault(std::move(cdm_created_cb));
 
   CastKeySystem cast_key_system(GetKeySystemByName(cdm_config.key_system));
 
@@ -65,11 +65,12 @@ void CastCdmFactory::Create(
 
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&CastCdm::Initialize, base::Unretained(cast_cdm.get()),
-                     ::media::BindToCurrentLoop(session_message_cb),
-                     ::media::BindToCurrentLoop(session_closed_cb),
-                     ::media::BindToCurrentLoop(session_keys_change_cb),
-                     ::media::BindToCurrentLoop(session_expiration_update_cb)));
+      base::BindOnce(
+          &CastCdm::Initialize, base::Unretained(cast_cdm.get()),
+          base::BindPostTaskToCurrentDefault(session_message_cb),
+          base::BindPostTaskToCurrentDefault(session_closed_cb),
+          base::BindPostTaskToCurrentDefault(session_keys_change_cb),
+          base::BindPostTaskToCurrentDefault(session_expiration_update_cb)));
   std::move(bound_cdm_created_cb).Run(cast_cdm, "");
 }
 

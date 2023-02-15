@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_mixer.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -23,10 +23,10 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
     media::SpeechRecognitionClient::OnReadyCallback callback)
     : content::RenderFrameObserver(render_frame),
       on_ready_callback_(std::move(callback)) {
-  initialize_callback_ = media::BindToCurrentLoop(base::BindRepeating(
+  initialize_callback_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &ChromeSpeechRecognitionClient::Initialize, weak_factory_.GetWeakPtr()));
 
-  send_audio_callback_ = media::BindToCurrentLoop(base::BindRepeating(
+  send_audio_callback_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService,
       weak_factory_.GetWeakPtr()));
 
@@ -136,19 +136,20 @@ void ChromeSpeechRecognitionClient::Initialize() {
   speech_recognition_context_->BindRecognizer(
       speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
       std::move(speech_recognition_client_remote), std::move(options),
-      media::BindToCurrentLoop(
+      base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));
   render_frame()->GetBrowserInterfaceBroker()->GetInterface(
       std::move(speech_recognition_context_receiver));
 
   // Bind the call to Reset() to the Media thread.
-  reset_callback_ = media::BindToCurrentLoop(base::BindRepeating(
+  reset_callback_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &ChromeSpeechRecognitionClient::Reset, weak_factory_.GetWeakPtr()));
 
-  speech_recognition_context_.set_disconnect_handler(media::BindToCurrentLoop(
-      base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerDisconnected,
-                     weak_factory_.GetWeakPtr())));
+  speech_recognition_context_.set_disconnect_handler(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &ChromeSpeechRecognitionClient::OnRecognizerDisconnected,
+          weak_factory_.GetWeakPtr())));
 }
 
 void ChromeSpeechRecognitionClient::Reset() {

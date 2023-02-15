@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -20,7 +21,6 @@
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
-#include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::libassistant {
@@ -87,7 +87,8 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
 
   void Reset() {
     run_loop_ = std::make_unique<base::RunLoop>();
-    quit_closure_ = media::BindToCurrentLoop(run_loop_->QuitClosure());
+    quit_closure_ =
+        base::BindPostTaskToCurrentDefault(run_loop_->QuitClosure());
   }
 
   void Wait() { run_loop_->Run(); }
