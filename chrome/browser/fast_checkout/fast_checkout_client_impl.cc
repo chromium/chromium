@@ -330,6 +330,9 @@ void FastCheckoutClientImpl::TryToFillForms() {
         form_filling_states_[std::make_pair(form->form_signature(),
                                             autofill::FormType::kAddressForm)] =
             FillingState::kFilling;
+        static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get())
+            ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddressHome,
+                                   run_id_);
         autofill_manager_->FillProfileForm(*autofill_profile,
                                            form->ToFormData(), *field);
       }
@@ -415,6 +418,8 @@ void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
     form_filling_states_[std::make_pair(form->form_signature(),
                                         autofill::FormType::kCreditCardForm)] =
         FillingState::kFilling;
+    static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get())
+        ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
     autofill_manager_->FillCreditCardForm(form->ToFormData(), *field, card,
                                           cvc);
   }

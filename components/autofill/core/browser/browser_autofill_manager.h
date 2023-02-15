@@ -316,6 +316,10 @@ class BrowserAutofillManager : public AutofillManager,
   // keyboard accessory, etc.
   virtual void SetAutofillSuggestionMethod(AutofillSuggestionMethod state);
 
+  // Set Fast Checkout run ID on the corresponding form event logger.
+  virtual void SetFastCheckoutRunId(FieldTypeGroup field_type_group,
+                                    int64_t run_id);
+
   void SetExternalDelegateForTest(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
     external_delegate_ = std::move(external_delegate);

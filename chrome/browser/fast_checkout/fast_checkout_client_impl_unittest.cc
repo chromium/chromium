@@ -136,6 +136,10 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
                const autofill::CreditCard&,
                const std::u16string&),
               (override));
+  MOCK_METHOD(void,
+              SetFastCheckoutRunId,
+              (autofill::FieldTypeGroup, int64_t),
+              (override));
 };
 
 class TestFastCheckoutClientImpl : public FastCheckoutClientImpl {
@@ -653,6 +657,9 @@ TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
               FillProfileFormImpl(FormDataEqualTo(address_form_data),
                                   FormFieldDataEqualTo(address_form_field_data),
                                   Eq(*autofill_profile)));
+  EXPECT_CALL(*autofill_manager(),
+              SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddressHome,
+                                   fast_checkout_client()->run_id_));
   fast_checkout_client()->OnAfterLoadedServerPredictions();
   EXPECT_THAT(
       fast_checkout_client()->form_filling_states_,
@@ -662,7 +669,7 @@ TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
           Pair(Pair(credit_card_form_signature,
                     autofill::FormType::kCreditCardForm),
                FastCheckoutClientImpl::FillingState::kNotFilled)));
-  EXPECT_TRUE(fast_checkout_client()->credit_card_form_global_id_);
+  EXPECT_TRUE(fast_checkout_client()->credit_card_form_global_id_.has_value());
 }
 
 TEST_F(FastCheckoutClientImplTest,
@@ -686,6 +693,9 @@ TEST_F(FastCheckoutClientImplTest,
               FillCreditCardFormImpl(
                   FormDataEqualTo(credit_card_form->ToFormData()),
                   FormFieldDataEqualTo(field), Eq(*credit_card), Eq(cvc)));
+  EXPECT_CALL(*autofill_manager(),
+              SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard,
+                                   fast_checkout_client()->run_id_));
   fast_checkout_client()->OnFullCardRequestSucceeded(*full_card_request,
                                                      *credit_card, cvc);
 
@@ -787,10 +797,18 @@ TEST_F(FastCheckoutClientImplTest,
       {address_form->form_signature(), credit_card_form->form_signature()});
   autofill::payments::FullCardRequest* full_card_request =
       autofill_client()->GetCvcAuthenticator()->GetFullCardRequest();
+  const autofill::FormFieldData& field = *credit_card_form->field(0);
+  std::u16string cvc = u"123";
 
-  EXPECT_CALL(*autofill_manager(), FillCreditCardFormImpl);
+  EXPECT_CALL(*autofill_manager(),
+              FillCreditCardFormImpl(
+                  FormDataEqualTo(credit_card_form->ToFormData()),
+                  FormFieldDataEqualTo(field), Eq(*credit_card), Eq(cvc)));
+  EXPECT_CALL(*autofill_manager(),
+              SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard,
+                                   fast_checkout_client()->run_id_));
   fast_checkout_client()->OnFullCardRequestSucceeded(*full_card_request,
-                                                     *credit_card, u"123");
+                                                     *credit_card, cvc);
 }
 
 TEST_F(FastCheckoutClientImplTest, OnFullCardRequestFailed_StopsRun) {

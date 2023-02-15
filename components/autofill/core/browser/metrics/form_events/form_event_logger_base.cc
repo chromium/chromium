@@ -376,7 +376,8 @@ void FormEventLoggerBase::RecordKeyMetrics() const {
       form_interactions_ukm_logger_->LogKeyMetrics(
           submitted_form_types_, has_logged_data_to_fill_available_,
           has_logged_suggestions_shown_, has_logged_edited_autofilled_field_,
-          has_logged_suggestion_filled_, form_interaction_counts_, flow_id_);
+          has_logged_suggestion_filled_, form_interaction_counts_, flow_id_,
+          fast_checkout_run_id_);
     }
   }
   if (has_logged_typed_into_non_filled_field_ ||

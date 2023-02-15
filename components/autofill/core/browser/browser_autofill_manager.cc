@@ -3486,4 +3486,10 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
   UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.All", total_num_log_events);
 }
 
+void BrowserAutofillManager::SetFastCheckoutRunId(
+    FieldTypeGroup field_type_group,
+    int64_t run_id) {
+  GetEventFormLogger(field_type_group)->SetFastCheckoutRunId(run_id);
+}
+
 }  // namespace autofill

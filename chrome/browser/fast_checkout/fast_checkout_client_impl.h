@@ -107,6 +107,9 @@ class FastCheckoutClientImpl
   FRIEND_TEST_ALL_PREFIXES(
       FastCheckoutClientImplTest,
       OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops);
+  FRIEND_TEST_ALL_PREFIXES(
+      FastCheckoutClientImplTest,
+      OnFullCardRequestSucceeded_InvokesCreditCardFormFill);
 
   // From autofill::PersonalDataManagerObserver.
   void OnPersonalDataChanged() override;

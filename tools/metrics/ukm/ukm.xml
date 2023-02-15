@@ -2388,13 +2388,19 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="AutofillAssistantIntent" enum="AutofillAssistantIntent">
     <summary>
-      Describes the trigger source that invoked Autofill. Only recorded if
-      AutofillAssistantIntent was not undefined.
+      Obsolete. Used to describe the trigger source that invoked Autofill. Was
+      only recorded if AutofillAssistantIntent was not undefined.
     </summary>
   </metric>
   <metric name="AutofillFills">
     <summary>
       Number of Autofill fills invoked by the user on the current form.
+    </summary>
+  </metric>
+  <metric name="FastCheckoutRunId">
+    <summary>
+      Optional, only set if a form was filled by Fast Checkout. Unique ID of a
+      Fast Checkout run.
     </summary>
   </metric>
   <metric name="FillingAcceptance">

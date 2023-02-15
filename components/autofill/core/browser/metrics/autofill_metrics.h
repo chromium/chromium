@@ -717,7 +717,8 @@ class AutofillMetrics {
                        bool edited_autofilled_field,
                        bool suggestion_filled,
                        const FormInteractionCounts& form_interaction_counts,
-                       const FormInteractionsFlowId& flow_id);
+                       const FormInteractionsFlowId& flow_id,
+                       absl::optional<int64_t> fast_checkout_run_id);
     void LogFormEvent(FormEvent form_event,
                       const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);

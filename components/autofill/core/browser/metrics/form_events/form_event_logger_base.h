@@ -95,8 +95,14 @@ class FormEventLoggerBase {
     return form_interaction_counts_;
   }
 
+  void SetFastCheckoutRunId(int64_t run_id) { fast_checkout_run_id_ = run_id; }
+
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
+  }
+
+  const absl::optional<int64_t> fast_checkout_run_id_for_test() const {
+    return fast_checkout_run_id_;
   }
 
  protected:
@@ -191,6 +197,8 @@ class FormEventLoggerBase {
   // Unique random id that is set on the first form interaction and identical
   // during the flow.
   FormInteractionsFlowId flow_id_;
+  // Unique ID of a Fast Checkout run. Used for metrics.
+  absl::optional<int64_t> fast_checkout_run_id_;
 
   // Form types of the submitted form
   DenseSet<FormType> submitted_form_types_;
