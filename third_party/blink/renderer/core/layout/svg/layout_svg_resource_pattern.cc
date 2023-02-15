@@ -162,8 +162,7 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
   }
 
   pattern_data->pattern = Pattern::CreatePaintRecordPattern(
-      AsPaintRecord(tile_bounds.size(), tile_transform),
-      gfx::RectF(tile_bounds.size()));
+      AsPaintRecord(tile_transform), gfx::RectF(tile_bounds.size()));
 
   // Compute pattern space transformation.
   pattern_data->transform.Translate(tile_bounds.x(), tile_bounds.y());
@@ -199,18 +198,10 @@ bool LayoutSVGResourcePattern::ApplyShader(
 }
 
 PaintRecord LayoutSVGResourcePattern::AsPaintRecord(
-    const gfx::SizeF& size,
     const AffineTransform& tile_transform) const {
   NOT_DESTROYED();
   DCHECK(!should_collect_pattern_attributes_);
 
-  AffineTransform content_transform;
-  if (attributes_.PatternContentUnits() ==
-      SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
-    content_transform = tile_transform;
-  }
-
-  gfx::RectF bounds(size);
   PaintRecorder paint_recorder;
   cc::PaintCanvas* canvas = paint_recorder.beginRecording();
 
@@ -228,7 +219,7 @@ PaintRecord LayoutSVGResourcePattern::AsPaintRecord(
   DCHECK(pattern_layout_object);
   DCHECK(!pattern_layout_object->NeedsLayout());
 
-  SubtreeContentTransformScope content_transform_scope(content_transform);
+  SubtreeContentTransformScope content_transform_scope(tile_transform);
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   for (LayoutObject* child = pattern_layout_object->FirstChild(); child;
