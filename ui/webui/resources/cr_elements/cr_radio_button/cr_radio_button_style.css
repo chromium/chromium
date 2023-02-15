@@ -39,6 +39,12 @@
         }
       }
 
+      @media (forced-colors: active) {
+        :host {
+          --cr-radio-button-checked-color: SelectedItem;
+        }
+      }
+
       :host([disabled]) {
         opacity: var(--cr-disabled-opacity);
         /* Disable pointer events for this whole element, as outer on-click gets
