@@ -33,11 +33,10 @@ base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
   }
   base::Value::Dict dict =
       policy::PolicyStatusProvider::GetStatusFromCore(core_);
-  ExtractDomainFromUsername(&dict);
+  SetDomainExtractedFromUsername(dict);
   GetUserAffiliationStatus(&dict, profile_);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
   dict.Set(policy::kFlexOrgWarningKey, is_flex_org);
-  SetDomainInUserStatus(dict);
   SetProfileId(&dict, profile_);
   return dict;
 }

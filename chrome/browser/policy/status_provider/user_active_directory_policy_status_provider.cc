@@ -74,7 +74,7 @@ base::Value::Dict UserActiveDirectoryPolicyStatusProvider::GetStatus() {
     GetUserManager(&dict, profile_);
   }
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
-  SetDomainInUserStatus(dict);
+  SetDomainExtractedFromUsername(dict);
   return dict;
 }
 

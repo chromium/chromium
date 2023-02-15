@@ -43,7 +43,7 @@ base::Value::Dict UserPolicyStatusProviderLacros::GetStatus() {
     return error_dict;
   }
   base::Value::Dict dict = GetStatusFromPolicyData(policy);
-  ExtractDomainFromUsername(&dict);
+  SetDomainExtractedFromUsername(dict);
   GetUserAffiliationStatus(&dict, profile_);
 
   // Get last fetched time from policy, since we have no refresh scheduler here.
@@ -66,7 +66,6 @@ base::Value::Dict UserPolicyStatusProviderLacros::GetStatus() {
                policy::CloudPolicyStore::STATUS_OK,
                policy::CloudPolicyValidatorBase::Status::VALIDATION_OK));
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
-  SetDomainInUserStatus(dict);
   SetProfileId(&dict, profile_);
   return dict;
 }

@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -23,10 +24,19 @@
 const char kDevicePolicyStatusDescription[] = "statusDevice";
 const char kUserPolicyStatusDescription[] = "statusUser";
 
-void ExtractDomainFromUsername(base::Value::Dict* dict) {
-  const std::string* username = dict->FindString("username");
+void SetDomainExtractedFromUsername(base::Value::Dict& dict) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (profiles::IsKioskSession()) {
+    // In kiosk session `username` is a website (for web kiosk) or an app id
+    // (for ChromeApp kiosk). Since it's not a proper email address, it's
+    // impossible to extract the domain name from it.
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  const std::string* username = dict.FindString(policy::kUsernameKey);
   if (username && !username->empty())
-    dict->Set(policy::kDomainKey, gaia::ExtractDomainName(*username));
+    dict.Set(policy::kDomainKey, gaia::ExtractDomainName(*username));
 }
 
 void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
@@ -50,12 +60,6 @@ void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
   dict->Set("isAffiliated",
             chrome::enterprise_util::IsProfileAffiliated(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void SetDomainInUserStatus(base::Value::Dict& user_status) {
-  const std::string* username = user_status.FindString(policy::kUsernameKey);
-  if (username && !username->empty())
-    user_status.Set(policy::kDomainKey, gaia::ExtractDomainName(*username));
 }
 
 void SetProfileId(base::Value::Dict* dict, Profile* profile) {

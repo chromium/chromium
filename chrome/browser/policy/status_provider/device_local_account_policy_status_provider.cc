@@ -35,10 +35,9 @@ base::Value::Dict DeviceLocalAccountPolicyStatusProvider::GetStatus() {
                            policy::CloudPolicyValidatorBase::VALIDATION_OK));
     dict.Set(policy::kUsernameKey, std::string());
   }
-  ExtractDomainFromUsername(&dict);
+  SetDomainExtractedFromUsername(dict);
   dict.Set("publicAccount", true);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
-  SetDomainInUserStatus(dict);
   return dict;
 }
 

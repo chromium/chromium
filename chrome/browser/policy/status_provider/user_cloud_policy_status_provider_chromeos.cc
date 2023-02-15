@@ -28,7 +28,7 @@ base::Value::Dict UserCloudPolicyStatusProviderChromeOS::GetStatus() {
   GetUserAffiliationStatus(&dict, profile_);
   GetUserManager(&dict, profile_);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
-  SetDomainInUserStatus(dict);
+  SetDomainExtractedFromUsername(dict);
   SetProfileId(&dict, profile_);
   return dict;
 }

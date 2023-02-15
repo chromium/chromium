@@ -11,15 +11,13 @@
 extern const char kDevicePolicyStatusDescription[];
 extern const char kUserPolicyStatusDescription[];
 
-void ExtractDomainFromUsername(base::Value::Dict* dict);
+// Looks for "username" key in `dict` and sets "domain" key with the
+// domain extracted from username.
+void SetDomainExtractedFromUsername(base::Value::Dict& dict);
 
 // Adds a new entry to |dict| with the affiliation status of the user associated
 // with |profile|. This method shouldn't be called for device scope status.
 void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile);
-
-// Looks for "username" key in `user_status` and sets "domain" key with the
-// domain of username.
-void SetDomainInUserStatus(base::Value::Dict& user_status);
 
 // Adds a new entry to |dict| with the enterprise profile identifier of the
 // current |profile|.
