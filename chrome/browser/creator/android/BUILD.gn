@@ -108,6 +108,7 @@ robolectric_library("junit") {
     "//chrome/browser/share:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/feed/core/v2:feedv2_core_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -116,6 +117,9 @@ robolectric_library("junit") {
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_shadows",
+    "//url:gurl_junit_test_support",
   ]
   resources_package = "org.chromium.chrome.browser.creator.test"
 }

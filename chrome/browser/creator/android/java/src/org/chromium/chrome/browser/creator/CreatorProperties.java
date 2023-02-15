@@ -17,6 +17,8 @@ public class CreatorProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> URL_KEY =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> FORMATTED_URL_KEY =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Boolean> IS_FOLLOWED_KEY =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ON_FOLLOW_CLICK_KEY =
@@ -27,5 +29,6 @@ public class CreatorProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {WEB_FEED_ID_KEY, TITLE_KEY, URL_KEY,
-            IS_FOLLOWED_KEY, ON_FOLLOW_CLICK_KEY, ON_FOLLOWING_CLICK_KEY, IS_TOOLBAR_VISIBLE_KEY};
+            FORMATTED_URL_KEY, IS_FOLLOWED_KEY, ON_FOLLOW_CLICK_KEY, ON_FOLLOWING_CLICK_KEY,
+            IS_TOOLBAR_VISIBLE_KEY};
 }

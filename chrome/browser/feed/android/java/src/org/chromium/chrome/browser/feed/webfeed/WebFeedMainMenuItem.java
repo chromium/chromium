@@ -69,7 +69,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private AppMenuHandler mAppMenuHandler;
     private CrowButtonDelegate mCrowButtonDelegate;
     private Class<?> mCreatorActivityClass;
-    private byte[] mWebFeedId;
 
     // Points to the currently shown chip: null, mFollowingChipView, mFollowChipView,
     private ChipView mChipView;
@@ -138,9 +137,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mCrowButtonDelegate = crowButtonDelegate;
         mCreatorActivityClass = creatorActivityClass;
         Callback<WebFeedMetadata> metadataCallback = result -> {
-            if (result != null) {
-                mWebFeedId = result.id;
-            }
             initializeFavicon(result);
             initializeText(result);
             initializeChipView(result);
@@ -367,13 +363,14 @@ public class WebFeedMainMenuItem extends FrameLayout {
 
     private void launchCreatorActivity() {
         try {
-            String creatorUrl =
-                    UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
             // Launch a new activity for the creator page.
             Intent intent = new Intent(mContext, mCreatorActivityClass);
-            intent.putExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID, mWebFeedId);
+            if (mRecommendedWebFeedName != null) {
+                intent.putExtra(
+                        CreatorIntentConstants.CREATOR_WEB_FEED_ID, mRecommendedWebFeedName);
+            }
             intent.putExtra(CreatorIntentConstants.CREATOR_TITLE, mTitle);
-            intent.putExtra(CreatorIntentConstants.CREATOR_URL, creatorUrl);
+            intent.putExtra(CreatorIntentConstants.CREATOR_URL, mUrl.getSpec());
             intent.putExtra(
                     CreatorIntentConstants.CREATOR_ENTRY_POINT, SingleWebFeedEntryPoint.MENU);
             mContext.startActivity(intent);

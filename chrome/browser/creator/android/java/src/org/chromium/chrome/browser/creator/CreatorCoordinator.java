@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.feed.SingleWebFeedParameters;
 import org.chromium.chrome.browser.feed.Stream;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.QueryResult;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -53,6 +54,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -90,7 +92,6 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private FeedSurfaceScopeDependencyProvider mDependencyProvider;
     private byte[] mWebFeedId;
     private PropertyModel mCreatorModel;
-    private boolean mIsFollowed;
     private PropertyModelChangeProcessor<PropertyModel, CreatorProfileView, PropertyKey>
             mCreatorProfileModelChangeProcessor;
     private PropertyModelChangeProcessor<PropertyModel, CreatorToolbarView, PropertyKey>
@@ -106,7 +107,6 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private Profile mProfile;
     private Stream mStream;
     private String mTitle;
-    private String mUrl;
     private int mHeaderCount;
 
     private EmptyBottomSheetObserver mSheetObserver;
@@ -120,7 +120,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private NewTabCreator mCreatorOpenTab;
     private final UnownedUserDataSupplier<ShareDelegate> mBottomsheetShareDelegateSupplier;
     private GURL mBottomSheetUrl;
-    int mEntryPoint;
+    private int mEntryPoint;
 
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
     private static final String CREATOR_PRIVACY_ID = "CreatorPrivacyId";
@@ -151,7 +151,6 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mSnackbarManager = snackbarManager;
         mWindowAndroid = windowAndroid;
         mTitle = title;
-        mUrl = url;
         mRecyclerView = setUpView();
         mCreatorWebContents = creatorWebContents;
         mCreatorOpenTab = creatorOpenTab;
@@ -176,12 +175,15 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mLayoutView = mCreatorViewGroup.findViewById(R.id.creator_layout);
         mLayoutView.addView(mRecyclerView);
 
+        // Generate Creator Model
+        mCreatorModel = generateCreatorModel(mWebFeedId, mTitle, url);
+
         // TODO(crbug.com/1377069): Add a JNI to get the follow status from CreatorBridge instead
-        getIsFollowedStatus();
+        if (mWebFeedId != null) {
+            getIsFollowedStatus();
+        }
         initBottomSheet();
 
-        // Generate Creator Model
-        mCreatorModel = generateCreatorModel(mWebFeedId, mTitle, mUrl, mIsFollowed);
         mCreatorProfileModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mCreatorModel, (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);
         mCreatorToolbarModelChangeProcessor = PropertyModelChangeProcessor.create(
@@ -192,13 +194,35 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     }
 
     /**
-     * Create a FeedStream and bind it to the RecyclerView
+     * Query for webfeedId if we don't have it, and then create the FeedStream.
      *
      * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
      * @param HelpAndFeedbackLauncher Interface for launching a help and feedback page.
      * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
      */
-    public void initFeedStream(FeedActionDelegate feedActionDelegate,
+    public void queryFeedStream(FeedActionDelegate feedActionDelegate,
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
+            Supplier<ShareDelegate> shareDelegateSupplier) {
+        if (mWebFeedId == null) {
+            Callback<QueryResult> queryWebFeedIdCallback = result -> {
+                mWebFeedId = result.webFeedId.getBytes();
+                mCreatorModel.set(CreatorProperties.WEB_FEED_ID_KEY, result.webFeedId.getBytes());
+                initFeedStream(feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
+            };
+            WebFeedBridge.queryWebFeedId(
+                    mCreatorModel.get(CreatorProperties.URL_KEY), queryWebFeedIdCallback);
+        } else {
+            initFeedStream(feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
+        }
+    }
+    /**
+     * Create the FeedStream and bind it to the RecyclerView.
+     *
+     * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
+     * @param HelpAndFeedbackLauncher Interface for launching a help and feedback page.
+     * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
+     */
+    private void initFeedStream(FeedActionDelegate feedActionDelegate,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Supplier<ShareDelegate> shareDelegateSupplier) {
         mStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
@@ -278,14 +302,16 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         return mActivity.getResources().getDimensionPixelSize(R.dimen.content_previews_padding);
     }
 
-    private PropertyModel generateCreatorModel(
-            byte[] webFeedId, String title, String url, boolean isFollowed) {
+    private PropertyModel generateCreatorModel(byte[] webFeedId, String title, String url) {
+        String formattedUrl =
+                UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(new GURL(url));
         PropertyModel model = new PropertyModel.Builder(CreatorProperties.ALL_KEYS)
                                       .with(CreatorProperties.WEB_FEED_ID_KEY, webFeedId)
                                       .with(CreatorProperties.TITLE_KEY, title)
                                       .with(CreatorProperties.URL_KEY, url)
-                                      .with(CreatorProperties.IS_FOLLOWED_KEY, isFollowed)
+                                      .with(CreatorProperties.IS_FOLLOWED_KEY, false)
                                       .with(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY, false)
+                                      .with(CreatorProperties.FORMATTED_URL_KEY, formattedUrl)
                                       .build();
         return model;
     }
@@ -297,12 +323,11 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                     result == null ? WebFeedSubscriptionStatus.UNKNOWN : result.subscriptionStatus;
             if (subscriptionStatus == WebFeedSubscriptionStatus.UNKNOWN
                     || subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
-                mIsFollowed = false;
+                mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, false);
             } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
-                mIsFollowed = true;
+                mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
             }
         };
-
         WebFeedBridge.getWebFeedMetadata(mWebFeedId, metadata_callback);
     }
 
@@ -440,7 +465,8 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     }
 
     private void openInNewTab() {
-        String url = mBottomSheetUrl.isValid() ? mBottomSheetUrl.getSpec() : mUrl;
+        String url = mBottomSheetUrl.isValid() ? mBottomSheetUrl.getSpec()
+                                               : mCreatorModel.get(CreatorProperties.URL_KEY);
         mBottomSheetController.hideContent(
                 mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
         mCreatorOpenTab.createNewTab(new LoadUrlParams(url));

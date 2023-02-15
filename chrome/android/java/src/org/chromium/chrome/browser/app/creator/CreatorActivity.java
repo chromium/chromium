@@ -86,7 +86,8 @@ public class CreatorActivity extends SnackbarActivity {
         mShareDelegateSupplier.set(shareDelegate);
         mCreatorActionDelegate =
                 new CreatorActionDelegateImpl(this, mProfile, getSnackbarManager(), coordinator);
-        coordinator.initFeedStream(mCreatorActionDelegate,
+
+        coordinator.queryFeedStream(mCreatorActionDelegate,
                 HelpAndFeedbackLauncherImpl.getInstance(), mShareDelegateSupplier);
 
         setContentView(coordinator.getView());

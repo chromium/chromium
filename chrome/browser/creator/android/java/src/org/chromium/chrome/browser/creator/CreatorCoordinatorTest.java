@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.creator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,15 +38,20 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 /**
  * Tests for {@link CreatorCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowGURL.class})
 public class CreatorCoordinatorTest {
     @Mock
     private WebFeedBridge.Natives mWebFeedBridgeJniMock;
@@ -73,10 +81,13 @@ public class CreatorCoordinatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+    @Mock
+    private UrlFormatter.Natives mUrlFormatterJniMock;
 
     private final byte[] mWebFeedIdDefault = "webFeedId".getBytes();
     private final String mTitleDefault = "Example";
-    private final String mUrlDefault = "example.com";
+    private final String mUrlDefault = JUnitTestGURLs.EXAMPLE_URL;
+    private final String mTestUrl = JUnitTestGURLs.URL_1;
     private final int mEntryPointDefault = SingleWebFeedEntryPoint.OTHER;
     private TestActivity mActivity;
 
@@ -89,6 +100,10 @@ public class CreatorCoordinatorTest {
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mJniMocker.mock(FeedReliabilityLoggingBridge.getTestHooksForTesting(),
                 mFeedReliabilityLoggingBridgeJniMock);
+
+        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
+        when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any()))
+                .thenReturn(JUnitTestGURLs.URL_1);
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
     }
@@ -144,7 +159,7 @@ public class CreatorCoordinatorTest {
 
     @Test
     public void testCreatorModel_DefaultUrl() {
-        String creatorUrl = "creatorUrl.com";
+        String creatorUrl = mTestUrl;
         CreatorCoordinator creatorCoordinator = newCreatorCoordinator(
                 mTitleDefault, creatorUrl, mWebFeedIdDefault, mEntryPointDefault);
         PropertyModel creatorModel = creatorCoordinator.getCreatorModel();
@@ -189,7 +204,7 @@ public class CreatorCoordinatorTest {
     public void testCreatorModel_NewUrl() {
         CreatorCoordinator creatorCoordinator = newCreatorCoordinator(
                 mTitleDefault, mUrlDefault, mWebFeedIdDefault, mEntryPointDefault);
-        String newUrl = "newCreatorUrl.com";
+        String newUrl = mTestUrl;
         PropertyModel creatorModel = creatorCoordinator.getCreatorModel();
         creatorModel.set(CreatorProperties.URL_KEY, newUrl);
         String url = creatorModel.get(CreatorProperties.URL_KEY);

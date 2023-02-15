@@ -36,9 +36,9 @@ public class CreatorProfileView extends LinearLayout {
         TooltipCompat.setTooltipText(mTitle, title);
     }
 
-    public void setUrl(String url) {
-        mUrl.setText(url);
-        TooltipCompat.setTooltipText(mUrl, url);
+    public void setUrl(String formattedUrl) {
+        mUrl.setText(formattedUrl);
+        TooltipCompat.setTooltipText(mUrl, formattedUrl);
     }
 
     public void setIsFollowedStatus(boolean isFollowed) {

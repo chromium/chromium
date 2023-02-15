@@ -108,6 +108,15 @@ public class WebFeedBridge {
     }
 
     /**
+     * Returns the Web Feed id for the web feed associated with this page.
+     * @param url The URL for which the status is being requested.
+     * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
+     */
+    public static void queryWebFeedId(String url, Callback<QueryResult> callback) {
+        WebFeedBridgeJni.get().queryWebFeed(url, callback);
+    }
+
+    /**
      * Returns Web Feed metadata respective to the provided identifier. The callback will receive
      * `null` if no matching recommended or followed Web Feed is found.
      * @param webFeedId The idenfitier of the Web Feed.
@@ -175,6 +184,16 @@ public class WebFeedBridge {
         }
         // Result of the operation.
         public final @WebFeedSubscriptionRequestStatus int requestStatus;
+    }
+
+    /** Container for results from an QueryWebFeed request. */
+    public static class QueryResult {
+        @CalledByNative("QueryResult")
+        public QueryResult(String webFeedId) {
+            this.webFeedId = webFeedId;
+        }
+        // Result of the operation.
+        public final String webFeedId;
     }
 
     /**
@@ -270,5 +289,6 @@ public class WebFeedBridge {
         void refreshRecommendedFeeds(Callback<Boolean> callback);
         void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
         void incrementFollowedFromWebPageMenuCount();
+        void queryWebFeed(String url, Callback<QueryResult> callback);
     }
 }

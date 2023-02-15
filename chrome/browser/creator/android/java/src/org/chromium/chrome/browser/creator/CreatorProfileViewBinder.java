@@ -14,8 +14,8 @@ public class CreatorProfileViewBinder {
     public static void bind(PropertyModel model, CreatorProfileView view, PropertyKey propertyKey) {
         if (CreatorProperties.TITLE_KEY == propertyKey) {
             view.setTitle(model.get(CreatorProperties.TITLE_KEY));
-        } else if (CreatorProperties.URL_KEY == propertyKey) {
-            view.setUrl(model.get(CreatorProperties.URL_KEY));
+        } else if (CreatorProperties.FORMATTED_URL_KEY == propertyKey) {
+            view.setUrl(model.get(CreatorProperties.FORMATTED_URL_KEY));
         } else if (CreatorProperties.IS_TOOLBAR_VISIBLE_KEY == propertyKey) {
             view.setProfileVisibility(model.get(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY));
         } else if (CreatorProperties.IS_FOLLOWED_KEY == propertyKey) {

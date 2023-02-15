@@ -8,7 +8,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.view.View;
 
@@ -22,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -40,15 +43,20 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 /**
  * Tests for {@link CreatorMediator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowGURL.class})
 public class CreatorMediatorTest {
     @Mock
     private WebFeedBridge.Natives mWebFeedBridgeJniMock;
@@ -74,6 +82,8 @@ public class CreatorMediatorTest {
     private NewTabCreator mCreatorOpenTab;
     @Mock
     private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock
+    private UrlFormatter.Natives mUrlFormatterJniMock;
 
     @Captor
     private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
@@ -87,7 +97,7 @@ public class CreatorMediatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     private final String mTitle = "Example";
-    private final String mUrl = "example.com";
+    private final String mUrl = JUnitTestGURLs.EXAMPLE_URL;
     private final byte[] mWebFeedId = "webFeedId".getBytes();
     private CreatorCoordinator mCreatorCoordinator;
     private CreatorMediator mCreatorMediator;
@@ -103,6 +113,10 @@ public class CreatorMediatorTest {
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mJniMocker.mock(FeedReliabilityLoggingBridge.getTestHooksForTesting(),
                 mFeedReliabilityLoggingBridgeJniMock);
+        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
+
+        when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any()))
+                .thenReturn(JUnitTestGURLs.URL_1);
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mCreatorCoordinator = new CreatorCoordinator(mActivity, mWebFeedId, mSnackbarManager,

@@ -153,7 +153,7 @@ struct QueryWebFeedDiscoverApi {
       NetworkRequestType::kQueryWebFeed;
   static base::StringPiece Method() { return "POST"; }
   static base::StringPiece RequestPath(const Request&) {
-    return "v1/QuerywebFeed";
+    return "v1:queryWebFeed";
   }
   static bool SendRequestMetadata() { return true; }
 };

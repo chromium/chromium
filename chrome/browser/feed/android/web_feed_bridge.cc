@@ -135,6 +135,13 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
 
 base::android::ScopedJavaLocalRef<jobject> ToJava(
     JNIEnv* env,
+    const WebFeedSubscriptions::QueryWebFeedResult& result) {
+  return Java_QueryResult_Constructor(
+      env, base::android::ConvertUTF8ToJavaString(env, result.web_feed_id));
+}
+
+base::android::ScopedJavaLocalRef<jobject> ToJava(
+    JNIEnv* env,
     history::DailyVisitsResult result) {
   return base::android::ToJavaIntArray(
       env, std::vector<int>({result.total_visits, result.days_with_visits}));
@@ -146,6 +153,19 @@ base::OnceCallback<void(WebFeedMetadata)> AdaptWebFeedMetadataCallback(
                     WebFeedMetadata metadata) {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::RunObjectCallbackAndroid(callback, ToJava(env, metadata));
+  };
+
+  return base::BindOnce(adaptor,
+                        base::android::ScopedJavaGlobalRef<jobject>(callback));
+}
+
+base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)>
+AdaptQueryWebFeedResultCallback(
+    const base::android::JavaParamRef<jobject>& callback) {
+  auto adaptor = [](const base::android::JavaRef<jobject>& callback,
+                    WebFeedSubscriptions::QueryWebFeedResult result) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    base::android::RunObjectCallbackAndroid(callback, ToJava(env, result));
   };
 
   return base::BindOnce(adaptor,
@@ -351,4 +371,19 @@ static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(
   stream->IncrementFollowedFromWebPageMenuCount();
 }
 
+static void JNI_WebFeedBridge_QueryWebFeed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& url,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)> callback =
+      AdaptQueryWebFeedResultCallback(j_callback);
+  WebFeedSubscriptions* subscriptions = GetSubscriptions();
+  if (!subscriptions) {
+    std::move(callback).Run({});
+    return;
+  }
+  subscriptions->QueryWebFeed(
+      GURL(base::android::ConvertJavaStringToUTF8(env, url)),
+      std::move(callback));
+}
 }  // namespace feed
