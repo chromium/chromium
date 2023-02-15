@@ -119,9 +119,13 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
 
 mojom::blink::RuntimeFeatureStateController*
   RuntimeFeatureStateOverrideContext::GetOrBindRuntimeFeatureStateController(){
-  if(!runtime_feature_state_controller_remote_.is_bound()){
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      runtime_feature_state_controller_remote_.BindNewPipeAndPassReceiver(execution_context_->GetTaskRunner(TaskType::kInternalDefault)));
+  // TODO(https://crbug.com/1410817): add support for workers/non-frames that
+  // are enabling origin trials to send their information to the browser too.
+  if(!runtime_feature_state_controller_remote_.is_bound() &&
+      execution_context_->IsWindow()){
+    execution_context_->GetBrowserInterfaceBroker().GetInterface(
+      runtime_feature_state_controller_remote_.BindNewPipeAndPassReceiver(
+      execution_context_->GetTaskRunner(TaskType::kInternalDefault)));
   }
   return runtime_feature_state_controller_remote_.get();
 }
