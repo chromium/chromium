@@ -35,6 +35,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -102,6 +103,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1406333")
     public void testSigninButtonDefaultAccount() {
         final HistogramDelta continuedHistogram = new HistogramDelta(CONTINUED_HISTOGRAM_NAME, 1);
         final CoreAccountInfo accountInfo =
