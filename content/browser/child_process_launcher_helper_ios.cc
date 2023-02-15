@@ -13,8 +13,8 @@ namespace internal {
 // TODO(crbug.com/1412835): Fill this class out.
 
 absl::optional<mojo::NamedPlatformChannel>
-ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
-  DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
+ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
+  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   return absl::nullopt;
 }
 

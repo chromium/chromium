@@ -48,22 +48,10 @@ void StopChildProcess(base::ProcessHandle handle) {
 
 }  // namespace
 
-void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
-  // Android only supports renderer, sandboxed utility and gpu.
-  std::string process_type =
-      command_line()->GetSwitchValueASCII(switches::kProcessType);
-  CHECK(process_type == switches::kGpuProcess ||
-        process_type == switches::kRendererProcess ||
-        process_type == switches::kUtilityProcess)
-      << "Unsupported process type: " << process_type;
-
-  // Non-sandboxed utility or renderer process are currently not supported.
-  DCHECK(process_type == switches::kGpuProcess ||
-         !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox));
-}
+void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {}
 
 absl::optional<mojo::NamedPlatformChannel>
-ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
+ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
   return absl::nullopt;
 }
 
@@ -97,6 +85,19 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
   DCHECK(!options);
+
+  // Android only supports renderer, sandboxed utility and gpu.
+  std::string process_type =
+      command_line()->GetSwitchValueASCII(switches::kProcessType);
+  CHECK(process_type == switches::kGpuProcess ||
+        process_type == switches::kRendererProcess ||
+        process_type == switches::kUtilityProcess)
+      << "Unsupported process type: " << process_type;
+
+  // Non-sandboxed utility or renderer process are currently not supported.
+  DCHECK(process_type == switches::kGpuProcess ||
+         !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox));
+
   return true;
 }
 

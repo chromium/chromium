@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_child_process_host.h"
+#include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -134,7 +135,7 @@ class ChildProcessLauncherHelper
   // specific. Returns |absl::nullopt| if the helper should initialize
   // a regular PlatformChannel for communication instead.
   absl::optional<mojo::NamedPlatformChannel>
-  CreateNamedPlatformChannelOnClientThread();
+  CreateNamedPlatformChannelOnLauncherThread();
 #endif
 
   // Returns the list of files that should be mapped in the child process.
@@ -237,7 +238,10 @@ class ChildProcessLauncherHelper
   ZygoteCommunication* GetZygoteForLaunch();
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
-  base::CommandLine* command_line() { return command_line_.get(); }
+  base::CommandLine* command_line() {
+    DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+    return command_line_.get();
+  }
   int child_process_id() const { return child_process_id_; }
 
   static void ForceNormalProcessTerminationSync(
@@ -252,6 +256,7 @@ class ChildProcessLauncherHelper
   const int child_process_id_;
   const scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
   base::TimeTicks begin_launch_time_;
+  // Accessed on launcher thread.
   std::unique_ptr<base::CommandLine> command_line_;
   std::unique_ptr<SandboxedProcessLauncherDelegate> delegate_;
   base::WeakPtr<ChildProcessLauncher> child_process_launcher_;
@@ -265,13 +270,13 @@ class ChildProcessLauncherHelper
   // The PlatformChannel that will be used to transmit an invitation to the
   // child process in most cases. Only used if the platform's helper
   // implementation doesn't return a server endpoint from
-  // |CreateNamedPlatformChannelOnClientThread()|.
+  // |CreateNamedPlatformChannelOnLauncherThread()|.
   absl::optional<mojo::PlatformChannel> mojo_channel_;
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // May be used in exclusion to the above if the platform helper implementation
   // returns a valid server endpoint from
-  // |CreateNamedPlatformChannelOnClientThread()|.
+  // |CreateNamedPlatformChannelOnLauncherThread()|.
   absl::optional<mojo::NamedPlatformChannel> mojo_named_channel_;
 #endif
 
