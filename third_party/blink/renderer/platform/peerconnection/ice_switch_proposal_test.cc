@@ -1,0 +1,79 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
+
+#include <vector>
+
+#include "testing/gtest/include/gtest/gtest.h"
+
+#include "third_party/blink/renderer/platform/peerconnection/fake_connection_test_base.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_connection_matchers.h"
+
+#include "third_party/webrtc/p2p/base/ice_controller_interface.h"
+#include "third_party/webrtc/p2p/base/ice_switch_reason.h"
+
+namespace {
+
+using ::cricket::Connection;
+using ::cricket::IceControllerInterface;
+using ::cricket::IceRecheckEvent;
+using ::cricket::IceSwitchReason;
+
+using ::blink::IceSwitchProposal;
+using ::blink::SwitchProposalEq;
+
+static const std::string kIp = "1.2.3.4";
+static const std::string kIpTwo = "1.3.5.7";
+static const int kPort = 6745;
+
+class IceSwitchProposalTest : public blink::FakeConnectionTestBase {};
+
+TEST_F(IceSwitchProposalTest, Construct) {
+  const Connection* conn = GetConnection(kIp, kPort);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  const IceSwitchReason reason = IceSwitchReason::CONNECT_STATE_CHANGE;
+  const int recheck_delay_ms = 10;
+  const bool reply_expected = true;
+  const IceRecheckEvent recheck_event(IceSwitchReason::ICE_CONTROLLER_RECHECK,
+                                      recheck_delay_ms);
+  std::vector<const Connection*> conns_to_forget{conn_two};
+  std::vector<const Connection*> empty_conns_to_forget{};
+  std::vector<const Connection*> null_conns_to_forget{nullptr};
+
+  IceControllerInterface::SwitchResult switch_result{conn, recheck_event,
+                                                     conns_to_forget};
+  EXPECT_THAT(IceSwitchProposal(reason, switch_result, reply_expected),
+              SwitchProposalEq(reason, switch_result));
+
+  IceControllerInterface::SwitchResult empty_switch_result{
+      absl::nullopt, recheck_event, conns_to_forget};
+  EXPECT_THAT(IceSwitchProposal(reason, empty_switch_result, reply_expected),
+              SwitchProposalEq(reason, empty_switch_result));
+
+  IceControllerInterface::SwitchResult null_switch_result{
+      nullptr, recheck_event, conns_to_forget};
+  EXPECT_THAT(IceSwitchProposal(reason, null_switch_result, reply_expected),
+              SwitchProposalEq(reason, null_switch_result));
+
+  IceControllerInterface::SwitchResult switch_result_no_recheck{
+      conn, absl::nullopt, conns_to_forget};
+  EXPECT_THAT(
+      IceSwitchProposal(reason, switch_result_no_recheck, reply_expected),
+      SwitchProposalEq(reason, switch_result_no_recheck));
+
+  IceControllerInterface::SwitchResult switch_result_empty_conns_to_forget{
+      conn, recheck_event, empty_conns_to_forget};
+  EXPECT_THAT(IceSwitchProposal(reason, switch_result_empty_conns_to_forget,
+                                reply_expected),
+              SwitchProposalEq(reason, switch_result_empty_conns_to_forget));
+
+  IceControllerInterface::SwitchResult switch_result_null_conns_to_forget{
+      conn, recheck_event, null_conns_to_forget};
+  EXPECT_THAT(IceSwitchProposal(reason, switch_result_null_conns_to_forget,
+                                reply_expected),
+              SwitchProposalEq(reason, switch_result_null_conns_to_forget));
+}
+
+}  // unnamed namespace

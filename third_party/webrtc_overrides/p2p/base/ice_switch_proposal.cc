@@ -1,8 +1,5 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
-#include <algorithm>
-#include <iterator>
-
 #include "base/notreached.h"
 
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
@@ -81,13 +78,18 @@ IceSwitchProposal::IceSwitchProposal(
     bool reply_expected)
     : IceProposal(reply_expected),
       reason_(ConvertFromWebrtcIceSwitchReason(reason)),
-      connection_(switch_result.connection),
       recheck_event_(switch_result.recheck_event) {
-  std::transform(
-      switch_result.connections_to_forget_state_on.cbegin(),
-      switch_result.connections_to_forget_state_on.cend(),
-      std::back_inserter(connections_to_forget_state_on_),
-      [](const cricket::Connection* conn) { return IceConnection(conn); });
+  if (switch_result.connection.value_or(nullptr)) {
+    connection_ = IceConnection(switch_result.connection.value());
+  } else {
+    connection_ = absl::nullopt;
+  }
+  for (const cricket::Connection* conn :
+       switch_result.connections_to_forget_state_on) {
+    if (conn) {
+      connections_to_forget_state_on_.emplace_back(conn);
+    }
+  }
 }
 
 std::string IceSwitchProposal::ToString() const {
