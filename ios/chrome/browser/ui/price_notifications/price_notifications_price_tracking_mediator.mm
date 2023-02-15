@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_alert_presenter.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -82,7 +83,17 @@ using PriceNotificationItems =
   // receives price tracking notifications to the current device. However, the
   // device's permission status will not prevent the shopping service from
   // subscribing the user to the product and its price tracking events.
-  [PushNotificationUtil requestPushNotificationPermission:nil];
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+  [PushNotificationUtil requestPushNotificationPermission:^(
+                            BOOL granted, BOOL promptShown, NSError* error) {
+    if (!error && !promptShown && !granted) {
+      // This callback can be executed on a background thread, make sure the UI
+      // is displayed on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.presenter presentPushNotificationPermissionAlert];
+      });
+    }
+  }];
 
   // The price tracking infrastructure is built on top of bookmarks, so a new
   // bookmark needs to be created before the item can be registered for price
@@ -97,7 +108,6 @@ using PriceNotificationItems =
         base::SysNSStringToUTF16(item.title), item.entryURL);
   }
 
-  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   commerce::SetPriceTrackingStateForBookmark(
       self.shoppingService, self.bookmarkModel, bookmark, true,
       base::BindOnce(^(bool success) {

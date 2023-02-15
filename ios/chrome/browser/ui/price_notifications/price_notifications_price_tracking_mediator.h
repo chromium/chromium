@@ -10,6 +10,7 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 
+@protocol PriceNotificationsAlertPresenter;
 @protocol BookmarksCommands;
 @protocol PriceNotificationsCommands;
 @protocol PriceNotificationsConsumer;
@@ -49,6 +50,8 @@ class WebState;
 @property(nonatomic, weak) id<PriceNotificationsConsumer> consumer;
 
 @property(nonatomic, weak) id<PriceNotificationsCommands> handler;
+
+@property(nonatomic, weak) id<PriceNotificationsAlertPresenter> presenter;
 
 @end
 

@@ -15,7 +15,9 @@
 
 namespace {
 
-using PermissionResponseHandler = void (^)(BOOL granted, NSError* error);
+using PermissionResponseHandler = void (^)(BOOL granted,
+                                           BOOL promptedUser,
+                                           NSError* error);
 
 // This enum is used to record the action a user performed when prompted to
 // allow push notification permissions.
@@ -79,7 +81,8 @@ const char kEnabledPermissionsHistogram[] =
   if (settings.authorizationStatus != UNAuthorizationStatusNotDetermined) {
     if (completion) {
       completion(
-          settings.authorizationStatus == UNAuthorizationStatusAuthorized, nil);
+          settings.authorizationStatus == UNAuthorizationStatusAuthorized, NO,
+          nil);
     }
     return;
   }
@@ -89,7 +92,7 @@ const char kEnabledPermissionsHistogram[] =
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
   [center requestAuthorizationWithOptions:options
-                        completionHandler:^(bool granted, NSError* error) {
+                        completionHandler:^(BOOL granted, NSError* error) {
                           [PushNotificationUtil
                               requestAuthorizationResult:completion
                                                  granted:granted
@@ -114,7 +117,7 @@ const char kEnabledPermissionsHistogram[] =
   }
 
   if (completion) {
-    completion(granted, error);
+    completion(granted, YES, error);
   }
 }
 

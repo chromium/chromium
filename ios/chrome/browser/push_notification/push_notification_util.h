@@ -32,10 +32,15 @@
 // prompt, the user must decide whether or not to allow iOS to notify them of
 // incoming Chromium push notifications. If the user decides to allow push
 // notifications, then `completionHandler` is executed with `granted` equaling
-// `true`. In addition, this function reports permission request outcome to
-// metrics.
+// `true`. Also, there is a possibility that `completionHandler` will be
+// executed in a background thread. In addition, this function reports
+// permission request's outcome to metrics. Since iOS only allows applications
+// to prompt users for push notifications permissons once, the `promptShown`
+// parameter captures whether the permission prompt was indeed displayed to the
+// user. If the prompt is not displayed, then `granted` is equal to the user's
+// iOS push notification permission setting for Chrome.
 + (void)requestPushNotificationPermission:
-    (void (^)(bool granted, NSError* error))completionHandler;
+    (void (^)(BOOL granted, BOOL promptShown, NSError* error))completionHandler;
 
 // This functions retrieves the authorization and feature-related settings for
 // push notifications.

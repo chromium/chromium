@@ -7,12 +7,14 @@
 
 #import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_alert_presenter.h"
 
 @class CommandDispatcher;
 
 // Coordinator for Price Notifications, displaying the Price Notifications when
 // starting.
-@interface PriceNotificationsViewCoordinator : ChromeCoordinator
+@interface PriceNotificationsViewCoordinator
+    : ChromeCoordinator <PriceNotificationsAlertPresenter>
 
 @end
 
