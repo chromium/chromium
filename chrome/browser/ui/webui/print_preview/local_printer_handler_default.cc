@@ -139,8 +139,7 @@ void OnDidFetchCapabilitiesFromPrintBackendService(
       result->get_printer_caps_and_info();
   base::Value::Dict settings = AssemblePrinterSettings(
       device_name, caps_and_info->printer_info,
-      caps_and_info->user_defined_papers, /*has_secure_protocol=*/false,
-      &caps_and_info->printer_caps);
+      /*has_secure_protocol=*/false, &caps_and_info->printer_caps);
   std::move(callback).Run(std::move(settings));
 }
 

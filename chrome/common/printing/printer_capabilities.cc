@@ -110,11 +110,9 @@ void PopulateAdvancedCapsLocalization(
 
 // Returns a dictionary representing printer capabilities as CDD, or
 // a Value of type NONE if no capabilities are provided.
-base::Value AssemblePrinterCapabilities(
-    const std::string& device_name,
-    const PrinterSemanticCapsAndDefaults::Papers& user_defined_papers,
-    bool has_secure_protocol,
-    PrinterSemanticCapsAndDefaults* caps) {
+base::Value AssemblePrinterCapabilities(const std::string& device_name,
+                                        bool has_secure_protocol,
+                                        PrinterSemanticCapsAndDefaults* caps) {
   DCHECK(!device_name.empty());
   if (!caps)
     return base::Value();
@@ -131,8 +129,6 @@ base::Value AssemblePrinterCapabilities(
   if (populate_paper_display_names)
     PopulateAndSortAllPaperDisplayNames(*caps);
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
-
-  caps->user_defined_papers = std::move(user_defined_papers);
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!has_secure_protocol)
@@ -170,7 +166,6 @@ std::string GetUserFriendlyName(const std::string& printer_name) {
 base::Value::Dict AssemblePrinterSettings(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
-    const PrinterSemanticCapsAndDefaults::Papers& user_defined_papers,
     bool has_secure_protocol,
     PrinterSemanticCapsAndDefaults* caps) {
   base::Value::Dict printer_info;
@@ -191,8 +186,8 @@ base::Value::Dict AssemblePrinterSettings(
 
   base::Value::Dict printer_info_capabilities;
   printer_info_capabilities.Set(kPrinter, std::move(printer_info));
-  base::Value capabilities = AssemblePrinterCapabilities(
-      device_name, user_defined_papers, has_secure_protocol, caps);
+  base::Value capabilities =
+      AssemblePrinterCapabilities(device_name, has_secure_protocol, caps);
   if (capabilities.is_dict()) {
     printer_info_capabilities.Set(kSettingCapabilities,
                                   std::move(capabilities));
@@ -217,6 +212,7 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
       print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps);
   if (result == mojom::ResultCode::kSuccess) {
     PRINTER_LOG(EVENT) << "Got printer capabilities for " << device_name;
+    caps->user_defined_papers = std::move(user_defined_papers);
   } else {
     // Failed to get capabilities, but proceed to assemble the settings to
     // return what information we do have.
@@ -225,7 +221,7 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
     caps = absl::nullopt;
   }
 
-  return AssemblePrinterSettings(device_name, basic_info, user_defined_papers,
+  return AssemblePrinterSettings(device_name, basic_info,
                                  /*has_secure_protocol=*/false,
                                  base::OptionalToPtr(caps));
 }

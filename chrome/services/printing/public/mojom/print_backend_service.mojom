@@ -37,11 +37,9 @@ union PrinterSemanticCapsAndDefaultsResult {
   ResultCode result_code;
 };
 
-// The set of basic info, paper details, and capabilities/defaults for a
-// printer.
+// The set of basic info and capabilities/defaults for a printer.
 struct PrinterCapsAndInfo {
   PrinterBasicInfo printer_info;
-  array<Paper> user_defined_papers;
   PrinterSemanticCapsAndDefaults printer_caps;
 };
 

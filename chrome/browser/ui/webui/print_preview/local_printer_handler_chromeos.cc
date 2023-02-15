@@ -163,8 +163,7 @@ base::Value::Dict LocalPrinterHandlerChromeos::CapabilityToValue(
               {kCUPSEnterprisePrinter, caps->basic_info->configured_via_policy
                                            ? kValueTrue
                                            : kValueFalse}}),
-      PrinterSemanticCapsAndDefaults::Papers(), caps->has_secure_protocol,
-      base::OptionalToPtr(caps->capabilities));
+      caps->has_secure_protocol, base::OptionalToPtr(caps->capabilities));
 }
 
 // static
