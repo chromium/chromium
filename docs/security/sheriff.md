@@ -306,6 +306,10 @@ and set the corresponding `FoundIn` label (for example `FoundIn-66` if the
 extended stable milestone is 66 and you've confirmed it's reproducible on M66).
 If you reproduced the bug with ClusterFuzz, it should do this on your behalf.
 
+If you performed a bisection or were provided one with the commit that
+introduced the problem, you can check which milestone has that commit by
+navigating to https://chromiumdash.appspot.com/commit/COMMIT_HASH_HERE.
+
 Sometimes Extended Stable is the same milestone as Stable; sometimes it
 differs. If in doubt about the currently active milestones, check
 [ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows).
