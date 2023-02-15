@@ -26,38 +26,24 @@ export const ChromeVox = {
 
 BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET,
-    BridgeConstants.Braille.Action.BACK_TRANSLATE, cells => {
-      if (ChromeVox.braille) {
-        return ChromeVox.braille.backTranslate(cells);
-      } else {
-        return Promise.resolve(null);
-      }
-    });
+    BridgeConstants.Braille.Action.BACK_TRANSLATE,
+    cells => Promise.resolve(ChromeVox.braille?.backTranslate(cells)));
 
 BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.PAN_LEFT,
-    () => {
-      if (ChromeVox.braille) {
-        ChromeVox.braille.panLeft();
-      }
-    });
+    () => ChromeVox.braille?.panLeft());
 
 BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.PAN_RIGHT,
-    () => {
-      if (ChromeVox.braille) {
-        ChromeVox.braille.panRight();
-      }
-    });
+    () => ChromeVox.braille?.panRight());
 
 BridgeHelper.registerHandler(
     BridgeConstants.TtsBackground.TARGET,
     BridgeConstants.TtsBackground.Action.SPEAK,
-    (text, queueMode, properties) => {
-      ChromeVox.tts.speak(text, queueMode, properties);
-    });
+    (text, queueMode, properties) =>
+        ChromeVox.tts?.speak(text, queueMode, properties));
 
 BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.WRITE,
     text =>
-        ChromeVox.braille.write(new NavBraille({text: new Spannable(text)})));
+        ChromeVox.braille?.write(new NavBraille({text: new Spannable(text)})));
