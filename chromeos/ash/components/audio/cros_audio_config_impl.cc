@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/audio/cros_audio_config_impl.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
@@ -14,6 +15,12 @@ namespace {
 
 constexpr int kDefaultInternalMicId = 0;
 constexpr char kStubInternalMicDisplayName[] = "Internal Mic";
+
+// Histogram names.
+constexpr char kOutputMuteChangeHistogramName[] =
+    "ChromeOS.Settings.Device.Audio.OutputMuteStateChange";
+constexpr char kInputMuteChangeHistogramName[] =
+    "ChromeOS.Settings.Device.Audio.InputMuteStateChange";
 
 // Creates an inactive input device with default property configuration.
 AudioDevice CreateStubInternalMic() {
@@ -64,6 +71,12 @@ mojom::AudioEffectState GetNoiseCancellationState(const AudioDevice& device) {
   return audio_handler->GetNoiseCancellationState()
              ? mojom::AudioEffectState::kEnabled
              : mojom::AudioEffectState::kNotEnabled;
+}
+
+void RecordMuteStateChanged(const char* histogram_name, bool muted) {
+  base::UmaHistogramEnumeration(
+      histogram_name,
+      muted ? AudioMuteButtonAction::kMuted : AudioMuteButtonAction::kUnmuted);
 }
 
 }  // namespace
@@ -208,6 +221,7 @@ void CrosAudioConfigImpl::SetOutputMuted(bool muted) {
   }
 
   audio_handler->SetOutputMute(muted);
+  RecordMuteStateChanged(kOutputMuteChangeHistogramName, muted);
 }
 
 void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
@@ -258,8 +272,13 @@ void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
 
 void CrosAudioConfigImpl::SetInputMuted(bool muted) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  if (audio_handler->input_muted_by_microphone_mute_switch()) {
+    return;
+  }
+
   audio_handler->SetMuteForDevice(audio_handler->GetPrimaryActiveInputNode(),
                                   muted);
+  RecordMuteStateChanged(kInputMuteChangeHistogramName, muted);
 }
 
 void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {

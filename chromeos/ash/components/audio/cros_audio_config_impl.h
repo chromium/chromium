@@ -11,6 +11,15 @@
 
 namespace ash::audio_config {
 
+// This enum is used in histograms, do not remove/renumber entries. If you're
+// adding to this enum, update the corresponding enum listing in
+// tools/metrics/histograms/enums.xml.
+enum class AudioMuteButtonAction {
+  kMuted = 0,
+  kUnmuted = 1,
+  kMaxValue = kUnmuted,
+};
+
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
     : public CrosAudioConfig,
       public CrasAudioHandler::AudioObserver {

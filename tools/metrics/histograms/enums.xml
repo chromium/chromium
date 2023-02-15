@@ -5713,6 +5713,11 @@ others/histograms.xml -->
   <int value="4" label="Document destroyed"/>
 </enum>
 
+<enum name="AudioMuteButtonAction">
+  <int value="0" label="Muted"/>
+  <int value="1" label="Unmuted"/>
+</enum>
+
 <enum name="AudioOutputDeviceMixerManagerStreamCreation">
   <int value="0" label="Unmixable stream"/>
   <int value="1" label="Fallback to unmixable stream"/>
