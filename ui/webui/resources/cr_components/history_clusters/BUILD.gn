@@ -48,10 +48,10 @@ build_cr_component("build") {
 
   mojo_files_deps = [
     ":mojo_bindings_ts__generator",
-    "//components/history_clusters/public/mojom:mojo_bindings_js__generator",
+    "//components/history_clusters/public/mojom:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/mojom-webui/components/history_clusters/public/mojom/history_cluster_types.mojom-webui.js",
+    "$root_gen_dir/components/history_clusters/public/mojom/history_cluster_types.mojom-webui.ts",
     "$target_gen_dir/history_clusters.mojom-webui.ts",
   ]
 
