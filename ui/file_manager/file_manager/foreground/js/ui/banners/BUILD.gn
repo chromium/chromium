@@ -23,8 +23,10 @@ html_to_js("web_components") {
   js_files = [
     "dlp_restricted_banner.js",
     "drive_low_individual_space_banner.js",
+    "drive_low_shared_drive_space_banner.js",
     "drive_out_of_individual_space_banner.js",
     "drive_out_of_organization_space_banner.js",
+    "drive_out_of_shared_drive_space_banner.js",
     "drive_offline_pinning_banner.js",
     "drive_bulk_pinning_banner.js",
     "drive_welcome_banner.js",
@@ -56,9 +58,11 @@ js_type_check("closure_compile_jsmodules") {
     ":dlp_restricted_banner",
     ":drive_bulk_pinning_banner",
     ":drive_low_individual_space_banner",
+    ":drive_low_shared_drive_space_banner",
     ":drive_offline_pinning_banner",
     ":drive_out_of_individual_space_banner",
     ":drive_out_of_organization_space_banner",
+    ":drive_out_of_shared_drive_space_banner",
     ":drive_welcome_banner",
     ":educational_banner",
     ":google_one_offer_banner",
@@ -126,6 +130,15 @@ js_library("drive_low_individual_space_banner") {
   ]
 }
 
+js_library("drive_low_shared_drive_space_banner") {
+  deps = [
+    ":warning_banner",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
 js_library("drive_out_of_individual_space_banner") {
   deps = [
     ":warning_banner",
@@ -136,6 +149,15 @@ js_library("drive_out_of_individual_space_banner") {
 }
 
 js_library("drive_out_of_organization_space_banner") {
+  deps = [
+    ":warning_banner",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
+js_library("drive_out_of_shared_drive_space_banner") {
   deps = [
     ":warning_banner",
     "//ui/file_manager/file_manager/common/js:util",

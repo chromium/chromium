@@ -340,7 +340,7 @@ util.isSharedDriveEntry = entry => {
 
 /**
  * Extracts Shared Drive name from entry path.
- * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
+ * @param {(!Entry|!FakeEntry|!FilesAppEntry)} entry Entry or a fake entry.
  * @return {string} The name of Shared Drive. Empty string if |entry| is not
  *     under Shared Drives.
  */

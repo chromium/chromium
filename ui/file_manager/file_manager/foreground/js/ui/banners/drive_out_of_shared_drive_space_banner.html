@@ -1,0 +1,15 @@
+<style>
+  warning-banner {
+    --icon-src: url(/foreground/images/files/ui/error_banner_icon.svg);
+  }
+</style>
+<warning-banner role="banner" class="tast-drive-out-of-shared-drive-space">
+  <span slot="text" aria-label="$i18n{DRIVE_WARNING_QUOTA_OVER}: $i18n{DRIVE_SHARED_DRIVE_QUOTA_OVER}">
+    <span aria-hidden="true">
+      $i18n{DRIVE_SHARED_DRIVE_QUOTA_OVER}
+    </span>
+  </span>
+  <cr-button slot="extra-button" href="$i18n{GOOGLE_DRIVE_MANAGE_STORAGE_URL}">
+    $i18n{LEARN_MORE_LABEL}
+  </cr-button>
+</warning-banner>

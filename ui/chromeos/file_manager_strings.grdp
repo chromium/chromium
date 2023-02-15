@@ -1265,11 +1265,17 @@
   <message name="IDS_FILE_BROWSER_DRIVE_INDIVIDUAL_QUOTA_LOW" desc="Text showing individual space left on Google Drive">
     Storage low <ph name="REMAINING_PERCENTAGE">$1<ex>12</ex></ph>% left of your <ph name="TOTAL_SPACE">$2<ex>10 TB</ex></ph> individual storage.
   </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_SHARED_DRIVE_QUOTA_LOW" desc="Text showing shared drive space left on Google Drive">
+    Storage low <ph name="REMAINING_PERCENTAGE">$1<ex>12</ex></ph>% left of your <ph name="TOTAL_SPACE">$2<ex>10 TB</ex></ph> shared drive storage.
+  </message>
   <message name="IDS_FILE_BROWSER_DRIVE_WARNING_QUOTA_OVER" desc="Word prepended to 'drive quota over' warning messages exclusively for screen readers to make up for warning icons that are not picked up by them">
     Warning
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_INDIVIDUAL_QUOTA_OVER" desc="Text informing users that their Google Drive individual quota has been exceeded">
     You’ve used all your individual Google Workspace storage.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_SHARED_DRIVE_QUOTA_OVER" desc="Text informing users that their Google Drive individual quota has been exceeded">
+    You’ve used all your Shared Drive Google Workspace storage.
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_ORGANIZATION_QUOTA_OVER" desc="Text informing users that their Google Drive organization quota has been exceeded">
     <ph name="ORGANIZATION_NAME">$1<ex>Jane's Flowers</ex></ph> has used all of its Google Workspace storage.
