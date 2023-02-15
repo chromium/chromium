@@ -2,16 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The value for each attribute should be the corresponding value that can be
-# passed to the --type flag of scripts/branch.py
-branch_type = struct(
-    STANDARD = "standard",
-    DESKTOP_EXTENDED_STABLE = "desktop-extended-stable",
+platform = struct(
+    ANDROID = "android",
+    CROS = "cros",
     CROS_LTS = "cros-lts",
-    FUCHSIA_LTS = "fuchsia-lts",
+    FUCHSIA = "fuchsia",
+    IOS = "ios",
+    LINUX = "linux",
+    MAC = "mac",
+    WINDOWS = "windows",
 )
 
-BRANCH_TYPES = tuple([getattr(branch_type, a) for a in dir(branch_type)])
+PLATFORMS = tuple([getattr(platform, a) for a in dir(platform)])
+
+def _platform_settings(
+        *,
+        description,  # buildifier: disable=unused-variable
+        sheriff_rotation = None):
+    """Declare settings for a platform on the project.
+
+    This provides the project-wide settings for a platform, which should be
+    modified based on what channels the milestone is being shipped to for each
+    platform.
+
+    Args:
+      * description - A string describing why the platform is enabled in the
+        project. This is not used by the starlark, but enables providing some
+        form of documentaion in the json file.
+      * sheriff_rotation - The name of a sheriff rotation in which to include
+        builders that are selected for the corresponding platform.
+    """
+    return struct(
+        sheriff_rotation = sheriff_rotation,
+    )
 
 def _project_settings(
         *,
@@ -19,7 +42,8 @@ def _project_settings(
         project_title,
         ref,
         chrome_project,
-        branch_types = []):
+        is_main,
+        platforms = {}):
     """Declare settings for the project.
 
     This provides the central location for what must be modified when
@@ -33,27 +57,36 @@ def _project_settings(
         titles of consoles).
       * ref - The git ref containing the code for this branch.
       * chrome_project - The name of the corresponding chrome project.
-      * branch_types - Values indicating what type(s) apply to the branch. If no
-        branch types are specified, that indicates main. It is an error for
-        branch_type.STANDARD to appear along with any other values.
+      * is_main - Whether or not this is the project for the main ref.
+      * platforms - A mapping from a platform ID value to the settings for the
+        platform. The valid platform ID values are the members of the platform
+        struct. The settings for the platforms are dicts giving arguments for
+        the _platform_settings function.
 
     Returns:
       A struct with attributes set to the input parameters. Additionally, the
       is_main attribute is set to True if branch_types is empty or False if
       branch_types is not empty.
     """
-    invalid_branch_types = [t for t in branch_types if t not in BRANCH_TYPES]
-    if invalid_branch_types:
-        fail("The following branch types are invalid: {}".format(invalid_branch_types))
-    if branch_type.STANDARD in branch_types and len(branch_types) != 1:
-        fail("STANDARD branch type cannot be specified along with other branch types")
+    if is_main:
+        if platforms:
+            fail("main project should not have any platforms set")
+    else:
+        if not platforms:
+            fail("Non-main projects must have at least one platform set")
+        invalid_platforms = [p for p in platforms if not p in PLATFORMS]
+        if invalid_platforms:
+            fail("The following platforms are invalid: {}".format(invalid_platforms))
+
+    platforms = {k: _platform_settings(**v) for k, v in platforms.items()}
+
     return struct(
         project = project,
         project_title = project_title,
         ref = ref,
         chrome_project = chrome_project,
-        is_main = not branch_types,
-        branch_types = branch_types,
+        is_main = is_main,
+        platforms = platforms,
     )
 
 settings = _project_settings(**json.decode(io.read_file("./settings.json")))

@@ -20,11 +20,11 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.blink",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.DESKTOP_BRANCHES,
 )
 
 def blink_mac_builder(*, name, **kwargs):
-    kwargs.setdefault("branch_selector", branches.STANDARD_MILESTONE)
+    kwargs.setdefault("branch_selector", branches.selector.MAC_BRANCHES)
     kwargs.setdefault("builderless", True)
     kwargs.setdefault("cores", None)
     kwargs.setdefault("goma_backend", goma.backend.RBE_PROD)
@@ -37,7 +37,7 @@ def blink_mac_builder(*, name, **kwargs):
 
 try_.builder(
     name = "linux-blink-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -70,7 +70,7 @@ try_.builder(
 
 try_.builder(
     name = "win10.20h2-blink-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -97,7 +97,7 @@ try_.builder(
 
 try_.builder(
     name = "win11-blink-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

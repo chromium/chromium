@@ -28,7 +28,7 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium.linux",
-    branch_selector = branches.CROS_LTS_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
 )
 
 try_.builder(
@@ -73,7 +73,6 @@ try_.builder(
 
 try_.builder(
     name = "linux-arm64-castos",
-    branch_selector = branches.MAIN,
     mirrors = [
         "ci/Cast Linux ARM64",
     ],
@@ -184,7 +183,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-libfuzzer-asan-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium_libfuzzer_trybot",
     builderless = not settings.is_main,
     main_list_view = "try",
@@ -209,7 +208,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Linux Builder",
         "ci/Linux Tests",
@@ -237,7 +236,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "linux-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     check_for_flakiness = True,
     main_list_view = "try",
 )
@@ -246,7 +245,6 @@ try_.compilator_builder(
 # and measuring performance to see if we can roll UBSan into ASan.
 try_.builder(
     name = "linux-ubsan-fyi-rel",
-    branch_selector = branches.MAIN,
     mirrors = [
         "ci/linux-ubsan-fyi-rel",
     ],
@@ -275,7 +273,7 @@ try_.orchestrator_builder(
 
 try_.orchestrator_builder(
     name = "linux-wayland-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Linux Builder (Wayland)",
         "ci/Linux Tests (Wayland)",
@@ -295,7 +293,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "linux-wayland-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     ssd = True,
     main_list_view = "try",
 )
@@ -344,7 +342,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-x64-castos",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Cast Linux",
     ],
@@ -362,7 +360,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-x64-castos-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Cast Linux Debug",
     ],
@@ -385,7 +383,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux_chromium_asan_rel_ng",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Linux ASan LSan Builder",
         "ci/Linux ASan LSan Tests (1)",
@@ -427,7 +425,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "linux_chromium_asan_rel_ng-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     main_list_view = "try",
 )
 
@@ -499,7 +497,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_compile_dbg_ng",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = ["ci/Linux Builder (dbg)"],
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
@@ -532,7 +530,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_dbg_ng",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Linux Builder (dbg)",
         "Linux Tests (dbg)(1)",
@@ -567,7 +565,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux_chromium_tsan_rel_ng",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Linux TSan Builder",
         "ci/Linux TSan Tests",
@@ -609,7 +607,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     main_list_view = "try",
 )
 
@@ -635,7 +633,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_layout_tests_layout_ng_disabled",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -679,7 +677,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_vr",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/VR Linux",
     ],
@@ -721,7 +719,7 @@ try_.builder(
 
 try_.gpu.optional_tests_builder(
     name = "linux_optional_gpu_tests_rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

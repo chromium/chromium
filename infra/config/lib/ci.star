@@ -31,7 +31,7 @@ defaults = args.defaults(
 def ci_builder(
         *,
         name,
-        branch_selector = branches.MAIN,
+        branch_selector = branches.selector.MAIN,
         console_view_entry = None,
         main_console_view = args.DEFAULT,
         cq_mirrors_console_view = args.DEFAULT,
@@ -127,22 +127,12 @@ def ci_builder(
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
-    sheriff_rotations = args.listify(
-        sheriff_rotations,
-        # All CI builders on standard branches should be part of the
-        # chrome_browser_release sheriff rotation
-        branches.value({branches.STANDARD_BRANCHES: "chrome_browser_release"}),
-    )
-
-    # All builders that are selected for extended stable should be part of the
-    # chrome_browser_release sheriff rotation (this is less straightforward than
-    # above because desktop extended stable can coexist with CrOS LTS and we
-    # don't want the CrOS LTS builders to appear in the chrome_browser_release
-    # tree)
-    if branches.matches(branch_selector, target = branches.DESKTOP_EXTENDED_STABLE_BRANCHES):
-        sheriff_rotations = args.listify(sheriff_rotations, branches.value({
-            branches.DESKTOP_EXTENDED_STABLE_BRANCHES: "chrome_browser_release",
-        }))
+    branch_sheriff_rotations = list({
+        platform_settings.sheriff_rotation: None
+        for platform, platform_settings in settings.platforms.items()
+        if branches.matches(branch_selector, platform = platform)
+    })
+    sheriff_rotations = args.listify(sheriff_rotations, branch_sheriff_rotations)
 
     goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
     if goma_enable_ats == args.COMPUTE:

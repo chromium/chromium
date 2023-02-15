@@ -32,12 +32,12 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium.fuchsia",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
 )
 
 try_.builder(
     name = "fuchsia-arm64-cast-receiver-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-arm64-cast-receiver-rel",
     ],
@@ -61,7 +61,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "fuchsia-arm64-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
@@ -76,7 +76,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "fuchsia-arm64-rel-compilator",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     # TODO(crbug.com/1298110): Set to True once compilator bots are moved
     ssd = None,
     main_list_view = "try",
@@ -84,7 +84,7 @@ try_.compilator_builder(
 
 try_.builder(
     name = "fuchsia-binary-size",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     executable = "recipe:binary_size_fuchsia_trybot",
     builderless = not settings.is_main,
     cores = 16 if settings.is_main else 8,
@@ -142,7 +142,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "fuchsia-x64-cast-receiver-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
@@ -158,7 +158,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "fuchsia-x64-cast-receiver-rel-compilator",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     cores = "8|16",
     ssd = True,
     goma_backend = None,
@@ -174,7 +174,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-x64-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-x64-rel",
     ],

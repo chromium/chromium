@@ -32,7 +32,10 @@ def ios_builder(*, name, **kwargs):
 
 consoles.list_view(
     name = "tryserver.chromium.mac",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = [
+        branches.selector.MAC_BRANCHES,
+        branches.selector.IOS_BRANCHES,
+    ],
 )
 
 try_.builder(
@@ -93,7 +96,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "mac-rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Mac Builder",
         "ci/Mac12 Tests",
@@ -144,7 +147,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac-rel-compilator",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     os = os.MAC_DEFAULT,
     check_for_flakiness = True,
     goma_jobs = goma.jobs.J300,
@@ -246,7 +249,7 @@ try_.builder(
 
 try_.builder(
     name = "mac_chromium_compile_dbg_ng",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Mac Builder (dbg)",
     ],
@@ -338,7 +341,7 @@ ios_builder(
 
 try_.orchestrator_builder(
     name = "ios-simulator",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.IOS_BRANCHES,
     mirrors = [
         "ci/ios-simulator",
     ],
@@ -358,7 +361,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "ios-simulator-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.IOS_BRANCHES,
     # Set builderless to False so that branch builders use builderful bots
     builderless = False,
     os = os.MAC_DEFAULT,
@@ -370,7 +373,7 @@ try_.compilator_builder(
 
 ios_builder(
     name = "ios-simulator-cronet",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.IOS_BRANCHES,
     mirrors = [
         "ci/ios-simulator-cronet",
     ],
@@ -388,7 +391,7 @@ ios_builder(
 
 ios_builder(
     name = "ios-simulator-full-configs",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.IOS_BRANCHES,
     mirrors = [
         "ci/ios-simulator-full-configs",
     ],
@@ -456,7 +459,7 @@ ios_builder(
 
 try_.gpu.optional_tests_builder(
     name = "mac_optional_gpu_tests_rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.IOS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

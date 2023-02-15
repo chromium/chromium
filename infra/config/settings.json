@@ -3,7 +3,35 @@
     "project_title": "Chromium M110",
     "ref": "refs/branch-heads/5481",
     "chrome_project": "chrome-m110",
-    "branch_types": [
-        "standard"
-    ]
+    "is_main": false,
+    "platforms": {
+        "android": {
+            "description": "beta/stable",
+            "sheriff_rotation": "chrome_browser_release"
+        },
+        "cros": {
+            "description": "beta/stable",
+            "sheriff_rotation": "chrome_browser_release"
+        },
+        "fuchsia": {
+            "description": "beta/stable",
+            "sheriff_rotation": "chrome_browser_release"
+        },
+        "ios": {
+            "description": "beta/stable",
+            "sheriff_rotation": "chrome_browser_release"
+        },
+        "linux": {
+            "description": "beta/stable",
+            "sheriff_rotation": "chrome_browser_release"
+        },
+        "mac": {
+            "description": "beta/stable",
+            "sheriff_rotation": "chrome_browser_release"
+        },
+        "windows": {
+            "description": "beta/stable",
+            "sheriff_rotation": "chrome_browser_release"
+        }
+    }
 }

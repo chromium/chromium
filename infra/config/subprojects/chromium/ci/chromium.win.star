@@ -27,7 +27,7 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.win",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     ordering = {
         None: ["release", "debug"],
         "debug|builder": consoles.ordering(short_names = ["64", "32"]),
@@ -65,7 +65,7 @@ ci.builder(
 
 ci.builder(
     name = "Win Builder",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -143,7 +143,7 @@ ci.builder(
 
 ci.builder(
     name = "Win Builder (dbg)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -169,7 +169,7 @@ ci.builder(
 
 ci.builder(
     name = "Win x64 Builder",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -199,7 +199,7 @@ ci.builder(
 
 ci.builder(
     name = "Win10 Tests x64",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     triggered_by = ["ci/Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
