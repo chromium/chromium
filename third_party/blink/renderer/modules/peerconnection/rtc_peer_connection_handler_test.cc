@@ -950,7 +950,7 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
   pc_handler_->GetStats(
       base::BindOnce(OnStatsDelivered, &result,
                      blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
-      {});
+      {}, false);
   RunMessageLoopsUntilIdle();
   EXPECT_TRUE(result);
 

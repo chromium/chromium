@@ -92,7 +92,8 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
                      absl::optional<webrtc::DegradationPreference>,
                      RTCVoidRequest*) override {}
   void GetStats(RTCStatsReportCallback,
-                const Vector<webrtc::NonStandardGroupId>&) override {}
+                const Vector<webrtc::NonStandardGroupId>&,
+                bool is_track_stats_deprecation_trial_enabled) override {}
   void SetStreams(const Vector<String>& stream_ids) override {}
 
  private:
@@ -154,7 +155,8 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
     return Vector<std::unique_ptr<RTCRtpSource>>();
   }
   void GetStats(RTCStatsReportCallback,
-                const Vector<webrtc::NonStandardGroupId>&) override {}
+                const Vector<webrtc::NonStandardGroupId>&,
+                bool is_track_stats_deprecation_trial_enabled) override {}
   std::unique_ptr<webrtc::RtpParameters> GetParameters() const override {
     return nullptr;
   }
@@ -326,7 +328,8 @@ void MockRTCPeerConnectionHandlerPlatform::GetStats(RTCStatsRequest*) {}
 
 void MockRTCPeerConnectionHandlerPlatform::GetStats(
     RTCStatsReportCallback,
-    const Vector<webrtc::NonStandardGroupId>&) {}
+    const Vector<webrtc::NonStandardGroupId>&,
+    bool is_track_stats_deprecation_trial_enabled) {}
 
 webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
 MockRTCPeerConnectionHandlerPlatform::AddTransceiverWithTrack(

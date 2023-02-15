@@ -45,7 +45,8 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
  public:
   RTCStatsReportPlatform(
       const scoped_refptr<const webrtc::RTCStatsReport>& stats_report,
-      const Vector<webrtc::NonStandardGroupId>& exposed_group_ids);
+      const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
+      bool is_track_stats_deprecation_trial_enabled);
   virtual ~RTCStatsReportPlatform();
   // Creates a new report object that is a handle to the same underlying stats
   // report (the stats are not copied). The new report's iterator is reset,
@@ -62,6 +63,7 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
   size_t Size() const;
 
  private:
+  const bool is_track_stats_deprecation_trial_enabled_;
   const bool unship_deprecated_stats_;
   const scoped_refptr<const webrtc::RTCStatsReport> stats_report_;
   webrtc::RTCStatsReport::ConstIterator it_;
@@ -141,7 +143,8 @@ rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
 CreateRTCStatsCollectorCallback(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     RTCStatsReportCallback callback,
-    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids);
+    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
+    bool is_track_stats_deprecation_trial_enabled);
 
 // A stats collector callback.
 // It is invoked on the WebRTC signaling thread and will post a task to invoke
@@ -157,7 +160,8 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
   RTCStatsCollectorCallbackImpl(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread,
       RTCStatsReportCallback callback,
-      const Vector<webrtc::NonStandardGroupId>& exposed_group_ids);
+      const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
+      bool is_track_stats_deprecation_trial_enabled);
   ~RTCStatsCollectorCallbackImpl() override;
 
   void OnStatsDeliveredOnMainThread(
@@ -166,6 +170,7 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   RTCStatsReportCallback callback_;
   Vector<webrtc::NonStandardGroupId> exposed_group_ids_;
+  bool is_track_stats_deprecation_trial_enabled_;
 };
 
 }  // namespace blink

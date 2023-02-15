@@ -767,9 +767,13 @@ ScriptPromise RTCRtpSender::getStats(ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+  bool is_track_stats_deprecation_trial_enabled =
+      RuntimeEnabledFeatures::RTCLegacyTrackStatsEnabled(
+          ExecutionContext::From(script_state));
   sender_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
                                   WrapPersistent(resolver)),
-                    GetExposedGroupIds(script_state));
+                    GetExposedGroupIds(script_state),
+                    is_track_stats_deprecation_trial_enabled);
   return promise;
 }
 

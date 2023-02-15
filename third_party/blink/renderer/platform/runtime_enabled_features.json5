@@ -2442,6 +2442,14 @@
       origin_trial_feature_name: "RTCInsertableStreams",
       status: "experimental",
     },
+    // getStats() no longer return the legacy "track" or "stream" stats objects
+    // unless this Deprecation Trial is enabled.
+    // TODO(https://crbug.com/1374215): Remove when origin trial ends.
+    {
+      name: "RTCLegacyTrackStats",
+      origin_trial_feature_name: "RTCLegacyTrackStats",
+      status: "experimental",
+    },
     // Enables the use of the RTCQuicTransport object.
     {
       name: "RTCQuicTransport",

@@ -29,7 +29,7 @@ namespace blink {
 // that filtering will become a NO-OP when "track" no longer exists.
 BASE_FEATURE(WebRtcUnshipDeprecatedStats,
              "WebRtcUnshipDeprecatedStats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -118,9 +118,13 @@ size_t CountExposedStatsObjects(
 
 RTCStatsReportPlatform::RTCStatsReportPlatform(
     const scoped_refptr<const webrtc::RTCStatsReport>& stats_report,
-    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids)
-    : unship_deprecated_stats_(
-          base::FeatureList::IsEnabled(WebRtcUnshipDeprecatedStats)),
+    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
+    bool is_track_stats_deprecation_trial_enabled)
+    : is_track_stats_deprecation_trial_enabled_(
+          is_track_stats_deprecation_trial_enabled),
+      unship_deprecated_stats_(
+          base::FeatureList::IsEnabled(WebRtcUnshipDeprecatedStats) &&
+          !is_track_stats_deprecation_trial_enabled_),
       stats_report_(stats_report),
       it_(stats_report_->begin()),
       end_(stats_report_->end()),
@@ -133,8 +137,9 @@ RTCStatsReportPlatform::~RTCStatsReportPlatform() {}
 
 std::unique_ptr<RTCStatsReportPlatform> RTCStatsReportPlatform::CopyHandle()
     const {
-  return std::make_unique<RTCStatsReportPlatform>(stats_report_,
-                                                  exposed_group_ids_);
+  return std::make_unique<RTCStatsReportPlatform>(
+      stats_report_, exposed_group_ids_,
+      is_track_stats_deprecation_trial_enabled_);
 }
 
 std::unique_ptr<RTCStats> RTCStatsReportPlatform::GetStats(
@@ -353,19 +358,24 @@ rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
 CreateRTCStatsCollectorCallback(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     RTCStatsReportCallback callback,
-    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids) {
+    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
+    bool is_track_stats_deprecation_trial_enabled) {
   return rtc::scoped_refptr<RTCStatsCollectorCallbackImpl>(
       new rtc::RefCountedObject<RTCStatsCollectorCallbackImpl>(
-          std::move(main_thread), std::move(callback), exposed_group_ids));
+          std::move(main_thread), std::move(callback), exposed_group_ids,
+          is_track_stats_deprecation_trial_enabled));
 }
 
 RTCStatsCollectorCallbackImpl::RTCStatsCollectorCallbackImpl(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     RTCStatsReportCallback callback,
-    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids)
+    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
+    bool is_track_stats_deprecation_trial_enabled)
     : main_thread_(std::move(main_thread)),
       callback_(std::move(callback)),
-      exposed_group_ids_(exposed_group_ids) {}
+      exposed_group_ids_(exposed_group_ids),
+      is_track_stats_deprecation_trial_enabled_(
+          is_track_stats_deprecation_trial_enabled) {}
 
 RTCStatsCollectorCallbackImpl::~RTCStatsCollectorCallbackImpl() {
   DCHECK(!callback_);
@@ -387,7 +397,8 @@ void RTCStatsCollectorCallbackImpl::OnStatsDeliveredOnMainThread(
   DCHECK(callback_);
   // Make sure the callback is destroyed in the main thread as well.
   std::move(callback_).Run(std::make_unique<RTCStatsReportPlatform>(
-      base::WrapRefCounted(report.get()), exposed_group_ids_));
+      base::WrapRefCounted(report.get()), exposed_group_ids_,
+      is_track_stats_deprecation_trial_enabled_));
 }
 
 }  // namespace blink
