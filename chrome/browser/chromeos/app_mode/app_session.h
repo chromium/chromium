@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
 #include "ppapi/buildflags/buildflags.h"
 
 class PrefRegistrySimple;
@@ -73,9 +72,6 @@ class AppSession {
   void SetOnHandleBrowserCallbackForTesting(
       base::RepeatingCallback<void(bool is_closing)> callback);
 
-  const KioskTroubleshootingController*
-  GetKioskTroubleshootingControllerForTesting() const;
-
   KioskSessionPluginHandlerDelegate* GetPluginHandlerDelegateForTesting();
 
   bool is_shutting_down() const { return is_shutting_down_; }
@@ -118,9 +114,6 @@ class AppSession {
 
   base::OnceClosure attempt_user_exit_;
   const std::unique_ptr<AppSessionMetricsService> metrics_service_;
-
-  std::unique_ptr<KioskTroubleshootingController>
-      kiosk_troubleshooting_controller_;
 
   // Is called whenever a new browser creation was handled by the
   // BrowserWindowHandler.

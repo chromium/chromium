@@ -873,7 +873,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   // In forced app mode, all size controls are always disabled. Otherwise, use
   // `create_params` to enable/disable specific size controls.
-  if (chrome::IsRunningInForcedAppMode()) {
+  // Allow devtools window to be movable and resizable.
+  if (chrome::IsRunningInForcedAppMode() && !browser_->is_type_devtools()) {
     SetHasWindowSizeControls(false);
   } else if (GetIsPictureInPictureType()) {
     // Picture in picture windows must always have a title, can never minimize,

@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/chromeos/app_mode/app_session_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -24,12 +25,16 @@ AppSessionBrowserWindowHandler::AppSessionBrowserWindowHandler(
     const absl::optional<std::string>& web_app_name,
     base::RepeatingCallback<void(bool is_closing)>
         on_browser_window_added_callback,
-    base::OnceClosure on_last_browser_window_closed_callback)
+    base::OnceClosure on_last_browser_window_closed_callback,
+    std::unique_ptr<KioskTroubleshootingController>
+        kiosk_troubleshooting_controller)
     : profile_(profile),
       web_app_name_(web_app_name),
       on_browser_window_added_callback_(on_browser_window_added_callback),
       on_last_browser_window_closed_callback_(
           std::move(on_last_browser_window_closed_callback)),
+      kiosk_troubleshooting_controller_(
+          std::move(kiosk_troubleshooting_controller)),
       app_session_policies_(profile_->GetPrefs()) {
   BrowserList::AddObserver(this);
 }
@@ -48,27 +53,35 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
     base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
                                   KioskBrowserWindowType::kSettingsPage);
     HandleNewSettingsWindow(browser, url_string);
-    on_browser_window_added_callback_.Run(false);
-  } else {
-    if (IsNewBrowserWindowAllowed(browser)) {
-      base::UmaHistogramEnumeration(
-          kKioskNewBrowserWindowHistogram,
-          KioskBrowserWindowType::kOpenedRegularBrowser);
-      LOG(WARNING)
-          << "Open additional fullscreen browser window in kiosk session"
-          << ", url=" << url_string;
-      chrome::ToggleFullscreenMode(browser);
-      on_browser_window_added_callback_.Run(false);
-    } else {
-      base::UmaHistogramEnumeration(
-          kKioskNewBrowserWindowHistogram,
-          KioskBrowserWindowType::kClosedRegularBrowser);
-      LOG(WARNING) << "Force close browser opened in kiosk session"
-                   << ", url=" << url_string;
-      browser->window()->Close();
-      on_browser_window_added_callback_.Run(true);
-    }
+    on_browser_window_added_callback_.Run(/*is_closing=*/false);
+    return;
   }
+
+  if (IsDevToolsAllowedBrowser(browser)) {
+    base::UmaHistogramEnumeration(
+        kKioskNewBrowserWindowHistogram,
+        KioskBrowserWindowType::kOpenedDevToolsBrowser);
+    on_browser_window_added_callback_.Run(/*is_closing=*/false);
+    return;
+  }
+
+  if (IsNewBrowserWindowAllowed(browser)) {
+    base::UmaHistogramEnumeration(
+        kKioskNewBrowserWindowHistogram,
+        KioskBrowserWindowType::kOpenedRegularBrowser);
+    LOG(WARNING) << "Open additional fullscreen browser window in kiosk session"
+                 << ", url=" << url_string;
+    chrome::ToggleFullscreenMode(browser);
+    on_browser_window_added_callback_.Run(/*is_closing=*/false);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
+                                KioskBrowserWindowType::kClosedRegularBrowser);
+  LOG(WARNING) << "Force close browser opened in kiosk session"
+               << ", url=" << url_string;
+  browser->window()->Close();
+  on_browser_window_added_callback_.Run(/*is_closing=*/true);
 }
 
 void AppSessionBrowserWindowHandler::HandleNewSettingsWindow(
@@ -143,6 +156,13 @@ bool AppSessionBrowserWindowHandler::IsNewBrowserWindowAllowed(
   return app_session_policies_.IsWindowCreationAllowed() &&
          browser->is_type_app_popup() && web_app_name_.has_value() &&
          browser->app_name() == web_app_name_.value();
+}
+
+bool AppSessionBrowserWindowHandler::IsDevToolsAllowedBrowser(
+    Browser* browser) const {
+  return browser->is_type_devtools() &&
+         kiosk_troubleshooting_controller_
+             ->AreKioskTroubleshootingToolsEnabled();
 }
 
 bool AppSessionBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved()

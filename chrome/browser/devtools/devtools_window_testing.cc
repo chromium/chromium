@@ -104,12 +104,24 @@ void DevToolsWindowTesting::WindowClosed(DevToolsWindow* window) {
 
 // static
 void DevToolsWindowTesting::WaitForDevToolsWindowLoad(DevToolsWindow* window) {
+  if (!window) {
+    return;
+  }
+  auto* main_web_contents = window->main_web_contents_;
   if (!window->ready_for_test_) {
     scoped_refptr<content::MessageLoopRunner> runner =
         new content::MessageLoopRunner;
     window->ready_for_test_callback_ = runner->QuitClosure();
     runner->Run();
   }
+
+  // The window might be removed upon creation.
+  // E.g. devtools windows may not be allowed in kiosk mode and killed upon
+  // creation..
+  if (!DevToolsWindow::IsDevToolsWindow(main_web_contents)) {
+    return;
+  }
+
   std::u16string harness = base::UTF8ToUTF16(
       content::DevToolsFrontendHost::GetFrontendResource(kHarnessScript));
   window->main_web_contents_->GetPrimaryMainFrame()->ExecuteJavaScript(

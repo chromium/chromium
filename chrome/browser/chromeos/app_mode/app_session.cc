@@ -246,11 +246,6 @@ void AppSession::SetOnHandleBrowserCallbackForTesting(
   on_handle_browser_callback_ = std::move(callback);
 }
 
-const KioskTroubleshootingController*
-AppSession::GetKioskTroubleshootingControllerForTesting() const {
-  return kiosk_troubleshooting_controller_.get();
-}
-
 KioskSessionPluginHandlerDelegate*
 AppSession::GetPluginHandlerDelegateForTesting() {
   return plugin_handler_delegate_.get();
@@ -267,20 +262,22 @@ AppSession::AppSession(
 #endif
       attempt_user_exit_(std::move(attempt_user_exit)),
       metrics_service_(std::move(metrics_service)) {
-  kiosk_troubleshooting_controller_ =
-      std::make_unique<KioskTroubleshootingController>(
-          profile_->GetPrefs(), base::BindOnce(&AppSession::ShutdownAppSession,
-                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppSession::CreateBrowserWindowHandler(
     const absl::optional<std::string>& web_app_name) {
+  // TODO(b/269431236): share ShutdownAppSession callback between
+  // KioskTroubleshootingController and AppSessionBrowserWindowHandler.
   browser_window_handler_ = std::make_unique<AppSessionBrowserWindowHandler>(
       profile(), web_app_name,
       base::BindRepeating(&AppSession::OnHandledNewBrowserWindow,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&AppSession::ShutdownAppSession,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&AppSession::ShutdownAppSession,
+                          weak_ptr_factory_.GetWeakPtr()),
+      std::make_unique<KioskTroubleshootingController>(
+          profile_->GetPrefs(),
+          base::BindOnce(&AppSession::ShutdownAppSession,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void AppSession::OnHandledNewBrowserWindow(bool is_closing) {

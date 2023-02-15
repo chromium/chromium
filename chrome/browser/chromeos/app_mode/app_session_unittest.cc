@@ -158,17 +158,19 @@ void CheckSessionRestartReasonHistogramDependingOnRebootStatus(
 
 }  // namespace
 
-class AppSessionTest
-    : public ::testing::TestWithParam<KioskSessionRestartTestCase> {
+template <typename AppSessionParamType = KioskSessionRestartTestCase>
+class AppSessionBaseTest
+    : public ::testing::TestWithParam<AppSessionParamType> {
  public:
-  explicit AppSessionTest(base::test::TaskEnvironment::TimeSource time_source =
-                              base::test::TaskEnvironment::TimeSource::DEFAULT)
+  explicit AppSessionBaseTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
       : task_environment_{time_source},
         local_state_(std::make_unique<ScopedTestingLocalState>(
             TestingBrowserProcess::GetGlobal())) {}
 
-  AppSessionTest(const AppSessionTest&) = delete;
-  AppSessionTest& operator=(const AppSessionTest&) = delete;
+  AppSessionBaseTest(const AppSessionBaseTest&) = delete;
+  AppSessionBaseTest& operator=(const AppSessionBaseTest&) = delete;
 
   static void SetUpTestSuite() {
     chromeos::PowerManagerClient::InitializeFake();
@@ -280,12 +282,6 @@ class AppSessionTest
 
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
 
- protected:
-  AppSession* app_session() {
-    DCHECK(app_session_);
-    return app_session_.get();
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -300,7 +296,9 @@ class AppSessionTest
   std::unique_ptr<AppSession> app_session_;
 };
 
-using AppSessionRestartReasonTest = AppSessionTest;
+using AppSessionTest = AppSessionBaseTest<>;
+using AppSessionRestartReasonTest =
+    AppSessionBaseTest<KioskSessionRestartTestCase>;
 
 TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   {
@@ -682,7 +680,7 @@ TEST_P(AppSessionRestartReasonTest, PluginHungMetric) {
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 INSTANTIATE_TEST_SUITE_P(
-    RestartReasons,
+    AppSessionRestartReasons,
     AppSessionRestartReasonTest,
     testing::ValuesIn<KioskSessionRestartTestCase>({
         {/*test_name=*/"WithReboot", /*run_with_reboot=*/false},
@@ -718,44 +716,106 @@ TEST_F(AppSessionRestartReasonTest, PowerManagerRequestRestart) {
   }
 }
 
-class AppSessionTroubleshootingTest : public AppSessionTest {
+// Kiosk type agnostic test class. Runs all tests for web and chrome app kiosks.
+class AppSessionTroubleshootingTest : public AppSessionBaseTest<bool> {
  public:
-  bool AreKioskTroubleshootingToolsEnabled() {
-    return app_session()
-        ->GetKioskTroubleshootingControllerForTesting()
-        ->AreKioskTroubleshootingToolsEnabled();
+  void SetUpKioskSession() {
+    bool is_web_kiosk = GetParam();
+    if (is_web_kiosk) {
+      StartWebKioskSession();
+      return;
+    }
+    StartChromeAppKioskSession();
   }
+
+  std::unique_ptr<Browser> CreateDevToolsBrowserWithTestWindow() {
+    auto params = Browser::CreateParams::CreateForDevTools(profile());
+    params.window = &test_window_;
+    return base::WrapUnique<Browser>(Browser::Create(params));
+  }
+
+ private:
+  TestBrowserWindow test_window_;
 };
 
-TEST_F(AppSessionTroubleshootingTest, EnableTroubleshootingToolsDuringSession) {
-  StartWebKioskSession();
-  EXPECT_FALSE(AreKioskTroubleshootingToolsEnabled());
+TEST_P(AppSessionTroubleshootingTest, EnableTroubleshootingToolsDuringSession) {
+  SetUpKioskSession();
 
   GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
 
-  EXPECT_TRUE(AreKioskTroubleshootingToolsEnabled());
   // Kiosk session should shoutdown only if policy is changed from enable to
   // disable.
   EXPECT_FALSE(IsSessionShuttingDown());
 
   GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
 
-  EXPECT_FALSE(AreKioskTroubleshootingToolsEnabled());
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
-TEST_F(AppSessionTroubleshootingTest,
+TEST_P(AppSessionTroubleshootingTest,
        EnableTroubleshootingToolsBeforeSessionStarted) {
   GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
 
-  StartWebKioskSession();
-  EXPECT_TRUE(AreKioskTroubleshootingToolsEnabled());
+  SetUpKioskSession();
 
   GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
 
-  EXPECT_FALSE(AreKioskTroubleshootingToolsEnabled());
   EXPECT_TRUE(IsSessionShuttingDown());
 }
+
+TEST_P(AppSessionTroubleshootingTest, OpenDevToolsEnabledTroubleshootingTools) {
+  SetUpKioskSession();
+
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
+
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateDevToolsBrowserWithTestWindow()->window()));
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOpenedDevToolsBrowser,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+}
+
+TEST_P(AppSessionTroubleshootingTest,
+       CloseDevToolsDisabledTroubleshootingTools) {
+  SetUpKioskSession();
+
+  // Kiosk troubleshooting tools are disabled by default.
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateDevToolsBrowserWithTestWindow()->window()));
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kClosedRegularBrowser,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+}
+
+TEST_P(AppSessionTroubleshootingTest,
+       OpenDevToolsDisableTroubleshootingToolsDuringSession) {
+  SetUpKioskSession();
+
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
+
+  // Kiosk session should shoutdown only if policy is changed from enable to
+  // disable.
+  EXPECT_FALSE(IsSessionShuttingDown());
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateDevToolsBrowserWithTestWindow()->window()));
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOpenedDevToolsBrowser,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
+
+  EXPECT_TRUE(IsSessionShuttingDown());
+}
+
+INSTANTIATE_TEST_SUITE_P(AppSessionTroubleshootingTools,
+                         AppSessionTroubleshootingTest,
+                         ::testing::Bool());
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 TEST_F(AppSessionTest, ShouldHandlePlugin) {

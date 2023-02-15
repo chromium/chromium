@@ -15,6 +15,8 @@
 
 namespace chromeos {
 
+class KioskTroubleshootingController;
+
 extern const char kKioskNewBrowserWindowHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -24,7 +26,8 @@ enum class KioskBrowserWindowType {
   kSettingsPage = 0,
   kClosedRegularBrowser = 1,
   kOpenedRegularBrowser = 2,
-  kMaxValue = kOpenedRegularBrowser,
+  kOpenedDevToolsBrowser = 3,
+  kMaxValue = kOpenedDevToolsBrowser,
 };
 
 // This class monitors for the addition and removal of new browser windows
@@ -45,7 +48,9 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
       const absl::optional<std::string>& web_app_name,
       base::RepeatingCallback<void(bool is_closing)>
           on_browser_window_added_callback,
-      base::OnceClosure on_last_browser_window_closed_callback);
+      base::OnceClosure on_last_browser_window_closed_callback,
+      std::unique_ptr<KioskTroubleshootingController>
+          kiosk_troubleshooting_controller);
   AppSessionBrowserWindowHandler(const AppSessionBrowserWindowHandler&) =
       delete;
   AppSessionBrowserWindowHandler& operator=(
@@ -65,6 +70,9 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   // Returns true if open by web application and allowed by policy.
   bool IsNewBrowserWindowAllowed(Browser* browser) const;
 
+  // Returns true if open devtools browser and it is allowed by policy.
+  bool IsDevToolsAllowedBrowser(Browser* browser) const;
+
   // Returns true in case of the initial browser window existed for web kiosks.
   bool ShouldExitKioskWhenLastBrowserRemoved() const;
 
@@ -80,6 +88,9 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   base::RepeatingCallback<void(bool is_closing)>
       on_browser_window_added_callback_;
   base::OnceClosure on_last_browser_window_closed_callback_;
+
+  std::unique_ptr<KioskTroubleshootingController>
+      kiosk_troubleshooting_controller_;
 
   // Browser in which settings are shown, restricted by
   // KioskSettingsNavigationThrottle.

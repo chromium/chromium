@@ -36,6 +36,8 @@ bool IsCommandAllowedInAppMode(int command_id, bool is_popup) {
 
   constexpr int kAllowed[] = {
       IDC_BACK,
+      // TODO(b/265405666): add more devtools-related shortcuts.
+      IDC_DEV_TOOLS,
       IDC_FORWARD,
       IDC_RELOAD,
       IDC_CLOSE_FIND_OR_STOP,

@@ -472,6 +472,12 @@ DevToolsWindow::~DevToolsWindow() {
   if (reattach_complete_callback_) {
     std::move(reattach_complete_callback_).Run();
   }
+
+  // If window gets destroyed during a test run, need to stop the test.
+  if (!ready_for_test_callback_.is_null()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(ready_for_test_callback_));
+  }
 }
 
 // static
