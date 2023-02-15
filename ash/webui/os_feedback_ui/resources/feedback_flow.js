@@ -282,8 +282,6 @@ export class FeedbackFlowElement extends PolymerElement {
     });
 
     window.addEventListener('beforeunload', event => {
-      event.preventDefault();
-
       switch (this.currentState_) {
         case FeedbackFlowState.SEARCH:
           this.recordExitPath_(

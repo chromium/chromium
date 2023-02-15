@@ -67,7 +67,6 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
   ready() {
     super.ready();
     window.addEventListener('beforeunload', event => {
-      event.preventDefault();
       this.handleEmitMetrics_(FeedbackAppPostSubmitAction.kCloseFeedbackApp);
     });
   }
