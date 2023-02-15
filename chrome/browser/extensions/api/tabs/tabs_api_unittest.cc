@@ -201,8 +201,8 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
     std::unique_ptr<base::Value> value(
         extension_function_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), args, browser(), api_test_utils::NONE));
-    EXPECT_TRUE(value && value->is_dict());
-    EXPECT_EQ(*value->FindStringKey("pendingUrl"), url);
+    ASSERT_TRUE(value && value->is_dict());
+    EXPECT_EQ(*value->GetDict().FindString("pendingUrl"), url);
   }
 
   // Succeed while edit in progress and calling chrome.tabs.query.

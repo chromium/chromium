@@ -257,9 +257,11 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptBeforeInitialCommit) {
 
     // Now we check the function call returned what we expected in the result.
     ASSERT_TRUE(result.get());
-    ASSERT_EQ(1u, result->GetList().size());
+    base::Value::List& result_list = result->GetList();
+    ASSERT_EQ(1u, result_list.size());
     const std::string* result_returned =
-        result->GetList()[0].FindStringKey("result");
+        result_list[0].GetDict().FindString("result");
+    ASSERT_TRUE(result_returned);
     EXPECT_EQ("Modified Title", *result_returned);
 
     // We also check that the tab itself was modified by the call.

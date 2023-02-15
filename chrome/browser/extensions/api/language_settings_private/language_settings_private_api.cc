@@ -311,8 +311,10 @@ void LanguageSettingsPrivateGetLanguageListFunction::
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
   for (auto& language_val : language_list_) {
-    if (service->UsesWindowsDictionary(*language_val.FindStringKey("code"))) {
-      language_val.SetBoolKey("supportsSpellcheck", new bool(true));
+    base::Value::Dict& language_val_dict = language_val.GetDict();
+    const std::string* str = language_val_dict.FindString("code");
+    if (str && service->UsesWindowsDictionary(*str)) {
+      language_val_dict.Set("supportsSpellcheck", true);
     }
   }
 }

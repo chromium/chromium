@@ -176,14 +176,11 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
     if (const base::Value::List* enums = dict.FindList("enum")) {
       CHECK(!enums->empty());
       for (const base::Value& value : *enums) {
-        const std::string* enum_str = value.GetIfString();
-        // Enum entries come in two versions: a list of possible strings, and
+        // Enum entries come in two versions: a list of possible strings, or
         // a dictionary with a field 'name'.
-        if (!enum_str) {
-          CHECK(value.is_dict());
-          enum_str = value.FindStringKey("name");
-          CHECK(enum_str);
-        }
+        const std::string* enum_str = value.is_string()
+                                          ? &value.GetString()
+                                          : value.GetDict().FindString("name");
         enum_values_.insert(*enum_str);
       }
     }
