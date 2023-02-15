@@ -628,9 +628,6 @@ size_t QuicChromiumClientStream::WriteHeaders(
 
 bool QuicChromiumClientStream::WriteStreamData(absl::string_view data,
                                                bool fin) {
-  // For gQUIC, this must not be called when data is buffered because headers
-  // are sent on the dedicated header stream.
-  DCHECK(!HasBufferedData() || VersionUsesHttp3(quic_version_));
   // Writes the data, or buffers it.
   WriteOrBufferBody(data, fin);
   return !HasBufferedData();  // Was all data written?
@@ -640,9 +637,6 @@ bool QuicChromiumClientStream::WritevStreamData(
     const std::vector<scoped_refptr<IOBuffer>>& buffers,
     const std::vector<int>& lengths,
     bool fin) {
-  // For gQUIC, this must not be called when data is buffered because headers
-  // are sent on the dedicated header stream.
-  DCHECK(!HasBufferedData() || VersionUsesHttp3(quic_version_));
   // Writes the data, or buffers it.
   for (size_t i = 0; i < buffers.size(); ++i) {
     bool is_fin = fin && (i == buffers.size() - 1);
@@ -830,12 +824,8 @@ void QuicChromiumClientStream::DisableConnectionMigrationToCellularNetwork() {
 }
 
 bool QuicChromiumClientStream::IsFirstStream() {
-  if (VersionUsesHttp3(quic_version_)) {
-    return id() == quic::QuicUtils::GetFirstBidirectionalStreamId(
-                       quic_version_, quic::Perspective::IS_CLIENT);
-  }
-  return id() == quic::QuicUtils::GetHeadersStreamId(quic_version_) +
-                     quic::QuicUtils::StreamIdDelta(quic_version_);
+  return id() == quic::QuicUtils::GetFirstBidirectionalStreamId(
+                     quic_version_, quic::Perspective::IS_CLIENT);
 }
 
 }  // namespace net

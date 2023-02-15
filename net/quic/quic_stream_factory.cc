@@ -2084,16 +2084,6 @@ void QuicStreamFactory::FinishCreateSession(
   quic::QuicConfig config = config_;
   ConfigureInitialRttEstimate(
       server_id, key.session_key().network_anonymization_key(), &config);
-  // QUIC versions that use the IETF invariant header all have NSTP
-  // enabled by default, so we only need to add it for those that don't.
-  if (!quic_version.HasIetfInvariantHeader() &&
-      !config.HasClientSentConnectionOption(quic::kNSTP,
-                                            quic::Perspective::IS_CLIENT)) {
-    // Enable the no stop waiting frames connection option by default.
-    quic::QuicTagVector connection_options = config.SendConnectionOptions();
-    connection_options.push_back(quic::kNSTP);
-    config.SetConnectionOptionsToSend(connection_options);
-  }
 
   // Use the factory to create a new socket performance watcher, and pass the
   // ownership to QuicChromiumClientSession.

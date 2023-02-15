@@ -1037,9 +1037,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
           connection_description,
           std::move(socket_performance_watcher),
           net_log_)),
-      http3_logger_(VersionUsesHttp3(connection->transport_version())
-                        ? std::make_unique<QuicHttp3Logger>(net_log_)
-                        : nullptr),
+      http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
       push_delegate_(push_delegate),
       push_promise_index_(std::move(push_promise_index)),
       path_validation_writer_delegate_(this, task_runner_) {
@@ -1054,8 +1052,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       session_key.server_id(), this,
       std::make_unique<ProofVerifyContextChromium>(cert_verify_flags, net_log_),
       crypto_config_->GetConfig());
-  if (VersionUsesHttp3(transport_version()))
-    set_debug_visitor(http3_logger_.get());
+  set_debug_visitor(http3_logger_.get());
   connection->set_debug_visitor(logger_.get());
   connection->set_creator_debug_delegate(logger_.get());
   migrate_back_to_default_timer_.SetTaskRunner(task_runner_.get());
@@ -1568,8 +1565,7 @@ bool QuicChromiumClientSession::ShouldCreateIncomingStream(
   }
   if (quic::QuicUtils::IsClientInitiatedStreamId(
           connection()->transport_version(), id) ||
-      (connection()->version().HasIetfQuicFrames() &&
-       quic::QuicUtils::IsBidirectionalStreamId(id, connection()->version()))) {
+      quic::QuicUtils::IsBidirectionalStreamId(id, connection()->version())) {
     LOG(WARNING) << "Received invalid push stream id " << id;
     connection()->CloseConnection(
         quic::QUIC_INVALID_STREAM_ID,
@@ -2178,8 +2174,7 @@ int QuicChromiumClientSession::HandleWriteError(
   }
 
   if (error_code == ERR_MSG_TOO_BIG || stream_factory_ == nullptr ||
-      !migrate_session_on_network_change_v2_ || !OneRttKeysAvailable() ||
-      !version().UsesHttp3()) {
+      !migrate_session_on_network_change_v2_ || !OneRttKeysAvailable()) {
     return error_code;
   }
 
@@ -2584,8 +2579,9 @@ void QuicChromiumClientSession::OnNetworkConnected(
                                duration, base::Milliseconds(1),
                                base::Minutes(10), 50);
   }
-  if (!migrate_session_on_network_change_v2_ || !version().UsesHttp3())
+  if (!migrate_session_on_network_change_v2_) {
     return;
+  }
 
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_CONNECTED,
@@ -2615,8 +2611,9 @@ void QuicChromiumClientSession::OnNetworkConnected(
 void QuicChromiumClientSession::OnNetworkDisconnectedV2(
     handles::NetworkHandle disconnected_network) {
   LogMetricsOnNetworkDisconnected();
-  if (!migrate_session_on_network_change_v2_ || !version().UsesHttp3())
+  if (!migrate_session_on_network_change_v2_) {
     return;
+  }
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_DISCONNECTED,
       "disconnected_network", disconnected_network);
@@ -2674,8 +2671,9 @@ void QuicChromiumClientSession::OnNetworkMadeDefault(
     handles::NetworkHandle new_network) {
   LogMetricsOnNetworkMadeDefault();
 
-  if (!migrate_session_on_network_change_v2_ || !version().UsesHttp3())
+  if (!migrate_session_on_network_change_v2_) {
     return;
+  }
 
   DCHECK_NE(handles::kInvalidNetworkHandle, new_network);
   net_log_.AddEventWithInt64Params(
@@ -2715,7 +2713,7 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   // - otherwise, it's brought to default network, cancel the running timer to
   //   migrate back.
 
-  DCHECK(migrate_session_on_network_change_v2_ && version().UsesHttp3());
+  DCHECK(migrate_session_on_network_change_v2_);
 
   if (!migrate_idle_session_ && !HasActiveRequestStreams()) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_NO_MIGRATABLE_STREAMS,
@@ -2977,9 +2975,6 @@ void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
 
   current_migration_cause_ = CHANGE_PORT_ON_PATH_DEGRADING;
 
-  if (!version().UsesHttp3())
-    return;
-
   // Migration before handshake confirmed is not allowed.
   if (!connection()->IsHandshakeConfirmed()) {
     HistogramAndLogMigrationFailure(
@@ -3015,7 +3010,7 @@ void QuicChromiumClientSession::
 
   current_migration_cause_ = CHANGE_NETWORK_ON_PATH_DEGRADING;
 
-  if (!migrate_session_early_v2_ || !version().UsesHttp3()) {
+  if (!migrate_session_early_v2_) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_PATH_DEGRADING_NOT_ENABLED,
                                     connection_id(),
                                     "Migration on path degrading not enabled");
@@ -3674,7 +3669,7 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
   // confirmed if the session is not created on the default network.
   if (migrate_session_on_network_change_v2_ &&
       default_network_ != handles::kInvalidNetworkHandle &&
-      GetCurrentNetwork() != default_network_ && version().UsesHttp3()) {
+      GetCurrentNetwork() != default_network_) {
     current_migration_cause_ = ON_MIGRATE_BACK_TO_DEFAULT_NETWORK;
     StartMigrateBackToDefaultNetworkTimer(
         base::Seconds(kMinRetryTimeForDefaultNetworkSecs));

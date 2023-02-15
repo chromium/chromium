@@ -102,8 +102,6 @@ QuicTestPacketMaker::QuicTestPacketMaker(quic::ParsedQuicVersion version,
       connection_id_(connection_id),
       clock_(clock),
       host_(host),
-      spdy_request_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
-      spdy_response_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
       qpack_encoder_(&decoder_stream_error_delegate_),
       perspective_(perspective),
       client_priority_uses_incremental_(client_priority_uses_incremental) {
@@ -792,37 +790,20 @@ QuicTestPacketMaker::MakeRequestHeadersAndMultipleDataFramesPacket(
     const std::vector<std::string>& data_writes) {
   InitializeHeader(packet_number, should_include_version);
 
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    MaybeAddHttp3SettingsFrames();
+  MaybeAddHttp3SettingsFrames();
 
-    std::string priority_data =
-        GenerateHttp3PriorityData(spdy_priority, stream_id);
-    if (!priority_data.empty()) {
-      AddQuicStreamFrame(2, false, priority_data);
-    }
-
-    std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
-                                          spdy_headers_frame_length);
-    for (const auto& data_write : data_writes) {
-      data += data_write;
-    }
-    AddQuicStreamFrame(stream_id, fin, data);
-
-    return BuildPacket();
+  std::string priority_data =
+      GenerateHttp3PriorityData(spdy_priority, stream_id);
+  if (!priority_data.empty()) {
+    AddQuicStreamFrame(2, false, priority_data);
   }
 
-  spdy::SpdySerializedFrame spdy_frame = MakeSpdyHeadersFrame(
-      stream_id, fin && data_writes.empty(), spdy_priority, std::move(headers));
-  if (spdy_headers_frame_length) {
-    *spdy_headers_frame_length = spdy_frame.size();
+  std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
+                                        spdy_headers_frame_length);
+  for (const auto& data_write : data_writes) {
+    data += data_write;
   }
-  AddQuicStreamFrame(GetHeadersStreamId(), false,
-                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
-
-  for (size_t i = 0; i < data_writes.size(); ++i) {
-    bool is_fin = fin && (i == data_writes.size() - 1);
-    AddQuicStreamFrame(stream_id, is_fin, absl::string_view(data_writes[i]));
-  }
+  AddQuicStreamFrame(stream_id, fin, data);
 
   return BuildPacket();
 }
@@ -839,30 +820,19 @@ QuicTestPacketMaker::MakeRequestHeadersPacket(
     bool should_include_priority_frame) {
   InitializeHeader(packet_number, should_include_version);
 
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    MaybeAddHttp3SettingsFrames();
+  MaybeAddHttp3SettingsFrames();
 
-    if (should_include_priority_frame) {
-      std::string priority_data =
-          GenerateHttp3PriorityData(spdy_priority, stream_id);
-      if (!priority_data.empty()) {
-        AddQuicStreamFrame(2, false, priority_data);
-      }
+  if (should_include_priority_frame) {
+    std::string priority_data =
+        GenerateHttp3PriorityData(spdy_priority, stream_id);
+    if (!priority_data.empty()) {
+      AddQuicStreamFrame(2, false, priority_data);
     }
-
-    std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
-                                          spdy_headers_frame_length);
-    AddQuicStreamFrame(stream_id, fin, data);
-
-    return BuildPacket();
   }
 
-  spdy::SpdySerializedFrame spdy_frame =
-      MakeSpdyHeadersFrame(stream_id, fin, spdy_priority, std::move(headers));
-  if (spdy_headers_frame_length)
-    *spdy_headers_frame_length = spdy_frame.size();
-  AddQuicStreamFrame(GetHeadersStreamId(), false,
-                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
+  std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
+                                        spdy_headers_frame_length);
+  AddQuicStreamFrame(stream_id, fin, data);
 
   return BuildPacket();
 }
@@ -888,28 +858,17 @@ QuicTestPacketMaker::MakeRetransmissionAndRequestHeadersPacket(
     }
   }
 
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    MaybeAddHttp3SettingsFrames();
+  MaybeAddHttp3SettingsFrames();
 
-    std::string priority_data =
-        GenerateHttp3PriorityData(spdy_priority, stream_id);
-    if (!priority_data.empty()) {
-      AddQuicStreamFrame(2, false, priority_data);
-    }
-
-    std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
-                                          spdy_headers_frame_length);
-    AddQuicStreamFrame(stream_id, fin, data);
-
-    return BuildPacket();
+  std::string priority_data =
+      GenerateHttp3PriorityData(spdy_priority, stream_id);
+  if (!priority_data.empty()) {
+    AddQuicStreamFrame(2, false, priority_data);
   }
 
-  spdy::SpdySerializedFrame spdy_frame =
-      MakeSpdyHeadersFrame(stream_id, fin, spdy_priority, std::move(headers));
-  if (spdy_headers_frame_length)
-    *spdy_headers_frame_length = spdy_frame.size();
-  AddQuicStreamFrame(GetHeadersStreamId(), false,
-                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
+  std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
+                                        spdy_headers_frame_length);
+  AddQuicStreamFrame(stream_id, fin, data);
 
   return BuildPacket();
 }
@@ -926,63 +885,19 @@ QuicTestPacketMaker::MakeRequestHeadersAndRstPacket(
     quic::QuicRstStreamErrorCode error_code) {
   InitializeHeader(packet_number, should_include_version);
 
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    MaybeAddHttp3SettingsFrames();
+  MaybeAddHttp3SettingsFrames();
 
-    std::string priority_data =
-        GenerateHttp3PriorityData(spdy_priority, stream_id);
-    if (!priority_data.empty()) {
-      AddQuicStreamFrame(2, false, priority_data);
-    }
-
-    std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
-                                          spdy_headers_frame_length);
-    AddQuicStreamFrame(stream_id, fin, data);
-    AddQuicStopSendingFrame(stream_id, error_code);
-    AddQuicRstStreamFrame(stream_id, error_code);
-
-    return BuildPacket();
+  std::string priority_data =
+      GenerateHttp3PriorityData(spdy_priority, stream_id);
+  if (!priority_data.empty()) {
+    AddQuicStreamFrame(2, false, priority_data);
   }
 
-  spdy::SpdySerializedFrame spdy_frame =
-      MakeSpdyHeadersFrame(stream_id, fin, spdy_priority, std::move(headers));
-  if (spdy_headers_frame_length) {
-    *spdy_headers_frame_length = spdy_frame.size();
-  }
-  AddQuicStreamFrame(GetHeadersStreamId(), false,
-                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
-
-  if (version_.HasIetfQuicFrames()) {
-    AddQuicStopSendingFrame(stream_id, error_code);
-  }
+  std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
+                                        spdy_headers_frame_length);
+  AddQuicStreamFrame(stream_id, fin, data);
+  AddQuicStopSendingFrame(stream_id, error_code);
   AddQuicRstStreamFrame(stream_id, error_code);
-
-  return BuildPacket();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakePushPromisePacket(
-    uint64_t packet_number,
-    quic::QuicStreamId stream_id,
-    quic::QuicStreamId promised_stream_id,
-    bool should_include_version,
-    bool fin,
-    spdy::Http2HeaderBlock headers,
-    size_t* spdy_headers_frame_length) {
-  InitializeHeader(packet_number, should_include_version);
-
-  DCHECK(!quic::VersionUsesHttp3(version_.transport_version));
-
-  spdy::SpdySerializedFrame spdy_frame;
-  spdy::SpdyPushPromiseIR promise_frame(stream_id, promised_stream_id,
-                                        std::move(headers));
-  promise_frame.set_fin(fin);
-  spdy_frame = spdy_request_framer_.SerializeFrame(promise_frame);
-  if (spdy_headers_frame_length) {
-    *spdy_headers_frame_length = spdy_frame.size();
-  }
-  AddQuicStreamFrame(GetHeadersStreamId(), false,
-                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
 
   return BuildPacket();
 }
@@ -997,25 +912,10 @@ QuicTestPacketMaker::MakeResponseHeadersPacket(
     size_t* spdy_headers_frame_length) {
   InitializeHeader(packet_number, should_include_version);
 
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
-                                          spdy_headers_frame_length);
+  std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
+                                        spdy_headers_frame_length);
 
-    AddQuicStreamFrame(stream_id, fin, data);
-
-    return BuildPacket();
-  }
-
-  spdy::SpdySerializedFrame spdy_frame;
-  spdy::SpdyHeadersIR headers_frame(stream_id, std::move(headers));
-  headers_frame.set_fin(fin);
-  spdy_frame = spdy_response_framer_.SerializeFrame(headers_frame);
-
-  if (spdy_headers_frame_length) {
-    *spdy_headers_frame_length = spdy_frame.size();
-  }
-  AddQuicStreamFrame(GetHeadersStreamId(), false,
-                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
+  AddQuicStreamFrame(stream_id, fin, data);
 
   return BuildPacket();
 }
@@ -1023,22 +923,7 @@ QuicTestPacketMaker::MakeResponseHeadersPacket(
 std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeInitialSettingsPacket(uint64_t packet_number) {
   InitializeHeader(packet_number, /*should_include_version*/ true);
-
-  if (!quic::VersionUsesHttp3(version_.transport_version)) {
-    spdy::SpdySettingsIR settings_frame;
-    settings_frame.AddSetting(spdy::SETTINGS_MAX_HEADER_LIST_SIZE,
-                              kQuicMaxHeaderListSize);
-    settings_frame.AddSetting(quic::SETTINGS_QPACK_BLOCKED_STREAMS,
-                              quic::kDefaultMaximumBlockedStreams);
-    spdy::SpdySerializedFrame spdy_frame(
-        spdy_request_framer_.SerializeFrame(settings_frame));
-    AddQuicStreamFrame(GetHeadersStreamId(), false,
-                       absl::string_view(spdy_frame.data(), spdy_frame.size()));
-    return BuildPacket();
-  }
-
   MaybeAddHttp3SettingsFrames();
-
   return BuildPacket();
 }
 
@@ -1049,17 +934,6 @@ QuicTestPacketMaker::MakePriorityPacket(uint64_t packet_number,
                                         spdy::SpdyPriority spdy_priority) {
   InitializeHeader(packet_number, should_include_version);
 
-  int weight = spdy::Spdy3PriorityToHttp2Weight(spdy_priority);
-  if (!VersionUsesHttp3(version_.transport_version)) {
-    spdy::SpdyPriorityIR priority_frame(id, /* parent_stream_id = */ 0, weight,
-                                        /* exclusive = */ false);
-    spdy::SpdySerializedFrame spdy_frame(
-        spdy_request_framer_.SerializeFrame(priority_frame));
-    AddQuicStreamFrame(GetHeadersStreamId(), false,
-                       absl::string_view(spdy_frame.data(), spdy_frame.size()));
-
-    return BuildPacket();
-  }
   std::string priority_data = GenerateHttp3PriorityData(spdy_priority, id);
   if (!priority_data.empty()) {
     AddQuicStreamFrame(2, false, priority_data);
@@ -1080,17 +954,6 @@ QuicTestPacketMaker::MakeAckAndPriorityPacket(
 
   AddQuicAckFrame(largest_received, smallest_received);
 
-  int weight = spdy::Spdy3PriorityToHttp2Weight(spdy_priority);
-  if (!VersionUsesHttp3(version_.transport_version)) {
-    spdy::SpdyPriorityIR priority_frame(id, /* parent_stream_id = */ 0, weight,
-                                        /* exclusive = */ false);
-    spdy::SpdySerializedFrame spdy_frame(
-        spdy_request_framer_.SerializeFrame(priority_frame));
-    AddQuicStreamFrame(GetHeadersStreamId(), false,
-                       absl::string_view(spdy_frame.data(), spdy_frame.size()));
-
-    return BuildPacket();
-  }
   std::string priority_data = GenerateHttp3PriorityData(spdy_priority, id);
   if (!priority_data.empty()) {
     AddQuicStreamFrame(2, false, priority_data);
@@ -1216,7 +1079,6 @@ std::string QuicTestPacketMaker::QpackEncodeHeaders(
     quic::QuicStreamId stream_id,
     spdy::Http2HeaderBlock headers,
     size_t* encoded_data_length) {
-  DCHECK(quic::VersionUsesHttp3(version_.transport_version));
   std::string data;
 
   std::string encoded_headers =
@@ -1531,21 +1393,6 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::BuildPacketImpl(
   return encrypted.Clone();
 }
 
-spdy::SpdySerializedFrame QuicTestPacketMaker::MakeSpdyHeadersFrame(
-    quic::QuicStreamId stream_id,
-    bool fin,
-    spdy::SpdyPriority spdy_priority,
-    spdy::Http2HeaderBlock headers) {
-  spdy::SpdyHeadersIR headers_frame(stream_id, std::move(headers));
-  headers_frame.set_fin(fin);
-  headers_frame.set_weight(spdy::Spdy3PriorityToHttp2Weight(spdy_priority));
-  headers_frame.set_has_priority(true);
-  headers_frame.set_parent_stream_id(0);
-  headers_frame.set_exclusive(false);
-
-  return spdy_request_framer_.SerializeFrame(headers_frame);
-}
-
 bool QuicTestPacketMaker::ShouldIncludeVersion(bool include_version) const {
   if (version_.HasIetfInvariantHeader()) {
     return encryption_level_ < quic::ENCRYPTION_FORWARD_SECURE;
@@ -1651,8 +1498,6 @@ std::string QuicTestPacketMaker::GenerateHttp3GreaseData() {
 }
 
 void QuicTestPacketMaker::MaybeAddHttp3SettingsFrames() {
-  DCHECK(quic::VersionUsesHttp3(version_.transport_version));
-
   quic::QuicStreamId stream_id =
       quic::QuicUtils::GetFirstUnidirectionalStreamId(
           version_.transport_version, perspective_);

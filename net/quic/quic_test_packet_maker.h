@@ -25,8 +25,6 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/simple_data_producer.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net::test {
 
@@ -388,17 +386,6 @@ class QuicTestPacketMaker {
 
   // If |spdy_headers_frame_length| is non-null, it will be set to the size of
   // the SPDY headers frame created for this packet.
-  std::unique_ptr<quic::QuicReceivedPacket> MakePushPromisePacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      quic::QuicStreamId promised_stream_id,
-      bool should_include_version,
-      bool fin,
-      spdy::Http2HeaderBlock headers,
-      size_t* spdy_headers_frame_length);
-
-  // If |spdy_headers_frame_length| is non-null, it will be set to the size of
-  // the SPDY headers frame created for this packet.
   std::unique_ptr<quic::QuicReceivedPacket> MakeResponseHeadersPacket(
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
@@ -462,9 +449,6 @@ class QuicTestPacketMaker {
 
   spdy::Http2HeaderBlock GetResponseHeaders(const std::string& status,
                                             const std::string& alt_svc) const;
-
-  spdy::SpdyFramer* spdy_request_framer() { return &spdy_request_framer_; }
-  spdy::SpdyFramer* spdy_response_framer() { return &spdy_response_framer_; }
 
   void Reset();
 
@@ -537,12 +521,6 @@ class QuicTestPacketMaker {
       const quic::QuicFrames& frames,
       quic::QuicStreamFrameDataProducer* data_producer);
 
-  spdy::SpdySerializedFrame MakeSpdyHeadersFrame(
-      quic::QuicStreamId stream_id,
-      bool fin,
-      spdy::SpdyPriority spdy_priority,
-      spdy::Http2HeaderBlock headers);
-
   bool ShouldIncludeVersion(bool include_version) const;
 
   quic::QuicPacketNumberLength GetPacketNumberLength() const;
@@ -569,8 +547,6 @@ class QuicTestPacketMaker {
   quic::QuicConnectionId connection_id_;
   raw_ptr<const quic::QuicClock> clock_;  // Not owned.
   std::string host_;
-  spdy::SpdyFramer spdy_request_framer_;
-  spdy::SpdyFramer spdy_response_framer_;
   quic::NoopDecoderStreamErrorDelegate decoder_stream_error_delegate_;
   quic::test::NoopQpackStreamSenderDelegate encoder_stream_sender_delegate_;
   quic::QpackEncoder qpack_encoder_;

@@ -159,9 +159,7 @@ bool MockCryptoClientStream::CryptoConnect() {
               ENCRYPTION_ZERO_RTT,
               std::make_unique<StrictTaggingDecrypter>(ENCRYPTION_ZERO_RTT));
         }
-        if (session()->version().UsesHttp3()) {
-          SetConfigNegotiated();
-        }
+        SetConfigNegotiated();
         session()->OnNewEncryptionKeyAvailable(
             ENCRYPTION_ZERO_RTT,
             std::make_unique<TaggingEncrypter>(ENCRYPTION_ZERO_RTT));
@@ -301,9 +299,7 @@ void MockCryptoClientStream::NotifySessionZeroRttComplete() {
   session()->connection()->InstallDecrypter(
       ENCRYPTION_ZERO_RTT,
       std::make_unique<StrictTaggingDecrypter>(ENCRYPTION_ZERO_RTT));
-  if (session()->version().UsesHttp3()) {
-    SetConfigNegotiated();
-  }
+  SetConfigNegotiated();
   session()->OnNewEncryptionKeyAvailable(
       ENCRYPTION_ZERO_RTT,
       std::make_unique<TaggingEncrypter>(ENCRYPTION_ZERO_RTT));
@@ -365,8 +361,6 @@ CryptoHandshakeMessage MockCryptoClientStream::GetDummyCHLOMessage() {
 }
 
 void MockCryptoClientStream::SetConfigNegotiated() {
-  if (!session()->version().UsesHttp3())
-    ASSERT_FALSE(session()->config()->negotiated());
   QuicTagVector cgst;
 // TODO(rtenneti): Enable the following code after BBR code is checked in.
 #if 0
@@ -384,12 +378,9 @@ void MockCryptoClientStream::SetConfigNegotiated() {
   config.SetInitialMaxStreamDataBytesUnidirectionalToSend(
       quic::kMinimumFlowControlSendWindow);
 
-  if (quic::VersionHasIetfInvariantHeader(
-          session()->connection()->transport_version())) {
-    auto connection_id = quic::test::TestConnectionId();
-    config.SetStatelessResetTokenToSend(
-        quic::QuicUtils::GenerateStatelessResetToken(connection_id));
-  }
+  auto connection_id = quic::test::TestConnectionId();
+  config.SetStatelessResetTokenToSend(
+      quic::QuicUtils::GenerateStatelessResetToken(connection_id));
   if (session()->version().UsesTls()) {
     if (session()->perspective() == Perspective::IS_CLIENT) {
       config.SetOriginalConnectionIdToSend(

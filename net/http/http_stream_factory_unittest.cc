@@ -2088,13 +2088,13 @@ class HttpStreamFactoryBidirectionalQuicTest
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          HttpStreamFactoryBidirectionalQuicTest,
-                         ::testing::ValuesIn(quic::AllSupportedVersions()),
+                         ::testing::ValuesIn(AllSupportedQuicVersions()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(HttpStreamFactoryBidirectionalQuicTest,
        RequestBidirectionalStreamImplQuicAlternative) {
   MockQuicData mock_quic_data(version());
-  // When using IETF QUIC, set priority to default value so that
+  // Set priority to default value so that
   // QuicTestPacketMaker::MakeRequestHeadersPacket() does not add mock
   // PRIORITY_UPDATE frame, which BidirectionalStreamQuicImpl currently does not
   // send.
@@ -2104,10 +2104,8 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
   size_t spdy_headers_frame_length;
   int packet_num = 1;
-  if (VersionUsesHttp3(version().transport_version)) {
-    mock_quic_data.AddWrite(
-        client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(
+      client_packet_maker().MakeInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
       packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
       /*should_include_version=*/true,
@@ -2186,7 +2184,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
        RequestBidirectionalStreamImplHttpJobFailsQuicJobSucceeds) {
   // Set up Quic data.
   MockQuicData mock_quic_data(version());
-  // When using IETF QUIC, set priority to default value so that
+  // Set priority to default value so that
   // QuicTestPacketMaker::MakeRequestHeadersPacket() does not add mock
   // PRIORITY_UPDATE frame, which BidirectionalStreamQuicImpl currently does not
   // send.
@@ -2196,10 +2194,8 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
   size_t spdy_headers_frame_length;
   int packet_num = 1;
-  if (VersionUsesHttp3(version().transport_version)) {
-    mock_quic_data.AddWrite(
-        client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(
+      client_packet_maker().MakeInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
       packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
       /*should_include_version=*/true,
@@ -2452,10 +2448,8 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
   size_t spdy_headers_frame_length;
   int packet_num = 1;
-  if (VersionUsesHttp3(version().transport_version)) {
-    mock_quic_data.AddWrite(
-        client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(
+      client_packet_maker().MakeInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
       packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
       /*should_include_version=*/true,
@@ -2475,10 +2469,8 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   client_packet_maker().Reset();
   MockQuicData mock_quic_data2(version());
   packet_num = 1;
-  if (VersionUsesHttp3(version().transport_version)) {
-    mock_quic_data2.AddWrite(
-        client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data2.AddWrite(
+      client_packet_maker().MakeInitialSettingsPacket(packet_num++));
   mock_quic_data2.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
       packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
       /*should_include_version=*/true,
@@ -3292,10 +3284,8 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
   size_t spdy_headers_frame_length;
   int packet_num = 1;
-  if (VersionUsesHttp3(version().transport_version)) {
-    mock_quic_data.AddWrite(
-        client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(
+      client_packet_maker().MakeInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
       packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
       /*should_include_version=*/true,

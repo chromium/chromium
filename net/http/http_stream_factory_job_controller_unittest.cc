@@ -1610,10 +1610,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, AltJobSucceedsMainJobDestroyed) {
 TEST_P(HttpStreamFactoryJobControllerTest,
        AltJobSucceedsMainJobBlockedControllerDestroyed) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
-  if (version_.UsesHttp3()) {
-    quic_data_->AddWrite(SYNCHRONOUS,
-                         client_maker_.MakeInitialSettingsPacket(1));
-  }
+  quic_data_->AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
   quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   HttpRequestInfo request_info;
@@ -2612,10 +2609,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
 TEST_P(HttpStreamFactoryJobControllerTest, PreconnectToHostWithValidAltSvc) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
-  if (version_.UsesHttp3()) {
-    quic_data_->AddWrite(SYNCHRONOUS,
-                         client_maker_.MakeInitialSettingsPacket(1));
-  }
+  quic_data_->AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
   quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   HttpRequestInfo request_info;
@@ -3526,10 +3520,8 @@ TEST_P(HttpStreamFactoryJobControllerMisdirectedRequestRetry,
   if (enable_alternative_services) {
     quic_data_ = std::make_unique<MockQuicData>(version_);
     quic_data_->AddConnect(SYNCHRONOUS, OK);
-    if (version_.UsesHttp3()) {
-      quic_data_->AddWrite(SYNCHRONOUS,
-                           client_maker_.MakeInitialSettingsPacket(1));
-    }
+    quic_data_->AddWrite(SYNCHRONOUS,
+                         client_maker_.MakeInitialSettingsPacket(1));
     quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   }
   tcp_data_ = std::make_unique<SequencedSocketData>();
@@ -4084,11 +4076,10 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
         MockCryptoClientStream::COLD_START);
     *quic_data = std::make_unique<MockQuicData>(version_);
     (*quic_data)->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-    if (version_.UsesHttp3()) {
-      (*quic_data)
-          ->AddWrite(SYNCHRONOUS, CreateQuicTestPacketMakerForClient()
-                                      .MakeInitialSettingsPacket(1));
-    }
+    (*quic_data)
+        ->AddWrite(
+            SYNCHRONOUS,
+            CreateQuicTestPacketMakerForClient().MakeInitialSettingsPacket(1));
   }
 
   void PrepareForQuicJobFailureImpl(std::unique_ptr<MockQuicData>* quic_data) {

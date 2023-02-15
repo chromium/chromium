@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
@@ -31,6 +32,23 @@ inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector ObsoleteQuicVersions() {
   return quic::ParsedQuicVersionVector{
       quic::ParsedQuicVersion::Q043(), quic::ParsedQuicVersion::Q046(),
       quic::ParsedQuicVersion::Q050(), quic::ParsedQuicVersion::Draft29()};
+}
+
+// All of the QUIC versions that Chrome can support. This is the subset of
+// QUIC versions that the QUIC shared code supports that are not on the list
+// of versions that Chrome considers obsolete.
+inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector
+AllSupportedQuicVersions() {
+  quic::ParsedQuicVersionVector obsolete_versions = ObsoleteQuicVersions();
+  quic::ParsedQuicVersionVector all_supported_versions =
+      quic::AllSupportedVersions();
+  quic::ParsedQuicVersionVector filtered_versions;
+  for (const auto& version : all_supported_versions) {
+    if (!base::Contains(obsolete_versions, version)) {
+      filtered_versions.push_back(version);
+    }
+  }
+  return filtered_versions;
 }
 
 // When a connection is idle for 30 seconds it will be closed.

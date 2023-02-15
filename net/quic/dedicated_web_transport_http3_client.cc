@@ -409,8 +409,6 @@ int DedicatedWebTransportHttp3Client::DoInit() {
   // Add other supported versions if available.
   for (quic::ParsedQuicVersion& version :
        quic_context_->params()->supported_versions) {
-    if (!version.UsesHttp3())
-      continue;
     if (base::Contains(supported_versions_, version))
       continue;  // Skip as we've already added it above.
     supported_versions_.push_back(version);

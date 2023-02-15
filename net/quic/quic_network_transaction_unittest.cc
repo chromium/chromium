@@ -52,6 +52,7 @@
 #include "net/quic/mock_quic_context.h"
 #include "net/quic/mock_quic_data.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
+#include "net/quic/quic_context.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_stream_factory_peer.h"
@@ -183,16 +184,10 @@ std::string GenerateQuicAltSvcHeader(
 std::vector<TestParams> GetTestParams() {
   std::vector<TestParams> params;
   quic::ParsedQuicVersionVector all_supported_versions =
-      quic::AllSupportedVersions();
+      AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    // Incremental support only exists for HTTP/3 and doesn't need to be tested
-    // in different permutations for previous versions of Quic.
-    if (quic::VersionUsesHttp3(version.transport_version)) {
-      params.push_back(TestParams{version, false});
-      params.push_back(TestParams{version, true});
-    } else {
-      params.push_back(TestParams{version, true});
-    }
+    params.push_back(TestParams{version, false});
+    params.push_back(TestParams{version, true});
   }
   return params;
 }
@@ -200,7 +195,7 @@ std::vector<TestParams> GetTestParams() {
 std::vector<PoolingTestParams> GetPoolingTestParams() {
   std::vector<PoolingTestParams> params;
   quic::ParsedQuicVersionVector all_supported_versions =
-      quic::AllSupportedVersions();
+      AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
     params.push_back(PoolingTestParams{version, SAME_AS_FIRST});
     params.push_back(PoolingTestParams{version, SAME_AS_SECOND});
@@ -211,9 +206,6 @@ std::vector<PoolingTestParams> GetPoolingTestParams() {
 
 std::string ConstructDataFrameForVersion(base::StringPiece body,
                                          quic::ParsedQuicVersion version) {
-  if (!version.HasIetfQuicFrames()) {
-    return std::string(body);
-  }
   quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
       body.size(), quiche::SimpleBufferAllocator::Get());
   return base::StrCat({base::StringPiece(buffer.data(), buffer.size()), body});
@@ -589,17 +581,6 @@ class QuicNetworkTransactionTest
         std::move(headers), spdy_headers_frame_length, data_writes);
   }
 
-  std::unique_ptr<quic::QuicEncryptedPacket> ConstructServerPushPromisePacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      quic::QuicStreamId promised_stream_id,
-      bool should_include_version,
-      spdy::Http2HeaderBlock headers) {
-    return server_maker_.MakePushPromisePacket(
-        packet_number, stream_id, promised_stream_id, should_include_version,
-        false, std::move(headers), nullptr);
-  }
-
   std::unique_ptr<quic::QuicEncryptedPacket>
   ConstructServerResponseHeadersPacket(uint64_t packet_number,
                                        quic::QuicStreamId stream_id,
@@ -877,10 +858,8 @@ class QuicNetworkTransactionTest
     MockQuicData quic_data(version_);
     int packet_number = 1;
     client_maker.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-    if (VersionUsesHttp3(version_.transport_version)) {
-      quic_data.AddWrite(
-          SYNCHRONOUS, client_maker.MakeInitialSettingsPacket(packet_number++));
-    }
+    quic_data.AddWrite(SYNCHRONOUS,
+                       client_maker.MakeInitialSettingsPacket(packet_number++));
     quic_data.AddWrite(
         SYNCHRONOUS,
         client_maker.MakeRequestHeadersPacket(
@@ -1086,8 +1065,7 @@ TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmed) {
       MockCryptoClientStream::CONFIRM_HANDSHAKE);
 
   MockQuicData mock_quic_data(version_);
-  if (VersionUsesHttp3(version_.transport_version))
-    mock_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  mock_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   mock_quic_data.AddWrite(SYNCHRONOUS, ERR_INTERNET_DISCONNECTED);
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
   mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
@@ -1117,8 +1095,7 @@ TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmedAsync) {
       MockCryptoClientStream::CONFIRM_HANDSHAKE);
 
   MockQuicData mock_quic_data(version_);
-  if (VersionUsesHttp3(version_.transport_version))
-    mock_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  mock_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   mock_quic_data.AddWrite(ASYNC, ERR_INTERNET_DISCONNECTED);
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
   mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
@@ -1145,10 +1122,8 @@ TEST_P(QuicNetworkTransactionTest, SocketWatcherEnabled) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1184,10 +1159,8 @@ TEST_P(QuicNetworkTransactionTest, SocketWatcherDisabled) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1223,10 +1196,8 @@ TEST_P(QuicNetworkTransactionTest, ForceQuic) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1288,21 +1259,12 @@ TEST_P(QuicNetworkTransactionTest, ForceQuic) {
   EXPECT_LT(0, pos);
 
   int log_stream_id = GetIntegerValueFromParams(entries[pos], "stream_id");
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    EXPECT_EQ(GetNthClientInitiatedBidirectionalStreamId(0),
-              static_cast<quic::QuicStreamId>(log_stream_id));
-  } else {
-    EXPECT_EQ(quic::QuicUtils::GetHeadersStreamId(version_.transport_version),
-              static_cast<quic::QuicStreamId>(log_stream_id));
-  }
+  EXPECT_EQ(GetNthClientInitiatedBidirectionalStreamId(0),
+            static_cast<quic::QuicStreamId>(log_stream_id));
 }
 
 // Regression test for https://crbug.com/1043531.
 TEST_P(QuicNetworkTransactionTest, ResetOnEmptyResponseHeaders) {
-  if (!quic::VersionUsesHttp3(version_.transport_version)) {
-    return;
-  }
-
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
@@ -1355,10 +1317,8 @@ TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1375,20 +1335,9 @@ TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
   response_headers["key8"] = std::string(30000, 'A');
   quic::QuicStreamId stream_id;
   std::string response_data;
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
-    response_data = server_maker_.QpackEncodeHeaders(
-        stream_id, std::move(response_headers), nullptr);
-  } else {
-    stream_id = quic::QuicUtils::GetHeadersStreamId(version_.transport_version);
-    spdy::SpdyHeadersIR headers_frame(
-        GetNthClientInitiatedBidirectionalStreamId(0),
-        std::move(response_headers));
-    spdy::SpdyFramer response_framer(spdy::SpdyFramer::ENABLE_COMPRESSION);
-    spdy::SpdySerializedFrame spdy_frame =
-        response_framer.SerializeFrame(headers_frame);
-    response_data = std::string(spdy_frame.data(), spdy_frame.size());
-  }
+  stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
+  response_data = server_maker_.QpackEncodeHeaders(
+      stream_id, std::move(response_headers), nullptr);
 
   uint64_t packet_number = 1;
   size_t chunk_size = 1200;
@@ -1426,10 +1375,8 @@ TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1449,20 +1396,9 @@ TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
 
   quic::QuicStreamId stream_id;
   std::string response_data;
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
-    response_data = server_maker_.QpackEncodeHeaders(
-        stream_id, std::move(response_headers), nullptr);
-  } else {
-    stream_id = quic::QuicUtils::GetHeadersStreamId(version_.transport_version);
-    spdy::SpdyHeadersIR headers_frame(
-        GetNthClientInitiatedBidirectionalStreamId(0),
-        std::move(response_headers));
-    spdy::SpdyFramer response_framer(spdy::SpdyFramer::ENABLE_COMPRESSION);
-    spdy::SpdySerializedFrame spdy_frame =
-        response_framer.SerializeFrame(headers_frame);
-    response_data = std::string(spdy_frame.data(), spdy_frame.size());
-  }
+  stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
+  response_data = server_maker_.QpackEncodeHeaders(
+      stream_id, std::move(response_headers), nullptr);
 
   uint64_t packet_number = 1;
   size_t chunk_size = 1200;
@@ -1504,10 +1440,8 @@ TEST_P(QuicNetworkTransactionTest, RedirectMultipleLocations) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1518,33 +1452,15 @@ TEST_P(QuicNetworkTransactionTest, RedirectMultipleLocations) {
   response_headers.AppendValueOrAddHeader("location", "https://example1.test");
   response_headers.AppendValueOrAddHeader("location", "https://example2.test");
 
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    const quic::QuicStreamId stream_id =
-        GetNthClientInitiatedBidirectionalStreamId(0);
-    const std::string response_data = server_maker_.QpackEncodeHeaders(
-        stream_id, std::move(response_headers), nullptr);
-    ASSERT_LT(response_data.size(), 1200u);
-    mock_quic_data.AddRead(
-        ASYNC, ConstructServerDataPacket(/*packet_number=*/1, stream_id,
-                                         /*should_include_version=*/false,
-                                         /*fin=*/true, response_data));
-  } else {
-    const quic::QuicStreamId stream_id =
-        quic::QuicUtils::GetHeadersStreamId(version_.transport_version);
-    spdy::SpdyHeadersIR headers_frame(
-        GetNthClientInitiatedBidirectionalStreamId(0),
-        std::move(response_headers));
-    spdy::SpdyFramer response_framer(spdy::SpdyFramer::ENABLE_COMPRESSION);
-    spdy::SpdySerializedFrame spdy_frame =
-        response_framer.SerializeFrame(headers_frame);
-    const std::string response_data =
-        std::string(spdy_frame.data(), spdy_frame.size());
-    ASSERT_LT(response_data.size(), 1200u);
-    mock_quic_data.AddRead(
-        ASYNC, ConstructServerDataPacket(/*packet_number=*/1, stream_id,
-                                         /*should_include_version=*/false,
-                                         /*fin=*/false, response_data));
-  }
+  const quic::QuicStreamId stream_id =
+      GetNthClientInitiatedBidirectionalStreamId(0);
+  const std::string response_data = server_maker_.QpackEncodeHeaders(
+      stream_id, std::move(response_headers), nullptr);
+  ASSERT_LT(response_data.size(), 1200u);
+  mock_quic_data.AddRead(
+      ASYNC, ConstructServerDataPacket(/*packet_number=*/1, stream_id,
+                                       /*should_include_version=*/false,
+                                       /*fin=*/true, response_data));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
 
   mock_quic_data.AddWrite(
@@ -1571,10 +1487,8 @@ TEST_P(QuicNetworkTransactionTest, ForceQuicForAll) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1609,10 +1523,8 @@ TEST_P(QuicNetworkTransactionTest, 408Response) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1645,10 +1557,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxy) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1697,10 +1607,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyWithCert) {
   client_maker_->set_hostname(origin_host);
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1761,10 +1669,8 @@ TEST_P(QuicNetworkTransactionTest, AlternativeServicesDifferentHost) {
   MockQuicData mock_quic_data(version_);
 
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1852,10 +1758,8 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
   // by the client has been advertised by the server.
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1917,10 +1821,8 @@ TEST_P(QuicNetworkTransactionTest, RetryMisdirectedRequest) {
   // dispensing the socket, making it available for the second try.
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -1978,13 +1880,11 @@ TEST_P(QuicNetworkTransactionTest, ForceQuicWithErrorConnecting) {
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData mock_quic_data1(version_);
-  if (VersionUsesHttp3(version_.transport_version))
-    mock_quic_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  mock_quic_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   mock_quic_data1.AddRead(ASYNC, ERR_SOCKET_NOT_CONNECTED);
   client_maker_->Reset();
   MockQuicData mock_quic_data2(version_);
-  if (VersionUsesHttp3(version_.transport_version))
-    mock_quic_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  mock_quic_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details_);
   mock_quic_data2.AddRead(ASYNC, ERR_SOCKET_NOT_CONNECTED);
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details_);
@@ -2048,10 +1948,8 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuic) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -2099,10 +1997,8 @@ TEST_P(QuicNetworkTransactionTest, UseIetfAlternativeServiceForQuic) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -2183,10 +2079,8 @@ TEST_P(QuicNetworkTransactionTest,
   // alternative service infrmation has been received in this context before.
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -2285,10 +2179,8 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceWithVersionForQuic1) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -2319,11 +2211,14 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceWithVersionForQuic1) {
 TEST_P(QuicNetworkTransactionTest,
        PickQuicVersionWhenMultipleVersionsAreSupported) {
   // Client and server both support more than one QUIC_VERSION.
-  // Client prefers |version_|, and then common_version_2.
-  // Server prefers common_version_2, and then |version_|.
+  // Client prefers common_version_2, and then |version_|.
+  // Server prefers |version_| common_version_2.
   // We should honor the server's preference.
   // The picked version is verified via checking the version used by the
   // TestPacketMakers and the response.
+  // Since Chrome only supports one ALPN-negotiated version, common_version_2
+  // will be another version that the common library supports even though
+  // Chrome may consider it obsolete.
 
   // Find an alternative commonly supported version other than |version_|.
   quic::ParsedQuicVersion common_version_2 =
@@ -2338,19 +2233,18 @@ TEST_P(QuicNetworkTransactionTest,
 
   // Setting up client's preference list: {|version_|, |common_version_2|}.
   supported_versions_.clear();
-  supported_versions_.push_back(version_);
   supported_versions_.push_back(common_version_2);
+  supported_versions_.push_back(version_);
 
   // Setting up server's Alt-Svc header in the following preference order:
-  // |common_version_2|, |version_|.
+  // |version_|, |common_version_2|.
   std::string QuicAltSvcWithVersionHeader;
   quic::ParsedQuicVersion picked_version =
       quic::ParsedQuicVersion::Unsupported();
   QuicAltSvcWithVersionHeader =
-      "Alt-Svc: " + quic::AlpnForVersion(common_version_2) +
-      "=\":443\"; ma=3600, " + quic::AlpnForVersion(version_) +
-      "=\":443\"; ma=3600\r\n\r\n";
-  picked_version = common_version_2;  // Use server's preference.
+      "Alt-Svc: " + quic::AlpnForVersion(version_) + "=\":443\"; ma=3600, " +
+      quic::AlpnForVersion(common_version_2) + "=\":443\"; ma=3600\r\n\r\n";
+  picked_version = version_;  // Use server's preference.
 
   MockRead http_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -2500,7 +2394,7 @@ TEST_P(QuicNetworkTransactionTest, DoNotGetAltSvcForDifferentOrigin) {
 TEST_P(QuicNetworkTransactionTest,
        StoreMutuallySupportedVersionsWhenProcessAltSvc) {
   // Add support for another QUIC version besides |version_|.
-  for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
+  for (const quic::ParsedQuicVersion& version : AllSupportedQuicVersions()) {
     if (version != version_) {
       supported_versions_.push_back(version);
       break;
@@ -2523,10 +2417,8 @@ TEST_P(QuicNetworkTransactionTest,
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -2584,10 +2476,8 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceAllSupportedVersion) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -2615,611 +2505,6 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceAllSupportedVersion) {
   SendRequestAndExpectQuicResponse("hello!");
 }
 
-TEST_P(QuicNetworkTransactionTest, GoAwayWithConnectionMigrationOnPortsOnly) {
-  if (version_.HasIetfQuicFrames()) {
-    // GoAway is not available under version 99
-    return;
-  }
-  MockQuicData mock_quic_data(version_);
-  int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          true, GetRequestHeaders("GET", "https", "/")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200")));
-  // Read a GoAway packet with
-  // quic::QuicErrorCode: quic::QUIC_ERROR_MIGRATING_PORT from the peer.
-  mock_quic_data.AddRead(SYNCHRONOUS,
-                         ConstructServerGoAwayPacket(
-                             2, quic::QUIC_ERROR_MIGRATING_PORT,
-                             "connection migration with port change only"));
-  mock_quic_data.AddWrite(SYNCHRONOUS,
-                          ConstructClientAckPacket(packet_num++, 2, 1));
-  mock_quic_data.AddRead(
-      SYNCHRONOUS, ConstructServerDataPacket(
-                       3, GetNthClientInitiatedBidirectionalStreamId(0), false,
-                       true, ConstructDataFrame("hello!")));
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientAckAndRstPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-          quic::QUIC_STREAM_CANCELLED, 3, 3));
-  mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
-
-  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  // The non-alternate protocol job needs to hang in order to guarantee that
-  // the alternate-protocol job will "win".
-  AddHangingNonAlternateProtocolSocketData();
-
-  // In order for a new QUIC session to be established via alternate-protocol
-  // without racing an HTTP connection, we need the host resolution to happen
-  // synchronously.  Of course, even though QUIC *could* perform a 0-RTT
-  // connection to the the server, in this test we require confirmation
-  // before encrypting so the HTTP job will still start.
-  host_resolver_.set_synchronous_mode(true);
-  host_resolver_.rules()->AddIPLiteralRule("mail.example.org", "192.168.0.1",
-                                           "");
-
-  CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
-      false);
-  AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
-
-  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
-  TestCompletionCallback callback;
-  int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  base::RunLoop().RunUntilIdle();
-
-  crypto_client_stream_factory_.last_stream()
-      ->NotifySessionOneRttKeyAvailable();
-  EXPECT_THAT(callback.WaitForResult(), IsOk());
-
-  // Check whether this transaction is correctly marked as received a go-away
-  // because of migrating port.
-  NetErrorDetails details;
-  EXPECT_FALSE(details.quic_port_migration_detected);
-  trans.PopulateNetErrorDetails(&details);
-  EXPECT_TRUE(details.quic_port_migration_detected);
-}
-
-// This test verifies that a new QUIC connection will be attempted on the
-// alternate network if the original QUIC connection fails with idle timeout
-// before handshake is confirmed.  If TCP succeeds and QUIC fails on the
-// alternate network as well, QUIC is marked as broken and the brokenness will
-// not expire when default network changes.
-// TODO(fayang): Add time driven idle network detection test.
-TEST_P(QuicNetworkTransactionTest,
-       DISABLED_QuicFailsOnBothNetworksWhileTCPSucceeds) {
-  if (version_.AlpnDeferToRFCv1()) {
-    // These versions currently do not support Alt-Svc.
-    return;
-  }
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-  SetUpTestForRetryConnectionOnAlternateNetwork();
-
-  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-
-  // The request will initially go out over QUIC.
-  MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read
-  int packet_num = 1;
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-  // Retransmit the handshake messages.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  // After timeout, connection will be closed with QUIC_NETWORK_IDLE_TIMEOUT.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeConnectionClosePacket(
-                         packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                         "No recent network activity after 4s. Timeout:4s"));
-  quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  // Add successful TCP data so that TCP job will succeed.
-  MockWrite http_writes[] = {
-      MockWrite(SYNCHRONOUS, 0, "GET / HTTP/1.1\r\n"),
-      MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
-      MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
-
-  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
-                           MockRead(SYNCHRONOUS, 5, "TCP succeeds"),
-                           MockRead(SYNCHRONOUS, OK, 6)};
-  SequencedSocketData http_data(http_reads, http_writes);
-  socket_factory_.AddSocketDataProvider(&http_data);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
-
-  // Add data for the second QUIC connection to fail.
-  MockQuicData quic_data2(version_);
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);  // Write error.
-  quic_data2.AddSocketDataToFactory(&socket_factory_);
-
-  // Resolve the host resolution synchronously.
-  host_resolver_.set_synchronous_mode(true);
-  host_resolver_.rules()->AddIPLiteralRule("mail.example.org", "192.168.0.1",
-                                           "");
-
-  CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
-      false);
-  // Use a TestTaskRunner to avoid waiting in real time for timeouts.
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
-      std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
-                                                 context_.clock()));
-  // Add alternate protocol mapping to race QUIC and TCP.
-  // QUIC connection requires handshake to be confirmed and sends CHLO to the
-  // peer.
-  AddQuicAlternateProtocolMapping(
-      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
-
-  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
-  TestCompletionCallback callback;
-  int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  // Pump the message loop to get the request started.
-  // Request will be served with TCP job.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(callback.WaitForResult(), IsOk());
-  CheckResponseData(&trans, "TCP succeeds");
-
-  // Fast forward to idle timeout the original connection. A new connection will
-  // be kicked off on the alternate network.
-  quic_task_runner_->FastForwardBy(quic::QuicTime::Delta::FromSeconds(4));
-  ASSERT_TRUE(quic_data.AllReadDataConsumed());
-  ASSERT_TRUE(quic_data.AllWriteDataConsumed());
-
-  // Run the message loop to execute posted tasks, which will report job status.
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that QUIC is marked as broken.
-  ExpectBrokenAlternateProtocolMapping();
-
-  // Deliver a message to notify the new network becomes default, the brokenness
-  // will not expire as QUIC is broken on both networks.
-  scoped_mock_change_notifier_->mock_network_change_notifier()
-      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
-  ExpectBrokenAlternateProtocolMapping();
-
-  ASSERT_TRUE(quic_data2.AllReadDataConsumed());
-  ASSERT_TRUE(quic_data2.AllWriteDataConsumed());
-}
-
-// This test verifies that a new QUIC connection will be attempted on the
-// alternate network if the original QUIC connection fails with idle timeout
-// before handshake is confirmed. If TCP succeeds and QUIC succeeds on the
-// alternate network, QUIC is marked as broken. The brokenness will expire when
-// the default network changes.
-// TODO(fayang): Add time driven idle network detection test.
-TEST_P(QuicNetworkTransactionTest,
-       DISABLED_RetryOnAlternateNetworkWhileTCPSucceeds) {
-  if (version_.AlpnDeferToRFCv1()) {
-    // These versions currently do not support Alt-Svc.
-    return;
-  }
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
-  SetUpTestForRetryConnectionOnAlternateNetwork();
-
-  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-
-  // The request will initially go out over QUIC.
-  MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read
-  int packet_num = 1;
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-  // Retransmit the handshake messages.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  // After timeout, connection will be closed with QUIC_NETWORK_IDLE_TIMEOUT.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeConnectionClosePacket(
-                         packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                         "No recent network activity after 4s. Timeout:4s"));
-  quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  // Add successful TCP data so that TCP job will succeed.
-  MockWrite http_writes[] = {
-      MockWrite(SYNCHRONOUS, 0, "GET / HTTP/1.1\r\n"),
-      MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
-      MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
-
-  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
-                           MockRead(SYNCHRONOUS, 5, "TCP succeeds"),
-                           MockRead(SYNCHRONOUS, OK, 6)};
-  SequencedSocketData http_data(http_reads, http_writes);
-  socket_factory_.AddSocketDataProvider(&http_data);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
-
-  // Quic connection will be retried on the alternate network after the initial
-  // one fails on the default network.
-  MockQuicData quic_data2(version_);
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Handing read.
-  quic_data2.AddWrite(SYNCHRONOUS,
-                      client_maker_->MakeDummyCHLOPacket(1));  // CHLO
-
-  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
-  if (VersionUsesHttp3(version_.transport_version))
-    quic_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(2));
-  quic_data2.AddSocketDataToFactory(&socket_factory_);
-
-  // Resolve the host resolution synchronously.
-  host_resolver_.set_synchronous_mode(true);
-  host_resolver_.rules()->AddIPLiteralRule("mail.example.org", "192.168.0.1",
-                                           "");
-
-  CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
-      false);
-  // Use a TestTaskRunner to avoid waiting in real time for timeouts.
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
-      std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
-                                                 context_.clock()));
-  // Add alternate protocol mapping to race QUIC and TCP.
-  // QUIC connection requires handshake to be confirmed and sends CHLO to the
-  // peer.
-  AddQuicAlternateProtocolMapping(
-      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
-
-  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
-  TestCompletionCallback callback;
-  int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  // Pump the message loop to get the request started.
-  // Request will be served with TCP job.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(callback.WaitForResult(), IsOk());
-  CheckResponseData(&trans, "TCP succeeds");
-
-  // Fast forward to idle timeout the original connection. A new connection will
-  // be kicked off on the alternate network.
-  quic_task_runner_->FastForwardBy(quic::QuicTime::Delta::FromSeconds(4));
-  ASSERT_TRUE(quic_data.AllReadDataConsumed());
-  ASSERT_TRUE(quic_data.AllWriteDataConsumed());
-
-  // The second connection hasn't finish handshake, verify that QUIC is not
-  // marked as broken.
-  ExpectQuicAlternateProtocolMapping();
-  base::RunLoop().RunUntilIdle();
-  // Explicitly confirm the handshake on the second connection.
-  crypto_client_stream_factory_.last_stream()
-      ->NotifySessionOneRttKeyAvailable();
-  // Run message loop to execute posted tasks, which will notify JoController
-  // about the orphaned job status.
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that QUIC is marked as broken.
-  ExpectBrokenAlternateProtocolMapping();
-
-  // Deliver a message to notify the new network becomes default, the previous
-  // brokenness will be clear as the brokenness is bond with old default
-  // network.
-  scoped_mock_change_notifier_->mock_network_change_notifier()
-      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
-  ExpectQuicAlternateProtocolMapping();
-
-  ASSERT_TRUE(quic_data2.AllReadDataConsumed());
-  ASSERT_TRUE(quic_data2.AllWriteDataConsumed());
-}
-
-// Much like above test, but verifies NetworkIsolationKeys are respected.
-// TODO(fayang): Add time driven idle network detection test.
-TEST_P(
-    QuicNetworkTransactionTest,
-    DISABLED_RetryOnAlternateNetworkWhileTCPSucceedsWithNetworkIsolationKey) {
-  if (version_.AlpnDeferToRFCv1()) {
-    // These versions currently do not support Alt-Svc.
-    return;
-  }
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
-  const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       // Need to partition connections by NetworkAnonymizationKey for
-       // QuicSessionAliasKey to include NetworkIsolationKeys.
-       features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {});
-  // Since HttpServerProperties caches the feature value, have to create a new
-  // one.
-  http_server_properties_ = std::make_unique<HttpServerProperties>();
-
-  SetUpTestForRetryConnectionOnAlternateNetwork();
-
-  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-
-  // The request will initially go out over QUIC.
-  MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read
-  int packet_num = 1;
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-  // Retransmit the handshake messages.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  // After timeout, connection will be closed with QUIC_NETWORK_IDLE_TIMEOUT.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeConnectionClosePacket(
-                         packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                         "No recent network activity after 4s. Timeout:4s"));
-  quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  // Add successful TCP data so that TCP job will succeed.
-  MockWrite http_writes[] = {
-      MockWrite(SYNCHRONOUS, 0, "GET / HTTP/1.1\r\n"),
-      MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
-      MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
-
-  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
-                           MockRead(SYNCHRONOUS, 5, "TCP succeeds"),
-                           MockRead(SYNCHRONOUS, OK, 6)};
-  SequencedSocketData http_data(http_reads, http_writes);
-  socket_factory_.AddSocketDataProvider(&http_data);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
-
-  // Quic connection will be retried on the alternate network after the initial
-  // one fails on the default network.
-  MockQuicData quic_data2(version_);
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Handing read.
-  quic_data2.AddWrite(SYNCHRONOUS,
-                      client_maker_->MakeDummyCHLOPacket(1));  // CHLO
-
-  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
-  if (VersionUsesHttp3(version_.transport_version))
-    quic_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(2));
-  quic_data2.AddSocketDataToFactory(&socket_factory_);
-
-  // Resolve the host resolution synchronously.
-  host_resolver_.set_synchronous_mode(true);
-  host_resolver_.rules()->AddIPLiteralRule("mail.example.org", "192.168.0.1",
-                                           "");
-
-  CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
-      false);
-  // Use a TestTaskRunner to avoid waiting in real time for timeouts.
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
-      std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
-                                                 context_.clock()));
-  // Add alternate protocol mapping to race QUIC and TCP.
-  // QUIC connection requires handshake to be confirmed and sends CHLO to the
-  // peer.
-  AddQuicAlternateProtocolMapping(
-      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT,
-      kNetworkAnonymizationKey1);
-  AddQuicAlternateProtocolMapping(
-      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT,
-      kNetworkAnonymizationKey2);
-
-  request_.network_isolation_key = kNetworkIsolationKey1;
-  request_.network_anonymization_key = kNetworkAnonymizationKey1;
-  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
-  TestCompletionCallback callback;
-  int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  // Pump the message loop to get the request started.
-  // Request will be served with TCP job.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(callback.WaitForResult(), IsOk());
-  CheckResponseData(&trans, "TCP succeeds");
-
-  // Fast forward to idle timeout the original connection. A new connection will
-  // be kicked off on the alternate network.
-  quic_task_runner_->FastForwardBy(quic::QuicTime::Delta::FromSeconds(4));
-  ASSERT_TRUE(quic_data.AllReadDataConsumed());
-  ASSERT_TRUE(quic_data.AllWriteDataConsumed());
-
-  // The second connection hasn't finish handshake, verify that QUIC is not
-  // marked as broken.
-  ExpectQuicAlternateProtocolMapping(kNetworkAnonymizationKey1);
-  ExpectQuicAlternateProtocolMapping(kNetworkAnonymizationKey2);
-  base::RunLoop().RunUntilIdle();
-  // Explicitly confirm the handshake on the second connection.
-  crypto_client_stream_factory_.last_stream()
-      ->NotifySessionOneRttKeyAvailable();
-  // Run message loop to execute posted tasks, which will notify JoController
-  // about the orphaned job status.
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that QUIC is marked as broken for kNetworkIsolationKey1 only.
-  ExpectBrokenAlternateProtocolMapping(kNetworkAnonymizationKey1);
-  ExpectQuicAlternateProtocolMapping(kNetworkAnonymizationKey2);
-
-  // Deliver a message to notify the new network becomes default, the previous
-  // brokenness will be clear as the brokenness is bond with old default
-  // network.
-  scoped_mock_change_notifier_->mock_network_change_notifier()
-      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
-  ExpectQuicAlternateProtocolMapping(kNetworkAnonymizationKey1);
-  ExpectQuicAlternateProtocolMapping(kNetworkAnonymizationKey2);
-
-  ASSERT_TRUE(quic_data2.AllReadDataConsumed());
-  ASSERT_TRUE(quic_data2.AllWriteDataConsumed());
-}
-
-// This test verifies that a new QUIC connection will be attempted on the
-// alternate network if the original QUIC connection fails with idle timeout
-// before handshake is confirmed. If TCP doesn't succeed but QUIC on the
-// alternative network succeeds, QUIC is not marked as broken.
-// TODO(fayang): Add time driven idle network detection test.
-TEST_P(QuicNetworkTransactionTest,
-       DISABLED_RetryOnAlternateNetworkWhileTCPHanging) {
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
-  SetUpTestForRetryConnectionOnAlternateNetwork();
-
-  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-
-  // The request will initially go out over QUIC.
-  MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read
-  int packet_num = 1;
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-  // Retransmit the handshake messages.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeDummyCHLOPacket(packet_num++));
-  // After timeout, connection will be closed with QUIC_NETWORK_IDLE_TIMEOUT.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeConnectionClosePacket(
-                         packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                         "No recent network activity after 4s. Timeout:4s"));
-  quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  // Add hanging TCP data so that TCP job will never succeeded.
-  AddHangingNonAlternateProtocolSocketData();
-
-  // Quic connection will then be retried on the alternate network.
-  MockQuicData quic_data2(version_);
-  packet_num = 1;
-  quic_data2.AddWrite(
-      SYNCHRONOUS,
-      client_maker_->MakeDummyCHLOPacket(packet_num++));  // CHLO
-
-  const std::string body = "hello!";
-
-  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data2.AddWrite(SYNCHRONOUS,
-                        ConstructInitialSettingsPacket(packet_num++));
-  }
-  quic_data2.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          true, GetRequestHeaders("GET", "https", "/")));
-  quic_data2.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200")));
-  quic_data2.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
-                 ConstructDataFrame(body)));
-  quic_data2.AddWrite(SYNCHRONOUS,
-                      ConstructClientAckPacket(packet_num++, 2, 1));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
-  quic_data2.AddSocketDataToFactory(&socket_factory_);
-
-  // Resolve the host resolution synchronously.
-  host_resolver_.set_synchronous_mode(true);
-  host_resolver_.rules()->AddIPLiteralRule("mail.example.org", "192.168.0.1",
-                                           "");
-
-  CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
-      false);
-  // Use a TestTaskRunner to avoid waiting in real time for timeouts.
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
-      std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
-                                                 context_.clock()));
-  // Add alternate protocol mapping to race QUIC and TCP.
-  // QUIC connection requires handshake to be confirmed and sends CHLO to the
-  // peer.
-  AddQuicAlternateProtocolMapping(
-      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
-
-  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
-  TestCompletionCallback callback;
-  int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  // Pump the message loop to get the request started.
-  base::RunLoop().RunUntilIdle();
-
-  // Fast forward to idle timeout the original connection. A new connection will
-  // be kicked off on the alternate network.
-  quic_task_runner_->FastForwardBy(quic::QuicTime::Delta::FromSeconds(4));
-  ASSERT_TRUE(quic_data.AllReadDataConsumed());
-  ASSERT_TRUE(quic_data.AllWriteDataConsumed());
-
-  // Verify that QUIC is not marked as broken.
-  ExpectQuicAlternateProtocolMapping();
-  base::RunLoop().RunUntilIdle();
-  // Explicitly confirm the handshake on the second connection.
-  crypto_client_stream_factory_.last_stream()
-      ->NotifySessionOneRttKeyAvailable();
-
-  // Read the response.
-  EXPECT_THAT(callback.WaitForResult(), IsOk());
-  CheckResponseData(&trans, body);
-  // Verify that QUIC is not marked as broken.
-  ExpectQuicAlternateProtocolMapping();
-
-  // Deliver a message to notify the new network becomes default.
-  scoped_mock_change_notifier_->mock_network_change_notifier()
-      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
-  ExpectQuicAlternateProtocolMapping();
-  ASSERT_TRUE(quic_data2.AllReadDataConsumed());
-  ASSERT_TRUE(quic_data2.AllWriteDataConsumed());
-}
-
 // Verify that if a QUIC connection times out, the QuicHttpStream will
 // return QUIC_PROTOCOL_ERROR.
 TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
@@ -3237,10 +2522,7 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
   client_maker_->set_save_packet_frames(true);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data.AddWrite(SYNCHRONOUS,
-                       ConstructInitialSettingsPacket(packet_num++));
-  }
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       client_maker_->MakeRequestHeadersPacket(
@@ -3249,57 +2531,29 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
 
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 1
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 2
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        2, packet_num++, true));
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 3
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
+  // QuicConnection::OnRetransmissionTimeout skips a packet number when
+  // sending PTO packets.
+  packet_num++;
+  // PTO 1
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
+                                      1, packet_num++, true));
+  // QuicConnection::OnRetransmissionTimeout skips a packet number when
+  // sending PTO packets.
+  packet_num++;
+  // PTO 2
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
+                                      2, packet_num++, true));
+  // QuicConnection::OnRetransmissionTimeout skips a packet number when
+  // sending PTO packets.
+  packet_num++;
+  // PTO 3
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
+                                      1, packet_num++, true));
 
-    quic_data.AddWrite(SYNCHRONOUS,
-                       client_maker_->MakeConnectionClosePacket(
-                           packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                           "No recent network activity after 4s. Timeout:4s"));
-  } else {
-    // Settings were sent in the request packet so there is only 1 packet to
-    // retransmit.
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 1
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 2
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 3
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-
-    quic_data.AddWrite(SYNCHRONOUS,
-                       client_maker_->MakeConnectionClosePacket(
-                           packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                           "No recent network activity after 4s. Timeout:4s"));
-  }
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_->MakeConnectionClosePacket(
+                         packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
+                         "No recent network activity after 4s. Timeout:4s"));
 
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, OK);
@@ -3352,10 +2606,7 @@ TEST_P(QuicNetworkTransactionTest, ProtocolErrorAfterHandshakeConfirmed) {
   MockQuicData quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data.AddWrite(SYNCHRONOUS,
-                       ConstructInitialSettingsPacket(packet_num++));
-  }
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -3373,12 +2624,8 @@ TEST_P(QuicNetworkTransactionTest, ProtocolErrorAfterHandshakeConfirmed) {
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientAckAndConnectionClosePacket(
-          packet_num++, 1, 1,
-          version_.HasIetfQuicFrames() ? quic::QUIC_HTTP_STREAM_WRONG_DIRECTION
-                                       : quic::QUIC_INVALID_STREAM_ID,
-          quic_error_details,
-          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
-                                       : quic::IETF_RST_STREAM));
+          packet_num++, 1, 1, quic::QUIC_HTTP_STREAM_WRONG_DIRECTION,
+          quic_error_details, quic::IETF_STOP_SENDING));
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // In order for a new QUIC session to be established via alternate-protocol
@@ -3439,10 +2686,8 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
   client_maker_->set_save_packet_frames(true);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data.AddWrite(SYNCHRONOUS,
-                       client_maker_->MakeInitialSettingsPacket(packet_num++));
-  }
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_->MakeInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       client_maker_->MakeRequestHeadersPacket(
@@ -3450,59 +2695,31 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
           true, priority, GetRequestHeaders("GET", "https", "/"), nullptr));
 
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 1
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
+  // QuicConnection::OnRetransmissionTimeout skips a packet number when
+  // sending PTO packets.
+  packet_num++;
+  // PTO 1
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
+                                      1, packet_num++, true));
 
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 2
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        2, packet_num++, true));
+  // QuicConnection::OnRetransmissionTimeout skips a packet number when
+  // sending PTO packets.
+  packet_num++;
+  // PTO 2
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
+                                      2, packet_num++, true));
 
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 3
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
+  // QuicConnection::OnRetransmissionTimeout skips a packet number when
+  // sending PTO packets.
+  packet_num++;
+  // PTO 3
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
+                                      1, packet_num++, true));
 
-    quic_data.AddWrite(SYNCHRONOUS,
-                       client_maker_->MakeConnectionClosePacket(
-                           packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                           "No recent network activity after 4s. Timeout:4s"));
-  } else {
-    // Settings were sent in the request packet so there is only 1 packet to
-    // retransmit.
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 1
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 2
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-    // QuicConnection::OnRetransmissionTimeout skips a packet number when
-    // sending PTO packets.
-    packet_num++;
-    // PTO 3
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        1, packet_num++, true));
-
-    quic_data.AddWrite(SYNCHRONOUS,
-                       client_maker_->MakeConnectionClosePacket(
-                           packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                           "No recent network activity after 4s. Timeout:4s"));
-  }
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_->MakeConnectionClosePacket(
+                         packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
+                         "No recent network activity after 4s. Timeout:4s"));
 
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, OK);
@@ -3586,10 +2803,7 @@ TEST_P(QuicNetworkTransactionTest,
   MockQuicData quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data.AddWrite(SYNCHRONOUS,
-                       ConstructInitialSettingsPacket(packet_num++));
-  }
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -3608,12 +2822,8 @@ TEST_P(QuicNetworkTransactionTest,
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientAckAndConnectionClosePacket(
-          packet_num++, 1, 1,
-          version_.HasIetfQuicFrames() ? quic::QUIC_HTTP_STREAM_WRONG_DIRECTION
-                                       : quic::QUIC_INVALID_STREAM_ID,
-          quic_error_details,
-          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
-                                       : quic::IETF_RST_STREAM));
+          packet_num++, 1, 1, quic::QUIC_HTTP_STREAM_WRONG_DIRECTION,
+          quic_error_details, quic::IETF_STOP_SENDING));
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // After that fails, it will be resent via TCP.
@@ -3706,10 +2916,8 @@ TEST_P(QuicNetworkTransactionTest,
   MockQuicData quic_data(version_);
   uint64_t packet_number = 1;
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data.AddWrite(SYNCHRONOUS,
-                       ConstructInitialSettingsPacket(packet_number++));
-  }
+  quic_data.AddWrite(SYNCHRONOUS,
+                     ConstructInitialSettingsPacket(packet_number++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -3726,15 +2934,11 @@ TEST_P(QuicNetworkTransactionTest,
                  quic::QUIC_STREAM_LAST_ERROR));
   std::string quic_error_details = "Data for nonexistent stream";
   quic::QuicErrorCode quic_error_code = quic::QUIC_INVALID_STREAM_ID;
-  if (version_.HasIetfQuicFrames()) {
-    quic_error_code = quic::QUIC_HTTP_STREAM_WRONG_DIRECTION;
-  }
-  quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientAckAndConnectionClosePacket(
-          packet_number++, 1, 1, quic_error_code, quic_error_details,
-          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
-                                       : quic::IETF_RST_STREAM));
+  quic_error_code = quic::QUIC_HTTP_STREAM_WRONG_DIRECTION;
+  quic_data.AddWrite(SYNCHRONOUS,
+                     ConstructClientAckAndConnectionClosePacket(
+                         packet_number++, 1, 1, quic_error_code,
+                         quic_error_details, quic::IETF_STOP_SENDING));
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // After that fails, it will be resent via TCP.
@@ -3824,10 +3028,7 @@ TEST_P(QuicNetworkTransactionTest,
   MockQuicData quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data.AddWrite(SYNCHRONOUS,
-                       ConstructInitialSettingsPacket(packet_num++));
-  }
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -3846,12 +3047,8 @@ TEST_P(QuicNetworkTransactionTest,
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientAckAndConnectionClosePacket(
-          packet_num++, 1, 1,
-          version_.HasIetfQuicFrames() ? quic::QUIC_HTTP_STREAM_WRONG_DIRECTION
-                                       : quic::QUIC_INVALID_STREAM_ID,
-          quic_error_details,
-          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
-                                       : quic::IETF_RST_STREAM));
+          packet_num++, 1, 1, quic::QUIC_HTTP_STREAM_WRONG_DIRECTION,
+          quic_error_details, quic::IETF_STOP_SENDING));
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // After that fails, it will be resent via TCP.
@@ -3934,10 +3131,7 @@ TEST_P(QuicNetworkTransactionTest, ResetAfterHandshakeConfirmedThenBroken) {
 
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data.AddWrite(SYNCHRONOUS,
-                       ConstructInitialSettingsPacket(packet_num++));
-  }
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       client_maker_->MakeRequestHeadersPacket(
@@ -3952,14 +3146,12 @@ TEST_P(QuicNetworkTransactionTest, ResetAfterHandshakeConfirmedThenBroken) {
                         1, false, GetNthClientInitiatedBidirectionalStreamId(0),
                         quic::QUIC_HEADERS_TOO_LARGE));
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data.AddWrite(
-        SYNCHRONOUS,
-        client_maker_->MakeAckRstAndDataPacket(
-            packet_num++, true, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_HEADERS_TOO_LARGE, 1, 1, GetQpackDecoderStreamId(),
-            false, StreamCancellationQpackDecoderInstruction(0)));
-  }
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_->MakeAckRstAndDataPacket(
+          packet_num++, true, GetNthClientInitiatedBidirectionalStreamId(0),
+          quic::QUIC_HEADERS_TOO_LARGE, 1, 1, GetQpackDecoderStreamId(), false,
+          StreamCancellationQpackDecoderInstruction(0)));
 
   quic_data.AddRead(ASYNC, OK);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -4045,10 +3237,8 @@ TEST_P(QuicNetworkTransactionTest, RemoteAltSvcWorkingWhileLocalAltSvcBroken) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -4186,10 +3376,8 @@ TEST_P(QuicNetworkTransactionTest,
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   // First request.
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -4227,15 +3415,13 @@ TEST_P(QuicNetworkTransactionTest,
                  3, false, GetNthClientInitiatedBidirectionalStreamId(1),
                  quic::QUIC_HEADERS_TOO_LARGE));
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        client_maker_->MakeAckRstAndDataPacket(
-            packet_num++, /*include_version=*/true,
-            GetNthClientInitiatedBidirectionalStreamId(1),
-            quic::QUIC_HEADERS_TOO_LARGE, 3, 2, GetQpackDecoderStreamId(),
-            /*fin=*/false, StreamCancellationQpackDecoderInstruction(1)));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_->MakeAckRstAndDataPacket(
+          packet_num++, /*include_version=*/true,
+          GetNthClientInitiatedBidirectionalStreamId(1),
+          quic::QUIC_HEADERS_TOO_LARGE, 3, 2, GetQpackDecoderStreamId(),
+          /*fin=*/false, StreamCancellationQpackDecoderInstruction(1)));
 
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
   mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
@@ -4357,10 +3543,8 @@ TEST_P(QuicNetworkTransactionTest, UseExistingAlternativeServiceForQuic) {
   // alternative service list.
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -4425,10 +3609,8 @@ TEST_P(QuicNetworkTransactionTest, PoolByOrigin) {
   MockQuicData mock_quic_data(version_);
 
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   // First request.
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -4512,10 +3694,8 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
   MockQuicData mock_quic_data(version_);
 
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   // First request.
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -4657,10 +3837,8 @@ TEST_P(QuicNetworkTransactionTest,
   client_maker_->set_hostname("www.example.org");
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   // First QUIC request data.
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -4776,10 +3954,8 @@ TEST_P(QuicNetworkTransactionTest, ConfirmAlternativeService) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -4859,10 +4035,8 @@ TEST_P(QuicNetworkTransactionTest,
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -4932,10 +4106,8 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuicForHttps) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -5019,10 +4191,8 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithHttpRace) {
   MockQuicData mock_quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -5082,10 +4252,8 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithNoHttpRace) {
   MockQuicData mock_quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, client_maker_->MakeInitialSettingsPacket(packet_number++));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, client_maker_->MakeInitialSettingsPacket(packet_number++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -5180,10 +4348,8 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithConfirmationRequired) {
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -5238,10 +4404,8 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithTooEarlyResponse) {
   uint64_t packet_number = 1;
   MockQuicData mock_quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, client_maker_->MakeInitialSettingsPacket(packet_number++));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, client_maker_->MakeInitialSettingsPacket(packet_number++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -5251,24 +4415,15 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithTooEarlyResponse) {
       ASYNC, ConstructServerResponseHeadersPacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
                  GetResponseHeaders("425")));
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        ConstructClientAckAndDataPacket(
-            packet_number++, false, GetQpackDecoderStreamId(), 1, 1, false,
-            StreamCancellationQpackDecoderInstruction(0)));
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            client_maker_->MakeRstPacket(
-                                packet_number++, false,
-                                GetNthClientInitiatedBidirectionalStreamId(0),
-                                quic::QUIC_STREAM_CANCELLED));
-  } else {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        ConstructClientAckAndRstPacket(
-            packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED, 1, 1));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientAckAndDataPacket(
+                       packet_number++, false, GetQpackDecoderStreamId(), 1, 1,
+                       false, StreamCancellationQpackDecoderInstruction(0)));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_->MakeRstPacket(
+          packet_number++, false, GetNthClientInitiatedBidirectionalStreamId(0),
+          quic::QUIC_STREAM_CANCELLED));
 
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
 
@@ -5331,10 +4486,8 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithMultipleTooEarlyResponse) {
   uint64_t packet_number = 1;
   MockQuicData mock_quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, client_maker_->MakeInitialSettingsPacket(packet_number++));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, client_maker_->MakeInitialSettingsPacket(packet_number++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -5344,24 +4497,15 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithMultipleTooEarlyResponse) {
       ASYNC, ConstructServerResponseHeadersPacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
                  GetResponseHeaders("425")));
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        ConstructClientAckAndDataPacket(
-            packet_number++, false, GetQpackDecoderStreamId(), 1, 1, false,
-            StreamCancellationQpackDecoderInstruction(0)));
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            client_maker_->MakeRstPacket(
-                                packet_number++, false,
-                                GetNthClientInitiatedBidirectionalStreamId(0),
-                                quic::QUIC_STREAM_CANCELLED));
-  } else {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        ConstructClientAckAndRstPacket(
-            packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED, 1, 1));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientAckAndDataPacket(
+                       packet_number++, false, GetQpackDecoderStreamId(), 1, 1,
+                       false, StreamCancellationQpackDecoderInstruction(0)));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_->MakeRstPacket(
+          packet_number++, false, GetNthClientInitiatedBidirectionalStreamId(0),
+          quic::QUIC_STREAM_CANCELLED));
 
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
 
@@ -5374,24 +4518,16 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithMultipleTooEarlyResponse) {
       ASYNC, ConstructServerResponseHeadersPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(1), false, false,
                  GetResponseHeaders("425")));
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        ConstructClientAckAndDataPacket(
-            packet_number++, false, GetQpackDecoderStreamId(), 2, 1, false,
-            StreamCancellationQpackDecoderInstruction(1, false)));
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            client_maker_->MakeRstPacket(
-                                packet_number++, false,
-                                GetNthClientInitiatedBidirectionalStreamId(1),
-                                quic::QUIC_STREAM_CANCELLED));
-  } else {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        ConstructClientAckAndRstPacket(
-            packet_number++, GetNthClientInitiatedBidirectionalStreamId(1),
-            quic::QUIC_STREAM_CANCELLED, 2, 1));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckAndDataPacket(
+          packet_number++, false, GetQpackDecoderStreamId(), 2, 1, false,
+          StreamCancellationQpackDecoderInstruction(1, false)));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_->MakeRstPacket(
+          packet_number++, false, GetNthClientInitiatedBidirectionalStreamId(1),
+          quic::QUIC_STREAM_CANCELLED));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
   mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
@@ -5444,10 +4580,8 @@ TEST_P(QuicNetworkTransactionTest,
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -5501,10 +4635,8 @@ TEST_P(QuicNetworkTransactionTest,
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -5521,12 +4653,8 @@ TEST_P(QuicNetworkTransactionTest,
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientAckAndConnectionClosePacket(
-          packet_num++, 1, 1,
-          version_.HasIetfQuicFrames() ? quic::QUIC_HTTP_STREAM_WRONG_DIRECTION
-                                       : quic::QUIC_INVALID_STREAM_ID,
-          quic_error_details,
-          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
-                                       : quic::IETF_RST_STREAM));
+          packet_num++, 1, 1, quic::QUIC_HTTP_STREAM_WRONG_DIRECTION,
+          quic_error_details, quic::IETF_STOP_SENDING));
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // The non-alternate protocol job needs to hang in order to guarantee that
@@ -5559,9 +4687,7 @@ TEST_P(QuicNetworkTransactionTest,
   EXPECT_EQ(quic::QUIC_NO_ERROR, details.quic_connection_error);
 
   trans.PopulateNetErrorDetails(&details);
-  EXPECT_EQ(version_.HasIetfQuicFrames()
-                ? quic::QUIC_HTTP_STREAM_WRONG_DIRECTION
-                : quic::QUIC_INVALID_STREAM_ID,
+  EXPECT_EQ(quic::QUIC_HTTP_STREAM_WRONG_DIRECTION,
             details.quic_connection_error);
 }
 
@@ -5569,10 +4695,8 @@ TEST_P(QuicNetworkTransactionTest, RstStreamErrorHandling) {
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -5589,17 +4713,12 @@ TEST_P(QuicNetworkTransactionTest, RstStreamErrorHandling) {
                  2, false, GetNthClientInitiatedBidirectionalStreamId(0),
                  quic::QUIC_STREAM_CANCELLED));
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        client_maker_->MakeAckRstAndDataPacket(
-            packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED, 2, 1, GetQpackDecoderStreamId(), false,
-            StreamCancellationQpackDecoderInstruction(0)));
-  } else {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructClientAckPacket(packet_num++, 2, 1));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_->MakeAckRstAndDataPacket(
+          packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
+          quic::QUIC_STREAM_CANCELLED, 2, 1, GetQpackDecoderStreamId(), false,
+          StreamCancellationQpackDecoderInstruction(0)));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -5650,10 +4769,8 @@ TEST_P(QuicNetworkTransactionTest, RstStreamBeforeHeaders) {
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -5665,14 +4782,12 @@ TEST_P(QuicNetworkTransactionTest, RstStreamBeforeHeaders) {
                  1, false, GetNthClientInitiatedBidirectionalStreamId(0),
                  quic::QUIC_STREAM_CANCELLED));
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        client_maker_->MakeAckRstAndDataPacket(
-            packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED, 1, 1, GetQpackDecoderStreamId(), false,
-            StreamCancellationQpackDecoderInstruction(0)));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_->MakeAckRstAndDataPacket(
+          packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
+          quic::QUIC_STREAM_CANCELLED, 1, 1, GetQpackDecoderStreamId(), false,
+          StreamCancellationQpackDecoderInstruction(0)));
 
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -5860,10 +4975,8 @@ TEST_P(QuicNetworkTransactionTest, DelayTCPOnStartWithQuicSupportOnSameIP) {
   MockQuicData mock_quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_number++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_number++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -5936,10 +5049,8 @@ TEST_P(QuicNetworkTransactionTest,
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -6252,10 +5363,8 @@ TEST_P(QuicNetworkTransactionTest, SecureResourceOverSecureQuic) {
       test_socket_performance_watcher_factory_.rtt_notification_received());
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -6288,10 +5397,7 @@ TEST_P(QuicNetworkTransactionTest, QuicUpload) {
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData mock_quic_data(version_);
-  if (!VersionUsesHttp3(version_.transport_version))
-    mock_quic_data.AddRead(SYNCHRONOUS, ERR_CONNECTION_CLOSED);
-  else
-    mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   mock_quic_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -6335,10 +5441,8 @@ TEST_P(QuicNetworkTransactionTest, QuicUploadWriteError) {
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    socket_data.AddWrite(SYNCHRONOUS,
-                         ConstructInitialSettingsPacket(packet_num++));
-  }
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_num++));
   socket_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -6382,10 +5486,8 @@ TEST_P(QuicNetworkTransactionTest, RetryAfterAsyncNoBufferSpace) {
 
   MockQuicData socket_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    socket_data.AddWrite(SYNCHRONOUS,
-                         ConstructInitialSettingsPacket(packet_num++));
-  }
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_num++));
   socket_data.AddWrite(ASYNC, ERR_NO_BUFFER_SPACE);
   socket_data.AddWrite(
       SYNCHRONOUS,
@@ -6422,10 +5524,8 @@ TEST_P(QuicNetworkTransactionTest, RetryAfterSynchronousNoBufferSpace) {
 
   MockQuicData socket_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    socket_data.AddWrite(SYNCHRONOUS,
-                         ConstructInitialSettingsPacket(packet_num++));
-  }
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_num++));
   socket_data.AddWrite(SYNCHRONOUS, ERR_NO_BUFFER_SPACE);
   socket_data.AddWrite(
       SYNCHRONOUS,
@@ -6463,8 +5563,7 @@ TEST_P(QuicNetworkTransactionTest, MaxRetriesAfterAsyncNoBufferSpace) {
 
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
-  if (VersionUsesHttp3(version_.transport_version))
-    socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   for (int i = 0; i < 13; ++i) {  // 12 retries then one final failure.
     socket_data.AddWrite(ASYNC, ERR_NO_BUFFER_SPACE);
   }
@@ -6502,8 +5601,7 @@ TEST_P(QuicNetworkTransactionTest, MaxRetriesAfterSynchronousNoBufferSpace) {
 
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
-  if (VersionUsesHttp3(version_.transport_version))
-    socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   for (int i = 0; i < 13; ++i) {  // 12 retries then one final failure.
     socket_data.AddWrite(ASYNC, ERR_NO_BUFFER_SPACE);
   }
@@ -6545,10 +5643,8 @@ TEST_P(QuicNetworkTransactionTest, NoMigrationForMsgTooBig) {
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    socket_data.AddWrite(SYNCHRONOUS,
-                         ConstructInitialSettingsPacket(packet_num++));
-  }
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_num++));
   socket_data.AddWrite(SYNCHRONOUS, ERR_MSG_TOO_BIG);
   // Connection close packet will be sent for MSG_TOO_BIG.
   socket_data.AddWrite(
@@ -6570,347 +5666,6 @@ TEST_P(QuicNetworkTransactionTest, NoMigrationForMsgTooBig) {
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-// Adds coverage to catch regression such as https://crbug.com/622043
-TEST_P(QuicNetworkTransactionTest, QuicServerPush) {
-  if (VersionUsesHttp3(version_.transport_version)) {
-    return;
-  }
-  context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
-
-  MockQuicData mock_quic_data(version_);
-  uint64_t client_packet_number = 1;
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          client_packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-          true, true, GetRequestHeaders("GET", "https", "/")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerPushPromisePacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0),
-                 GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 GetRequestHeaders("GET", "https", "/pushed.jpg")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200")));
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS, ConstructClientAckPacket(client_packet_number++, 2, 1));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 3, GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 false, GetResponseHeaders("200")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 4, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("hello!")));
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS, ConstructClientAckPacket(client_packet_number++, 4, 3));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 5, GetNthServerInitiatedUnidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("and hello!")));
-  if (!VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructClientAckAndRstPacket(
-                                client_packet_number++,
-                                GetNthServerInitiatedUnidirectionalStreamId(0),
-                                quic::QUIC_RST_ACKNOWLEDGEMENT, 5, 5));
-  } else {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, client_maker_->MakeAckAndPriorityUpdatePacket(
-                         client_packet_number++, true, 5, 5, 3,
-                         GetNthServerInitiatedUnidirectionalStreamId(0)));
-  }
-  mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
-  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  // The non-alternate protocol job needs to hang in order to guarantee that
-  // the alternate-protocol job will "win".
-  AddHangingNonAlternateProtocolSocketData();
-
-  CreateSession();
-
-  // PUSH_PROMISE handling in the http layer gets exercised here.
-  SendRequestAndExpectQuicResponse("hello!");
-
-  request_.url = GURL("https://mail.example.org/pushed.jpg");
-  SendRequestAndExpectQuicResponse("and hello!");
-
-  // Check that the NetLog was filled reasonably.
-  auto entries = net_log_observer_.GetEntries();
-  EXPECT_LT(0u, entries.size());
-
-  // Check that we logged a QUIC_HTTP_STREAM_ADOPTED_PUSH_STREAM
-  int pos = ExpectLogContainsSomewhere(
-      entries, 0, NetLogEventType::QUIC_HTTP_STREAM_ADOPTED_PUSH_STREAM,
-      NetLogEventPhase::NONE);
-  EXPECT_LT(0, pos);
-}
-
-// Checks that if the same resource is pushed using two different
-// NetworkIsolationKeys, both pushed resources are tracked independently, and
-// NetworkIsolationKeys are respected.
-TEST_P(QuicNetworkTransactionTest, QuicServerPushRespectsNetworkIsolationKey) {
-  if (VersionUsesHttp3(version_.transport_version)) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kPartitionConnectionsByNetworkIsolationKey);
-  context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
-
-  MockQuicData mock_quic_data1(version_);
-  uint64_t client_packet_number1 = 1;
-  mock_quic_data1.AddWrite(
-      SYNCHRONOUS, ConstructClientRequestHeadersPacket(
-                       client_packet_number1++,
-                       GetNthClientInitiatedBidirectionalStreamId(0), true,
-                       true, GetRequestHeaders("GET", "https", "/")));
-  mock_quic_data1.AddRead(
-      ASYNC, ConstructServerPushPromisePacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0),
-                 GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 GetRequestHeaders("GET", "https", "/pushed.jpg")));
-  mock_quic_data1.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200")));
-  mock_quic_data1.AddWrite(
-      SYNCHRONOUS, ConstructClientAckPacket(client_packet_number1++, 2, 1));
-  mock_quic_data1.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 3, GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 false, GetResponseHeaders("200")));
-  mock_quic_data1.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 4, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("hello1")));
-  mock_quic_data1.AddWrite(
-      SYNCHRONOUS, ConstructClientAckPacket(client_packet_number1++, 4, 3));
-  mock_quic_data1.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 5, GetNthServerInitiatedUnidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("and hello1")));
-  if (!VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data1.AddWrite(SYNCHRONOUS,
-                             ConstructClientAckAndRstPacket(
-                                 client_packet_number1++,
-                                 GetNthServerInitiatedUnidirectionalStreamId(0),
-                                 quic::QUIC_RST_ACKNOWLEDGEMENT, 5, 5));
-  } else {
-    mock_quic_data1.AddWrite(
-        SYNCHRONOUS, client_maker_->MakeAckAndPriorityUpdatePacket(
-                         client_packet_number1++, true, 5, 5, 3,
-                         GetNthServerInitiatedUnidirectionalStreamId(0)));
-  }
-  mock_quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data1.AddRead(ASYNC, 0);               // EOF
-  mock_quic_data1.AddSocketDataToFactory(&socket_factory_);
-
-  QuicTestPacketMaker client_maker2(
-      version_,
-      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
-      true);
-  QuicTestPacketMaker server_maker2(
-      version_,
-      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kDefaultServerHostName, quic::Perspective::IS_SERVER,
-      false);
-  MockQuicData mock_quic_data2(version_);
-  uint64_t client_packet_number2 = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data2.AddWrite(
-        SYNCHRONOUS,
-        client_maker2.MakeInitialSettingsPacket(client_packet_number2++));
-  }
-  mock_quic_data2.AddWrite(
-      SYNCHRONOUS,
-      client_maker2.MakeRequestHeadersPacket(
-          client_packet_number2++,
-          GetNthClientInitiatedBidirectionalStreamId(0), true, true,
-          ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
-          GetRequestHeaders("GET", "https", "/"), nullptr));
-  mock_quic_data2.AddRead(
-      ASYNC, server_maker2.MakePushPromisePacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0),
-                 GetNthServerInitiatedUnidirectionalStreamId(0), false, false,
-                 GetRequestHeaders("GET", "https", "/pushed.jpg"), nullptr));
-  mock_quic_data2.AddRead(
-      ASYNC, server_maker2.MakeResponseHeadersPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200"), nullptr));
-  mock_quic_data2.AddWrite(
-      SYNCHRONOUS, client_maker2.MakeAckPacket(client_packet_number2++, 2, 1));
-  mock_quic_data2.AddRead(
-      ASYNC, server_maker2.MakeResponseHeadersPacket(
-                 3, GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 false, GetResponseHeaders("200"), nullptr));
-  mock_quic_data2.AddRead(
-      ASYNC, server_maker2.MakeDataPacket(
-                 4, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("hello2")));
-  mock_quic_data2.AddWrite(
-      SYNCHRONOUS, client_maker2.MakeAckPacket(client_packet_number2++, 4, 3));
-  mock_quic_data2.AddRead(
-      ASYNC, server_maker2.MakeDataPacket(
-                 5, GetNthServerInitiatedUnidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("and hello2")));
-  if (!VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data2.AddWrite(SYNCHRONOUS,
-                             client_maker2.MakeAckAndRstPacket(
-                                 client_packet_number2++, false,
-                                 GetNthServerInitiatedUnidirectionalStreamId(0),
-                                 quic::QUIC_RST_ACKNOWLEDGEMENT, 5, 5));
-  } else {
-    mock_quic_data2.AddWrite(
-        SYNCHRONOUS, client_maker2.MakeAckAndPriorityUpdatePacket(
-                         client_packet_number2++, true, 5, 5, 3,
-                         GetNthServerInitiatedUnidirectionalStreamId(0)));
-  }
-  mock_quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data2.AddRead(ASYNC, 0);               // EOF
-  mock_quic_data2.AddSocketDataToFactory(&socket_factory_);
-
-  scoped_refptr<X509Certificate> cert(
-      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
-  verify_details_.cert_verify_result.verified_cert = cert;
-  verify_details_.cert_verify_result.is_issued_by_known_root = true;
-  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details_);
-
-  // The non-alternate protocol jobs need to hang in order to guarantee that
-  // the alternate-protocol job will "win". Use "AddTcpSocketDataProvider()", as
-  // the connection requests may or may not actually make it to the socket
-  // factory, there may or may not be a TCP connection made in between the two
-  // QUIC connection attempts.
-  StaticSocketDataProvider hanging_data1;
-  hanging_data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
-  socket_factory_.AddTcpSocketDataProvider(&hanging_data1);
-  StaticSocketDataProvider hanging_data2;
-  hanging_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
-  socket_factory_.AddTcpSocketDataProvider(&hanging_data2);
-
-  CreateSession();
-
-  NetworkIsolationKey network_isolation_key1 =
-      NetworkIsolationKey::CreateTransient();
-  NetworkIsolationKey network_isolation_key2 =
-      NetworkIsolationKey::CreateTransient();
-  NetworkAnonymizationKey network_anonymization_key1 =
-      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          network_isolation_key1);
-  NetworkAnonymizationKey network_anonymization_key2 =
-      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          network_isolation_key2);
-
-  // Creates the first QUIC session, and triggers the first push.
-  request_.network_isolation_key = network_isolation_key1;
-  request_.network_anonymization_key = network_anonymization_key1;
-
-  SendRequestAndExpectQuicResponse("hello1");
-
-  // Use a different NIK, which creates another QUIC session, triggering a
-  // second push,
-  request_.network_isolation_key = network_isolation_key2;
-  request_.network_anonymization_key = network_anonymization_key2;
-  SendRequestAndExpectQuicResponse("hello2");
-
-  // Use the second NIK again, should receive the push body from the second
-  // session.
-  request_.url = GURL("https://mail.example.org/pushed.jpg");
-  SendRequestAndExpectQuicResponse("and hello2");
-
-  // Use the first NIK again, should receive the push body from the first
-  // session.
-  request_.network_isolation_key = network_isolation_key1;
-  request_.network_anonymization_key = network_anonymization_key1;
-  SendRequestAndExpectQuicResponse("and hello1");
-}
-
-// Regression test for http://crbug.com/719461 in which a promised stream
-// is closed before the pushed headers arrive, but after the connection
-// is closed and before the callbacks are executed.
-TEST_P(QuicNetworkTransactionTest, CancelServerPushAfterConnectionClose) {
-  if (VersionUsesHttp3(version_.transport_version)) {
-    return;
-  }
-  context_.params()->retry_without_alt_svc_on_quic_errors = false;
-  context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
-
-  MockQuicData mock_quic_data(version_);
-  uint64_t client_packet_number = 1;
-  // First request: GET https://mail.example.org/
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          client_packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-          true, true, GetRequestHeaders("GET", "https", "/")));
-  // Server promise for: https://mail.example.org/pushed.jpg
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerPushPromisePacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0),
-                 GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 GetRequestHeaders("GET", "https", "/pushed.jpg")));
-  // Response headers for first request.
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200")));
-  // Client ACKs the response headers.
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS, ConstructClientAckPacket(client_packet_number++, 2, 1));
-  // Response body for first request.
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 3, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("hello!")));
-  // Write error for the third request.
-  mock_quic_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
-  mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
-  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  CreateSession();
-
-  // Send a request which triggers a push promise from the server.
-  SendRequestAndExpectQuicResponse("hello!");
-
-  // Start a push transaction that will be cancelled after the connection
-  // is closed, but before the callback is executed.
-  request_.url = GURL("https://mail.example.org/pushed.jpg");
-  auto trans2 = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
-                                                         session_.get());
-  TestCompletionCallback callback2;
-  int rv = trans2->Start(&request_, callback2.callback(), net_log_with_source_);
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  base::RunLoop().RunUntilIdle();
-
-  // Cause the connection to close on a write error.
-  HttpRequestInfo request3;
-  request3.method = "GET";
-  request3.url = GURL("https://mail.example.org/");
-  request3.load_flags = 0;
-  request3.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  HttpNetworkTransaction trans3(DEFAULT_PRIORITY, session_.get());
-  TestCompletionCallback callback3;
-  EXPECT_THAT(
-      trans3.Start(&request3, callback3.callback(), net_log_with_source_),
-      IsError(ERR_IO_PENDING));
-
-  base::RunLoop().RunUntilIdle();
-
-  // When |trans2| is destroyed, the underlying stream will be closed.
-  EXPECT_FALSE(callback2.have_result());
-  trans2 = nullptr;
-
-  EXPECT_THAT(callback3.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
-}
-
 TEST_P(QuicNetworkTransactionTest, QuicForceHolBlocking) {
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
@@ -6918,10 +5673,8 @@ TEST_P(QuicNetworkTransactionTest, QuicForceHolBlocking) {
   MockQuicData mock_quic_data(version_);
 
   int write_packet_index = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(write_packet_index++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(write_packet_index++));
 
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -6981,10 +5734,8 @@ TEST_P(QuicNetworkTransactionTest, HostInAllowlist) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -7342,10 +6093,8 @@ TEST_P(QuicNetworkTransactionWithDestinationTest, PoolIfCertificateValid) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(
-                                             packet_num++, &client_maker));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++, &client_maker));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -7445,10 +6194,8 @@ TEST_P(QuicNetworkTransactionWithDestinationTest,
 
   MockQuicData mock_quic_data1(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(
-                                              packet_num++, &client_maker1));
-  }
+  mock_quic_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(
+                                            packet_num++, &client_maker1));
   mock_quic_data1.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -7481,10 +6228,8 @@ TEST_P(QuicNetworkTransactionWithDestinationTest,
 
   MockQuicData mock_quic_data2(version_);
   int packet_num2 = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(
-                                              packet_num2++, &client_maker2));
-  }
+  mock_quic_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(
+                                            packet_num2++, &client_maker2));
   mock_quic_data2.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -7512,167 +6257,6 @@ TEST_P(QuicNetworkTransactionWithDestinationTest,
   EXPECT_TRUE(AllDataConsumed());
 }
 
-// crbug.com/705109 - this confirms that matching request with a body
-// triggers a crash (pre-fix).
-TEST_P(QuicNetworkTransactionTest, QuicServerPushMatchesRequestWithBody) {
-  if (VersionUsesHttp3(version_.transport_version)) {
-    return;
-  }
-  context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
-
-  MockQuicData mock_quic_data(version_);
-  uint64_t client_packet_number = 1;
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          client_packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-          true, true, GetRequestHeaders("GET", "https", "/")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerPushPromisePacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0),
-                 GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 GetRequestHeaders("GET", "https", "/pushed.jpg")));
-
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200")));
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS, ConstructClientAckPacket(client_packet_number++, 2, 1));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 3, GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 false, GetResponseHeaders("200")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 4, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("hello!")));
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS, ConstructClientAckPacket(client_packet_number++, 4, 3));
-
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 5, GetNthServerInitiatedUnidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("and hello!")));
-
-  // Because the matching request has a body, we will see the push
-  // stream get cancelled, and the matching request go out on the
-  // wire.
-  mock_quic_data.AddWrite(SYNCHRONOUS,
-                          ConstructClientAckAndRstPacket(
-                              client_packet_number++,
-                              GetNthServerInitiatedUnidirectionalStreamId(0),
-                              quic::QUIC_STREAM_CANCELLED, 5, 5));
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersAndDataFramesPacket(
-          client_packet_number++, GetNthClientInitiatedBidirectionalStreamId(1),
-          false, true, DEFAULT_PRIORITY,
-          GetRequestHeaders("GET", "https", "/pushed.jpg"), nullptr,
-          {ConstructDataFrame("1")}));
-
-  // We see the same response as for the earlier pushed and cancelled
-  // stream.
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 6, GetNthClientInitiatedBidirectionalStreamId(1), false, false,
-                 GetResponseHeaders("200")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 7, GetNthClientInitiatedBidirectionalStreamId(1), false, true,
-                 ConstructDataFrame("and hello!")));
-
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS, ConstructClientAckPacket(client_packet_number++, 7, 6));
-  mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
-  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  // The non-alternate protocol job needs to hang in order to guarantee that
-  // the alternate-protocol job will "win".
-  AddHangingNonAlternateProtocolSocketData();
-
-  CreateSession();
-
-  // PUSH_PROMISE handling in the http layer gets exercised here.
-  SendRequestAndExpectQuicResponse("hello!");
-
-  request_.url = GURL("https://mail.example.org/pushed.jpg");
-  ChunkedUploadDataStream upload_data(0);
-  upload_data.AppendData("1", 1, true);
-  request_.upload_data_stream = &upload_data;
-  SendRequestAndExpectQuicResponse("and hello!");
-}
-
-// Regression test for https://crbug.com/797825: If pushed headers describe a
-// valid URL with empty hostname, then X509Certificate::VerifyHostname() must
-// not be called (otherwise a DCHECK fails).
-TEST_P(QuicNetworkTransactionTest, QuicServerPushWithEmptyHostname) {
-  if (VersionUsesHttp3(version_.transport_version)) {
-    return;
-  }
-  spdy::Http2HeaderBlock pushed_request_headers;
-  pushed_request_headers[":authority"] = "";
-  pushed_request_headers[":method"] = "GET";
-  pushed_request_headers[":path"] = "/";
-  pushed_request_headers[":scheme"] = "nosuchscheme";
-
-  context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
-
-  MockQuicData mock_quic_data(version_);
-
-  int packet_num = 1;
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          true, GetRequestHeaders("GET", "https", "/")));
-
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerPushPromisePacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0),
-                 GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 std::move(pushed_request_headers)));
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientAckAndRstPacket(
-          packet_num++, GetNthServerInitiatedUnidirectionalStreamId(0),
-          quic::QUIC_INVALID_PROMISE_URL, 1, 1));
-
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200")));
-
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 3, GetNthServerInitiatedUnidirectionalStreamId(0), false,
-                 false, GetResponseHeaders("200")));
-  mock_quic_data.AddWrite(SYNCHRONOUS,
-                          ConstructClientAckPacket(packet_num++, 3, 1));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 4, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("hello!")));
-
-  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
-  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  // The non-alternate protocol job needs to hang in order to guarantee that
-  // the alternate-protocol job will "win".
-  AddHangingNonAlternateProtocolSocketData();
-
-  CreateSession();
-
-  // PUSH_PROMISE handling in the http layer gets exercised here.
-  SendRequestAndExpectQuicResponse("hello!");
-
-  EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
-  EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
-}
-
 // Performs an HTTPS/1.1 request over QUIC proxy tunnel.
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   session_params_.enable_quic = true;
@@ -7683,26 +6267,21 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
 
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-              DEFAULT_PRIORITY));
-    }
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
@@ -7734,12 +6313,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
                           ConstructClientAckPacket(packet_num++, 3, 2));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientDataPacket(
-                         packet_num++, GetQpackDecoderStreamId(), true, false,
-                         StreamCancellationQpackDecoderInstruction(0)));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientDataPacket(
+                       packet_num++, GetQpackDecoderStreamId(), true, false,
+                       StreamCancellationQpackDecoderInstruction(0)));
 
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -7784,26 +6361,21 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
 
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-              DEFAULT_PRIORITY));
-    }
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
@@ -7837,12 +6409,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
                           ConstructClientAckPacket(packet_num++, 3, 2));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientDataPacket(
-                         packet_num++, GetQpackDecoderStreamId(), true, false,
-                         StreamCancellationQpackDecoderInstruction(0)));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientDataPacket(
+                       packet_num++, GetQpackDecoderStreamId(), true, false,
+                       StreamCancellationQpackDecoderInstruction(0)));
 
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -7886,26 +6456,21 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
 
   MockQuicData mock_quic_data(version_);
   int write_packet_index = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(write_packet_index++));
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(write_packet_index++));
 
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              write_packet_index++,
-              GetNthClientInitiatedBidirectionalStreamId(0), DEFAULT_PRIORITY));
-    }
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            write_packet_index++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           write_packet_index++, GetNthClientInitiatedBidirectionalStreamId(0),
-          true, false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          true, false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
@@ -7965,12 +6530,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
                           ConstructClientAckPacket(write_packet_index++, 5, 4));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientDataPacket(
-                         write_packet_index++, GetQpackDecoderStreamId(), true,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientDataPacket(
+                       write_packet_index++, GetQpackDecoderStreamId(), true,
+                       false, StreamCancellationQpackDecoderInstruction(0)));
 
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -8021,17 +6584,15 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
 
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-              DEFAULT_PRIORITY));
-    }
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
 
   // CONNECT request and response for first request
@@ -8039,10 +6600,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
@@ -8075,8 +6633,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
                           ConstructClientAckPacket(packet_num++, 3, 2));
 
   // CONNECT request and response for second request
-  if (VersionUsesHttp3(version_.transport_version) &&
-      base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
         ConstructClientPriorityPacket(
@@ -8087,10 +6644,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(1), false,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("different.example.org:443"), false));
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
@@ -8124,26 +6678,19 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 6, 5));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
-
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientDataPacket(
-                         packet_num++, GetQpackDecoderStreamId(), true, false,
-                         StreamCancellationQpackDecoderInstruction(0)));
-  }
-
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientDataPacket(
+                       packet_num++, GetQpackDecoderStreamId(), true, false,
+                       StreamCancellationQpackDecoderInstruction(0)));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRstPacket(packet_num++,
                                GetNthClientInitiatedBidirectionalStreamId(0),
                                quic::QUIC_STREAM_CANCELLED));
-
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientDataPacket(
-                         packet_num++, GetQpackDecoderStreamId(), true, false,
-                         StreamCancellationQpackDecoderInstruction(1, false)));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientDataPacket(
+                       packet_num++, GetQpackDecoderStreamId(), true, false,
+                       StreamCancellationQpackDecoderInstruction(1, false)));
 
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -8196,26 +6743,21 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectFailure) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
 
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-              DEFAULT_PRIORITY));
-    }
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
@@ -8255,25 +6797,20 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyQuicConnectionError) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-              DEFAULT_PRIORITY));
-    }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_FAILED);
 
@@ -8303,51 +6840,37 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
 
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-              DEFAULT_PRIORITY));
-    }
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
                  GetResponseHeaders("200")));
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        ConstructClientRstPacket(packet_num++,
-                                 GetNthClientInitiatedBidirectionalStreamId(0),
-                                 quic::QUIC_STREAM_CANCELLED));
-  } else {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS,
-        ConstructClientAckAndRstPacket(
-            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED, 1, 1));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientAckAndDataPacket(
+                       packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
+                       false, StreamCancellationQpackDecoderInstruction(0)));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRstPacket(packet_num++,
+                               GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED));
 
-  if (VersionUsesHttp3(version_.transport_version) &&
-      base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
         ConstructClientPriorityPacket(
@@ -8358,10 +6881,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(1), false,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
@@ -8393,12 +6913,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
                           ConstructClientAckPacket(packet_num++, 4, 3));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
 
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientDataPacket(
-                         packet_num++, GetQpackDecoderStreamId(), true, false,
-                         StreamCancellationQpackDecoderInstruction(1, false)));
-  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS, ConstructClientDataPacket(
+                       packet_num++, GetQpackDecoderStreamId(), true, false,
+                       StreamCancellationQpackDecoderInstruction(1, false)));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRstPacket(packet_num++,
@@ -8453,16 +6971,14 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyUserAgent) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-              DEFAULT_PRIORITY));
-    }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
 
   spdy::Http2HeaderBlock headers =
@@ -8472,11 +6988,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyUserAgent) {
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
-          std::move(headers), false));
+          false, DEFAULT_PRIORITY, std::move(headers), false));
   // Return an error, so the transaction stops here (this test isn't interested
   // in the rest).
   mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_FAILED);
@@ -8514,25 +7026,20 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyRequestPriority) {
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          ConstructClientPriorityPacket(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-              DEFAULT_PRIORITY));
-    }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        ConstructClientPriorityPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            DEFAULT_PRIORITY));
   }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          false,
-          VersionUsesHttp3(version_.transport_version)
-              ? DEFAULT_PRIORITY
-              : HttpProxyConnectJob::kH2QuicTunnelPriority,
+          false, DEFAULT_PRIORITY,
           ConnectRequestHeaders("mail.example.org:443"), false));
   // Return an error, so the transaction stops here (this test isn't interested
   // in the rest).
@@ -8566,16 +7073,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
   const RequestPriority kRequestPriority2 = LOWEST;
 
   MockQuicData mock_quic_data(version_);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(ASYNC, ConstructInitialSettingsPacket(1));
-    mock_quic_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
-  } else {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientRequestHeadersPacket(
-                         1, GetNthClientInitiatedBidirectionalStreamId(0), true,
-                         false, HttpProxyConnectJob::kH2QuicTunnelPriority,
-                         ConnectRequestHeaders("mail.example.org:443"), 0));
-  }
+  mock_quic_data.AddWrite(ASYNC, ConstructInitialSettingsPacket(1));
+  mock_quic_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
   // This should never be reached.
   mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_FAILED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -8656,28 +7155,22 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
     MockQuicData mock_quic_data(version_);
 
     int packet_num = 1;
-    if (VersionUsesHttp3(version_.transport_version)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS, client_maker.MakeInitialSettingsPacket(packet_num++));
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS, client_maker.MakeInitialSettingsPacket(packet_num++));
 
-      if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-        mock_quic_data.AddWrite(
-            SYNCHRONOUS, client_maker.MakePriorityPacket(
-                             packet_num++, true,
-                             GetNthClientInitiatedBidirectionalStreamId(0),
-                             quic::QuicStreamPriority::kDefaultUrgency));
-      }
+    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+      mock_quic_data.AddWrite(
+          SYNCHRONOUS,
+          client_maker.MakePriorityPacket(
+              packet_num++, true, GetNthClientInitiatedBidirectionalStreamId(0),
+              quic::QuicStreamPriority::kDefaultUrgency));
     }
 
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
         client_maker.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-            false,
-            VersionUsesHttp3(version_.transport_version)
-                ? quic::QuicStreamPriority::kDefaultUrgency
-                : ConvertRequestPriorityToQuicPriority(
-                      HttpProxyConnectJob::kH2QuicTunnelPriority),
+            false, quic::QuicStreamPriority::kDefaultUrgency,
             client_maker.ConnectRequestHeaders("mail.example.org:443"), nullptr,
             false));
 
@@ -8704,14 +7197,12 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
     mock_quic_data.AddWrite(SYNCHRONOUS,
                             client_maker.MakeAckPacket(packet_num++, 2, 1));
 
-    if (VersionUsesHttp3(version_.transport_version)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          client_maker.MakeDataPacket(
-              packet_num++, GetQpackDecoderStreamId(),
-              /* should_include_version = */ true,
-              /* fin = */ false, StreamCancellationQpackDecoderInstruction(0)));
-    }
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        client_maker.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /* should_include_version = */ true,
+            /* fin = */ false, StreamCancellationQpackDecoderInstruction(0)));
 
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
@@ -8720,8 +7211,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
             quic::QUIC_STREAM_CANCELLED,
             /*include_stop_sending_if_v99=*/true));
 
-    if (VersionUsesHttp3(version_.transport_version) &&
-        base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
       mock_quic_data.AddWrite(
           SYNCHRONOUS,
           client_maker.MakePriorityPacket(
@@ -8735,11 +7225,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
         SYNCHRONOUS,
         client_maker.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(1), false,
-            false,
-            VersionUsesHttp3(version_.transport_version)
-                ? quic::QuicStreamPriority::kDefaultUrgency
-                : ConvertRequestPriorityToQuicPriority(
-                      HttpProxyConnectJob::kH2QuicTunnelPriority),
+            false, quic::QuicStreamPriority::kDefaultUrgency,
             std::move(headers), nullptr, false));
 
     // Response to wrong password
@@ -8753,24 +7239,16 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
     mock_quic_data.AddRead(SYNCHRONOUS,
                            ERR_IO_PENDING);  // No more data to read
 
-    if (VersionUsesHttp3(version_.transport_version)) {
-      mock_quic_data.AddWrite(
-          SYNCHRONOUS,
-          client_maker.MakeAckAndDataPacket(
-              packet_num++, false, GetQpackDecoderStreamId(), 3, 3, false,
-              StreamCancellationQpackDecoderInstruction(1, false)));
-      mock_quic_data.AddWrite(SYNCHRONOUS,
-                              client_maker.MakeRstPacket(
-                                  packet_num++, false,
-                                  GetNthClientInitiatedBidirectionalStreamId(1),
-                                  quic::QUIC_STREAM_CANCELLED));
-    } else {
-      mock_quic_data.AddWrite(SYNCHRONOUS,
-                              client_maker.MakeAckAndRstPacket(
-                                  packet_num++, false,
-                                  GetNthClientInitiatedBidirectionalStreamId(1),
-                                  quic::QUIC_STREAM_CANCELLED, 3, 3));
-    }
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        client_maker.MakeAckAndDataPacket(
+            packet_num++, false, GetQpackDecoderStreamId(), 3, 3, false,
+            StreamCancellationQpackDecoderInstruction(1, false)));
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        client_maker.MakeRstPacket(
+            packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(1),
+            quic::QUIC_STREAM_CANCELLED));
 
     mock_quic_data.AddSocketDataToFactory(&socket_factory_);
     mock_quic_data.GetSequencedSocketData()->set_busy_before_sync_reads(true);
@@ -8907,10 +7385,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
           quic::Perspective::IS_SERVER, false);
 
       int packet_num = 1;
-      if (VersionUsesHttp3(version_.transport_version)) {
-        unpartitioned_mock_quic_data.AddWrite(
-            SYNCHRONOUS, client_maker1.MakeInitialSettingsPacket(packet_num++));
-      }
+      unpartitioned_mock_quic_data.AddWrite(
+          SYNCHRONOUS, client_maker1.MakeInitialSettingsPacket(packet_num++));
 
       unpartitioned_mock_quic_data.AddWrite(
           SYNCHRONOUS,
@@ -8984,11 +7460,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
           quic::Perspective::IS_SERVER, false);
 
       int packet_num2 = 1;
-      if (VersionUsesHttp3(version_.transport_version)) {
-        partitioned_mock_quic_data1.AddWrite(
-            SYNCHRONOUS,
-            client_maker2.MakeInitialSettingsPacket(packet_num2++));
-      }
+      partitioned_mock_quic_data1.AddWrite(
+          SYNCHRONOUS, client_maker2.MakeInitialSettingsPacket(packet_num2++));
 
       partitioned_mock_quic_data1.AddWrite(
           SYNCHRONOUS,
@@ -9043,11 +7516,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
           quic::Perspective::IS_SERVER, false);
 
       int packet_num3 = 1;
-      if (VersionUsesHttp3(version_.transport_version)) {
-        partitioned_mock_quic_data2.AddWrite(
-            SYNCHRONOUS,
-            client_maker3.MakeInitialSettingsPacket(packet_num3++));
-      }
+      partitioned_mock_quic_data2.AddWrite(
+          SYNCHRONOUS, client_maker3.MakeInitialSettingsPacket(packet_num3++));
 
       partitioned_mock_quic_data2.AddWrite(
           SYNCHRONOUS,
@@ -9174,17 +7644,15 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
         false);
 
     int packet_num = 1;
-    if (VersionUsesHttp3(version_.transport_version)) {
-      mock_quic_data[index]->AddWrite(
-          SYNCHRONOUS, client_maker.MakeInitialSettingsPacket(packet_num++));
+    mock_quic_data[index]->AddWrite(
+        SYNCHRONOUS, client_maker.MakeInitialSettingsPacket(packet_num++));
 
-      if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-        mock_quic_data[index]->AddWrite(
-            SYNCHRONOUS, client_maker.MakePriorityPacket(
-                             packet_num++, true,
-                             GetNthClientInitiatedBidirectionalStreamId(0),
-                             quic::QuicStreamPriority::kDefaultUrgency));
-      }
+    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+      mock_quic_data[index]->AddWrite(
+          SYNCHRONOUS,
+          client_maker.MakePriorityPacket(
+              packet_num++, true, GetNthClientInitiatedBidirectionalStreamId(0),
+              quic::QuicStreamPriority::kDefaultUrgency));
     }
 
     std::cout << "MakeRequestHeadersPacket\n";
@@ -9192,11 +7660,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
         SYNCHRONOUS,
         client_maker.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-            false,
-            VersionUsesHttp3(version_.transport_version)
-                ? quic::QuicStreamPriority::kDefaultUrgency
-                : ConvertRequestPriorityToQuicPriority(
-                      HttpProxyConnectJob::kH2QuicTunnelPriority),
+            false, quic::QuicStreamPriority::kDefaultUrgency,
             ConnectRequestHeaders("mail.example.org:443"), nullptr, false));
     mock_quic_data[index]->AddRead(
         ASYNC, server_maker.MakeResponseHeadersPacket(
@@ -9280,10 +7744,8 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1MockTest) {
 
   MockQuicData mock_quic_data(version_);
   int write_packet_index = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(write_packet_index++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(write_packet_index++));
   const std::string upload_content = "foo";
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -9331,10 +7793,8 @@ TEST_P(QuicNetworkTransactionTest, DISABLED_AllowHTTP1UploadPauseAndResume) {
   mock_quic_data.AddWrite(
       ASYNC, client_maker_->MakeDummyCHLOPacket(write_packet_index++));
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(write_packet_index++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(write_packet_index++));
   const std::string upload_content = "foo";
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -9406,10 +7866,8 @@ TEST_P(QuicNetworkTransactionTest,
   mock_quic_data.AddWrite(
       ASYNC, client_maker_->MakeDummyCHLOPacket(write_packet_index++));
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(write_packet_index++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(write_packet_index++));
   const std::string upload_content = "foo";
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -9476,10 +7934,6 @@ TEST_P(QuicNetworkTransactionTest,
 }
 
 TEST_P(QuicNetworkTransactionTest, IncorrectHttp3GoAway) {
-  if (!version_.HasIetfQuicFrames()) {
-    return;
-  }
-
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
 
   MockQuicData mock_quic_data(version_);
@@ -9544,10 +7998,6 @@ TEST_P(QuicNetworkTransactionTest, IncorrectHttp3GoAway) {
 }
 
 TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
-  if (!version_.HasIetfQuicFrames()) {
-    return;
-  }
-
   MockQuicData mock_quic_data1(version_);
   int write_packet_number1 = 1;
   mock_quic_data1.AddWrite(
@@ -9690,10 +8140,8 @@ TEST_P(QuicNetworkTransactionTest, WebsocketOpensNewConnectionWithHttp1) {
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
 
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
 
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
@@ -9814,10 +8262,8 @@ TEST_P(QuicNetworkTransactionTest,
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -9908,10 +8354,8 @@ TEST_P(QuicNetworkTransactionTest,
   MockQuicData mock_quic_data(version_);
 
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructInitialSettingsPacket(packet_num++));
 
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);

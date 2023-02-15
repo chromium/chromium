@@ -23,6 +23,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
+#include "net/quic/quic_context.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/fuzzed_datagram_client_socket.h"
@@ -149,7 +150,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   QuicStreamRequest request(factory.get());
   TestCompletionCallback callback;
   NetErrorDetails net_error_details;
-  quic::ParsedQuicVersionVector versions = quic::AllSupportedVersions();
+  quic::ParsedQuicVersionVector versions = AllSupportedQuicVersions();
   quic::ParsedQuicVersion version =
       versions[data_provider.ConsumeIntegralInRange<size_t>(
           0, versions.size() - 1)];

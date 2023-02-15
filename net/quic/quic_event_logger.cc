@@ -89,29 +89,17 @@ base::Value NetLogReceivedQuicPacketHeaderParams(
   if (!client_connection_id.IsEmpty()) {
     dict.Set("client_connection_id", client_connection_id.ToString());
   }
-  if (version.HasIetfInvariantHeader()) {
-    if (header.destination_connection_id_included ==
-            quic::CONNECTION_ID_PRESENT &&
-        header.destination_connection_id != client_connection_id &&
-        !header.destination_connection_id.IsEmpty()) {
-      dict.Set("destination_connection_id",
-               header.destination_connection_id.ToString());
-    }
-    if (header.source_connection_id_included == quic::CONNECTION_ID_PRESENT &&
-        header.source_connection_id != connection_id &&
-        !header.source_connection_id.IsEmpty()) {
-      dict.Set("source_connection_id", header.source_connection_id.ToString());
-    }
-  } else {
-    if (header.destination_connection_id_included ==
-            quic::CONNECTION_ID_PRESENT &&
-        header.destination_connection_id != connection_id &&
-        !header.destination_connection_id.IsEmpty()) {
-      dict.Set("destination_connection_id",
-               header.destination_connection_id.ToString());
-    }
-    dict.Set("reset_flag", header.reset_flag);
-    dict.Set("version_flag", header.version_flag);
+  if (header.destination_connection_id_included ==
+          quic::CONNECTION_ID_PRESENT &&
+      header.destination_connection_id != client_connection_id &&
+      !header.destination_connection_id.IsEmpty()) {
+    dict.Set("destination_connection_id",
+             header.destination_connection_id.ToString());
+  }
+  if (header.source_connection_id_included == quic::CONNECTION_ID_PRESENT &&
+      header.source_connection_id != connection_id &&
+      !header.source_connection_id.IsEmpty()) {
+    dict.Set("source_connection_id", header.source_connection_id.ToString());
   }
   dict.Set("packet_number", NetLogNumberValue(header.packet_number.ToUint64()));
   dict.Set("header_format", quic::PacketHeaderFormatToString(header.form));

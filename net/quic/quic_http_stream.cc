@@ -348,35 +348,19 @@ bool QuicHttpStream::IsConnectionReused() const {
 }
 
 int64_t QuicHttpStream::GetTotalReceivedBytes() const {
-  // When QPACK is enabled, headers are sent and received on the stream, so
-  // the headers bytes do not need to be accounted for independently.
-  int64_t total_received_bytes =
-      quic::VersionUsesHttp3(quic_session()->GetQuicVersion().transport_version)
-          ? 0
-          : headers_bytes_received_;
   if (stream_) {
     DCHECK_LE(stream_->NumBytesConsumed(), stream_->stream_bytes_read());
     // Only count the uniquely received bytes.
-    total_received_bytes += stream_->NumBytesConsumed();
-  } else {
-    total_received_bytes += closed_stream_received_bytes_;
+    return stream_->NumBytesConsumed();
   }
-  return total_received_bytes;
+  return closed_stream_received_bytes_;
 }
 
 int64_t QuicHttpStream::GetTotalSentBytes() const {
-  // When QPACK is enabled, headers are sent and received on the stream, so
-  // the headers bytes do not need to be accounted for independently.
-  int64_t total_sent_bytes =
-      quic::VersionUsesHttp3(quic_session()->GetQuicVersion().transport_version)
-          ? 0
-          : headers_bytes_sent_;
   if (stream_) {
-    total_sent_bytes += stream_->stream_bytes_written();
-  } else {
-    total_sent_bytes += closed_stream_sent_bytes_;
+    return stream_->stream_bytes_written();
   }
-  return total_sent_bytes;
+  return closed_stream_sent_bytes_;
 }
 
 bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {

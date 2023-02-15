@@ -159,7 +159,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
         quic::test::kInitialSessionFlowControlWindowForTest);
     server_ = std::make_unique<QuicSimpleServer>(
         net::test::ProofSourceForTestingChromium(), server_config_,
-        server_config_options_, quic::AllSupportedVersions(),
+        server_config_options_, AllSupportedQuicVersions(),
         &memory_cache_backend_);
     server_->Listen(server_address_);
     server_address_ = server_->server_address();

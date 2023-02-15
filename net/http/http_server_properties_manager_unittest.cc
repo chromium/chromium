@@ -28,6 +28,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
+#include "net/quic/quic_context.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3017,7 +3018,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 }
 
 TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
-  for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
+  for (const quic::ParsedQuicVersion& version : AllSupportedQuicVersions()) {
     if (version.AlpnDeferToRFCv1()) {
       // These versions currently do not support Alt-Svc.
       continue;

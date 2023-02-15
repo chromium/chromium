@@ -30,6 +30,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
 #include "net/quic/crypto/proof_source_chromium.h"
+#include "net/quic/quic_context.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/ct_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -134,7 +135,7 @@ const char kLogDescription[] = "somelog";
 // This test exercises code that does not depend on the QUIC version in use
 // but that still requires a version so we just use the first one.
 const quic::QuicTransportVersion kTestTransportVersion =
-    quic::AllSupportedVersions().front().transport_version;
+    AllSupportedQuicVersions().front().transport_version;
 
 }  // namespace
 

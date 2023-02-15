@@ -37,6 +37,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/quic/quic_chromium_packet_writer.h"
+#include "net/quic/quic_context.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
@@ -135,16 +136,9 @@ class QuicProxyClientSocketTest
 
   QuicProxyClientSocketTest()
       : version_(GetParam()),
-        client_data_stream_id1_(
-            quic::VersionUsesHttp3(version_.transport_version)
-                ? quic::QuicUtils::GetFirstBidirectionalStreamId(
-                      version_.transport_version,
-                      quic::Perspective::IS_CLIENT)
-                : quic::QuicUtils::GetFirstBidirectionalStreamId(
-                      version_.transport_version,
-                      quic::Perspective::IS_CLIENT) +
-                      quic::QuicUtils::StreamIdDelta(
-                          version_.transport_version)),
+        client_data_stream_id1_(quic::QuicUtils::GetFirstBidirectionalStreamId(
+            version_.transport_version,
+            quic::Perspective::IS_CLIENT)),
         mock_quic_data_(version_),
         crypto_config_(
             quic::test::crypto_test_utils::ProofVerifierForTesting()),
@@ -271,10 +265,8 @@ class QuicProxyClientSocketTest
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.
-    if (VersionUsesHttp3(version_.transport_version)) {
-      session_->qpack_decoder()->set_qpack_stream_sender_delegate(
-          &noop_qpack_stream_sender_delegate_);
-    }
+    session_->qpack_decoder()->set_qpack_stream_sender_delegate(
+        &noop_qpack_stream_sender_delegate_);
 
     TestCompletionCallback callback;
     EXPECT_THAT(session_->CryptoConnect(callback.callback()), IsOk());
@@ -577,9 +569,6 @@ class QuicProxyClientSocketTest
   }
 
   std::string ConstructDataHeader(size_t body_len) {
-    if (!version_.HasIetfQuicFrames()) {
-      return "";
-    }
     quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
         body_len, quiche::SimpleBufferAllocator::Get());
     return std::string(buffer.data(), buffer.size());
@@ -633,10 +622,8 @@ class QuicProxyClientSocketTest
 
 TEST_P(QuicProxyClientSocketTest, ConnectSendsCorrectRequest) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -675,10 +662,8 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
   const char kResponseHeaderValue[] = "testing";
 
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacketWithExtraHeaders(
                                packet_number++,
@@ -708,10 +693,8 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
 
 TEST_P(QuicProxyClientSocketTest, ConnectWithAuthRequested) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC,
@@ -732,10 +715,8 @@ TEST_P(QuicProxyClientSocketTest, ConnectWithAuthRequested) {
 
 TEST_P(QuicProxyClientSocketTest, ConnectWithAuthCredentials) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectAuthRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -764,10 +745,8 @@ TEST_P(QuicProxyClientSocketTest, ConnectWithAuthCredentials) {
 // Tests that a redirect response from a CONNECT fails.
 TEST_P(QuicProxyClientSocketTest, ConnectRedirects) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC,
@@ -795,10 +774,8 @@ TEST_P(QuicProxyClientSocketTest, ConnectRedirects) {
 
 TEST_P(QuicProxyClientSocketTest, ConnectFails) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
@@ -814,10 +791,8 @@ TEST_P(QuicProxyClientSocketTest, ConnectFails) {
 
 TEST_P(QuicProxyClientSocketTest, WasEverUsedReturnsCorrectValue) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -828,8 +803,7 @@ TEST_P(QuicProxyClientSocketTest, WasEverUsedReturnsCorrectValue) {
 
   Initialize();
 
-  if (VersionUsesHttp3(version_.transport_version))
-    EXPECT_TRUE(sock_->WasEverUsed());  // Used due to crypto handshake
+  EXPECT_TRUE(sock_->WasEverUsed());  // Used due to crypto handshake
   AssertConnectSucceeds();
   EXPECT_TRUE(sock_->WasEverUsed());
   sock_->Disconnect();
@@ -838,10 +812,8 @@ TEST_P(QuicProxyClientSocketTest, WasEverUsedReturnsCorrectValue) {
 
 TEST_P(QuicProxyClientSocketTest, GetPeerAddressReturnsCorrectValues) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -869,10 +841,8 @@ TEST_P(QuicProxyClientSocketTest, GetPeerAddressReturnsCorrectValues) {
 
 TEST_P(QuicProxyClientSocketTest, IsConnectedAndIdle) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -908,10 +878,8 @@ TEST_P(QuicProxyClientSocketTest, IsConnectedAndIdle) {
 
 TEST_P(QuicProxyClientSocketTest, GetTotalReceivedBytes) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   size_t header_length;
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
@@ -936,24 +904,13 @@ TEST_P(QuicProxyClientSocketTest, GetTotalReceivedBytes) {
 
   AssertConnectSucceeds();
 
-  if (!VersionUsesHttp3(version_.transport_version)) {
-    header_length = 0;
-    EXPECT_EQ(0, sock_->GetTotalReceivedBytes());
-  } else {
-    // HTTP/3 sends and receives HTTP headers on the request stream.
-    EXPECT_EQ((int64_t)(header_length), sock_->GetTotalReceivedBytes());
-  }
+  EXPECT_EQ((int64_t)(header_length), sock_->GetTotalReceivedBytes());
 
   // The next read is consumed and buffered.
   ResumeAndRun();
 
-  if (!VersionUsesHttp3(version_.transport_version)) {
-    EXPECT_EQ(0, sock_->GetTotalReceivedBytes());
-  } else {
-    // HTTP/3 encodes data with DATA frame. The header is consumed.
-    EXPECT_EQ((int64_t)(header_length + data_header.length()),
-              sock_->GetTotalReceivedBytes());
-  }
+  EXPECT_EQ((int64_t)(header_length + data_header.length()),
+            sock_->GetTotalReceivedBytes());
 
   // The payload from the single large data frame will be read across
   // two different reads.
@@ -970,11 +927,9 @@ TEST_P(QuicProxyClientSocketTest, GetTotalReceivedBytes) {
 
 TEST_P(QuicProxyClientSocketTest, SetStreamPriority) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
-  // Despite setting the priority to HIGHEST, the requets initial priority of
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  // Despite setting the priority to HIGHEST, the requests initial priority of
   // LOWEST is used.
   mock_quic_data_.AddWrite(
       SYNCHRONOUS, ConstructConnectRequestPacket(packet_number++, LOWEST));
@@ -992,39 +947,24 @@ TEST_P(QuicProxyClientSocketTest, SetStreamPriority) {
 
 TEST_P(QuicProxyClientSocketTest, WriteSendsDataInDataFrame) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
   mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  if (version_.HasIetfQuicFrames()) {
-    std::string header = ConstructDataHeader(kLen1);
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructAckAndDataPacket(packet_number++, 1, 1,
-                                  {header + std::string(kMsg1, kLen1)}));
-    std::string header2 = ConstructDataHeader(kLen2);
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructDataPacket(packet_number++,
-                            {header2 + std::string(kMsg2, kLen2)}));
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
-  } else {
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS, ConstructAckAndDataPacket(packet_number++, 1, 1,
-                                               std::string(kMsg1, kLen1)));
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructDataPacket(packet_number++, std::string(kMsg2, kLen2)));
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
-  }
+  std::string header = ConstructDataHeader(kLen1);
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructAckAndDataPacket(packet_number++, 1, 1,
+                                {header + std::string(kMsg1, kLen1)}));
+  std::string header2 = ConstructDataHeader(kLen2);
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructDataPacket(packet_number++,
+                                       {header2 + std::string(kMsg2, kLen2)}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
 
   Initialize();
 
@@ -1036,25 +976,17 @@ TEST_P(QuicProxyClientSocketTest, WriteSendsDataInDataFrame) {
 
 TEST_P(QuicProxyClientSocketTest, WriteSplitsLargeDataIntoMultiplePackets) {
   int write_packet_index = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(write_packet_index++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(write_packet_index++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(write_packet_index++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
   mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   std::string header = ConstructDataHeader(kLen1);
-  if (!version_.HasIetfQuicFrames()) {
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS, ConstructAckAndDataPacket(write_packet_index++, 1, 1,
-                                               std::string(kMsg1, kLen1)));
-  } else {
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructAckAndDataPacket(write_packet_index++, 1, 1,
-                                  {header + std::string(kMsg1, kLen1)}));
-  }
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructAckAndDataPacket(write_packet_index++, 1, 1,
+                                {header + std::string(kMsg1, kLen1)}));
 
   // Expect |kNumDataPackets| data packets, each containing the max possible
   // amount of data.
@@ -1062,16 +994,14 @@ TEST_P(QuicProxyClientSocketTest, WriteSplitsLargeDataIntoMultiplePackets) {
   std::string data(numDataPackets * quic::kDefaultMaxPacketSize, 'x');
   quic::QuicStreamOffset offset = kLen1 + header.length();
 
-  if (version_.HasIetfQuicFrames()) {
-    numDataPackets++;
-  }
+  numDataPackets++;
   size_t total_data_length = 0;
   for (int i = 0; i < numDataPackets; ++i) {
     size_t max_packet_data_length = GetStreamFrameDataLengthFromPacketLength(
         quic::kDefaultMaxPacketSize, version_, !kIncludeVersion,
         !kIncludeDiversificationNonce, k8ByteConnectionId,
         quic::PACKET_1BYTE_PACKET_NUMBER, offset);
-    if (version_.HasIetfQuicFrames() && i == 0) {
+    if (i == 0) {
       // 3661 is the data frame length from packet length.
       std::string header2 = ConstructDataHeader(3661);
       mock_quic_data_.AddWrite(
@@ -1081,7 +1011,7 @@ TEST_P(QuicProxyClientSocketTest, WriteSplitsLargeDataIntoMultiplePackets) {
               {header2 +
                std::string(data.c_str(), max_packet_data_length - 7)}));
       offset += max_packet_data_length - header2.length() - 1;
-    } else if (version_.HasIetfQuicFrames() && i == numDataPackets - 1) {
+    } else if (i == numDataPackets - 1) {
       mock_quic_data_.AddWrite(
           SYNCHRONOUS, ConstructDataPacket(write_packet_index++,
                                            std::string(data.c_str(), 7)));
@@ -1120,10 +1050,8 @@ TEST_P(QuicProxyClientSocketTest, WriteSplitsLargeDataIntoMultiplePackets) {
 
 TEST_P(QuicProxyClientSocketTest, ReadReadsDataInDataFrame) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1149,10 +1077,8 @@ TEST_P(QuicProxyClientSocketTest, ReadReadsDataInDataFrame) {
 
 TEST_P(QuicProxyClientSocketTest, ReadDataFromBufferedFrames) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1187,10 +1113,8 @@ TEST_P(QuicProxyClientSocketTest, ReadDataFromBufferedFrames) {
 
 TEST_P(QuicProxyClientSocketTest, ReadDataMultipleBufferedFrames) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1223,10 +1147,8 @@ TEST_P(QuicProxyClientSocketTest, ReadDataMultipleBufferedFrames) {
 
 TEST_P(QuicProxyClientSocketTest, LargeReadWillMergeDataFromDifferentFrames) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1259,10 +1181,8 @@ TEST_P(QuicProxyClientSocketTest, LargeReadWillMergeDataFromDifferentFrames) {
 
 TEST_P(QuicProxyClientSocketTest, MultipleShortReadsThenMoreRead) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1307,10 +1227,8 @@ TEST_P(QuicProxyClientSocketTest, MultipleShortReadsThenMoreRead) {
 
 TEST_P(QuicProxyClientSocketTest, ReadWillSplitDataFromLargeFrame) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1346,10 +1264,8 @@ TEST_P(QuicProxyClientSocketTest, ReadWillSplitDataFromLargeFrame) {
 
 TEST_P(QuicProxyClientSocketTest, MultipleReadsFromSameLargeFrame) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1387,10 +1303,8 @@ TEST_P(QuicProxyClientSocketTest, MultipleReadsFromSameLargeFrame) {
 
 TEST_P(QuicProxyClientSocketTest, ReadAuthResponseBody) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC,
@@ -1424,10 +1338,8 @@ TEST_P(QuicProxyClientSocketTest, ReadAuthResponseBody) {
 
 TEST_P(QuicProxyClientSocketTest, ReadErrorResponseBody) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC,
@@ -1456,10 +1368,8 @@ TEST_P(QuicProxyClientSocketTest, ReadErrorResponseBody) {
 
 TEST_P(QuicProxyClientSocketTest, AsyncReadAroundWrite) {
   int write_packet_index = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(write_packet_index++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(write_packet_index++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(write_packet_index++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1472,16 +1382,9 @@ TEST_P(QuicProxyClientSocketTest, AsyncReadAroundWrite) {
                            ConstructAckPacket(write_packet_index++, 2, 1));
 
   std::string header2 = ConstructDataHeader(kLen2);
-  if (version_.HasIetfQuicFrames()) {
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructDataPacket(write_packet_index++,
-                            {header2 + std::string(kMsg2, kLen2)}));
-  } else {
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructDataPacket(write_packet_index++, std::string(kMsg2, kLen2)));
-  }
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructDataPacket(write_packet_index++,
+                                       {header2 + std::string(kMsg2, kLen2)}));
 
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
 
@@ -1516,10 +1419,8 @@ TEST_P(QuicProxyClientSocketTest, AsyncReadAroundWrite) {
 
 TEST_P(QuicProxyClientSocketTest, AsyncWriteAroundReads) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1540,20 +1441,12 @@ TEST_P(QuicProxyClientSocketTest, AsyncWriteAroundReads) {
   mock_quic_data_.AddWrite(ASYNC, ERR_IO_PENDING);  // Pause
 
   std::string header3 = ConstructDataHeader(kLen2);
-  if (!version_.HasIetfQuicFrames()) {
-    mock_quic_data_.AddWrite(
-        ASYNC, ConstructDataPacket(packet_number++, std::string(kMsg2, kLen2)));
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS, ConstructAckAndDataPacket(packet_number++, 3, 3,
-                                               std::string(kMsg2, kLen2)));
-  } else {
-    mock_quic_data_.AddWrite(
-        ASYNC, ConstructDataPacket(packet_number++,
-                                   {header3 + std::string(kMsg2, kLen2)}));
-    mock_quic_data_.AddWrite(
-        ASYNC, ConstructAckAndDataPacket(packet_number++, 3, 3,
-                                         header3 + std::string(kMsg2, kLen2)));
-  }
+  mock_quic_data_.AddWrite(
+      ASYNC, ConstructDataPacket(packet_number++,
+                                 {header3 + std::string(kMsg2, kLen2)}));
+  mock_quic_data_.AddWrite(
+      ASYNC, ConstructAckAndDataPacket(packet_number++, 3, 3,
+                                       header3 + std::string(kMsg2, kLen2)));
 
   mock_quic_data_.AddWrite(
       SYNCHRONOUS,
@@ -1588,10 +1481,8 @@ TEST_P(QuicProxyClientSocketTest, AsyncWriteAroundReads) {
 // Reading from an already closed socket should return 0
 TEST_P(QuicProxyClientSocketTest, ReadOnClosedSocketReturnsZero) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1614,10 +1505,8 @@ TEST_P(QuicProxyClientSocketTest, ReadOnClosedSocketReturnsZero) {
 // Read pending when socket is closed should return 0
 TEST_P(QuicProxyClientSocketTest, PendingReadOnCloseReturnsZero) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1638,10 +1527,8 @@ TEST_P(QuicProxyClientSocketTest, PendingReadOnCloseReturnsZero) {
 // Reading from a disconnected socket is an error
 TEST_P(QuicProxyClientSocketTest, ReadOnDisconnectSocketReturnsNotConnected) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1664,10 +1551,8 @@ TEST_P(QuicProxyClientSocketTest, ReadOnDisconnectSocketReturnsNotConnected) {
 // FIN, then 0.
 TEST_P(QuicProxyClientSocketTest, ReadAfterFinReceivedReturnsBufferedData) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1701,10 +1586,8 @@ TEST_P(QuicProxyClientSocketTest, ReadAfterFinReceivedReturnsBufferedData) {
 // Calling Write() on a closed socket is an error.
 TEST_P(QuicProxyClientSocketTest, WriteOnClosedStream) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1723,10 +1606,8 @@ TEST_P(QuicProxyClientSocketTest, WriteOnClosedStream) {
 // Calling Write() on a disconnected socket is an error.
 TEST_P(QuicProxyClientSocketTest, WriteOnDisconnectedSocket) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1748,10 +1629,8 @@ TEST_P(QuicProxyClientSocketTest, WriteOnDisconnectedSocket) {
 // with the same error the session was closed with.
 TEST_P(QuicProxyClientSocketTest, WritePendingOnClose) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1784,10 +1663,8 @@ TEST_P(QuicProxyClientSocketTest, WritePendingOnClose) {
 
 TEST_P(QuicProxyClientSocketTest, DisconnectWithWritePending) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1824,10 +1701,8 @@ TEST_P(QuicProxyClientSocketTest, DisconnectWithWritePending) {
 // should not be called.
 TEST_P(QuicProxyClientSocketTest, DisconnectWithReadPending) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1857,10 +1732,8 @@ TEST_P(QuicProxyClientSocketTest, DisconnectWithReadPending) {
 // both should be called back.
 TEST_P(QuicProxyClientSocketTest, RstWithReadAndWritePending) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -1870,22 +1743,12 @@ TEST_P(QuicProxyClientSocketTest, RstWithReadAndWritePending) {
       ASYNC, ConstructServerRstPacket(2, quic::QUIC_STREAM_CANCELLED));
   mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   std::string header = ConstructDataHeader(kLen2);
-  if (!version_.HasIetfQuicFrames()) {
-    mock_quic_data_.AddWrite(
-        ASYNC, ConstructAckAndDataPacket(packet_number++, 1, 1,
-                                         std::string(kMsg2, kLen2)));
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructAckAndRstPacket(packet_number++,
-                                 quic::QUIC_RST_ACKNOWLEDGEMENT, 2, 2));
-  } else {
-    mock_quic_data_.AddWrite(
-        ASYNC, ConstructAckAndDataPacket(packet_number++, 1, 1,
-                                         {header + std::string(kMsg2, kLen2)}));
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS, ConstructAckAndRstOnlyPacket(
-                         packet_number++, quic::QUIC_STREAM_CANCELLED, 2, 2));
-  }
+  mock_quic_data_.AddWrite(
+      ASYNC, ConstructAckAndDataPacket(packet_number++, 1, 1,
+                                       {header + std::string(kMsg2, kLen2)}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstOnlyPacket(
+                       packet_number++, quic::QUIC_STREAM_CANCELLED, 2, 2));
 
   Initialize();
 
@@ -1914,10 +1777,8 @@ TEST_P(QuicProxyClientSocketTest, RstWithReadAndWritePending) {
 // and only the expected NetLog events (No SpdySession events).
 TEST_P(QuicProxyClientSocketTest, NetLog) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -2003,10 +1864,8 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
 // not be called.
 TEST_P(QuicProxyClientSocketTest, RstWithReadAndWritePendingDelete) {
   int packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data_.AddWrite(SYNCHRONOUS,
-                             ConstructSettingsPacket(packet_number++));
-  }
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
@@ -2015,23 +1874,13 @@ TEST_P(QuicProxyClientSocketTest, RstWithReadAndWritePendingDelete) {
   mock_quic_data_.AddRead(
       ASYNC, ConstructServerRstPacket(2, quic::QUIC_STREAM_CANCELLED));
   mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  if (!version_.HasIetfQuicFrames()) {
-    mock_quic_data_.AddWrite(
-        ASYNC, ConstructAckAndDataPacket(packet_number++, 1, 1,
-                                         std::string(kMsg1, kLen1)));
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS,
-        ConstructAckAndRstPacket(packet_number++,
-                                 quic::QUIC_RST_ACKNOWLEDGEMENT, 2, 2));
-  } else {
-    std::string header = ConstructDataHeader(kLen1);
-    mock_quic_data_.AddWrite(
-        ASYNC, ConstructAckAndDataPacket(packet_number++, 1, 1,
-                                         {header + std::string(kMsg1, kLen1)}));
-    mock_quic_data_.AddWrite(
-        SYNCHRONOUS, ConstructAckAndRstOnlyPacket(
-                         packet_number++, quic::QUIC_STREAM_CANCELLED, 2, 2));
-  }
+  std::string header = ConstructDataHeader(kLen1);
+  mock_quic_data_.AddWrite(
+      ASYNC, ConstructAckAndDataPacket(packet_number++, 1, 1,
+                                       {header + std::string(kMsg1, kLen1)}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstOnlyPacket(
+                       packet_number++, quic::QUIC_STREAM_CANCELLED, 2, 2));
 
   Initialize();
 
@@ -2062,7 +1911,7 @@ TEST_P(QuicProxyClientSocketTest, RstWithReadAndWritePendingDelete) {
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          QuicProxyClientSocketTest,
-                         ::testing::ValuesIn(quic::AllSupportedVersions()),
+                         ::testing::ValuesIn(AllSupportedQuicVersions()),
                          ::testing::PrintToStringParamName());
 
 }  // namespace net::test

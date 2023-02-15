@@ -12,6 +12,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
+#include "net/quic/quic_context.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_source.h"
@@ -125,7 +126,7 @@ class ProofTest : public ::testing::TestWithParam<quic::ParsedQuicVersion> {};
 
 INSTANTIATE_TEST_SUITE_P(QuicTransportVersion,
                          ProofTest,
-                         ::testing::ValuesIn(quic::AllSupportedVersions()),
+                         ::testing::ValuesIn(AllSupportedQuicVersions()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(ProofTest, Verify) {

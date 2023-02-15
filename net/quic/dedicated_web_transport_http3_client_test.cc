@@ -14,6 +14,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/crypto/proof_source_chromium.h"
+#include "net/quic/quic_context.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
@@ -157,7 +158,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
     server_ = std::make_unique<QuicSimpleServer>(
         std::move(proof_source), quic::QuicConfig(),
         quic::QuicCryptoServerConfig::ConfigOptions(),
-        quic::AllSupportedVersions(), &backend_);
+        AllSupportedQuicVersions(), &backend_);
     ASSERT_TRUE(server_->CreateUDPSocketAndListen(
         quic::QuicSocketAddress(quic::QuicIpAddress::Any6(), /*port=*/0)));
     port_ = server_->server_address().port();

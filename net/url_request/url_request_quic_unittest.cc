@@ -325,7 +325,7 @@ std::string PrintToString(const quic::ParsedQuicVersion& v) {
 
 INSTANTIATE_TEST_SUITE_P(Version,
                          URLRequestQuicTest,
-                         ::testing::ValuesIn(quic::AllSupportedVersions()),
+                         ::testing::ValuesIn(AllSupportedQuicVersions()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(URLRequestQuicTest, TestGetRequest) {
