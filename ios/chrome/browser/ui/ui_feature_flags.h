@@ -49,6 +49,9 @@ BASE_DECLARE_FEATURE(kDefaultBrowserFullscreenPromoExperiment);
 // Feature flag that allows external apps to show default browser settings.
 BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 
+// Feature flag to enable partial translate in the edit menu.
+BASE_DECLARE_FEATURE(kIOSEditMenuPartialTranslate);
+
 // Feature flag that shows iOS 15 context menu, instead of tooltip popover,
 // during a location bar long press gesture.
 BASE_DECLARE_FEATURE(kIOSLocationBarUseNativeContextMenu);

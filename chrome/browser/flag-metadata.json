@@ -4398,6 +4398,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "ios-edit-menu-partial-translate",
+    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "ios-force-translate-enabled",
     "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 120

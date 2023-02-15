@@ -53,6 +53,10 @@ BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
              "DefaultBrowserIntentsShowSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSEditMenuPartialTranslate,
+             "IOSEditMenuPartialTranslate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSNewOmniboxImplementation,
              "kIOSNewOmniboxImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);

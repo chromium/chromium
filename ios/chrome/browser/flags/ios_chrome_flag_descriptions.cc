@@ -453,6 +453,12 @@ const char kIOS3PIntentsInIncognitoDescription[] =
     "When enabled, an additional setting lets the user open links from other "
     "apps in Incognito.";
 
+const char kIOSEditMenuPartialTranslateName[] =
+    "Enable partial translate in edit menu";
+const char kIOSEditMenuPartialTranslateDescription[] =
+    "Replace the Apple translate entry in the web edit menu to use Google "
+    "Translate instead.";
+
 const char kIOSForceTranslateEnabledName[] = "Allow force translate on iOS.";
 const char kIOSForceTranslateEnabledDescription[] =
     "Enable the translate feature when language detection failed.";
