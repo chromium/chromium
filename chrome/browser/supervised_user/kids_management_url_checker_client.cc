@@ -8,7 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 

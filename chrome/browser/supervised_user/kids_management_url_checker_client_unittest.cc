@@ -13,14 +13,16 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,7 +64,11 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
  public:
   explicit KidsChromeManagementClientForTesting(
       content::BrowserContext* context)
-      : KidsChromeManagementClient(static_cast<Profile*>(context)) {}
+      : KidsChromeManagementClient(Profile::FromBrowserContext(context)
+                                       ->GetDefaultStoragePartition()
+                                       ->GetURLLoaderFactoryForBrowserProcess(),
+                                   IdentityManagerFactory::GetForProfile(
+                                       Profile::FromBrowserContext(context))) {}
 
   KidsChromeManagementClientForTesting(
       const KidsChromeManagementClientForTesting&) = delete;

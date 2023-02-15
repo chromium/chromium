@@ -1,10 +1,14 @@
 include_rules = [
+  "+components/google",
   "+components/grit",
-  "+components/keyed_service/core",
+  "+components/keyed_service",
   "+components/prefs",
   "+components/strings/grit",
   "+components/signin",
-  "+third_party/protobuf",
   "+components/sync",
+  "+google_apis",
+  "+net",
+  "+services/network/public",
+  "+third_party/protobuf",
   "+ui/base",
 ]

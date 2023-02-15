@@ -11,14 +11,17 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -57,7 +60,10 @@ class SupervisedUserRegionalURLFilterTest
   class MockKidsChromeManagementClient : public KidsChromeManagementClient {
    public:
     explicit MockKidsChromeManagementClient(Profile* profile)
-        : KidsChromeManagementClient(profile) {
+        : KidsChromeManagementClient(
+              profile->GetDefaultStoragePartition()
+                  ->GetURLLoaderFactoryForBrowserProcess(),
+              IdentityManagerFactory::GetForProfile(profile)) {
       // Without forwarding the call to the real implementation, the browser
       // hangs and the test times out.
       ON_CALL(*this, ClassifyURL)

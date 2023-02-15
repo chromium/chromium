@@ -4,20 +4,34 @@
 
 static_library("browser") {
   sources = [
+    "kids_chrome_management_client.cc",
+    "kids_chrome_management_client.h",
     "supervised_user_error_page.cc",
     "supervised_user_error_page.h",
     "supervised_user_settings_service.cc",
     "supervised_user_settings_service.h",
   ]
 
+  public_deps = [
+    "//components/keyed_service/core",
+    "//components/supervised_user/core/browser/proto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+
   deps = [
     "//base",
-    "//components/prefs:prefs",
+    "//components/google/core/common",
+    "//components/prefs",
     "//components/resources:components_resources",
     "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/common",
     "//components/sync",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//ui/base",
     "//url",
   ]

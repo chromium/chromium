@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 
 #include <utility>
 
@@ -11,8 +11,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -20,8 +18,6 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
@@ -161,12 +157,11 @@ struct KidsChromeManagementClient::KidsChromeManagementRequest {
   const RequestMethod method;
 };
 
-KidsChromeManagementClient::KidsChromeManagementClient(Profile* profile) {
-  url_loader_factory_ = profile->GetDefaultStoragePartition()
-                            ->GetURLLoaderFactoryForBrowserProcess();
-
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
-}
+KidsChromeManagementClient::KidsChromeManagementClient(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager)
+    : url_loader_factory_(url_loader_factory),
+      identity_manager_(identity_manager) {}
 
 KidsChromeManagementClient::~KidsChromeManagementClient() = default;
 
@@ -190,6 +185,15 @@ void KidsChromeManagementClient::ClassifyURL(
             "An OAuth2 access token identifying and authenticating the "
             "Google account, and the URL to be checked."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-kids-eng@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-02-13"
         }
         policy {
           cookies_allowed: NO
@@ -199,7 +203,7 @@ void KidsChromeManagementClient::ClassifyURL(
             "family dashboard."
           policy_exception_justification:
             "Enterprise admins don't have control over this feature "
-            "because it can't be enabled on enterprise environements."
+            "because it can't be enabled on enterprise environments."
         })");
 
   auto kids_chrome_request = std::make_unique<KidsChromeManagementRequest>(
@@ -226,8 +230,9 @@ void KidsChromeManagementClient::StartFetching(
   // This is a quick fix for https://crbug.com/1192222. `resource_request` is
   // moved during creation of SimpleURLLoader. Retrying the request causes
   // dereferencing nullptr. To avoid that recreate the `resource_request` here.
-  if (!req->resource_request)
+  if (!req->resource_request) {
     req->resource_request = CreateResourceRequestForUrlClassifier();
+  }
 
   signin::ScopeSet scopes{req->scope};
 

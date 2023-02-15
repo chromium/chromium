@@ -3662,6 +3662,7 @@ if (!is_android) {
       }
       deps += [
         "//chrome/browser/supervised_user:test_support",
+        "//components/supervised_user/core/browser",
         "//components/supervised_user/core/browser/proto",
         "//components/supervised_user/core/common",
       ]

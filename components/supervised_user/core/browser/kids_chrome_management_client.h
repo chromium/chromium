@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_CHROME_MANAGEMENT_CLIENT_H_
-#define CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_CHROME_MANAGEMENT_CLIENT_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_CHROME_MANAGEMENT_CLIENT_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_CHROME_MANAGEMENT_CLIENT_H_
 
 #include <list>
 #include <memory>
@@ -27,7 +27,6 @@ class SimpleURLLoader;
 }  // namespace network
 
 class GoogleServiceAuthError;
-class Profile;
 
 // Provides an interface between Family Link RPC clients (e.g.
 // KidsManagementURLChecker) and the Kids Chrome Management Service.
@@ -46,7 +45,9 @@ class KidsChromeManagementClient : public KeyedService {
       std::unique_ptr<google::protobuf::MessageLite> response_proto,
       ErrorCode error_code)>;
 
-  explicit KidsChromeManagementClient(Profile* profile);
+  explicit KidsChromeManagementClient(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
 
   KidsChromeManagementClient(const KidsChromeManagementClient&) = delete;
   KidsChromeManagementClient& operator=(const KidsChromeManagementClient&) =
@@ -110,4 +111,4 @@ class KidsChromeManagementClient : public KeyedService {
   KidsChromeRequestList requests_in_progress_;
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_CHROME_MANAGEMENT_CLIENT_H_
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_CHROME_MANAGEMENT_CLIENT_H_
