@@ -79,8 +79,9 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The current visibility of the extension; this affects the "pin" / "unpin"
   // strings in the menu.
-  // TODO(devlin): Rename this "PinState" when we finish removing the old UI
-  // bits.
+  // TODO(crbug.com/1416359): Rename this "PinState" when we finish removing the
+  // old UI bits and move outside this class (pin state is not tied to the
+  // context menu).
   enum ButtonVisibility {
     // The extension is pinned on the toolbar.
     PINNED,

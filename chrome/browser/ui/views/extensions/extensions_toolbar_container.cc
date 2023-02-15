@@ -397,26 +397,26 @@ bool ExtensionsToolbarContainer::CanShowActionsInToolbar() const {
   return !browser_->app_controller();
 }
 
+// TODO(crbug.com/1416359): Use `action_id` instead of action here and in the
+// next method as there is no need to have access to the view controller.
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
     const ToolbarActionViewController* action) const {
-  const std::string& extension_id = action->GetId();
-  return ShouldForceVisibility(extension_id) ||
-         model_->IsActionPinned(extension_id);
+  return GetActionVisibility(action) !=
+         extensions::ExtensionContextMenuModel::UNPINNED;
 }
 
 extensions::ExtensionContextMenuModel::ButtonVisibility
 ExtensionsToolbarContainer::GetActionVisibility(
     const ToolbarActionViewController* action) const {
-  extensions::ExtensionContextMenuModel::ButtonVisibility visibility =
-      extensions::ExtensionContextMenuModel::PINNED;
-
-  if (ShouldForceVisibility(action->GetId()) &&
-      !model_->IsActionPinned(action->GetId())) {
-    visibility = extensions::ExtensionContextMenuModel::TRANSITIVELY_VISIBLE;
-  } else if (!IsActionVisibleOnToolbar(action)) {
-    visibility = extensions::ExtensionContextMenuModel::UNPINNED;
+  if (model_->IsActionPinned(action->GetId())) {
+    return extensions::ExtensionContextMenuModel::PINNED;
   }
-  return visibility;
+
+  if (ShouldForceVisibility(action->GetId())) {
+    return extensions::ExtensionContextMenuModel::TRANSITIVELY_VISIBLE;
+  }
+
+  return extensions::ExtensionContextMenuModel::UNPINNED;
 }
 
 void ExtensionsToolbarContainer::UndoPopOut() {
