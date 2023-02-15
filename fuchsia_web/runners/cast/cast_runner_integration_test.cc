@@ -165,10 +165,12 @@ class FakeComponentState : public cr_fuchsia::AgentImpl::ComponentStateBase {
   FakeComponentState(base::StringPiece component_url,
                      chromium::cast::ApiBindings* bindings_manager,
                      chromium::cast::UrlRequestRewriteRulesProvider*
-                         url_request_rules_provider)
+                         url_request_rules_provider,
+                     base::OnceClosure on_delete)
       : ComponentStateBase(component_url),
         bindings_manager_binding_(outgoing_directory(), bindings_manager),
-        context_binding_(outgoing_directory(), &application_context_) {
+        context_binding_(outgoing_directory(), &application_context_),
+        on_delete_(std::move(on_delete)) {
     if (url_request_rules_provider) {
       url_request_rules_provider_binding_.emplace(outgoing_directory(),
                                                   url_request_rules_provider);
@@ -187,10 +189,6 @@ class FakeComponentState : public cr_fuchsia::AgentImpl::ComponentStateBase {
 
   FakeApplicationContext* application_context() {
     return &application_context_;
-  }
-
-  void set_on_delete(base::OnceClosure on_delete) {
-    on_delete_ = std::move(on_delete);
   }
 
   void Disconnect() { DisconnectClientsAndTeardown(); }
@@ -226,10 +224,7 @@ class TestCastComponent {
     EXPECT_TRUE(cast_runner_);
   }
 
-  ~TestCastComponent() {
-    if (component_controller_)
-      ShutdownComponent();
-  }
+  ~TestCastComponent() { ShutdownComponent(); }
 
   TestCastComponent(const TestCastComponent&) = delete;
   TestCastComponent& operator=(const FakeComponentState&) = delete;
@@ -335,14 +330,12 @@ class TestCastComponent {
     EXPECT_EQ(ExecuteJavaScript("window.location.href"), app_url.spec());
   }
 
+  // Closes the ComponentController and runs until the ComponentState is
+  // observed to have been deleted.
   void ShutdownComponent() {
-    EXPECT_TRUE(component_controller_);
-
     if (component_state_) {
-      base::RunLoop run_loop;
-      component_state_->set_on_delete(run_loop.QuitClosure());
       component_controller_.ptr().Unbind();
-      run_loop.Run();
+      WaitForComponentDestroyed();
     }
   }
 
@@ -359,29 +352,19 @@ class TestCastComponent {
     loop.Run();
   }
 
+  // Run until the ComponentState and ComponentController are both closed.
+  // This should be used after triggering component teardown, e.g. via an
+  // explicit ComponentController.Kill() call, to wait for it to take effect.
   void WaitForComponentDestroyed() {
     ASSERT_TRUE(component_state_);
     base::RunLoop state_loop;
-    component_state_->set_on_delete(state_loop.QuitClosure());
+    base::AutoReset reset_callback(&on_component_state_destroyed_,
+                                   state_loop.QuitClosure());
 
     if (component_controller_)
       ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
 
     state_loop.Run();
-
-    ResetComponentState();
-  }
-
-  void ResetComponentState() {
-    component_context_ = nullptr;
-    component_services_client_ = nullptr;
-    component_state_ = nullptr;
-    test_port_ = nullptr;
-  }
-
-  void OnComponentStateCreated(base::OnceClosure callback) {
-    ASSERT_FALSE(component_state_created_callback_);
-    component_state_created_callback_ = std::move(callback);
   }
 
   FakeApiBindingsImpl* api_bindings() { return &api_bindings_; }
@@ -433,14 +416,8 @@ class TestCastComponent {
 
   void WaitComponentStateCreated() {
     base::RunLoop run_loop;
-    base::OnceClosure old_component_state_created_callback =
-        std::move(component_state_created_callback_);
-    component_state_created_callback_ = base::BindLambdaForTesting([&] {
-      if (old_component_state_created_callback) {
-        std::move(old_component_state_created_callback).Run();
-      }
-      run_loop.Quit();
-    });
+    base::AutoReset reset_callback(&on_component_state_created_,
+                                   run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -448,14 +425,27 @@ class TestCastComponent {
       base::StringPiece component_url) {
     auto component_state = std::make_unique<FakeComponentState>(
         component_url, &api_bindings_,
-        url_request_rewrite_rules_provider_.get());
+        url_request_rewrite_rules_provider_.get(),
+        base::BindOnce(&TestCastComponent::OnComponentStateDestroyed,
+                       base::Unretained(this)));
     component_state_ = component_state.get();
 
-    if (component_state_created_callback_)
-      std::move(component_state_created_callback_).Run();
+    if (on_component_state_created_) {
+      std::move(on_component_state_created_).Run();
+    }
 
     return component_state;
   }
+
+  void OnComponentStateDestroyed() {
+    component_state_ = nullptr;
+
+    if (on_component_state_destroyed_) {
+      std::move(on_component_state_destroyed_).Run();
+    }
+  }
+
+  fuchsia::sys::Runner* const cast_runner_;
 
   FakeApiBindingsImpl api_bindings_;
   std::unique_ptr<FakeUrlRequestRewriteRulesProvider>
@@ -469,8 +459,8 @@ class TestCastComponent {
   FakeComponentState* component_state_ = nullptr;
   fuchsia::web::MessagePortPtr test_port_;
 
-  base::OnceClosure component_state_created_callback_;
-  fuchsia::sys::Runner* const cast_runner_;
+  base::OnceClosure on_component_state_created_;
+  base::OnceClosure on_component_state_destroyed_;
 };
 
 }  // namespace
@@ -660,6 +650,7 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrl) {
   component.CreateComponentContext(component_url, /*with_fake_agent=*/false);
   EXPECT_TRUE(component.component_context());
 
+  base::RunLoop shutdown_run_loop;
   base::RunLoop run_loop;
   FakeComponentState* dummy_component_state = nullptr;
   component.component_context()->RegisterCreateComponentStateCallback(
@@ -670,7 +661,8 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrl) {
             run_loop.Quit();
             auto result = std::make_unique<FakeComponentState>(
                 component_url, &dummy_agent_api_bindings,
-                &dummy_url_request_rewrite_rules_provider);
+                &dummy_url_request_rewrite_rules_provider,
+                shutdown_run_loop.QuitClosure());
             dummy_component_state = result.get();
             return result;
           }));
@@ -684,8 +676,6 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrl) {
   EXPECT_FALSE(component.component_state());
 
   // Shutdown component before destroying dummy_agent_api_bindings.
-  base::RunLoop shutdown_run_loop;
-  dummy_component_state->set_on_delete(shutdown_run_loop.QuitClosure());
   component.component_controller()->ptr().Unbind();
   shutdown_run_loop.Run();
 }
@@ -716,6 +706,8 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrlRewriteOptional) {
 
   auto component_url = base::StrCat({"cast:", kTestAppId});
   component.CreateComponentContext(component_url, /*with_fake_agent=*/false);
+
+  base::RunLoop shutdown_run_loop;
   base::RunLoop run_loop;
   FakeComponentState* dummy_component_state = nullptr;
   component.component_context()->RegisterCreateComponentStateCallback(
@@ -725,7 +717,8 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrlRewriteOptional) {
               -> std::unique_ptr<cr_fuchsia::AgentImpl::ComponentStateBase> {
             run_loop.Quit();
             auto result = std::make_unique<FakeComponentState>(
-                component_url, &dummy_agent_api_bindings, nullptr);
+                component_url, &dummy_agent_api_bindings, nullptr,
+                shutdown_run_loop.QuitClosure());
             dummy_component_state = result.get();
             return result;
           }));
@@ -739,8 +732,6 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrlRewriteOptional) {
   EXPECT_FALSE(component.component_state());
 
   // Shutdown component before destroying dummy_agent_api_bindings.
-  base::RunLoop shutdown_run_loop;
-  dummy_component_state->set_on_delete(shutdown_run_loop.QuitClosure());
   component.component_controller()->ptr().Unbind();
   shutdown_run_loop.Run();
 }
@@ -818,7 +809,6 @@ TEST_F(CastRunnerIntegrationTest, CameraAccessAfterComponentShutdown) {
   // Start and then shutdown the first app.
   component.CreateComponentContextAndStartComponent(kTestAppId);
   component.ShutdownComponent();
-  component.ResetComponentState();
 
   // Start the second app and try to connect the camera. It's expected to fail
   // to initialize the camera without crashing CastRunner.
@@ -857,7 +847,6 @@ TEST_F(CastRunnerIntegrationTest, MultipleComponentsUsingCamera) {
 
   // Shut down the first component.
   first_component.ShutdownComponent();
-  first_component.ResetComponentState();
 
   second_component.ExecuteJavaScript("connectCamera();");
 }
@@ -958,13 +947,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_WindowClose) {
 // Verifies that the ComponentController reports TerminationReason::EXITED and
 // exit code ZX_OK if the web content terminates itself.
 // TODO(https://crbug.com/1066833): Make this a WebRunner test.
-// TODO(crbug.com/1408810): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_OnTerminated_WindowClose DISABLED_OnTerminated_WindowClose
-#else
-#define MAYBE_OnTerminated_WindowClose OnTerminated_WindowClose
-#endif
-TEST_F(CastRunnerIntegrationTest, MAYBE_OnTerminated_WindowClose) {
+TEST_F(CastRunnerIntegrationTest, OnTerminated_WindowClose) {
   TestCastComponent component(cast_runner());
   const GURL url = test_server().GetURL(kBlankAppUrl);
   app_config_manager().AddApp(kTestAppId, url);
@@ -991,7 +974,8 @@ TEST_F(CastRunnerIntegrationTest, MAYBE_OnTerminated_WindowClose) {
   EXPECT_EQ(component.ExecuteJavaScript("window.close()"), "undefined");
   exit_code_loop.Run();
 
-  component.component_controller()->ptr().Unbind();
+  // TestComponent's destructor will spin the loop until the ComponentState is
+  // torn down.
 }
 
 // Verifies that the ComponentController reports TerminationReason::EXITED and
@@ -1024,7 +1008,8 @@ TEST_F(CastRunnerIntegrationTest, OnTerminated_ComponentKill) {
   component.component_controller()->ptr()->Kill();
   exit_code_loop.Run();
 
-  component.component_controller()->ptr().Unbind();
+  // TestComponent's destructor will spin the loop until the ComponentState is
+  // torn down.
 }
 
 // Ensures that CastRunner handles the value not being specified.
