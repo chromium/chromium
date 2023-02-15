@@ -4,6 +4,7 @@
 
 #include "skia/ext/benchmarking_canvas.h"
 
+#include <array>
 #include <memory>
 #include <sstream>
 #include <utility>
@@ -124,7 +125,7 @@ base::Value AsValue(SkBlendMode mode) {
 
 base::Value AsValue(SkCanvas::PointMode mode) {
   static const char* gModeStrings[] = { "Points", "Lines", "Polygon" };
-  DCHECK_LT(static_cast<size_t>(mode), SK_ARRAY_COUNT(gModeStrings));
+  DCHECK_LT(static_cast<size_t>(mode), std::size(gModeStrings));
 
   return base::Value(gModeStrings[mode]);
 }
@@ -175,7 +176,7 @@ base::Value AsValue(const SkPaint& paint) {
   if (paint.getStyle() != default_paint.getStyle()) {
     static const char* gStyleStrings[] = { "Fill", "Stroke", "StrokeFill" };
     DCHECK_LT(static_cast<size_t>(paint.getStyle()),
-              SK_ARRAY_COUNT(gStyleStrings));
+              std::size(gStyleStrings));
     val.Set("Style", gStyleStrings[paint.getStyle()]);
   }
 
@@ -213,7 +214,7 @@ base::Value AsValue(SkClipOp op) {
                                       "Replace"
                                     };
   size_t index = static_cast<size_t>(op);
-  DCHECK_LT(index, SK_ARRAY_COUNT(gOpStrings));
+  DCHECK_LT(index, std::size(gOpStrings));
   return base::Value(gOpStrings[index]);
 }
 
@@ -244,7 +245,7 @@ base::Value AsValue(const SkPath& path) {
   static const char* gFillStrings[] =
       { "winding", "even-odd", "inverse-winding", "inverse-even-odd" };
   size_t index = static_cast<size_t>(path.getFillType());
-  DCHECK_LT(index, SK_ARRAY_COUNT(gFillStrings));
+  DCHECK_LT(index, std::size(gFillStrings));
   val.Set("fill-type", gFillStrings[index]);
   val.Set("convex", path.isConvex());
   val.Set("is-rect", path.isRect(nullptr));
@@ -255,13 +256,13 @@ base::Value AsValue(const SkPath& path) {
   static const int gPtsPerVerb[] = { 1, 1, 2, 2, 3, 0, 0 };
   static const int gPtOffsetPerVerb[] = { 0, 1, 1, 1, 1, 0, 0 };
   static_assert(
-      SK_ARRAY_COUNT(gVerbStrings) == static_cast<size_t>(SkPath::kDone_Verb + 1),
+      std::size(gVerbStrings) == static_cast<size_t>(SkPath::kDone_Verb + 1),
       "gVerbStrings size mismatch");
   static_assert(
-      SK_ARRAY_COUNT(gVerbStrings) == SK_ARRAY_COUNT(gPtsPerVerb),
+      std::size(gVerbStrings) == std::size(gPtsPerVerb),
       "gPtsPerVerb size mismatch");
   static_assert(
-      SK_ARRAY_COUNT(gVerbStrings) == SK_ARRAY_COUNT(gPtOffsetPerVerb),
+      std::size(gVerbStrings) == std::size(gPtOffsetPerVerb),
       "gPtOffsetPerVerb size mismatch");
 
   base::Value::List verbs_val;
@@ -270,7 +271,7 @@ base::Value AsValue(const SkPath& path) {
 
   for (SkPath::Verb verb = iter.next(points); verb != SkPath::kDone_Verb;
        verb = iter.next(points)) {
-    DCHECK_LT(static_cast<size_t>(verb), SK_ARRAY_COUNT(gVerbStrings));
+    DCHECK_LT(static_cast<size_t>(verb), std::size(gVerbStrings));
 
     base::Value::Dict verb_val;
     base::Value::List pts_val;
