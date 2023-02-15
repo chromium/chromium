@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/service/provisioning_fetcher_impl.h"
+#include "media/mojo/services/fuchsia_cdm_provisioning_fetcher_impl.h"
 
 #include <fuchsia/media/drm/cpp/fidl.h>
 #include <memory>
@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "media/fuchsia/cdm/service/mock_provision_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +24,21 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::WithArgs;
-using MockProvisionFetcher = ::media::testing::MockProvisionFetcher;
+
+// This is a mock for the Chromium media::ProvisionFetcher (and not Fuchsia's
+// similarly named ProvisioningFetcher protocol).
+class MockProvisionFetcher : public ProvisionFetcher {
+ public:
+  MockProvisionFetcher() = default;
+  ~MockProvisionFetcher() override = default;
+
+  MOCK_METHOD(void,
+              Retrieve,
+              (const GURL& default_url,
+               const std::string& request_data,
+               ResponseCB response_cb),
+              (override));
+};
 
 constexpr char kTestDefaultUrl[] = "http://test_default_url.com/";
 constexpr char kTestRequest[] = "test_request_message";
@@ -41,17 +54,17 @@ drm::ProvisioningRequest CreateProvisioningRequest(
   return request;
 }
 
-class ProvisioningFetcherImplTest : public ::testing::Test {
+class FuchsiaCdmProvisioningFetcherImplTest : public ::testing::Test {
  public:
-  ProvisioningFetcherImplTest() = default;
+  FuchsiaCdmProvisioningFetcherImplTest() = default;
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 };
 
-TEST_F(ProvisioningFetcherImplTest, Fetch) {
-  ProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
+TEST_F(FuchsiaCdmProvisioningFetcherImplTest, Fetch) {
+  FuchsiaCdmProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
     auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();
     EXPECT_CALL(*mock_provision_fetcher,
                 Retrieve(Eq(kTestDefaultUrl), Eq(kTestRequest), _))
@@ -75,8 +88,8 @@ TEST_F(ProvisioningFetcherImplTest, Fetch) {
   EXPECT_EQ(*response_message, kTestResponse);
 }
 
-TEST_F(ProvisioningFetcherImplTest, RetrieveFails) {
-  ProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
+TEST_F(FuchsiaCdmProvisioningFetcherImplTest, RetrieveFails) {
+  FuchsiaCdmProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
     auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();
     EXPECT_CALL(*mock_provision_fetcher, Retrieve(_, _, _))
         .WillOnce(WithArgs<2>(
@@ -99,8 +112,8 @@ TEST_F(ProvisioningFetcherImplTest, RetrieveFails) {
   EXPECT_TRUE(response_message->empty());
 }
 
-TEST_F(ProvisioningFetcherImplTest, NoDefaultProvisioningUrl) {
-  ProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
+TEST_F(FuchsiaCdmProvisioningFetcherImplTest, NoDefaultProvisioningUrl) {
+  FuchsiaCdmProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
     auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();
     EXPECT_CALL(*mock_provision_fetcher, Retrieve(_, _, _))
         .WillOnce(WithArgs<2>(
@@ -117,8 +130,8 @@ TEST_F(ProvisioningFetcherImplTest, NoDefaultProvisioningUrl) {
                 [](drm::ProvisioningResponse response) { FAIL(); });
 }
 
-TEST_F(ProvisioningFetcherImplTest, MultipleRequestsFails) {
-  ProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
+TEST_F(FuchsiaCdmProvisioningFetcherImplTest, MultipleRequestsFails) {
+  FuchsiaCdmProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
     auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();
     EXPECT_CALL(*mock_provision_fetcher, Retrieve(_, _, _)).Times(1);
 

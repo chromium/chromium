@@ -17,6 +17,6 @@ specific_include_rules = {
   "webrtc_video_perf_mojolpm_fuzzer\.cc": [
     "+third_party/libprotobuf-mutator/src/src",
     "+components/leveldb_proto/testing/fake_db.h",
-  ]
+  ],
 }
 

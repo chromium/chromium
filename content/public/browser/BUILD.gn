@@ -606,7 +606,6 @@ source_set("browser_sources") {
 
   if (is_fuchsia) {
     sources += [ "ax_inspect_factory_fuchsia.cc" ]
-    deps += [ "//media/fuchsia/mojom:fuchsia_media" ]
   }
 
   if (is_win) {

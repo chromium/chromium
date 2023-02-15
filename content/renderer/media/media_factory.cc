@@ -89,8 +89,9 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "media/fuchsia/cdm/client/fuchsia_cdm_util.h"
+#include "media/fuchsia/cdm/fuchsia_cdm_factory.h"
 #include "media/fuchsia/video/fuchsia_decoder_factory.h"
+#include "media/mojo/clients/mojo_fuchsia_cdm_provider.h"
 #elif BUILDFLAG(ENABLE_MOJO_CDM)
 #include "media/mojo/clients/mojo_cdm_factory.h"  // nogncheck
 #else
@@ -852,7 +853,8 @@ media::CdmFactory* MediaFactory::GetCdmFactory() {
 
 #if BUILDFLAG(IS_FUCHSIA)
   DCHECK(interface_broker_);
-  cdm_factory_ = media::CreateFuchsiaCdmFactory(interface_broker_);
+  cdm_factory_ = std::make_unique<media::FuchsiaCdmFactory>(
+      std::make_unique<media::MojoFuchsiaCdmProvider>(interface_broker_));
 #elif BUILDFLAG(ENABLE_MOJO_CDM)
   cdm_factory_ =
       std::make_unique<media::MojoCdmFactory>(GetMediaInterfaceFactory());

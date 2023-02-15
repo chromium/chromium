@@ -231,10 +231,7 @@ test("media_unittests") {
   }
 
   if (is_fuchsia) {
-    deps += [
-      "//media/fuchsia/cdm/service:unittests",
-      "//media/fuchsia/video:unittests",
-    ]
+    deps += [ "//media/fuchsia/video:unittests" ]
 
     # PaintCanvasVideoRendererWithGLTest.* uses SwiftShader, which generates
     # machine code.

@@ -699,6 +699,33 @@ mojom("mojom") {
     ]
   }
 
+  if (is_fuchsia) {
+    sources += [ "fuchsia_media.mojom" ]
+
+    shared_typemaps += [
+      {
+        types = [
+          {
+            mojom = "media.mojom.CdmRequest"
+            cpp = "::fidl::InterfaceRequest<::fuchsia::media::drm::ContentDecryptionModule>"
+            move_only = true
+          },
+          {
+            mojom = "media.mojom.StreamProcessorRequest"
+            cpp = "::fidl::InterfaceRequest<::fuchsia::media::StreamProcessor>"
+            move_only = true
+          },
+        ]
+        traits_headers = [ "fuchsia_media_mojom_traits.h" ]
+        traits_public_deps = [
+          "//mojo/public/cpp/base/fuchsia:traits",
+          "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
+          "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm:fuchsia.media.drm_hlcpp",
+        ]
+      },
+    ]
+  }
+
   cpp_typemaps += shared_typemaps
   blink_cpp_typemaps = shared_typemaps
 

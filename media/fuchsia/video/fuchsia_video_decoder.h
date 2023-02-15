@@ -18,7 +18,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/fuchsia/common/sysmem_buffer_stream.h"
 #include "media/fuchsia/common/sysmem_client.h"
-#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
+#include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace gfx {

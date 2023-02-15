@@ -10,7 +10,7 @@
 #include "content/renderer/media/codec_factory.h"
 #include "media/base/overlay_info.h"
 #include "media/base/video_decoder.h"
-#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
+#include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 

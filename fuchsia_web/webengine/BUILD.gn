@@ -223,7 +223,6 @@ component("web_engine_core") {
     "//google_apis",
     "//gpu/command_buffer/service",
     "//media",
-    "//media/fuchsia/cdm/service",
     "//media/mojo/common",
     "//media/mojo/services",
     "//mojo/public/cpp/bindings",

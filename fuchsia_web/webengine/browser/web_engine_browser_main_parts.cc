@@ -47,7 +47,7 @@
 #include "fuchsia_web/webengine/browser/web_engine_memory_inspector.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "media/fuchsia/cdm/service/fuchsia_cdm_manager.h"
+#include "media/mojo/services/fuchsia_cdm_manager.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_context.mojom.h"

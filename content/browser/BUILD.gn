@@ -2448,8 +2448,6 @@ source_set("browser") {
       "speech/tts_fuchsia.cc",
     ]
     deps += [
-      "//media/fuchsia/cdm/service",
-      "//media/fuchsia/mojom:fuchsia_media",
       "//third_party/abseil-cpp:absl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics:fuchsia.accessibility.semantics_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/client/mojo_fuchsia_cdm_provider.h"
+#include "media/mojo/clients/mojo_fuchsia_cdm_provider.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 

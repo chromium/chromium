@@ -356,7 +356,6 @@ target(link_target_type, "renderer") {
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp" ]
 
     deps += [
-      "//media/fuchsia/cdm/client",
       "//media/fuchsia/video",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]

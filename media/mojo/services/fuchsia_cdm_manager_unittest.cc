@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/service/fuchsia_cdm_manager.h"
+#include "media/mojo/services/fuchsia_cdm_manager.h"
 
 #include <fuchsia/media/drm/cpp/fidl.h>
 #include <fuchsia/media/drm/cpp/fidl_test_base.h>
@@ -18,7 +18,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "media/fuchsia/cdm/service/mock_provision_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -34,7 +33,21 @@ using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::SaveArg;
 using ::testing::WithArgs;
-using MockProvisionFetcher = ::media::testing::MockProvisionFetcher;
+
+// This is a mock for the Chromium media::ProvisionFetcher (and not Fuchsia's
+// similarly named ProvisioningFetcher protocol).
+class MockProvisionFetcher : public ProvisionFetcher {
+ public:
+  MockProvisionFetcher() = default;
+  ~MockProvisionFetcher() override = default;
+
+  MOCK_METHOD(void,
+              Retrieve,
+              (const GURL& default_url,
+               const std::string& request_data,
+               ResponseCB response_cb),
+              (override));
+};
 
 std::unique_ptr<ProvisionFetcher> CreateMockProvisionFetcher() {
   auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();

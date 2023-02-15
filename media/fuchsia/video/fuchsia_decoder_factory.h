@@ -7,7 +7,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder_factory.h"
-#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
+#include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace media {

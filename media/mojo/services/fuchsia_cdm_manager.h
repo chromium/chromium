@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_CDM_SERVICE_FUCHSIA_CDM_MANAGER_H_
-#define MEDIA_FUCHSIA_CDM_SERVICE_FUCHSIA_CDM_MANAGER_H_
+#ifndef MEDIA_MOJO_SERVICES_FUCHSIA_CDM_MANAGER_H_
+#define MEDIA_MOJO_SERVICES_FUCHSIA_CDM_MANAGER_H_
 
 #include <fuchsia/media/drm/cpp/fidl.h>
 #include <string>
@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/provision_fetcher.h"
+#include "media/mojo/services/media_mojo_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
@@ -26,7 +27,7 @@ namespace media {
 
 // Create and connect to Fuchsia CDM services. Additionally manages the storage
 // for CDM user data.
-class FuchsiaCdmManager {
+class MEDIA_MOJO_EXPORT FuchsiaCdmManager {
  public:
   using CreateKeySystemCallback = base::RepeatingCallback<
       fidl::InterfaceHandle<fuchsia::media::drm::KeySystem>()>;
@@ -103,4 +104,4 @@ class FuchsiaCdmManager {
 
 }  // namespace media
 
-#endif  // MEDIA_FUCHSIA_CDM_SERVICE_FUCHSIA_CDM_MANAGER_H_
+#endif  // MEDIA_MOJO_SERVICES_FUCHSIA_CDM_MANAGER_H_

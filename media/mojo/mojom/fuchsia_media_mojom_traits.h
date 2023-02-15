@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_MOJOM_FUCHSIA_MEDIA_MOJOM_TRAITS_H_
-#define MEDIA_FUCHSIA_MOJOM_FUCHSIA_MEDIA_MOJOM_TRAITS_H_
+#ifndef MEDIA_MOJO_MOJOM_FUCHSIA_MEDIA_MOJOM_TRAITS_H_
+#define MEDIA_MOJO_MOJOM_FUCHSIA_MEDIA_MOJOM_TRAITS_H_
 
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/media/drm/cpp/fidl.h>
@@ -29,4 +29,4 @@ struct StructTraits<media::mojom::StreamProcessorRequestDataView,
 
 }  // namespace mojo
 
-#endif  // MEDIA_FUCHSIA_MOJOM_FUCHSIA_MEDIA_MOJOM_TRAITS_H_
+#endif  // MEDIA_MOJO_MOJOM_FUCHSIA_MEDIA_MOJOM_TRAITS_H_

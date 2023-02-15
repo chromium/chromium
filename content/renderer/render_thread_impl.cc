@@ -211,7 +211,7 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "content/renderer/media/codec_factory_fuchsia.h"
-#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
+#include "media/mojo/mojom/fuchsia_media.mojom.h"
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)

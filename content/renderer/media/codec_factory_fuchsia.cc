@@ -13,8 +13,8 @@
 #include "media/base/overlay_info.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
-#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
+#include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
 namespace content {

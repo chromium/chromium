@@ -56,4 +56,7 @@ specific_include_rules = {
   "null_video_sink_unittest.cc": [
     "+components/viz/common/frame_sinks/begin_frame_args.h",
   ],
+  "fuchsia_.*_mojom_traits\.h": [
+    "+mojo/public/cpp/base/fuchsia/fidl_interface_request_mojom_traits.h",
+  ],
 }

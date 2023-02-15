@@ -23,8 +23,6 @@ include_rules = [
   "+gpu/config",
   "+media/base",
   "+media/capabilities",
-  "+media/fuchsia/cdm/service",
-  "+media/fuchsia/mojom",
   "+media/mojo/common",
   "+media/mojo/mojom",
   "+media/mojo/services",

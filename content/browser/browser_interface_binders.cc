@@ -216,7 +216,7 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "content/browser/renderer_host/media/fuchsia_media_cdm_provider_impl.h"
-#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
+#include "media/mojo/mojom/fuchsia_media.mojom.h"
 #endif
 
 namespace blink {

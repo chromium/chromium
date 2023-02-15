@@ -9,7 +9,7 @@
 
 #include "base/threading/thread_checker.h"
 #include "content/common/content_export.h"
-#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
+#include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

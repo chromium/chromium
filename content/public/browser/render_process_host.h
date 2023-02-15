@@ -58,7 +58,7 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "media/fuchsia/mojom/fuchsia_media.mojom-forward.h"
+#include "media/mojo/mojom/fuchsia_media.mojom-forward.h"
 #endif
 
 class GURL;

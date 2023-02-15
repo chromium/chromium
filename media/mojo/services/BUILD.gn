@@ -214,6 +214,18 @@ component("services") {
       "//media/gpu/chromeos",
     ]
   }
+
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia_cdm_manager.cc",
+      "fuchsia_cdm_manager.h",
+      "fuchsia_cdm_provisioning_fetcher_impl.cc",
+      "fuchsia_cdm_provisioning_fetcher_impl.h",
+    ]
+
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm:fuchsia.media.drm_hlcpp" ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit-promise" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -282,6 +294,15 @@ source_set("unit_tests") {
 
   if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
     sources += [ "stable_video_decoder_service_unittest.cc" ]
+  }
+
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia_cdm_manager_unittest.cc",
+      "fuchsia_cdm_provisioning_fetcher_impl_unittest.cc",
+    ]
+
+    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit-promise" ]
   }
 }
 

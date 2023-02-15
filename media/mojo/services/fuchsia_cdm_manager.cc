@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/service/fuchsia_cdm_manager.h"
+#include "media/mojo/services/fuchsia_cdm_manager.h"
 
 #include <fuchsia/media/drm/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
@@ -23,7 +23,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "media/fuchsia/cdm/service/provisioning_fetcher_impl.h"
+#include "media/mojo/services/fuchsia_cdm_provisioning_fetcher_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -50,8 +50,9 @@ CdmDirectoryInfo GetCdmDirectoryInfo(const base::FilePath& path) {
       base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES);
   while (!enumerator.Next().empty()) {
     const base::FileEnumerator::FileInfo info = enumerator.GetInfo();
-    if (info.GetSize() > 0)
+    if (info.GetSize() > 0) {
       directory_size += info.GetSize();
+    }
     last_used = std::max(last_used, info.GetLastModifiedTime());
   }
   return {
@@ -77,21 +78,24 @@ void ApplyCdmStorageQuota(base::FilePath cdm_data_path,
                                  base::FileEnumerator::DIRECTORIES);
   for (;;) {
     const base::FilePath origin_directory = by_origin.Next();
-    if (origin_directory.empty())
+    if (origin_directory.empty()) {
       break;
+    }
     base::FileEnumerator by_key_system(origin_directory, false /* recursive */,
                                        base::FileEnumerator::DIRECTORIES);
     for (;;) {
       const base::FilePath key_system_directory = by_key_system.Next();
-      if (key_system_directory.empty())
+      if (key_system_directory.empty()) {
         break;
+      }
       directories_info.push_back(GetCdmDirectoryInfo(key_system_directory));
       directories_size_bytes += directories_info.back().size_bytes;
     }
   }
 
-  if (directories_size_bytes <= cdm_data_quota_bytes)
+  if (directories_size_bytes <= cdm_data_quota_bytes) {
     return;
+  }
 
   VLOG(1) << "Removing least recently accessed CDM data.";
 
@@ -103,8 +107,9 @@ void ApplyCdmStorageQuota(base::FilePath cdm_data_path,
             });
   base::flat_set<base::FilePath> affected_origin_directories;
   for (const auto& directory_info : directories_info) {
-    if (directories_size_bytes <= cdm_data_quota_bytes)
+    if (directories_size_bytes <= cdm_data_quota_bytes) {
       break;
+    }
 
     VLOG(1) << "Removing " << directory_info.path;
     base::DeletePathRecursively(directory_info.path);
@@ -117,8 +122,9 @@ void ApplyCdmStorageQuota(base::FilePath cdm_data_path,
   // Enumerate all the origin directories that had sub-directories deleted,
   // and delete any that are now empty.
   for (const auto& origin_directory : affected_origin_directories) {
-    if (base::IsDirectoryEmpty(origin_directory))
+    if (base::IsDirectoryEmpty(origin_directory)) {
       base::DeleteFile(origin_directory);
+    }
   }
 }
 
@@ -207,8 +213,9 @@ class FuchsiaCdmManager::KeySystemClient {
       return absl::nullopt;
     }
 
-    auto provisioning_fetcher = std::make_unique<ProvisioningFetcherImpl>(
-        std::move(create_fetcher_callback));
+    auto provisioning_fetcher =
+        std::make_unique<FuchsiaCdmProvisioningFetcherImpl>(
+            std::move(create_fetcher_callback));
 
     DataStoreId data_store_id = next_data_store_id_++;
 
@@ -236,7 +243,7 @@ class FuchsiaCdmManager::KeySystemClient {
   }
 
   void OnProvisioningFetcherError(
-      ProvisioningFetcherImpl* provisioning_fetcher) {
+      FuchsiaCdmProvisioningFetcherImpl* provisioning_fetcher) {
     provisioning_fetchers_.erase(provisioning_fetcher);
   }
 
@@ -249,7 +256,7 @@ class FuchsiaCdmManager::KeySystemClient {
   // A set of ProvisioningFetchers, one for each data store that gets added.
   // The KeySystem might close the channel even if the data store remains in
   // use.
-  base::flat_set<std::unique_ptr<ProvisioningFetcherImpl>,
+  base::flat_set<std::unique_ptr<FuchsiaCdmProvisioningFetcherImpl>,
                  base::UniquePtrComparator>
       provisioning_fetchers_;
 
@@ -284,8 +291,9 @@ FuchsiaCdmManager::FuchsiaCdmManager(
   // CDM data directories that are in active use, the |storage_task_runner_| is
   // sequenced, thereby ensuring cleanup completes before any CDM activities
   // start.
-  if (cdm_data_quota_bytes_)
+  if (cdm_data_quota_bytes_) {
     ApplyCdmStorageQuota(cdm_data_path_, *cdm_data_quota_bytes_);
+  }
 
   DCHECK(!g_fuchsia_cdm_manager_instance);
   g_fuchsia_cdm_manager_instance = this;

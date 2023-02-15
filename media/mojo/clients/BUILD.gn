@@ -93,6 +93,15 @@ source_set("clients") {
       "win/media_foundation_renderer_client_factory.h",
     ]
   }
+
+  if (is_fuchsia) {
+    sources += [
+      "mojo_fuchsia_cdm_provider.cc",
+      "mojo_fuchsia_cdm_provider.h",
+    ]
+
+    deps += [ "//third_party/blink/public:blink_headers" ]
+  }
 }
 
 source_set("unit_tests") {

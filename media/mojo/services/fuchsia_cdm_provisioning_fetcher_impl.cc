@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/service/provisioning_fetcher_impl.h"
+#include "media/mojo/services/fuchsia_cdm_provisioning_fetcher_impl.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
@@ -12,17 +12,18 @@
 
 namespace media {
 
-ProvisioningFetcherImpl::ProvisioningFetcherImpl(
+FuchsiaCdmProvisioningFetcherImpl::FuchsiaCdmProvisioningFetcherImpl(
     CreateFetcherCB create_fetcher_callback)
     : create_fetcher_callback_(std::move(create_fetcher_callback)),
       binding_(this) {
   DCHECK(create_fetcher_callback_);
 }
 
-ProvisioningFetcherImpl::~ProvisioningFetcherImpl() = default;
+FuchsiaCdmProvisioningFetcherImpl::~FuchsiaCdmProvisioningFetcherImpl() =
+    default;
 
 fidl::InterfaceHandle<fuchsia::media::drm::ProvisioningFetcher>
-ProvisioningFetcherImpl::Bind(base::OnceClosure error_callback) {
+FuchsiaCdmProvisioningFetcherImpl::Bind(base::OnceClosure error_callback) {
   error_callback_ = std::move(error_callback);
 
   binding_.set_error_handler(
@@ -35,12 +36,11 @@ ProvisioningFetcherImpl::Bind(base::OnceClosure error_callback) {
   return binding_.NewBinding();
 }
 
-void ProvisioningFetcherImpl::Fetch(
+void FuchsiaCdmProvisioningFetcherImpl::Fetch(
     fuchsia::media::drm::ProvisioningRequest request,
     FetchCallback callback) {
   if (retrieve_in_progress_) {
-    DLOG(WARNING)
-        << "ProvisioningFetcherImpl received too many ProvisioningRequests";
+    DLOG(WARNING) << "Received too many ProvisioningRequests.";
     OnError(ZX_ERR_BAD_STATE);
     return;
   }
@@ -66,14 +66,14 @@ void ProvisioningFetcherImpl::Fetch(
   retrieve_in_progress_ = true;
   fetcher_->Retrieve(
       GURL(request.default_provisioning_server_url.value()), *request_str,
-      base::BindRepeating(&ProvisioningFetcherImpl::OnRetrieveComplete,
-                          base::Unretained(this),
-                          base::Passed(std::move(callback))));
+      base::BindOnce(&FuchsiaCdmProvisioningFetcherImpl::OnRetrieveComplete,
+                     base::Unretained(this), std::move(callback)));
 }
 
-void ProvisioningFetcherImpl::OnRetrieveComplete(FetchCallback callback,
-                                                 bool success,
-                                                 const std::string& response) {
+void FuchsiaCdmProvisioningFetcherImpl::OnRetrieveComplete(
+    FetchCallback callback,
+    bool success,
+    const std::string& response) {
   retrieve_in_progress_ = false;
   // Regardless of success or failure, send the response back to acknowledge
   // it has been completed.
@@ -86,7 +86,7 @@ void ProvisioningFetcherImpl::OnRetrieveComplete(FetchCallback callback,
   callback(std::move(provision_response));
 }
 
-void ProvisioningFetcherImpl::OnError(zx_status_t status) {
+void FuchsiaCdmProvisioningFetcherImpl::OnError(zx_status_t status) {
   DCHECK(error_callback_);
 
   binding_.Close(status);

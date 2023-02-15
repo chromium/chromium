@@ -11,7 +11,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "media/base/provision_fetcher.h"
-#include "media/fuchsia/cdm/service/fuchsia_cdm_manager.h"
+#include "media/mojo/services/fuchsia_cdm_manager.h"
 
 namespace content {
 

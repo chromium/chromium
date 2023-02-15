@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "mojo_fuchsia_cdm_provider\.cc": [
+    "+third_party/blink/public/common/browser_interface_broker_proxy.h",
+  ],
+}

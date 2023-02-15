@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_FUCHSIA_MEDIA_CDM_PROVIDER_IMPL_H_
 
 #include "content/public/browser/document_service.h"
-#include "media/fuchsia/mojom/fuchsia_media.mojom.h"
+#include "media/mojo/mojom/fuchsia_media.mojom.h"
 
 namespace content {
 
