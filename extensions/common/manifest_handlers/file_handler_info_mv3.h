@@ -14,7 +14,8 @@
 
 namespace extensions {
 
-using FileHandlersInfoMV3 = std::vector<api::file_handlers::FileHandler>;
+using FileHandler = api::file_handlers::FileHandler;
+using FileHandlersInfoMV3 = std::vector<FileHandler>;
 
 // Structured contents of the `file_handlers` manifest key.
 struct FileHandlersMV3 : public Extension::ManifestData {
@@ -23,6 +24,12 @@ struct FileHandlersMV3 : public Extension::ManifestData {
 
   // The list of entries for the web-accessible resources of the extension.
   FileHandlersInfoMV3 file_handlers;
+
+  static const FileHandlersInfoMV3* GetFileHandlers(const Extension& extension);
+
+  // Verify that MV3+ file handers are supported.
+  // TODO(crbug/1179530): Remove after MV2 deprecation.
+  static bool SupportsWebFileHandlers(const int manifest_version);
 };
 
 // Parses the `file_handlers` manifest key.

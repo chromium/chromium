@@ -7,17 +7,21 @@
 #include "base/strings/string_split.h"
 #include "extensions/common/api/file_handlers.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 
 namespace extensions {
 
-namespace errors = manifest_errors;
-
 namespace {
 
 using FileHandlersManifestKeys = api::file_handlers::ManifestKeys;
 
+// Verifies manifest input. Disambiguates `file_extensions` on `accept` into a
+// list, which could otherwise have also been a string. `icon.sizes` remains as
+// is because the generated data type only accepts a string. This string can be
+// parsed with a method that gets a list of sizes.
+// TODO(crbug/1179530): Re-use Blink parser.
 std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
                                                std::u16string* error) {
   FileHandlersManifestKeys manifest_keys;
@@ -28,7 +32,8 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
 
   auto get_error = [](size_t i, base::StringPiece message) {
     return ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidFileHandlersMV3, base::NumberToString(i), message);
+        manifest_errors::kInvalidFileHandlersMV3, base::NumberToString(i),
+        message);
   };
 
   auto info = std::make_unique<FileHandlersMV3>();
@@ -40,34 +45,41 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
   }
 
   for (size_t i = 0; i < manifest_keys.file_handlers.size(); i++) {
-    auto& file_handler = manifest_keys.file_handlers[i];
+    FileHandler file_handler;
+    auto& manifest_file_handler = manifest_keys.file_handlers[i];
 
     // `name` is a string that can't be empty.
-    if (file_handler.name.empty()) {
+    if (manifest_file_handler.name.empty()) {
       *error = get_error(i, "`name` must have a value.");
       return nullptr;
     }
+    file_handler.name = std::move(manifest_file_handler.name);
 
     // `action` is a string that can't be empty and starts with slash.
-    if (file_handler.action.empty()) {
+    if (manifest_file_handler.action.empty()) {
       *error = get_error(i, "`action` must have a value.");
       return nullptr;
-    } else if (file_handler.action[0] != '/') {
+    } else if (manifest_file_handler.action[0] != '/') {
       *error = get_error(i, "`action` must start with a forward slash.");
       return nullptr;
     }
+    file_handler.action = std::move(manifest_file_handler.action);
 
     // `accept` is a dictionary. MIME types are strings with one slash. File
     // extensions are strings or an array of strings where each string has a
     // leading period.
-    if (file_handler.accept.additional_properties.empty()) {
+    if (manifest_file_handler.accept.additional_properties.empty()) {
       *error = get_error(i, "`accept` cannot be empty.");
       return nullptr;
     }
+
     // Mime type keyed by string or array of strings of file extensions.
+    base::Value::Dict accept;
     for (const auto [mime_type, file_extensions] :
-         file_handler.accept.additional_properties) {
+         manifest_file_handler.accept.additional_properties) {
       // Verify that mime type only has one slash.
+      // TODO(crbug/1179530): Verify that slash isn't the first or last char.
+      // TODO(crbug/1179530): Cross-check slash against canonical mime list.
       auto num_slashes = std::count(mime_type.begin(), mime_type.end(), '/');
       if (num_slashes != 1) {
         *error =
@@ -89,6 +101,8 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
         *error = get_error(i, "`accept` file extension must have a value.");
         return nullptr;
       }
+
+      // Verify file extensions in `accept`.
       for (const auto& file_extension : file_extension_list) {
         auto file_extension_item = file_extension.GetString();
         if (file_extension_item.empty()) {
@@ -101,11 +115,18 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
           return nullptr;
         }
       }
+
+      // TODO(crbug/1179530): Error if there are duplicate mime_types.
+      accept.Set(mime_type, std::move(file_extension_list));
     }
 
+    // Make the temporary `accept` permanent by assigning to `file_handler`.
+    api::file_handlers::FileHandler::Accept::Populate(
+        base::Value(std::move(accept)), &file_handler.accept, error);
+
     // `icon` is an optional array of dictionaries.
-    if (file_handler.icons.has_value()) {
-      for (const auto& icon : file_handler.icons.value()) {
+    if (manifest_file_handler.icons.has_value()) {
+      for (const auto& icon : manifest_file_handler.icons.value()) {
         if (icon.src.empty()) {
           *error = get_error(i, "`icon.src` must have a value.");
           return nullptr;
@@ -138,10 +159,15 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
           }
         }
       }
+
+      // Append icon.
+      file_handler.icons = std::move(manifest_file_handler.icons);
     }
 
+    // Append file handlers.
     info->file_handlers.emplace_back(std::move(file_handler));
   }
+
   return info;
 }
 
@@ -150,13 +176,33 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
 FileHandlersMV3::FileHandlersMV3() = default;
 FileHandlersMV3::~FileHandlersMV3() = default;
 
+// static
+const FileHandlersInfoMV3* FileHandlersMV3::GetFileHandlers(
+    const Extension& extension) {
+  // Guard against incompatible extension manifest versions.
+  if (!FileHandlersMV3::SupportsWebFileHandlers(extension.manifest_version())) {
+    return nullptr;
+  }
+
+  FileHandlersMV3* info = static_cast<FileHandlersMV3*>(
+      extension.GetManifestData(manifest_keys::kFileHandlers));
+  return info ? &info->file_handlers : nullptr;
+}
+
 FileHandlersParserMV3::FileHandlersParserMV3() = default;
 FileHandlersParserMV3::~FileHandlersParserMV3() = default;
 
 bool FileHandlersParserMV3::Parse(Extension* extension, std::u16string* error) {
+  // Guard against incompatible extension manifest versions.
+  DCHECK(extension);
+  DCHECK(
+      FileHandlersMV3::SupportsWebFileHandlers(extension->manifest_version()));
+
   auto info = ParseFromList(*extension, error);
-  if (!info)
+  if (!info) {
     return false;
+  }
+
   extension->SetManifestData(FileHandlersManifestKeys::kFileHandlers,
                              std::move(info));
   return true;
@@ -174,6 +220,11 @@ bool FileHandlersParserMV3::Validate(
     std::vector<InstallWarning>* warnings) const {
   // TODO(1313786): Validate that icons exist.
   return true;
+}
+
+bool FileHandlersMV3::SupportsWebFileHandlers(const int manifest_version) {
+  return manifest_version >= 3 &&
+         base::FeatureList::IsEnabled(extensions_features::kFileHandlersMV3);
 }
 
 }  // namespace extensions

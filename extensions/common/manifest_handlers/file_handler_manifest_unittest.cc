@@ -13,6 +13,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
+#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -202,9 +203,17 @@ TEST_F(FileHandlersManifestV3Test, GeneralSuccess) {
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.title);
+
+    // Load extension and get file handlers.
     scoped_refptr<Extension> extension(LoadAndExpectSuccess(
         std::move(GetManifestData(test_case.file_handler))));
-    ASSERT_TRUE(FileHandlers::GetFileHandlersMV3(extension.get()));
+    auto* file_handlers = FileHandlersMV3::GetFileHandlers(*extension.get());
+    ASSERT_TRUE(file_handlers);
+
+    // Exercise `file_handlers` key with a subkey that only exists in MV3.
+    for (const auto& file_handler : *file_handlers) {
+      EXPECT_TRUE(file_handler.action.size() > 0);
+    }
   }
 }
 
@@ -457,5 +466,8 @@ TEST_F(FileHandlersManifestV3Test, IconErrors) {
                        test_case.expected_error);
   }
 }
+
+// TODO(crbug/1179530): Add tests for MV2, MV3, and missing the flag.
+// crrev.com/c/4215992/comment/5c5148e7_2b24c9d3
 
 }  // namespace extensions

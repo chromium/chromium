@@ -13,12 +13,21 @@
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
-#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
 
 namespace extensions {
 
 using FileHandlersInfo = std::vector<apps::FileHandlerInfo>;
 
+// When setting up the menus for file open, if a file type has default Chrome
+// extension set as the default we used to try to choose a default handler by
+// matching against any sniffed MIME type or its file name extension.
+//
+// If there was no clear 'winner' for being set as the default handler for the
+// file type, we'd prefer one of our allowlisted handlers over a handler that
+// explicitly matches the file name extension. e.g. an '.ica' file contains
+// plain text, but if there is a Chrome extension registered that lists '.ica'
+// in its 'file_handlers' in the manifest, it fails to be chosen as default if
+// there is a text editor installed that can process MIME types of text/plain.
 struct FileHandlerMatch {
   FileHandlerMatch();
   ~FileHandlerMatch();
@@ -36,11 +45,8 @@ struct FileHandlers : public Extension::ManifestData {
   ~FileHandlers() override;
 
   FileHandlersInfo file_handlers;
-  FileHandlersInfoMV3 file_handlers_mv3;
 
   static const FileHandlersInfo* GetFileHandlers(const Extension* extension);
-  static const FileHandlersInfoMV3* GetFileHandlersMV3(
-      const Extension* extension);
 };
 
 // Parses the "file_handlers" manifest key.
