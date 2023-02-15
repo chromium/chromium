@@ -7,6 +7,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
@@ -36,6 +37,16 @@ TEST_F(LocalWebApprovalsFeatureTest,
   EXPECT_FALSE(IsLocalWebApprovalsEnabled());
 }
 
+void CheckIsLocalWebApprovalsEnabled() {
+  bool is_local_web_approvals_enabled = true;
+// On android require a Google-branded build is required.
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  is_local_web_approvals_enabled = false;
+#endif  // BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  EXPECT_EQ(IsLocalWebApprovalsEnabled(), is_local_web_approvals_enabled);
+}
+
 TEST_F(LocalWebApprovalsFeatureTest,
        InterstitialRefreshEnabledAndLocalApprovalsEnabled) {
   scoped_feature_list_.InitWithFeatures(
@@ -43,7 +54,7 @@ TEST_F(LocalWebApprovalsFeatureTest,
                               kLocalWebApprovals},
       /* disabled_features */ {});
   EXPECT_TRUE(IsWebFilterInterstitialRefreshEnabled());
-  EXPECT_TRUE(IsLocalWebApprovalsEnabled());
+  CheckIsLocalWebApprovalsEnabled();
 }
 
 TEST_F(LocalWebApprovalsFeatureTest,
