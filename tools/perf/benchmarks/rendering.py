@@ -127,6 +127,11 @@ class RenderingDesktop(_RenderingBenchmark):
     if sys.platform == 'darwin':
       options.AppendExtraBrowserArgs(
           '--use-gpu-high-thread-priority-for-perf-tests')
+      # Mac bots without a physical display fallbacks to SRGB. This flag forces
+      # them to use a color profile (P3), which matches the usual color profile
+      # on Mac monitors and changes the cost of some overlay operations to match
+      # real conditions more closely.
+      options.AppendExtraBrowserArgs('--force-color-profile=display-p3-d65')
 
 
 @benchmark.Info(
