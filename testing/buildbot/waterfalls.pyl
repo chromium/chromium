@@ -5242,7 +5242,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'bullhead',
-          'marshmallow',
+          'nougat',
         ],
         'os_type': 'android',
       },
