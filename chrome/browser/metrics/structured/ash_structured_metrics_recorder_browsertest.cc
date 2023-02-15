@@ -10,10 +10,12 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,45 +29,35 @@ using EventDelegate = base::RepeatingCallback<void(const Event& event)>;
 
 using testing::Eq;
 
+// The name hash of "TestProjectOne".
+constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
+
+// The name hash of "chrome::TestProjectOne::TestEventOne".
+constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
+
+// The name hash of "TestMetricOne".
+constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
+// The name hash of "TestMetricTwo".
+constexpr uint64_t kMetricTwoHash = UINT64_C(14083999144141567134);
+
 }  // namespace
 
-class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
-                                         Recorder::RecorderImpl {
+class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest {
  public:
   AshStructuredMetricsRecorderTest() = default;
 
-  void SetUpInProcessBrowserTestFixture() override {
-    Recorder::GetInstance()->AddObserver(this);
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    structured_metrics_mixin_.GetTestStructuredMetricsProvider()
+        ->EnableRecording();
   }
 
-  void TearDownInProcessBrowserTestFixture() override {
-    Recorder::GetInstance()->RemoveObserver(this);
-    StructuredMetricsClient::Get()->UnsetDelegate();
-  }
-
-  void SetTestMessageReceivedClosure(EventDelegate event_delegate) {
-    event_delegate_ = event_delegate;
-  }
-
-  // RecorderImpl:
-  void OnEventRecord(const Event& event) override {
-    if (!event_delegate_)
-      return;
-    event_delegate_.Run(event);
-  }
-
-  // Tests do not care about these.
-  void OnProfileAdded(const base::FilePath& profile_path) override {}
-  void OnReportingStateChanged(bool enabled) override {}
-  absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override {
-    return absl::nullopt;
-  }
+ protected:
+  StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_};
 
  private:
   base::test::ScopedRunLoopTimeout shortened_timeout_{FROM_HERE,
                                                       base::Seconds(3)};
-
-  EventDelegate event_delegate_;
 };
 
 IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
@@ -76,20 +68,22 @@ IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
   // Wait for the test messages to have been received.
   base::RunLoop run_loop;
 
-  // TODO(crbug/1350322): Replace this with a mixin once mixin is ready to use.
-  // There is currently no way to test structured metrics E2E in a browser test.
-  // This delegate intercepts the event to ensure that the mojo interface is
-  // working correctly.
-  //
-  // A better way to test this would be to verify that the events are persisted
-  // correctly using a mixin.
-  EventDelegate event_handler =
-      base::BindLambdaForTesting([&run_loop](const Event& event) {
+  base::RepeatingCallback<void(const Event& event)> event_record_callback =
+      base::BindLambdaForTesting([&run_loop, this](const Event& event) {
         EXPECT_THAT(event.project_name(), Eq("TestProjectOne"));
         EXPECT_THAT(event.event_name(), Eq("TestEventOne"));
+        const StructuredEventProto* event_result =
+            structured_metrics_mixin_.GetTestStructuredMetricsProvider()
+                ->FindEvent(kProjectOneHash, kEventOneHash)
+                .value();
+        EXPECT_EQ(event_result->metrics_size(), 2);
+        EXPECT_EQ(event_result->metrics(0).name_hash(), kMetricOneHash);
+        EXPECT_EQ(event_result->metrics(1).name_hash(), kMetricTwoHash);
+        EXPECT_EQ(event_result->metrics(1).value_int64(), 1);
         run_loop.Quit();
       });
-  SetTestMessageReceivedClosure(event_handler);
+  structured_metrics_mixin_.GetTestStructuredMetricsProvider()
+      ->SetOnEventsRecordClosure(event_record_callback);
   test_event.Record();
   run_loop.Run();
 }
