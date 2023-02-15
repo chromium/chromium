@@ -351,6 +351,12 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrame) {
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+
+  // Setting to kSharedImageFormat, resources type should not change.
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
 }
 
 TEST_F(VideoResourceUpdaterTest, SoftwareFrameNV12) {
@@ -362,9 +368,15 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameNV12) {
 
   // Use a different frame for this test since frames with the same unique_id()
   // expect to use the same resources.
+  scoped_refptr<VideoFrame> video_frame = CreateNV12TestFrame();
   gl_->set_supports_texture_rg(true);
-  resources =
-      updater->CreateExternalResourcesFromVideoFrame(CreateNV12TestFrame());
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+
+  // Setting to kSharedImageFormat, resources type should not change.
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
 }
 
@@ -387,24 +399,24 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
     EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
 #if BUILDFLAG(IS_MAC)
     EXPECT_EQ(resources.resources[0].format,
-              viz::SharedImageFormat::SinglePlane(viz::BGRA_8888));
+              viz::SinglePlaneFormat::kBGRA_8888);
 #else
     EXPECT_EQ(resources.resources[0].size, video_frame->coded_size());
 
     if (fmt == PIXEL_FORMAT_XBGR) {
       EXPECT_EQ(resources.resources[0].format,
-                viz::SharedImageFormat::SinglePlane(viz::RGBA_8888));
+                viz::SinglePlaneFormat::kRGBA_8888);
     } else if (fmt == PIXEL_FORMAT_XRGB) {
       EXPECT_EQ(resources.resources[0].format,
-                viz::SharedImageFormat::SinglePlane(viz::BGRA_8888));
+                viz::SinglePlaneFormat::kBGRA_8888);
 
     } else if (fmt == PIXEL_FORMAT_ABGR) {
       EXPECT_EQ(resources.resources[0].format,
-                viz::SharedImageFormat::SinglePlane(viz::RGBA_8888));
+                viz::SinglePlaneFormat::kRGBA_8888);
 
     } else if (fmt == PIXEL_FORMAT_ARGB) {
       EXPECT_EQ(resources.resources[0].format,
-                viz::SharedImageFormat::SinglePlane(viz::BGRA_8888));
+                viz::SinglePlaneFormat::kBGRA_8888);
     }
 #endif
   }
@@ -477,6 +489,12 @@ TEST_F(VideoResourceUpdaterTest, HighBitFrameNoF16) {
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+
+  // Setting to kSharedImageFormat, resources type should not change.
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
 }
 
@@ -577,6 +595,12 @@ TEST_F(VideoResourceUpdaterTest, WonkySoftwareFrame) {
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+
+  // Setting to kSharedImageFormat, resources type should not change.
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
 }
 
@@ -693,7 +717,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBSoftwareCompositor) {
         updater->CreateExternalResourcesFromVideoFrame(video_frame);
     EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resources.type);
     EXPECT_EQ(resources.resources[0].format,
-              viz::SharedImageFormat::SinglePlane(viz::RGBA_8888));
+              viz::SinglePlaneFormat::kRGBA_8888);
   }
 }
 
@@ -780,7 +804,7 @@ TEST_F(VideoResourceUpdaterTest, ChangeResourceSizeSoftwareCompositor) {
   EXPECT_NE(shared_bitmap_reporter_.shared_bitmaps(), shared_bitmaps_copy);
 }
 
-TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes) {
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_ResourceFormat) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
 
   scoped_refptr<VideoFrame> video_frame = CreateTestRGBAHardwareVideoFrame();
@@ -798,6 +822,9 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes) {
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
   EXPECT_EQ(3u, resources.resources.size());
   EXPECT_EQ(3u, resources.release_callbacks.size());
+  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[0].format);
+  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[1].format);
+  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[2].format);
   EXPECT_EQ(resources.resources[0].synchronization_type,
             viz::TransferableResource::SynchronizationType::kSyncToken);
   EXPECT_EQ(resources.resources[1].synchronization_type,
@@ -818,6 +845,34 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes) {
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
   EXPECT_EQ(
       resources.resources[2].synchronization_type,
+      viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
+}
+
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+  scoped_refptr<VideoFrame> video_frame = CreateTestYuvHardwareVideoFrame(
+      PIXEL_FORMAT_I420, 1, GL_TEXTURE_RECTANGLE_ARB);
+  // Setting to kSharedImageFormat, resources type should change to RGB.
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resources.type);
+  EXPECT_EQ(1u, resources.resources.size());
+  EXPECT_EQ(1u, resources.release_callbacks.size());
+  EXPECT_EQ(viz::MultiPlaneFormat::kYVU_420, resources.resources[0].format);
+  EXPECT_EQ(resources.resources[0].synchronization_type,
+            viz::TransferableResource::SynchronizationType::kSyncToken);
+
+  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_I420, 1,
+                                                GL_TEXTURE_RECTANGLE_ARB);
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  video_frame->metadata().read_lock_fences_enabled = true;
+
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(
+      resources.resources[0].synchronization_type,
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
 }
 
@@ -972,7 +1027,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
-TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DualNV12) {
+TEST_F(VideoResourceUpdaterTest,
+       CreateForHardwarePlanes_DualNV12_ResourceFormat) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame = CreateTestYuvHardwareVideoFrame(
@@ -988,8 +1044,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DualNV12) {
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resources.resources[1].mailbox_holder.texture_target);
   // |updater| doesn't set |buffer_format| in this case.
-  EXPECT_EQ(viz::RED_8, resources.resources[0].format.resource_format());
-  EXPECT_EQ(viz::RG_88, resources.resources[1].format.resource_format());
+  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[0].format);
+  EXPECT_EQ(viz::SinglePlaneFormat::kRG_88, resources.resources[1].format);
 
   video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12, 2,
                                                 GL_TEXTURE_RECTANGLE_ARB);
@@ -1000,8 +1056,44 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DualNV12) {
             resources.resources[0].mailbox_holder.texture_target);
   EXPECT_EQ((GLenum)GL_TEXTURE_RECTANGLE_ARB,
             resources.resources[1].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::RED_8, resources.resources[0].format.resource_format());
-  EXPECT_EQ(viz::RG_88, resources.resources[1].format.resource_format());
+  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[0].format);
+  EXPECT_EQ(viz::SinglePlaneFormat::kRG_88, resources.resources[1].format);
+  EXPECT_EQ(0u, GetSharedImageCount());
+}
+
+TEST_F(VideoResourceUpdaterTest,
+       CreateForHardwarePlanes_DualNV12_SharedImageFormat) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+  EXPECT_EQ(0u, GetSharedImageCount());
+  scoped_refptr<VideoFrame> video_frame = CreateTestYuvHardwareVideoFrame(
+      PIXEL_FORMAT_NV12, 1, GL_TEXTURE_RECTANGLE_ARB);
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  // Setting to kSharedImageFormat, resources type should bo RGB.
+  EXPECT_EQ(VideoFrameResourceType::RGB, resources.type);
+  EXPECT_EQ(1u, resources.resources.size());
+  EXPECT_EQ((GLenum)GL_TEXTURE_RECTANGLE_ARB,
+            resources.resources[0].mailbox_holder.texture_target);
+  EXPECT_EQ(viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
+            resources.resources[0].format);
+  EXPECT_EQ(0u, GetSharedImageCount());
+
+  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12, 1,
+                                                GL_TEXTURE_EXTERNAL_OES);
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resources.type);
+  EXPECT_EQ(1u, resources.resources.size());
+  EXPECT_EQ(1u, resources.release_callbacks.size());
+  EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
+            resources.resources[0].mailbox_holder.texture_target);
+  // |updater| doesn't set |buffer_format| in this case.
+  EXPECT_EQ(viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
+            resources.resources[0].format);
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
@@ -1022,7 +1114,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_EXTERNAL_OES),
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::P010, resources.resources[0].format.resource_format());
+  EXPECT_EQ(viz::ResourceFormat::P010,
+            resources.resources[0].format.resource_format());
   EXPECT_EQ(kHDR10ColorSpace, resources.resources[0].color_space);
   EXPECT_EQ(hdr_metadata, resources.resources[0].hdr_metadata);
   EXPECT_EQ(0u, GetSharedImageCount());

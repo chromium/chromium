@@ -1245,10 +1245,16 @@ gfx::ColorSpace VideoFrame::ColorSpace() const {
 }
 
 bool VideoFrame::RequiresExternalSampler() const {
+  // With SharedImageFormats NumTextures() is always 1. Use
+  // SharedImageFormatType to check for NumTextures for legacy formats and
+  // kSharedImageFormatExternalSampler for SharedImageFormats
   const bool result =
       (format() == PIXEL_FORMAT_NV12 || format() == PIXEL_FORMAT_YV12 ||
        format() == PIXEL_FORMAT_P016LE) &&
-      NumTextures() == 1;
+      ((NumTextures() == 1 &&
+        shared_image_format_type() == SharedImageFormatType::kLegacy) ||
+       shared_image_format_type() ==
+           SharedImageFormatType::kSharedImageFormatExternalSampler);
   // The texture target can be 0 for Fuchsia.
   DCHECK(!result ||
          (mailbox_holder(0).texture_target == GL_TEXTURE_EXTERNAL_OES ||
