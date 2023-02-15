@@ -35,7 +35,6 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -158,7 +157,6 @@ void InitializeDBus() {
   InitializeDBusClient<ConciergeClient>(bus);
   InitializeDBusClient<CrasAudioClient>(bus);
   InitializeDBusClient<CrosDisksClient>(bus);
-  InitializeDBusClient<cros_healthd::CrosHealthdClient>(bus);
   InitializeDBusClient<CryptohomeMiscClient>(bus);
   InitializeDBusClient<CryptohomePkcs11Client>(bus);
   InitializeDBusClient<CupsProxyClient>(bus);
@@ -325,7 +323,6 @@ void ShutdownDBus() {
   CupsProxyClient::Shutdown();
   CryptohomePkcs11Client::Shutdown();
   CryptohomeMiscClient::Shutdown();
-  cros_healthd::CrosHealthdClient::Shutdown();
   CrosDisksClient::Shutdown();
   CrasAudioClient::Shutdown();
   ConciergeClient::Shutdown();
