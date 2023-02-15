@@ -5,6 +5,7 @@
 """Tests that no linker inputs are from private paths."""
 
 import argparse
+import fnmatch
 import os
 import pathlib
 import sys
@@ -12,38 +13,28 @@ import sys
 _DIR_SRC_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
-def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--linker-inputs',
-                      required=True,
-                      help='Path to file containing one linker input per line, '
-                      'relative to --root-out-dir')
-  parser.add_argument('--private-paths-file',
-                      required=True,
-                      help='Path to file containing list of paths that are '
-                      'considered private, relative gclient root.')
-  parser.add_argument('--root-out-dir',
-                      required=True,
-                      help='See --linker-inputs.')
-  parser.add_argument('--expect-failure',
-                      action='store_true',
-                      help='Invert exit code.')
-  args = parser.parse_args()
+def _print_paths(paths, limit):
+  for path in paths[:limit]:
+    print(path)
+  if len(paths) > limit:
+    print(f'... and {len(paths) - limit} more.')
+  print()
 
-  private_paths = pathlib.Path(args.private_paths_file).read_text().splitlines()
-  linker_inputs = pathlib.Path(args.linker_inputs).read_text().splitlines()
 
-  # Remove src/ prefix from paths.
-  # We care only about paths within src/ since GN cannot reference files
-  # outside of // (and what would the obj/ path for them look like?).
-  private_paths = [p[4:] for p in private_paths if p.startswith('src/')]
-  if not private_paths:
-    raise ('No paths src/ paths found in ' + args.private_paths_file)
+def _apply_allowlist(found, globs):
+  ignored_paths = []
+  new_found = []
+  for path in found:
+    for pattern in globs:
+      if fnmatch.fnmatch(path, pattern):
+        ignored_paths.append(path)
+        break
+    else:
+      new_found.append(path)
+  return new_found, ignored_paths
 
-  root_out_dir = args.root_out_dir
-  if root_out_dir == '.':
-    root_out_dir = ''
 
+def _find_private_paths(linker_inputs, private_paths, root_out_dir):
   seen = set()
   found = []
   for linker_input in linker_inputs:
@@ -69,14 +60,56 @@ def main():
       found.append(linker_input)
     else:
       seen.add(dirname)
+  return found
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--linker-inputs',
+                      required=True,
+                      help='Path to file containing one linker input per line, '
+                      'relative to --root-out-dir')
+  parser.add_argument('--private-paths-file',
+                      required=True,
+                      help='Path to file containing list of paths that are '
+                      'considered private, relative gclient root.')
+  parser.add_argument('--root-out-dir',
+                      required=True,
+                      help='See --linker-inputs.')
+  parser.add_argument('--allow-violation',
+                      action='append',
+                      help='globs of private paths to allow.')
+  parser.add_argument('--expect-failure',
+                      action='store_true',
+                      help='Invert exit code.')
+  args = parser.parse_args()
+
+  private_paths = pathlib.Path(args.private_paths_file).read_text().splitlines()
+  linker_inputs = pathlib.Path(args.linker_inputs).read_text().splitlines()
+
+  # Remove src/ prefix from paths.
+  # We care only about paths within src/ since GN cannot reference files
+  # outside of // (and what would the obj/ path for them look like?).
+  private_paths = [p[4:] for p in private_paths if p.startswith('src/')]
+  if not private_paths:
+    raise ('No paths src/ paths found in ' + args.private_paths_file)
+
+  root_out_dir = args.root_out_dir
+  if root_out_dir == '.':
+    root_out_dir = ''
+
+  found = _find_private_paths(linker_inputs, private_paths, root_out_dir)
+
+  if args.allow_violation:
+    found, ignored_paths = _apply_allowlist(found, args.allow_violation)
+    if ignored_paths:
+      print('Ignoring {len(ignored_paths)} allowlisted private paths:')
+      _print_paths(sorted(ignored_paths), 10)
 
   if found:
     limit = 10 if args.expect_failure else 1000
-    print('Found private paths being linked into public code:')
-    for path in found[:limit]:
-      print(f'{path}')
-    if len(found) > limit:
-      print(f'... and {len(found) - limit} more.')
+    print(f'Found {len(found)} private paths being linked into public code:')
+    _print_paths(found, limit)
   elif args.expect_failure:
     print('Expected to find a private path, but none were found.')
 

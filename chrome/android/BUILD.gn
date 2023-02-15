@@ -7,7 +7,6 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/android/system_image.gni")
 import("//build/config/python.gni")
-import("//build/private_code_test/private_code_test.gni")
 import("//build/util/process_version.gni")
 import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/chrome_java_resources.gni")
@@ -3444,13 +3443,6 @@ if (current_toolchain == default_toolchain) {
               "expectations/$target_name.$target_cpu.libs_and_assets.expected"
         }
       }
-    }
-  }
-
-  if (enable_chrome_android_internal) {
-    private_code_test("libmonochrome_private_code_test") {
-      linker_inputs_dep =
-          ":libmonochrome_inputs($_monochrome_browser_toolchain)"
     }
   }
 }
