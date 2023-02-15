@@ -33,7 +33,6 @@ TEST(LacrosMemoryPressureEvaluatorTest, CheckMemoryPressure) {
       FROM_HERE, base::BindRepeating(&PressureCallback, &pressure_events));
 
   memory_pressure::MultiSourceMemoryPressureMonitor monitor;
-  monitor.ResetSystemEvaluatorForTesting();
 
   auto evaluator =
       std::make_unique<LacrosMemoryPressureEvaluator>(monitor.CreateVoter());

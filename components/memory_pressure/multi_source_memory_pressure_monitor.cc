@@ -83,10 +83,6 @@ void MultiSourceMemoryPressureMonitor::OnNotifyListenersRequested() {
   dispatch_callback_.Run(current_pressure_level_);
 }
 
-void MultiSourceMemoryPressureMonitor::ResetSystemEvaluatorForTesting() {
-  system_evaluator_.reset();
-}
-
 void MultiSourceMemoryPressureMonitor::SetSystemEvaluator(
     std::unique_ptr<SystemMemoryPressureEvaluator> evaluator) {
   DCHECK(!system_evaluator_);

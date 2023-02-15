@@ -210,7 +210,6 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest,
 // for the correct behavior on event reposting as well as state updates.
 TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   MultiSourceMemoryPressureMonitor monitor;
-  monitor.ResetSystemEvaluatorForTesting();
 
   // Large-memory.
   testing::StrictMock<TestSystemMemoryPressureEvaluator> evaluator(
@@ -321,7 +320,6 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
 
 TEST_F(WinSystemMemoryPressureEvaluatorTest, OSSignalsMemoryPressureEvaluator) {
   MultiSourceMemoryPressureMonitor monitor;
-  monitor.ResetSystemEvaluatorForTesting();
   testing::StrictMock<TestSystemMemoryPressureEvaluator> evaluator(
       true, monitor.CreateVoter());
   evaluator.CreateOSSignalPressureEvaluator(monitor.CreateVoter());

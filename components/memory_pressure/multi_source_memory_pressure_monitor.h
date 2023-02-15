@@ -52,8 +52,6 @@ class MultiSourceMemoryPressureMonitor
     return &aggregator_;
   }
 
-  void ResetSystemEvaluatorForTesting();
-
   void SetSystemEvaluator(
       std::unique_ptr<SystemMemoryPressureEvaluator> evaluator);
 

@@ -147,7 +147,6 @@ TEST_F(LinuxSystemMemoryPressureEvaluatorTest,
 // for the correct behavior on event reposting as well as state updates.
 TEST_F(LinuxSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   MultiSourceMemoryPressureMonitor monitor;
-  monitor.ResetSystemEvaluatorForTesting();
 
   // Large-memory.
   testing::StrictMock<TestSystemMemoryPressureEvaluator> evaluator(

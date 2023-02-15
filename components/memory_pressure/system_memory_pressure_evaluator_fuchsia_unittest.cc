@@ -137,7 +137,6 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
       publish_provider(test_context_.additional_services(), this);
 
   MultiSourceMemoryPressureMonitor monitor;
-  monitor.ResetSystemEvaluatorForTesting();
 
   testing::StrictMock<TestSystemMemoryPressureEvaluator> evaluator(
       monitor.CreateVoter());
