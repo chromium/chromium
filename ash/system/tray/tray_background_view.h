@@ -179,6 +179,13 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // disabled until the returned scoped closure runner is run.
   [[nodiscard]] base::ScopedClosureRunner DisableShowAnimation();
 
+  // Registers a client's request to use custom visibility animations. The
+  // custom animation must be executed by the client; `TrayBackgroundView` does
+  // not run any custom animations (it will simply do nothing rather than run
+  // the default visibility animations). Custom animations will be used until
+  // the returned scoped closure runner is run.
+  [[nodiscard]] base::ScopedClosureRunner SetUseCustomVisibilityAnimations();
+
   // Returns true if the view is showing a context menu.
   bool IsShowingMenu() const;
 
@@ -190,6 +197,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Returns a weak pointer to this instance.
   base::WeakPtr<TrayBackgroundView> GetWeakPtr();
+
+  // Checks if we should show bounce in or fade in animation.
+  bool IsShowAnimationEnabled();
 
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }
@@ -284,10 +294,8 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // state.
   bool GetEffectiveVisibility();
 
-  // Checks if we should show bounce in or fade in animation.
-  bool IsShowAnimationEnabled() const {
-    return disable_show_animation_count_ == 0u;
-  }
+  // Checks if we should use custom visibility animations.
+  bool ShouldUseCustomVisibilityAnimations() const;
 
   // The shelf containing the system tray for this view.
   Shelf* shelf_;
@@ -322,6 +330,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Number of active requests to disable the bounce-in and fade-in animation.
   size_t disable_show_animation_count_ = 0;
+
+  // Number of active requests to use custom visibility animations.
+  size_t use_custom_visibility_animation_count_ = 0;
 
   // The shape of this tray which is only applied to the horizontal tray.
   // Defaults to `kAllRounded`.

@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -109,6 +110,28 @@ void TrayItemView::DestroyImageView() {
   image_view_ = nullptr;
 }
 
+base::ScopedClosureRunner TrayItemView::DisableAnimation() {
+  if (layer()->GetAnimator()->is_animating()) {
+    layer()->GetAnimator()->StopAnimating();
+  }
+  ++disable_animation_count_;
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](const base::WeakPtr<TrayItemView>& ptr) {
+        if (ptr) {
+          --ptr->disable_animation_count_;
+        }
+      },
+      weak_factory_.GetWeakPtr()));
+}
+
+void TrayItemView::SetAnimationIdleClosureForTest(base::OnceClosure closure) {
+  animation_idle_closure_ = std::move(closure);
+}
+
+bool TrayItemView::IsAnimating() {
+  return animation_ && animation_->is_animating();
+}
+
 void TrayItemView::SetVisible(bool visible) {
   if (!GetWidget() ||
       ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
@@ -139,6 +162,15 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
     animation_ = std::make_unique<gfx::SlideAnimation>(this);
     animation_->SetTweenType(gfx::Tween::LINEAR);
     animation_->Reset(target_visible_ ? 0.0 : 1.0);
+  }
+
+  // Immediately progress to the end of the animation if animation is disabled.
+  if (!IsAnimationEnabled()) {
+    animation_->Reset(target_visible_ ? 1.0 : 0.0);
+    layer()->SetTransform(gfx::Transform());
+    layer()->SetOpacity(target_visible_ ? 1.0 : 0.0);
+    views::View::SetVisible(target_visible_);
+    return;
   }
 
   if (target_visible_) {
@@ -233,6 +265,10 @@ void TrayItemView::AnimationEnded(const gfx::Animation* animation) {
     // Reset `throughput_tracker_` to reset animation metrics recording.
     throughput_tracker_->Stop();
     throughput_tracker_.reset();
+  }
+
+  if (animation_idle_closure_) {
+    std::move(animation_idle_closure_).Run();
   }
 }
 

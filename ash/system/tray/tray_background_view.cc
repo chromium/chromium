@@ -381,6 +381,10 @@ base::WeakPtr<TrayBackgroundView> TrayBackgroundView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+bool TrayBackgroundView::IsShowAnimationEnabled() {
+  return disable_show_animation_count_ == 0u;
+}
+
 void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
   if (visible == layer()->GetTargetVisibility())
     return;
@@ -398,6 +402,11 @@ void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
 
     // We only show visible animation when `IsShowAnimationEnabled()`.
     if (IsShowAnimationEnabled()) {
+      // We only show default animations when
+      // `ShouldUseCustomVisibilityAnimations()` is false.
+      if (ShouldUseCustomVisibilityAnimations()) {
+        return;
+      }
       if (use_bounce_in_animation_)
         BounceInAnimation();
       else
@@ -427,6 +436,18 @@ base::ScopedClosureRunner TrayBackgroundView::DisableShowAnimation() {
           --ptr->disable_show_animation_count_;
           if (ptr->IsShowAnimationEnabled())
             ptr->OnShouldShowAnimationChanged(true);
+        }
+      },
+      weak_factory_.GetWeakPtr()));
+}
+
+base::ScopedClosureRunner
+TrayBackgroundView::SetUseCustomVisibilityAnimations() {
+  ++use_custom_visibility_animation_count_;
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](const base::WeakPtr<TrayBackgroundView>& ptr) {
+        if (ptr) {
+          ptr->use_custom_visibility_animation_count_--;
         }
       },
       weak_factory_.GetWeakPtr()));
@@ -893,6 +914,10 @@ bool TrayBackgroundView::GetEffectiveVisibility() {
     return show_when_collapsed_;
 
   return true;
+}
+
+bool TrayBackgroundView::ShouldUseCustomVisibilityAnimations() const {
+  return use_custom_visibility_animation_count_ > 0u;
 }
 
 bool TrayBackgroundView::CacheBubbleViewForHide() const {

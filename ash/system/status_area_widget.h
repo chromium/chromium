@@ -36,6 +36,7 @@ class PhoneHubTray;
 class ProjectorAnnotationTray;
 class SelectToSpeakTray;
 class Shelf;
+class StatusAreaAnimationController;
 class StatusAreaOverflowButtonTray;
 class StatusAreaWidgetDelegate;
 class StopRecordingButtonTray;
@@ -309,6 +310,9 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Number of active tray bubbles on the display where status area widget
   // lives.
   int tray_bubble_count_ = 0;
+
+  // Owned by `StatusAreaWidget`:
+  std::unique_ptr<StatusAreaAnimationController> animation_controller_;
 
   base::WeakPtrFactory<StatusAreaWidget> weak_ptr_factory_{this};
 };

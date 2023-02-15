@@ -67,6 +67,10 @@ class ASH_EXPORT NotificationCenterTray
     return privacy_indicators_view_;
   }
 
+  NotificationIconsController* notification_icons_controller() {
+    return notification_icons_controller_.get();
+  }
+
  private:
   friend class NotificationCenterTestApi;
   friend class NotificationCounterViewTest;

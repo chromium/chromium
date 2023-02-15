@@ -74,6 +74,17 @@ class ASH_EXPORT TrayItemView : public views::View,
   // user session starts). It should reload any strings the view is using.
   virtual void HandleLocaleChange() = 0;
 
+  // Temporarily disables the use of animation on visibility changes. Animation
+  // will be disabled until the returned scoped closure is run.
+  [[nodiscard]] base::ScopedClosureRunner DisableAnimation();
+
+  // Sets `animation_idle_closure_`. Used by tests only.
+  void SetAnimationIdleClosureForTest(base::OnceClosure closure);
+
+  // Returns true if a visibility animation is currently running, false
+  // otherwise.
+  bool IsAnimating();
+
   IconizedLabel* label() const { return label_; }
   views::ImageView* image_view() const { return image_view_; }
 
@@ -117,6 +128,9 @@ class ASH_EXPORT TrayItemView : public views::View,
   double GetItemScaleProgressFromAnimationProgress(
       double animation_value) const;
 
+  // Checks if we should use animation on visibility changes.
+  bool IsAnimationEnabled() const { return disable_animation_count_ == 0u; }
+
   Shelf* const shelf_;
 
   // When showing the item in tray, the animation is executed with 2 stages:
@@ -139,6 +153,15 @@ class ASH_EXPORT TrayItemView : public views::View,
 
   // Measure animation smoothness metrics for `animation_`.
   absl::optional<ui::ThroughputTracker> throughput_tracker_;
+
+  // Number of active requests to disable animation.
+  size_t disable_animation_count_ = 0u;
+
+  // A closure called when the visibility animation finishes. Used for tests
+  // only.
+  base::OnceClosure animation_idle_closure_;
+
+  base::WeakPtrFactory<TrayItemView> weak_factory_{this};
 };
 
 }  // namespace ash
