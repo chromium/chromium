@@ -239,6 +239,12 @@ Note: Updating display to "browser" means the default windowed experience is now
 | WMLC | install_or_shortcut_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown |
 | WMLC | install_or_shortcut_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedA) | check_launch_icon_shown |
 
+The following specialization is required here since in tabbed mode, launching may add a tab to the existing window instead of making a new one.
+
+| #Platforms | Test -> | | | | | | | | | | | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| WMLC  | install_or_shortcut_windowed_with_shortcut | manifest_update_display(Standalone, Tabbed) | maybe_close_pwa | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_tabbed |
+
 These mac specializations are required due to launching from platform shortcut actually focusing the window, instead of creating a new one.
 
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
