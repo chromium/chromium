@@ -373,7 +373,9 @@ void HelpBubbleHandlerBase::HelpBubbleClosed(
   }
 
   // This could also theoretically trigger callbacks.
-  data->help_bubble->Close();
+  if (data->help_bubble) {
+    data->help_bubble->Close();
+  }
 
   if (!weak_ptr)
     return;
