@@ -276,10 +276,10 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                           std::move(callback)));
 }
 
-void ChromeOSAuthenticator::GetCredentialInformationForRequest(
+void ChromeOSAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
-    GetCredentialInformationForRequestCallback callback) {
+    GetPlatformCredentialInfoForRequestCallback callback) {
   u2f::HasCredentialsRequest req;
   req.set_rp_id(request.rp_id);
   if (request.app_id) {
@@ -298,15 +298,18 @@ void ChromeOSAuthenticator::GetCredentialInformationForRequest(
 }
 
 void ChromeOSAuthenticator::OnHasCredentialInformationForRequest(
-    GetCredentialInformationForRequestCallback callback,
+    GetPlatformCredentialInfoForRequestCallback callback,
     absl::optional<u2f::HasCredentialsResponse> response) {
   std::move(callback).Run(
       /*credentials=*/{},
-      /*has_credential=*/
       response &&
-          response->status() ==
-              u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
-          response->credential_id().size() > 0);
+              response->status() ==
+                  u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
+              response->credential_id().size() > 0
+          ? FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential
+          : FidoRequestHandlerBase::RecognizedCredential::
+                kNoRecognizedCredential);
 }
 
 void ChromeOSAuthenticator::OnGetAssertionResponse(

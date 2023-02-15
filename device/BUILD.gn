@@ -199,6 +199,7 @@ test("device_unittests") {
 
   if (is_mac) {
     sources += [
+      "fido/mac/authenticator_unittest.mm",
       "fido/mac/browsing_data_deletion_unittest.mm",
       "fido/mac/credential_metadata_unittest.cc",
       "fido/mac/credential_store_unittest.mm",

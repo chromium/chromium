@@ -5,6 +5,7 @@
 #include "device/fido/virtual_fido_device_authenticator.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_device_authenticator.h"
+#include "device/fido/fido_request_handler_base.h"
 
 namespace device {
 
@@ -14,10 +15,10 @@ VirtualFidoDeviceAuthenticator::VirtualFidoDeviceAuthenticator(
 
 VirtualFidoDeviceAuthenticator::~VirtualFidoDeviceAuthenticator() = default;
 
-void VirtualFidoDeviceAuthenticator::GetCredentialInformationForRequest(
+void VirtualFidoDeviceAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
-    GetCredentialInformationForRequestCallback callback) {
+    GetPlatformCredentialInfoForRequestCallback callback) {
   DCHECK_EQ(device()->DeviceTransport(), FidoTransportProtocol::kInternal);
 
   VirtualFidoDevice* virtual_device = static_cast<VirtualFidoDevice*>(device());
@@ -32,7 +33,11 @@ void VirtualFidoDeviceAuthenticator::GetCredentialInformationForRequest(
                                  *registration.second.user);
       }
     }
-    bool has_credentials = credentials.size() > 0;
+    FidoRequestHandlerBase::RecognizedCredential has_credentials =
+        credentials.empty() ? FidoRequestHandlerBase::RecognizedCredential::
+                                  kNoRecognizedCredential
+                            : FidoRequestHandlerBase::RecognizedCredential::
+                                  kHasRecognizedCredential;
     std::move(callback).Run(std::move(credentials), has_credentials);
     return;
   }
@@ -41,12 +46,16 @@ void VirtualFidoDeviceAuthenticator::GetCredentialInformationForRequest(
        virtual_device->mutable_state()->registrations) {
     for (const auto& allow_list_credential : request.allow_list) {
       if (allow_list_credential.id == registration.first) {
-        std::move(callback).Run(/*credentials=*/{}, true);
+        std::move(callback).Run(/*credentials=*/{},
+                                FidoRequestHandlerBase::RecognizedCredential::
+                                    kHasRecognizedCredential);
         return;
       }
     }
   }
-  std::move(callback).Run(/*credentials=*/{}, false);
+  std::move(callback).Run(
+      /*credentials=*/{},
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
 }  // namespace device

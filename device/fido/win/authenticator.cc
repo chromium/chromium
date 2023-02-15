@@ -25,6 +25,7 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/win/type_conversions.h"
 #include "device/fido/win/webauthn_api.h"
@@ -280,25 +281,17 @@ void WinWebAuthnApiAuthenticator::GetAssertionDone(
   std::move(callback).Run(result.first, std::move(responses));
 }
 
-void WinWebAuthnApiAuthenticator::GetCredentialInformationForRequest(
+void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& request_options,
-    base::OnceCallback<void(std::vector<DiscoverableCredentialMetadata>, bool)>
-        callback) {
-  // Since the Windows authenticator forwards requests to other devices such as
-  // security keys, we cannot know if there are no available credentials for a
-  // given request. Therefore, this function always sets has_credentials to
-  // true.
-  if (!request.allow_list.empty()) {
-    std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/true);
-    return;
-  }
+    GetPlatformCredentialInfoForRequestCallback callback) {
   if (!win_api_->SupportsSilentDiscovery()) {
     // The Windows platform authenticator is the only authenticator available to
-    // us and we can't know if there are credentials in advance. Assume there
-    // are credentials available.
+    // us and we can't know if there are credentials in advance.
     FIDO_LOG(DEBUG) << "Windows API version does not support silent discovery";
-    std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/true);
+    std::move(callback).Run(
+        /*credentials=*/{},
+        FidoRequestHandlerBase::RecognizedCredential::kUnknown);
     return;
   }
   FIDO_LOG(DEBUG) << "Silently discovering credentials for " << request.rp_id;
@@ -318,16 +311,41 @@ void WinWebAuthnApiAuthenticator::GetCredentialInformationForRequest(
       std::vector<DiscoverableCredentialMetadata> result =
           WinCredentialDetailsListToCredentialMetadata(*credentials);
       FIDO_LOG(DEBUG) << "Found " << result.size() << " credentials";
-      std::move(callback).Run(std::move(result), /*has_credentials=*/true);
+      if (request.allow_list.empty()) {
+        std::move(callback).Run(std::move(result),
+                                FidoRequestHandlerBase::RecognizedCredential::
+                                    kHasRecognizedCredential);
+        return;
+      }
+      // Look for a discoverable credential present in the allow list.
+      for (const auto& credential : request.allow_list) {
+        if (std::find_if(result.begin(), result.end(),
+                         [&credential](const auto& result) {
+                           return result.cred_id == credential.id;
+                         }) != result.end()) {
+          std::move(callback).Run(/*credentials=*/{},
+                                  FidoRequestHandlerBase::RecognizedCredential::
+                                      kHasRecognizedCredential);
+          return;
+        }
+      }
+      // Could not find a credential that is present in the allow list.
+      std::move(callback).Run(
+          /*credentials=*/{}, FidoRequestHandlerBase::RecognizedCredential::
+                                  kNoRecognizedCredential);
       return;
     }
     case NTE_NOT_FOUND:
       FIDO_LOG(DEBUG) << "No credentials found";
-      std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/false);
+      std::move(callback).Run(/*credentials=*/{},
+                              FidoRequestHandlerBase::RecognizedCredential::
+                                  kNoRecognizedCredential);
       return;
     default:
       FIDO_LOG(ERROR) << "Windows API returned unknown result: " << hresult;
-      std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/true);
+      std::move(callback).Run(
+          /*credentials=*/{},
+          FidoRequestHandlerBase::RecognizedCredential::kUnknown);
       return;
   }
 }

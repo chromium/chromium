@@ -20,6 +20,7 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/get_assertion_operation.h"
 #include "device/fido/mac/make_credential_operation.h"
@@ -51,10 +52,10 @@ void TouchIdAuthenticator::InitializeAuthenticator(base::OnceClosure callback) {
                                                            std::move(callback));
 }
 
-void TouchIdAuthenticator::GetCredentialInformationForRequest(
+void TouchIdAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
-    GetCredentialInformationForRequestCallback callback) {
+    GetPlatformCredentialInfoForRequestCallback callback) {
   if (!request.allow_list.empty()) {
     // Non resident credentials request.
     absl::optional<std::list<Credential>> credentials =
@@ -62,11 +63,19 @@ void TouchIdAuthenticator::GetCredentialInformationForRequest(
             request.rp_id, request.allow_list);
     if (!credentials) {
       FIDO_LOG(ERROR) << "FindCredentialsFromCredentialDescriptorList() failed";
-      std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/false);
+      std::move(callback).Run(
+          /*credentials=*/{},
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kNoRecognizedCredential);
       return;
     }
-    std::move(callback).Run(/*credentials=*/{},
-                            /*has_credentials=*/!credentials->empty());
+    std::move(callback).Run(
+        /*credentials=*/{},
+        credentials->empty()
+            ? device::FidoRequestHandlerBase::RecognizedCredential::
+                  kNoRecognizedCredential
+            : device::FidoRequestHandlerBase::RecognizedCredential::
+                  kHasRecognizedCredential);
     return;
   }
 
@@ -75,7 +84,9 @@ void TouchIdAuthenticator::GetCredentialInformationForRequest(
       credential_store_.FindResidentCredentials(request.rp_id);
   if (!resident_credentials) {
     FIDO_LOG(ERROR) << "GetResidentCredentialsForRequest() failed";
-    std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/false);
+    std::move(callback).Run(/*credentials=*/{},
+                            device::FidoRequestHandlerBase::
+                                RecognizedCredential::kNoRecognizedCredential);
     return;
   }
   std::vector<DiscoverableCredentialMetadata> result;
@@ -83,7 +94,13 @@ void TouchIdAuthenticator::GetCredentialInformationForRequest(
     result.emplace_back(request.rp_id, credential.credential_id,
                         credential.metadata.ToPublicKeyCredentialUserEntity());
   }
-  std::move(callback).Run(std::move(result), !resident_credentials->empty());
+  std::move(callback).Run(
+      std::move(result),
+      resident_credentials->empty()
+          ? device::FidoRequestHandlerBase::RecognizedCredential::
+                kNoRecognizedCredential
+          : device::FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential);
 }
 
 void TouchIdAuthenticator::MakeCredential(CtapMakeCredentialRequest request,

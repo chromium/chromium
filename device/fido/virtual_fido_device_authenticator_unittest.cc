@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,8 +21,9 @@ namespace device {
 
 namespace {
 
-using CredentialInfoCallback = device::test::
-    TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>, bool>;
+using CredentialInfoCallback = device::test::TestCallbackReceiver<
+    std::vector<DiscoverableCredentialMetadata>,
+    FidoRequestHandlerBase::RecognizedCredential>;
 
 class VirtualFidoDeviceAuthenticatorTest : public testing::Test {
  protected:
@@ -54,19 +56,21 @@ class VirtualFidoDeviceAuthenticatorTest : public testing::Test {
 };
 
 TEST_F(VirtualFidoDeviceAuthenticatorTest,
-       TestGetCredentialInformationForRequest) {
+       TestGetPlatformCredentialInfoForRequest) {
   constexpr char kRpId[] = "forgerfamily.com";
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   authenticator_state_->transport = FidoTransportProtocol::kInternal;
   {
     // No credentials.
     CredentialInfoCallback callback;
-    authenticator_->GetCredentialInformationForRequest(
+    authenticator_->GetPlatformCredentialInfoForRequest(
         request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
     EXPECT_EQ(std::get<0>(*callback.result()),
               std::vector<DiscoverableCredentialMetadata>{});
-    EXPECT_FALSE(std::get<1>(*callback.result()));
+    EXPECT_EQ(
+        std::get<1>(*callback.result()),
+        FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
   }
   {
     // A credential for a different RP ID.
@@ -75,12 +79,14 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
         PublicKeyCredentialRpEntity("eden-academy.com"),
         PublicKeyCredentialUserEntity()));
     CredentialInfoCallback callback;
-    authenticator_->GetCredentialInformationForRequest(
+    authenticator_->GetPlatformCredentialInfoForRequest(
         request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
     EXPECT_EQ(std::get<0>(*callback.result()),
               std::vector<DiscoverableCredentialMetadata>{});
-    EXPECT_FALSE(std::get<1>(*callback.result()));
+    EXPECT_EQ(
+        std::get<1>(*callback.result()),
+        FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
     authenticator_state_->registrations.clear();
   }
   {
@@ -88,12 +94,14 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     ASSERT_TRUE(authenticator_state_->InjectRegistration(
         std::vector<uint8_t>{1, 2, 3, 4}, kRpId));
     CredentialInfoCallback callback;
-    authenticator_->GetCredentialInformationForRequest(
+    authenticator_->GetPlatformCredentialInfoForRequest(
         request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
     EXPECT_EQ(std::vector<DiscoverableCredentialMetadata>{},
               std::get<0>(*callback.result()));
-    EXPECT_FALSE(std::get<1>(*callback.result()));
+    EXPECT_EQ(
+        std::get<1>(*callback.result()),
+        FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
     authenticator_state_->registrations.clear();
   }
   {
@@ -107,7 +115,7 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     ASSERT_TRUE(authenticator_state_->InjectResidentKey(
         id2, PublicKeyCredentialRpEntity(kRpId), user2));
     CredentialInfoCallback callback;
-    authenticator_->GetCredentialInformationForRequest(
+    authenticator_->GetPlatformCredentialInfoForRequest(
         request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
     DiscoverableCredentialMetadata expected1 =
@@ -116,7 +124,9 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
         DiscoverableCredentialMetadata(kRpId, id2, user2);
     EXPECT_THAT(std::get<0>(*callback.result()),
                 testing::UnorderedElementsAre(expected1, expected2));
-    EXPECT_TRUE(std::get<1>(*callback.result()));
+    EXPECT_EQ(
+        std::get<1>(*callback.result()),
+        FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
     authenticator_state_->registrations.clear();
   }
 }

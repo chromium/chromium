@@ -330,7 +330,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // and whether it has responsive credentials at all.
   void OnHavePlatformCredentialStatus(
       std::vector<DiscoverableCredentialMetadata> user_entities,
-      bool have_credential);
+      RecognizedCredential has_credentials);
 
  private:
   friend class FidoRequestHandlerTest;

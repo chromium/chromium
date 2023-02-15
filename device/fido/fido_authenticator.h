@@ -51,9 +51,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   using GetAssertionCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               std::vector<AuthenticatorGetAssertionResponse>)>;
-  using GetCredentialInformationForRequestCallback = base::OnceCallback<void(
+  using GetPlatformCredentialInfoForRequestCallback = base::OnceCallback<void(
       std::vector<DiscoverableCredentialMetadata> credentials,
-      bool has_credentials)>;
+      FidoRequestHandlerBase::RecognizedCredential has_credentials)>;
 
   using GetRetriesCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
@@ -131,14 +131,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                             CtapGetAssertionOptions options,
                             GetAssertionCallback callback) = 0;
 
-  // GetCredentialInformationForRequest returns a boolean indicating whether
-  // there are credentials applicable for |request|, and if supported, a list of
-  // the corresponding resident credential metadata for empty allow list
-  // requests.
-  virtual void GetCredentialInformationForRequest(
+  // GetPlatformCredentialInfoForRequest returns whether there are platform
+  // credentials applicable for |request|, and if supported, a list of the
+  // corresponding resident credential metadata for empty allow list requests.
+  // This is only valid to call for internal authenticators, or for the Windows
+  // native authenticator (in which case the result will reflect its platform
+  // authenticator).
+  virtual void GetPlatformCredentialInfoForRequest(
       const CtapGetAssertionRequest& request,
       const CtapGetAssertionOptions& options,
-      GetCredentialInformationForRequestCallback callback);
+      GetPlatformCredentialInfoForRequestCallback callback);
   // GetTouch causes an (external) authenticator to flash and wait for a touch.
   virtual void GetTouch(base::OnceCallback<void()> callback);
   // GetPinRetries gets the number of PIN attempts remaining before an

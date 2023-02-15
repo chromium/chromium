@@ -76,10 +76,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   void GetAssertion(CtapGetAssertionRequest request,
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override;
-  void GetCredentialInformationForRequest(
+  void GetPlatformCredentialInfoForRequest(
       const CtapGetAssertionRequest& request,
       const CtapGetAssertionOptions& options,
-      GetCredentialInformationForRequestCallback callback) override;
+      GetPlatformCredentialInfoForRequestCallback callback) override;
   void Cancel() override;
   Type GetType() const override;
   std::string GetId() const override;
@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   // of `InitializeAuthenticator`.
   void OnIsPowerButtonModeEnabled(base::OnceClosure callback, bool enabled);
   void OnHasCredentialInformationForRequest(
-      GetCredentialInformationForRequestCallback callback,
+      GetPlatformCredentialInfoForRequestCallback callback,
       absl::optional<u2f::HasCredentialsResponse> response);
   void OnMakeCredentialResponse(
       CtapMakeCredentialRequest request,

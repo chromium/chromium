@@ -398,20 +398,16 @@ void FidoRequestHandlerBase::GetPlatformCredentialStatus(
 
 void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
     std::vector<DiscoverableCredentialMetadata> creds,
-    bool have_credential) {
+    RecognizedCredential has_credentials) {
   DCHECK_EQ(transport_availability_info_.has_platform_authenticator_credential,
             RecognizedCredential::kUnknown);
-  if (!have_credential) {
-    transport_availability_info_.has_platform_authenticator_credential =
-        RecognizedCredential::kNoRecognizedCredential;
+  transport_availability_info_.has_platform_authenticator_credential =
+      has_credentials;
+  transport_availability_info_.recognized_platform_authenticator_credentials =
+      std::move(creds);
+  if (has_credentials == RecognizedCredential::kNoRecognizedCredential) {
     transport_availability_info_.available_transports.erase(
         FidoTransportProtocol::kInternal);
-  } else {
-    transport_availability_info_.has_platform_authenticator_credential =
-        have_credential ? RecognizedCredential::kHasRecognizedCredential
-                        : RecognizedCredential::kNoRecognizedCredential;
-    transport_availability_info_.recognized_platform_authenticator_credentials =
-        std::move(creds);
   }
   transport_availability_callback_readiness_
       ->platform_credential_check_pending = false;

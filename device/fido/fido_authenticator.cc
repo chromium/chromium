@@ -21,10 +21,10 @@ void FidoAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess, absl::nullopt);
 }
 
-void FidoAuthenticator::GetCredentialInformationForRequest(
+void FidoAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
-    GetCredentialInformationForRequestCallback callback) {
+    GetPlatformCredentialInfoForRequestCallback callback) {
   NOTREACHED();
 }
 

@@ -497,7 +497,7 @@ void GetAssertionRequestHandler::AuthenticatorRemoved(
 void GetAssertionRequestHandler::GetPlatformCredentialStatus(
     FidoAuthenticator* platform_authenticator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  platform_authenticator->GetCredentialInformationForRequest(
+  platform_authenticator->GetPlatformCredentialInfoForRequest(
       request_, options_,
       base::BindOnce(
           &GetAssertionRequestHandler::OnHavePlatformCredentialStatus,

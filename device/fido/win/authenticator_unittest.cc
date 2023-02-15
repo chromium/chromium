@@ -15,6 +15,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_rp_entity.h"
@@ -32,12 +33,13 @@ using MakeCredentialCallbackReceiver = test::StatusAndValueCallbackReceiver<
 
 using GetCredentialCallbackReceiver =
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
-                               bool>;
+                               FidoRequestHandlerBase::RecognizedCredential>;
 
 using EnumeratePlatformCredentialsCallbackReceiver =
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>>;
 
 const std::vector<uint8_t> kCredentialId = {1, 2, 3, 4};
+const std::vector<uint8_t> kCredentialId2 = {9, 0, 1, 2};
 constexpr char kRpId[] = "project-altdeus.example.com";
 const std::vector<uint8_t> kUserId = {5, 6, 7, 8};
 constexpr char kUserName[] = "unit-aarc-noa";
@@ -68,7 +70,7 @@ TEST_F(WinAuthenticatorTest,
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(
+  authenticator_->GetPlatformCredentialInfoForRequest(
       std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
@@ -76,7 +78,9 @@ TEST_F(WinAuthenticatorTest,
       DiscoverableCredentialMetadata(kRpId, kCredentialId, user);
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{expected});
-  EXPECT_TRUE(std::get<1>(*callback.result()));
+  EXPECT_EQ(
+      std::get<1>(*callback.result()),
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
   EXPECT_FALSE(fake_webauthn_api_->last_get_credentials_options()
                    ->bBrowserInPrivateMode);
 }
@@ -91,7 +95,7 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Incognito) {
   CtapGetAssertionOptions options;
   options.is_off_the_record_context = true;
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(
+  authenticator_->GetPlatformCredentialInfoForRequest(
       std::move(request), std::move(options), callback.callback());
   callback.WaitForCallback();
   EXPECT_TRUE(fake_webauthn_api_->last_get_credentials_options()
@@ -104,13 +108,15 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Incognito) {
 TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_NoCredentials) {
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(
+  authenticator_->GetPlatformCredentialInfoForRequest(
       std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{});
-  EXPECT_FALSE(std::get<1>(*callback.result()));
+  EXPECT_EQ(
+      std::get<1>(*callback.result()),
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
 // Tests the authenticator handling of an unexpected error from the Windows API.
@@ -118,13 +124,14 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_UnknownError) {
   fake_webauthn_api_->set_hresult(ERROR_NOT_SUPPORTED);
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(
+  authenticator_->GetPlatformCredentialInfoForRequest(
       std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{});
-  EXPECT_TRUE(std::get<1>(*callback.result()));
+  EXPECT_EQ(std::get<1>(*callback.result()),
+            FidoRequestHandlerBase::RecognizedCredential::kUnknown);
 }
 
 // Tests the authenticator handling of attempting to get credential information
@@ -137,7 +144,7 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(
+  authenticator_->GetPlatformCredentialInfoForRequest(
       std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
@@ -145,13 +152,15 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
       DiscoverableCredentialMetadata(kRpId, kCredentialId, user);
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{});
-  EXPECT_TRUE(std::get<1>(*callback.result()));
+  EXPECT_EQ(std::get<1>(*callback.result()),
+            FidoRequestHandlerBase::RecognizedCredential::kUnknown);
 }
 
-// Tests that for non empty allow-list requests, the authenticator returns an
-// empty credential list.
+// Tests that for non empty allow-list requests with a matching discoverable
+// credential, the authenticator returns an empty credential list but reports
+// the credential availability.
 TEST_F(WinAuthenticatorTest,
-       GetCredentialInformationForRequest_NonEmptyAllowList) {
+       GetCredentialInformationForRequest_NonEmptyAllowList_Found) {
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
@@ -159,15 +168,38 @@ TEST_F(WinAuthenticatorTest,
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   request.allow_list.emplace_back(CredentialType::kPublicKey, kCredentialId);
   GetCredentialCallbackReceiver callback;
-  authenticator_->GetCredentialInformationForRequest(
+  authenticator_->GetPlatformCredentialInfoForRequest(
       std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
-  DiscoverableCredentialMetadata expected =
-      DiscoverableCredentialMetadata(kRpId, kCredentialId, user);
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{});
-  EXPECT_TRUE(std::get<1>(*callback.result()));
+  EXPECT_EQ(
+      std::get<1>(*callback.result()),
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
+}
+
+// Tests that for non empty allow-list requests without a matching discoverable
+// credential, the authenticator returns an empty credential list and reports no
+// credential availability.
+TEST_F(WinAuthenticatorTest,
+       GetCredentialInformationForRequest_NonEmptyAllowList_NotMatching) {
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
+
+  CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+  request.allow_list.emplace_back(CredentialType::kPublicKey, kCredentialId2);
+  GetCredentialCallbackReceiver callback;
+  authenticator_->GetPlatformCredentialInfoForRequest(
+      std::move(request), CtapGetAssertionOptions(), callback.callback());
+  callback.WaitForCallback();
+
+  EXPECT_EQ(std::get<0>(*callback.result()),
+            std::vector<DiscoverableCredentialMetadata>{});
+  EXPECT_EQ(
+      std::get<1>(*callback.result()),
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
 TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
