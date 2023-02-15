@@ -8,6 +8,8 @@
 ../../web_tests/external/wpt/css/css-fonts/resources/COLR-palettes-test-font.ttf
 ../../web_tests/external/wpt/fonts/**/*.otf
 ../../web_tests/external/wpt/fonts/**/*.ttf
+# List TTF as well since globing is case sensitive on most platforms.
+../../web_tests/external/wpt/fonts/**/*.TTF
 ../../web_tests/external/wpt/fonts/**/*.woff
 -../../web_tests/external/wpt/fonts/CSSTest/**
 -../../web_tests/external/wpt/fonts/noto/**
