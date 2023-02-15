@@ -84,6 +84,9 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 @property(nonatomic, strong) NSLayoutConstraint* snapshotViewTopConstraint;
 // Header view's height constraint.
 @property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
+// Favicon container view's center Y constraint.
+@property(nonatomic, strong)
+    NSLayoutConstraint* faviconContainerViewCenterYConstraint;
 @end
 
 @implementation PinnedCell {
@@ -240,7 +243,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
     [snapshotView.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor],
     [snapshotView.bottomAnchor
-        constraintEqualToAnchor:contentView.bottomAnchor],
+        constraintGreaterThanOrEqualToAnchor:contentView.bottomAnchor],
   ];
   [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -274,11 +277,15 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 // Sets up the `_faviconContainerView` view.
 - (void)setupFaviconContainerView {
   UIView* faviconContainerView = [[UIView alloc] init];
+  faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   [_headerView addSubview:faviconContainerView];
 
-  faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  _faviconContainerViewCenterYConstraint = [faviconContainerView.centerYAnchor
+      constraintEqualToAnchor:_headerView.topAnchor
+                     constant:kPinnedCellHeight / 2];
 
   [NSLayoutConstraint activateConstraints:@[
+    _faviconContainerViewCenterYConstraint,
     [faviconContainerView.leadingAnchor
         constraintEqualToAnchor:_headerView.leadingAnchor
                        constant:kPinnedCellHorizontalPadding],
@@ -286,8 +293,6 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
         constraintEqualToConstant:kPinnedCellFaviconContainerWidth],
     [faviconContainerView.heightAnchor
         constraintEqualToAnchor:faviconContainerView.widthAnchor],
-    [faviconContainerView.centerYAnchor
-        constraintEqualToAnchor:_headerView.centerYAnchor]
   ]];
 
   _faviconContainerView = faviconContainerView;
@@ -520,6 +525,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
   self.snapshotViewTopConstraint.constant = self.topTabView.frame.size.height;
   self.headerViewHeightConstraint.constant = self.topTabView.frame.size.height;
+  self.faviconContainerViewCenterYConstraint.constant =
+      self.topTabView.frame.size.height / 2;
 
   [self setNeedsUpdateConstraints];
   [self layoutIfNeeded];
@@ -542,7 +549,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   [self scaleTabViews];
 
   self.snapshotViewTopConstraint.constant = kPinnedCellSnapshotTopPadding;
-  self.headerViewHeightConstraint.constant = kPinnedCellHeight;
+  self.faviconContainerViewCenterYConstraint.constant = kPinnedCellHeight / 2;
 
   [self setNeedsUpdateConstraints];
   [self layoutIfNeeded];

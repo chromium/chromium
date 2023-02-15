@@ -119,7 +119,7 @@ const CGFloat kInactiveItemScale = 0.95;
   //   (C) Rounding the corners of the active cell.
   //
   //  {0%}----------------------[A]-------------------{100%}
-  //                            {50%}----[B]----{80%}
+  //  {0%}----------------------[B]-------------{80%}
   //  {0%}---[C]---{30%}
 
   // If there's more than once cell, the animation adds two more parts:
@@ -128,7 +128,7 @@ const CGFloat kInactiveItemScale = 0.95;
   // The overall timing is as follows:
   //
   //  {0%}----------------------[A]-------------------{100%}
-  //                            {50%}----[B]----{80%}
+  //  {0%}----------------------[B]-------------{80%}
   //  {0%}---[C]---{30%}
   //           {20%}--[D]-----------------------------{100%}
   //           {20%}--[E]-----------------------{80%}
@@ -158,7 +158,6 @@ const CGFloat kInactiveItemScale = 0.95;
   auto fadeInAuxillaryKeyframeAnimation =
       [self keyframeAnimationFadingView:activeCell.topTabView
                           throughToView:activeCell.topCellView
-                          relativeStart:0.5
                        relativeDuration:briefDuration];
 
   UIViewPropertyAnimator* fadeInAuxillary = [[UIViewPropertyAnimator alloc]
@@ -474,16 +473,15 @@ const CGFloat kInactiveItemScale = 0.95;
 // animation curev should be EaseInEaseOut.
 - (void (^)(void))keyframeAnimationFadingView:(UIView*)startView
                                 throughToView:(UIView*)endView
-                                relativeStart:(double)start
                              relativeDuration:(double)duration {
   CGFloat halfDuration = duration / 2;
   auto keyframes = ^{
-    [UIView addKeyframeWithRelativeStartTime:start
+    [UIView addKeyframeWithRelativeStartTime:0
                             relativeDuration:halfDuration
                                   animations:^{
                                     startView.alpha = 0.0;
                                   }];
-    [UIView addKeyframeWithRelativeStartTime:start + halfDuration
+    [UIView addKeyframeWithRelativeStartTime:halfDuration
                             relativeDuration:halfDuration
                                   animations:^{
                                     endView.alpha = 1.0;
