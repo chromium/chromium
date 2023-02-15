@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/sync_device_info/device_info_sync_bridge.h"
+#include "build/build_config.h"
 
 #include <algorithm>
 #include <map>
@@ -1173,8 +1174,16 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithMalformedTimestamps) {
             bridge()->CountActiveDevicesByType());
 }
 
+// TODO(crbug.com/1416485): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldFilterOutNonChromeClientsFromDeviceTracker \
+  DISABLED_ShouldFilterOutNonChromeClientsFromDeviceTracker
+#else
+#define MAYBE_ShouldFilterOutNonChromeClientsFromDeviceTracker \
+  ShouldFilterOutNonChromeClientsFromDeviceTracker
+#endif
 TEST_F(DeviceInfoSyncBridgeTest,
-       ShouldFilterOutNonChromeClientsFromDeviceTracker) {
+       MAYBE_ShouldFilterOutNonChromeClientsFromDeviceTracker) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
