@@ -70,7 +70,6 @@ class IsolatedWebAppTrustChecker {
   struct Result {
     enum class Status {
       kTrusted,
-      kErrorFeatureDisabled,
       kErrorUnsupportedWebBundleIdType,
       kErrorInvalidSignatureStackLength,
       kErrorWebBundleIdNotDerivedFromFirstPublicKey,
