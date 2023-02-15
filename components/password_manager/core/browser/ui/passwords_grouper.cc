@@ -355,7 +355,7 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
         forms.push_back(blocked_site);
       }
     }
-    return {};
+    return forms;
   }
 
   // Get group id based on signon_realm.
