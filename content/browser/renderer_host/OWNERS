@@ -49,4 +49,6 @@ per-file agent_scheduling_group*=haraken@chromium.org
 per-file render_frame_host_impl_interface_binders.cc=set noparent
 per-file render_frame_host_impl_interface_binders.cc=file://ipc/SECURITY_OWNERS
 per-file *_sandboxed*.*=set noparent
-per-file *_sandboxed*.*=file://ipc/SECURITY_OWNERS
+per-file *_sandboxed*.*=file://sandbox/OWNERS
+
+per-file render_process_host_sandbox_policy_win_browsertest.cc=file://sandbox/win/OWNERS
