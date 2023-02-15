@@ -64,7 +64,7 @@ class ResourceLoadInfoNotifierWrapper;
 class BackForwardCacheLoaderHelper;
 class BlobDataHandle;
 class WebData;
-class WebResourceRequestSender;
+class ResourceRequestSender;
 class WebURLRequestExtraData;
 class URLLoaderClient;
 class WebURLResponse;
@@ -138,7 +138,7 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   GetTaskRunnerForBodyLoader();
 
   void SetResourceRequestSenderForTesting(
-      std::unique_ptr<WebResourceRequestSender> resource_request_sender);
+      std::unique_ptr<ResourceRequestSender> resource_request_sender);
 
  private:
   class Context;

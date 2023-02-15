@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -44,7 +44,7 @@ class MojoURLLoaderClient::DeferredMessage {
   virtual ~DeferredMessage() = default;
 
   virtual void HandleMessage(
-      WebResourceRequestSender* resource_request_sender) = 0;
+      ResourceRequestSender* resource_request_sender) = 0;
   virtual bool IsCompletionMessage() const = 0;
 };
 
@@ -57,8 +57,7 @@ class MojoURLLoaderClient::DeferredOnReceiveResponse final
       : response_head_(std::move(response_head)),
         response_arrival_(response_arrival) {}
 
-  void HandleMessage(
-      WebResourceRequestSender* resource_request_sender) override {
+  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnReceivedResponse(std::move(response_head_),
                                                 response_arrival_);
   }
@@ -80,8 +79,7 @@ class MojoURLLoaderClient::DeferredOnReceiveRedirect final
         response_head_(std::move(response_head)),
         task_runner_(std::move(task_runner)) {}
 
-  void HandleMessage(
-      WebResourceRequestSender* resource_request_sender) override {
+  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnReceivedRedirect(
         redirect_info_, std::move(response_head_), task_runner_);
   }
@@ -99,8 +97,7 @@ class MojoURLLoaderClient::DeferredOnUploadProgress final
   DeferredOnUploadProgress(int64_t current, int64_t total)
       : current_(current), total_(total) {}
 
-  void HandleMessage(
-      WebResourceRequestSender* resource_request_sender) override {
+  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnUploadProgress(current_, total_);
   }
   bool IsCompletionMessage() const override { return false; }
@@ -116,8 +113,7 @@ class MojoURLLoaderClient::DeferredOnReceiveCachedMetadata final
   explicit DeferredOnReceiveCachedMetadata(mojo_base::BigBuffer data)
       : data_(std::move(data)) {}
 
-  void HandleMessage(
-      WebResourceRequestSender* resource_request_sender) override {
+  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnReceivedCachedMetadata(std::move(data_));
   }
   bool IsCompletionMessage() const override { return false; }
@@ -133,8 +129,7 @@ class MojoURLLoaderClient::DeferredOnStartLoadingResponseBody final
       mojo::ScopedDataPipeConsumerHandle body)
       : body_(std::move(body)) {}
 
-  void HandleMessage(
-      WebResourceRequestSender* resource_request_sender) override {
+  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnStartLoadingResponseBody(std::move(body_));
   }
   bool IsCompletionMessage() const override { return false; }
@@ -148,8 +143,7 @@ class MojoURLLoaderClient::DeferredOnComplete final : public DeferredMessage {
   explicit DeferredOnComplete(const network::URLLoaderCompletionStatus& status)
       : status_(status) {}
 
-  void HandleMessage(
-      WebResourceRequestSender* resource_request_sender) override {
+  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnRequestComplete(status_);
   }
   bool IsCompletionMessage() const override { return true; }
@@ -276,7 +270,7 @@ class MojoURLLoaderClient::BodyBuffer final
 };
 
 MojoURLLoaderClient::MojoURLLoaderClient(
-    WebResourceRequestSender* resource_request_sender,
+    ResourceRequestSender* resource_request_sender,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool bypass_redirect_checks,
     const GURL& request_url,
@@ -497,7 +491,7 @@ void MojoURLLoaderClient::OnComplete(
   has_received_complete_ = true;
   StopBackForwardCacheEvictionTimer();
 
-  // Dispatch completion status to the WebResourceRequestSender.
+  // Dispatch completion status to the ResourceRequestSender.
   // Except for errors, there must always be a response's body.
   DCHECK(has_received_response_body_ || status.error_code != net::OK);
   if (NeedsStoringMessage()) {

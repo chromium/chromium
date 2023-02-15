@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -60,8 +60,9 @@ std::string ReadOneChunk(mojo::ScopedDataPipeConsumerHandle* handle) {
   uint32_t read_bytes = kDataPipeCapacity;
   MojoResult result =
       (*handle)->ReadData(buffer, &read_bytes, MOJO_READ_DATA_FLAG_NONE);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return "";
+  }
   return std::string(buffer, read_bytes);
 }
 
@@ -128,10 +129,10 @@ class TestResourceRequestSenderDelegate
   };
 };
 
-// A mock WebRequestPeer to receive messages from the WebResourceRequestSender.
+// A mock WebRequestPeer to receive messages from the ResourceRequestSender.
 class MockRequestPeer : public WebRequestPeer {
  public:
-  explicit MockRequestPeer(WebResourceRequestSender* resource_request_sender)
+  explicit MockRequestPeer(ResourceRequestSender* resource_request_sender)
       : resource_request_sender_(resource_request_sender) {}
 
   // WebRequestPeer overrides:
@@ -153,8 +154,9 @@ class MockRequestPeer : public WebRequestPeer {
   }
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override {
-    if (cancel_on_receive_response_)
+    if (cancel_on_receive_response_) {
       return;
+    }
     if (body) {
       data_ += ReadOneChunk(&body);
     }
@@ -163,8 +165,9 @@ class MockRequestPeer : public WebRequestPeer {
   void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override {
-    if (cancel_on_receive_response_)
+    if (cancel_on_receive_response_) {
       return;
+    }
     completion_status_ = status;
     complete_ = true;
   }
@@ -190,18 +193,18 @@ class MockRequestPeer : public WebRequestPeer {
   bool cancel_on_receive_response_ = false;
   net::LoadTimingInfo last_load_timing_;
   network::URLLoaderCompletionStatus completion_status_;
-  WebResourceRequestSender* resource_request_sender_ = nullptr;
+  ResourceRequestSender* resource_request_sender_ = nullptr;
 };  // namespace blink
 
 // Sets up the message sender override for the unit test.
-class WebResourceRequestSenderTest : public testing::Test,
-                                     public network::mojom::URLLoaderFactory {
+class ResourceRequestSenderTest : public testing::Test,
+                                  public network::mojom::URLLoaderFactory {
  public:
-  explicit WebResourceRequestSenderTest()
+  explicit ResourceRequestSenderTest()
       : platform_(&delegate_),
-        resource_request_sender_(new WebResourceRequestSender()) {}
+        resource_request_sender_(new ResourceRequestSender()) {}
 
-  ~WebResourceRequestSenderTest() override {
+  ~ResourceRequestSenderTest() override {
     resource_request_sender_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -253,7 +256,7 @@ class WebResourceRequestSenderTest : public testing::Test,
     return request;
   }
 
-  WebResourceRequestSender* sender() { return resource_request_sender_.get(); }
+  ResourceRequestSender* sender() { return resource_request_sender_.get(); }
 
   void StartAsync(std::unique_ptr<network::ResourceRequest> request,
                   scoped_refptr<WebRequestPeer> peer) {
@@ -298,13 +301,13 @@ class WebResourceRequestSenderTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestPlatform, WebResourceRequestSenderDelegate*>
       platform_;
-  std::unique_ptr<WebResourceRequestSender> resource_request_sender_;
+  std::unique_ptr<ResourceRequestSender> resource_request_sender_;
 
   scoped_refptr<MockRequestPeer> mock_peer_;
 };
 
 // Tests the generation of unique request ids.
-TEST_F(WebResourceRequestSenderTest, MakeRequestID) {
+TEST_F(ResourceRequestSenderTest, MakeRequestID) {
   int first_id = GenerateRequestId();
   int second_id = GenerateRequestId();
 
@@ -313,7 +316,7 @@ TEST_F(WebResourceRequestSenderTest, MakeRequestID) {
   EXPECT_GE(first_id, 0);
 }
 
-TEST_F(WebResourceRequestSenderTest, DelegateTest) {
+TEST_F(ResourceRequestSenderTest, DelegateTest) {
   std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
   mock_peer_ =
       base::MakeRefCounted<MockRequestPeer>(resource_request_sender_.get());
@@ -360,7 +363,7 @@ TEST_F(WebResourceRequestSenderTest, DelegateTest) {
   EXPECT_TRUE(mock_peer_->complete());
 }
 
-TEST_F(WebResourceRequestSenderTest, CancelDuringCallbackWithWrapperPeer) {
+TEST_F(ResourceRequestSenderTest, CancelDuringCallbackWithWrapperPeer) {
   std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
   mock_peer_ =
       base::MakeRefCounted<MockRequestPeer>(resource_request_sender_.get());
@@ -392,7 +395,7 @@ TEST_F(WebResourceRequestSenderTest, CancelDuringCallbackWithWrapperPeer) {
   // This lets the wrapper peer pass all the messages to the original
   // peer at once, but the original peer cancels right after it receives
   // the response. (This will remove pending request info from
-  // WebResourceRequestSender while the wrapper peer is still running
+  // ResourceRequestSender while the wrapper peer is still running
   // OnCompletedRequest, but it should not lead to crashes.)
   network::URLLoaderCompletionStatus status;
   status.error_code = net::OK;
@@ -408,7 +411,7 @@ TEST_F(WebResourceRequestSenderTest, CancelDuringCallbackWithWrapperPeer) {
   EXPECT_FALSE(mock_peer_->complete());
 }
 
-class TimeConversionTest : public WebResourceRequestSenderTest {
+class TimeConversionTest : public ResourceRequestSenderTest {
  public:
   void PerformTest(network::mojom::URLResponseHeadPtr response_head) {
     std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
@@ -474,7 +477,7 @@ TEST_F(TimeConversionTest, NotInitialized) {
             response_info().load_timing.connect_timing.domain_lookup_start);
 }
 
-class CompletionTimeConversionTest : public WebResourceRequestSenderTest {
+class CompletionTimeConversionTest : public ResourceRequestSenderTest {
  public:
   void PerformTest(base::TimeTicks remote_request_start,
                    base::TimeTicks completion_time,
@@ -511,8 +514,9 @@ class CompletionTimeConversionTest : public WebResourceRequestSenderTest {
     client->OnComplete(status);
 
     const base::TimeTicks until = base::TimeTicks::Now() + delay;
-    while (base::TimeTicks::Now() < until)
+    while (base::TimeTicks::Now() < until) {
       base::PlatformThread::Sleep(base::Milliseconds(1));
+    }
     base::RunLoop().RunUntilIdle();
     loader_and_clients_.clear();
   }

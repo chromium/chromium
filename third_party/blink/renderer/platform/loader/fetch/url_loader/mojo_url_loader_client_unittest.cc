@@ -25,7 +25,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -34,11 +34,11 @@ namespace {
 
 constexpr size_t kDataPipeCapacity = 4096;
 
-class MockWebResourceRequestSender : public WebResourceRequestSender {
+class MockResourceRequestSender : public ResourceRequestSender {
  public:
   struct Context;
-  MockWebResourceRequestSender() : context_(new Context()) {}
-  ~MockWebResourceRequestSender() override = default;
+  MockResourceRequestSender() : context_(new Context()) {}
+  ~MockResourceRequestSender() override = default;
 
   void OnUploadProgress(int64_t position, int64_t size) override {
     EXPECT_FALSE(context_->complete);
@@ -162,7 +162,7 @@ std::string ReadOneChunk(mojo::ScopedDataPipeConsumerHandle* handle) {
 }
 
 std::string GetRequestPeerContextBody(
-    MockWebResourceRequestSender::Context* context) {
+    MockResourceRequestSender::Context* context) {
   if (context->body_handle) {
     context->data += ReadOneChunk(&context->body_handle);
   }
@@ -187,7 +187,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
                                    public ::testing::WithParamInterface<bool> {
  protected:
   WebMojoURLLoaderClientTest()
-      : resource_request_sender_(new MockWebResourceRequestSender()) {
+      : resource_request_sender_(new MockResourceRequestSender()) {
     if (DeferWithBackForwardCacheEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kLoadingTasksUnfreezable);
@@ -261,8 +261,8 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ThrottlingURLLoader> url_loader_;
   std::unique_ptr<MojoURLLoaderClient> client_;
-  std::unique_ptr<MockWebResourceRequestSender> resource_request_sender_;
-  MockWebResourceRequestSender::Context* context_;
+  std::unique_ptr<MockResourceRequestSender> resource_request_sender_;
+  MockResourceRequestSender::Context* context_;
   int request_id_ = 0;
   mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
 };

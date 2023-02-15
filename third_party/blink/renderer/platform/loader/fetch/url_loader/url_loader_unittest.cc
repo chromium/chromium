@@ -49,10 +49,10 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -64,7 +64,7 @@ const char kTestURL[] = "http://foo";
 const char kTestHTTPSURL[] = "https://foo";
 const char kTestData[] = "blah!";
 
-class MockResourceRequestSender : public WebResourceRequestSender {
+class MockResourceRequestSender : public ResourceRequestSender {
  public:
   MockResourceRequestSender() = default;
   MockResourceRequestSender(const MockResourceRequestSender&) = delete;
@@ -72,7 +72,7 @@ class MockResourceRequestSender : public WebResourceRequestSender {
       delete;
   ~MockResourceRequestSender() override = default;
 
-  // WebResourceRequestSender implementation:
+  // ResourceRequestSender implementation:
   void SendSync(
       std::unique_ptr<network::ResourceRequest> request,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,

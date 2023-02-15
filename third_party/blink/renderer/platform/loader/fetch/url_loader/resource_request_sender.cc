@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 
 #include <utility>
 
@@ -120,8 +120,9 @@ void CheckSchemeForReferrerPolicy(const network::ResourceRequest& request) {
 bool RedirectRequiresLoaderRestart(const GURL& original_url,
                                    const GURL& redirect_url) {
   // Restart is needed if the URL is no longer handled by network service.
-  if (network::IsURLHandledByNetworkService(original_url))
+  if (network::IsURLHandledByNetworkService(original_url)) {
     return !network::IsURLHandledByNetworkService(redirect_url);
+  }
 
   // If URL wasn't originally handled by network service, restart is needed if
   // schemes are different.
@@ -130,12 +131,12 @@ bool RedirectRequiresLoaderRestart(const GURL& original_url,
 
 }  // namespace
 
-WebResourceRequestSender::WebResourceRequestSender()
+ResourceRequestSender::ResourceRequestSender()
     : delegate_(Platform::Current()->GetResourceRequestSenderDelegate()) {}
 
-WebResourceRequestSender::~WebResourceRequestSender() = default;
+ResourceRequestSender::~ResourceRequestSender() = default;
 
-void WebResourceRequestSender::SendSync(
+void ResourceRequestSender::SendSync(
     std::unique_ptr<network::ResourceRequest> request,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
@@ -161,8 +162,9 @@ void WebResourceRequestSender::SendSync(
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   // Prepare the configured throttles for use on a separate thread.
-  for (const auto& throttle : throttles)
+  for (const auto& throttle : throttles) {
     throttle->DetachFromCurrentSequence();
+  }
 
   // A task is posted to a separate thread to execute the request so that
   // this thread may block on a waitable event. It is safe to pass raw
@@ -207,7 +209,7 @@ void WebResourceRequestSender::SendSync(
   }
 }
 
-int WebResourceRequestSender::SendAsync(
+int ResourceRequestSender::SendAsync(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -266,8 +268,9 @@ int WebResourceRequestSender::SendAsync(
   // which case `DeletePendingRequest()` has reset the `request_info_` to
   // nullptr and `this` will be destroyed by `DeleteSoon()`. If so, just return
   // the `request_id`.
-  if (!request_info_)
+  if (!request_info_) {
     return request_id;
+  }
 
   request_info_->url_loader = std::move(url_loader);
   request_info_->url_loader_client = std::move(client);
@@ -275,14 +278,14 @@ int WebResourceRequestSender::SendAsync(
   return request_id;
 }
 
-void WebResourceRequestSender::Cancel(
+void ResourceRequestSender::Cancel(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   // Cancel the request if it didn't complete, and clean it up so the bridge
   // will receive no more messages.
   DeletePendingRequest(std::move(task_runner));
 }
 
-void WebResourceRequestSender::Freeze(WebLoaderFreezeMode mode) {
+void ResourceRequestSender::Freeze(WebLoaderFreezeMode mode) {
   if (!request_info_) {
     DLOG(ERROR) << "unknown request";
     return;
@@ -298,9 +301,8 @@ void WebResourceRequestSender::Freeze(WebLoaderFreezeMode mode) {
   }
 }
 
-void WebResourceRequestSender::DidChangePriority(
-    net::RequestPriority new_priority,
-    int intra_priority_value) {
+void ResourceRequestSender::DidChangePriority(net::RequestPriority new_priority,
+                                              int intra_priority_value) {
   if (!request_info_) {
     DLOG(ERROR) << "unknown request";
     return;
@@ -309,10 +311,11 @@ void WebResourceRequestSender::DidChangePriority(
   request_info_->url_loader->SetPriority(new_priority, intra_priority_value);
 }
 
-void WebResourceRequestSender::DeletePendingRequest(
+void ResourceRequestSender::DeletePendingRequest(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  if (!request_info_)
+  if (!request_info_) {
     return;
+  }
 
   if (request_info_->net_error == net::ERR_IO_PENDING) {
     request_info_->net_error = net::ERR_ABORTED;
@@ -333,7 +336,7 @@ void WebResourceRequestSender::DeletePendingRequest(
   task_runner->DeleteSoon(FROM_HERE, request_info_.release());
 }
 
-WebResourceRequestSender::PendingRequestInfo::PendingRequestInfo(
+ResourceRequestSender::PendingRequestInfo::PendingRequestInfo(
     scoped_refptr<WebRequestPeer> peer,
     network::mojom::RequestDestination request_destination,
     const KURL& request_url,
@@ -347,9 +350,9 @@ WebResourceRequestSender::PendingRequestInfo::PendingRequestInfo(
       resource_load_info_notifier_wrapper(
           std::move(resource_load_info_notifier_wrapper)) {}
 
-WebResourceRequestSender::PendingRequestInfo::~PendingRequestInfo() = default;
+ResourceRequestSender::PendingRequestInfo::~PendingRequestInfo() = default;
 
-void WebResourceRequestSender::FollowPendingRedirect(
+void ResourceRequestSender::FollowPendingRedirect(
     PendingRequestInfo* request_info) {
   if (request_info->has_pending_redirect &&
       request_info->should_follow_redirect) {
@@ -374,35 +377,37 @@ void WebResourceRequestSender::FollowPendingRedirect(
   }
 }
 
-void WebResourceRequestSender::OnTransferSizeUpdated(
-    int32_t transfer_size_diff) {
+void ResourceRequestSender::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   DCHECK_GT(transfer_size_diff, 0);
-  if (!request_info_)
+  if (!request_info_) {
     return;
+  }
 
   // TODO(yhirano): Consider using int64_t in
   // WebRequestPeer::OnTransferSizeUpdated.
   request_info_->peer->OnTransferSizeUpdated(transfer_size_diff);
-  if (!request_info_)
+  if (!request_info_) {
     return;
+  }
   request_info_->resource_load_info_notifier_wrapper
       ->NotifyResourceTransferSizeUpdated(transfer_size_diff);
 }
 
-void WebResourceRequestSender::OnUploadProgress(int64_t position,
-                                                int64_t size) {
-  if (!request_info_)
+void ResourceRequestSender::OnUploadProgress(int64_t position, int64_t size) {
+  if (!request_info_) {
     return;
+  }
 
   request_info_->peer->OnUploadProgress(position, size);
 }
 
-void WebResourceRequestSender::OnReceivedResponse(
+void ResourceRequestSender::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr response_head,
     base::TimeTicks response_arrival) {
-  TRACE_EVENT0("loading", "WebResourceRequestSender::OnReceivedResponse");
-  if (!request_info_)
+  TRACE_EVENT0("loading", "ResourceRequestSender::OnReceivedResponse");
+  if (!request_info_) {
     return;
+  }
   request_info_->local_response_start = base::TimeTicks::Now();
   request_info_->remote_request_start =
       response_head->load_timing.request_start;
@@ -427,37 +432,40 @@ void WebResourceRequestSender::OnReceivedResponse(
 
   request_info_->peer->OnReceivedResponse(response_head.Clone(),
                                           response_arrival);
-  if (!request_info_)
+  if (!request_info_) {
     return;
+  }
 
   request_info_->resource_load_info_notifier_wrapper
       ->NotifyResourceResponseReceived(std::move(response_head));
 }
 
-void WebResourceRequestSender::OnReceivedCachedMetadata(
+void ResourceRequestSender::OnReceivedCachedMetadata(
     mojo_base::BigBuffer data) {
-  if (!request_info_)
+  if (!request_info_) {
     return;
+  }
 
   if (data.size()) {
     request_info_->peer->OnReceivedCachedMetadata(std::move(data));
   }
 }
 
-void WebResourceRequestSender::OnReceivedRedirect(
+void ResourceRequestSender::OnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  TRACE_EVENT0("loading", "WebResourceRequestSender::OnReceivedRedirect");
-  if (!request_info_)
+  TRACE_EVENT0("loading", "ResourceRequestSender::OnReceivedRedirect");
+  if (!request_info_) {
     return;
+  }
   if (!request_info_->url_loader && request_info_->should_follow_redirect) {
     // This is a redirect that synchronously came as the loader is being
     // constructed, due to a URLLoaderThrottle that changed the starting
     // URL. Handle this in a posted task, as we don't have the loader
     // pointer yet.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&WebResourceRequestSender::OnReceivedRedirect,
+        FROM_HERE, base::BindOnce(&ResourceRequestSender::OnReceivedRedirect,
                                   weak_factory_.GetWeakPtr(), redirect_info,
                                   std::move(response_head), task_runner));
     return;
@@ -482,8 +490,9 @@ void WebResourceRequestSender::OnReceivedRedirect(
           redirect_info, response_head.Clone(), &removed_headers)) {
     // Double-check if the request is still around. The call above could
     // potentially remove it.
-    if (!request_info_)
+    if (!request_info_) {
       return;
+    }
     // TODO(yoav): If request_info doesn't change above, we could avoid this
     // copy.
     WebVector<WebString> vector(removed_headers.size());
@@ -497,29 +506,31 @@ void WebResourceRequestSender::OnReceivedRedirect(
         ->NotifyResourceRedirectReceived(redirect_info,
                                          std::move(response_head));
 
-    if (request_info_->freeze_mode == WebLoaderFreezeMode::kNone)
+    if (request_info_->freeze_mode == WebLoaderFreezeMode::kNone) {
       FollowPendingRedirect(request_info_.get());
+    }
   } else {
     Cancel(std::move(task_runner));
   }
 }
 
-void WebResourceRequestSender::OnStartLoadingResponseBody(
+void ResourceRequestSender::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
-  TRACE_EVENT0("loading",
-               "WebResourceRequestSender::OnStartLoadingResponseBody");
+  TRACE_EVENT0("loading", "ResourceRequestSender::OnStartLoadingResponseBody");
 
-  if (!request_info_)
+  if (!request_info_) {
     return;
+  }
   request_info_->peer->OnStartLoadingResponseBody(std::move(body));
 }
 
-void WebResourceRequestSender::OnRequestComplete(
+void ResourceRequestSender::OnRequestComplete(
     const network::URLLoaderCompletionStatus& status) {
-  TRACE_EVENT0("loading", "WebResourceRequestSender::OnRequestComplete");
+  TRACE_EVENT0("loading", "ResourceRequestSender::OnRequestComplete");
 
-  if (!request_info_)
+  if (!request_info_) {
     return;
+  }
   request_info_->net_error = status.error_code;
 
   request_info_->resource_load_info_notifier_wrapper
@@ -574,7 +585,7 @@ void WebResourceRequestSender::OnRequestComplete(
   peer->OnCompletedRequest(renderer_status);
 }
 
-base::TimeTicks WebResourceRequestSender::ToLocalURLResponseHead(
+base::TimeTicks ResourceRequestSender::ToLocalURLResponseHead(
     const PendingRequestInfo& request_info,
     network::mojom::URLResponseHead& response_head) const {
   base::TimeTicks remote_response_start = response_head.response_start;

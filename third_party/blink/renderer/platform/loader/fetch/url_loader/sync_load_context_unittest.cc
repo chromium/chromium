@@ -17,8 +17,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
 
 namespace blink {
 
@@ -71,7 +71,7 @@ class MockPendingSharedURLLoaderFactory
   scoped_refptr<TestSharedURLLoaderFactory> factory_;
 };
 
-class MockResourceRequestSender : public WebResourceRequestSender {
+class MockResourceRequestSender : public ResourceRequestSender {
  public:
   void CreatePendingRequest(scoped_refptr<WebRequestPeer> peer) {
     peer_ = std::move(peer);

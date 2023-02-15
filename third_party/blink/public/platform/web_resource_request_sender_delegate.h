@@ -15,7 +15,7 @@ class WebURL;
 // Interface that allows observing request events and optionally replacing
 // the peer. Note that if it doesn't replace the peer it must return the
 // current peer so that the ownership is continued to be held by
-// WebResourceRequestSender.
+// ResourceRequestSender.
 class BLINK_PLATFORM_EXPORT WebResourceRequestSenderDelegate {
  public:
   virtual ~WebResourceRequestSenderDelegate() = default;

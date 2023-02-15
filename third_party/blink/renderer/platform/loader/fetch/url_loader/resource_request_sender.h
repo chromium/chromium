@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_RESOURCE_REQUEST_SENDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_RESOURCE_REQUEST_SENDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_RESOURCE_REQUEST_SENDER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_RESOURCE_REQUEST_SENDER_H_
 
 #include <stdint.h>
 
@@ -59,12 +59,12 @@ struct SyncLoadResponse;
 // This class creates a PendingRequestInfo object and handles sending a resource
 // request asynchronously or synchronously, and it's owned by
 // URLLoader::Context or SyncLoadContext.
-class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
+class BLINK_PLATFORM_EXPORT ResourceRequestSender {
  public:
-  WebResourceRequestSender();
-  WebResourceRequestSender(const WebResourceRequestSender&) = delete;
-  WebResourceRequestSender& operator=(const WebResourceRequestSender&) = delete;
-  virtual ~WebResourceRequestSender();
+  ResourceRequestSender();
+  ResourceRequestSender(const ResourceRequestSender&) = delete;
+  ResourceRequestSender& operator=(const ResourceRequestSender&) = delete;
+  virtual ~ResourceRequestSender();
 
   // Call this method to load the resource synchronously (i.e., in one shot).
   // This is an alternative to the StartAsync method. Be warned that this method
@@ -216,9 +216,9 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
   // when the response has finished, or when the request is canceled.
   std::unique_ptr<PendingRequestInfo> request_info_;
 
-  base::WeakPtrFactory<WebResourceRequestSender> weak_factory_{this};
+  base::WeakPtrFactory<ResourceRequestSender> weak_factory_{this};
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_RESOURCE_REQUEST_SENDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_RESOURCE_REQUEST_SENDER_H_

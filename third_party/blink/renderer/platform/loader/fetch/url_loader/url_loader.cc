@@ -79,9 +79,9 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
@@ -146,7 +146,7 @@ class URLLoader::Context : public WebRequestPeer {
       const network::URLLoaderCompletionStatus& status) override;
 
   void SetResourceRequestSenderForTesting(  // IN-TEST
-      std::unique_ptr<WebResourceRequestSender> resource_request_sender);
+      std::unique_ptr<ResourceRequestSender> resource_request_sender);
 
  private:
   ~Context() override;
@@ -192,7 +192,7 @@ class URLLoader::Context : public WebRequestPeer {
 
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
 
-  std::unique_ptr<WebResourceRequestSender> resource_request_sender_;
+  std::unique_ptr<ResourceRequestSender> resource_request_sender_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -220,7 +220,7 @@ URLLoader::Context::Context(
       cors_exempt_header_list_(cors_exempt_header_list),
       terminate_sync_load_event_(terminate_sync_load_event),
       request_id_(-1),
-      resource_request_sender_(std::make_unique<WebResourceRequestSender>()),
+      resource_request_sender_(std::make_unique<ResourceRequestSender>()),
       url_loader_factory_(std::move(url_loader_factory)),
       back_forward_cache_loader_helper_(back_forward_cache_loader_helper) {
   DCHECK(url_loader_factory_);
@@ -631,7 +631,7 @@ URLLoader::GetTaskRunnerForBodyLoader() {
 }
 
 void URLLoader::SetResourceRequestSenderForTesting(
-    std::unique_ptr<WebResourceRequestSender> resource_request_sender) {
+    std::unique_ptr<ResourceRequestSender> resource_request_sender) {
   context_->SetResourceRequestSenderForTesting(  // IN-TEST
       std::move(resource_request_sender));
 }
@@ -744,7 +744,7 @@ net::NetworkTrafficAnnotationTag URLLoader::Context::GetTrafficAnnotationTag(
 }
 
 void URLLoader::Context::SetResourceRequestSenderForTesting(
-    std::unique_ptr<blink::WebResourceRequestSender> resource_request_sender) {
+    std::unique_ptr<blink::ResourceRequestSender> resource_request_sender) {
   resource_request_sender_ = std::move(resource_request_sender);
 }
 

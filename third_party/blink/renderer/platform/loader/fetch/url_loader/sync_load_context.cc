@@ -145,8 +145,8 @@ SyncLoadContext::SyncLoadContext(
   url_loader_factory_ =
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory));
 
-  // Constructs a new WebResourceRequestSender specifically for this request.
-  resource_request_sender_ = std::make_unique<WebResourceRequestSender>();
+  // Constructs a new ResourceRequestSender specifically for this request.
+  resource_request_sender_ = std::make_unique<ResourceRequestSender>();
 
   // Initialize the final URL with the original request URL. It will be
   // overwritten on redirects.
