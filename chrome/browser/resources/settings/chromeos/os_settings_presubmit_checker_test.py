@@ -23,7 +23,7 @@ class OSSettingsPresubmitCheckerTest(unittest.TestCase):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
             MockAffectedFile('chrome/example_browser_proxy.js', [
-                "import {addSingletonGetter} from 'chrome://resources/ash/common/cr.m.js';",
+                "import {addSingletonGetter} from 'chrome://resources/js/cr.js';",
                 '',
                 'addSingletonGetter(ExampleBrowserProxyImpl);',
             ]),

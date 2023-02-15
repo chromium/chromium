@@ -121,8 +121,8 @@ import './os_toolbar/os_toolbar.js';
 import './parental_controls_page/parental_controls_page.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import * as appNotificationHandlerMojom from '../mojom-webui/app_notification_handler.mojom-webui.js';
 import * as crosAudioConfigMojom from '../mojom-webui/cros_audio_config.mojom-webui.js';

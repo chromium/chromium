@@ -25,11 +25,11 @@ import './os_sync_controls.js';
 import './os_signout_dialog.js';
 import './os_sync_page.js';
 
-import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

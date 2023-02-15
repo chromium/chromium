@@ -12,7 +12,7 @@
 
 import 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
 import 'chrome://resources/ash/common/quick_unlock/setup_pin_keyboard.js';
-import 'chrome://resources/ash/common/assert.js';
+import 'chrome://resources/js/assert_ts.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -24,6 +24,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
+
 import {getTemplate} from './pin_autosubmit_dialog.html.js';
 
 // Maximum length supported by auto submit
