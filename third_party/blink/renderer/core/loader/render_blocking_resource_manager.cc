@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 
@@ -51,7 +54,11 @@ class ImperativeFontLoadFinishedCallback final
 
 RenderBlockingResourceManager::RenderBlockingResourceManager(Document& document)
     : document_(document),
-      font_preload_timer_(
+      font_preload_max_blocking_timer_(
+          document.GetTaskRunner(TaskType::kInternalFrameLifecycleControl),
+          this,
+          &RenderBlockingResourceManager::FontPreloadingTimerFired),
+      font_preload_max_fcp_delay_timer_(
           document.GetTaskRunner(TaskType::kInternalFrameLifecycleControl),
           this,
           &RenderBlockingResourceManager::FontPreloadingTimerFired),
@@ -59,15 +66,12 @@ RenderBlockingResourceManager::RenderBlockingResourceManager(Document& document)
 
 void RenderBlockingResourceManager::AddPendingFontPreload(
     const PendingLinkPreload& link) {
-  if (font_preload_timer_has_fired_) {
+  if (font_preload_timer_has_fired_ || document_->body()) {
     return;
   }
 
-  if (document_->body())
-    return;
-
   pending_font_preloads_.insert(&link);
-  EnsureStartFontPreloadTimer();
+  EnsureStartFontPreloadMaxBlockingTimer();
 }
 
 void RenderBlockingResourceManager::AddImperativeFontLoading(
@@ -82,7 +86,7 @@ void RenderBlockingResourceManager::AddImperativeFontLoading(
       MakeGarbageCollected<ImperativeFontLoadFinishedCallback>(*document_);
   font_face->AddCallback(callback);
   ++imperative_font_loading_count_;
-  EnsureStartFontPreloadTimer();
+  EnsureStartFontPreloadMaxBlockingTimer();
 }
 
 void RenderBlockingResourceManager::RemovePendingFontPreload(
@@ -92,7 +96,7 @@ void RenderBlockingResourceManager::RemovePendingFontPreload(
     return;
   }
   pending_font_preloads_.erase(iter);
-  document_->RenderBlockingResourceUnblocked();
+  RenderBlockingResourceUnblocked();
 }
 
 void RenderBlockingResourceManager::RemoveImperativeFontLoading() {
@@ -100,15 +104,26 @@ void RenderBlockingResourceManager::RemoveImperativeFontLoading() {
     return;
   DCHECK(imperative_font_loading_count_);
   --imperative_font_loading_count_;
-  document_->RenderBlockingResourceUnblocked();
+  RenderBlockingResourceUnblocked();
 }
 
-void RenderBlockingResourceManager::EnsureStartFontPreloadTimer() {
-  if (!font_preload_timer_.IsActive())
-    font_preload_timer_.StartOneShot(font_preload_timeout_, FROM_HERE);
+void RenderBlockingResourceManager::EnsureStartFontPreloadMaxBlockingTimer() {
+  if (font_preload_timer_has_fired_ ||
+      font_preload_max_blocking_timer_.IsActive()) {
+    return;
+  }
+  base::TimeDelta timeout =
+      base::FeatureList::IsEnabled(features::kRenderBlockingFonts)
+          ? document_->Loader()
+                ->RemainingTimeToRenderBlockingFontMaxBlockingTime()
+          : font_preload_timeout_;
+  font_preload_max_blocking_timer_.StartOneShot(timeout, FROM_HERE);
 }
 
 void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
+  if (font_preload_timer_has_fired_) {
+    return;
+  }
   font_preload_timer_has_fired_ = true;
   pending_font_preloads_.clear();
   imperative_font_loading_count_ = 0;
@@ -117,20 +132,21 @@ void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
 
 void RenderBlockingResourceManager::SetFontPreloadTimeoutForTest(
     base::TimeDelta timeout) {
-  if (font_preload_timer_.IsActive()) {
-    font_preload_timer_.Stop();
-    font_preload_timer_.StartOneShot(timeout, FROM_HERE);
+  if (font_preload_max_blocking_timer_.IsActive()) {
+    font_preload_max_blocking_timer_.Stop();
+    font_preload_max_blocking_timer_.StartOneShot(timeout, FROM_HERE);
   }
   font_preload_timeout_ = timeout;
 }
 
 void RenderBlockingResourceManager::DisableFontPreloadTimeoutForTest() {
-  if (font_preload_timer_.IsActive())
-    font_preload_timer_.Stop();
+  if (font_preload_max_blocking_timer_.IsActive()) {
+    font_preload_max_blocking_timer_.Stop();
+  }
 }
 
 bool RenderBlockingResourceManager::FontPreloadTimerIsActiveForTest() const {
-  return font_preload_timer_.IsActive();
+  return font_preload_max_blocking_timer_.IsActive();
 }
 
 bool RenderBlockingResourceManager::AddPendingStylesheet(
@@ -148,7 +164,7 @@ bool RenderBlockingResourceManager::RemovePendingStylesheet(
   if (iter == pending_stylesheet_owner_nodes_.end())
     return false;
   pending_stylesheet_owner_nodes_.erase(iter);
-  document_->RenderBlockingResourceUnblocked();
+  RenderBlockingResourceUnblocked();
   return true;
 }
 
@@ -165,7 +181,33 @@ void RenderBlockingResourceManager::RemovePendingScript(
   if (iter == pending_scripts_.end())
     return;
   pending_scripts_.erase(iter);
+  RenderBlockingResourceUnblocked();
+}
+
+void RenderBlockingResourceManager::WillInsertDocumentBody() {
+  if (base::FeatureList::IsEnabled(features::kRenderBlockingFonts) &&
+      !HasNonFontRenderBlockingResources() && HasRenderBlockingFonts()) {
+    EnsureStartFontPreloadMaxFCPDelayTimer();
+  }
+}
+
+void RenderBlockingResourceManager::RenderBlockingResourceUnblocked() {
   document_->RenderBlockingResourceUnblocked();
+  if (base::FeatureList::IsEnabled(features::kRenderBlockingFonts) &&
+      !HasNonFontRenderBlockingResources() && HasRenderBlockingFonts() &&
+      document_->body()) {
+    EnsureStartFontPreloadMaxFCPDelayTimer();
+  }
+}
+
+void RenderBlockingResourceManager::EnsureStartFontPreloadMaxFCPDelayTimer() {
+  if (font_preload_timer_has_fired_ ||
+      font_preload_max_fcp_delay_timer_.IsActive()) {
+    return;
+  }
+  base::TimeDelta max_fcp_delay =
+      base::Milliseconds(features::kMaxFCPDelayMsForRenderBlockingFonts.Get());
+  font_preload_max_fcp_delay_timer_.StartOneShot(max_fcp_delay, FROM_HERE);
 }
 
 void RenderBlockingResourceManager::Trace(Visitor* visitor) const {
@@ -173,7 +215,8 @@ void RenderBlockingResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(pending_stylesheet_owner_nodes_);
   visitor->Trace(pending_scripts_);
   visitor->Trace(pending_font_preloads_);
-  visitor->Trace(font_preload_timer_);
+  visitor->Trace(font_preload_max_blocking_timer_);
+  visitor->Trace(font_preload_max_fcp_delay_timer_);
 }
 
 }  // namespace blink

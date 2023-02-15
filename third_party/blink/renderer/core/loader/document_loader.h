@@ -376,6 +376,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // the LCP limit. See crbug.com/1065508 for details.
   base::TimeDelta RemainingTimeToLCPLimit() const;
 
+  // We are experimenting the idea of making preloaded fonts render-blocking up
+  // to a certain amount of time after navigation starts. This returns the
+  // remaining time to that time limit. See crbug.com/1412861 for details.
+  base::TimeDelta RemainingTimeToRenderBlockingFontMaxBlockingTime() const;
+
   mojom::blink::ContentSecurityNotifier& GetContentSecurityNotifier();
 
   // Returns the value of the text fragment token and then resets it to false

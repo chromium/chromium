@@ -1732,5 +1732,19 @@ BASE_FEATURE(kExtendScriptResourceLifetime,
              "ExtendScriptResourceLifetime",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRenderBlockingFonts,
+             "RenderBlockingFonts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kMaxBlockingTimeMsForRenderBlockingFonts(
+    &features::kRenderBlockingFonts,
+    "max-blocking-time",
+    1500);
+
+const base::FeatureParam<int> kMaxFCPDelayMsForRenderBlockingFonts(
+    &features::kRenderBlockingFonts,
+    "max-fcp-delay",
+    100);
+
 }  // namespace features
 }  // namespace blink

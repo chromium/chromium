@@ -781,7 +781,7 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       resource = FontResource::Fetch(params, resource_fetcher, nullptr);
       if (document.GetRenderBlockingResourceManager()) {
         document.GetRenderBlockingResourceManager()
-            ->EnsureStartFontPreloadTimer();
+            ->EnsureStartFontPreloadMaxBlockingTimer();
       }
       break;
     case ResourceType::kAudio:

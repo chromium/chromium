@@ -3552,6 +3552,10 @@ void Document::WillInsertBody() {
     supplement->WillInsertBody();
   }
 
+  if (render_blocking_resource_manager_) {
+    render_blocking_resource_manager_->WillInsertDocumentBody();
+  }
+
   // If we get to the <body> try to resume commits since we should have content
   // to paint now.
   // TODO(esprehn): Is this really optimal? We might start producing frames

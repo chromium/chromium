@@ -32,13 +32,20 @@ class CORE_EXPORT RenderBlockingResourceManager final
       const RenderBlockingResourceManager&) = delete;
 
   bool HasRenderBlockingResources() const {
-    return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size() ||
-           pending_font_preloads_.size() || imperative_font_loading_count_;
+    return HasNonFontRenderBlockingResources() || HasRenderBlockingFonts();
   }
-
+  bool HasNonFontRenderBlockingResources() const {
+    return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size();
+  }
+  bool HasRenderBlockingFonts() const {
+    return pending_font_preloads_.size() || imperative_font_loading_count_;
+  }
   bool HasPendingStylesheets() const {
     return pending_stylesheet_owner_nodes_.size();
   }
+
+  void WillInsertDocumentBody();
+
   // Returns true if the sheet is successfully added as a render-blocking
   // resource.
   bool AddPendingStylesheet(const Node& owner_node);
@@ -58,13 +65,16 @@ class CORE_EXPORT RenderBlockingResourceManager final
 
   void AddImperativeFontLoading(FontFace*);
   void RemoveImperativeFontLoading();
-  void EnsureStartFontPreloadTimer();
+  void EnsureStartFontPreloadMaxBlockingTimer();
+  void EnsureStartFontPreloadMaxFCPDelayTimer();
   void FontPreloadingTimerFired(TimerBase*);
 
   void Trace(Visitor* visitor) const;
 
  private:
   friend class RenderBlockingResourceManagerTest;
+
+  void RenderBlockingResourceUnblocked();
 
   // Exposed to unit tests only.
   void SetFontPreloadTimeoutForTest(base::TimeDelta timeout);
@@ -88,7 +98,10 @@ class CORE_EXPORT RenderBlockingResourceManager final
 
   unsigned imperative_font_loading_count_ = 0;
 
-  HeapTaskRunnerTimer<RenderBlockingResourceManager> font_preload_timer_;
+  HeapTaskRunnerTimer<RenderBlockingResourceManager>
+      font_preload_max_blocking_timer_;
+  HeapTaskRunnerTimer<RenderBlockingResourceManager>
+      font_preload_max_fcp_delay_timer_;
   base::TimeDelta font_preload_timeout_;
   bool font_preload_timer_has_fired_ = false;
 };

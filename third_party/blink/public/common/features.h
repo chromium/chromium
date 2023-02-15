@@ -980,6 +980,18 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // See https://crbug.com/1393246.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExtendScriptResourceLifetime);
 
+// Makes preloaded fonts render-blocking up to the limits below.
+// See https://crbug.com/1412861
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);
+
+// Max milliseconds from navigation start that fonts can block rendering.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxBlockingTimeMsForRenderBlockingFonts;
+
+// Max milliseconds that font are allowed to delay of FCP.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxFCPDelayMsForRenderBlockingFonts;
+
 }  // namespace features
 }  // namespace blink
 
