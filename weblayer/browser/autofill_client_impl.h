@@ -157,6 +157,8 @@ class AutofillClientImpl
   explicit AutofillClientImpl(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutofillClientImpl>;
 
+  std::unique_ptr<autofill::AutofillDownloadManager> download_manager_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

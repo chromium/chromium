@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "content/public/browser/browser_context.h"
@@ -34,8 +35,12 @@ AutofillClientImpl::GetURLLoaderFactory() {
 }
 
 autofill::AutofillDownloadManager* AutofillClientImpl::GetDownloadManager() {
-  NOTREACHED();
-  return nullptr;
+  if (!download_manager_) {
+    // Lazy initialization to avoid virtual function calls in the constructor.
+    download_manager_ = std::make_unique<autofill::AutofillDownloadManager>(
+        this, GetChannel(), GetLogManager());
+  }
+  return download_manager_.get();
 }
 
 autofill::PersonalDataManager* AutofillClientImpl::GetPersonalDataManager() {
