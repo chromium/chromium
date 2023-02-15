@@ -74,13 +74,8 @@ PhysicalRect HitTestingTransformState::BoundsOfMappedArea() const {
 
 PhysicalRect HitTestingTransformState::BoundsOfMappedQuadInternal(
     const gfx::QuadF& q) const {
-  gfx::RectF rect =
-      accumulated_transform_.InverseOrIdentity().ProjectQuad(q).BoundingBox();
-  PhysicalOffset offset(LayoutUnit::FromFloatRound(rect.x()),
-                        LayoutUnit::FromFloatRound(rect.y()));
-  PhysicalSize size(LayoutUnit::FromFloatRound(rect.right()) - offset.left,
-                    LayoutUnit::FromFloatRound(rect.bottom()) - offset.top);
-  return PhysicalRect(offset, size);
+  return PhysicalRect::EnclosingRect(
+      accumulated_transform_.InverseOrIdentity().ProjectQuad(q).BoundingBox());
 }
 
 }  // namespace blink

@@ -2122,6 +2122,26 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
   }
 }
 
+TEST_P(PaintLayerTest, HitTestTinyLayerUnderLargeScale) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 1px; height: 1px;
+                            transform: scale(200); transform-origin: 0 0">
+    </div>
+  )HTML");
+
+  auto* target = GetDocument().getElementById("target");
+  // Before https://crrev.com/c/4250297,
+  // HitTestingTransformState::BoundsOfMappedQuadInternal() might "randomly"
+  // return an empty rect with some of the following hit test locations.
+  // See https://crbug.com/1414042.
+  for (float x = 50; x < 50.5; x += 0.001) {
+    const HitTestLocation location(gfx::PointF(x, 50));
+    HitTestResult result;
+    GetLayoutView().HitTest(location, result);
+    EXPECT_EQ(target, result.InnerNode()) << " x=" << x;
+  }
+}
+
 TEST_P(PaintLayerTest, AddLayerNeedsRepaintAndCullRectUpdate) {
   SetBodyInnerHTML(R"HTML(
     <div id="parent" style="opacity: 0.9">
