@@ -4815,7 +4815,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DirectSockets.PermissionDeniedFailures"
     enum="DirectSocketPermissionFailureType" expires_after="2023-09-13">
-  <owner>ericwilligers@chromium.org</owner>
   <owner>glenrob@chromium.org</owner>
   <owner>greengrape@google.com</owner>
   <summary>
@@ -4828,7 +4827,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DirectSockets.TCPNetworkFailures" enum="NetErrorCodes"
     expires_after="2023-09-13">
-  <owner>ericwilligers@chromium.org</owner>
+  <owner>bartfab@chromium.org</owner>
   <owner>greengrape@google.com</owner>
   <summary>
     How often tcp socket opening finishes with a network failure.
@@ -4837,7 +4836,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DirectSockets.UDPNetworkFailures" enum="NetErrorCodes"
     expires_after="2023-09-13">
-  <owner>ericwilligers@chromium.org</owner>
+  <owner>bartfab@chromium.org</owner>
   <owner>greengrape@google.com</owner>
   <summary>
     How often udp socket opening finishes with a network failure.

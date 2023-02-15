@@ -654,7 +654,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.Install.DisplayMode2" enum="WebAppDisplayMode"
     expires_after="2024-01-01">
-  <owner>ericwilligers@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -1274,7 +1273,6 @@ chromium-metrics-reviews@google.com.
     enum="WebappUninstallDialogAction" expires_after="2024-01-01">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
-  <owner>ericwilligers@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Records the user response to the dialog shown when uninstalling a web app.

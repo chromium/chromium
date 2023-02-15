@@ -1645,7 +1645,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.ErrorPageCounts.WebAppAlternativeErrorPage"
     enum="NetErrorCodes" expires_after="2023-08-13">
-  <owner>ericwilligers@chromium.org</owner>
+  <owner>finnur@chromium.org</owner>
   <owner>alexbn@chromium.org</owner>
   <summary>
     Counts the number of times web apps receive `ERR_INTERNET_DISCONNECTED` and
