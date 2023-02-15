@@ -375,7 +375,11 @@ for board, pb_name in _PB_IMAGE_PATHS.items():
                               path='bin/run_sync_performance_tests',
                               additional_flags=FUCHSIA_EXEC_ARGS[board]),
   ])
-
+_LACROS_EVE_PERF_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('rendering.desktop.notracing'),
+])
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
@@ -788,8 +792,9 @@ ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
                                          pinpoint_only=True)
 
 # Cros/Lacros
-LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '', _LACROS_BENCHMARK_CONFIGS,
-                               4, 'chromeos')
+LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
+                               _LACROS_EVE_PERF_BENCHMARK_CONFIGS, 4,
+                               'chromeos')
 LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
                                10, 'chromeos')
 # Fuchsia
