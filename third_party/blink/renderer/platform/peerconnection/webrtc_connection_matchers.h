@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
@@ -19,13 +20,13 @@
 namespace cricket {
 
 // Pretty prints a connection object for tests.
-void PrintTo(const Connection* conn, std::ostream* os) {
-  *os << conn->ToString();
+inline void PrintTo(const Connection* conn, std::ostream* os) {
+  *os << (conn ? conn->ToString() : "(nullptr)");
 }
 
 // Pretty prints a ping result for tests.
-void PrintTo(const IceControllerInterface::PingResult& result,
-             std::ostream* os) {
+inline void PrintTo(const IceControllerInterface::PingResult& result,
+                    std::ostream* os) {
   *os << "PingResult["
       << (result.connection.has_value() ? result.connection.value()->ToString()
                                         : "<no connection>")
@@ -33,18 +34,18 @@ void PrintTo(const IceControllerInterface::PingResult& result,
 }
 
 // Pretty prints an ICE switch reason for tests.
-void PrintTo(const IceSwitchReason reason, std::ostream* os) {
+inline void PrintTo(const IceSwitchReason reason, std::ostream* os) {
   *os << IceSwitchReasonToString(reason);
 }
 
 // Pretty prints an ICE recheck event for tests.
-void PrintTo(const IceRecheckEvent& event, std::ostream* os) {
+inline void PrintTo(const IceRecheckEvent& event, std::ostream* os) {
   *os << event.ToString();
 }
 
 // Pretty prints a switch result for tests.
-void PrintTo(const IceControllerInterface::SwitchResult& result,
-             std::ostream* os) {
+inline void PrintTo(const IceControllerInterface::SwitchResult& result,
+                    std::ostream* os) {
   *os << "SwitchResult["
       << (result.connection.has_value() ? result.connection.value()->ToString()
                                         : "<no connection>")
@@ -59,6 +60,15 @@ void PrintTo(const IceControllerInterface::SwitchResult& result,
 }
 
 }  // namespace cricket
+
+namespace webrtc {
+
+// Pretty prints an RTCError for tests.
+inline void PrintTo(const RTCErrorType error, std::ostream* os) {
+  *os << ToString(error);
+}
+
+}  // namespace webrtc
 
 namespace blink {
 
