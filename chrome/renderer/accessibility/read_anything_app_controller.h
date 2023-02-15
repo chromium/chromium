@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "chrome/renderer/accessibility/read_anything_app_model.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -242,6 +243,8 @@ class ReadAnythingAppController
   float letter_spacing_;
   float line_spacing_;
 
+  // Model that holds state for this controller.
+  ReadAnythingAppModel model_;
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };
 
