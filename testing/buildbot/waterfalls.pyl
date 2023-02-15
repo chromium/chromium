@@ -1905,6 +1905,9 @@
         ],
       },
       'ToTWin': {
+        'mixins': [
+          'win10',
+        ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
@@ -1914,6 +1917,9 @@
         ],
       },
       'ToTWin(dbg)': {
+        'mixins': [
+          'win10',
+        ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
           # Doesn't run win_specific_isolated_scripts because the mini
@@ -1925,6 +1931,9 @@
         ],
       },
       'ToTWin(dll)': {
+        'mixins': [
+          'win10',
+        ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
@@ -1973,6 +1982,10 @@
         ],
       },
       'ToTWin64PGO': {
+        'mixins': [
+          'x86-64',
+          'win10',
+        ],
         'additional_compile_targets': [
           'all',
         ],
@@ -1981,6 +1994,9 @@
         },
       },
       'ToTWinASanLibfuzzer': {
+        'mixins': [
+          'win10',
+        ],
         'additional_compile_targets': [
           'all',
         ],
