@@ -5,8 +5,8 @@
 #ifndef PRINTING_PDF_METAFILE_CG_MAC_H_
 #define PRINTING_PDF_METAFILE_CG_MAC_H_
 
-#include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
+#include <CoreGraphics/CoreGraphics.h>
 #include <stdint.h>
 
 #include "base/component_export.h"

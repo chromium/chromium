@@ -4,7 +4,7 @@
 
 #include "printing/image.h"
 
-#include <ApplicationServices/ApplicationServices.h>
+#include <CoreGraphics/CoreGraphics.h>
 #include <stddef.h>
 #include <stdint.h>
 

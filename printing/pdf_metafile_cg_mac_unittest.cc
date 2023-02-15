@@ -4,7 +4,7 @@
 
 #include "printing/pdf_metafile_cg_mac.h"
 
-#import <ApplicationServices/ApplicationServices.h>
+#include <CoreGraphics/CoreGraphics.h>
 #include <stdint.h>
 
 #include <memory>
