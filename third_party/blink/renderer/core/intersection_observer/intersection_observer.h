@@ -119,8 +119,6 @@ class CORE_EXPORT IntersectionObserver final
       bool use_overflow_clip_edge = false,
       ExceptionState& = ASSERT_NO_EXCEPTION);
 
-  static void ResumeSuspendedObservers();
-
   explicit IntersectionObserver(IntersectionObserverDelegate&,
                                 Node*,
                                 const Vector<Length>& margin,
