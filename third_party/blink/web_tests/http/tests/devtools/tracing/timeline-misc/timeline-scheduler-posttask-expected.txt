@@ -1,0 +1,63 @@
+Tests the Timeline events for scheduler.postTask()
+
+SchedulePostTaskCallback Properties:
+{
+    data : {
+        delay : 0
+        frame : <string>
+        priority : "user-visible"
+        stackTrace : <object>
+        taskId : 0
+    }
+    endTime : <number>
+    frameId : <string>
+    stackTrace : <object>
+    startTime : <number>
+    type : "SchedulePostTaskCallback"
+}
+Text details for SchedulePostTaskCallback: test://evaluations/0/timeline-scheduler-posttask.js:19:32
+SchedulePostTaskCallback Properties:
+{
+    data : {
+        delay : 0
+        frame : <string>
+        priority : "background"
+        stackTrace : <object>
+        taskId : 1
+    }
+    endTime : <number>
+    frameId : <string>
+    stackTrace : <object>
+    startTime : <number>
+    type : "SchedulePostTaskCallback"
+}
+Text details for SchedulePostTaskCallback: test://evaluations/0/timeline-scheduler-posttask.js:20:32
+RunPostTaskCallback Properties:
+{
+    data : {
+        delay : 0
+        frame : <string>
+        priority : "user-visible"
+        taskId : 0
+    }
+    endTime : <number>
+    frameId : <string>
+    startTime : <number>
+    type : "RunPostTaskCallback"
+}
+Text details for RunPostTaskCallback: null
+AbortPostTaskCallback Properties:
+{
+    data : {
+        frame : <string>
+        stackTrace : <object>
+        taskId : 1
+    }
+    endTime : <number>
+    frameId : <string>
+    stackTrace : <object>
+    startTime : <number>
+    type : "AbortPostTaskCallback"
+}
+Text details for AbortPostTaskCallback: test://evaluations/0/timeline-scheduler-posttask.js:13:24
+
