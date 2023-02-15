@@ -376,8 +376,7 @@ void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
                                                    : gfx::kGoogleBlue600};
   mixer[cros_tokens::kCrosSysOnPrimary] = {dark_mode ? gfx::kGoogleGrey900
                                                      : gfx::kGoogleGrey200};
-  mixer[cros_tokens::kCrosSysSecondary] = {dark_mode ? gfx::kGoogleGrey400
-                                                     : gfx::kGoogleGrey200};
+  mixer[cros_tokens::kCrosSysSecondary] = {cros_tokens::kColorSecondary};
   mixer[cros_tokens::kCrosSysOnSecondary] = {dark_mode ? gfx::kGoogleGrey800
                                                        : gfx::kGoogleGrey600};
 
@@ -391,9 +390,6 @@ void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
         SK_ColorWHITE, StyleUtil::kDarkInkDropOpacity * SK_AlphaOPAQUE);
   }
 
-  mixer[cros_tokens::kCrosSysHighlightShape] =
-      ui::SetAlpha(gfx::kGoogleBlue600, 31);  // 12%
-                                              // opacity
   mixer[cros_tokens::kCrosSysHoverOnSubtle] = {SK_ColorTRANSPARENT};
   mixer[cros_tokens::kCrosSysSystemBaseElevated] = {kColorAshShieldAndBase80};
   mixer[cros_tokens::kCrosSysSystemOnBase] = {
