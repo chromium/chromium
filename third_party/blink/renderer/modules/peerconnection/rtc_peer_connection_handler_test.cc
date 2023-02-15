@@ -917,7 +917,7 @@ TEST_F(RTCPeerConnectionHandlerTest, GetStatsWithBadSelector) {
 
 TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
   rtc::scoped_refptr<webrtc::RTCStatsReport> report =
-      webrtc::RTCStatsReport::Create(42);
+      webrtc::RTCStatsReport::Create(webrtc::Timestamp::Micros(42));
 
   report->AddStats(
       std::unique_ptr<const webrtc::RTCStats>(new webrtc::RTCTestStats(
