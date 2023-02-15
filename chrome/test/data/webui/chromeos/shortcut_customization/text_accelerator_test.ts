@@ -5,12 +5,13 @@
 import 'chrome://shortcut-customization/js/text_accelerator.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {TextAcceleratorElement} from 'chrome://shortcut-customization/js/text_accelerator.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -131,10 +132,19 @@ suite('textAcceleratorTest', function() {
     assertEquals(delimiterPart!.icon, 'shortcut-customization-keys:plus');
   });
 
-  test('LockIconPresent', async () => {
+  test('LockIconPresentWhenCustomizationEnabled', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
     const ctrlKey =
         createTextAcceleratorPart('ctrl', TextAcceleratorPartType.kModifier);
     await initTextAcceleratorElement([ctrlKey]);
     assertTrue(isVisible(getLockIcon()));
+  });
+
+  test('LockIconHiddenWhenCustomizationDisabled', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    const ctrlKey =
+        createTextAcceleratorPart('ctrl', TextAcceleratorPartType.kModifier);
+    await initTextAcceleratorElement([ctrlKey]);
+    assertFalse(isVisible(getLockIcon()));
   });
 });

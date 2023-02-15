@@ -25,6 +25,8 @@
   accelerator parts. -->
   <div id="text-wrapper">
     <div class="parts-container"></div>
-    <iron-icon id="lock" icon="shortcut-customization:lock"></iron-icon>
+    <div hidden="[[!shouldShowLockIcon()]]">
+      <iron-icon id="lock" icon="shortcut-customization:lock"></iron-icon>
+    </div>
   </div>
 </div>

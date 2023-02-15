@@ -12,6 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {InputKeyElement, KeyInputState} from './input_key.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {TextAcceleratorPart, TextAcceleratorPartType} from './shortcut_types.js';
+import {isCustomizationDisabled} from './shortcut_utils.js';
 import {getTemplate} from './text_accelerator.html.js';
 
 /**
@@ -84,6 +85,10 @@ export class TextAcceleratorElement extends PolymerElement {
     span.classList.add('spacing');
     span.innerText = text;
     return span;
+  }
+
+  private shouldShowLockIcon(): boolean {
+    return !isCustomizationDisabled();
   }
 
   static get template(): HTMLTemplateElement {
