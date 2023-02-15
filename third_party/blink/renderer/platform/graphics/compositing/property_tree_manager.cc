@@ -985,7 +985,7 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
         clip_id = EnsureCompositorClipNode(*clip);
       }
       // For non-trivial clip, isolation_effect.stable_id will be assigned later
-      // when the effect is closed. For now the default value INVALID_STABLE_ID
+      // when the effect is closed. For now the default value kInvalidStableId
       // is used. See PropertyTreeManager::EmitClipMaskLayer().
       if (SupportsShaderBasedRoundedCorner(*pending_clip.clip,
                                            pending_clip.type, next_effect)) {
@@ -1116,7 +1116,7 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
   }
 
   if (has_multiple_groups) {
-    if (effect_node.stable_id != cc::EffectNode::INVALID_STABLE_ID) {
+    if (effect_node.stable_id != cc::EffectNode::kInvalidStableId) {
       // We are creating more than one cc effect nodes for one blink effect.
       // Give the extra cc effect node a unique stable id.
       effect_node.stable_id =
