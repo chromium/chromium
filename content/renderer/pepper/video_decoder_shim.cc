@@ -51,6 +51,8 @@ namespace {
 // The maximum size is chosen to be the same as in the VaapiVideoDecoder.
 constexpr size_t kTimestampCacheSize = 128;
 
+constexpr gfx::Size kDefaultSize(128, 128);
+
 bool IsSoftwareCodecSupported(media::VideoCodec codec) {
 #if BUILDFLAG(ENABLE_LIBVPX)
   if (codec == media::VideoCodec::kVP9)
@@ -504,9 +506,8 @@ bool VideoDecoderShim::Initialize(const Config& vda_config, Client* client) {
   media::VideoDecoderConfig video_decoder_config(
       codec, vda_config.profile,
       media::VideoDecoderConfig::AlphaMode::kIsOpaque, media::VideoColorSpace(),
-      media::kNoTransformation,
-      gfx::Size(32, 24),  // Small sizes that won't fail.
-      gfx::Rect(32, 24), gfx::Size(32, 24),
+      media::kNoTransformation, kDefaultSize, gfx::Rect(kDefaultSize),
+      kDefaultSize,
       // TODO(bbudge): Verify extra data isn't needed.
       media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
 
