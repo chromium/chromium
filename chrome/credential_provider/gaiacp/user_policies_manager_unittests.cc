@@ -147,7 +147,8 @@ void GcpUserPoliciesFetchAndReadTest::SetRegistryValues(bool dm_enrollment,
 
 TEST_P(GcpUserPoliciesFetchAndReadTest, ValueConversion) {
   base::Value policies_value = policies_.ToValue();
-  UserPolicies policies_from_value = UserPolicies::FromValue(policies_value);
+  UserPolicies policies_from_value =
+      UserPolicies::FromValue(policies_value.GetDict());
 
   ASSERT_EQ(policies_, policies_from_value);
 }

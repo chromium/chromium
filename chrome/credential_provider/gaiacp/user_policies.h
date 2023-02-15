@@ -34,7 +34,7 @@ struct COMPONENT_EXPORT(GCPW_POLICIES) UserPolicies {
 
   // Creates the user policies by reading the values found in the |dict|
   // dictionary.
-  static UserPolicies FromValue(const base::Value& dict);
+  static UserPolicies FromValue(const base::Value::Dict& dict);
 
   base::Value ToValue() const;
 

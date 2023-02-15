@@ -301,7 +301,7 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
   }
 
   // Override policies with those we just read.
-  *user_policies = UserPolicies::FromValue(*policies);
+  *user_policies = UserPolicies::FromValue(policies->GetDict());
 
   return true;
 }
