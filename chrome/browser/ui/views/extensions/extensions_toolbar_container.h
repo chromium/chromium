@@ -148,8 +148,8 @@ class ExtensionsToolbarContainer
   ToolbarActionViewController* GetActionForId(
       const std::string& action_id) override;
   ToolbarActionViewController* GetPoppedOutAction() const override;
-  void OnContextMenuShown(ToolbarActionViewController* extension) override;
-  void OnContextMenuClosed(ToolbarActionViewController* extension) override;
+  void OnContextMenuShown(const std::string& action_id) override;
+  void OnContextMenuClosed() override;
   bool CanShowActionsInToolbar() const override;
   bool IsActionVisibleOnToolbar(
       const ToolbarActionViewController* action) const override;

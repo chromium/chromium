@@ -366,7 +366,7 @@ ToolbarActionViewController* ExtensionsToolbarContainer::GetPoppedOutAction()
 }
 
 void ExtensionsToolbarContainer::OnContextMenuShown(
-    ToolbarActionViewController* extension) {
+    const std::string& action_id) {
   // Only update the extension's toolbar visibility if the context menu is being
   // shown from an extension visible in the toolbar.
   if (!IsExtensionsMenuShowing()) {
@@ -375,13 +375,12 @@ void ExtensionsToolbarContainer::OnContextMenuShown(
     // fixed.
     HideActivePopup();
 #endif
-    extension_with_open_context_menu_id_ = extension->GetId();
+    extension_with_open_context_menu_id_ = action_id;
     UpdateIconVisibility(extension_with_open_context_menu_id_.value());
   }
 }
 
-void ExtensionsToolbarContainer::OnContextMenuClosed(
-    ToolbarActionViewController* extension) {
+void ExtensionsToolbarContainer::OnContextMenuClosed() {
   // |extension_with_open_context_menu_id_| does not have a value when a context
   // menu is being shown from within the extensions menu.
   if (extension_with_open_context_menu_id_.has_value()) {

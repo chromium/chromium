@@ -30,11 +30,11 @@ class ExtensionsContainer {
 
   // Called when a context menu is shown so the container can perform any
   // necessary setup.
-  virtual void OnContextMenuShown(ToolbarActionViewController* extension) {}
+  virtual void OnContextMenuShown(const std::string& action_id) {}
 
   // Called when a context menu is closed so the container can perform any
   // necessary cleanup.
-  virtual void OnContextMenuClosed(ToolbarActionViewController* extension) {}
+  virtual void OnContextMenuClosed() {}
 
   // Whether the container supports showing extensions on the toolbar.
   virtual bool CanShowActionsInToolbar() const = 0;

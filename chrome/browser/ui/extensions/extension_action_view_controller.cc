@@ -327,11 +327,11 @@ ui::MenuModel* ExtensionActionViewController::GetContextMenu(
 }
 
 void ExtensionActionViewController::OnContextMenuShown() {
-  extensions_container_->OnContextMenuShown(this);
+  extensions_container_->OnContextMenuShown(GetId());
 }
 
 void ExtensionActionViewController::OnContextMenuClosed() {
-  extensions_container_->OnContextMenuClosed(this);
+  extensions_container_->OnContextMenuClosed();
 }
 
 void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
