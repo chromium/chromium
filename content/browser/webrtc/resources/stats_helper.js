@@ -40,7 +40,7 @@ export function generateStatsLabel(report) {
   } else if (report.type === 'codec') {
     labels = ['mimeType', 'payloadType']
       .map(stat => generateLabel(stat, report.stats.values));
-  } else if (report.type === 'media-source') {
+  } else if (['media-playout', 'media-source'].includes(report.type)) {
     labels = ['kind']
       .map(stat => generateLabel(stat, report.stats.values));
   } else if (report.type === 'candidate-pair') {
