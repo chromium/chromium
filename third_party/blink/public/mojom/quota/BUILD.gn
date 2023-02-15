@@ -23,4 +23,8 @@ mojom("quota") {
   generate_java = true
 
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Used by Blink as well as WebUI, so needs legacy bindings for Blink.
+  generate_legacy_js_bindings = true
 }

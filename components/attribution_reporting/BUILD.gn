@@ -14,6 +14,11 @@ mojom("mojom") {
     "trigger_registration_error.mojom",
   ]
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # The 3 legacy JS bindings types are required by Blink and by the fuzzer
+  # targets below.
+  generate_legacy_js_bindings = true
   generate_java = true
 }
 
@@ -165,6 +170,10 @@ mojom("registration_mojom") {
 
   generate_java = true
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Used by Blink, so requires legacy JS bindings.
+  generate_legacy_js_bindings = true
 
   deps = [
     "//components/aggregation_service:mojom",
@@ -286,4 +295,10 @@ component("registration_mojom_traits") {
 mojom("source_type_mojom") {
   sources = [ "source_type.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Fuzzers use the 3 legacy JS bindings types. This mojom is a dependency of
+  # the attribution_reporting component, which is used by the fuzzer tests
+  # above.
+  generate_legacy_js_bindings = enable_mojom_fuzzer
 }

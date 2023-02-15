@@ -5,6 +5,8 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  cpp_only = true
+
   sources = [
     "blob_storage_context.mojom",
     "cache_storage_control.mojom",

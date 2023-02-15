@@ -330,6 +330,13 @@ mojom("mojom_attribution") {
 
   webui_module_path = "/"
 
+  # Generate TypeScript rather than JavaScript WebUI bindings.
+  use_typescript_sources = true
+
+  # This is a dependency of url_loader_base below, which is used from Blink.
+  # Blink requires legacy JS bindings.
+  generate_legacy_js_bindings = true
+
   sources = [ "attribution.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
@@ -746,6 +753,12 @@ mojom("mojom_schemeful_site") {
   ]
 
   webui_module_path = "/"
+
+  # Generate TypeScript rather than JavaScript WebUI bindings.
+  use_typescript_sources = true
+
+  # Blink requires the 3 legacy JS bindings types.
+  generate_legacy_js_bindings = true
 }
 
 mojom("mojom_network_param") {

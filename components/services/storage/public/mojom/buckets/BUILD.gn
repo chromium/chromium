@@ -47,4 +47,8 @@ mojom("buckets") {
   ]
 
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Fuzzers use legacy bindings.
+  generate_legacy_js_bindings = enable_mojom_fuzzer
 }

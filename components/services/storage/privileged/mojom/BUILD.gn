@@ -14,6 +14,10 @@ mojom("mojom_bucket") {
   ]
 
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Fuzzers require legacy bindings.
+  generate_legacy_js_bindings = enable_mojom_fuzzer
 }
 
 mojom("mojom") {
@@ -22,6 +26,7 @@ mojom("mojom") {
     "indexed_db_control.mojom",
     "indexed_db_control_test.mojom",
   ]
+  cpp_only = true
 
   public_deps = [
     ":mojom_bucket",

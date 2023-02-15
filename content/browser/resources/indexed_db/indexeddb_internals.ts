@@ -68,11 +68,29 @@ const stringifyMojo = {
   },
 
   transactionState(mojoState: IdbTransactionState): string {
-    return toMojoEnumName(IdbTransactionState, mojoState);
+    switch (mojoState) {
+      case IdbTransactionState.kBlocked:
+        return 'Blocked';
+      case IdbTransactionState.kRunning:
+        return 'Running';
+      case IdbTransactionState.kStarted:
+        return 'Started';
+      case IdbTransactionState.kCommitting:
+        return 'Comitting';
+      case IdbTransactionState.kFinished:
+        return 'Finished';
+    }
   },
 
   transactionMode(mojoMode: IdbTransactionMode): string {
-    return toMojoEnumName(IdbTransactionMode, mojoMode);
+    switch (mojoMode) {
+      case IdbTransactionMode.kReadOnly:
+        return 'ReadOnly';
+      case IdbTransactionMode.kReadWrite:
+        return 'ReadWrite';
+      case IdbTransactionMode.kVersionChange:
+        return 'VersionChange';
+    }
   },
 
   partitionBucketCount(mojoPartition: IdbPartitionMetadata): number {
@@ -83,21 +101,6 @@ const stringifyMojo = {
     return count;
   },
 };
-
-interface MojoEnum {
-  [key: string]: number;
-}
-
-function toMojoEnumName(mojoEnum: MojoEnum, value: number): string {
-  const name: string|undefined =
-      Object.keys(mojoEnum).find(key => mojoEnum[key] === value);
-  // Assert that we found a string and that it starts with the letter k.
-  assert(
-      name !== undefined && name.length > 0 && name[0] === 'k',
-      'toMojoEnumName failed');
-  // Remove the letter k.
-  return name.slice(1);
-}
 
 interface MojomResponse<T> {
   error: string|null;

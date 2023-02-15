@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "indexed_db_internals.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
 
   public_deps = [
     "//components/services/storage/privileged/mojom:mojom_bucket",

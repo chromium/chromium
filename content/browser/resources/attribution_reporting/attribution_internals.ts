@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './attribution_internals_table.js';
 
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
@@ -834,7 +835,7 @@ function sourceTypeToText(sourceType: SourceType): string {
     case SourceType.kEvent:
       return 'Event';
     default:
-      return sourceType.toString();
+      assertNotReached();
   }
 }
 
@@ -854,7 +855,7 @@ function attributabilityToText(attributability: WebUISource_Attributability):
     case WebUISource_Attributability.kReachedEventLevelAttributionLimit:
       return 'Attributable: reached event-level attribution limit';
     default:
-      return attributability.toString();
+      assertNotReached();
   }
 }
 
@@ -922,7 +923,7 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
     case WebUITrigger_Status.kExcessiveEventLevelReports:
       return 'Failure: Excessive event-level reports';
     default:
-      return status.toString();
+      assertNotReached();
   }
 }
 
