@@ -1209,7 +1209,7 @@ const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoEncoding{
 // doesn't affect the PPB_VideoDecoder_Impl which will continue to use the
 // GpuVideoDecodeAcceleratorHost for the PPB_VideoDecoder_Dev interface.
 const base::Feature MEDIA_EXPORT kUseMojoVideoDecoderForPepper{
-    "UseMojoVideoDecoderForPepper", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UseMojoVideoDecoderForPepper", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Use SequencedTaskRunner for MediaService.
 BASE_FEATURE(kUseSequencedTaskRunnerForMediaService,
