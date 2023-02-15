@@ -2432,6 +2432,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-get-debugd-logs-in-parallel",
+    "owners": [ "xiangdongkong", "cros-feedback-app@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-get-display-media-set",
     "owners": [ "simonha" ],
     "expiry_milestone": 120

@@ -6663,6 +6663,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExperimentalRgbKeyboardPatternsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kExperimentalRgbKeyboardPatterns)},
 
+    {"enable-get-debugd-logs-in-parallel",
+     flag_descriptions::kEnableGetDebugdLogsInParallelName,
+     flag_descriptions::kEnableGetDebugdLogsInParallelDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableGetDebugdLogsInParallel)},
+
     {"enable-hostname-setting", flag_descriptions::kEnableHostnameSettingName,
      flag_descriptions::kEnableHostnameSettingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableHostnameSetting)},

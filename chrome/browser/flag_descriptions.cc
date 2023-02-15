@@ -5199,6 +5199,12 @@ const char kEnableExternalKeyboardsInDiagnosticsAppDescription[] =
     "Shows external keyboards in the Diagnostics App's input section. Requires "
     "#enable-input-in-diagnostics-app to be enabled.";
 
+const char kEnableGetDebugdLogsInParallelName[] =
+    "Enable getting debug daemon logs in parallel for feedback";
+const char kEnableGetDebugdLogsInParallelDescription[] =
+    "When enabled, the feedback app will use a new debug daemon method to get "
+    "logs. The method collects different pieces of logs in parallel.";
+
 const char kEnableHostnameSettingName[] = "Enable setting the device hostname";
 const char kEnableHostnameSettingDescription[] =
     "Enables the ability to set the ChromeOS hostname, the name of the device "
