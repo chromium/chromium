@@ -72,6 +72,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorBookmarkBarSeparator] = {kColorToolbarSeparatorDefault};
   mixer[kColorBookmarkButtonIcon] = {kColorToolbarButtonIconDefault};
+  mixer[kColorBookmarkFavicon] = {kColorToolbarButtonIcon};
   mixer[kColorDownloadShelfContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
   mixer[kColorInfoBarForeground] = {kColorToolbarTextDefault};
@@ -79,6 +80,8 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
       kColorToolbarContentAreaSeparator};
   mixer[kColorLocationBarBorder] =
       UseIfNonzeroAlpha(ui::kColorNativeTextfieldBorderUnfocused);
+  mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
+  mixer[kColorNewTabButtonBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
   mixer[kColorNewTabPageBackground] = {ui::kColorTextfieldBackground};
   mixer[kColorNewTabPageHeader] = {ui::kColorNativeButtonBorder};
   mixer[kColorNewTabPageLink] = {ui::kColorTextfieldSelectionBackground};

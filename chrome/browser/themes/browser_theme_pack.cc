@@ -40,6 +40,7 @@
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
+#include "ui/color/color_transform.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_analysis.h"
@@ -1100,10 +1101,26 @@ void BrowserThemePack::AddColorMixers(
       {TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE,
        kColorWindowControlButtonBackgroundInactive}};
 
+  SkColor color;
   for (const auto& entry : kThemePropertiesMap) {
-    SkColor color;
     if (GetColor(entry.property_id, &color))
       mixer[entry.color_id] = {color};
+  }
+
+  if (GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, &color)) {
+    mixer[kColorBookmarkFavicon] = {kColorToolbarButtonIcon};
+  }
+
+  if (GetColor(TP::COLOR_BOOKMARK_TEXT, &color)) {
+    mixer[kColorBookmarkFolderIcon] =
+        ui::DeriveDefaultIconColor(kColorBookmarkBarForeground);
+  }
+
+  int result = 0;
+  if (GetDisplayProperty(TP::SHOULD_FILL_BACKGROUND_TAB_COLOR, &result) &&
+      result == 0) {
+    mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
+    mixer[kColorNewTabButtonBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
   }
 }
 
