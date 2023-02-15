@@ -742,7 +742,7 @@ StringView CSSTokenizer::ConsumeName() {
   if (buffer.Is8Bit()) {
     const LChar* ptr = buffer.Characters8();
     while (size + 16 <= buffer.length()) {
-      uint8_t b __attribute__((vector_size(16)));
+      int8_t b __attribute__((vector_size(16)));
       memcpy(&b, ptr + size, sizeof(b));
 
       // Exactly the same as IsNameCodePoint(), except the IsASCII() part,
@@ -769,7 +769,7 @@ StringView CSSTokenizer::ConsumeName() {
       // (or something similar, like shifting). Now the mask is either all-zero
       // or all-one for each byte, so we can use the code from
       // https://community.arm.com/arm-community-blogs/b/infrastructure-solutions-blog/posts/porting-x86-vector-bitmask-optimizations-to-arm-neon
-      non_name_mask = non_name_mask && (b < 0x80);
+      non_name_mask = non_name_mask && (b >= 0);
       uint8x8_t narrowed_mask = vshrn_n_u16(non_name_mask, 4);
       uint64_t bits = vget_lane_u64(vreinterpret_u64_u8(narrowed_mask), 0);
       if (bits == 0) {
