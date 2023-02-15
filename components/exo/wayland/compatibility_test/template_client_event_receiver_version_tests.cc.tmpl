@@ -139,7 +139,7 @@ void {{ base_fixture_name }}::NudgeServerFor{{ step.instance_name | pascal }}Cre
 std::unique_ptr<struct {{ step.interface.name }}>
 {{ base_fixture_name }}::Make{{ step.instance_name | pascal }}() noexcept {
       {% if not step.ctor.message.is_event %}
-  auto {{ step.instance_name }} = std::unique_ptr<struct {{ step.interface.name }}>(
+  auto {{ step.instance_name }}obj = std::unique_ptr<struct {{ step.interface.name }}>(
   {{ step.ctor.interface_step.interface.name }}_{{ step.ctor.message.name }}(
       {{ step.ctor.interface_step.instance_name }}.get()
         {% for arg in step.ctor.message.args %}
@@ -160,7 +160,7 @@ std::unique_ptr<struct {{ step.interface.name }}>
         {% endfor %}
       ));
       {% else %}
-  std::unique_ptr<struct {{ step.interface.name }}> {{ step.instance_name }};
+  std::unique_ptr<struct {{ step.interface.name }}> {{ step.instance_name }}obj;
 
   static {{ step.ctor.interface_step.interface.name }}_listener {{ step.ctor.interface_step.interface.name }}_listener = {
         {% for event in step.ctor.interface_step.interface.events %}
@@ -236,7 +236,7 @@ std::unique_ptr<struct {{ step.interface.name }}>
         << "{{ step.interface.name | pascal  }}EventTest::NudgeServerFor{{ step.instance_name | pascal }}Creation()";
 
       {% endif %}
-  return {{ step.instance_name }};
+  return {{ step.instance_name }}obj;
 }
 
     {% endif %}
