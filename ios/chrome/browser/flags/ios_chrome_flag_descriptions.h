@@ -196,11 +196,6 @@ extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
-// Title and description for the flag to enable the Sign-in promo view in
-// the bookmark screen on iOS related to account storage
-extern const char kEnableBookmarkAccountStoragePromoOnIOSName[];
-extern const char kEnableBookmarkAccountStoragePromoOnIOSDescription[];
-
 // Title and description for the flag to enable checking feed visibility on
 // attention log start.
 extern const char kEnableCheckVisibilityOnAttentionLogStartName[];

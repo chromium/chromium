@@ -1842,11 +1842,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-bookmark-account-storage-on-ios",
-    "owners": [ "jlebel", "bsazonov", "chrome-signin-team" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "enable-browsing-data-lifetime-manager",
     "owners": ["ydago"],
     "expiry_milestone": 106
