@@ -98,7 +98,7 @@ public class MetricsUploadServiceTest {
                         new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             IMetricsUploadService service =
                     IMetricsUploadService.Stub.asInterface(helper.getBinder());
-            int returnedStatus = service.uploadMetricsLog(mMetricsLog.toByteArray());
+            int returnedStatus = service.uploadMetricsLog(mMetricsLog.toByteArray(), false);
 
             Assert.assertEquals(expectedHttpStatusCode, returnedStatus);
         }

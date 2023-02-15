@@ -44,14 +44,16 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
 
     private final InitialMetricsServiceConnection mInitialConnection;
     private final boolean mWaitForResults;
+    private final boolean mUseDefaultUploadQos;
 
     /**
      * @param waitForResults Whether logging should wait for a status for the platform or return
      * early.
      */
-    public AwMetricsLogUploader(boolean waitForResults) {
+    public AwMetricsLogUploader(boolean waitForResults, boolean useDefaultUploadQos) {
         mInitialConnection = new InitialMetricsServiceConnection();
         mWaitForResults = waitForResults;
+        mUseDefaultUploadQos = useDefaultUploadQos;
     }
 
     // A service connection that is used to establish an initial connection to the
@@ -90,11 +92,13 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     // A service connection that sends the given serialized metrics log data to
     // MetricsUploadService. It closes the connection after sending the metrics log.
     private static class MetricsLogUploaderServiceConnection implements ServiceConnection {
+        private final boolean mUseDefaultUploadQos;
         private final @NonNull byte[] mData;
         private final CompletableFuture<Integer> mResult;
 
-        public MetricsLogUploaderServiceConnection(
+        public MetricsLogUploaderServiceConnection(boolean useDefaultUploadQos,
                 @NonNull byte[] data, @NonNull CompletableFuture<Integer> resultFuture) {
+            mUseDefaultUploadQos = useDefaultUploadQos;
             mData = data;
             mResult = resultFuture;
         }
@@ -108,7 +112,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
                 IMetricsUploadService uploadService =
                         IMetricsUploadService.Stub.asInterface(service);
                 try {
-                    int status = uploadService.uploadMetricsLog(mData);
+                    int status = uploadService.uploadMetricsLog(mData, mUseDefaultUploadQos);
                     mResult.complete(status);
                 } catch (RemoteException e) {
                     Log.d(TAG, "Failed to send serialized metrics data to service", e);
@@ -175,7 +179,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     @VisibleForTesting
     public int log(@NonNull byte[] data, @NonNull CompletableFuture<Integer> resultFuture) {
         MetricsLogUploaderServiceConnection connection =
-                new MetricsLogUploaderServiceConnection(data, resultFuture);
+                new MetricsLogUploaderServiceConnection(mUseDefaultUploadQos, data, resultFuture);
         int status = connection.sendData(mWaitForResults);
         // Unbind the initial connection if it's still bound, since a new connection is now bound to
         // the service.

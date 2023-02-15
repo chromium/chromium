@@ -20,6 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MetricsTestPlatformServiceBridge extends PlatformServiceBridge {
     private final BlockingQueue<byte[]> mQueue;
     private int mStatus;
+    private boolean mUseDefaultUploadQos;
 
     public MetricsTestPlatformServiceBridge() {
         mQueue = new LinkedBlockingQueue<>();
@@ -41,12 +42,18 @@ public class MetricsTestPlatformServiceBridge extends PlatformServiceBridge {
     @Override
     public void logMetrics(byte[] data, boolean useDefaultUploadQos) {
         mQueue.add(data);
+        mUseDefaultUploadQos = useDefaultUploadQos;
     }
 
     @Override
     public int logMetricsBlocking(byte[] data, boolean useDefaultUploadQos) {
         logMetrics(data, useDefaultUploadQos);
+        mUseDefaultUploadQos = useDefaultUploadQos;
         return mStatus;
+    }
+
+    public boolean isLastLogUsingDefaultUploadQos() {
+        return mUseDefaultUploadQos;
     }
 
     /**
