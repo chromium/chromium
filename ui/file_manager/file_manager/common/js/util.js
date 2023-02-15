@@ -1528,4 +1528,15 @@ class UserCanceledError extends Error {}
  */
 util.isNullOrUndefined = (value) => value === null || value === undefined;
 
+/**
+ * @param {?VolumeInfo} volumeInfo
+ * @return {boolean}
+ */
+util.isOneDrive = (volumeInfo) => {
+  if (volumeInfo?.providerId === 'ajdgmkbkgifbokednjgbmieaemeighkg') {
+    return true;
+  }
+  return false;
+};
+
 export {util, UserCanceledError};

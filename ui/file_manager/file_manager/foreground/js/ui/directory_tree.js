@@ -1143,6 +1143,9 @@ class VolumeItem extends DirectoryItem {
     }
 
     this.setupIcon_(this.querySelector('.icon'), this.volumeInfo_);
+    if (util.isOneDrive(modelItem.volumeInfo)) {
+      this.toggleAttribute('one-drive', true);
+    }
 
     // Attach a placeholder for rename input text box and the eject icon if the
     // volume is ejectable
