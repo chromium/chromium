@@ -23,7 +23,7 @@ namespace ash {
 namespace {
 
 // The dimensions of the area that can activate the multitask menu.
-constexpr gfx::SizeF kTargetAreaSize(510.f, 113.f);
+constexpr gfx::SizeF kTargetAreaSize(200.f, 40.f);
 
 }  // namespace
 
