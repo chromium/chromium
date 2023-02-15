@@ -47,6 +47,14 @@ ScreenSecurityController::~ScreenSecurityController() {
 
 void ScreenSecurityController::CreateNotification(const std::u16string& message,
                                                   bool is_capture) {
+  if (features::IsVideoConferenceEnabled()) {
+    // Don't send screen share notifications, because the VideoConferenceTray
+    // serves as the notifier for screen share. As for screen capture, continue
+    // to show these notifications for now, although they may end up in the
+    // `VideoConferenceTray` as well. See b/269486186 for details.
+    DCHECK(is_capture);
+  }
+
   message_center::RichNotificationData data;
   data.buttons.push_back(message_center::ButtonInfo(l10n_util::GetStringUTF16(
       is_capture ? IDS_ASH_STATUS_TRAY_SCREEN_CAPTURE_STOP
@@ -115,6 +123,10 @@ void ScreenSecurityController::CreateNotification(const std::u16string& message,
 }
 
 void ScreenSecurityController::StopAllSessions(bool is_capture) {
+  if (features::IsVideoConferenceEnabled() && !is_capture) {
+    return;
+  }
+
   message_center::MessageCenter::Get()->RemoveNotification(
       is_capture ? kScreenCaptureNotificationId : kScreenShareNotificationId,
       false /* by_user */);
@@ -162,6 +174,14 @@ void ScreenSecurityController::OnScreenCaptureStop() {
 void ScreenSecurityController::OnScreenShareStart(
     base::OnceClosure stop_callback,
     const std::u16string& helper_name) {
+  // Don't send screen share notifications, because the VideoConferenceTray
+  // serves as the notifier for screen share. As for screen capture, continue to
+  // show these notifications for now, although they may end up in the
+  // `VideoConferenceTray` as well. See b/269486186 for details.
+  if (features::IsVideoConferenceEnabled()) {
+    return;
+  }
+
   share_stop_callbacks_.emplace_back(std::move(stop_callback));
 
   std::u16string help_label_text;
@@ -180,6 +200,9 @@ void ScreenSecurityController::OnScreenShareStart(
 }
 
 void ScreenSecurityController::OnScreenShareStop() {
+  if (features::IsVideoConferenceEnabled()) {
+    return;
+  }
   StopAllSessions(false /* is_capture */);
 
   if (features::IsPrivacyIndicatorsEnabled())
