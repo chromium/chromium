@@ -382,7 +382,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       const absl::optional<url::Origin>& initiator_origin,
       const gfx::Rect& bounds,
       content::SessionStorageNamespace* session_storage_namespace,
-      content::PreloadingAttempt* attempt = nullptr);
+      base::WeakPtr<content::PreloadingAttempt> attempt = nullptr);
 
   void StartSchedulingPeriodicCleanups();
   void StopSchedulingPeriodicCleanups();
