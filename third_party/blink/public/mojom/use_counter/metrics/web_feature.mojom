@@ -3806,6 +3806,8 @@ enum WebFeature {
   kPopoverTypeManual = 4465,
   kPopoverTypeInvalid = 4466,
   kCSSAnchorPositioning = 4467,
+  kServiceWorkerAddHandlerAfterInitialization = 4468,
+  kServiceWorkerSetAttributeHandlerAfterInitialization = 4469,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
