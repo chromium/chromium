@@ -277,7 +277,7 @@ void FakeSkiaOutputSurface::CopyOutput(
     // don't actually check the returned texture data.
     auto* sii = GetSharedImageInterface();
     gpu::Mailbox local_mailbox = sii->CreateSharedImage(
-        ResourceFormat::RGBA_8888, geometry.result_selection.size(),
+        SinglePlaneFormat::kRGBA_8888, geometry.result_selection.size(),
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
 

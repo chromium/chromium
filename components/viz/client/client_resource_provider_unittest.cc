@@ -509,7 +509,7 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
 
   auto* sii = context_provider()->SharedImageInterface();
   gpu::Mailbox mailbox = sii->CreateSharedImage(
-      ResourceFormat::RGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
+      SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
       gpu::kNullSurfaceHandle);

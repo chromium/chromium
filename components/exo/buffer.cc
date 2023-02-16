@@ -154,10 +154,10 @@ Buffer::Texture::Texture(
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_GLES2;
 
-  mailbox_ =
-      sii->CreateSharedImage(viz::ResourceFormat::RGBA_8888, size, color_space,
-                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                             usage, gpu::kNullSurfaceHandle);
+  mailbox_ = sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888, size,
+                                    color_space, kTopLeft_GrSurfaceOrigin,
+                                    kPremul_SkAlphaType, usage,
+                                    gpu::kNullSurfaceHandle);
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();
