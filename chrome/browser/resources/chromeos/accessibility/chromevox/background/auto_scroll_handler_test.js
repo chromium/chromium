@@ -152,6 +152,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxE2ETest {
           return;
         }
         list.removeEventListener(EventType.CHILDREN_CHANGED, listener, true);
+        assertEquals('function', typeof eventListener);
         eventListener();
       };
       list.addEventListener(EventType.CHILDREN_CHANGED, listener, true);
