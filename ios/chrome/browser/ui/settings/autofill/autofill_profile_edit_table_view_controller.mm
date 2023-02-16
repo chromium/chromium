@@ -411,7 +411,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else {
     item.text = @"Test A required field is empty. Fill it before saving.";
   }
-  // TODO(crbug.com/1407666): Change color to kRedColor.
+  item.textColor = [UIColor colorNamed:kRedColor];
   return item;
 }
 

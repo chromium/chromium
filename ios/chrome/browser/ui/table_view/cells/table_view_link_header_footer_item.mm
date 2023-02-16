@@ -60,7 +60,10 @@ const CGFloat kVerticalPadding = 8;
   if ([self.urls count] != 0) {
     headerFooter.urls = self.urls;
   }
-  [headerFooter setText:self.text];
+  UIColor* textColor = self.textColor
+                           ? self.textColor
+                           : [UIColor colorNamed:kTextSecondaryColor];
+  [headerFooter setText:self.text withColor:textColor];
 }
 
 @end
@@ -121,13 +124,13 @@ const CGFloat kVerticalPadding = 8;
 
 #pragma mark - Properties
 
-- (void)setText:(NSString*)text {
+- (void)setText:(NSString*)text withColor:(UIColor*)color {
   StringWithTags parsedString = ParseStringWithLinks(text);
 
   NSDictionary* textAttributes = @{
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+    NSForegroundColorAttributeName : color
   };
 
   NSMutableAttributedString* attributedText =

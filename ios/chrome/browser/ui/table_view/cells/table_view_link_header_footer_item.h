@@ -32,6 +32,10 @@
 // The main text string.
 @property(nonatomic, copy) NSString* text;
 
+// UIColor for the text displayed in text view. Default is
+// [UIColor colorNamed:kTextSecondaryColor].
+@property(nonatomic, strong) UIColor* textColor;
+
 @end
 
 // UITableViewHeaderFooterView subclass containing a single UITextView. The text
@@ -47,8 +51,8 @@
 @property(nonatomic, strong) NSArray<CrURL*>* urls;
 
 // Sets the `text` displayed by this cell. If the `text` contains a link, the
-// link is appropriately colored.
-- (void)setText:(NSString*)text;
+// link is appropriately colored. The text is coolored with `color`.
+- (void)setText:(NSString*)text withColor:(UIColor*)color;
 
 @end
 
