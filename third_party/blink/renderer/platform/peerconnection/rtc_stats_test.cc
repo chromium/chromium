@@ -124,7 +124,7 @@ TEST(RTCStatsTest, OnlyIncludeStandarizedMembers) {
 
 TEST(RTCStatsTest, IncludeAllMembers) {
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
-      webrtc::RTCStatsReport::Create(7);
+      webrtc::RTCStatsReport::Create(webrtc::Timestamp::Micros(7));
   webrtc_report->AddStats(
       std::make_unique<TestStats>("id", webrtc::Timestamp::Micros(0)));
 
@@ -168,7 +168,7 @@ TEST(RTCStatsTest, IncludeAllMembersFeatureFlag) {
 
 TEST(RTCStatsTest, CopyHandle) {
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
-      webrtc::RTCStatsReport::Create(17);
+      webrtc::RTCStatsReport::Create(webrtc::Timestamp::Micros(17));
   webrtc_report->AddStats(
       std::make_unique<TestStats>("id", webrtc::Timestamp::Micros(0)));
 
