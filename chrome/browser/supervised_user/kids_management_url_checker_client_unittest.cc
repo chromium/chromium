@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/kids_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/kids_management_url_checker_client.h"
 
 #include <memory>
 #include <utility>

@@ -6,6 +6,8 @@ static_library("browser") {
   sources = [
     "kids_chrome_management_client.cc",
     "kids_chrome_management_client.h",
+    "kids_management_url_checker_client.cc",
+    "kids_management_url_checker_client.h",
     "supervised_user_error_page.cc",
     "supervised_user_error_page.h",
     "supervised_user_settings_service.cc",
@@ -23,6 +25,7 @@ static_library("browser") {
     "//components/google/core/common",
     "//components/prefs",
     "//components/resources:components_resources",
+    "//components/safe_search_api",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",

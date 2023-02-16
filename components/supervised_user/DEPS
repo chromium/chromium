@@ -3,6 +3,7 @@ include_rules = [
   "+components/grit",
   "+components/keyed_service",
   "+components/prefs",
+  "+components/safe_search_api",
   "+components/strings/grit",
   "+components/signin",
   "+components/sync",
