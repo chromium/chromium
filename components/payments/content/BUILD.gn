@@ -210,6 +210,8 @@ source_set("unit_tests") {
     "android_app_communication_unittest.cc",
     "android_payment_app_factory_unittest.cc",
     "android_payment_app_unittest.cc",
+    "mock_android_app_communication.cc",
+    "mock_android_app_communication.h",
     "mock_payment_app_factory_delegate.cc",
     "mock_payment_app_factory_delegate.h",
     "payment_event_response_util_unittest.cc",
