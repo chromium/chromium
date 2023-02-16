@@ -34,6 +34,7 @@ bool TestAshWebView::GoBack() {
 }
 
 void TestAshWebView::Navigate(const GURL& url) {
+  current_url_ = url;
   // Simulate navigation by notifying |observers_| of the expected event that
   // would normally signal navigation completion. We do this asynchronously to
   // more accurately simulate real-world conditions.
