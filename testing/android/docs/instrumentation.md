@@ -129,29 +129,6 @@ unconditionally disables a test.
 )
 ```
 
-[**@FlakyTest**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/FlakyTest.java)
-marks a test as flaky. This also unconditionally disables the test, though
-tests marked with **@FlakyTest** are explicitly run on some bots.
-```java
-@FlakyTest(
-    // Describes why the test is marked flaky. Typically includes a crbug link.
-    message = ""
-)
-```
-
-Note that there are Android versions of **@DisabledTest** and **@FlakyTest**
-that do not allow message specification. These are no longer used in Chromium.
-
-As alluded to above, tests marked with either **@DisabledTest** or
-**@FlakyTest** can be explicitly run via the test runner's
-[-A/--annotation](/testing/android/docs/todo.md)
-flag. For example, this would run only the tests marked as flaky in
-`chrome_public_test_apk`:
-
-```bash
-./out/Debug/bin/run_chrome_public_test_apk -A FlakyTest
-```
-
 ##### Conditional disabling
 
 There are two primary annotation categories that conditionally disable tests:
