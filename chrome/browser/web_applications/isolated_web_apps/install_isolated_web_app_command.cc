@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -321,8 +322,6 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
         {R"(Manifest `id` must be "/". Resolved manifest id: )", *encoded_id})};
   }
 
-  info.manifest_id = "";
-
   url::Origin origin = isolation_info_.origin();
   if (manifest.scope != origin.GetURL()) {
     return base::unexpected{
@@ -336,6 +335,9 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
         {"App manifest must have either 'name' or 'short_name'. manifest_url: ",
          manifest_url.possibly_invalid_spec()}));
   }
+
+  info.manifest_id = "";
+  info.user_display_mode = mojom::UserDisplayMode::kStandalone;
 
   return info;
 }
