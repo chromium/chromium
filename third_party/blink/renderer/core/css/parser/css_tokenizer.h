@@ -110,6 +110,7 @@ class CORE_EXPORT CSSTokenizer {
   CSSParserToken TokenizeSingleWithComments();
 
  private:
+  template <bool SkipComments, bool StoreOffset>
   ALWAYS_INLINE CSSParserToken NextToken();
 
   UChar Consume();
@@ -154,7 +155,6 @@ class CORE_EXPORT CSSTokenizer {
   CSSParserToken HyphenMinus(UChar);
   CSSParserToken Asterisk(UChar);
   CSSParserToken LessThan(UChar);
-  CSSParserToken Solidus(UChar);
   CSSParserToken Colon(UChar);
   CSSParserToken SemiColon(UChar);
   CSSParserToken Hash(UChar);

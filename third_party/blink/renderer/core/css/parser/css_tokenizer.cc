@@ -40,7 +40,8 @@ std::unique_ptr<CachedCSSTokenizer> CSSTokenizer::CreateCachedTokenizer(
 
   offsets.push_back(0);
   while (true) {
-    const CSSParserToken token = tokenizer.NextToken();
+    const CSSParserToken token =
+        tokenizer.NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
     tokens.push_back(token);
     offsets.push_back(tokenizer.Offset());
     if (token.GetType() == kEOFToken) {
@@ -78,15 +79,12 @@ Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOF() {
                                 kEstimatedCharactersPerToken);
 
   while (true) {
-    const CSSParserToken token = NextToken();
-    switch (token.GetType()) {
-      case kCommentToken:
-        continue;
-      case kEOFToken:
-        return tokens;
-      default:
-        tokens.push_back(token);
-        break;
+    const CSSParserToken token =
+        NextToken</*SkipComments=*/true, /*StoreOffset=*/false>();
+    if (token.GetType() == kEOFToken) {
+      return tokens;
+    } else {
+      tokens.push_back(token);
     }
   }
 }
@@ -97,19 +95,11 @@ StringView CSSTokenizer::StringRangeAt(wtf_size_t start,
 }
 
 CSSParserToken CSSTokenizer::TokenizeSingle() {
-  while (true) {
-    prev_offset_ = input_.Offset();
-    const CSSParserToken token = NextToken();
-    if (token.GetType() == kCommentToken) {
-      continue;
-    }
-    return token;
-  }
+  return NextToken</*SkipComments=*/true, /*StoreOffset=*/true>();
 }
 
 CSSParserToken CSSTokenizer::TokenizeSingleWithComments() {
-  prev_offset_ = input_.Offset();
-  return NextToken();
+  return NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
 }
 
 wtf_size_t CSSTokenizer::TokenCount() {
@@ -224,16 +214,6 @@ CSSParserToken CSSTokenizer::HyphenMinus(UChar cc) {
   return CSSParserToken(kDelimiterToken, cc);
 }
 
-CSSParserToken CSSTokenizer::Solidus(UChar cc) {
-  if (ConsumeIfNext('*')) {
-    // These get ignored, but we need a value to return.
-    ConsumeUntilCommentEndFound();
-    return CSSParserToken(kCommentToken);
-  }
-
-  return CSSParserToken(kDelimiterToken, cc);
-}
-
 CSSParserToken CSSTokenizer::Colon(UChar cc) {
   return CSSParserToken(kColonToken);
 }
@@ -334,125 +314,139 @@ CSSParserToken CSSTokenizer::EndOfFile(UChar cc) {
   return CSSParserToken(kEOFToken);
 }
 
+template <bool SkipComments, bool StoreOffset>
 CSSParserToken CSSTokenizer::NextToken() {
-  // Unlike the HTMLTokenizer, the CSS Syntax spec is written
-  // as a stateless, (fixed-size) look-ahead tokenizer.
-  // We could move to the stateful model and instead create
-  // states for all the "next 3 codepoints are X" cases.
-  // State-machine tokenizers are easier to write to handle
-  // incremental tokenization of partial sources.
-  // However, for now we follow the spec exactly.
-  UChar cc = Consume();
-  ++token_count_;
+  do {
+    if (StoreOffset) {
+      prev_offset_ = input_.Offset();
+    }
+    // Unlike the HTMLTokenizer, the CSS Syntax spec is written
+    // as a stateless, (fixed-size) look-ahead tokenizer.
+    // We could move to the stateful model and instead create
+    // states for all the "next 3 codepoints are X" cases.
+    // State-machine tokenizers are easier to write to handle
+    // incremental tokenization of partial sources.
+    // However, for now we follow the spec exactly.
+    UChar cc = Consume();
+    ++token_count_;
 
-  switch (cc) {
-    case 0:
-      return EndOfFile(cc);
-    case '\t':
-    case '\n':
-    case '\f':
-    case '\r':
-    case ' ':
-      return WhiteSpace(cc);
-    case '\'':
-    case '"':
-      return StringStart(cc);
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-      return AsciiDigit(cc);
-    case '(':
-      return LeftParenthesis(cc);
-    case ')':
-      return RightParenthesis(cc);
-    case '[':
-      return LeftBracket(cc);
-    case ']':
-      return RightBracket(cc);
-    case '{':
-      return LeftBrace(cc);
-    case '}':
-      return RightBrace(cc);
-    case '+':
-    case '.':
-      return PlusOrFullStop(cc);
-    case '-':
-      return HyphenMinus(cc);
-    case '*':
-      return Asterisk(cc);
-    case '<':
-      return LessThan(cc);
-    case ',':
-      return Comma(cc);
-    case '/':
-      return Solidus(cc);
-    case '\\':
-      return ReverseSolidus(cc);
-    case ':':
-      return Colon(cc);
-    case ';':
-      return SemiColon(cc);
-    case '#':
-      return Hash(cc);
-    case '^':
-      return CircumflexAccent(cc);
-    case '$':
-      return DollarSign(cc);
-    case '|':
-      return VerticalLine(cc);
-    case '~':
-      return Tilde(cc);
-    case '@':
-      return CommercialAt(cc);
-    case 'u':
-    case 'U':
-      return LetterU(cc);
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 11:
-    case 14:
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-    case 19:
-    case 20:
-    case 21:
-    case 22:
-    case 23:
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case '!':
-    case '%':
-    case '&':
-    case '=':
-    case '>':
-    case '?':
-    case '`':
-    case 127:
-      return CSSParserToken(kDelimiterToken, cc);
-    default:
-      return NameStart(cc);
-  }
+    switch (cc) {
+      case 0:
+        return EndOfFile(cc);
+      case '\t':
+      case '\n':
+      case '\f':
+      case '\r':
+      case ' ':
+        return WhiteSpace(cc);
+      case '\'':
+      case '"':
+        return StringStart(cc);
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        return AsciiDigit(cc);
+      case '(':
+        return LeftParenthesis(cc);
+      case ')':
+        return RightParenthesis(cc);
+      case '[':
+        return LeftBracket(cc);
+      case ']':
+        return RightBracket(cc);
+      case '{':
+        return LeftBrace(cc);
+      case '}':
+        return RightBrace(cc);
+      case '+':
+      case '.':
+        return PlusOrFullStop(cc);
+      case '-':
+        return HyphenMinus(cc);
+      case '*':
+        return Asterisk(cc);
+      case '<':
+        return LessThan(cc);
+      case ',':
+        return Comma(cc);
+      case '/':
+        if (ConsumeIfNext('*')) {
+          ConsumeUntilCommentEndFound();
+          if (SkipComments) {
+            break;  // Read another token.
+          } else {
+            return CSSParserToken(kCommentToken);
+          }
+        }
+        return CSSParserToken(kDelimiterToken, cc);
+      case '\\':
+        return ReverseSolidus(cc);
+      case ':':
+        return Colon(cc);
+      case ';':
+        return SemiColon(cc);
+      case '#':
+        return Hash(cc);
+      case '^':
+        return CircumflexAccent(cc);
+      case '$':
+        return DollarSign(cc);
+      case '|':
+        return VerticalLine(cc);
+      case '~':
+        return Tilde(cc);
+      case '@':
+        return CommercialAt(cc);
+      case 'u':
+      case 'U':
+        return LetterU(cc);
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+      case 11:
+      case 14:
+      case 15:
+      case 16:
+      case 17:
+      case 18:
+      case 19:
+      case 20:
+      case 21:
+      case 22:
+      case 23:
+      case 24:
+      case 25:
+      case 26:
+      case 27:
+      case 28:
+      case 29:
+      case 30:
+      case 31:
+      case '!':
+      case '%':
+      case '&':
+      case '=':
+      case '>':
+      case '?':
+      case '`':
+      case 127:
+        return CSSParserToken(kDelimiterToken, cc);
+      default:
+        return NameStart(cc);
+    }
+  } while (SkipComments);
 }
 
 // This method merges the following spec sections for efficiency
