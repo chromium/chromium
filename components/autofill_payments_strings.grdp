@@ -538,6 +538,9 @@
   <message name="IDS_AUTOFILL_IBAN_SAVED" desc="Title text for the Autofill save IBAN (International Bank Account Number) bubble view when the IBAN  has been saved. Also label for icon animation.">
     IBAN saved
   </message>
+  <message name="IDS_AUTOFILL_MANAGE_PAYMENTS" desc="Text to show for the button in the save IBAN (International Bank Account Number) manage bubble, which appears after the IBAN had been saved. The user will be redirected to chrome://settings/payments if the 'Manage payments' button is clicked">
+    Manage payments
+  </message>
 
   <!-- virtual cards related strings - start -->
   <if expr="not is_ios and not is_android">

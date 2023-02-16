@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
+
+#include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
+
 namespace autofill {
 
 TestAutofillBubbleHandler::TestAutofillBubbleHandler() = default;
@@ -18,14 +21,15 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveCreditCardBubble(
   return save_card_bubble_view_.get();
 }
 
-AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveIbanBubble(
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowIbanBubble(
     content::WebContents* web_contents,
-    SaveIbanBubbleController* controller,
-    bool is_user_gesture) {
-  if (!save_iban_bubble_view_) {
-    save_iban_bubble_view_ = std::make_unique<TestAutofillBubble>();
+    IbanBubbleController* controller,
+    bool is_user_gesture,
+    IbanBubbleType bubble_type) {
+  if (!iban_bubble_view_) {
+    iban_bubble_view_ = std::make_unique<TestAutofillBubble>();
   }
-  return save_iban_bubble_view_.get();
+  return iban_bubble_view_.get();
 }
 
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowLocalCardMigrationBubble(
