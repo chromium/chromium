@@ -18,6 +18,10 @@
 // The accessory type to display on the trailing edge of the cell.
 @property(nonatomic, assign) UITableViewCellAccessoryType accessoryType;
 
+// The accessory type to display on the trailing edge of the cell in the edit
+// mode.
+@property(nonatomic, assign) UITableViewCellAccessoryType editingAccessoryType;
+
 // The accessory view to display on the trailing edge of the cell. Overrides
 // the value of the `accessoryType` property.
 @property(nonatomic, strong) UIView* accessoryView;

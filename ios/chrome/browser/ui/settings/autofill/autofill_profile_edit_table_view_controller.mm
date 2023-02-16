@@ -463,8 +463,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewMultiDetailTextItem alloc] initWithType:ItemTypeCountry];
   item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_COUNTRY);
   item.trailingDetailText = self.countryValue;
-  // TODO(crbug.com/1407666): Show it as a button in the edit mode and fix the
-  // color.
+  item.trailingDetailTextColor = [UIColor colorNamed:kTextPrimaryColor];
+  if (self.tableView.editing) {
+    item.editingAccessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  }
   return item;
 }
 

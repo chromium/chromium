@@ -19,6 +19,9 @@
 // Trailing detail text to be displayed.
 @property(nonatomic, copy) NSString* trailingDetailText;
 
+// Text color for the trailing detail text.
+@property(nonatomic, strong) UIColor* trailingDetailTextColor;
+
 @end
 
 // TableViewCell that displays two leading text labels on top of each other and

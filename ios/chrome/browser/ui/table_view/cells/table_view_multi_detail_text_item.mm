@@ -36,6 +36,9 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
   cell.textLabel.text = self.text;
   cell.leadingDetailTextLabel.text = self.leadingDetailText;
   cell.trailingDetailTextLabel.text = self.trailingDetailText;
+  cell.trailingDetailTextLabel.textColor =
+      self.trailingDetailTextColor ? self.trailingDetailTextColor
+                                   : [UIColor colorNamed:kTextSecondaryColor];
 }
 
 @end
