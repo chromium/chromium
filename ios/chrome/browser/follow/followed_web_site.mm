@@ -12,22 +12,6 @@
 
 @implementation FollowedWebSite
 
-// TODO(crbug.com/1416286): remove.
-- (instancetype)initWithTitle:(NSString*)title
-                   webPageURL:(NSURL*)webPageURL
-                   faviconURL:(NSURL*)faviconURL
-                       RSSURL:(NSURL*)RSSURL
-                    available:(BOOL)available {
-  if ((self = [super init])) {
-    _title = [title copy];
-    _webPageURL = webPageURL;
-    _faviconURL = faviconURL;
-    _RSSURL = RSSURL;
-    _available = available;
-  }
-  return self;
-}
-
 #pragma mark - NSObject
 
 - (BOOL)isEqual:(id)object {

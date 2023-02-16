@@ -12,14 +12,6 @@
 // Represents a followed website.
 @interface FollowedWebSite : NSObject
 
-// Convenience initializer that initializes all properties.
-// TODO(crbug.com/1416286): remove.
-- (instancetype)initWithTitle:(NSString*)title
-                   webPageURL:(NSURL*)webPageURL
-                   faviconURL:(NSURL*)faviconURL
-                       RSSURL:(NSURL*)RSSURL
-                    available:(BOOL)available;
-
 // Title of the website.
 @property(nonatomic, copy) NSString* title;
 

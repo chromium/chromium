@@ -47,12 +47,11 @@ NSArray<FollowedWebSite*>* ChromiumFollowService::GetFollowedWebSites() {
 void ChromiumFollowService::FollowWebSite(WebPageURLs* web_page_urls,
                                           FollowSource source,
                                           ResultCallback callback) {
-  FollowedWebSite* web_channel =
-      [[FollowedWebSite alloc] initWithTitle:@""
-                                  webPageURL:web_page_urls.URL
-                                  faviconURL:nil
-                                      RSSURL:[web_page_urls.RSSURLs firstObject]
-                                   available:NO];
+  FollowedWebSite* web_channel = [[FollowedWebSite alloc] init];
+  web_channel.title = @"";
+  web_channel.webPageURL = web_page_urls.URL;
+  web_channel.RSSURL = [web_page_urls.RSSURLs firstObject];
+  web_channel.state = FollowedWebSiteStateStateUnknown;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -62,12 +61,11 @@ void ChromiumFollowService::FollowWebSite(WebPageURLs* web_page_urls,
 void ChromiumFollowService::UnfollowWebSite(WebPageURLs* web_page_urls,
                                             FollowSource source,
                                             ResultCallback callback) {
-  FollowedWebSite* web_channel =
-      [[FollowedWebSite alloc] initWithTitle:@""
-                                  webPageURL:web_page_urls.URL
-                                  faviconURL:nil
-                                      RSSURL:[web_page_urls.RSSURLs firstObject]
-                                   available:NO];
+  FollowedWebSite* web_channel = [[FollowedWebSite alloc] init];
+  web_channel.title = @"";
+  web_channel.webPageURL = web_page_urls.URL;
+  web_channel.RSSURL = [web_page_urls.RSSURLs firstObject];
+  web_channel.state = FollowedWebSiteStateStateUnknown;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
