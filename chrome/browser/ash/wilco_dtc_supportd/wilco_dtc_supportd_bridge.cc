@@ -83,7 +83,7 @@ void WilcoDtcSupportdBridgeDelegateImpl::
   mojo::OutgoingInvitation invitation;
   mojo::PlatformChannel channel;
   mojo::ScopedMessagePipeHandle server_pipe = invitation.AttachMessagePipe(
-      diagnostics::kWilcoDtcSupportdMojoConnectionChannelToken);
+      ::diagnostics::kWilcoDtcSupportdMojoConnectionChannelToken);
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  channel.TakeLocalEndpoint());
