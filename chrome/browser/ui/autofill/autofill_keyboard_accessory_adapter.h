@@ -17,6 +17,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "components/autofill/core/common/aliases.h"
+#include "content/public/browser/native_web_keyboard_event.h"
 
 namespace autofill {
 
@@ -70,16 +72,16 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   }
 
  private:
-  // AutofillPopupView implementation.
-  void Show() override;
+  // AutofillPopupView:
+  void Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void Hide() override;
-  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
-                            absl::optional<int> current_row_selection) override;
+  bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event) override;
   void OnSuggestionsChanged() override;
   void AxAnnounce(const std::u16string& text) override;
   absl::optional<int32_t> GetAxUniqueId() override;
 
-  // AutofillPopupController implementation.
+  // AutofillPopupController:
   // Hidden: void OnSuggestionsChanged() override;
   void AcceptSuggestion(int index, base::TimeDelta show_threshold) override;
   int GetLineCount() const override;
@@ -92,13 +94,11 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
                                   std::u16string* title,
                                   std::u16string* body) override;
   bool RemoveSuggestion(int index) override;
-  void SetSelectedLine(absl::optional<int> selected_line) override;
-  absl::optional<int> selected_line() const override;
+  void SelectSuggestion(absl::optional<size_t> index) override;
   PopupType GetPopupType() const override;
 
   void Hide(PopupHidingReason reason) override;
   void ViewDestroyed() override;
-  void SelectionCleared() override;
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;

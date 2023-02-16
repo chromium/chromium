@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "components/autofill/core/common/aliases.h"
+#include "content/public/browser/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -38,6 +41,7 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
 
   using RowPointer =
       absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
+  using CellIndex = std::pair<size_t, PopupRowView::CellType>;
 
   PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
                  views::Widget* parent_widget);
@@ -45,11 +49,17 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
   PopupViewViews& operator=(const PopupViewViews&) = delete;
   ~PopupViewViews() override;
 
+  base::WeakPtr<AutofillPopupController> controller() { return controller_; }
+  // Gets and sets the currently selected cell. If an invalid `cell_index` is
+  // passed, `GetSelectedCell()` will return `absl::nullopt` afterwards.
+  absl::optional<CellIndex> GetSelectedCell() const;
+  void SetSelectedCell(absl::optional<CellIndex> cell_index);
+
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // AutofillPopupView:
-  void Show() override;
+  void Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void Hide() override;
   absl::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;
@@ -59,8 +69,6 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
   // methods in PopupBaseView.
   void OnMouseMoved(const ui::MouseEvent& event) override {}
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
-
-  base::WeakPtr<AutofillPopupController> controller() { return controller_; }
 
  private:
   friend class PopupViewViewsBrowsertest;
@@ -74,6 +82,12 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
   PopupRowView& GetPopupRowViewAt(size_t index) {
     return *absl::get<PopupRowView*>(rows_[index]);
   }
+  const PopupRowView& GetPopupRowViewAt(size_t index) const {
+    return *absl::get<PopupRowView*>(rows_[index]);
+  }
+
+  // Returns whether the row at `index` exists and is a `PopupRowView`.
+  bool HasPopupRowViewAt(size_t index) const;
 
   // Creates child views based on the suggestions given by |controller_|.
   // This method expects that all non-footer suggestions precede footer
@@ -84,9 +98,32 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
   // element width when possible.
   int AdjustWidth(int width) const;
 
+  // Selects the first row prior to the currently selected one that is
+  // selectable (e.g. not a separator). If no row is selected or no row prior to
+  // the current one is selectable, it tries to select the last row. If that one
+  // is unselectable, no row is selected.
+  void SelectPreviousRow();
+
+  // Analogous to previous row, just in the opposite direction: Tries to find
+  // the next selectable row after the currently selected one. If no row is
+  // selected or no row following the currently selected one is selectable, it
+  // tries to select the first row. If that one is unselectable, no row is
+  // selected.
+  void SelectNextRow();
+
+  // Attempts to accept the selected cell. It will return false if the cell is
+  // not selectable or the current cell selection is invalid.
+  // If `tab_key_pressed` is true, only cells that trigger field filling or
+  // scanning a credit card qualify as selectable.
+  bool AcceptSelectedCell(bool tab_key_pressed);
+
+  // Attempts to remove the selected cell. Only content cells are allowed to be
+  // selected.
+  bool RemoveSelectedCell();
+
   // AutofillPopupView:
-  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
-                            absl::optional<int> current_row_selection) override;
+  bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event) override;
   void OnSuggestionsChanged() override;
 
   // PopupBaseView:
@@ -94,6 +131,8 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
+  // The index of the row with a selected cell.
+  absl::optional<size_t> row_with_selected_cell_;
   std::vector<RowPointer> rows_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> body_container_ = nullptr;

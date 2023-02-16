@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -165,7 +166,7 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, ShowingInitializesAndUpdatesView) {
   EXPECT_CALL(*view(), Show());
-  adapter_as_view()->Show();
+  adapter_as_view()->Show(AutoselectFirstSuggestion(false));
 }
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, HidingAdapterHidesView) {
@@ -245,17 +246,6 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, RemoveAfterConfirmation) {
 
   EXPECT_CALL(*controller(), RemoveSuggestion(0)).WillOnce(Return(true));
   std::move(confirm).Run();
-}
-
-TEST_F(AutofillKeyboardAccessoryAdapterTest, MapSelectedLineToChangedIndices) {
-  controller()->set_suggestions(createSuggestions(/*clearItemOffset=*/2));
-  NotifyAboutSuggestions();
-
-  EXPECT_CALL(*controller(), SetSelectedLine(absl::optional<int>(0)));
-  adapter_as_controller()->SetSelectedLine(1);
-
-  EXPECT_CALL(*controller(), selected_line()).WillRepeatedly(Return(0));
-  EXPECT_EQ(adapter_as_controller()->selected_line(), 1);
 }
 
 }  // namespace autofill

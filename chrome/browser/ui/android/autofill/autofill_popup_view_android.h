@@ -13,6 +13,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "components/autofill/core/common/aliases.h"
+#include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/android/view_android.h"
 
 namespace autofill {
@@ -48,11 +50,11 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
                       const base::android::JavaParamRef<jobject>& obj);
 
  protected:
-  // AutofillPopupView implementation.
-  void Show() override;
+  // AutofillPopupView:
+  void Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void Hide() override;
-  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
-                            absl::optional<int> current_row_selection) override;
+  bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event) override;
   void OnSuggestionsChanged() override;
   void AxAnnounce(const std::u16string& text) override;
   absl::optional<int32_t> GetAxUniqueId() override;

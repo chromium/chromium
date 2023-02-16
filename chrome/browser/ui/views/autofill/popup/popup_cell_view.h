@@ -67,6 +67,15 @@ class PopupCellView : public views::View {
     return on_accepted_callback_;
   }
   void SetOnAcceptedCallback(base::RepeatingClosure callback);
+  // Gets and sets the callbacks for when the cell is (un)selected.
+  const base::RepeatingClosure& GetOnSelectedCallback() const {
+    return on_selected_callback_;
+  }
+  void SetOnSelectedCallback(base::RepeatingClosure callback);
+  const base::RepeatingClosure& GetOnUnselectedCallback() const {
+    return on_unselected_callback_;
+  }
+  void SetOnUnselectedCallback(base::RepeatingClosure callback);
 
   // Adds `label` to a list of labels whose style is refreshed whenever the
   // selection status of the cell changes. Assumes that `label` is a child of
@@ -112,6 +121,8 @@ class PopupCellView : public views::View {
   base::RepeatingClosure on_entered_callback_;
   base::RepeatingClosure on_exited_callback_;
   base::RepeatingClosure on_accepted_callback_;
+  base::RepeatingClosure on_selected_callback_;
+  base::RepeatingClosure on_unselected_callback_;
 
   // The labels whose style is updated when the cell's selection status changes.
   std::vector<raw_ptr<views::Label>> tracked_labels_;
@@ -132,6 +143,8 @@ VIEW_BUILDER_PROPERTY(absl::optional<int>, SetIndexForAccessibility)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnEnteredCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnExitedCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnAcceptedCallback)
+VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnSelectedCallback)
+VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnUnselectedCallback)
 END_VIEW_BUILDER
 
 }  // namespace autofill

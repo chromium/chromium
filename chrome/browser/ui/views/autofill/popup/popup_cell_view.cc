@@ -36,6 +36,10 @@ void PopupCellView::SetSelected(bool selected) {
 
   selected_ = selected;
   RefreshStyle();
+  if (base::RepeatingClosure callback =
+          selected_ ? on_selected_callback_ : on_unselected_callback_) {
+    callback.Run();
+  }
 }
 
 void PopupCellView::SetVoiceOverString(std::u16string voice_over) {
@@ -60,6 +64,14 @@ void PopupCellView::SetOnExitedCallback(base::RepeatingClosure callback) {
 
 void PopupCellView::SetOnAcceptedCallback(base::RepeatingClosure callback) {
   on_accepted_callback_ = std::move(callback);
+}
+
+void PopupCellView::SetOnSelectedCallback(base::RepeatingClosure callback) {
+  on_selected_callback_ = std::move(callback);
+}
+
+void PopupCellView::SetOnUnselectedCallback(base::RepeatingClosure callback) {
+  on_unselected_callback_ = std::move(callback);
 }
 
 void PopupCellView::TrackLabel(views::Label* label) {
@@ -197,6 +209,8 @@ ADD_PROPERTY_METADATA(absl::optional<int>, SetIndexForAccessibility)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnEnteredCallback)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnExitedCallback)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnAcceptedCallback)
+ADD_PROPERTY_METADATA(base::RepeatingClosure, OnSelectedCallback)
+ADD_PROPERTY_METADATA(base::RepeatingClosure, OnUnselectedCallback)
 END_METADATA
 
 }  // namespace autofill

@@ -18,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,6 +35,8 @@ namespace {
 
 using testing::NiceMock;
 using testing::Return;
+using CellIndex = PopupViewViews::CellIndex;
+using CellType = PopupRowView::CellType;
 
 std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
@@ -80,17 +83,16 @@ class PopupViewViewsBrowsertest : public UiBrowserTest,
     controller_.set_suggestions(std::move(suggestions));
   }
 
-  void PrepareSelectedRow(int row) { selected_row_ = row; }
+  void PrepareSelectedCell(CellIndex cell) { selected_cell_ = cell; }
 
   void ShowUi(const std::string& name) override {
     EXPECT_CALL(controller_, ViewDestroyed());
     view_ = new PopupViewViews(controller_.GetWeakPtr(),
                                views::Widget::GetWidgetForNativeWindow(
                                    browser()->window()->GetNativeWindow()));
-    view_->Show();
-    if (selected_row_) {
-      view_->OnSelectedRowChanged(/*previous_row_selection=*/absl::nullopt,
-                                  selected_row_);
+    view_->Show(AutoselectFirstSuggestion(false));
+    if (selected_cell_) {
+      view_->SetSelectedCell(selected_cell_);
     }
   }
 
@@ -128,8 +130,8 @@ class PopupViewViewsBrowsertest : public UiBrowserTest,
   NiceMock<autofill::MockAutofillPopupController> controller_;
   raw_ptr<PopupViewViews> view_ = nullptr;
 
-  // The index of the selected row. No row is selected by default.
-  absl::optional<int> selected_row_;
+  // The index of the selected cell. No cell is selected by default.
+  absl::optional<CellIndex> selected_cell_;
 };
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
@@ -146,14 +148,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autofill_Profile) {
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Autofill_Profile_Selected_Profile) {
   PrepareSuggestions(CreateAutofillProfileSuggestions());
-  PrepareSelectedRow(0);
+  PrepareSelectedCell(CellIndex{0, CellType::kContent});
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Autofill_Profile_Selected_Footer) {
   PrepareSuggestions(CreateAutofillProfileSuggestions());
-  PrepareSelectedRow(3);
+  PrepareSelectedCell(CellIndex{3, CellType::kContent});
   ShowAndVerifyUi();
 }
 

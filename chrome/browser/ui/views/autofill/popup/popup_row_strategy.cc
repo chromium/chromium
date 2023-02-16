@@ -464,10 +464,10 @@ void AddCallbacksToContentView(
     base::WeakPtr<AutofillPopupController> controller,
     int line_number,
     PopupCellView& content_view) {
-  content_view.SetOnEnteredCallback(base::BindRepeating(
-      &AutofillPopupController::SetSelectedLine, controller, line_number));
-  content_view.SetOnExitedCallback(base::BindRepeating(
-      &AutofillPopupController::SelectionCleared, controller));
+  content_view.SetOnSelectedCallback(base::BindRepeating(
+      &AutofillPopupController::SelectSuggestion, controller, line_number));
+  content_view.SetOnUnselectedCallback(base::BindRepeating(
+      &AutofillPopupController::SelectSuggestion, controller, absl::nullopt));
   content_view.SetOnAcceptedCallback(base::BindRepeating(
       &AutofillPopupController::AcceptSuggestion, controller, line_number,
       /*show_threshold=*/kIgnoreEarlyClicksOnPopupDuration));

@@ -24,6 +24,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -42,7 +43,8 @@ AutofillPopupViewAndroid::AutofillPopupViewAndroid(
 
 AutofillPopupViewAndroid::~AutofillPopupViewAndroid() {}
 
-void AutofillPopupViewAndroid::Show() {
+void AutofillPopupViewAndroid::Show(
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
   OnSuggestionsChanged();
 }
 
@@ -57,9 +59,10 @@ void AutofillPopupViewAndroid::Hide() {
   }
 }
 
-void AutofillPopupViewAndroid::OnSelectedRowChanged(
-    absl::optional<int> previous_row_selection,
-    absl::optional<int> current_row_selection) {}
+bool AutofillPopupViewAndroid::HandleKeyPressEvent(
+    const content::NativeWebKeyboardEvent& event) {
+  return false;
+}
 
 void AutofillPopupViewAndroid::OnSuggestionsChanged() {
   if (java_object_.is_null())

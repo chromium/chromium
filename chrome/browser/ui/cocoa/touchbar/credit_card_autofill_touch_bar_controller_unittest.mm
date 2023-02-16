@@ -4,6 +4,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
+#include <vector>
+
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
@@ -15,6 +18,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -27,6 +31,7 @@ NSString* const kCreditCardItemsTouchId = @"CREDIT-CARD-ITEMS";
 
 constexpr int testSuggestionsMaxCount = 4;
 
+// TODO(crbug.com/1411172): Use existing MockAutofillPopupController class.
 class MockAutofillPopupController : public autofill::AutofillPopupController {
  public:
   MockAutofillPopupController()
@@ -41,25 +46,25 @@ class MockAutofillPopupController : public autofill::AutofillPopupController {
         autofill::Suggestion("scrubjay", "bluejay", "stellersjay", 1));
   }
 
-  // AutofillPopupViewDelegate
-  MOCK_METHOD1(Hide, void(autofill::PopupHidingReason));
-  MOCK_METHOD0(ViewDestroyed, void());
-  MOCK_METHOD1(SetSelectionAtPoint, void(const gfx::Point& point));
-  MOCK_METHOD0(AcceptSelectedLine, bool());
-  MOCK_METHOD0(SelectionCleared, void());
-  MOCK_CONST_METHOD0(HasSelection, bool());
-  MOCK_CONST_METHOD0(popup_bounds, gfx::Rect());
-  MOCK_CONST_METHOD0(container_view, gfx::NativeView());
-  MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
-  MOCK_CONST_METHOD0(element_bounds, const gfx::RectF&());
-  MOCK_CONST_METHOD0(IsRTL, bool());
+  // AutofillPopupViewDelegate:
+  MOCK_METHOD(void, Hide, (autofill::PopupHidingReason), (override));
+  MOCK_METHOD(void, ViewDestroyed, (), (override));
+  MOCK_METHOD(bool, HasSelection, (), (const override));
+  MOCK_METHOD(gfx::Rect, popup_bounds, (), (const override));
+  MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
+  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
+  MOCK_METHOD(const gfx::RectF&, element_bounds, (), (const override));
+  MOCK_METHOD(bool, IsRTL, (), (const override));
+
   std::vector<autofill::Suggestion> GetSuggestions() const override {
     return suggestions_;
   }
 
-  // AutofillPopupController
-  MOCK_METHOD0(OnSuggestionsChanged, void());
-  MOCK_METHOD2(AcceptSuggestion, void(int, base::TimeDelta));
+  // AutofillPopupController:
+  MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
+  MOCK_METHOD(void, SelectSuggestion, (absl::optional<size_t>), (override));
+  MOCK_METHOD(void, AcceptSuggestion, (int, base::TimeDelta), (override));
+  MOCK_METHOD(bool, RemoveSuggestion, (int), (override));
 
   int GetLineCount() const override { return line_count_; }
 
@@ -80,12 +85,11 @@ class MockAutofillPopupController : public autofill::AutofillPopupController {
     return suggestions_[row].labels;
   }
 
-  MOCK_METHOD3(GetRemovalConfirmationText,
-               bool(int index, std::u16string* title, std::u16string* body));
-  MOCK_METHOD1(RemoveSuggestion, bool(int index));
-  MOCK_METHOD1(SetSelectedLine, void(absl::optional<int> selected_line));
-  MOCK_CONST_METHOD0(selected_line, absl::optional<int>());
-  MOCK_CONST_METHOD0(GetPopupType, autofill::PopupType());
+  MOCK_METHOD(bool,
+              GetRemovalConfirmationText,
+              (int, std::u16string*, std::u16string*),
+              (override));
+  MOCK_METHOD(autofill::PopupType, GetPopupType, (), (const override));
 
   void set_line_count(int line_count) {
     EXPECT_LE(line_count, testSuggestionsMaxCount);

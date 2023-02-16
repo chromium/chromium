@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -22,7 +23,9 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view_class_properties.h"
 
 namespace autofill {
@@ -66,22 +69,51 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
 PopupRowView::PopupRowView(PopupViewViews& popup_view,
                            std::unique_ptr<PopupRowStrategy> strategy)
     : popup_view_(popup_view), strategy_(std::move(strategy)) {
+  DCHECK(strategy_);
   // TODO(crbug.com/1411172): Use a BoxLayout once controls are supported.
   SetUseDefaultFillLayout(true);
   content_view_ = AddChildView(strategy_->CreateContent());
+  content_view_->SetOnExitedCallback(
+      base::BindRepeating(&PopupViewViews::SetSelectedCell,
+                          base::Unretained(&popup_view), absl::nullopt));
+  content_view_->SetOnEnteredCallback(base::BindRepeating(
+      &PopupViewViews::SetSelectedCell, base::Unretained(&popup_view),
+      PopupViewViews::CellIndex{strategy_->GetLineNumber(),
+                                PopupRowView::CellType::kContent}));
 }
 
 PopupRowView::~PopupRowView() = default;
 
-void PopupRowView::SetSelected(bool selected) {
-  if (selected == selected_) {
+void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
+  if (cell == selected_cell_) {
     return;
   }
 
-  selected_ = selected;
-  GetContentView().SetSelected(selected_);
-  if (selected_) {
-    GetPopupView().NotifyAXSelection(GetContentView());
+  auto view_from_type =
+      [this](absl::optional<CellType> type) -> PopupCellView* {
+    if (!type) {
+      return nullptr;
+    }
+    switch (*type) {
+      case CellType::kContent:
+        return content_view_.get();
+      case CellType::kControl:
+        return control_view_.get();
+    }
+  };
+
+  if (PopupCellView* old_view = view_from_type(selected_cell_)) {
+    old_view->SetSelected(false);
+  }
+  selected_cell_ = cell;
+
+  if (PopupCellView* new_view = view_from_type(selected_cell_)) {
+    new_view->SetSelected(true);
+    GetPopupView().NotifyAXSelection(*new_view);
+  } else {
+    // Set the selected cell to none in case an invalid choice was made (e.g.
+    // selecting a control cell when none exists).
+    selected_cell_ = absl::nullopt;
   }
 }
 
@@ -105,7 +137,13 @@ void PopupRowView::MaybeShowIphPromo() {
 }
 
 BEGIN_METADATA(PopupRowView, views::View)
-ADD_PROPERTY_METADATA(bool, Selected)
+ADD_PROPERTY_METADATA(absl::optional<PopupRowView::CellType>, SelectedCell)
 END_METADATA
 
 }  // namespace autofill
+
+DEFINE_ENUM_CONVERTERS(autofill::PopupRowView::CellType,
+                       {autofill::PopupRowView::CellType::kContent,
+                        u"kContent"},
+                       {autofill::PopupRowView::CellType::kControl,
+                        u"kControl"})

@@ -33,10 +33,6 @@ class AutofillPopupViewDelegate {
   // Called when the popup view was destroyed.
   virtual void ViewDestroyed() = 0;
 
-  // The user cleared the current selection, e.g. by moving the mouse cursor
-  // out of the popup bounds.
-  virtual void SelectionCleared() = 0;
-
   // The view that the form field element sits in.
   virtual gfx::NativeView container_view() const = 0;
 

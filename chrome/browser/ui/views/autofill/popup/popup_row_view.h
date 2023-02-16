@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -21,11 +22,20 @@ class PopupViewViews;
 // `PopupRowView` represents a single selectable popup row. Different styles
 // of the row can be achieved by injecting the respective `PopupRowStrategy`
 // objects in the constructor.
-// TODO(crbug.com/1411172): Add support for (selectable) control areas in the
-// row.
 class PopupRowView : public views::View {
  public:
+  // Enum class describing the different cells that a `PopupRowView` can
+  // contain.
+  enum class CellType {
+    // The cell containing the main content of the row.
+    kContent = 0,
+    // The cell containing the control elements (such as a delete button).
+    kControl = 1
+  };
+
   METADATA_HEADER(PopupRowView);
+  // TODO(crbug.com/1411172): Consider passing an interface instead of an
+  // implementation to allow for separate testing of this class.
   PopupRowView(PopupViewViews& popup_view,
                std::unique_ptr<PopupRowStrategy> strategy);
   PopupRowView(const PopupRowView&) = delete;
@@ -36,9 +46,9 @@ class PopupRowView : public views::View {
   static std::unique_ptr<PopupRowView> Create(PopupViewViews& popup_view,
                                               int line_number);
 
-  // Gets and sets the selection status of the row.
-  bool GetSelected() const { return selected_; }
-  void SetSelected(bool selected);
+  // Gets and sets the selected cell within this row.
+  absl::optional<CellType> GetSelectedCell() const { return selected_cell_; }
+  void SetSelectedCell(absl::optional<CellType> cell);
 
   // Show the in-product-help promo anchored to this bubble if applicable. The
   // in-product-help promo is a bubble anchored to this item to show educational
@@ -56,12 +66,14 @@ class PopupRowView : public views::View {
   const raw_ref<PopupViewViews> popup_view_;
   const std::unique_ptr<PopupRowStrategy> strategy_;
 
-  // Whether this row is currently selected.
-  bool selected_ = false;
+  // Which (if any) cell of this row is currently selected.
+  absl::optional<CellType> selected_cell_;
 
   // The cell wrapping the content area of the row.
   raw_ptr<PopupCellView> content_view_ = nullptr;
-  // TODO(crbug.com/1411172): Add a control view.
+  // The cell wrapping the control area of the row.
+  // TODO(crbug.com/1411172): Implement properly.
+  raw_ptr<PopupCellView> control_view_ = nullptr;
 };
 
 }  // namespace autofill

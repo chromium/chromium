@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
 
@@ -50,7 +51,8 @@ AutofillKeyboardAccessoryAdapter::~AutofillKeyboardAccessoryAdapter() = default;
 
 // AutofillPopupView implementation.
 
-void AutofillKeyboardAccessoryAdapter::Show() {
+void AutofillKeyboardAccessoryAdapter::Show(
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
   DCHECK(view_) << "Show called before a View was set!";
   OnSuggestionsChanged();
 }
@@ -60,9 +62,10 @@ void AutofillKeyboardAccessoryAdapter::Hide() {
   view_->Hide();
 }
 
-void AutofillKeyboardAccessoryAdapter::OnSelectedRowChanged(
-    absl::optional<int> previous_row_selection,
-    absl::optional<int> current_row_selection) {}
+bool AutofillKeyboardAccessoryAdapter::HandleKeyPressEvent(
+    const content::NativeWebKeyboardEvent& event) {
+  return false;
+}
 
 void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
   TRACE_EVENT0("passwords",
@@ -168,26 +171,12 @@ bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(int index) {
   return true;
 }
 
-void AutofillKeyboardAccessoryAdapter::SetSelectedLine(
-    absl::optional<int> selected_line) {
+void AutofillKeyboardAccessoryAdapter::SelectSuggestion(
+    absl::optional<size_t> index) {
   if (!controller_)
     return;
-  if (!selected_line.has_value()) {
-    controller_->SetSelectedLine(absl::nullopt);
-    return;
-  }
-  controller_->SetSelectedLine(OffsetIndexFor(selected_line.value()));
-}
-
-absl::optional<int> AutofillKeyboardAccessoryAdapter::selected_line() const {
-  if (!controller_ || !controller_->selected_line().has_value())
-    return absl::nullopt;
-  for (int i = 0; i < GetLineCount(); ++i) {
-    if (OffsetIndexFor(i) == controller_->selected_line().value()) {
-      return i;
-    }
-  }
-  return absl::nullopt;
+  controller_->SelectSuggestion(
+      index ? absl::optional<size_t>(OffsetIndexFor(*index)) : absl::nullopt);
 }
 
 // AutofillPopupViewDelegate implementation
@@ -206,11 +195,6 @@ void AutofillKeyboardAccessoryAdapter::ViewDestroyed() {
   // The controller has now deleted itself.
   controller_ = nullptr;
   delete this;  // Remove dangling weak reference.
-}
-
-void AutofillKeyboardAccessoryAdapter::SelectionCleared() {
-  if (controller_)
-    controller_->SelectionCleared();
 }
 
 gfx::NativeView AutofillKeyboardAccessoryAdapter::container_view() const {

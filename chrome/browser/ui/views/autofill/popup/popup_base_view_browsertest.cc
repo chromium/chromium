@@ -43,7 +43,6 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
 
   MOCK_METHOD(void, Hide, (PopupHidingReason), (override));
   MOCK_METHOD(void, ViewDestroyed, (), (override));
-  MOCK_METHOD(void, SelectionCleared, (), (override));
 
   MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));

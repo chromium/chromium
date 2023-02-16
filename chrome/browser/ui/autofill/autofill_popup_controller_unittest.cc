@@ -32,7 +32,9 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -132,12 +134,11 @@ class MockAutofillPopupView : public AutofillPopupView {
   MockAutofillPopupView& operator=(MockAutofillPopupView&) = delete;
   ~MockAutofillPopupView() override = default;
 
-  MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, Show, (AutoselectFirstSuggestion), (override));
   MOCK_METHOD(void, Hide, (), (override));
-  MOCK_METHOD(void,
-              OnSelectedRowChanged,
-              (absl::optional<int> previous_row_selection,
-               absl::optional<int> current_row_selection),
+  MOCK_METHOD(bool,
+              HandleKeyPressEvent,
+              (const content::NativeWebKeyboardEvent&),
               (override));
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(absl::optional<int32_t>, GetAxUniqueId, (), (override));
@@ -166,11 +167,8 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::GetSuggestionLabelsAt;
   using AutofillPopupControllerImpl::GetSuggestionMainTextAt;
   using AutofillPopupControllerImpl::GetWeakPtr;
-  using AutofillPopupControllerImpl::RemoveSelectedLine;
-  using AutofillPopupControllerImpl::selected_line;
-  using AutofillPopupControllerImpl::SelectNextLine;
-  using AutofillPopupControllerImpl::SelectPreviousLine;
-  using AutofillPopupControllerImpl::SetSelectedLine;
+  using AutofillPopupControllerImpl::RemoveSuggestion;
+  using AutofillPopupControllerImpl::SelectSuggestion;
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
   MOCK_METHOD(ui::AXPlatformNode*,
@@ -230,8 +228,6 @@ class MockAxPlatformNode : public ui::AXPlatformNodeBase {
   MOCK_CONST_METHOD0(GetDelegate, ui::AXPlatformNodeDelegate*());
 };
 
-static constexpr absl::optional<int> kNoSelection;
-
 }  // namespace
 
 class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
@@ -286,8 +282,19 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
         driver);
   }
 
-  TestAutofillPopupController* popup_controller() {
-    return autofill_popup_controller_;
+  // Shows empty suggestions with the frontend ids passed as `ids`.
+  void ShowSuggestions(const std::vector<int>& ids) {
+    std::vector<Suggestion> suggestions;
+    suggestions.reserve(ids.size());
+    for (int id : ids) {
+      suggestions.emplace_back("", "", "", id);
+    }
+    popup_controller().Show(std::move(suggestions),
+                            AutoselectFirstSuggestion(false));
+  }
+
+  TestAutofillPopupController& popup_controller() {
+    return *autofill_popup_controller_;
   }
 
   NiceMock<MockAutofillExternalDelegate>* delegate() {
@@ -356,177 +363,28 @@ class AutofillPopupControllerAccessibilityUnitTest
 };
 #endif
 
-TEST_F(AutofillPopupControllerUnitTest, ChangeSelectedLine) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", 0));
-  suggestions.push_back(Suggestion("", "", "", 0));
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
-
-  EXPECT_FALSE(autofill_popup_controller_->selected_line());
-  // Check that there are at least 2 values so that the first and last selection
-  // are different.
-  EXPECT_GE(2, static_cast<int>(autofill_popup_controller_->GetLineCount()));
-
-  // Test wrapping before the front.
-  autofill_popup_controller_->SelectPreviousLine();
-  EXPECT_EQ(autofill_popup_controller_->GetLineCount() - 1,
-            autofill_popup_controller_->selected_line().value());
-
-  // Test wrapping after the end.
-  autofill_popup_controller_->SelectNextLine();
-  EXPECT_EQ(0, *autofill_popup_controller_->selected_line());
-}
-
-TEST_F(AutofillPopupControllerUnitTest, RedrawSelectedLine) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", 0));
-  suggestions.push_back(Suggestion("", "", "", 0));
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
-
-  // Make sure that when a new line is selected, it is invalidated so it can
-  // be updated to show it is selected.
-  absl::optional<int> selected_line = 0;
-  EXPECT_CALL(*autofill_popup_view_,
-              OnSelectedRowChanged(kNoSelection, selected_line));
-
-  autofill_popup_controller_->SetSelectedLine(selected_line);
-
-  // Ensure that the row isn't invalidated if it didn't change.
-  EXPECT_CALL(*autofill_popup_view_, OnSelectedRowChanged(_, _)).Times(0);
-  autofill_popup_controller_->SetSelectedLine(selected_line);
-
-  // Change back to no selection.
-  EXPECT_CALL(*autofill_popup_view_,
-              OnSelectedRowChanged(selected_line, kNoSelection));
-
-  autofill_popup_controller_->SetSelectedLine(kNoSelection);
-}
-
-TEST_F(AutofillPopupControllerUnitTest, RemoveLine) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", 1));
-  suggestions.push_back(Suggestion("", "", "", 1));
-  suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS));
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
+TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {
+  ShowSuggestions({1, 1, POPUP_ITEM_ID_AUTOFILL_OPTIONS});
 
   // Generate a popup, so it can be hidden later. It doesn't matter what the
   // external_delegate thinks is being shown in the process, since we are just
   // testing the popup here.
   test::GenerateTestAutofillPopup(external_delegate_.get());
 
-  // No line is selected so the removal should fail.
-  EXPECT_FALSE(autofill_popup_controller_->RemoveSelectedLine());
-
-  // Select the first entry.
-  absl::optional<int> selected_line(0);
-  EXPECT_CALL(*autofill_popup_view_,
-              OnSelectedRowChanged(kNoSelection, selected_line));
-  autofill_popup_controller_->SetSelectedLine(selected_line);
-  Mock::VerifyAndClearExpectations(autofill_popup_view());
-
   // Remove the first entry. The popup should be redrawn since its size has
   // changed.
-  EXPECT_CALL(*autofill_popup_view_, OnSelectedRowChanged(_, _)).Times(0);
-  EXPECT_CALL(*autofill_popup_controller_, OnSuggestionsChanged());
-  EXPECT_TRUE(autofill_popup_controller_->RemoveSelectedLine());
+  EXPECT_CALL(popup_controller(), OnSuggestionsChanged());
+  EXPECT_TRUE(popup_controller().RemoveSuggestion(0));
   Mock::VerifyAndClearExpectations(autofill_popup_view());
 
-  // Select the last entry.
-  EXPECT_CALL(*autofill_popup_view_,
-              OnSelectedRowChanged(kNoSelection, selected_line));
-  autofill_popup_controller_->SetSelectedLine(selected_line);
-  Mock::VerifyAndClearExpectations(autofill_popup_view());
-
-  // Remove the last entry. The popup should then be hidden since there are
+  // Remove the next entry. The popup should then be hidden since there are
   // no Autofill entries left.
-  EXPECT_CALL(*autofill_popup_view_, OnSelectedRowChanged(_, _)).Times(0);
-  EXPECT_CALL(*autofill_popup_controller_,
-              Hide(PopupHidingReason::kNoSuggestions));
-  EXPECT_TRUE(autofill_popup_controller_->RemoveSelectedLine());
-}
-
-TEST_F(AutofillPopupControllerUnitTest, RemoveOnlyLine) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", 1));
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
-
-  // Generate a popup.
-  test::GenerateTestAutofillPopup(external_delegate_.get());
-
-  // No selection immediately after drawing popup.
-  EXPECT_FALSE(autofill_popup_controller_->selected_line());
-
-  // Select the only line.
-  absl::optional<int> selected_line(0);
-  EXPECT_CALL(*autofill_popup_view_,
-              OnSelectedRowChanged(kNoSelection, selected_line));
-  autofill_popup_controller_->SetSelectedLine(selected_line);
-  Mock::VerifyAndClearExpectations(autofill_popup_view());
-
-  // Remove the only line. The popup should then be hidden since there are no
-  // Autofill entries left.
-  EXPECT_CALL(*autofill_popup_controller_,
-              Hide(PopupHidingReason::kNoSuggestions));
-  EXPECT_CALL(*autofill_popup_view_, OnSelectedRowChanged(_, _)).Times(0);
-  EXPECT_TRUE(autofill_popup_controller_->RemoveSelectedLine());
-}
-
-TEST_F(AutofillPopupControllerUnitTest, SkipSeparator) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", 1));
-  suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR));
-  suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS));
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
-
-  autofill_popup_controller_->SetSelectedLine(0);
-
-  // Make sure next skips the unselectable separator.
-  autofill_popup_controller_->SelectNextLine();
-  EXPECT_EQ(2, *autofill_popup_controller_->selected_line());
-
-  // Make sure previous skips the unselectable separator.
-  autofill_popup_controller_->SelectPreviousLine();
-  EXPECT_EQ(0, *autofill_popup_controller_->selected_line());
-}
-
-TEST_F(AutofillPopupControllerUnitTest, SkipInsecureFormWarning) {
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", 1));
-  suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR));
-  suggestions.push_back(Suggestion(
-      "", "", "", POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE));
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
-
-  // Make sure previous skips the unselectable form warning when there is no
-  // selection.
-  autofill_popup_controller_->SelectPreviousLine();
-  EXPECT_FALSE(autofill_popup_controller_->selected_line());
-
-  autofill_popup_controller_->SetSelectedLine(0);
-  EXPECT_EQ(0, *autofill_popup_controller_->selected_line());
-
-  // Make sure previous skips the unselectable form warning when there is a
-  // selection.
-  autofill_popup_controller_->SelectPreviousLine();
-  EXPECT_FALSE(autofill_popup_controller_->selected_line());
+  EXPECT_CALL(popup_controller(), Hide(PopupHidingReason::kNoSuggestions));
+  EXPECT_TRUE(popup_controller().RemoveSuggestion(0));
 }
 
 TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", 1));
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
+  ShowSuggestions({1});
 
   // Add one data list entry.
   std::u16string value1 = u"data list value 1";
@@ -534,29 +392,27 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   std::u16string label1 = u"data list label 1";
   std::vector<std::u16string> data_list_labels{label1};
 
-  autofill_popup_controller_->UpdateDataListValues(data_list_values,
-                                                   data_list_labels);
+  popup_controller().UpdateDataListValues(data_list_values, data_list_labels);
 
-  ASSERT_EQ(3, autofill_popup_controller_->GetLineCount());
+  ASSERT_EQ(3, popup_controller().GetLineCount());
 
-  Suggestion result0 = autofill_popup_controller_->GetSuggestionAt(0);
+  Suggestion result0 = popup_controller().GetSuggestionAt(0);
   EXPECT_EQ(value1, result0.main_text.value);
-  EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionMainTextAt(0));
+  EXPECT_EQ(value1, popup_controller().GetSuggestionMainTextAt(0));
   ASSERT_EQ(1u, result0.labels.size());
   ASSERT_EQ(1u, result0.labels[0].size());
   EXPECT_EQ(label1, result0.labels[0][0].value);
   EXPECT_EQ(std::u16string(), result0.additional_label);
-  EXPECT_EQ(label1,
-            autofill_popup_controller_->GetSuggestionLabelsAt(0)[0][0].value);
+  EXPECT_EQ(label1, popup_controller().GetSuggestionLabelsAt(0)[0][0].value);
   EXPECT_EQ(POPUP_ITEM_ID_DATALIST_ENTRY, result0.frontend_id);
 
-  Suggestion result1 = autofill_popup_controller_->GetSuggestionAt(1);
+  Suggestion result1 = popup_controller().GetSuggestionAt(1);
   EXPECT_EQ(std::u16string(), result1.main_text.value);
   EXPECT_TRUE(result1.labels.empty());
   EXPECT_EQ(std::u16string(), result1.additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_SEPARATOR, result1.frontend_id);
 
-  Suggestion result2 = autofill_popup_controller_->GetSuggestionAt(2);
+  Suggestion result2 = popup_controller().GetSuggestionAt(2);
   EXPECT_EQ(std::u16string(), result2.main_text.value);
   EXPECT_TRUE(result2.labels.empty());
   EXPECT_EQ(std::u16string(), result2.additional_label);
@@ -568,49 +424,38 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   std::u16string label2 = u"data list label 2";
   data_list_labels.push_back(label2);
 
-  autofill_popup_controller_->UpdateDataListValues(data_list_values,
-                                                   data_list_labels);
-  ASSERT_EQ(4, autofill_popup_controller_->GetLineCount());
+  popup_controller().UpdateDataListValues(data_list_values, data_list_labels);
+  ASSERT_EQ(4, popup_controller().GetLineCount());
 
   // Original one first, followed by new one, then separator.
-  EXPECT_EQ(value1,
-            autofill_popup_controller_->GetSuggestionAt(0).main_text.value);
-  EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionMainTextAt(0));
-  ASSERT_EQ(1u, autofill_popup_controller_->GetSuggestionAt(0).labels.size());
-  ASSERT_EQ(1u,
-            autofill_popup_controller_->GetSuggestionAt(0).labels[0].size());
-  EXPECT_EQ(label1,
-            autofill_popup_controller_->GetSuggestionAt(0).labels[0][0].value);
+  EXPECT_EQ(value1, popup_controller().GetSuggestionAt(0).main_text.value);
+  EXPECT_EQ(value1, popup_controller().GetSuggestionMainTextAt(0));
+  ASSERT_EQ(1u, popup_controller().GetSuggestionAt(0).labels.size());
+  ASSERT_EQ(1u, popup_controller().GetSuggestionAt(0).labels[0].size());
+  EXPECT_EQ(label1, popup_controller().GetSuggestionAt(0).labels[0][0].value);
   EXPECT_EQ(std::u16string(),
-            autofill_popup_controller_->GetSuggestionAt(0).additional_label);
-  EXPECT_EQ(value2,
-            autofill_popup_controller_->GetSuggestionAt(1).main_text.value);
-  EXPECT_EQ(value2, autofill_popup_controller_->GetSuggestionMainTextAt(1));
-  ASSERT_EQ(1u, autofill_popup_controller_->GetSuggestionAt(1).labels.size());
-  ASSERT_EQ(1u,
-            autofill_popup_controller_->GetSuggestionAt(1).labels[0].size());
-  EXPECT_EQ(label2,
-            autofill_popup_controller_->GetSuggestionAt(1).labels[0][0].value);
+            popup_controller().GetSuggestionAt(0).additional_label);
+  EXPECT_EQ(value2, popup_controller().GetSuggestionAt(1).main_text.value);
+  EXPECT_EQ(value2, popup_controller().GetSuggestionMainTextAt(1));
+  ASSERT_EQ(1u, popup_controller().GetSuggestionAt(1).labels.size());
+  ASSERT_EQ(1u, popup_controller().GetSuggestionAt(1).labels[0].size());
+  EXPECT_EQ(label2, popup_controller().GetSuggestionAt(1).labels[0][0].value);
   EXPECT_EQ(std::u16string(),
-            autofill_popup_controller_->GetSuggestionAt(1).additional_label);
+            popup_controller().GetSuggestionAt(1).additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_SEPARATOR,
-            autofill_popup_controller_->GetSuggestionAt(2).frontend_id);
+            popup_controller().GetSuggestionAt(2).frontend_id);
 
   // Clear all data list values.
   data_list_values.clear();
-  autofill_popup_controller_->UpdateDataListValues(data_list_values,
-                                                   data_list_labels);
+  popup_controller().UpdateDataListValues(data_list_values, data_list_labels);
 
-  ASSERT_EQ(1, autofill_popup_controller_->GetLineCount());
-  EXPECT_EQ(1, autofill_popup_controller_->GetSuggestionAt(0).frontend_id);
+  ASSERT_EQ(1, popup_controller().GetLineCount());
+  EXPECT_EQ(1, popup_controller().GetSuggestionAt(0).frontend_id);
 }
 
 TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   // Create the popup with a single datalist element.
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_DATALIST_ENTRY));
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
+  ShowSuggestions({POPUP_ITEM_ID_DATALIST_ENTRY});
 
   // Replace the datalist element with a new one.
   std::u16string value1 = u"data list value 1";
@@ -618,28 +463,22 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   std::u16string label1 = u"data list label 1";
   std::vector<std::u16string> data_list_labels{label1};
 
-  autofill_popup_controller_->UpdateDataListValues(data_list_values,
-                                                   data_list_labels);
+  popup_controller().UpdateDataListValues(data_list_values, data_list_labels);
 
-  ASSERT_EQ(1, autofill_popup_controller_->GetLineCount());
-  EXPECT_EQ(value1,
-            autofill_popup_controller_->GetSuggestionAt(0).main_text.value);
-  ASSERT_EQ(1u, autofill_popup_controller_->GetSuggestionAt(0).labels.size());
-  ASSERT_EQ(1u,
-            autofill_popup_controller_->GetSuggestionAt(0).labels[0].size());
-  EXPECT_EQ(label1,
-            autofill_popup_controller_->GetSuggestionAt(0).labels[0][0].value);
+  ASSERT_EQ(1, popup_controller().GetLineCount());
+  EXPECT_EQ(value1, popup_controller().GetSuggestionAt(0).main_text.value);
+  ASSERT_EQ(1u, popup_controller().GetSuggestionAt(0).labels.size());
+  ASSERT_EQ(1u, popup_controller().GetSuggestionAt(0).labels[0].size());
+  EXPECT_EQ(label1, popup_controller().GetSuggestionAt(0).labels[0][0].value);
   EXPECT_EQ(std::u16string(),
-            autofill_popup_controller_->GetSuggestionAt(0).additional_label);
+            popup_controller().GetSuggestionAt(0).additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_DATALIST_ENTRY,
-            autofill_popup_controller_->GetSuggestionAt(0).frontend_id);
+            popup_controller().GetSuggestionAt(0).frontend_id);
 
   // Clear datalist values and check that the popup becomes hidden.
-  EXPECT_CALL(*autofill_popup_controller_,
-              Hide(PopupHidingReason::kNoSuggestions));
+  EXPECT_CALL(popup_controller(), Hide(PopupHidingReason::kNoSuggestions));
   data_list_values.clear();
-  autofill_popup_controller_->UpdateDataListValues(data_list_values,
-                                                   data_list_values);
+  popup_controller().UpdateDataListValues(data_list_values, data_list_values);
 }
 
 TEST_F(AutofillPopupControllerUnitTest, GetOrCreate) {
@@ -702,18 +541,14 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreate) {
 }
 
 TEST_F(AutofillPopupControllerUnitTest, ProperlyResetController) {
-  std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion("", "", "", 0));
-  suggestions.push_back(Suggestion("", "", "", 0));
-  popup_controller()->Show(suggestions, AutoselectFirstSuggestion(false));
-  popup_controller()->SetSelectedLine(0);
+  ShowSuggestions(
+      {POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
 
   // Now show a new popup with the same controller, but with fewer items.
   WeakPtr<AutofillPopupControllerImpl> controller =
       AutofillPopupControllerImpl::GetOrCreate(
-          popup_controller()->GetWeakPtr(), delegate()->GetWeakPtr(), nullptr,
+          popup_controller().GetWeakPtr(), delegate()->GetWeakPtr(), nullptr,
           nullptr, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION);
-  EXPECT_FALSE(controller->selected_line());
   EXPECT_EQ(0, controller->GetLineCount());
 }
 
@@ -737,11 +572,11 @@ TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
 
 TEST_F(AutofillPopupControllerUnitTest, DontHideWhenWaitingForData) {
   EXPECT_CALL(*autofill_popup_view(), Hide).Times(0);
-  autofill_popup_controller_->PinView();
+  popup_controller().PinView();
 
   // Hide() will not work for stale data or when focusing native UI.
-  autofill_popup_controller_->DoHide(PopupHidingReason::kStaleData);
-  autofill_popup_controller_->DoHide(PopupHidingReason::kEndEditing);
+  popup_controller().DoHide(PopupHidingReason::kStaleData);
+  popup_controller().DoHide(PopupHidingReason::kEndEditing);
 
   // Check the expectations now since TearDown will perform a successful hide.
   Mock::VerifyAndClearExpectations(delegate());
@@ -783,8 +618,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
     EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
         .Times(2)
         .WillRepeatedly(testing::Return(absl::optional<int32_t>(123)));
-    EXPECT_CALL(*autofill_popup_controller_,
-                GetRootAXPlatformNodeForWebContents)
+    EXPECT_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
         .WillRepeatedly(testing::Return(&mock_ax_platform_node));
     EXPECT_CALL(mock_ax_platform_node, GetDelegate)
         .WillRepeatedly(testing::Return(&mock_ax_platform_node_delegate));
@@ -793,11 +627,11 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
         .WillRepeatedly(testing::Return(&mock_ax_platform_node));
 
     // Fire event for popup show and active popup ax unique id is set.
-    autofill_popup_controller_->FireControlsChangedEvent(true);
+    popup_controller().FireControlsChangedEvent(true);
     EXPECT_EQ(123, ui::GetActivePopupAxUniqueId());
 
     // Fire event for popup hide and active popup ax unique id is cleared.
-    autofill_popup_controller_->FireControlsChangedEvent(false);
+    popup_controller().FireControlsChangedEvent(false);
     EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
   }
 
@@ -809,8 +643,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
         .WillOnce(testing::Return(test_tree_id));
     EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
         .WillOnce(testing::Return(absl::optional<int32_t>(123)));
-    EXPECT_CALL(*autofill_popup_controller_,
-                GetRootAXPlatformNodeForWebContents)
+    EXPECT_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
         .WillOnce(testing::Return(&mock_ax_platform_node));
     EXPECT_CALL(mock_ax_platform_node, GetDelegate)
         .WillOnce(testing::Return(&mock_ax_platform_node_delegate));
@@ -819,7 +652,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
 
     // No controls changed event is fired and active popup ax unique id is not
     // set.
-    autofill_popup_controller_->FireControlsChangedEvent(true);
+    popup_controller().FireControlsChangedEvent(true);
     EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
   }
 
@@ -827,8 +660,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
   // the ax platform node associated with the popup.
   // No event is fired and global active popup ax unique id is not set.
   {
-    EXPECT_CALL(*autofill_popup_controller_,
-                GetRootAXPlatformNodeForWebContents)
+    EXPECT_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
         .WillRepeatedly(testing::Return(&mock_ax_platform_node));
     EXPECT_CALL(*autofill_driver_, GetAxTreeId())
         .WillOnce(testing::Return(test_tree_id));
@@ -841,7 +673,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
 
     // No controls changed event is fired and active popup ax unique id is not
     // set.
-    autofill_popup_controller_->FireControlsChangedEvent(true);
+    popup_controller().FireControlsChangedEvent(true);
     EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
   }
 
@@ -851,8 +683,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
   {
     EXPECT_CALL(*autofill_driver_, GetAxTreeId())
         .WillOnce(testing::Return(test_tree_id));
-    EXPECT_CALL(*autofill_popup_controller_,
-                GetRootAXPlatformNodeForWebContents)
+    EXPECT_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
         .WillRepeatedly(testing::Return(&mock_ax_platform_node));
     EXPECT_CALL(mock_ax_platform_node, GetDelegate)
         .WillRepeatedly(testing::Return(&mock_ax_platform_node_delegate));
@@ -863,7 +694,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
 
     // No controls changed event is fired and active popup ax unique id is not
     // set.
-    autofill_popup_controller_->FireControlsChangedEvent(true);
+    popup_controller().FireControlsChangedEvent(true);
     EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
   }
   // This needs to happen before TearDown() because having the mode set to
@@ -873,100 +704,32 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
 }
 #endif
 
-// Verify that pressing the tab key while an autofillable entry is selected
-// triggers the filling.
-TEST_F(AutofillPopupControllerUnitTest, FillOnTabPressed) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions = {
-      Suggestion("value", "", "", 1),
-      Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
-      Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
-  // Select the autofill suggestion.
-  autofill_popup_controller_->SetSelectedLine(0);
-
-  // Because the first line is an autofillable entry, we expect that the tab
-  // key triggers autofill.
-  EXPECT_CALL(*delegate(), DidAcceptSuggestion);
-  bool swallow_event =
-      autofill_popup_controller_->HandleKeyPressEvent(CreateTabKeyPressEvent());
-  EXPECT_FALSE(swallow_event);
-}
-
-// Verify that pressing the tab key while the "Manage addresses..." entry is
-// selected does not trigger "accepting" the entry (which would mean opening
-// a tab with the autofill settings).
-TEST_F(AutofillPopupControllerUnitTest,
-       NoAutofillOptionsTriggeredOnTabPressed) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions = {
-      Suggestion("value", "", "", 1),
-      Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
-      Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
-  // Select the POPUP_ITEM_ID_AUTOFILL_OPTIONS line.
-  autofill_popup_controller_->SetSelectedLine(2);
-
-  // Because the selected line is POPUP_ITEM_ID_AUTOFILL_OPTIONS, we expect that
-  // the tab key does not trigger anything.
-  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
-  bool swallow_event =
-      autofill_popup_controller_->HandleKeyPressEvent(CreateTabKeyPressEvent());
-  EXPECT_FALSE(swallow_event);
-}
-
-// This is a regression test for crbug.com/1309431 to ensure that we don't crash
-// when we press tab before a line is selected.
-TEST_F(AutofillPopupControllerUnitTest, TabBeforeSelectingALine) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions = {
-      Suggestion("value", "", "", 1),
-      Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
-      Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
-  autofill_popup_controller_->Show(suggestions,
-                                   AutoselectFirstSuggestion(false));
-
-  // autofill_popup_controller_->SetSelectedLine(...); is not called here to
-  // produce the edge case.
-
-  // The following should not crash:
-  bool swallow_event =
-      autofill_popup_controller_->HandleKeyPressEvent(CreateTabKeyPressEvent());
-  EXPECT_FALSE(swallow_event);
-}
-
 // This is a regression test for crbug.com/521133 to ensure that we don't crash
 // when suggestions updates race with user selections.
 TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions = {Suggestion("value", "", "", 1)};
-  popup_controller()->Show(suggestions, AutoselectFirstSuggestion(false));
+  ShowSuggestions({1});
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
 
   // The following should not crash:
-  popup_controller()->AcceptSuggestion(
+  popup_controller().AcceptSuggestion(
       1, /*show_threshold=*/base::Milliseconds(0));  // Out of bounds!
 }
 
 TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
-  // Set up the popup.
-  std::vector<Suggestion> suggestions = {Suggestion("value", "", "", 1)};
-  popup_controller()->Show(suggestions, AutoselectFirstSuggestion(false));
+  ShowSuggestions({1});
 
   // Calls before the threshold are ignored.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
-  popup_controller()->AcceptSuggestion(
+  popup_controller().AcceptSuggestion(
       0, /*show_threshold=*/base::Milliseconds(500));
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  popup_controller()->AcceptSuggestion(
+  popup_controller().AcceptSuggestion(
       0, /*show_threshold=*/base::Milliseconds(500));
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion);
   task_environment()->FastForwardBy(base::Milliseconds(400));
-  popup_controller()->AcceptSuggestion(
+  popup_controller().AcceptSuggestion(
       0, /*show_threshold=*/base::Milliseconds(500));
 }
 

@@ -91,8 +91,16 @@ class PopupRowStrategyTest
         AcceptSuggestion(index, /*show_threshold=*/base::Milliseconds(500)));
     on_accept_callback.Run();
 
-    // TODO(crbug.com/1411172): Add tests for the other callbacks once improved
-    // event handling is merged.
+    base::RepeatingClosure on_select_callback = cell.GetOnSelectedCallback();
+    ASSERT_TRUE(on_select_callback);
+    EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(index)));
+    on_select_callback.Run();
+
+    base::RepeatingClosure on_unselect_callback =
+        cell.GetOnUnselectedCallback();
+    ASSERT_TRUE(on_unselect_callback);
+    EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
+    on_unselect_callback.Run();
   }
 
   std::unique_ptr<PopupRowStrategy> CreateStrategy(StrategyType type,

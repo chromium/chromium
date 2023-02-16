@@ -27,10 +27,17 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // suggestions change.
   virtual void OnSuggestionsChanged() = 0;
 
+  // Selects the suggestion with `index`. For fillable items, this will trigger
+  // preview. For other items, it does not do anything.
+  virtual void SelectSuggestion(absl::optional<size_t> index) = 0;
+
   // Accepts the suggestion at `index`. The suggestion will only be accepted if
   // the popup has been shown for at least `show_threshold` to allow
   // ruling out accidental popup interactions (crbug.com/1279268).
   virtual void AcceptSuggestion(int index, base::TimeDelta show_threshold) = 0;
+
+  // Removes the suggestion at the given index.
+  virtual bool RemoveSuggestion(int index) = 0;
 
   // Returns the number of lines of data that there are.
   virtual int GetLineCount() const = 0;
@@ -65,16 +72,6 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   virtual bool GetRemovalConfirmationText(int index,
                                           std::u16string* title,
                                           std::u16string* body) = 0;
-
-  // Removes the suggestion at the given index.
-  virtual bool RemoveSuggestion(int index) = 0;
-
-  // Change which line is currently selected by the user.
-  virtual void SetSelectedLine(absl::optional<int> selected_line) = 0;
-
-  // Returns the index of the selected line. A line is "selected" when it is
-  // hovered or has keyboard focus.
-  virtual absl::optional<int> selected_line() const = 0;
 
   // Returns the popup type corresponding to the controller.
   virtual PopupType GetPopupType() const = 0;
