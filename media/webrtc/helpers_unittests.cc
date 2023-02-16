@@ -59,8 +59,8 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
 
-#if BUILDFLAG(IS_ANDROID)
-  // Android uses echo cancellation optimized for mobiles, and does not
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Android and iOS use echo cancellation optimized for mobiles, and does not
   // support keytap suppression.
   EXPECT_TRUE(config.echo_canceller.mobile_mode);
   EXPECT_FALSE(config.transient_suppression.enabled);
@@ -162,7 +162,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyEchoCancellerSettings) {
         /*settings=*/{.echo_cancellation = echo_canceller_enabled});
 
     EXPECT_EQ(config.echo_canceller.enabled, echo_canceller_enabled);
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
 #else
     EXPECT_FALSE(config.echo_canceller.mobile_mode);
