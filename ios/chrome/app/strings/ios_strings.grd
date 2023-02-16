@@ -985,6 +985,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_FOLLOW_SUBTITLE" desc="The subtitle of the first follow surface.">
         You'll now see stories from <ph name="CHANNEL_NAME">$1<ex>ESPN</ex></ph> when you open a new tab.
       </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_SUBTITLE_NO_CONTENT" desc="The subtitle of the first follow surface when there's no available content from the website.">
+        Soon, you’ll see stories from <ph name="CHANNEL_NAME">$1<ex>ESPN</ex></ph> when you open a new tab.
+      </message>
       <message name="IDS_IOS_FIRST_FOLLOW_BODY" desc="The body of the first follow surface.">
         Sites you follow are saved in your Google account. You can Manage them in Discover Settings.
       </message>
