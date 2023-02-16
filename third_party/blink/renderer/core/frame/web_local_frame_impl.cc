@@ -406,13 +406,11 @@ class ChromePrintContext : public PrintContext {
         current_height += page_size_in_pixels.width() + 1;
       }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       // Account for the disabling of scaling in spoolPage. In the context of
       // SpoolPagesWithBoundariesForTesting the scale HAS NOT been
       // pre-applied.
       float scale = GetPageShrink(page_index);
       transform.Scale(scale, scale);
-#endif
       context.Save();
       context.ConcatCTM(transform);
 
@@ -425,19 +423,11 @@ class ChromePrintContext : public PrintContext {
   }
 
  protected:
-  // Spools the printed page, a subrect of frame(). Skip the scale step.
-  // NativeTheme doesn't play well with scaling. Scaling is done browser side
-  // instead. Returns the scale to be applied.
-  // On Linux, we don't have the problem with NativeTheme, hence we let WebKit
-  // do the scaling and ignore the return value.
   virtual float SpoolPage(GraphicsContext& context, int page_number) {
     gfx::Rect page_rect = page_rects_[page_number];
     float scale = printed_page_width_ / page_rect.width();
 
     AffineTransform transform;
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-    transform.Scale(scale);
-#endif
     transform.Translate(static_cast<float>(-page_rect.x()),
                         static_cast<float>(-page_rect.y()));
     context.Save();

@@ -2625,13 +2625,8 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   gfx::Rect canvas_area =
       params.display_header_footer ? gfx::Rect(page_size) : content_area;
 
-  // TODO(thestig): Figure out why Linux is different.
-#if BUILDFLAG(IS_WIN)
   float webkit_page_shrink_factor = frame->GetPrintPageShrink(page_number);
   float final_scale_factor = css_scale_factor * webkit_page_shrink_factor;
-#else
-  float final_scale_factor = css_scale_factor;
-#endif
 
   cc::PaintCanvas* canvas = metafile->GetVectorCanvasForNewPage(
       page_size, canvas_area, final_scale_factor, params.page_orientation);
@@ -2641,17 +2636,9 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   canvas->SetPrintingMetafile(metafile);
 
   if (params.display_header_footer) {
-#if BUILDFLAG(IS_WIN)
-    const float fudge_factor = 1;
-#else
-    // TODO(thestig): Figure out why Linux needs this. It is almost certainly
-    // |kPrintingMinimumShrinkFactor| from Blink.
-    const float fudge_factor = kPrintingMinimumShrinkFactor;
-#endif
     // |page_number| is 0-based, so 1 is added.
     PrintHeaderAndFooter(canvas, page_number + 1, page_count, *frame,
-                         final_scale_factor / fudge_factor,
-                         *page_layout_in_points, params);
+                         final_scale_factor, *page_layout_in_points, params);
   }
 
   float webkit_scale_factor =
