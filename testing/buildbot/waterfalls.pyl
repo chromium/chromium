@@ -3483,6 +3483,9 @@
         },
       },
       'linux-headless-shell-rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
         'test_suites': {
           'gtest_tests': 'headless_browser_gtests',
         },
