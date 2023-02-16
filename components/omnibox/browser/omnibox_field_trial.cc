@@ -796,10 +796,6 @@ const base::FeatureParam<bool>
         &omnibox::kPreserveDefault,
         "AutocompleteStabilityPreventDefaultPreviousMatches",
         true);
-const base::FeatureParam<bool> kAutocompleteStabilityAsyncProvidersFirst(
-    &omnibox::kAutocompleteStability,
-    "AutocompleteStabilityAsyncProvidersFirst",
-    true);
 const base::FeatureParam<bool>
     kAutocompleteStabilityUpdateResultDebounceFromLastRun(
         &omnibox::kUpdateResultDebounce,

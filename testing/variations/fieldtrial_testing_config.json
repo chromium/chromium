@@ -3846,11 +3846,8 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "AutocompleteStabilityAsyncProvidersFirst": "true"
-                    },
+                    "params": {},
                     "enable_features": [
-                        "OmniboxAutocompleteStability",
                         "OmniboxDocumentProviderDedupingOptimization",
                         "OmniboxStrippedGurlOptimization"
                     ]

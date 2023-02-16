@@ -62,16 +62,6 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
              "OmniboxRemoveSuggestionsFromClipboard",
              enabled_by_default_android_only);
 
-// Enables various tweaks to `AutocompleteController` autocompletion twiddling
-// that may improve autocompletion stability. Feature params control which
-// tweaks specifically are enabled. Enabling this feature without params is a
-// no-op.
-// TODO(manukh) Enabled by default on 10/20/22 m109. Clean up feature code
-//  2/7/23, when m110 reaches stable.
-BASE_FEATURE(kAutocompleteStability,
-             "OmniboxAutocompleteStability",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature to enable memoizing and filtering non-doc hosts for
 // `DocumentProvider::GetURLForDeduping()`.
 // TODO(manukh) Enabled by default on 10/20/22 m109. Clean up feature code

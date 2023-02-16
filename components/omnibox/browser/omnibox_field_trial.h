@@ -497,10 +497,6 @@ extern const base::FeatureParam<bool>
 // be default.
 extern const base::FeatureParam<bool>
     kAutocompleteStabilityPreventDefaultPreviousMatches;
-// Begin async providers before sync providers so their async requests can
-// happen in parallel. This effects only the search, history_url, document, and
-// on device head providers.
-extern const base::FeatureParam<bool> kAutocompleteStabilityAsyncProvidersFirst;
 // Limit how frequently `AutocompleteController::UpdateResult()` will be
 // invoked. See the comments at `AutocompleteController::update_debouncer_`.
 extern const base::FeatureParam<bool>
