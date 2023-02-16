@@ -126,6 +126,14 @@
     display: flex;
     margin-inline-start: auto;
   }
+
+  #zoneCustomizationButton:not([aria-pressed='true']) iron-icon {
+    display: none;
+  }
+
+  #zoneCustomizationButton[aria-pressed='true'] .text {
+    margin-inline-start: 8px;
+  }
 </style>
 <div id="container" class="preview-container">
   <div id="keyboardBacklightLabel">
@@ -198,8 +206,11 @@
       </div>
     </div>
     <template is="dom-if" if="[[isMultiZoneRgbKeyboardSupported_]]">
-      <cr-button id="zoneCustomizationButton" on-click="showZoneCustomizationDialog_">
-        $i18n{zoneCustomize}
+      <cr-button id="zoneCustomizationButton" on-click="showZoneCustomizationDialog_"
+          class="primary"
+          aria-pressed$="[[getZoneCustomizationButtonAriaPressed_(backlightColor_)]]">
+        <iron-icon icon="personalization:circle_checkmark"></iron-icon>
+        <div class="text">$i18n{zoneCustomize}</div>
       </cr-button>
     </template>
   </iron-selector>

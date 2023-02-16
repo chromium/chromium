@@ -361,6 +361,11 @@ export class KeyboardBacklight extends WithPersonalizationStore {
         'zone customization dialog only available if multi-zone is supported');
     this.$.zoneCustomizationRender.get().showModal();
   }
+
+  private getZoneCustomizationButtonAriaPressed_(selectedColor:
+                                                     BacklightColor) {
+    return (selectedColor === BacklightColor.kMultiZone).toString();
+  }
 }
 
 customElements.define(KeyboardBacklight.is, KeyboardBacklight);
