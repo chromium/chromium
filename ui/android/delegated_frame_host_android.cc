@@ -210,21 +210,28 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame() {
   if (local_surface_id_.is_valid()) {
     if (base::FeatureList::IsEnabled(features::kEvictSubtree)) {
       auto child_surfaces = client_->CollectSurfaceIdsForEviction();
-      if (current.is_valid() && !child_surfaces.empty()) {
-        auto it =
-            std::find(child_surfaces.begin(), child_surfaces.end(), current);
-        CHECK(it != child_surfaces.end())
-            << "Surface to Evict not in FrameTree: " << current.ToString();
+      if (current.is_valid()) {
+        if (child_surfaces.empty()) {
+          // TODO(crbug.com/1393349): This can occur when the RenderViewHostImpl
+          // is not active, such as during navigations. We should see how much
+          // subtrees we are missing during these conditions.
+          surface_ids.push_back(current);
+        } else {
+          auto it =
+              std::find(child_surfaces.begin(), child_surfaces.end(), current);
+          CHECK(it != child_surfaces.end())
+              << "Surface to Evict not in FrameTree: " << current.ToString();
+          std::move(child_surfaces.begin(), child_surfaces.end(),
+                    std::back_inserter(surface_ids));
+        }
       }
-      UMA_HISTOGRAM_COUNTS_100("MemoryAndroid.EvictedTreeSize",
-                               child_surfaces.size());
-      std::move(child_surfaces.begin(), child_surfaces.end(),
-                std::back_inserter(surface_ids));
     } else {
       surface_ids.push_back(current);
     }
   }
 
+  UMA_HISTOGRAM_COUNTS_100("MemoryAndroid.EvictedTreeSize2",
+                           surface_ids.size());
   if (surface_ids.empty())
     return;
   host_frame_sink_manager_->EvictSurfaces(surface_ids);

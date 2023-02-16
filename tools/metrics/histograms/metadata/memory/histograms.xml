@@ -2892,7 +2892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MemoryAndroid.EvictedTreeSize" units="units"
-    expires_after="2023-12-01">
+    expires_after="2023-03-01">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
@@ -2900,6 +2900,18 @@ chromium-metrics-reviews@google.com.
 
     This will be emitted whenever we evict one DelegatedFrameHostAndroid, while
     the features::kEvictSubtree is enabled.
+  </summary>
+</histogram>
+
+<histogram name="MemoryAndroid.EvictedTreeSize2" units="units"
+    expires_after="2023-12-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    The total count of viz::SurfaceIds being evicted for the current FrameTree.
+    Along with any surfaces that were embedded before a navigation occurred.
+
+    This will be emitted whenever we evict one DelegatedFrameHostAndroid.
   </summary>
 </histogram>
 
