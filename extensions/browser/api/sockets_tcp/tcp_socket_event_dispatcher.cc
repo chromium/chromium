@@ -55,14 +55,14 @@ TCPSocketEventDispatcher::TCPSocketEventDispatcher(
   sockets_ = manager->data_;
 }
 
-TCPSocketEventDispatcher::~TCPSocketEventDispatcher() {}
+TCPSocketEventDispatcher::~TCPSocketEventDispatcher() = default;
 
-TCPSocketEventDispatcher::ReadParams::ReadParams() {}
+TCPSocketEventDispatcher::ReadParams::ReadParams() = default;
 
 TCPSocketEventDispatcher::ReadParams::ReadParams(const ReadParams& other) =
     default;
 
-TCPSocketEventDispatcher::ReadParams::~ReadParams() {}
+TCPSocketEventDispatcher::ReadParams::~ReadParams() = default;
 
 void TCPSocketEventDispatcher::OnSocketConnect(const std::string& extension_id,
                                                int socket_id) {
