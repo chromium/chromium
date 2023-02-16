@@ -1828,9 +1828,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportDmgWithoutKoly) {
 
 // Test that a large DMG (size equals max value of 64 bit signed int) is not
 // unpacked for binary feature analysis.
-// Disabled due to new CHECK failures: https://crbug.com/1393039
-TEST_F(DownloadProtectionServiceTest,
-       DISABLED_CheckClientDownloadReportLargeDmg) {
+TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportLargeDmg) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
   base::FilePath unsigned_dmg;
