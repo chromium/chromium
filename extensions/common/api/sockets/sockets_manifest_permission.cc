@@ -145,9 +145,9 @@ void AddNetworkListMessage(const SocketPermissionEntrySet& sockets,
 
 }  // namespace
 
-SocketsManifestPermission::SocketsManifestPermission() {}
+SocketsManifestPermission::SocketsManifestPermission() = default;
 
-SocketsManifestPermission::~SocketsManifestPermission() {}
+SocketsManifestPermission::~SocketsManifestPermission() = default;
 
 // static
 std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
