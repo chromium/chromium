@@ -127,7 +127,6 @@ struct FakeWinWebAuthnApi::WebAuthnAssertionEx {
   absl::optional<std::vector<uint8_t>> user_id;
   std::vector<uint8_t> authenticator_data;
   std::vector<uint8_t> signature;
-  absl::optional<std::vector<uint8_t>> large_blob;
   WEBAUTHN_ASSERTION assertion;
 };
 
@@ -193,12 +192,10 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
     PCWEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options,
     PWEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation_ptr) {
   DCHECK(is_available_);
-  last_make_credential_options_ =
-      std::make_unique<WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS>(
-          *options);
   if (result_override_ != S_OK) {
     return result_override_;
   }
+
   // Validate the input parameters.
   DCHECK_GT(client_data->cbClientDataJSON, 0u);
   DCHECK(client_data->pbClientDataJSON);
@@ -212,14 +209,10 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
   DCHECK(user->pwszDisplayName);
   DCHECK(options->pExcludeCredentialList);
 
-  int attachment = options->dwAuthenticatorAttachment;
-  if (attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY) {
-    attachment = preferred_attachment_;
-  }
-
   std::unique_ptr<VirtualFidoDevice::PrivateKey> private_key =
       MakePrivateKey(cose_credential_parameters,
-                     attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM);
+                     options->dwAuthenticatorAttachment ==
+                         WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM);
   if (!private_key) {
     return NTE_NOT_SUPPORTED;
   }
@@ -288,7 +281,8 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
       options->dwLargeBlobSupport != WEBAUTHN_LARGE_BLOB_SUPPORT_NONE &&
       version_ >= WEBAUTHN_API_VERSION_3;
   attestation->win_attestation.dwUsedTransport =
-      attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
+      options->dwAuthenticatorAttachment ==
+              WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
           ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL
           : transport_;
 
@@ -378,20 +372,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
 
   // Fill in the WEBAUTHN_ASSERTION struct returned to the caller.
   result->assertion = {};
-  switch (version_) {
-    case WEBAUTHN_API_VERSION_1:
-    case WEBAUTHN_API_VERSION_2:
-      result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_1;
-      break;
-    case WEBAUTHN_API_VERSION_3:
-      result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_2;
-      break;
-    case WEBAUTHN_API_VERSION_4:
-      result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_3;
-      break;
-    default:
-      NOTREACHED() << "Unknown webauthn version " << version_;
-  }
+  result->assertion.dwVersion = 1;
   result->assertion.cbAuthenticatorData = result->authenticator_data.size();
   result->assertion.pbAuthenticatorData = reinterpret_cast<PBYTE>(
       const_cast<uint8_t*>(result->authenticator_data.data()));
@@ -411,43 +392,6 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
   } else {
     result->assertion.pbUserId = nullptr;
     result->assertion.cbUserId = 0;
-  }
-
-  // Perform the large blob operation.
-  result->assertion.pbCredLargeBlob = nullptr;
-  result->assertion.cbCredLargeBlob = 0;
-  if (options->dwCredLargeBlobOperation !=
-      WEBAUTHN_CRED_LARGE_BLOB_OPERATION_NONE) {
-    result->assertion.dwCredLargeBlobStatus = large_blob_result_;
-  }
-  if (large_blob_result_ == WEBAUTHN_CRED_LARGE_BLOB_STATUS_SUCCESS &&
-      version_ >= WEBAUTHN_API_VERSION_3) {
-    switch (options->dwCredLargeBlobOperation) {
-      case WEBAUTHN_CRED_LARGE_BLOB_OPERATION_NONE:
-        break;
-      case WEBAUTHN_CRED_LARGE_BLOB_OPERATION_GET: {
-        auto large_blob_it = large_blobs_.find(result->credential_id);
-        if (large_blob_it != large_blobs_.end()) {
-          result->large_blob = large_blob_it->second;
-          result->assertion.pbCredLargeBlob = result->large_blob->data();
-          result->assertion.cbCredLargeBlob = result->large_blob->size();
-        } else {
-          result->assertion.dwCredLargeBlobStatus =
-              WEBAUTHN_CRED_LARGE_BLOB_STATUS_NOT_FOUND;
-        }
-        break;
-      }
-      case WEBAUTHN_CRED_LARGE_BLOB_OPERATION_SET: {
-        std::vector<uint8_t> large_blob(
-            options->pbCredLargeBlob,
-            options->pbCredLargeBlob + options->cbCredLargeBlob);
-        large_blobs_.emplace(result->credential_id, std::move(large_blob));
-        break;
-      }
-      default:
-        NOTREACHED() << "Unknown operation "
-                     << options->dwCredLargeBlobOperation;
-    }
   }
 
   // The real API hands out results in naked pointers and asks callers

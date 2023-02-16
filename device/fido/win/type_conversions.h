@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
-#include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,7 +32,7 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 absl::optional<AuthenticatorGetAssertionResponse>
 ToAuthenticatorGetAssertionResponse(
     const WEBAUTHN_ASSERTION& credential_attestation,
-    const CtapGetAssertionOptions& request_options);
+    const std::vector<PublicKeyCredentialDescriptor>& allow_list);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 uint32_t ToWinUserVerificationRequirement(
