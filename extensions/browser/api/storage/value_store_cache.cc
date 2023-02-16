@@ -6,7 +6,7 @@
 
 namespace extensions {
 
-ValueStoreCache::~ValueStoreCache() {}
+ValueStoreCache::~ValueStoreCache() = default;
 
 void ValueStoreCache::ShutdownOnUI() {}
 

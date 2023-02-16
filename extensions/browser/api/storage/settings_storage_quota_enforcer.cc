@@ -72,7 +72,7 @@ SettingsStorageQuotaEnforcer::SettingsStorageQuotaEnforcer(
       used_total_(0),
       usage_calculated_(false) {}
 
-SettingsStorageQuotaEnforcer::~SettingsStorageQuotaEnforcer() {}
+SettingsStorageQuotaEnforcer::~SettingsStorageQuotaEnforcer() = default;
 
 size_t SettingsStorageQuotaEnforcer::GetBytesInUse(const std::string& key) {
   LazyCalculateUsage();

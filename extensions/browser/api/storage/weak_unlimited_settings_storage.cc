@@ -12,7 +12,7 @@ WeakUnlimitedSettingsStorage::WeakUnlimitedSettingsStorage(
     ValueStore* delegate)
     : delegate_(delegate) {}
 
-WeakUnlimitedSettingsStorage::~WeakUnlimitedSettingsStorage() {}
+WeakUnlimitedSettingsStorage::~WeakUnlimitedSettingsStorage() = default;
 
 size_t WeakUnlimitedSettingsStorage::GetBytesInUse(const std::string& key) {
   return delegate_->GetBytesInUse(key);
