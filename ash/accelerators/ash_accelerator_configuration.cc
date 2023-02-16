@@ -26,6 +26,8 @@
 
 namespace {
 
+using AcceleratorActionMap = ui::AcceleratorMap<ash::AcceleratorAction>;
+
 void AppendAcceleratorData(
     std::vector<ash::AcceleratorData>& data,
     base::span<const ash::AcceleratorData> accelerators) {
@@ -33,6 +35,86 @@ void AppendAcceleratorData(
   for (const auto& accelerator : accelerators) {
     data.push_back(accelerator);
   }
+}
+
+void SetLookupMaps(base::span<const ash::AcceleratorData> accelerators,
+                   ash::ActionIdToAcceleratorsMap& id_to_accelerator,
+                   AcceleratorActionMap& accelerator_to_id) {
+  for (const auto& acceleratorData : accelerators) {
+    ui::Accelerator accelerator(acceleratorData.keycode,
+                                acceleratorData.modifiers);
+    accelerator.set_key_state(acceleratorData.trigger_on_press
+                                  ? ui::Accelerator::KeyState::PRESSED
+                                  : ui::Accelerator::KeyState::RELEASED);
+    accelerator_to_id.InsertNew(
+        std::make_pair(accelerator, acceleratorData.action));
+    id_to_accelerator[static_cast<uint32_t>(acceleratorData.action)].push_back(
+        accelerator);
+  }
+}
+
+std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
+  std::vector<ash::AcceleratorData> accelerators;
+  AppendAcceleratorData(
+      accelerators,
+      base::make_span(ash::kAcceleratorData, ash::kAcceleratorDataLength));
+
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(ash::kEnableWithPositionalAcceleratorsData,
+                        ash::kEnableWithPositionalAcceleratorsDataLength));
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(
+            ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData,
+            ash::
+                kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength));
+  } else if (::features::IsNewShortcutMappingEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(ash::kEnableWithNewMappingAcceleratorData,
+                        ash::kEnableWithNewMappingAcceleratorDataLength));
+  } else {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(ash::kDisableWithNewMappingAcceleratorData,
+                        ash::kDisableWithNewMappingAcceleratorDataLength));
+  }
+  if (ash::features::IsSameAppWindowCycleEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(
+            ash::kEnableWithSameAppWindowCycleAcceleratorData,
+            ash::kEnableWithSameAppWindowCycleAcceleratorDataLength));
+  }
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(ash::kEnableWithFloatWindowAcceleratorData,
+                        ash::kEnableWithFloatWindowAcceleratorDataLength));
+  }
+  if (ash::features::IsGameDashboardEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(ash::kToggleGameDashboardAcceleratorData,
+                        ash::kToggleGameDashboardAcceleratorDataLength));
+  }
+
+  // Debug accelerators.
+  if (ash::debug::DebugAcceleratorsEnabled()) {
+    AppendAcceleratorData(accelerators,
+                          base::make_span(ash::kDebugAcceleratorData,
+                                          ash::kDebugAcceleratorDataLength));
+  }
+
+  // Developer accelerators.
+  if (ash::debug::DeveloperAcceleratorsEnabled()) {
+    AppendAcceleratorData(
+        accelerators, base::make_span(ash::kDeveloperAcceleratorData,
+                                      ash::kDeveloperAcceleratorDataLength));
+  }
+  return accelerators;
 }
 
 }  // namespace
@@ -103,65 +185,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
 }
 
 void AshAcceleratorConfiguration::Initialize() {
-  std::vector<AcceleratorData> accelerators;
-  AppendAcceleratorData(
-      accelerators, base::make_span(kAcceleratorData, kAcceleratorDataLength));
-
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(kEnableWithPositionalAcceleratorsData,
-                        kEnableWithPositionalAcceleratorsDataLength));
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(
-            kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData,
-            kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength));
-  } else if (::features::IsNewShortcutMappingEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(kEnableWithNewMappingAcceleratorData,
-                        kEnableWithNewMappingAcceleratorDataLength));
-  } else {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(kDisableWithNewMappingAcceleratorData,
-                        kDisableWithNewMappingAcceleratorDataLength));
-  }
-  if (ash::features::IsSameAppWindowCycleEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(kEnableWithSameAppWindowCycleAcceleratorData,
-                        kEnableWithSameAppWindowCycleAcceleratorDataLength));
-  }
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(kEnableWithFloatWindowAcceleratorData,
-                        kEnableWithFloatWindowAcceleratorDataLength));
-  }
-  if (features::IsGameDashboardEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(kToggleGameDashboardAcceleratorData,
-                        kToggleGameDashboardAcceleratorDataLength));
-  }
-
-  // Debug accelerators.
-  if (debug::DebugAcceleratorsEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(kDebugAcceleratorData, kDebugAcceleratorDataLength));
-  }
-
-  // Developer accelerators.
-  if (debug::DeveloperAcceleratorsEnabled()) {
-    AppendAcceleratorData(accelerators,
-                          base::make_span(kDeveloperAcceleratorData,
-                                          kDeveloperAcceleratorDataLength));
-  }
-
-  Initialize(accelerators);
+  Initialize(GetDefaultAccelerators());
   InitializeDeprecatedAccelerators();
 }
 
@@ -171,7 +195,15 @@ void AshAcceleratorConfiguration::Initialize(
   deprecated_accelerators_.clear();
   id_to_accelerators_.clear();
   accelerator_to_id_.Clear();
+  default_accelerators_to_id_cache_.Clear();
+  default_id_to_accelerators_cache_.clear();
 
+  // Cache these accelerators as the default.
+  SetLookupMaps(accelerators, default_id_to_accelerators_cache_,
+                default_accelerators_to_id_cache_);
+
+  // TODO(jimmyxgong): Before adding the accelerators to the mappings, apply
+  // pref remaps.
   AddAccelerators(accelerators);
 }
 
@@ -210,15 +242,7 @@ void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
 
 void AshAcceleratorConfiguration::AddAccelerators(
     base::span<const AcceleratorData> accelerators) {
-  for (const auto& data : accelerators) {
-    ui::Accelerator accelerator(data.keycode, data.modifiers);
-    accelerator.set_key_state(data.trigger_on_press
-                                  ? ui::Accelerator::KeyState::PRESSED
-                                  : ui::Accelerator::KeyState::RELEASED);
-    accelerator_to_id_.InsertNew(std::make_pair(accelerator, data.action));
-    id_to_accelerators_[static_cast<uint32_t>(data.action)].push_back(
-        accelerator);
-  }
+  SetLookupMaps(accelerators, id_to_accelerators_, accelerator_to_id_);
   UpdateAndNotifyAccelerators();
 }
 
@@ -262,6 +286,24 @@ void AshAcceleratorConfiguration::NotifyAcceleratorsUpdated() {
   for (auto& observer : observer_list_) {
     observer.OnAcceleratorsUpdated();
   }
+}
+
+absl::optional<AcceleratorAction>
+AshAcceleratorConfiguration::GetIdForDefaultAccelerator(
+    ui::Accelerator accelerator) {
+  AcceleratorAction* found_id =
+      default_accelerators_to_id_cache_.Find(accelerator);
+  return found_id ? absl::optional<AcceleratorAction>(*found_id)
+                  : absl::nullopt;
+}
+
+std::vector<ui::Accelerator>
+AshAcceleratorConfiguration::GetDefaultAcceleratorsForId(
+    AcceleratorActionId id) {
+  const auto iter = default_id_to_accelerators_cache_.find(id);
+  DCHECK(iter != default_id_to_accelerators_cache_.end());
+
+  return iter->second;
 }
 
 void AshAcceleratorConfiguration::UpdateAndNotifyAccelerators() {

@@ -107,6 +107,15 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   const DeprecatedAcceleratorData* GetDeprecatedAcceleratorData(
       AcceleratorActionId action);
 
+  // Returns the ID of the action if `accelerator` is a default accelerator.
+  // If there is no ID found, returns absl::nullopt.
+  absl::optional<AcceleratorAction> GetIdForDefaultAccelerator(
+      ui::Accelerator accelerator);
+
+  // Returns the default accelerators of a given accelerator ID.
+  std::vector<ui::Accelerator> GetDefaultAcceleratorsForId(
+      AcceleratorActionId id);
+
  private:
   // A map for looking up actions from accelerators.
   using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;
@@ -138,6 +147,14 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   // A map from accelerators to the AcceleratorAction values, which are used in
   // the implementation.
   AcceleratorActionMap accelerator_to_id_;
+
+  // The following are caches for system default accelerators.
+  // These should not be modified after the initial instantiation. Provides a
+  // reference to the defaults in the event of customization or resets.
+  // These are effectively const and should not be modified after the initial
+  // data is set.
+  ActionIdToAcceleratorsMap default_id_to_accelerators_cache_;
+  AcceleratorActionMap default_accelerators_to_id_cache_;
 
   // List of all observer clients.
   base::ObserverList<Observer> observer_list_;
