@@ -16,9 +16,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace base {
 class ReadOnlySharedMemoryRegion;
@@ -61,9 +58,6 @@ class PdfPrintJob : public content::WebContentsObserver {
 
   void OnDidPrintWithParams(printing::mojom::PrintWithParamsResultPtr result);
   void OnCompositeDocumentToPdfDone(
-      const gfx::Size& page_size,
-      const gfx::Rect& content_area,
-      const gfx::Point& physical_offsets,
       printing::mojom::PrintCompositor::Status status,
       base::ReadOnlySharedMemoryRegion region);
 
