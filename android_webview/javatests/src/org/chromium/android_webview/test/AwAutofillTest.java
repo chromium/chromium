@@ -49,6 +49,7 @@ import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -84,6 +85,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for WebView Autofill.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
 @RequiresApi(Build.VERSION_CODES.O)
 public class AwAutofillTest {
@@ -916,6 +918,7 @@ public class AwAutofillTest {
 
     @After
     public void tearDown() {
+        sIsAwGCurrentAutofillService = true;
         mWebServer.shutdown();
         mAutofillProvider = null;
     }
