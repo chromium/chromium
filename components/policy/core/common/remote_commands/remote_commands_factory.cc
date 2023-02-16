@@ -6,7 +6,6 @@
 
 namespace policy {
 
-RemoteCommandsFactory::~RemoteCommandsFactory() {
-}
+RemoteCommandsFactory::~RemoteCommandsFactory() = default;
 
 }  // namespace policy

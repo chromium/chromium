@@ -387,8 +387,9 @@ void RemoteCommandsService::OnJobFinished(RemoteCommandJob* command) {
   result.set_result(CommandStatusToResultType(command->status()));
 
   std::unique_ptr<std::string> result_payload = command->GetResultPayload();
-  if (result_payload)
+  if (result_payload) {
     result.set_payload(std::move(*result_payload));
+  }
 
   SYSLOG(INFO) << "Remote command " << command->unique_id()
                << " finished with result " << ToString(result.result()) << " ("
@@ -407,19 +408,22 @@ void RemoteCommandsService::OnRemoteCommandsFetched(
   DCHECK(command_fetch_in_progress_);
   command_fetch_in_progress_ = false;
 
-  if (!on_command_acked_callback_.is_null())
+  if (!on_command_acked_callback_.is_null()) {
     std::move(on_command_acked_callback_).Run();
+  }
 
   // TODO(binjin): Add retrying on errors. See http://crbug.com/466572.
   if (status == DM_STATUS_SUCCESS) {
-    for (const auto& command : commands)
+    for (const auto& command : commands) {
       VerifyAndEnqueueSignedCommand(command);
+    }
   }
 
   // Start another fetch request job immediately if there are unsent command
   // results or enqueued fetch requests.
-  if (!unsent_results_.empty() || has_enqueued_fetch_request_)
+  if (!unsent_results_.empty() || has_enqueued_fetch_request_) {
     FetchRemoteCommands();
+  }
 }
 
 void RemoteCommandsService::RecordReceivedRemoteCommand(

@@ -40,8 +40,9 @@ em::RemoteCommand GenerateCommandProto(RemoteCommandJob::UniqueIDType unique_id,
       enterprise_management::RemoteCommand_Type_COMMAND_ECHO_TEST);
   command_proto.set_command_id(unique_id);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
-  if (!payload.empty())
+  if (!payload.empty()) {
     command_proto.set_payload(payload);
+  }
   return command_proto;
 }
 

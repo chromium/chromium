@@ -50,8 +50,9 @@ std::string ToString(enterprise_management::RemoteCommand::Type type) {
 
 RemoteCommandJob::~RemoteCommandJob() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (status_ == RUNNING)
+  if (status_ == RUNNING) {
     Terminate();
+  }
 }
 
 bool RemoteCommandJob::Init(
@@ -63,8 +64,9 @@ bool RemoteCommandJob::Init(
 
   status_ = INVALID;
 
-  if (!command.has_type() || !command.has_command_id())
+  if (!command.has_type() || !command.has_command_id()) {
     return false;
+  }
   DCHECK_EQ(command.type(), GetType());
 
   unique_id_ = command.command_id();
@@ -140,8 +142,9 @@ bool RemoteCommandJob::Run(base::Time now,
 void RemoteCommandJob::Terminate() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (IsExecutionFinished())
+  if (IsExecutionFinished()) {
     return;
+  }
 
   DCHECK_EQ(RUNNING, status_);
 
@@ -150,8 +153,9 @@ void RemoteCommandJob::Terminate() {
 
   TerminateImpl();
 
-  if (finished_callback_)
+  if (finished_callback_) {
     std::move(finished_callback_).Run();
+  }
 }
 
 base::TimeDelta RemoteCommandJob::GetCommandTimeout() const {
@@ -194,8 +198,9 @@ void RemoteCommandJob::OnCommandExecutionFinishedWithResult(
 
   result_payload_ = std::move(result_payload);
 
-  if (finished_callback_)
+  if (finished_callback_) {
     std::move(finished_callback_).Run();
+  }
 }
 
 }  // namespace policy
