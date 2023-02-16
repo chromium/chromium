@@ -59,7 +59,7 @@ class ExtensionsTestSuite : public content::ContentTestSuiteBase {
 ExtensionsTestSuite::ExtensionsTestSuite(int argc, char** argv)
     : content::ContentTestSuiteBase(argc, argv) {}
 
-ExtensionsTestSuite::~ExtensionsTestSuite() {}
+ExtensionsTestSuite::~ExtensionsTestSuite() = default;
 
 void ExtensionsTestSuite::Initialize() {
   content::ContentTestSuiteBase::Initialize();
