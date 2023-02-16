@@ -57,7 +57,7 @@ GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
         configurations.insert(gfx::BufferUsageAndFormat(usage, format));
     }
   }
-#endif  // BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+#endif  // BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
 
   return configurations;
@@ -67,7 +67,7 @@ bool GetImageNeedsPlatformSpecificTextureTarget(gfx::BufferFormat format,
                                                 gfx::BufferUsage usage) {
   if (!NativeBufferNeedsPlatformSpecificTextureTarget(format))
     return false;
-#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
   GpuMemoryBufferSupport support;
   GpuMemoryBufferConfigurationSet native_configurations =
