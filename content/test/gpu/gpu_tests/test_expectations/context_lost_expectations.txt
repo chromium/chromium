@@ -136,6 +136,9 @@ crbug.com/1399895 [ mac amd release asan ] GpuCrash_InfoForDualHardwareGpus [ Sk
 # Vulkan enabled on linux, the crash fallback logic is different.
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
+# Windows debug causes render process hangs due to slow gpu process restart.
+crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
