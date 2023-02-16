@@ -238,11 +238,8 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       NotifyPointerdown(pointer_info->GetEntry());
       pointer_id_entry_map_.erase(pointer_id);
     }
-    // Any existing entry in the map cannot fire a click.
-    FlushPointerMap();
-    if (pointer_flush_timer_.IsActive()) {
-      pointer_flush_timer_.Stop();
-    }
+    // Any existing pointerup in the map cannot fire a click.
+    StopTimerAndFlush();
     pointer_id_entry_map_.Set(
         pointer_id, PointerEntryAndInfo::Create(entry, event_timestamps));
 
@@ -253,6 +250,17 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     // Generate a new interaction id.
     UpdateInteractionId();
     entry->SetInteractionId(GetCurrentInteractionId());
+
+    // Any existing pointerup in the map cannot fire a click.
+    StopTimerAndFlush();
+    // Platforms like Android would create ever-increasing pointer_id for
+    // interactions, whereas platforms like linux could reuse the same id for
+    // different interactions. So resetting pointer_info here if it's flushed.
+    if (!pointer_id_entry_map_.Contains(pointer_id)) {
+      // Reset if pointer_info got flushed.
+      pointer_info = nullptr;
+    }
+
     if (pointer_info &&
         pointer_info->GetEntry()->name() == event_type_names::kPointerdown) {
       // Set interaction id and notify the pointer down entry.
@@ -267,9 +275,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
           pointer_id, PointerEntryAndInfo::Create(entry, event_timestamps));
     }
     // Start the timer to flush the entry just created later, if needed.
-    if (!pointer_flush_timer_.IsActive()) {
-      pointer_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
-    }
+    pointer_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
     last_pointer_id_ = pointer_id;
   } else if (event_type == event_type_names::kClick) {
     // We do not rely on the |pointer_id| for clicks because they may be
@@ -293,7 +299,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       pointer_info->GetTimeStamps().push_back(event_timestamps);
       RecordDragTapOrClickUKM(window, *pointer_info);
       // The pointer id of the pointerdown is no longer needed.
-      pointer_id_entry_map_.erase(pointer_id);
+      pointer_id_entry_map_.erase(*last_pointer_id_);
     } else {
       // There is no previous pointerdown or pointerup entry. This can happen
       // when the user clicks using a non-pointer device. Generate a new
@@ -304,6 +310,8 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       RecordDragTapOrClickUKM(
           window, *PointerEntryAndInfo::Create(entry, event_timestamps));
     }
+    // Any existing pointerup in the map cannot fire a click.
+    StopTimerAndFlush();
     last_pointer_id_ = absl::nullopt;
   }
   return true;
@@ -435,12 +443,18 @@ void ResponsivenessMetrics::FlushPointerMap() {
     // event for this |item|, which means we have pointerdown and pointerup.
     if (entry->name() == event_type_names::kPointerup ||
         item.value->GetTimeStamps().size() > 1u) {
-      NotifyPointerdown(entry);
       RecordDragTapOrClickUKM(window, *item.value);
       pointer_ids_to_remove.push_back(item.key);
     }
   }
   pointer_id_entry_map_.RemoveAll(pointer_ids_to_remove);
+}
+
+void ResponsivenessMetrics::StopTimerAndFlush() {
+  if (pointer_flush_timer_.IsActive()) {
+    pointer_flush_timer_.Stop();
+  }
+  FlushPointerMap();
 }
 
 void ResponsivenessMetrics::NotifyPointerdown(

@@ -151,6 +151,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   // pointerup. We either know there is no click happening or waited long enough
   // for a click to occur.
   void FlushPointerMap();
+  void StopTimerAndFlush();
 
   void NotifyPointerdown(PerformanceEventTiming* entry) const;
 

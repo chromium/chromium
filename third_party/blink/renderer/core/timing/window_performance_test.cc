@@ -1577,8 +1577,8 @@ TEST_F(InteractionIdTest, MultiTouch) {
   EXPECT_EQ(ids[1], ids[2]);
   // After a wait, flush UKM logging mojo request.
   test::RunDelayedTasks(base::Seconds(1));
-  CheckUKMValues({{50, 60, UserInteractionType::kTapOrClick},
-                  {30, 50, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{30, 50, UserInteractionType::kTapOrClick},
+                  {50, 60, UserInteractionType::kTapOrClick}});
 }
 
 TEST_F(InteractionIdTest, ClickIncorrectPointerId) {
