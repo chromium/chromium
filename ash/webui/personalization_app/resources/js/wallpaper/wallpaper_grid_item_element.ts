@@ -15,7 +15,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
-import {isSelectionEvent} from '../utils.js';
+import {getCheckmarkIcon, isSelectionEvent} from '../utils.js';
 
 import {getLoadingPlaceholderAnimationDelay} from './utils.js';
 import {getTemplate} from './wallpaper_grid_item_element.html.js';
@@ -118,6 +118,13 @@ export class WallpaperGridItem extends PolymerElement {
           return [];
         },
         observer: 'onImageStatusChanged_',
+      },
+
+      checkmarkIcon_: {
+        type: String,
+        value() {
+          return getCheckmarkIcon();
+        },
       },
     };
   }

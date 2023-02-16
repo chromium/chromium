@@ -43,31 +43,17 @@
     width: 48px;
   }
 
-  iron-icon[icon='personalization:checkmark'],
-  .checkmark-background {
+  iron-icon[icon='personalization:circle_checkmark'] {
     display: none;
   }
 
-  cr-button[aria-checked='true'] iron-icon[icon='personalization:checkmark'],
-  cr-button[aria-checked='true'] .checkmark-background {
+  cr-button[aria-checked='true'] iron-icon[icon='personalization:circle_checkmark'] {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    bottom: -4px;
     display: block;
     position: absolute;
-  }
-
-  .checkmark-background {
-    background-color: var(--cros-sys-surface);
-    border-radius: 50%;
-    bottom: -4px;
-    height: 22px;
     right: -4px;
-    width: 22px;
-  }
-
-  iron-icon[icon='personalization:checkmark'] {
-    --iron-icon-height: 18px;
-    --iron-icon-width: 18px;
-    bottom: 2px;
-    right: 2px;
   }
 
   color-scheme-icon-svg,
@@ -106,9 +92,7 @@
           aria-checked$="[[getColorSchemeAriaChecked_(colorScheme.scheme, colorSchemeSelected_)]]">
         <div class="container">
           <color-scheme-icon-svg scheme="[[colorScheme]]"></color-scheme-icon-svg>
-          <div class="checkmark-background">
-            <iron-icon class="checkmark" icon="personalization:checkmark"></iron-icon>
-          </div>
+          <iron-icon class="checkmark" icon="personalization:circle_checkmark"></iron-icon>
         </div>
       </cr-button>
     </template>
@@ -128,9 +112,7 @@
           <svg>
             <circle style$="fill: [[staticColor]]" cx="24" cy="24" r="24"></circle>
           </svg>
-          <div class="checkmark-background">
-            <iron-icon icon="personalization:checkmark"></iron-icon>
-          </div>
+          <iron-icon icon="personalization:circle_checkmark"></iron-icon>
         </div>
       </cr-button>
     </template>

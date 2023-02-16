@@ -14,7 +14,7 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {AnimationTheme} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isSelectionEvent} from '../utils.js';
+import {getCheckmarkIcon, isSelectionEvent} from '../utils.js';
 
 import {setAnimationTheme} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
@@ -39,6 +39,12 @@ export class AnimationThemeItem extends WithPersonalizationStore {
       imgSrc_: {
         type: String,
         computed: 'computeImgSrc_(animationTheme)',
+      },
+      checkmarkIcon_: {
+        type: String,
+        value() {
+          return getCheckmarkIcon();
+        },
       },
     };
   }
