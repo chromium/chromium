@@ -1790,7 +1790,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         You're already tracking this product.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_EMPTY_LIST" desc="Table element description explaining that the current website does not contain any items that can have their prices tracked.">
-        Price tracking isn't available for this site.
+        Price tracking isn't available for this page.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKING_EMPTY_LIST" desc="Table element description explaining that this section is the location where the user's price-tracked items will be displayed.">
         The products you track will show up here.
