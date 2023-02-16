@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.NativeViewListRenderer;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
+import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
+import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.SingleWebFeedParameters;
 import org.chromium.chrome.browser.feed.Stream;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -163,11 +165,8 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         List<NtpListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
         contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
                 getContentPreviewsPaddingPx(), CREATOR_PROFILE_ID, mProfileView));
-        View privacyView = LayoutInflater.from(mActivity).inflate(R.layout.creator_privacy, null);
-        contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
-                getContentPreviewsPaddingPx(), CREATOR_PRIVACY_ID, privacyView));
         mContentManager.addContents(0, contentPreviewsList);
-        mHeaderCount = 2;
+        mHeaderCount = 1;
 
         // Inflate the XML
         mCreatorViewGroup =
@@ -233,6 +232,10 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 /* FeedContentFirstLoadWatcher */ this,
                 /* streamsMediator */ new StreamsMediatorImpl(),
                 new SingleWebFeedParameters(mWebFeedId, mEntryPoint));
+
+        if (mEntryPoint == SingleWebFeedEntryPoint.MENU) {
+            mStream.addOnContentChangedListener(new ContentChangedListener());
+        }
 
         mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
                 mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount,
@@ -489,6 +492,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
             mBottomSheetController.collapseSheet(true);
         }
     }
+
     private void createWebContents() {
         assert mWebContents == null;
 
@@ -520,6 +524,40 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mLayoutView.removeOnLayoutChangeListener(this);
         if (mSheetObserver != null) mBottomSheetController.removeObserver(mSheetObserver);
     }
+
+    @VisibleForTesting
+    void setStreamForTest(Stream stream) {
+        mStream = stream;
+    }
+
+    class ContentChangedListener implements Stream.ContentChangedListener {
+        @Override
+        public void onContentChanged(List<FeedContent> feedContents) {
+            if (feedContents == null) return;
+            boolean hasError = false;
+            // Assume native cards beyond the header are errors.
+            for (int i = mHeaderCount; i < feedContents.size(); i++) {
+                FeedContent content = feedContents.get(i);
+                if (content.isNativeView()) {
+                    hasError = true;
+                    break;
+                }
+            }
+            // If no error cards are found, then remove the listener and add privacy header.
+            if (!hasError) {
+                List<FeedContent> privacyList = new ArrayList<>();
+                View privacyView =
+                        LayoutInflater.from(mActivity).inflate(R.layout.creator_privacy, null);
+                privacyList.add(new NtpListContentManager.NativeViewContent(
+                        getContentPreviewsPaddingPx(), CREATOR_PRIVACY_ID, privacyView));
+                mContentManager.addContents(mHeaderCount, privacyList);
+                mHeaderCount += privacyList.size();
+                mStream.removeOnContentChangedListener(this);
+                mStream.notifyNewHeaderCount(mHeaderCount);
+            }
+        }
+    }
+
     /**
      * Helper class to generate a favicon for a given URL and resize it to the desired dimensions
      * for displaying it on the image view.
