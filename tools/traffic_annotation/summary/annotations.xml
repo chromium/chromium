@@ -295,7 +295,7 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_fetcher" added_in_milestone="98" content_hash_code="0419c2d5" os_list="chromeos" file_path="chrome/browser/chromeos/extensions/wallpaper_api.cc" />
  <item id="network_traversal_ice_config_fetcher" added_in_milestone="98" content_hash_code="0065f89d" os_list="chromeos" file_path="chrome/browser/nearby_sharing/network_traversal_ice_config_fetcher.cc" />
  <item id="tachyon_ice_config_fetcher" added_in_milestone="98" content_hash_code="01e878b0" os_list="chromeos" file_path="chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.cc" />
- <item id="supervised_users_denylist" added_in_milestone="98" content_hash_code="01cebaff" os_list="chromeos,android" file_path="chrome/browser/supervised_user/supervised_user_service.cc" />
+ <item id="supervised_users_denylist" added_in_milestone="98" content_hash_code="01cebaff" os_list="chromeos,android,linux" file_path="chrome/browser/supervised_user/supervised_user_service.cc" />
  <item id="launcher_item_suggest" added_in_milestone="98" content_hash_code="04a4041e" os_list="chromeos" file_path="chrome/browser/ash/file_suggest/item_suggest_cache.cc" />
  <item id="ambient_client" added_in_milestone="98" content_hash_code="062d821f" os_list="chromeos" file_path="chrome/browser/ui/ash/ambient/ambient_client_impl.cc" />
  <item id="calendar_get_events" added_in_milestone="98" content_hash_code="0603f52a" os_list="chromeos" file_path="chrome/browser/ui/ash/calendar/calendar_keyed_service.cc" />
@@ -310,10 +310,10 @@ Refer to README.md for content description and update process.
  <item id="rlz" added_in_milestone="98" content_hash_code="0839c21d" os_list="android" file_path="chrome/browser/android/rlz/rlz_ping_handler.cc" />
  <item id="download_manager_service_retry" added_in_milestone="98" content_hash_code="01044c58" os_list="android" file_path="chrome/browser/download/android/download_manager_service.cc" />
  <item id="download_bitmap" added_in_milestone="98" content_hash_code="0632ef37" os_list="android" file_path="chrome/browser/share/bitmap_download_request.cc" />
- <item id="family_info" added_in_milestone="98" content_hash_code="01831b1a" os_list="android,chromeos" file_path="chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc" />
- <item id="permission_request_creator" added_in_milestone="98" content_hash_code="04629d73" os_list="android,chromeos" file_path="chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc" />
- <item id="kids_chrome_management_client_classify_url" added_in_milestone="98" content_hash_code="003a8b30" os_list="chromeos,android" file_path="components/supervised_user/core/browser/kids_chrome_management_client.cc" />
- <item id="kids_chrome_management_list_family_members" added_in_milestone="106" content_hash_code="00458289" os_list="android,chromeos" file_path="chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.cc" />
+ <item id="family_info" added_in_milestone="98" content_hash_code="01831b1a" os_list="android,chromeos,linux" file_path="chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc" />
+ <item id="permission_request_creator" added_in_milestone="98" content_hash_code="04629d73" os_list="android,chromeos,linux" file_path="chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc" />
+ <item id="kids_chrome_management_client_classify_url" added_in_milestone="98" content_hash_code="003a8b30" os_list="android,chromeos,linux" file_path="components/supervised_user/core/browser/kids_chrome_management_client.cc" />
+ <item id="kids_chrome_management_list_family_members" added_in_milestone="106" content_hash_code="00458289" os_list="android,chromeos,linux" file_path="chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.cc" />
  <item id="publish_note_request" added_in_milestone="98" content_hash_code="01e9f0b8" os_list="android" file_path="components/content_creation/notes/core/server/notes_server_saver.cc" />
  <item id="cached_image_fetcher" added_in_milestone="98" content_hash_code="06334a2d" os_list="android" file_path="components/image_fetcher/image_fetcher_bridge.cc" />
  <item id="chrome_cast_discovery_api" added_in_milestone="98" content_hash_code="0502b792" os_list="linux,windows,chromeos" file_path="chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.cc" />

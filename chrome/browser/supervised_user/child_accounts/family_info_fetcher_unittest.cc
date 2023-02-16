@@ -155,9 +155,10 @@ class FamilyInfoFetcherTest
 #if BUILDFLAG(IS_CHROMEOS)
     return identity_test_env_.SetPrimaryAccount(kAccountId,
                                                 signin::ConsentLevel::kSync);
-#elif BUILDFLAG(IS_ANDROID)
-    // Android supports Unicorn accounts in signed in state with sync disabled.
-    // Using that setup in these tests checks that we aren't overly
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX)
+    // Android and desktop support Unicorn accounts in signed in state with sync
+    // disabled. Using that setup in these tests checks that we aren't overly
     // restrictive.
     return identity_test_env_.SetPrimaryAccount(kAccountId,
                                                 signin::ConsentLevel::kSignin);
@@ -167,20 +168,17 @@ class FamilyInfoFetcherTest
   }
 
   void ClearPrimaryAccount() {
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
     return identity_test_env_.ClearPrimaryAccount();
-#else
-#error Unsupported platform.
-#endif
   }
 
   void IssueRefreshToken() {
 #if BUILDFLAG(IS_CHROMEOS)
     identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
                                                    signin::ConsentLevel::kSync);
-#elif BUILDFLAG(IS_ANDROID)
-    // Android supports Unicorn accounts in signed in state with sync disabled.
-    // Using that setup in these tests checks that we aren't overly
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX)
+    // Android and desktop support Unicorn accounts in signed in state with sync
+    // disabled. Using that setup in these tests checks that we aren't overly
     // restrictive.
     identity_test_env_.MakePrimaryAccountAvailable(
         kAccountId, signin::ConsentLevel::kSignin);

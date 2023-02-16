@@ -155,9 +155,9 @@ class SupervisedUserServiceTest
 TEST_P(SupervisedUserServiceTest, IsURLFilteringEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      supervised_users::kFilterWebsitesForSupervisedUsersOnThirdParty);
+      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
   EXPECT_TRUE(base::FeatureList::IsEnabled(
-      supervised_users::kFilterWebsitesForSupervisedUsersOnThirdParty));
+      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty));
 
   signin::IdentityTestEnvironment* identity_test_env =
       identity_test_env_profile_adaptor_->identity_test_env();

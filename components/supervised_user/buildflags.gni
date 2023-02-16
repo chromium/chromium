@@ -3,6 +3,10 @@
 # found in the LICENSE file.
 
 declare_args() {
-  # Enables parental control features for Family Link users.
-  enable_supervised_users = is_chromeos || is_android || is_ios
+  # Enables supervision for Family Link users.
+  enable_supervised_users =
+      # Platforms which fully support supervision features:
+      is_android || is_chromeos ||
+      # Platforms for which support is currently in development:
+      is_ios || is_linux
 }

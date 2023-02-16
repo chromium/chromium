@@ -20,7 +20,6 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/management/management_api_constants.h"
@@ -42,8 +41,9 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// TODO(https://crbug.com/1218633): Fix and include extensions tests on LaCrOS.
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/265970428): Fix and include extensions tests on LaCrOS.
+// TODO(b/266051970): Fix and include extensions tests on Windows/Mac/Linux.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/background/background_contents.h"
@@ -52,7 +52,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "content/public/browser/gpu_data_manager.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using extensions::mojom::ManifestLocation;
 
@@ -830,8 +830,9 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   EXPECT_FALSE(known_perms->IsEmpty());
 }
 
-// TODO(https://crbug.com/1218633): Fix and include extensions tests on LaCrOS.
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/265970428): Fix and include extensions tests on LaCrOS.
+// TODO(b/266051970): Fix and include extensions tests on Windows/Mac/Linux.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A delegate that senses when extensions are enabled or disabled.
 class TestManagementAPIDelegate : public ManagementAPIDelegate {
@@ -1744,7 +1745,7 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
   // Extension was not enabled.
   EXPECT_EQ(0, delegate_->enable_count_);
 }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace extensions

@@ -7458,7 +7458,6 @@ static_library("browser") {
     ]
   }
   if (enable_supervised_users && enable_extensions) {
-    assert(is_chromeos)
     sources += [
       "supervised_user/supervised_user_extensions_delegate_impl.cc",
       "supervised_user/supervised_user_extensions_delegate_impl.h",

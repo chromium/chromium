@@ -1937,7 +1937,6 @@ static_library("ui") {
   }
 
   if (enable_supervised_users && enable_extensions) {
-    assert(is_chromeos)
     sources += [
       "supervised_user/parent_permission_dialog.h",
       "views/supervised_user/extension_install_blocked_by_parent_dialog.cc",

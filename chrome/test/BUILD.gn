@@ -3642,9 +3642,8 @@ if (!is_android) {
       }
     }
 
-    # TODO(https://crbug.com/1218633): Fix the mixin and enable tests on LaCrOS.
-    if (enable_supervised_users && !is_chromeos_lacros) {
-      assert(is_chromeos_ash)
+    # TODO(https://crbug.com/1218633): Fix the mixin and enable tests on LaCrOS and desktop.
+    if (enable_supervised_users && is_chromeos_ash) {
       sources += [
         "../browser/supervised_user/permission_request_creator_mock.cc",
         "../browser/supervised_user/permission_request_creator_mock.h",

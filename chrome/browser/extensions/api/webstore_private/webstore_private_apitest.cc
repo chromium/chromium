@@ -44,11 +44,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/gl/gl_switches.h"
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(https://crbug.com/1218633): Fix the mixin and enable extensions tests on
 // LaCrOS.
+#include "ash/constants/ash_switches.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -61,13 +60,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "extensions/common/extension_builder.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#endif
-
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace utils = extension_function_test_utils;
 
@@ -316,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, EmptyCrx) {
   ASSERT_TRUE(RunInstallTest("empty.html", "empty.crx"));
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 static constexpr char kTestChildEmail[] = "test_child_user@google.com";
 static constexpr char kTestChildGaiaId[] = "8u8tuw09sufncmnaos";
 
@@ -516,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
           SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
 }
 
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {
  protected:

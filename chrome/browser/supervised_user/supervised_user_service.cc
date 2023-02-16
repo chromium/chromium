@@ -247,7 +247,7 @@ bool SupervisedUserService::IsURLFilteringEnabled() const {
   return account_info.capabilities.is_subject_to_parental_controls() ==
              signin::Tribool::kTrue &&
          base::FeatureList::IsEnabled(
-             supervised_users::kFilterWebsitesForSupervisedUsersOnThirdParty);
+             supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
 #endif
 }
 
