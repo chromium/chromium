@@ -993,13 +993,12 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return *this += -delta_elems;
   }
 
-  // Do not disable operator+() and operator-()!
-  // They provide OOB checks central to RawPtrBackupRefImpl correctness. Enable
-  // these regardless, which may be blocked later when attempting to apply the
-  // += or -= operation, when disabled. In the absence of these operators, the
-  // compiler is free to implicitly convert to the underlying T* representation
-  // and perform ordinary pointer arithmetic, thus invalidating the purpose
-  // behind disabling them.
+  // Do not disable operator+() and operator-().
+  // They provide OOB checks. Keep them enabled, which may be blocked later when
+  // attempting to apply the += or -= operation, when disabled. In the absence
+  // of operators +/-, the compiler is free to implicitly convert to the
+  // underlying T* representation and perform ordinary pointer arithmetic, thus
+  // invalidating the purpose behind disabling them.
   template <typename Z>
   friend PA_ALWAYS_INLINE raw_ptr operator+(const raw_ptr& p, Z delta_elems) {
     raw_ptr result = p;
