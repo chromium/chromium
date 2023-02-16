@@ -69,9 +69,11 @@ class ColorPaletteControllerImpl : public ColorPaletteController {
       DVLOG(1) << "No user pref service available.";
       return;
     }
-    pref_service->SetUint64(prefs::kDynamicColorSeedColor, seed_color);
+    // Set the color scheme before the seed color because there is a check in
+    // |GetStaticColor| to only return a color if the color scheme is kStatic.
     pref_service->SetInteger(prefs::kDynamicColorColorScheme,
                              static_cast<int>(ColorScheme::kStatic));
+    pref_service->SetUint64(prefs::kDynamicColorSeedColor, seed_color);
     // TODO(b/258719005): Call this after the native theme change has been
     // applied.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
