@@ -409,6 +409,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/web/java_script_console:unit_tests",
     "//ios/chrome/browser/web/print:unit_tests",
     "//ios/chrome/browser/web/session_state:unit_tests",
+    "//ios/chrome/browser/web_selection:unit_tests",
     "//ios/chrome/browser/web_state_list:unit_tests",
     "//ios/chrome/browser/web_state_list/web_usage_enabler:unit_tests",
     "//ios/chrome/browser/webui:unit_tests",

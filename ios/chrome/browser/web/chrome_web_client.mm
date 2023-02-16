@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/web/print/print_java_script_feature.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
+#import "ios/chrome/browser/web_selection/web_selection_java_script_feature.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
@@ -305,6 +306,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(
       password_manager::PasswordManagerJavaScriptFeature::GetInstance());
   features.push_back(LinkToTextJavaScriptFeature::GetInstance());
+  if (base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+    features.push_back(WebSelectionJavaScriptFeature::GetInstance());
+  }
 
   SearchEngineJavaScriptFeature::GetInstance()->SetDelegate(
       SearchEngineTabHelperFactory::GetInstance());
