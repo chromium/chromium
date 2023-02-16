@@ -24,5 +24,7 @@ const char kLocalSearchServiceMetricsHelpAppLauncherCount[] =
     "local_search_service.metrics.help_app_launcher_count";
 const char kLocalSearchServiceMetricsPersonalizationCount[] =
     "local_search_service.metrics.personalization_count";
+const char kLocalSearchServiceMetricsShortcutsAppCount[] =
+    "local_search_service.metrics.shortcuts_app_count";
 
 }  // namespace ash::local_search_service::prefs

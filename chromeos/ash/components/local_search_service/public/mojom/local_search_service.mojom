@@ -12,7 +12,8 @@ enum IndexId {
   kCrosSettings = 0,
   kHelpApp = 1,
   kHelpAppLauncher = 2,
-  kPersonalization = 3
+  kPersonalization = 3,
+  kShortcutsApp = 4
   // Add new client IDs here.
 };
 

@@ -32,6 +32,7 @@ class SearchMetricsReporter : public mojom::SearchMetricsReporter {
   static const char kHelpAppName[];
   static const char kHelpAppLauncherName[];
   static const char kPersonalizationName[];
+  static const char kShortcutsAppName[];
 
   // Registers prefs used by SearchMetricsReporter in |registry|.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

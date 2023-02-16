@@ -22,6 +22,8 @@ EnumTraits<ash::local_search_service::mojom::IndexId,
       return ash::local_search_service::mojom::IndexId::kHelpAppLauncher;
     case ash::local_search_service::IndexId::kPersonalization:
       return ash::local_search_service::mojom::IndexId::kPersonalization;
+    case ash::local_search_service::IndexId::kShortcutsApp:
+      return ash::local_search_service::mojom::IndexId::kShortcutsApp;
   }
   NOTREACHED();
   return ash::local_search_service::mojom::IndexId::kCrosSettings;
@@ -44,6 +46,9 @@ bool EnumTraits<ash::local_search_service::mojom::IndexId,
       return true;
     case ash::local_search_service::mojom::IndexId::kPersonalization:
       *output = ash::local_search_service::IndexId::kPersonalization;
+      return true;
+    case ash::local_search_service::mojom::IndexId::kShortcutsApp:
+      *output = ash::local_search_service::IndexId::kShortcutsApp;
       return true;
   }
   NOTREACHED();

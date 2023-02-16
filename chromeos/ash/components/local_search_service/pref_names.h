@@ -19,6 +19,7 @@ extern const char kLocalSearchServiceMetricsCrosSettingsCount[];
 extern const char kLocalSearchServiceMetricsHelpAppCount[];
 extern const char kLocalSearchServiceMetricsHelpAppLauncherCount[];
 extern const char kLocalSearchServiceMetricsPersonalizationCount[];
+extern const char kLocalSearchServiceMetricsShortcutsAppCount[];
 // TODO(thanhdng): clean this up after LSS is sandboxed.
 extern const char kLocalSearchServiceSyncMetricsCrosSettingsCount[];
 extern const char kLocalSearchServiceSyncMetricsHelpAppCount[];

@@ -17,7 +17,8 @@ enum class IndexId {
   kHelpApp = 1,
   kHelpAppLauncher = 2,
   kPersonalization = 3,
-  kMaxValue = kPersonalization,
+  kShortcutsApp = 4,
+  kMaxValue = kShortcutsApp,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

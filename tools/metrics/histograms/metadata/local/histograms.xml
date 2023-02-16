@@ -27,6 +27,7 @@ chromium-metrics-reviews@google.com.
   <variant name="HelpApp." summary="Help App"/>
   <variant name="HelpAppLauncher." summary="Help App Launcher"/>
   <variant name="Personalization." summary="Personalization App"/>
+  <variant name="ShortcutsApp." summary="Shortcuts App"/>
 </variants>
 
 <variants name="LocalStorageSizes">
