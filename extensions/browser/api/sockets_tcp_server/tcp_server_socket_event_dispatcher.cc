@@ -60,14 +60,14 @@ TCPServerSocketEventDispatcher::TCPServerSocketEventDispatcher(
   client_sockets_ = client_manager->data_;
 }
 
-TCPServerSocketEventDispatcher::~TCPServerSocketEventDispatcher() {}
+TCPServerSocketEventDispatcher::~TCPServerSocketEventDispatcher() = default;
 
-TCPServerSocketEventDispatcher::AcceptParams::AcceptParams() {}
+TCPServerSocketEventDispatcher::AcceptParams::AcceptParams() = default;
 
 TCPServerSocketEventDispatcher::AcceptParams::AcceptParams(
     const AcceptParams& other) = default;
 
-TCPServerSocketEventDispatcher::AcceptParams::~AcceptParams() {}
+TCPServerSocketEventDispatcher::AcceptParams::~AcceptParams() = default;
 
 void TCPServerSocketEventDispatcher::OnServerSocketListen(
     const std::string& extension_id,
