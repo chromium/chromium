@@ -108,6 +108,7 @@ gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
   if (!transform.HasPerspective()) {
     transform.Round2dTranslationComponents();
   }
+
   return transform;
 }
 
@@ -844,6 +845,13 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       return false;
     }
 
+    // TODO(bokan): This doesn't account for the local offset of an inline
+    // element within its container. The object-view-box inset will ensure the
+    // snapshot is rendered in the correct place but the pseudo is positioned
+    // w.r.t. to the container. This can look awkward since the opposing
+    // snapshot may have a different object-view-box. Inline positioning and
+    // scaling more generally might use some improvements.
+    // https://crbug.com/1416951.
     auto snapshot_matrix = ComputeViewportTransform(*layout_object);
 
     if (document_->GetLayoutView()
@@ -864,17 +872,27 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     snapshot_matrix.Zoom(1.0 / device_pixel_ratio_);
 
-    // ResizeObserverEntry is created to reuse the logic for parsing object size
-    // for different types of LayoutObjects.
-    auto* resize_observer_entry =
-        MakeGarbageCollected<ResizeObserverEntry>(element_data->target_element);
-    auto entry_size = resize_observer_entry->borderBoxSize()[0];
-    LayoutSize border_box_size_in_css_space =
-        layout_object->IsHorizontalWritingMode()
-            ? LayoutSize(LayoutUnit(entry_size->inlineSize()),
-                         LayoutUnit(entry_size->blockSize()))
-            : LayoutSize(LayoutUnit(entry_size->blockSize()),
-                         LayoutUnit(entry_size->inlineSize()));
+    LayoutSize border_box_size_in_css_space;
+
+    if (layout_object->IsSVGChild() || IsA<LayoutBox>(layout_object)) {
+      // ResizeObserverEntry is created to reuse the logic for parsing object
+      // size for different types of LayoutObjects. However, this works only
+      // for SVGChild and LayoutBox.
+      auto* resize_observer_entry = MakeGarbageCollected<ResizeObserverEntry>(
+          element_data->target_element);
+      auto entry_size = resize_observer_entry->borderBoxSize()[0];
+      border_box_size_in_css_space =
+          layout_object->IsHorizontalWritingMode()
+              ? LayoutSize(LayoutUnit(entry_size->inlineSize()),
+                           LayoutUnit(entry_size->blockSize()))
+              : LayoutSize(LayoutUnit(entry_size->blockSize()),
+                           LayoutUnit(entry_size->inlineSize()));
+    } else if (auto* box_model =
+                   DynamicTo<LayoutBoxModelObject>(layout_object)) {
+      border_box_size_in_css_space =
+          LayoutSize(box_model->BorderBoundingBox().size());
+    }
+
     if (float effective_zoom = layout_object->StyleRef().EffectiveZoom();
         std::abs(effective_zoom - device_pixel_ratio_) >=
         std::numeric_limits<float>::epsilon()) {
@@ -882,8 +900,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     }
 
     PhysicalRect visual_overflow_rect_in_layout_space;
-    if (auto* box = DynamicTo<LayoutBox>(layout_object))
+    if (auto* box = DynamicTo<LayoutBoxModelObject>(layout_object)) {
       visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(*box);
+    }
 
     WritingMode writing_mode = layout_object->StyleRef().GetWritingMode();
 
