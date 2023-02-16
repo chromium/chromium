@@ -1,15 +1,23 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation.
 
-name: Web platform tests with ChromeDriver
+name: Generate WPT report
 
 on:
-  pull_request:
   push:
     branches: 'main'
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   wpt:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -64,22 +72,6 @@ jobs:
           node test-report/htmlWptReport.mjs
           out/wptreport-chromedriver.json
           out/wptreport-chromedriver.html
-      - name: Update expectations
-        # Force run task even if the previous tasks failed.
-        if: ${{ always() }}
-        run: >
-          ./wpt/wpt update-expectations
-          --product chromium
-          --manifest MANIFEST.json
-          --metadata ./wpt-metadata/chromedriver
-          out/wptreport-chromedriver.json
-      - name: Upload expectations
-        # Force run task even if the previous tasks failed.
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: wpt-metadata-chromedriver
-          path: wpt-metadata/chromedriver
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -87,6 +79,22 @@ jobs:
         with:
           name: wpt-chromedriver-artifacts
           path: out
+      # The following steps should be done only for merges in `main`.
+      - name: Prepare Pages
+        if: ${{ always() }}
+        run: mkdir -p out/site; cp out/wptreport-chromedriver.html out/site/index.html
+      - name: Setup Pages
+        if: ${{ always() }}
+        uses: actions/configure-pages@v3
+      - name: Upload Pages artifact
+        if: ${{ always() }}
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: out/site
+      - name: Deploy to GitHub Pages
+        if: ${{ always() }}
+        id: deployment
+        uses: actions/deploy-pages@v1
 
 env:
   FORCE_COLOR: 3

@@ -48,7 +48,7 @@ function generateHtml(report) {
   return `
     <html lang="">
     <head>
-      <title>BiDi-CDP Mapper</title>
+      <title>WPT test results</title>
       <style>
         body { font-family: Roboto, serif; font-size: 13px; color: #202124; }
         .path { font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; line-height: 180%; padding: 5px 18px; margin: 0; }
