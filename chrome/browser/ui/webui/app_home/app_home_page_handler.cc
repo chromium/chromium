@@ -64,7 +64,7 @@ namespace webapps {
 
 namespace {
 
-const int kWebAppIconSize = 64;
+const int kWebAppIconSize = 128;
 
 // The Youtube app is incorrectly hardcoded to be a 'bookmark app'. However, it
 // is a platform app.
