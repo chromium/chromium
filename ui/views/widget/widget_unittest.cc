@@ -54,6 +54,7 @@
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget_deletion_observer.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/widget/widget_removals_observer.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -2319,12 +2320,22 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
 #endif
   EXPECT_EQ(ui::SHOW_STATE_NORMAL, show_state);
 
+  views::test::PropertyWaiter minimize_waiter(
+      base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget.get())),
+      true);
   widget->Minimize();
+  EXPECT_TRUE(minimize_waiter.Wait());
+
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
   EXPECT_EQ(ui::SHOW_STATE_MINIMIZED, show_state);
   EXPECT_EQ(expected_bounds, restored_bounds);
 
+  views::test::PropertyWaiter restore_waiter(
+      base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget.get())),
+      false);
   widget->Restore();
+  EXPECT_TRUE(restore_waiter.Wait());
+
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
   EXPECT_EQ(ui::SHOW_STATE_NORMAL, show_state);
   EXPECT_EQ(expected_bounds, restored_bounds);
