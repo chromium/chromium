@@ -336,9 +336,7 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less_or_equal.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/textureshadow/2d_nearest_mipmap_nearest_less.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 crbug.com/angleproject/7425 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
-crbug.com/1369290 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ RetryOnFailure ]
 
 ## Metal Intel ##
 
@@ -544,7 +542,6 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/extensions/
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/textures/misc/format-filterable-renderable.html [ Failure ]
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
-crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/fboinvalidate/format_02.html [ Failure ]
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/framebufferblit/conversion_08.html [ Failure ]
