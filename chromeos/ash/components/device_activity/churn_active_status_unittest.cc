@@ -312,17 +312,17 @@ TEST_F(ChurnActiveStatusAtInceptionDate, SetMaxActiveStatusValueAsInt) {
   const int max_28_bits_as_int = 268435455;
   EXPECT_EQ(ConvertBitSetToInt(max_28_bits), max_28_bits_as_int);
 
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
-  churn_active_status_->SetValueForTesting(max_28_bits);
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
+  churn_active_status->SetValueForTesting(max_28_bits);
 
   // Validate the max months since inception is:
   // 2^10 - 1, which is equal to 10 bits all turned on..
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(),
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
             std::pow(2, 10) - 1);
 
   // Validate the max active months bits is:
   // 2^18 - 1, which is equal to 18 bits all turned on.
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(), std::pow(2, 18) - 1);
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(), std::pow(2, 18) - 1);
 }
 
 TEST_F(ChurnActiveStatusAtInceptionDate, GetMinActiveStatusValueAsInt) {
@@ -331,56 +331,56 @@ TEST_F(ChurnActiveStatusAtInceptionDate, GetMinActiveStatusValueAsInt) {
   const int min_28_bits_as_int = 0;
   EXPECT_EQ(ConvertBitSetToInt(min_28_bits), min_28_bits_as_int);
 
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
-  churn_active_status_->SetValueForTesting(min_28_bits);
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
+  churn_active_status->SetValueForTesting(min_28_bits);
 
   // Validate the months since inception and active months are both 0.
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(), 0);
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(), 0);
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(), 0);
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(), 0);
 }
 
 TEST_F(ChurnActiveStatusAtInceptionDate, ActiveMonthsBitsIsZero) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(), 0);
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(), 0);
 }
 
 TEST_F(ChurnActiveStatusAtInceptionDate, ActiveMonthsBitsIsMaxed) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(), 0);
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(), 0);
 
   base::Time month;
   EXPECT_TRUE(base::Time::FromString(kInceptionTimeString, &month));
 
   for (int exponent = 0; exponent < ChurnActiveStatus::kActiveMonthsBitSize;
        exponent++) {
-    EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+    EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
               std::pow(2, exponent) - 1);
 
     month = GetNextMonth(month);
-    churn_active_status_->UpdateValue(month);
+    churn_active_status->UpdateValue(month);
   }
 
   // Verify that all bits are turned on for the past 18 months of active status.
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             std::pow(2, ChurnActiveStatus::kActiveMonthsBitSize) - 1);
 }
 
 TEST_F(ChurnActiveStatusAtInceptionDate,
        ActiveInceptionMonthDoesNotModifyValueBits) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(), 0);
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(), 0);
 
   // Inception month should not modify active bits.
   base::Time month;
   EXPECT_TRUE(base::Time::FromString(kInceptionTimeString, &month));
 
-  churn_active_status_->UpdateValue(month);
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(), 0);
+  churn_active_status->UpdateValue(month);
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(), 0);
 }
 
 TEST_F(ChurnActiveStatusAtInceptionDate, UpdateActiveSameMonth) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(), 0);
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(), 0);
 
   base::Time month;
   EXPECT_TRUE(base::Time::FromString(kInceptionTimeString, &month));
@@ -388,57 +388,57 @@ TEST_F(ChurnActiveStatusAtInceptionDate, UpdateActiveSameMonth) {
   // Update active status for inception month + 1 month.
   // Inception month does not represent an active month.
   month = GetNextMonth(month);
-  churn_active_status_->UpdateValue(month);
+  churn_active_status->UpdateValue(month);
 
-  const int active_bits_val = churn_active_status_->GetActiveMonthBits();
+  const int active_bits_val = churn_active_status->GetActiveMonthBits();
   const int expected_val = 1;
 
   EXPECT_EQ(active_bits_val, expected_val);
 
   // Attempt to update the value again using the same month.
-  churn_active_status_->UpdateValue(month);
+  churn_active_status->UpdateValue(month);
 
   // Verify that same month does not modify active month bits.
   EXPECT_EQ(active_bits_val, expected_val);
 }
 
 TEST_F(ChurnActiveStatusAtInceptionDate, ValidateUpdatingActiveStatus) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
 
   base::Time month_1;
   EXPECT_TRUE(base::Time::FromString("2000-02-01T00:00:00Z", &month_1));
-  churn_active_status_->UpdateValue(month_1);
+  churn_active_status->UpdateValue(month_1);
   std::bitset<ChurnActiveStatus::kMonthsSinceInceptionSize>
       expected_months_count("0000000001");
   std::bitset<ChurnActiveStatus::kActiveMonthsBitSize> expected_active_months(
       "000000000000000001");
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(),
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
             ConvertBitSetToInt(expected_months_count));
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             ConvertBitSetToInt(expected_active_months));
 
   base::Time month_2;
   EXPECT_TRUE(base::Time::FromString("2000-03-01T00:00:00Z", &month_2));
-  churn_active_status_->UpdateValue(month_2);
+  churn_active_status->UpdateValue(month_2);
   expected_months_count =
       std::bitset<ChurnActiveStatus::kMonthsSinceInceptionSize>("0000000010");
   expected_active_months = std::bitset<ChurnActiveStatus::kActiveMonthsBitSize>(
       "000000000000000011");
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(),
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
             ConvertBitSetToInt(expected_months_count));
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             ConvertBitSetToInt(expected_active_months));
 
   base::Time month_3;
   EXPECT_TRUE(base::Time::FromString("2000-06-01T00:00:00Z", &month_3));
-  churn_active_status_->UpdateValue(month_3);
+  churn_active_status->UpdateValue(month_3);
   expected_months_count =
       std::bitset<ChurnActiveStatus::kMonthsSinceInceptionSize>("0000000101");
   expected_active_months = std::bitset<ChurnActiveStatus::kActiveMonthsBitSize>(
       "000000000000011001");
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(),
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
             ConvertBitSetToInt(expected_months_count));
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             ConvertBitSetToInt(expected_active_months));
 }
 
@@ -454,65 +454,65 @@ class ChurnActiveStatusAtFixedDate : public ChurnActiveStatusBase {
 };
 
 TEST_F(ChurnActiveStatusAtFixedDate, UpdateActiveBefore18Months) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
 
   // Set month_1 to exactly 17 months after January 2023.
   base::Time month_1;
   EXPECT_TRUE(base::Time::FromString("2024-06-01T00:00:00Z", &month_1));
-  churn_active_status_->UpdateValue(month_1);
+  churn_active_status->UpdateValue(month_1);
   std::bitset<ChurnActiveStatus::kMonthsSinceInceptionSize>
       expected_months_count("0100100101");
   std::bitset<ChurnActiveStatus::kActiveMonthsBitSize> expected_active_months(
       "100000000000000001");
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(),
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
             ConvertBitSetToInt(expected_months_count));
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             ConvertBitSetToInt(expected_active_months));
 }
 
 TEST_F(ChurnActiveStatusAtFixedDate, UpdateActiveAt18Months) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
 
   // Set month_1 to exactly 18 months after January 2023.
   base::Time month_1;
   EXPECT_TRUE(base::Time::FromString("2024-07-01T00:00:00Z", &month_1));
-  churn_active_status_->UpdateValue(month_1);
+  churn_active_status->UpdateValue(month_1);
   std::bitset<ChurnActiveStatus::kMonthsSinceInceptionSize>
       expected_months_count("0100100110");
   std::bitset<ChurnActiveStatus::kActiveMonthsBitSize> expected_active_months(
       "000000000000000001");
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(),
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
             ConvertBitSetToInt(expected_months_count));
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             ConvertBitSetToInt(expected_active_months));
 }
 
 TEST_F(ChurnActiveStatusAtFixedDate, UpdateActiveAfter18Months) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
 
   // Set month_1 to exactly 19 months after January 2023.
   base::Time month_1;
   EXPECT_TRUE(base::Time::FromString("2024-08-01T00:00:00Z", &month_1));
-  churn_active_status_->UpdateValue(month_1);
+  churn_active_status->UpdateValue(month_1);
   std::bitset<ChurnActiveStatus::kMonthsSinceInceptionSize>
       expected_months_count("0100100111");
   std::bitset<ChurnActiveStatus::kActiveMonthsBitSize> expected_active_months(
       "000000000000000001");
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(),
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
             ConvertBitSetToInt(expected_months_count));
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             ConvertBitSetToInt(expected_active_months));
 }
 
 TEST_F(ChurnActiveStatusAtFixedDate, UpdateActiveFailsOnSettingBeforeDate) {
-  ChurnActiveStatus* churn_active_status_ = GetChurnActiveStatus();
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
 
   // Set month_1 to 1 month prior to January 2023.
   // Validate that the |value_| does not change when trying to update with
   // a past date.
   base::Time month_1;
   EXPECT_TRUE(base::Time::FromString("2022-12-01T00:00:00Z", &month_1));
-  EXPECT_EQ(churn_active_status_->UpdateValue(month_1), absl::nullopt);
+  EXPECT_EQ(churn_active_status->UpdateValue(month_1), absl::nullopt);
 
   // These two variables represent value for January 2023, NOT December 2022.
   std::bitset<ChurnActiveStatus::kMonthsSinceInceptionSize>
@@ -520,9 +520,9 @@ TEST_F(ChurnActiveStatusAtFixedDate, UpdateActiveFailsOnSettingBeforeDate) {
   std::bitset<ChurnActiveStatus::kActiveMonthsBitSize> expected_active_months(
       "000000000000000001");
 
-  EXPECT_EQ(churn_active_status_->GetMonthsSinceInception(),
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
             ConvertBitSetToInt(expected_months_count));
-  EXPECT_EQ(churn_active_status_->GetActiveMonthBits(),
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             ConvertBitSetToInt(expected_active_months));
 }
 
