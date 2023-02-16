@@ -19,10 +19,6 @@
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace image_service {
-class ImageService;
-}  // namespace image_service
-
 namespace history_clusters {
 
 class HistoryClustersService;
@@ -49,7 +45,6 @@ class QueryClustersState {
                               bool is_continuation)>;
 
   QueryClustersState(base::WeakPtr<HistoryClustersService> service,
-                     base::WeakPtr<image_service::ImageService> image_service,
                      const std::string& query,
                      bool recluster = false);
   ~QueryClustersState();
@@ -96,18 +91,11 @@ class QueryClustersState {
                      QueryClustersContinuationParams continuation_params,
                      std::vector<history::Cluster> clusters);
 
-  // Callback to `OnGotClusters()`.
-  void OnGotImagedClusters(base::TimeTicks query_start_time,
-                           ResultCallback callback,
-                           QueryClustersContinuationParams continuation_params,
-                           std::vector<history::Cluster> clusters);
-
   // Updates the internal state of raw labels for this next batch of `clusters`.
   void UpdateUniqueRawLabels(const std::vector<history::Cluster>& clusters);
 
   // Weak pointers to services we may outlive. Never nullptr except in tests.
   const base::WeakPtr<HistoryClustersService> service_;
-  const base::WeakPtr<image_service::ImageService> image_service_;
 
   // The string query the user entered into the searchbox.
   const std::string query_;

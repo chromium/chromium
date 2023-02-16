@@ -82,7 +82,7 @@ class QueryClustersStateTest : public testing::Test {
 
 TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
   base::HistogramTester histogram_tester;
-  QueryClustersState state(nullptr, nullptr, "");
+  QueryClustersState state(nullptr, "");
 
   std::vector<history::Cluster> raw_clusters;
   raw_clusters.push_back(history::Cluster(
@@ -113,7 +113,7 @@ TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
 }
 
 TEST_F(QueryClustersStateTest, CrossBatchDeduplication) {
-  QueryClustersState state(nullptr, nullptr, "myquery");
+  QueryClustersState state(nullptr, "myquery");
 
   {
     std::vector<history::Cluster> raw_clusters;
@@ -185,7 +185,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
       2, {GetHardcodedClusterVisit(3), GetHardcodedClusterVisit(4)}, {}, true};
 
   {
-    QueryClustersState state(nullptr, nullptr, "");
+    QueryClustersState state(nullptr, "");
 
     // If the response clusters is empty, the callback should not be invoked.
     InjectRawClustersAndExpectNoCallback(
@@ -224,7 +224,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
   }
 
   {
-    QueryClustersState state(nullptr, nullptr, "");
+    QueryClustersState state(nullptr, "");
 
     // `is_continuation` should be false on the first callback.
     // `can_load_more` should be true on non-last callback.
@@ -270,7 +270,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
 }
 
 TEST_F(QueryClustersStateTest, UniqueRawLabels) {
-  QueryClustersState state(nullptr, nullptr, "");
+  QueryClustersState state(nullptr, "");
 
   std::vector<history::ClusterVisit> cluster_visits = {
       GetHardcodedClusterVisit(1), GetHardcodedClusterVisit(2)};

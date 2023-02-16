@@ -11,7 +11,6 @@ component("image_service") {
   deps = [
     "//base",
     "//components/google/core/common",
-    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
     "//components/search_engines",
