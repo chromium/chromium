@@ -16,12 +16,15 @@ namespace policy {
 
 namespace {
 
+using enterprise_management::CrdSessionAvailability;
 using enterprise_management::RemoteCommand;
 using extensions::DictionaryBuilder;
 
 constexpr char kIdleTime[] = "deviceIdleTimeInSeconds";
 constexpr char kUserSessionType[] = "userSessionType";
 constexpr char kSupportedCrdSessionTypes[] = "supportedCrdSessionTypes";
+constexpr char kRemoteSupportAvailability[] = "remoteSupportAvailability";
+constexpr char kRemoteAccessAvailability[] = "remoteAccessAvailability";
 constexpr char kIsInManagedEnvironment[] = "isInManagedEnvironment";
 
 base::Value::List GetSupportedSessionTypes(bool is_in_managed_environment) {
@@ -37,6 +40,26 @@ base::Value::List GetSupportedSessionTypes(bool is_in_managed_environment) {
   }
 
   return result;
+}
+
+CrdSessionAvailability GetRemoteSupportAvailability(
+    UserSessionType current_user_session) {
+  if (!UserSessionSupportsRemoteSupport(current_user_session)) {
+    return CrdSessionAvailability::UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE;
+  }
+  return CrdSessionAvailability::AVAILABLE;
+}
+
+CrdSessionAvailability GetRemoteAccessAvailability(
+    bool is_in_managed_environment,
+    UserSessionType current_user_session) {
+  if (!is_in_managed_environment) {
+    return CrdSessionAvailability::UNAVAILABLE_UNMANAGED_ENVIRONMENT;
+  }
+  if (!UserSessionSupportsRemoteAccess(current_user_session)) {
+    return CrdSessionAvailability::UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE;
+  }
+  return CrdSessionAvailability::AVAILABLE;
 }
 
 }  // namespace
@@ -65,10 +88,15 @@ void DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload(
   std::string payload =
       extensions::DictionaryBuilder()
           .Set(kIdleTime, static_cast<int>(GetDeviceIdleTime().InSeconds()))
-          .Set(kUserSessionType, static_cast<int>(GetCurrentUserSessionType()))
+          .Set(kUserSessionType, GetCurrentUserSessionType())
           .Set(kIsInManagedEnvironment, is_in_managed_environment)
           .Set(kSupportedCrdSessionTypes,
                GetSupportedSessionTypes(is_in_managed_environment))
+          .Set(kRemoteSupportAvailability,
+               GetRemoteSupportAvailability(GetCurrentUserSessionType()))
+          .Set(kRemoteAccessAvailability,
+               GetRemoteAccessAvailability(is_in_managed_environment,
+                                           GetCurrentUserSessionType()))
           .ToJSON();
 
   CRD_DVLOG(1) << "Finished FETCH_CRD_AVAILABILITY_INFO remote command: "

@@ -63,6 +63,20 @@ enum CrdSessionType {
   REMOTE_SUPPORT_SESSION = 2;
 }
 
+// Enum indicating why a CRD session is or is not available.
+// This enum is used in the response payload of the
+// `FETCH_CRD_AVAILABILITY_INFO` remote command.
+enum CrdSessionAvailability {
+  CRD_SESSION_AVAILABILITY_UNKNOWN = 0;
+  // The CRD session is available and the admin can start a CRD session.
+  AVAILABLE = 1;
+  // The CRD session is not available for the current user session type.
+  UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE = 2;
+  // The CRD session is not available since the device is in an unmanaged
+  // environment.
+  UNAVAILABLE_UNMANAGED_ENVIRONMENT = 3;
+}
+
 // Data along with a cryptographic signature verifying their authenticity.
 message SignedData {
   // The data to be signed.

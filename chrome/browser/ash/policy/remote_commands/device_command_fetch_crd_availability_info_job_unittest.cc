@@ -33,6 +33,7 @@ using base::test::ParseJson;
 using base::test::ParseJsonDict;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
+using enterprise_management::CrdSessionAvailability;
 using enterprise_management::RemoteCommand;
 using extensions::DictionaryBuilder;
 using test::SessionTypeToString;
@@ -309,6 +310,78 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
       ParseJsonDict(result.payload).FindList("supportedCrdSessionTypes"),
       Not(ListContains(
           static_cast<int>(CrdSessionType::REMOTE_ACCESS_SESSION))));
+
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteAccessAvailability"),
+            CrdSessionAvailability::UNAVAILABLE_UNMANAGED_ENVIRONMENT);
+}
+
+TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
+       ShouldReturnRemoteSupportAvailability) {
+  TestSessionType session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
+
+  StartSessionOfType(session_type, user_manager());
+
+  Result result = CreateAndRunJob();
+
+  const CrdSessionAvailability expected = [&]() {
+    switch (session_type) {
+      case TestSessionType::kNoSession:
+      case TestSessionType::kGuestSession:
+      case TestSessionType::kUnaffiliatedUserSession:
+        return CrdSessionAvailability::
+            UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE;
+
+      case TestSessionType::kManuallyLaunchedArcKioskSession:
+      case TestSessionType::kManuallyLaunchedWebKioskSession:
+      case TestSessionType::kManuallyLaunchedKioskSession:
+      case TestSessionType::kAutoLaunchedArcKioskSession:
+      case TestSessionType::kAutoLaunchedWebKioskSession:
+      case TestSessionType::kAutoLaunchedKioskSession:
+      case TestSessionType::kManagedGuestSession:
+      case TestSessionType::kAffiliatedUserSession:
+        return CrdSessionAvailability::AVAILABLE;
+    }
+  }();
+
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteSupportAvailability"),
+            expected);
+}
+
+TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
+       ShouldReturnRemoteAccessAvailability) {
+  TestSessionType session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
+
+  AddActiveManagedNetwork();
+  StartSessionOfType(session_type, user_manager());
+
+  Result result = CreateAndRunJob();
+
+  const CrdSessionAvailability expected = [&]() {
+    switch (session_type) {
+      case TestSessionType::kNoSession:
+        return CrdSessionAvailability::AVAILABLE;
+
+      case TestSessionType::kGuestSession:
+      case TestSessionType::kUnaffiliatedUserSession:
+      case TestSessionType::kManuallyLaunchedArcKioskSession:
+      case TestSessionType::kManuallyLaunchedWebKioskSession:
+      case TestSessionType::kManuallyLaunchedKioskSession:
+      case TestSessionType::kAutoLaunchedArcKioskSession:
+      case TestSessionType::kAutoLaunchedWebKioskSession:
+      case TestSessionType::kAutoLaunchedKioskSession:
+      case TestSessionType::kManagedGuestSession:
+      case TestSessionType::kAffiliatedUserSession:
+        return CrdSessionAvailability::
+            UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE;
+    }
+  }();
+
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteAccessAvailability"),
+            expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(
