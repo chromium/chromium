@@ -8062,8 +8062,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Customize Chrome Tutorial Strings -->
-      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_OPEN_SIDE_PANEL" desc="The description of the 'open side panel' step in customize chrome tutorial">
+      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH" desc="The description of the IPH to start the customize chrome tutorial">
         Customize Chrome to give your browser a new look
+      </message>
+      <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_OPEN_SIDE_PANEL" desc="The description of the 'open side panel' step in customize chrome tutorial">
+        Click “Customize Chrome”
       </message>
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_CHANGE_THEME" desc="The description of the 'change theme' step in customize chrome tutorial">
         Click “Change theme” to explore themes inspired by artists, nature and more
