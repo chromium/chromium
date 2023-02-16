@@ -28,6 +28,23 @@ namespace {
 constexpr char kFakePsmDeviceActiveSecret[] =
     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
+constexpr char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
+
+// This value represents the UTC based activate date of the device formatted
+// YYYY-WW to reduce privacy granularity.
+// See
+// https://crsrc.org/o/src/third_party/chromiumos-overlay/chromeos-base/chromeos-activate-date/files/activate_date;l=67
+const char kFakeFirstActivateDate[] = "2022-50";
+
+// The decimal representation of the bit string `100010001100000000000001101`
+// The first 10 bits represent the number of months since 2000 is 275, which
+// represents the 2022-12.
+// The right 18 bits represent the churn cohort active status for past 18
+// months. The right most bit represents the status of previous active mont,
+// in this case, it represent 2022-12. And the second right most bit
+// represents 2022-11, etc.
+const int kFakeChurnActiveStatus = 109450913;
+
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
     version_info::Channel::STABLE /* chromeos_channel */,
     MarketSegment::MARKET_SEGMENT_UNKNOWN /* market_segment */,
@@ -49,6 +66,10 @@ class ChurnCohortUseCaseImplTest : public testing::Test {
     DeviceActivityController::RegisterPrefs(local_state_.registry());
 
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+
+    // Set the ActiveDate key in machine statistics as kFakeFirstActivateDate.
+    statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
+                                             kFakeFirstActivateDate);
 
     // Initialize the churn active status to a default value of 0.
     churn_active_status_ = std::make_unique<ChurnActiveStatus>(0);
@@ -91,5 +112,47 @@ TEST_F(ChurnCohortUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
 
   EXPECT_EQ(static_cast<int>(window_id.size()), 6);
   EXPECT_EQ(window_id, "202201");
+}
+
+TEST_F(ChurnCohortUseCaseImplTest, ValidateChurnMetadata) {
+  churn_active_status_->InitializeValue(kFakeChurnActiveStatus);
+  base::Time new_daily_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("01 Dec 2022 23:59:59 GMT", &new_daily_ts));
+  churn_cohort_use_case_impl_->SetWindowIdentifier(new_daily_ts);
+  std::string window_id_str =
+      churn_cohort_use_case_impl_->GetWindowIdentifier().value();
+  EXPECT_EQ(window_id_str, "202212");
+
+  FresnelImportDataRequest req =
+      churn_cohort_use_case_impl_->GenerateImportRequestBody().value();
+  EXPECT_EQ(req.device_metadata().hardware_id(), kHardwareClassKeyNotFound);
+  EXPECT_EQ(req.device_metadata().chromeos_channel(), Channel::CHANNEL_STABLE);
+  EXPECT_EQ(req.device_metadata().market_segment(),
+            MarketSegment::MARKET_SEGMENT_UNKNOWN);
+  EXPECT_FALSE(req.device_metadata().chromeos_version().empty());
+  EXPECT_EQ(req.import_data(0).window_identifier(), "202212");
+  EXPECT_TRUE(
+      req.import_data(0).churn_cohort_metadata().is_first_active_in_cohort());
+
+  base::Time first_active_week = churn_active_status_->GetFirstActiveWeek();
+  base::Time::Exploded exploded;
+  first_active_week.UTCExplode(&exploded);
+  EXPECT_EQ(exploded.year, 2022);
+  EXPECT_EQ(exploded.month, 12);
+}
+
+TEST_F(ChurnCohortUseCaseImplTest, ValidateFirstActiveStatus) {
+  base::Time new_daily_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("01 Nov 2022 23:59:59 GMT", &new_daily_ts));
+  churn_cohort_use_case_impl_->SetWindowIdentifier(new_daily_ts);
+  std::string window_id_str =
+      churn_cohort_use_case_impl_->GetWindowIdentifier().value();
+  EXPECT_EQ(window_id_str, "202211");
+  FresnelImportDataRequest req =
+      churn_cohort_use_case_impl_->GenerateImportRequestBody().value();
+  EXPECT_FALSE(
+      req.import_data(0).churn_cohort_metadata().is_first_active_in_cohort());
 }
 }  // namespace ash::device_activity

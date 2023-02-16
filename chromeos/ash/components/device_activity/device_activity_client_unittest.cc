@@ -52,6 +52,12 @@ namespace {
 // Note that we use midnight PST (UTC-8) for the unit tests.
 const char kFakeNowTimeString[] = "2000-01-01 08:00:00 GMT";
 
+// This value represents the UTC based activate date of the device formatted
+// YYYY-WW to reduce privacy granularity.
+// See
+// https://crsrc.org/o/src/third_party/chromiumos-overlay/chromeos-base/chromeos-activate-date/files/activate_date;l=67
+const char kFakeFirstActivateDate[] = "2022-50";
+
 // Milliseconds per minute.
 constexpr int kMillisecondsPerMinute = 60000;
 
@@ -516,6 +522,10 @@ class DeviceActivityClientTest : public testing::Test {
         pc_test_case.get_response());
     client_test_interface()->SetSaveLastPingDatesStatusResponse(
         pc_test_case.save_response());
+
+    // Set the ActiveDate key in machine statistics as kFakeFirstActivateDate.
+    statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
+                                             kFakeFirstActivateDate);
 
     // Initialize the churn active status to a default value of 0.
     churn_active_status_ = std::make_unique<ChurnActiveStatus>(0);

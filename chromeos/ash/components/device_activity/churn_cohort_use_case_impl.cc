@@ -17,6 +17,23 @@ namespace ash::device_activity {
 
 namespace psm_rlwe = private_membership::rlwe;
 
+namespace {
+
+bool IsFirstActiveInCohort(base::Time first_active_week,
+                           base::Time cohort_active_ts) {
+  base::Time::Exploded exploded;
+  first_active_week.UTCExplode(&exploded);
+  int first_active_year = exploded.year;
+  int first_active_month = exploded.month;
+
+  cohort_active_ts.UTCExplode(&exploded);
+  int cohort_year = exploded.year;
+  int cohort_month = exploded.month;
+
+  return first_active_year == cohort_year && first_active_month == cohort_month;
+}
+}  // namespace
+
 ChurnCohortUseCaseImpl::ChurnCohortUseCaseImpl(
     ChurnActiveStatus* churn_active_status_ptr,
     const std::string& psm_device_active_secret,
@@ -70,6 +87,19 @@ ChurnCohortUseCaseImpl::GenerateImportRequestBody() {
   import_data->set_plaintext_id(psm_id_str);
   import_data->set_window_identifier(window_id_str);
   import_data->set_is_pt_window_identifier(true);
+
+  ChurnCohortMetadata* cohort_metadata =
+      import_data->mutable_churn_cohort_metadata();
+  cohort_metadata->set_active_status_value(
+      churn_active_status_ptr_->GetValueAsInt());
+  base::Time first_active_week = churn_active_status_ptr_->GetFirstActiveWeek();
+  // Only when we can get the ActivateDate from VPD then set whether the
+  // device is first active during the churn cohort period. If we cannot
+  // get value from VPD, then we don't set value for this field.
+  if (first_active_week != base::Time::UnixEpoch()) {
+    cohort_metadata->set_is_first_active_in_cohort(IsFirstActiveInCohort(
+        churn_active_status_ptr_->GetFirstActiveWeek(), GetActiveTs()));
+  }
 
   return import_request;
 }

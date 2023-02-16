@@ -89,7 +89,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Note: The exact first active month cannot be determined because of the
   // week granularity, but the overall calculation for first active
   // should be accurate since most weeks fall within the month.
-  base::Time first_active_week_;
+  // Initialized to UnixEpoch().
+  base::Time first_active_week_ = base::Time::UnixEpoch();
 };
 
 }  // namespace device_activity
