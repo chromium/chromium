@@ -717,9 +717,6 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
       base::Contains(kItemTypesUsingLeadingIcons, kSuggestion.frontend_id);
 
   if (kSuggestion.is_loading) {
-    // TODO(crbug.com/1411172): Remove if we can confirm that `SetEnabled` does
-    // not do anything.
-    view->SetEnabled(false);
     view->AddChildView(std::make_unique<views::Throbber>())->Start();
     AddSpacerWithSize(*view, *layout_manager,
                       PopupBaseView::GetHorizontalPadding(),
