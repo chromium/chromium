@@ -146,13 +146,25 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
 
-  gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
-  holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
-                                 mailboxes);
-  ri->ConvertYUVAMailboxesToRGB(dest_mailbox_holder.mailbox,
-                                holder_->yuva_info().yuvColorSpace(), nullptr,
-                                holder_->yuva_info().planeConfig(),
-                                holder_->yuva_info().subsampling(), mailboxes);
+  // TODO(hitawala): Add support for software video decode.
+  if (video_frame->shared_image_format_type() !=
+          SharedImageFormatType::kLegacy &&
+      video_frame->HasTextures()) {
+    gpu::Mailbox src_mailbox = video_frame->mailbox_holder(0).mailbox;
+    ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, GL_TEXTURE_2D,
+                        0, 0, 0, 0, video_frame->coded_size().width(),
+                        video_frame->coded_size().height(),
+                        /*unpack_flip_y=*/false,
+                        /*unpack_premultiply_alpha=*/false);
+  } else {
+    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
+    holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
+                                   mailboxes);
+    ri->ConvertYUVAMailboxesToRGB(
+        dest_mailbox_holder.mailbox, holder_->yuva_info().yuvColorSpace(),
+        nullptr, holder_->yuva_info().planeConfig(),
+        holder_->yuva_info().subsampling(), mailboxes);
+  }
   return true;
 }
 
