@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -976,6 +977,11 @@ ScreenWinDisplay ScreenWin::GetScreenWinDisplayNearestDIPRect(
 ScreenWinDisplay ScreenWin::GetPrimaryScreenWinDisplay() const {
   const ScreenWinDisplay screen_win_display = GetScreenWinDisplay(
       MonitorInfoFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY));
+
+  // For help in diagnosing https://crbug.com/1413940.
+  auto bounds = screen_win_display.display().bounds();
+  base::debug::Alias(&bounds);
+
   // The Windows primary monitor is defined to have an origin of (0, 0).
   // Don't DCHECK if GetScreenWinDisplay returns the default monitor.
   DCHECK(screen_win_display.display().bounds().origin().IsOrigin() ||
