@@ -15,6 +15,7 @@ PASS Magnetometer: Test that sensor can be successfully created and its states a
 PASS Magnetometer: no exception is thrown when calling start() on already started sensor.
 PASS Magnetometer: no exception is thrown when calling stop() on already stopped sensor.
 PASS Magnetometer: Test that fresh reading is fetched on start().
+PASS Magnetometer: Losing visibility must cause readings to be suspended.
 PASS Magnetometer: frequency hint works.
 PASS Magnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors.
 PASS Magnetometer: throw 'TypeError' if frequency is invalid.
@@ -36,6 +37,7 @@ FAIL UncalibratedMagnetometer: Test that sensor can be successfully created and 
 FAIL UncalibratedMagnetometer: no exception is thrown when calling start() on already started sensor. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: no exception is thrown when calling stop() on already stopped sensor. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: Test that fresh reading is fetched on start(). assert_implements: UncalibratedMagnetometer is not supported. undefined
+FAIL UncalibratedMagnetometer: Losing visibility must cause readings to be suspended. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: frequency hint works. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: throw 'TypeError' if frequency is invalid. assert_implements: UncalibratedMagnetometer is not supported. undefined

@@ -15,6 +15,7 @@ FAIL GeolocationSensor: Test that sensor can be successfully created and its sta
 FAIL GeolocationSensor: no exception is thrown when calling start() on already started sensor. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: no exception is thrown when calling stop() on already stopped sensor. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: Test that fresh reading is fetched on start(). assert_implements: GeolocationSensor is not supported. undefined
+FAIL GeolocationSensor: Losing visibility must cause readings to be suspended. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: frequency hint works. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: Readings delivered by shared platform sensor are immediately accessible to all sensors. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: throw 'TypeError' if frequency is invalid. assert_implements: GeolocationSensor is not supported. undefined
