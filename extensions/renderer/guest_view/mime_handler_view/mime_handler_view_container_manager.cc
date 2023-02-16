@@ -144,7 +144,7 @@ MimeHandlerViewContainerManager::MimeHandlerViewContainerManager(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {}
 
-MimeHandlerViewContainerManager::~MimeHandlerViewContainerManager() {}
+MimeHandlerViewContainerManager::~MimeHandlerViewContainerManager() = default;
 
 void MimeHandlerViewContainerManager::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {

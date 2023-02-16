@@ -75,7 +75,7 @@ class RenderFrameStatus final : public content::RenderFrameObserver {
  public:
   explicit RenderFrameStatus(content::RenderFrame* render_frame)
       : content::RenderFrameObserver(render_frame) {}
-  ~RenderFrameStatus() final {}
+  ~RenderFrameStatus() final = default;
 
   bool is_ok() { return render_frame() != nullptr; }
 
@@ -89,7 +89,7 @@ GuestViewInternalCustomBindings::GuestViewInternalCustomBindings(
     ScriptContext* context)
     : ObjectBackedNativeHandler(context) {}
 
-GuestViewInternalCustomBindings::~GuestViewInternalCustomBindings() {}
+GuestViewInternalCustomBindings::~GuestViewInternalCustomBindings() = default;
 
 void GuestViewInternalCustomBindings::AddRoutes() {
   RouteHandlerFunction(

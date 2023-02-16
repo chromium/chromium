@@ -30,7 +30,7 @@ MimeHandlerViewFrameContainer::MimeHandlerViewFrameContainer(
           GetSourceFrame()->GetSecurityOrigin().CanAccess(
               blink::WebSecurityOrigin::Create(resource_url))) {}
 
-MimeHandlerViewFrameContainer::~MimeHandlerViewFrameContainer() {}
+MimeHandlerViewFrameContainer::~MimeHandlerViewFrameContainer() = default;
 
 blink::WebLocalFrame* MimeHandlerViewFrameContainer::GetSourceFrame() {
   return container_manager_->render_frame()->GetWebFrame();
