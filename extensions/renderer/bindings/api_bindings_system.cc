@@ -51,7 +51,7 @@ APIBindingsSystem::APIBindingsSystem(
   }
 }
 
-APIBindingsSystem::~APIBindingsSystem() {}
+APIBindingsSystem::~APIBindingsSystem() = default;
 
 v8::Local<v8::Object> APIBindingsSystem::CreateAPIInstance(
     const std::string& api_name,

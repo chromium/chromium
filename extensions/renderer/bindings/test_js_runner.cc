@@ -70,7 +70,7 @@ TestJSRunner::Suspension::~Suspension() {
   test_runner->Flush();
 }
 
-TestJSRunner::PendingCall::PendingCall() {}
+TestJSRunner::PendingCall::PendingCall() = default;
 TestJSRunner::PendingCall::~PendingCall() = default;
 TestJSRunner::PendingCall::PendingCall(PendingCall&& other) = default;
 

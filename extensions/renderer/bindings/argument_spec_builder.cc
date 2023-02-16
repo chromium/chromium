@@ -18,7 +18,7 @@ ArgumentSpecBuilder::ArgumentSpecBuilder(ArgumentType type,
     spec_->set_name(name);
 }
 
-ArgumentSpecBuilder::~ArgumentSpecBuilder() {}
+ArgumentSpecBuilder::~ArgumentSpecBuilder() = default;
 
 ArgumentSpecBuilder& ArgumentSpecBuilder::MakeOptional() {
   spec_->set_optional(true);

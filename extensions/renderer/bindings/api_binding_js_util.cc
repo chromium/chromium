@@ -33,7 +33,7 @@ APIBindingJSUtil::APIBindingJSUtil(APITypeReferenceMap* type_refs,
       event_handler_(event_handler),
       exception_handler_(exception_handler) {}
 
-APIBindingJSUtil::~APIBindingJSUtil() {}
+APIBindingJSUtil::~APIBindingJSUtil() = default;
 
 gin::ObjectTemplateBuilder APIBindingJSUtil::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {

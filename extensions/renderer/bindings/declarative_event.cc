@@ -137,7 +137,7 @@ DeclarativeEvent::DeclarativeEvent(
   }
 }
 
-DeclarativeEvent::~DeclarativeEvent() {}
+DeclarativeEvent::~DeclarativeEvent() = default;
 
 gin::ObjectTemplateBuilder DeclarativeEvent::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {

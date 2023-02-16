@@ -13,8 +13,8 @@
 
 namespace extensions {
 
-APIBindingTest::APIBindingTest() {}
-APIBindingTest::~APIBindingTest() {}
+APIBindingTest::APIBindingTest() = default;
+APIBindingTest::~APIBindingTest() = default;
 
 v8::ExtensionConfiguration* APIBindingTest::GetV8ExtensionConfiguration() {
   return nullptr;

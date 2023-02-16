@@ -108,7 +108,7 @@ APIEventHandler::APIEventHandler(
     : listeners_changed_(listeners_changed),
       context_owner_id_getter_(context_owner_id_getter),
       exception_handler_(exception_handler) {}
-APIEventHandler::~APIEventHandler() {}
+APIEventHandler::~APIEventHandler() = default;
 
 void APIEventHandler::SetResponseValidator(
     std::unique_ptr<APIResponseValidator> validator) {

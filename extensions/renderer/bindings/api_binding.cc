@@ -360,7 +360,7 @@ APIBinding::APIBinding(const std::string& api_name,
   }
 }
 
-APIBinding::~APIBinding() {}
+APIBinding::~APIBinding() = default;
 
 v8::Local<v8::Object> APIBinding::CreateInstance(
     v8::Local<v8::Context> context) {

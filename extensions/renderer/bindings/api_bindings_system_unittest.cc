@@ -126,7 +126,7 @@ bool AllowPromises(v8::Local<v8::Context> context) {
 
 }  // namespace
 
-APIBindingsSystemTest::APIBindingsSystemTest() {}
+APIBindingsSystemTest::APIBindingsSystemTest() = default;
 APIBindingsSystemTest::~APIBindingsSystemTest() = default;
 
 void APIBindingsSystemTest::SetUp() {

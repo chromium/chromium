@@ -548,7 +548,7 @@ APISignature::APISignature(
   }
 }
 
-APISignature::~APISignature() {}
+APISignature::~APISignature() = default;
 
 // static
 std::unique_ptr<APISignature> APISignature::CreateFromValues(

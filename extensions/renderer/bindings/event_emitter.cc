@@ -35,7 +35,7 @@ EventEmitter::EventEmitter(bool supports_filters,
       listeners_(std::move(listeners)),
       exception_handler_(exception_handler) {}
 
-EventEmitter::~EventEmitter() {}
+EventEmitter::~EventEmitter() = default;
 
 gin::ObjectTemplateBuilder EventEmitter::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {

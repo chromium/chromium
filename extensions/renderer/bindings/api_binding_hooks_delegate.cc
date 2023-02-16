@@ -6,7 +6,7 @@
 
 namespace extensions {
 
-APIBindingHooksDelegate::~APIBindingHooksDelegate() {}
+APIBindingHooksDelegate::~APIBindingHooksDelegate() = default;
 
 bool APIBindingHooksDelegate::CreateCustomEvent(
     v8::Local<v8::Context> context,

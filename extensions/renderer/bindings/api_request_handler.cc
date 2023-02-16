@@ -201,7 +201,7 @@ APIRequestHandler::AsyncResultHandler::AsyncResultHandler(
     custom_callback_.Reset(isolate, custom_callback);
 }
 
-APIRequestHandler::AsyncResultHandler::~AsyncResultHandler() {}
+APIRequestHandler::AsyncResultHandler::~AsyncResultHandler() = default;
 
 void APIRequestHandler::AsyncResultHandler::ResolveRequest(
     v8::Local<v8::Context> context,
@@ -423,7 +423,7 @@ APIRequestHandler::PendingRequest::PendingRequest(
     user_gesture_token = std::move(gesture_token);
 }
 
-APIRequestHandler::PendingRequest::~PendingRequest() {}
+APIRequestHandler::PendingRequest::~PendingRequest() = default;
 APIRequestHandler::PendingRequest::PendingRequest(PendingRequest&&) = default;
 APIRequestHandler::PendingRequest& APIRequestHandler::PendingRequest::operator=(
     PendingRequest&&) = default;
@@ -438,7 +438,7 @@ APIRequestHandler::APIRequestHandler(
       exception_handler_(exception_handler),
       interaction_provider_(interaction_provider) {}
 
-APIRequestHandler::~APIRequestHandler() {}
+APIRequestHandler::~APIRequestHandler() = default;
 
 v8::Local<v8::Promise> APIRequestHandler::StartRequest(
     v8::Local<v8::Context> context,
