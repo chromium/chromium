@@ -30,6 +30,7 @@
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
+#import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
@@ -927,14 +928,25 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
 TEST_F(NativeWidgetMacTest, VisibleAfterNativeParentDeminiaturize) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
   [native_parent makeKeyAndOrderFront:nil];
+
+  base::scoped_nsobject<WindowedNSNotificationObserver> miniaturizationObserver(
+      [[WindowedNSNotificationObserver alloc]
+          initForNotification:NSWindowDidMiniaturizeNotification
+                       object:native_parent]);
   [native_parent miniaturize:nil];
+  [miniaturizationObserver wait];
   Widget* child = AttachPopupToNativeParent(native_parent);
 
   child->Show();
   EXPECT_FALSE([native_parent isVisible]);
   EXPECT_FALSE(child->IsVisible());  // Parent is hidden so child is also.
 
+  base::scoped_nsobject<WindowedNSNotificationObserver>
+      deminiaturizationObserver([[WindowedNSNotificationObserver alloc]
+          initForNotification:NSWindowDidDeminiaturizeNotification
+                       object:native_parent]);
   [native_parent deminiaturize:nil];
+  [deminiaturizationObserver wait];
   EXPECT_TRUE([native_parent isVisible]);
   // Don't WaitForVisibleCounts() here: deminiaturize is synchronous, so any
   // spurious _occlusion_ state change would have already occurred. Further
