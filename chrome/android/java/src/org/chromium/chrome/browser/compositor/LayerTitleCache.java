@@ -135,10 +135,9 @@ public class LayerTitleCache {
             title.register();
         }
 
-        // Boolean determines if tab title text needs to be bolded.
-        boolean isBold = false;
+        // Boolean determines if a tab is selected.
+        boolean isSelectedTab = false;
 
-        // Bold title text for TSR detached.
         if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
             if (mTabModelSelector == null) {
                 return titleString;
@@ -147,11 +146,11 @@ public class LayerTitleCache {
             // Get currently selected tab id.
             int selectedTabId = mTabModelSelector.getCurrentTabId();
 
-            // Selected tab title text should be bolded.
-            isBold = tabId == selectedTabId;
+            // Determine if the current tab is the selected tab.
+            isSelectedTab = tabId == selectedTabId;
         }
 
-        title.set(titleBitmapFactory.getTitleBitmap(mContext, titleString, isBold),
+        title.set(titleBitmapFactory.getTitleBitmap(mContext, titleString, isSelectedTab),
                 titleBitmapFactory.getFaviconBitmap(originalFavicon), fetchFaviconFromHistory);
 
         if (mNativeLayerTitleCache != 0) {
