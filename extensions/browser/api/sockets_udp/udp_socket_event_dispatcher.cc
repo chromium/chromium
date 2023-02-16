@@ -51,14 +51,14 @@ UDPSocketEventDispatcher::UDPSocketEventDispatcher(
   sockets_ = manager->data_;
 }
 
-UDPSocketEventDispatcher::~UDPSocketEventDispatcher() {}
+UDPSocketEventDispatcher::~UDPSocketEventDispatcher() = default;
 
-UDPSocketEventDispatcher::ReceiveParams::ReceiveParams() {}
+UDPSocketEventDispatcher::ReceiveParams::ReceiveParams() = default;
 
 UDPSocketEventDispatcher::ReceiveParams::ReceiveParams(
     const ReceiveParams& other) = default;
 
-UDPSocketEventDispatcher::ReceiveParams::~ReceiveParams() {}
+UDPSocketEventDispatcher::ReceiveParams::~ReceiveParams() = default;
 
 void UDPSocketEventDispatcher::OnSocketBind(const std::string& extension_id,
                                             int socket_id) {
