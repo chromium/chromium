@@ -1,8 +1,119 @@
 # ChromeOS Dictation
 
-<!-- TODO(akihiroota): document the rest of Dictation. -->
 Dictation is a ChromeOS accessibility feature that allows users to type and edit
 text with their voice.
+
+## Summary
+
+### User flow
+
+Dictation can be toggled on in two ways: by pressing Search + D or by pressing the
+microphone icon in the status tray. Once toggled, Dictation starts speech
+recognition and the user can start speaking. If a command is recognized, then
+it will execute the command to the best of its ability; otherwise it will input
+the recognized text as-is. Dictation can be turned off in the same two ways
+mentioned above; it will automatically turn off if no speech has been
+recognized within a short period of time. Lastly, Dictation can only be used
+when focus is on an editable field (textarea, input, contenteditable, etc). 
+
+### Technical overview
+
+Dictation is implemented primarily as a chrome extension in JavaScript. It also
+has a few C++ components, such as the UI and APIs that it uses. After receiving
+a toggle, the Dictation extension starts speech recognition via the
+chrome.speechRecognitionPrivate API. The API forwards all speech recognition
+results to the Dictation extension, where it parses text to see if it matched a
+command. If a command was detected, then it will verify and execute the
+command to the best of its ability; otherwise, it will input the recognized text
+using IME APIs. Throughout this flow, the main Dictation object uses the
+chrome.accessibilityPrivate API to update the Dictation UI (which lives in C++)
+so that the user is aware of Dictation's internal state.
+
+It's also worth noting that Dictation utilizes two [DLCs](https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice/docs/developer.md): Pumpkin and SODA.
+Pumpkin is a semantic parser that allows Dictation to extract meaning out of
+recognized text. SODA stands for "speech on-device API" and turns the user's
+speech into text on-device (without sending it to a Google server). When Pumpkin
+isn't available or fails to download, Dictation falls back to regex-based
+speech parsing. Similarly, when SODA isn't available, Dictation falls back to
+network speech recognition.
+
+## Code structure
+
+The majority of Dictation code lives in the [dictation/](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/) extension directory.
+There's also a small amount of C++ code, most of which is for the Dictation UI.
+
+### Dictation JavaScript
+
+The `dictation/` extension directory is broken into a few subdirectories
+organized by functionality:
+
+* The `parse/` directory contains all code related to speech parsing, which
+is the process of turning recognized text into a command. Dictation currently
+utilizes two parsing strategies: regex-based, which uses regular expressions to
+match text to known commands, and Pumpkin-based, which uses a semantic parser
+developed by Google (see more about Pumpkin below).
+
+* The `macros/` directory contains all code for macro (also known as a command)
+implementation.
+
+All other Dictation JavaScript code is located in the main `dictation/`
+directory. Some noteworthy classes are:
+
+* `Dictation`, which is the main object. It handles setup/teardown, interacts
+with APIs like chrome.speechRecognitionPrivate and chrome.settingsPrivate, and
+owns many other essential classes.
+
+* `InputController`, which handles all interaction with editable fields. In its
+current form, it uses various IME APIs to enter text into the editable, as well
+as listen to changes in the editable value. It's also responsible for
+calculating the data about the focused editable node, the current value, the
+selection start, and selection end. Lastly, it implements many of the editing
+commands supported by Dictation.
+
+* `UIController`, which handles all interaction with the Dictation UI. Since the
+Dictation UI is implemented as a View in C++, it uses the
+chrome.accessibilityPrivate API to manipulate the UI. Generally, all changes to
+the UI should go through the UIController.
+
+* `FocusHandler`, which tracks the currently focused node using the automation
+API. Dictation can only work on editable nodes, so FocusHandler is used mostly
+to check this precondition (and also to access to the node's accessibility
+data).
+
+* `LocaleInfo`, which is the source of truth for the Dictation locale and whether
+or not certain behaviors are supported in the current locale.
+
+### Dictation C++
+
+* `DictationBubbleController` manages the Dictation UI from the C++ side and
+provides an entry point for updating/changing the UI.
+
+* `DictationBubbleView` is the actual implementation of the Dictation UI.
+
+* `Dictation`, which used to contain the feature's implementation before it
+was moved to JavaScript. It now contains a small amount of logic around
+supported locales.
+
+* `AccessibilityController` exposes several Dictation-related APIs, mostly
+around updating the UI and showing notifications.
+
+* `AccessibilityManager` contains a fair amount of Dictation logic, specifically
+around setting up/tearing down the extension, managing DLC downloads, and
+showing notifications to the user.
+
+### Testing
+
+* See the `dictation/` extension directory for all JavaScript extension tests
+
+* See `dictation_browsertest.cc` for C++ integration tests. Note that these
+tests hook into a JavaScript class called `DictationTestSupport` and allows the
+C++ tests to execute JavaScript or wait for information to propagate to the
+JavaScript side before continuing.
+
+Two C++ helper classes that are worth noting are `DictationBubbleTestHelper`,
+which allows tests to query the state of the Dictation UI or wait for it
+to reach a certain state, and `SpeechRecognitionTestHelper`, which allows tests
+to easily interact with speech recognizers.
 
 ## Semantic parsing with Pumpkin
 
