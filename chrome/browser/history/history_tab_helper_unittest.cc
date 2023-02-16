@@ -87,6 +87,12 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
         ->SetForceEligibleTabForTesting(true);
   }
 
+  void TearDown() override {
+    // Drop unowned reference before destroying object that owns it.
+    history_service_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {{HistoryServiceFactory::GetInstance(),
              HistoryServiceFactory::GetDefaultFactory()}};
