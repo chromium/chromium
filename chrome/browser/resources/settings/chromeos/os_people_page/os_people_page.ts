@@ -27,37 +27,27 @@ import './os_sync_page.js';
 
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {LockStateMixin} from '../lock_state_mixin.js';
 import {OsPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_settings_routes.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
-import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
 import {getTemplate} from './os_people_page.html.js';
 
 const OsSettingsPeoplePageElementBase =
-    mixinBehaviors(
-        [LockStateBehavior],
-        WebUiListenerMixin(
-            I18nMixin(RouteObserverMixin(DeepLinkingMixin(PolymerElement)))),
-        ) as {
-      new (): PolymerElement & RouteObserverMixinInterface &
-          I18nMixinInterface & WebUiListenerMixinInterface &
-          DeepLinkingMixinInterface & LockStateBehaviorInterface,
-    };
+    LockStateMixin(RouteObserverMixin(DeepLinkingMixin(PolymerElement)));
 
 class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   static get is() {

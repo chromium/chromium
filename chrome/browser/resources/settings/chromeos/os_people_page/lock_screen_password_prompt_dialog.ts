@@ -19,22 +19,14 @@
 import '../../controls/password_prompt_dialog.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from '../common/types.js';
+import {LockStateMixin} from '../lock_state_mixin.js';
 
 import {getTemplate} from './lock_screen_password_prompt_dialog.html.js';
-import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
-
 
 const SettingsLockScreenPasswordPromptDialogElementBase =
-    mixinBehaviors(
-        [
-          LockStateBehavior,
-        ],
-        I18nMixin(PolymerElement)) as
-    Constructor<PolymerElement&I18nMixinInterface&LockStateBehaviorInterface>;
+    LockStateMixin(PolymerElement);
 
 class SettingsLockScreenPasswordPromptDialogElement extends
     SettingsLockScreenPasswordPromptDialogElementBase {

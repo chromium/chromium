@@ -20,14 +20,11 @@ import '../os_settings_icons.html.js';
 import '../../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from '../common/types.js';
-import {LockStateBehavior, LockStateBehaviorInterface} from '../os_people_page/lock_state_behavior.js';
+import {LockStateMixin} from '../lock_state_mixin.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
@@ -91,13 +88,7 @@ interface SettingsMultidevicePermissionsSetupDialogElement {
 }
 
 const SettingsMultidevicePermissionsSetupDialogElementBase =
-    mixinBehaviors(
-        [
-          LockStateBehavior,
-        ],
-        WebUiListenerMixin(I18nMixin(PolymerElement))) as
-    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
-                LockStateBehaviorInterface>;
+    LockStateMixin(PolymerElement);
 
 class SettingsMultidevicePermissionsSetupDialogElement extends
     SettingsMultidevicePermissionsSetupDialogElementBase {

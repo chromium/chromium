@@ -16,21 +16,14 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ConfigureResult} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from '../common/types.js';
+import {LockStateMixin} from '../lock_state_mixin.js';
 
 import {getTemplate} from './local_data_recovery_dialog.html.js';
-import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
 
-const LocalDataRecoveryDialogElementBase = mixinBehaviors(
-                                               [
-                                                 LockStateBehavior,
-                                               ],
-                                               I18nMixin(PolymerElement)) as
-    Constructor<PolymerElement&I18nMixinInterface&LockStateBehaviorInterface>;
+const LocalDataRecoveryDialogElementBase = LockStateMixin(PolymerElement);
 
 interface LocalDataRecoveryDialogElement {
   $: {

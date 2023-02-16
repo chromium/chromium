@@ -424,7 +424,7 @@ function registerLockScreenTests() {
     // (1) User selects PIN_PASSSWORD, and successfully sets a pin, adding
     //     QuickUnlockMode.PIN to active modes.
     // (2) User selects PASSWORD, QuickUnlockMode.PIN capability is cleared
-    //     from the active modes, notifying LockStateBehavior to call
+    //     from the active modes, notifying LockStateMixin to call
     //     updateUnlockType to fetch the active modes asynchronously.
     // (3) User selects PIN_PASSWORD, but the process from step 2 has
     //     not yet completed.

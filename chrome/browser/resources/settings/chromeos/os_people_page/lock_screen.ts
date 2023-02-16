@@ -30,36 +30,27 @@ import '../multidevice_page/multidevice_smartlock_item.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {LockScreenUnlockType, LockStateMixin} from '../lock_state_mixin.js';
 import {routes} from '../os_settings_routes.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
 import {getTemplate} from './lock_screen.html.js';
-import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
 import {getPluralStringFromProxy} from './plural_string_proxy_wrapper.js';
 
 const SettingsLockScreenElementBase =
-    mixinBehaviors(
-        [LockStateBehavior],
-        RouteObserverMixin(
-            WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))))) as
-    Constructor<PolymerElement&DeepLinkingMixinInterface&I18nMixinInterface&
-                WebUiListenerMixinInterface&RouteObserverMixinInterface&
-                LockStateBehaviorInterface>;
+    RouteObserverMixin(LockStateMixin(DeepLinkingMixin(PolymerElement)));
 
 class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   static get is() {
