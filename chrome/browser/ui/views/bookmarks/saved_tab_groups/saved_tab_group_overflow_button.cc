@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,12 +24,10 @@
 SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
     : views::MenuButton(std::move(callback), u"") {
-  // TODO(crbug/1415488): Change the accessible name and tooltip text to IDS
-  // strings when UX gives the final strings to use. Can use
-  // IDS_BOOKMARK_BAR_OVERFLOW_BUTTON_TOOLTIP as a template for the tooltip
-  // text.
-  SetAccessibleName(u"Saved Group Overflow Accessible Name");
-  SetTooltipText(u"Hidden saved groups");
+  SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
+  SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP));
   ConfigureInkDropForToolbar(this);
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -45,11 +44,10 @@ void SavedTabGroupOverflowButton::GetAccessibleNodeData(
     node_data->SetNameExplicitlyEmpty();
   }
 
-  // TODO(crbug/1415488): Add an IDS string instead of the hard coded value. Can
-  // use IDS_ACCNAME_BOOKMARKS_CHEVRON as a template.
   views::MenuButton::GetAccessibleNodeData(node_data);
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                                "Menu containing hidden saved groups");
+  node_data->AddStringAttribute(
+      ax::mojom::StringAttribute::kRoleDescription,
+      l10n_util::GetStringUTF8(IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
 }
 
 std::unique_ptr<views::LabelButtonBorder>

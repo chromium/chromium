@@ -7780,6 +7780,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SAVED_TAB_GROUPS" desc="The accessible name for the area in the bookmarks bar for saved tab groups.">
         Saved Tab Groups
       </message>
+      <message name="IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON" desc="The accessible name for the chevron visible there are more than 4 groups saved in the bookmarks bar.">
+        Menu containing hidden saved tab groups
+      </message>
+      <message name="IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP" desc="Text shown on the overflow chevron, if visible">
+        Hidden saved tab groups
+      </message>
       <message name="IDS_ACCNAME_BOOKMARKS_CHEVRON" desc="The accessible name for the chevron visible if not all the bookmark buttons fit.">
         Menu containing hidden bookmarks
       </message>
