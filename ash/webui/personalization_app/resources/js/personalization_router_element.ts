@@ -30,6 +30,14 @@ export enum Paths {
   USER = '/user',
 }
 
+export interface QueryParams {
+  id?: string;
+  googlePhotosAlbumId?: string;
+  // If present, expected to always be 'true'.
+  googlePhotosAlbumIsShared?: 'true';
+  topicSource?: string;
+}
+
 export function isPathValid(path: string|null): boolean {
   return !!path && Object.values(Paths).includes(path as Paths);
 }
@@ -73,12 +81,7 @@ export class PersonalizationRouter extends PolymerElement {
   }
   private path_: string;
   private query_: string;
-  private queryParams_: {
-    id?: string,
-    googlePhotosAlbumId?: string,
-    googlePhotosAlbumIsShared?: string,
-    topicSource?: string,
-  };
+  private queryParams_: QueryParams;
 
   static instance(): PersonalizationRouter {
     return document.querySelector(PersonalizationRouter.is) as
@@ -125,10 +128,14 @@ export class PersonalizationRouter extends PolymerElement {
 
   /** Navigate to a specific album in the Google Photos collection page. */
   selectGooglePhotosAlbum(album: GooglePhotosAlbum) {
-    this.goToRoute(Paths.GOOGLE_PHOTOS_COLLECTION, {
-      googlePhotosAlbumId: album.id,
-      googlePhotosAlbumIsShared: album.isShared,
-    });
+    this.goToRoute(
+        Paths.GOOGLE_PHOTOS_COLLECTION,
+        {
+          googlePhotosAlbumId: album.id,
+          // Only include key if album is shared.
+          ...(album.isShared ? {googlePhotosAlbumIsShared: 'true'} : false),
+        },
+    );
   }
 
   /** Navigate to albums subpage of specific topic source. */
@@ -136,7 +143,7 @@ export class PersonalizationRouter extends PolymerElement {
     this.goToRoute(Paths.AMBIENT_ALBUMS, {topicSource: topicSource.toString()});
   }
 
-  goToRoute(path: Paths, queryParams: Object = {}) {
+  goToRoute(path: Paths, queryParams: QueryParams = {}) {
     this.setProperties({path_: path, queryParams_: queryParams});
   }
 

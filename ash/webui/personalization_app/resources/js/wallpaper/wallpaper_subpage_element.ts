@@ -9,7 +9,7 @@
 
 import {CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
-import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
+import {Paths, PersonalizationRouter, QueryParams} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './wallpaper_subpage_element.html.js';
@@ -38,13 +38,18 @@ export class WallpaperSubpage extends WithPersonalizationStore {
           return isGooglePhotosIntegrationEnabled();
         },
       },
+      isGooglePhotosAlbumShared_: {
+        type: Boolean,
+        computed: 'computeIsGooglePhotosAlbumShared_(queryParams)',
+      },
     };
   }
 
   path: string;
-  queryParams: Record<string, string>;
+  queryParams: QueryParams;
   private currentSelected_: CurrentWallpaper|null;
   private isGooglePhotosIntegrationEnabled_: boolean;
+  private isGooglePhotosAlbumShared_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -56,6 +61,11 @@ export class WallpaperSubpage extends WithPersonalizationStore {
     if (value && value.type === WallpaperType.kPolicy) {
       PersonalizationRouter.reloadAtRoot();
     }
+  }
+
+  private computeIsGooglePhotosAlbumShared_(queryParams?: QueryParams):
+      boolean {
+    return !!queryParams && queryParams.googlePhotosAlbumIsShared === 'true';
   }
 
   private shouldShowCollections_(path: string): boolean {

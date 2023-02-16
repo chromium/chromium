@@ -362,9 +362,9 @@ suite('WallpaperSelectedTest', function() {
         const album_id = 'test_album_id';
 
         wallpaperSelectedElement = initElement(WallpaperSelected, {
-          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-          'googlePhotosAlbumId': album_id,
-          'googlePhotosAlbumIsShared': 'true',
+          path: Paths.GOOGLE_PHOTOS_COLLECTION,
+          googlePhotosAlbumId: album_id,
+          isGooglePhotosAlbumShared: true,
         });
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
@@ -392,9 +392,9 @@ suite('WallpaperSelectedTest', function() {
         const album_id = 'test_album_id';
 
         wallpaperSelectedElement = initElement(WallpaperSelected, {
-          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-          'googlePhotosAlbumId': album_id,
-          'googlePhotosAlbumIsShared': 'true',
+          path: Paths.GOOGLE_PHOTOS_COLLECTION,
+          googlePhotosAlbumId: album_id,
+          isGooglePhotosAlbumShared: true,
         });
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
@@ -426,9 +426,9 @@ suite('WallpaperSelectedTest', function() {
         const album_id = 'test_album_id';
 
         wallpaperSelectedElement = initElement(WallpaperSelected, {
-          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-          'googlePhotosAlbumId': album_id,
-          'googlePhotosAlbumIsShared': 'true',
+          path: Paths.GOOGLE_PHOTOS_COLLECTION,
+          googlePhotosAlbumId: album_id,
+          isGooglePhotosAlbumShared: true,
         });
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
@@ -465,9 +465,9 @@ suite('WallpaperSelectedTest', function() {
     };
 
     wallpaperSelectedElement = initElement(WallpaperSelected, {
-      'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-      'googlePhotosAlbumId': album_id,
-      'googlePhotosAlbumIsShared': 'true',
+      path: Paths.GOOGLE_PHOTOS_COLLECTION,
+      googlePhotosAlbumId: album_id,
+      isGooglePhotosAlbumShared: true,
     });
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
@@ -494,9 +494,9 @@ suite('WallpaperSelectedTest', function() {
     const album_id = 'test_album_id';
 
     wallpaperSelectedElement = initElement(WallpaperSelected, {
-      'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-      'googlePhotosAlbumId': album_id,
-      'googlePhotosAlbumIsShared': 'false',
+      path: Paths.GOOGLE_PHOTOS_COLLECTION,
+      googlePhotosAlbumId: album_id,
+      isGooglePhotosAlbumShared: false,
     });
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
@@ -524,9 +524,9 @@ suite('WallpaperSelectedTest', function() {
         const album_id = 'test_album_id';
 
         wallpaperSelectedElement = initElement(WallpaperSelected, {
-          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-          'googlePhotosAlbumId': album_id,
-          'googlePhotosAlbumIsShared': 'false',
+          path: Paths.GOOGLE_PHOTOS_COLLECTION,
+          googlePhotosAlbumId: album_id,
+          isGooglePhotosAlbumShared: false,
         });
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);

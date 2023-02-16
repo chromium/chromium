@@ -49,7 +49,10 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /**
        * Whether the google photos album is shared.
        */
-      googlePhotosAlbumIsShared: String,
+      isGooglePhotosAlbumShared: {
+        type: Boolean,
+        value: false,
+      },
 
       /**
        * The current Google Photos Album id to display.
@@ -161,7 +164,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   // since we can't be in a Backdrop collection or a Google Photos album
   // simultaneously
   collectionId: string|undefined;
-  googlePhotosAlbumIsShared: string|undefined;
+  isGooglePhotosAlbumShared: boolean;
   googlePhotosAlbumId: string|undefined;
   path: string;
   private image_: CurrentWallpaper|null;
@@ -371,7 +374,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
     if (this.googlePhotosAlbumId) {
       assert(!this.collectionId);
       if (this.googlePhotosSharedAlbumsEnabled_ &&
-          this.googlePhotosAlbumIsShared === 'true') {
+          this.isGooglePhotosAlbumShared) {
         this.shouldShowDailyRefreshConfirmationDialog_ = true;
       } else {
         this.enableGooglePhotosAlbumDailyRefresh_();
