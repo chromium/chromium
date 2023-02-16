@@ -2,18 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/services/stable_video_decoder_service.h"
+#include <sys/mman.h>
+
+#include "base/posix/eintr_wrapper.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/media_log.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/stable_video_decoder_factory_service.h"
+#include "media/mojo/services/stable_video_decoder_service.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 using testing::_;
 using testing::ByMove;
@@ -38,6 +43,64 @@ VideoDecoderConfig CreateValidVideoDecoderConfig() {
       EncryptionScheme::kUnencrypted);
   DCHECK(config.IsValidConfig());
   return config;
+}
+
+scoped_refptr<VideoFrame> CreateTestNV12GpuMemoryBufferVideoFrame() {
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::NATIVE_PIXMAP;
+
+  // We need to create something that looks like a dma-buf in order to pass the
+  // validation in the mojo traits, so we use memfd_create() + ftruncate().
+  auto y_fd = base::ScopedFD(memfd_create("nv12_dummy_buffer", 0));
+  if (!y_fd.is_valid()) {
+    return nullptr;
+  }
+  if (HANDLE_EINTR(ftruncate(y_fd.get(), 280000 + 140000)) < 0) {
+    return nullptr;
+  }
+  auto uv_fd = base::ScopedFD(HANDLE_EINTR(dup(y_fd.get())));
+  if (!uv_fd.is_valid()) {
+    return nullptr;
+  }
+
+  gfx::NativePixmapPlane y_plane;
+  y_plane.stride = 700;
+  y_plane.offset = 0;
+  y_plane.size = 280000;
+  y_plane.fd = std::move(y_fd);
+  gmb_handle.native_pixmap_handle.planes.push_back(std::move(y_plane));
+
+  gfx::NativePixmapPlane uv_plane;
+  uv_plane.stride = 700;
+  uv_plane.offset = 280000;
+  uv_plane.size = 140000;
+  uv_plane.fd = std::move(uv_fd);
+  gmb_handle.native_pixmap_handle.planes.push_back(std::move(uv_plane));
+
+  gpu::GpuMemoryBufferSupport gmb_support;
+  auto gmb = gmb_support.CreateGpuMemoryBufferImplFromHandle(
+      std::move(gmb_handle), gfx::Size(640, 368),
+      gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::SCANOUT_VDA_WRITE,
+      base::DoNothing());
+  if (!gmb) {
+    return nullptr;
+  }
+
+  gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
+  auto gmb_video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+      /*visible_rect=*/gfx::Rect(640, 368),
+      /*natural_size=*/gfx::Size(640, 368), std::move(gmb), dummy_mailbox,
+      base::NullCallback(), base::TimeDelta());
+  if (!gmb_video_frame) {
+    return nullptr;
+  }
+
+  gmb_video_frame->metadata().allow_overlay = true;
+  gmb_video_frame->metadata().end_of_stream = false;
+  gmb_video_frame->metadata().read_lock_fences_enabled = true;
+  gmb_video_frame->metadata().power_efficient = true;
+
+  return gmb_video_frame;
 }
 
 class MockVideoFrameHandleReleaser : public mojom::VideoFrameHandleReleaser {
@@ -711,7 +774,9 @@ TEST_F(StableVideoDecoderServiceTest,
   ASSERT_TRUE(auxiliary_endpoints->mock_stable_video_decoder_client);
 
   const auto token_for_release = base::UnguessableToken::Create();
-  scoped_refptr<VideoFrame> video_frame_to_send = VideoFrame::CreateEOSFrame();
+  scoped_refptr<VideoFrame> video_frame_to_send =
+      CreateTestNV12GpuMemoryBufferVideoFrame();
+  ASSERT_TRUE(video_frame_to_send);
   scoped_refptr<VideoFrame> video_frame_received;
   constexpr bool kCanReadWithoutStalling = true;
   EXPECT_CALL(
@@ -722,7 +787,7 @@ TEST_F(StableVideoDecoderServiceTest,
       video_frame_to_send, kCanReadWithoutStalling, token_for_release);
   auxiliary_endpoints->video_decoder_client_remote.FlushForTesting();
   ASSERT_TRUE(video_frame_received);
-  EXPECT_TRUE(video_frame_received->metadata().end_of_stream);
+  EXPECT_TRUE(video_frame_received->metadata().allow_overlay);
 }
 
 // Tests that a mojom::VideoDecoderClient::OnWaiting() call originating from the

@@ -662,6 +662,10 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
       base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
                      weak_this_factory_.GetWeakPtr(), release_token)));
 
+  // According to the media::VideoDecoder API, |output_cb_| should not be
+  // supplied with EOS frames. The mojo traits guarantee this DCHECK.
+  DCHECK(!frame->metadata().end_of_stream);
+
   // TODO(b/220915557): validate |frame|.
   if (output_cb_)
     output_cb_.Run(frame);

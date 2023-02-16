@@ -31,13 +31,9 @@ namespace mojo {
 
 namespace {
 
-media::stable::mojom::VideoFrameDataPtr MakeVideoFrameData(
+gfx::GpuMemoryBufferHandle GetVideoFrameGpuMemoryBufferHandle(
     const media::VideoFrame* input) {
-  if (input->metadata().end_of_stream) {
-    return media::stable::mojom::VideoFrameData::NewEosData(
-        media::stable::mojom::EosVideoFrameData::New());
-  }
-
+  CHECK(!input->metadata().end_of_stream);
   CHECK_EQ(input->storage_type(), media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   CHECK(input->HasGpuMemoryBuffer());
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
@@ -52,9 +48,7 @@ media::stable::mojom::VideoFrameDataPtr MakeVideoFrameData(
   CHECK(false);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  return media::stable::mojom::VideoFrameData::NewGpuMemoryBufferData(
-      media::stable::mojom::GpuMemoryBufferVideoFrameData::New(
-          std::move(gpu_memory_buffer_handle)));
+  return gpu_memory_buffer_handle;
 }
 
 }  // namespace
@@ -1560,11 +1554,11 @@ StructTraits<media::stable::mojom::VideoFrameDataView,
 }
 
 // static
-media::stable::mojom::VideoFrameDataPtr
+gfx::GpuMemoryBufferHandle
 StructTraits<media::stable::mojom::VideoFrameDataView,
              scoped_refptr<media::VideoFrame>>::
-    data(const scoped_refptr<media::VideoFrame>& input) {
-  return MakeVideoFrameData(input.get());
+    gpu_memory_buffer_handle(const scoped_refptr<media::VideoFrame>& input) {
+  return GetVideoFrameGpuMemoryBufferHandle(input.get());
 }
 
 // static
@@ -1589,15 +1583,6 @@ bool StructTraits<media::stable::mojom::VideoFrameDataView,
                   scoped_refptr<media::VideoFrame>>::
     Read(media::stable::mojom::VideoFrameDataView input,
          scoped_refptr<media::VideoFrame>* output) {
-  // View of the |data| member of the input media::stable::mojom::VideoFrame.
-  media::stable::mojom::VideoFrameDataDataView data;
-  input.GetDataDataView(&data);
-
-  if (data.is_eos_data()) {
-    *output = media::VideoFrame::CreateEOSFrame();
-    return !!*output;
-  }
-
   media::VideoPixelFormat format;
   if (!input.ReadFormat(&format))
     return false;
@@ -1621,45 +1606,36 @@ bool StructTraits<media::stable::mojom::VideoFrameDataView,
   if (!input.ReadTimestamp(&timestamp))
     return false;
 
-  scoped_refptr<media::VideoFrame> frame;
-  if (data.is_gpu_memory_buffer_data()) {
-    media::stable::mojom::GpuMemoryBufferVideoFrameDataDataView
-        gpu_memory_buffer_data;
-    data.GetGpuMemoryBufferDataDataView(&gpu_memory_buffer_data);
-
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    if (!gpu_memory_buffer_data.ReadGpuMemoryBufferHandle(
-            &gpu_memory_buffer_handle)) {
-      return false;
-    }
-
-    if (!media::VerifyGpuMemoryBufferHandle(format, coded_size,
-                                            gpu_memory_buffer_handle)) {
-      return false;
-    }
-
-    absl::optional<gfx::BufferFormat> buffer_format =
-        VideoPixelFormatToGfxBufferFormat(format);
-    if (!buffer_format)
-      return false;
-
-    gpu::GpuMemoryBufferSupport support;
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-        support.CreateGpuMemoryBufferImplFromHandle(
-            std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
-            gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
-    if (!gpu_memory_buffer)
-      return false;
-
-    gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
-    frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_rect, natural_size, std::move(gpu_memory_buffer), dummy_mailbox,
-        base::NullCallback(), timestamp);
-
-  } else {
-    NOTREACHED();
+  gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
+  if (!input.ReadGpuMemoryBufferHandle(&gpu_memory_buffer_handle)) {
     return false;
   }
+
+  if (!media::VerifyGpuMemoryBufferHandle(format, coded_size,
+                                          gpu_memory_buffer_handle)) {
+    return false;
+  }
+
+  absl::optional<gfx::BufferFormat> buffer_format =
+      VideoPixelFormatToGfxBufferFormat(format);
+  if (!buffer_format) {
+    return false;
+  }
+
+  gpu::GpuMemoryBufferSupport support;
+  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+      support.CreateGpuMemoryBufferImplFromHandle(
+          std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
+          gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
+  if (!gpu_memory_buffer) {
+    return false;
+  }
+
+  gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::WrapExternalGpuMemoryBuffer(
+          visible_rect, natural_size, std::move(gpu_memory_buffer),
+          dummy_mailbox, base::NullCallback(), timestamp);
 
   if (!frame)
     return false;
@@ -1682,54 +1658,6 @@ bool StructTraits<media::stable::mojom::VideoFrameDataView,
 
   *output = std::move(frame);
   return true;
-}
-
-// static
-bool StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
-                  media::VideoFrameMetadata>::
-    allow_overlay(const media::VideoFrameMetadata& input) {
-  static_assert(
-      std::is_same<
-          decltype(::media::VideoFrameMetadata::allow_overlay),
-          decltype(
-              media::stable::mojom::VideoFrameMetadata::allow_overlay)>::value,
-      "Unexpected type for media::VideoFrameMetadata::allow_overlay. If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-
-  return input.allow_overlay;
-}
-
-// static
-bool StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
-                  media::VideoFrameMetadata>::
-    end_of_stream(const media::VideoFrameMetadata& input) {
-  static_assert(
-      std::is_same<
-          decltype(::media::VideoFrameMetadata::end_of_stream),
-          decltype(
-              media::stable::mojom::VideoFrameMetadata::end_of_stream)>::value,
-      "Unexpected type for media::VideoFrameMetadata::end_of_stream. If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-
-  return input.end_of_stream;
-}
-
-// static
-bool StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
-                  media::VideoFrameMetadata>::
-    read_lock_fences_enabled(const media::VideoFrameMetadata& input) {
-  static_assert(
-      std::is_same<decltype(
-                       ::media::VideoFrameMetadata::read_lock_fences_enabled),
-                   decltype(media::stable::mojom::VideoFrameMetadata::
-                                read_lock_fences_enabled)>::value,
-      "Unexpected type for "
-      "media::VideoFrameMetadata::read_lock_fences_enabled. If you need to "
-      "change this assertion, please contact chromeos-gfx-video@google.com.");
-
-  return input.read_lock_fences_enabled;
 }
 
 // static
@@ -1766,29 +1694,14 @@ bool StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
 // static
 bool StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
                   media::VideoFrameMetadata>::
-    power_efficient(const media::VideoFrameMetadata& input) {
-  static_assert(
-      std::is_same<decltype(::media::VideoFrameMetadata::power_efficient),
-                   decltype(media::stable::mojom::VideoFrameMetadata::
-                                power_efficient)>::value,
-      "Unexpected type for media::VideoFrameMetadata::power_efficient. If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
-
-  return input.power_efficient;
-}
-
-// static
-bool StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
-                  media::VideoFrameMetadata>::
     Read(media::stable::mojom::VideoFrameMetadataDataView input,
          media::VideoFrameMetadata* output) {
-  output->allow_overlay = input.allow_overlay();
-  output->end_of_stream = input.end_of_stream();
-  output->read_lock_fences_enabled = input.read_lock_fences_enabled();
+  output->allow_overlay = true;
+  output->end_of_stream = false;
+  output->read_lock_fences_enabled = true;
   output->protected_video = input.protected_video();
   output->hw_protected = input.hw_protected();
-  output->power_efficient = input.power_efficient();
+  output->power_efficient = true;
 
   return true;
 }

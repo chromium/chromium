@@ -172,6 +172,13 @@ void StableVideoDecoderService::OnVideoFrameDecoded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(stable_video_decoder_client_remote_.is_bound());
   DCHECK(release_token.has_value());
+
+  // The mojo traits have been coded assuming these conditions.
+  CHECK(frame->metadata().allow_overlay);
+  CHECK(!frame->metadata().end_of_stream);
+  CHECK(frame->metadata().read_lock_fences_enabled);
+  CHECK(frame->metadata().power_efficient);
+
   stable_video_decoder_client_remote_->OnVideoFrameDecoded(
       frame, can_read_without_stalling, *release_token);
 }

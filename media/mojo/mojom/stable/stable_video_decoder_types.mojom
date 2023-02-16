@@ -405,11 +405,6 @@ enum VideoPixelFormat {
   [MinVersion=2] kPixelFormatNV12A = 39,
 };
 
-// Based on |media.mojom.EosVideoFrameData|.
-[Stable]
-struct EosVideoFrameData {
-};
-
 // Based on |gfx.mojom.GpuMemoryBufferHandle| but does not depend on
 // |gfx.mojom.GpuMemoryBufferPlatformHandle|.
 // Next min field ID: 2
@@ -419,40 +414,13 @@ struct NativeGpuMemoryBufferHandle {
   NativePixmapHandle platform_handle@1;
 };
 
-// Based on |media.mojom.GpuMemoryBufferVideoFrameData| but does not depend
-// on |gfx.mojom.GpuMemoryBufferHandle| or |gpu.mojom.MailboxHolder|.
-// Next min field ID: 1
-[Stable]
-struct GpuMemoryBufferVideoFrameData {
-  NativeGpuMemoryBufferHandle gpu_memory_buffer_handle@0;
-};
-
 // Based on |media.mojom.VideoFrameMetadata| but does not depend on
 // |media.mojom.VideoTransformation|.
-// Next min field ID: 6
+// Next min field ID: 2
 [Stable]
 struct VideoFrameMetadata {
-  bool allow_overlay@0;
-
-  bool end_of_stream@1;
-
-  bool read_lock_fences_enabled@2;
-
-  bool protected_video@3;
-
-  bool hw_protected@4;
-
-  bool power_efficient@5;
-};
-
-// Based on |media.mojom.VideoFrameData| but does not depend on
-// |media.mojom.EosVideoFrameData|, |media.mojom.SharedBufferVideoFrameData|,
-// |media.mojom.GpuMemoryBufferVideoFrameData| or
-// |media.mojom.MailboxVideoFrameData|.
-[Stable]
-union VideoFrameData {
-  EosVideoFrameData eos_data;
-  GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
+  bool protected_video@0;
+  bool hw_protected@1;
 };
 
 // Based on |media.mojom.VideoFrame| but does not depend on
@@ -477,8 +445,8 @@ struct VideoFrame {
   // Timestamp in microseconds of the associated frame.
   mojo_base.mojom.TimeDelta timestamp@4;
 
-  // Contents of the video frame (or EOS marker).
-  VideoFrameData data@5;
+  // Contents of the video frame.
+  NativeGpuMemoryBufferHandle gpu_memory_buffer_handle@5;
 
   // Extra properties associated with the VideoFrame.
   VideoFrameMetadata metadata@6;

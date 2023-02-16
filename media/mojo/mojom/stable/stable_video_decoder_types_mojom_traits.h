@@ -1206,7 +1206,7 @@ struct StructTraits<media::stable::mojom::VideoFrameDataView,
   static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
       const scoped_refptr<media::VideoFrame>& input);
 
-  static media::stable::mojom::VideoFrameDataPtr data(
+  static gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle(
       const scoped_refptr<media::VideoFrame>& input);
 
   static const media::VideoFrameMetadata& metadata(
@@ -1219,17 +1219,9 @@ struct StructTraits<media::stable::mojom::VideoFrameDataView,
 template <>
 struct StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
                     media::VideoFrameMetadata> {
-  static bool allow_overlay(const media::VideoFrameMetadata& input);
-
-  static bool end_of_stream(const media::VideoFrameMetadata& input);
-
-  static bool read_lock_fences_enabled(const media::VideoFrameMetadata& input);
-
   static bool protected_video(const media::VideoFrameMetadata& input);
 
   static bool hw_protected(const media::VideoFrameMetadata& input);
-
-  static bool power_efficient(const media::VideoFrameMetadata& input);
 
   static bool Read(media::stable::mojom::VideoFrameMetadataDataView input,
                    media::VideoFrameMetadata* output);
