@@ -16,9 +16,9 @@
 
 namespace extensions {
 
-ShellTestHelperAura::ShellTestHelperAura() {}
+ShellTestHelperAura::ShellTestHelperAura() = default;
 
-ShellTestHelperAura::~ShellTestHelperAura() {}
+ShellTestHelperAura::~ShellTestHelperAura() = default;
 
 void ShellTestHelperAura::SetUp() {
   // AuraTestHelper sets up the rest of the Aura initialization.

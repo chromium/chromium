@@ -15,7 +15,7 @@ namespace extensions {
 
 ShellFileSystemDelegate::ShellFileSystemDelegate() = default;
 
-ShellFileSystemDelegate::~ShellFileSystemDelegate() {}
+ShellFileSystemDelegate::~ShellFileSystemDelegate() = default;
 
 base::FilePath ShellFileSystemDelegate::GetDefaultDirectory() {
   NOTIMPLEMENTED();

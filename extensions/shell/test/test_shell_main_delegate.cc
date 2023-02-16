@@ -34,9 +34,9 @@ class TestShellContentUtilityClient : public content::ContentUtilityClient {
 
 namespace extensions {
 
-TestShellMainDelegate::TestShellMainDelegate() {}
+TestShellMainDelegate::TestShellMainDelegate() = default;
 
-TestShellMainDelegate::~TestShellMainDelegate() {}
+TestShellMainDelegate::~TestShellMainDelegate() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 absl::optional<int> TestShellMainDelegate::PostEarlyInitialization(

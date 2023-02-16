@@ -26,9 +26,9 @@
 
 namespace extensions {
 
-ShellExtensionsAPIClient::ShellExtensionsAPIClient() {}
+ShellExtensionsAPIClient::ShellExtensionsAPIClient() = default;
 
-ShellExtensionsAPIClient::~ShellExtensionsAPIClient() {}
+ShellExtensionsAPIClient::~ShellExtensionsAPIClient() = default;
 
 void ShellExtensionsAPIClient::AttachWebContentsHelpers(
     content::WebContents* web_contents) const {

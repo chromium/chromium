@@ -9,7 +9,7 @@
 
 namespace extensions {
 
-ShellNavigationUIData::ShellNavigationUIData() {}
+ShellNavigationUIData::ShellNavigationUIData() = default;
 
 ShellNavigationUIData::ShellNavigationUIData(
     content::NavigationHandle* navigation_handle) {
@@ -18,7 +18,7 @@ ShellNavigationUIData::ShellNavigationUIData(
       extension_misc::kUnknownWindowId);
 }
 
-ShellNavigationUIData::~ShellNavigationUIData() {}
+ShellNavigationUIData::~ShellNavigationUIData() = default;
 
 std::unique_ptr<content::NavigationUIData> ShellNavigationUIData::Clone() {
   std::unique_ptr<ShellNavigationUIData> copy =

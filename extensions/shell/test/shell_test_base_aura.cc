@@ -9,9 +9,9 @@
 
 namespace extensions {
 
-ShellTestBaseAura::ShellTestBaseAura() {}
+ShellTestBaseAura::ShellTestBaseAura() = default;
 
-ShellTestBaseAura::~ShellTestBaseAura() {}
+ShellTestBaseAura::~ShellTestBaseAura() = default;
 
 void ShellTestBaseAura::SetUp() {
   helper_ = std::make_unique<ShellTestHelperAura>();
