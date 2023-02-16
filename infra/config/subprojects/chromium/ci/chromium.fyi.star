@@ -697,7 +697,7 @@ ci.builder(
     ),
 )
 
-ci.builder(
+fyi_mac_builder(
     name = "mac-perfetto-rel",
     schedule = "triggered",
     triggered_by = [],
@@ -713,7 +713,7 @@ ci.builder(
         ),
     ),
     builderless = True,
-    os = os.MAC_DEFAULT,
+    cores = 8,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
@@ -954,6 +954,7 @@ ci.builder(
         short_name = "64rel",
     ),
     notifies = ["chrome-memory-safety"],
+    reclient_scandeps_server = True,
 )
 
 ci.builder(
@@ -1058,7 +1059,7 @@ ci.builder(
     ),
 )
 
-ci.builder(
+fyi_mac_builder(
     name = "mac-upload-perfetto",
     schedule = "with 3h interval",
     triggered_by = [],
@@ -1074,7 +1075,6 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "perfetto",
         short_name = "mac",
@@ -1175,12 +1175,11 @@ ci.builder(
     reclient_cache_silo = "Comparison Linux - cache siloed",
 )
 
-ci.builder(
+fyi_mac_builder(
     name = "Comparison Mac (reclient)",
     executable = "recipe:reclient_goma_comparison",
     builderless = True,
     cores = None,
-    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "cmp",
@@ -1198,12 +1197,11 @@ ci.builder(
     reclient_instance = reclient.instance.TEST_TRUSTED,
 )
 
-ci.builder(
+fyi_mac_builder(
     name = "Comparison Mac arm64 (reclient)",
     executable = "recipe:reclient_goma_comparison",
     builderless = True,
     cores = None,
-    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "cmp",
@@ -1221,12 +1219,11 @@ ci.builder(
     reclient_instance = reclient.instance.TEST_TRUSTED,
 )
 
-ci.builder(
+fyi_mac_builder(
     name = "Comparison Mac arm64 on arm64 (reclient)",
     executable = "recipe:reclient_goma_comparison",
     builderless = True,
     cores = None,
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
@@ -1309,12 +1306,11 @@ ci.builder(
     reclient_cache_silo = "Comparison Simple Chrome - cache siloed",
 )
 
-ci.builder(
+fyi_mac_builder(
     name = "Comparison ios (reclient)",
     executable = "recipe:reclient_goma_comparison",
     builderless = True,
     cores = None,
-    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ios",
         short_name = "cmp",
@@ -1386,7 +1382,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_jobs = 150,
 )
 
-ci.builder(
+fyi_mac_builder(
     name = "Comparison Mac (reclient)(CQ)",
     description_html = """\
 This builder measures Mac build performance with goma vs reclient in cq configuration.<br/>\
@@ -1395,7 +1391,6 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     executable = "recipe:reclient_goma_comparison",
     builderless = True,
     cores = None,
-    os = os.MAC_DEFAULT,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "mac|cq",
@@ -1472,7 +1467,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_jobs = 300,
 )
 
-ci.builder(
+fyi_mac_builder(
     name = "Comparison ios (reclient)(CQ)",
     description_html = """\
 This builder measures iOS build performance with goma vs reclient in cq configuration.<br/>\
@@ -1481,7 +1476,6 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     executable = "recipe:reclient_goma_comparison",
     builderless = True,
     cores = None,
-    os = os.MAC_DEFAULT,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "ios|cq",
