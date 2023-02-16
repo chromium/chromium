@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -236,34 +237,16 @@ class AccountManagerUIHandlerTest
 
   std::vector<::account_manager::Account> GetAccountsFromAccountManager()
       const {
-    std::vector<::account_manager::Account> accounts;
-
-    base::RunLoop run_loop;
-    account_manager_->GetAccounts(base::BindLambdaForTesting(
-        [&accounts, &run_loop](
-            const std::vector<::account_manager::Account>& stored_accounts) {
-          accounts = stored_accounts;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-
-    return accounts;
+    base::test::TestFuture<const std::vector<::account_manager::Account>&>
+        future;
+    account_manager_->GetAccounts(future.GetCallback());
+    return future.Get();
   }
 
   bool HasDummyGaiaToken(const ::account_manager::AccountKey& account_key) {
-    bool has_dummy_token_result;
-
-    base::RunLoop run_loop;
-    account_manager_->HasDummyGaiaToken(
-        account_key,
-        base::BindLambdaForTesting(
-            [&has_dummy_token_result, &run_loop](bool has_dummy_token) {
-              has_dummy_token_result = has_dummy_token;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-
-    return has_dummy_token_result;
+    base::test::TestFuture<bool> future;
+    account_manager_->HasDummyGaiaToken(account_key, future.GetCallback());
+    return future.Get();
   }
 
   DeviceAccountInfo GetDeviceAccountInfo() const { return GetParam(); }
@@ -450,20 +433,10 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
   }
 
   base::flat_set<::account_manager::Account> GetAccountsAvailableInArc() const {
-    base::flat_set<::account_manager::Account> accounts;
-
-    base::RunLoop run_loop;
-    account_apps_availability_->GetAccountsAvailableInArc(
-        base::BindLambdaForTesting(
-            [&accounts,
-             &run_loop](const base::flat_set<::account_manager::Account>&
-                            stored_accounts) {
-              accounts = stored_accounts;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-
-    return accounts;
+    base::test::TestFuture<const base::flat_set<::account_manager::Account>&>
+        future;
+    account_apps_availability_->GetAccountsAvailableInArc(future.GetCallback());
+    return future.Get();
   }
 
   absl::optional<::account_manager::Account> FindAccountByEmail(
