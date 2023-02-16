@@ -265,26 +265,6 @@ std::wstring PrependWindowsSessionPath(const wchar_t* object) {
 // Adds the generic config rules to a sandbox TargetConfig.
 ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
-  ResultCode result;
-
-  if (!base::FeatureList::IsEnabled(
-          sandbox::policy::features::kChromePipeLockdown)) {
-    // Add the policy for the client side of a pipe. It is just a file
-    // in the \pipe\ namespace. We restrict it to pipes that start with
-    // "chrome." so the sandboxed process cannot connect to system services.
-    result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
-                             L"\\??\\pipe\\chrome.*");
-    if (result != SBOX_ALL_OK)
-      return result;
-
-    // Allow the server side of sync sockets, which are pipes that have
-    // the "chrome.sync" namespace and a randomly generated suffix.
-    result =
-        config->AddRule(SubSystem::kNamedPipes, Semantics::kNamedPipesAllowAny,
-                        L"\\\\.\\pipe\\chrome.sync.*");
-    if (result != SBOX_ALL_OK)
-      return result;
-  }
 
 // Add the policy for read-only PDB file access for stack traces.
 #if !defined(OFFICIAL_BUILD)
@@ -292,10 +272,14 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   if (!base::PathService::Get(base::FILE_EXE, &exe))
     return SBOX_ERROR_GENERIC;
   base::FilePath pdb_path = exe.DirName().Append(L"*.pdb");
-  result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowReadonly,
-                           pdb_path.value().c_str());
-  if (result != SBOX_ALL_OK)
-    return result;
+  {
+    ResultCode result =
+        config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowReadonly,
+                        pdb_path.value().c_str());
+    if (result != SBOX_ALL_OK) {
+      return result;
+    }
+  }
 #endif
 
 #if defined(SANITIZER_COVERAGE)
@@ -312,10 +296,14 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
     CHECK(coverage_dir.size() == coverage_dir_size);
     base::FilePath sancov_path =
         base::FilePath(coverage_dir).Append(L"*.sancov");
-    result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
-                             sancov_path.value().c_str());
-    if (result != SBOX_ALL_OK)
-      return result;
+    {
+      ResultCode result =
+          config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
+                          sancov_path.value().c_str());
+      if (result != SBOX_ALL_OK) {
+        return result;
+      }
+    }
   }
 #endif
 

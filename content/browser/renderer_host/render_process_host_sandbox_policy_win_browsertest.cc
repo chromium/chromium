@@ -42,14 +42,9 @@ IN_PROC_BROWSER_TEST_F(RendererAppContainerFeatureBrowserTest, Navigate) {
 }
 
 // Test class to verify the behavior of the pipe interceptions for renderers.
-class PipeLockdownFeatureBrowserTest
-    : public ContentBrowserTest,
-      public ::testing::WithParamInterface</* Pipe Lockdown Enabled */ bool> {
+class PipeLockdownFeatureBrowserTest : public ContentBrowserTest {
  public:
-  PipeLockdownFeatureBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        sandbox::policy::features::kChromePipeLockdown, PipeLockdownEnabled());
-  }
+  PipeLockdownFeatureBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     // Support multiple sites on the test server.
@@ -57,17 +52,12 @@ class PipeLockdownFeatureBrowserTest
   }
 
  protected:
-  bool PipeLockdownEnabled() const { return GetParam(); }
-
   WebContentsImpl* contents() const {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(PipeLockdownFeatureBrowserTest, Navigate) {
+IN_PROC_BROWSER_TEST_F(PipeLockdownFeatureBrowserTest, Navigate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
@@ -138,24 +128,9 @@ IN_PROC_BROWSER_TEST_P(PipeLockdownFeatureBrowserTest, Navigate) {
   // There should never be a way to Create pipes for chrome.*.
   EXPECT_FALSE(found_chrome_pipe_create_pipe_rule);
 
-  if (PipeLockdownEnabled()) {
-    // With pipe lockdown enabled, no pipe rules should exist for renderers.
-    EXPECT_FALSE(found_chrome_sync_pipe_create_pipe_rule);
-    EXPECT_FALSE(found_chrome_pipe_open_rule);
-  } else {
-    // Old behavior allowed chrome.sync.* to be created (for base::SyncSocket).
-    EXPECT_TRUE(found_chrome_sync_pipe_create_pipe_rule);
-    // Old behavior allowed chrome.* to be opened (for legacy IPC).
-    EXPECT_TRUE(found_chrome_pipe_open_rule);
-  }
+  // With pipe lockdown enabled, no pipe rules should exist for renderers.
+  EXPECT_FALSE(found_chrome_sync_pipe_create_pipe_rule);
+  EXPECT_FALSE(found_chrome_pipe_open_rule);
 }
-
-INSTANTIATE_TEST_SUITE_P(Enabled,
-                         PipeLockdownFeatureBrowserTest,
-                         /* Pipe Lockdown Enabled */ ::testing::Values(true));
-
-INSTANTIATE_TEST_SUITE_P(Disabled,
-                         PipeLockdownFeatureBrowserTest,
-                         /* Pipe Lockdown Enabled */ ::testing::Values(false));
 
 }  // namespace content
