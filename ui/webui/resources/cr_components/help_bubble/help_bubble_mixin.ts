@@ -50,6 +50,7 @@ export const HelpBubbleMixin = dedupingMixin(
         private helpBubbleAnchorObserver_: IntersectionObserver|null = null;
         private helpBubbleFixedAnchorObserver_: IntersectionObserver|null =
             null;
+        private helpBubbleAnchorResizeObserver_: ResizeObserver|null = null;
         private helpBubbleDismissedEventTracker_: EventTracker =
             new EventTracker();
         private helpBubbleScrollCallbackDebounced_:
@@ -78,6 +79,15 @@ export const HelpBubbleMixin = dedupingMixin(
               router.externalHelpBubbleUpdated.addListener(
                   this.onExternalHelpBubbleUpdated_.bind(this)));
 
+          const isVisible = (element: Element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.height > 0 && rect.width > 0;
+          };
+
+          this.helpBubbleAnchorResizeObserver_ = new ResizeObserver(
+              entries => entries.forEach(
+                  ({target}) => this.onAnchorVisibilityChanged_(
+                      target as HTMLElement, isVisible(target))));
           this.helpBubbleAnchorObserver_ = new IntersectionObserver(
               entries => entries.forEach(
                   ({target, isIntersecting}) => this.onAnchorVisibilityChanged_(
@@ -113,6 +123,9 @@ export const HelpBubbleMixin = dedupingMixin(
             this.helpBubbleCallbackRouter_.removeListener(listenerId);
           }
           this.helpBubbleListenerIds_ = [];
+          assert(this.helpBubbleAnchorResizeObserver_);
+          this.helpBubbleAnchorResizeObserver_.disconnect();
+          this.helpBubbleAnchorResizeObserver_ = null;
           assert(this.helpBubbleAnchorObserver_);
           this.helpBubbleAnchorObserver_.disconnect();
           this.helpBubbleAnchorObserver_ = null;
@@ -196,8 +209,7 @@ export const HelpBubbleMixin = dedupingMixin(
           // This can be called before or after `connectedCallback()`, so if the
           // component isn't connected and the observer set up yet, delay
           // observation until it is.
-          if (this.helpBubbleAnchorObserver_ &&
-              this.helpBubbleFixedAnchorObserver_) {
+          if (this.helpBubbleAnchorObserver_) {
             this.observeControllerAnchor_(controller);
           }
           return controller;
@@ -224,6 +236,9 @@ export const HelpBubbleMixin = dedupingMixin(
           if (controller.isAnchorFixed()) {
             assert(this.helpBubbleFixedAnchorObserver_);
             this.helpBubbleFixedAnchorObserver_.observe(anchor);
+          } else if (controller.isNonBodyScrollable()) {
+            assert(this.helpBubbleAnchorResizeObserver_);
+            this.helpBubbleAnchorResizeObserver_.observe(anchor);
           } else {
             assert(this.helpBubbleAnchorObserver_);
             this.helpBubbleAnchorObserver_.observe(anchor);
@@ -236,6 +251,9 @@ export const HelpBubbleMixin = dedupingMixin(
           if (controller.isAnchorFixed()) {
             assert(this.helpBubbleFixedAnchorObserver_);
             this.helpBubbleFixedAnchorObserver_.unobserve(anchor);
+          } else if (controller.isNonBodyScrollable()) {
+            assert(this.helpBubbleAnchorResizeObserver_);
+            this.helpBubbleAnchorResizeObserver_.unobserve(anchor);
           } else {
             assert(this.helpBubbleAnchorObserver_);
             this.helpBubbleAnchorObserver_.unobserve(anchor);

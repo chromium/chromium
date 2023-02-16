@@ -34,6 +34,14 @@ export class HelpBubbleController {
   private options_: Options = {padding: new InsetsF(), fixed: false};
 
   /**
+   * Whether the anchor element is contained in an element that is scrollable
+   * but is not the document body. These elements require different visibility
+   * handling as they will not technically intersect the document body when
+   * they're scrolled out of view.
+   */
+  private isNonBodyScrollable_: boolean = false;
+
+  /**
    * Whether a help bubble (webui or external) is being shown for this
    * controller
    */
@@ -104,6 +112,10 @@ export class HelpBubbleController {
     return this.options_.fixed;
   }
 
+  isNonBodyScrollable(): boolean {
+    return this.isNonBodyScrollable_;
+  }
+
   isExternal() {
     return this.isExternal_;
   }
@@ -137,6 +149,8 @@ export class HelpBubbleController {
     anchor.dataset['nativeId'] = this.nativeId_;
     this.anchor_ = anchor;
     this.options_ = options;
+    this.isNonBodyScrollable_ =
+        !options.fixed && HelpBubbleController.getIsNonBodyScrollable_(anchor);
     return true;
   }
 
@@ -241,5 +255,39 @@ export class HelpBubbleController {
     assert(
         this.anchor_, 'Set anchor highlight: expected valid anchor element.');
     this.anchor_.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, highlight);
+  }
+
+  /**
+   * Gets the immediate ancestor element of `element` in the DOM, or null if
+   * none. This steps out of shadow DOMs as it finds them.
+   */
+  private static getImmediateAncestor(element: Element): Element|null {
+    if (element.parentElement) {
+      return element.parentElement;
+    }
+    if (element.parentNode instanceof ShadowRoot) {
+      return (element.parentNode as ShadowRoot).host;
+    }
+    return null;
+  }
+
+  /**
+   * Returns whether `element` has an ancestor in the document that is
+   * scrollable and that is not the document body. These elements require
+   * special visibility handling.
+   */
+  private static getIsNonBodyScrollable_(element: Element): boolean {
+    const scrollableOverflow = ['scroll', 'auto', 'overlay'];
+    for (let parent = HelpBubbleController.getImmediateAncestor(element);
+         parent && parent !== document.body;
+         parent = HelpBubbleController.getImmediateAncestor(parent)) {
+      const style = getComputedStyle(parent);
+      if (scrollableOverflow.includes(style.overflow) ||
+          scrollableOverflow.includes(style.overflowX) ||
+          scrollableOverflow.includes(style.overflowY)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
