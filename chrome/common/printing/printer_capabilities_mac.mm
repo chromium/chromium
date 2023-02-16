@@ -15,6 +15,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "printing/units.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace printing {
 
@@ -26,6 +28,10 @@ constexpr int kMacPaperDimensionLimit = 99999 * kPointsPerInch;
 PrinterSemanticCapsAndDefaults::Papers& GetTestPapers() {
   static base::NoDestructor<PrinterSemanticCapsAndDefaults::Papers> test_papers;
   return *test_papers;
+}
+
+bool IsValidMargin(int margin) {
+  return 0 <= margin && margin <= kMacPaperDimensionLimit;
 }
 
 }  // namespace
@@ -72,10 +78,11 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
     if (![paper isKindOfClass:[NSDictionary class]])
       continue;
 
-    int width = [paper[@"width"] intValue];
-    int height = [paper[@"height"] intValue];
-    if (width <= 0 || height <= 0 || width > kMacPaperDimensionLimit ||
-        height > kMacPaperDimensionLimit) {
+    int size_width = [paper[@"width"] intValue];
+    int size_height = [paper[@"height"] intValue];
+    if (size_width <= 0 || size_height <= 0 ||
+        size_width > kMacPaperDimensionLimit ||
+        size_height > kMacPaperDimensionLimit) {
       continue;
     }
 
@@ -84,10 +91,38 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
       continue;
 
     gfx::Size size_microns(
-        ConvertUnit(width, kPointsPerInch, kMicronsPerInch),
-        ConvertUnit(height, kPointsPerInch, kMicronsPerInch));
-    custom_paper_sizes.push_back(
-        {base::SysNSStringToUTF8(name), "", size_microns});
+        ConvertUnit(size_width, kPointsPerInch, kMicronsPerInch),
+        ConvertUnit(size_height, kPointsPerInch, kMicronsPerInch));
+
+    int margin_left = [paper[@"left"] intValue];
+    int margin_bottom = [paper[@"bottom"] intValue];
+    int margin_right = [paper[@"right"] intValue];
+    int margin_top = [paper[@"top"] intValue];
+    if (!IsValidMargin(margin_left) || !IsValidMargin(margin_bottom) ||
+        !IsValidMargin(margin_right) || !IsValidMargin(margin_top)) {
+      continue;
+    }
+
+    // Since each margin must be less than `kMacPaperDimensionLimit`, there
+    // won't be any integer overflow here.
+    int margin_width = margin_left + margin_right;
+    int margin_height = margin_bottom + margin_top;
+    if (margin_width >= size_width || margin_height >= size_height) {
+      continue;
+    }
+
+    // The printable area should now always be non-empty and always in-bounds of
+    // the paper size.
+    int printable_area_width = size_width - margin_width;
+    int printable_area_height = size_height - margin_height;
+    gfx::Rect printable_area_microns(
+        ConvertUnit(margin_left, kPointsPerInch, kMicronsPerInch),
+        ConvertUnit(margin_bottom, kPointsPerInch, kMicronsPerInch),
+        ConvertUnit(printable_area_width, kPointsPerInch, kMicronsPerInch),
+        ConvertUnit(printable_area_height, kPointsPerInch, kMicronsPerInch));
+
+    custom_paper_sizes.push_back({base::SysNSStringToUTF8(name), "",
+                                  size_microns, printable_area_microns});
   }
   std::sort(custom_paper_sizes.begin(), custom_paper_sizes.end(),
             [](const PrinterSemanticCapsAndDefaults::Paper& a,

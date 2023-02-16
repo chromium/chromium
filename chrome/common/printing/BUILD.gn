@@ -52,6 +52,7 @@ source_set("printing") {
     "//printing",
     "//printing/mojom",
     "//ui/base",
+    "//ui/gfx/geometry",
   ]
 
   if (is_chromeos) {
