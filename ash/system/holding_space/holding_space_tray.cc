@@ -472,7 +472,10 @@ void HoldingSpaceTray::VisibilityChanged(views::View* starting_from,
                                          bool is_visible) {
   TrayBackgroundView::VisibilityChanged(starting_from, is_visible);
 
-  if (!is_visible) {
+  // `drag_drop_observer_` is constructed only when `HoldingSpaceTray` is
+  // drawn. NOTE: `is_visible` indicates the visibility of `starting_from`.
+  // Therefore, `IsDrawn()` should not be replaced by `is_visible`.
+  if (!IsDrawn()) {
     drag_drop_observer_.reset();
     return;
   }
