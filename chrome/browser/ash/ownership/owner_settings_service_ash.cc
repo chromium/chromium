@@ -24,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
-#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
@@ -213,13 +212,9 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
 
   if (!user_manager::UserManager::IsInitialized()) {
     // interactive_ui_tests does not set user manager.
-    waiting_for_easy_unlock_operation_finshed_ = false;
     return;
   }
 
-  UserSessionManager::GetInstance()->WaitForEasyUnlockKeyOpsFinished(
-      base::BindOnce(&OwnerSettingsServiceAsh::OnEasyUnlockKeyOpsFinished,
-                     weak_factory_.GetWeakPtr()));
   // The ProfileManager may be null in unit tests.
   if (ProfileManager* profile_manager = g_browser_process->profile_manager())
     profile_manager_observation_.Observe(profile_manager);
@@ -261,13 +256,6 @@ void OwnerSettingsServiceAsh::OnTPMTokenReady() {
 
   // TPMTokenLoader initializes the TPM and NSS database which is necessary to
   // determine ownership. Force a reload once we know these are initialized.
-  ReloadKeypair();
-}
-
-void OwnerSettingsServiceAsh::OnEasyUnlockKeyOpsFinished() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  waiting_for_easy_unlock_operation_finshed_ = false;
-
   ReloadKeypair();
 }
 
@@ -744,8 +732,9 @@ void OwnerSettingsServiceAsh::ReloadKeypairImpl(
     return;
   }
 
-  if (waiting_for_tpm_token_ || waiting_for_easy_unlock_operation_finshed_)
+  if (waiting_for_tpm_token_) {
     return;
+  }
 
   if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
     const bool is_enterprise_managed = g_browser_process->platform_part()

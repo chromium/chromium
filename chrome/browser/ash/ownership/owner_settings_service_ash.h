@@ -192,9 +192,6 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
   // Whether TPM token still needs to be initialized.
   bool waiting_for_tpm_token_ = true;
 
-  // Whether easy unlock operation is finished.
-  bool waiting_for_easy_unlock_operation_finshed_ = true;
-
   // True if local-owner policy fixups are still pending.
   bool has_pending_fixups_ = false;
 

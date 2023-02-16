@@ -147,7 +147,12 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   bool LoginAndWaitForActiveSession(const UserContext& user_context);
 
   // Logs in a user using with CreateDefaultUserContext(user_info) context.
-  void LoginWithDefaultContext(const TestUserInfo& user_info);
+  // When |wait_for_profile_prepared| is true, it waits until user profile is
+  // fully initialized. This is used for regular user login. When user profile
+  // initialization is expected to never complete (i.e. restart request),
+  // |wait_for_profile_prepared| should be false.
+  void LoginWithDefaultContext(const TestUserInfo& user_info,
+                               bool wait_for_profile_prepared = true);
 
   // Logs in as a regular user with default user context. Should be used for
   // proceeding into the session from the login screen.
