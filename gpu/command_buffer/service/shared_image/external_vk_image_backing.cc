@@ -63,8 +63,8 @@ static const struct GLFormatInfo {
     {GL_RGBA, GL_UNSIGNED_BYTE},                // RGBA_8888
     {GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4},       // RGBA_4444
     {GL_BGRA, GL_UNSIGNED_BYTE},                // BGRA_8888
-    {GL_RED, GL_UNSIGNED_BYTE},                 // ALPHA_8
-    {GL_RED, GL_UNSIGNED_BYTE},                 // LUMINANCE_8
+    {GL_ZERO, GL_ZERO},                         // ALPHA_8
+    {GL_ZERO, GL_ZERO},                         // LUMINANCE_8
     {GL_RGB, GL_UNSIGNED_SHORT_5_6_5},          // RGB_565
     {GL_BGR, GL_UNSIGNED_SHORT_5_6_5},          // BGR_565
     {GL_ZERO, GL_ZERO},                         // ETC1

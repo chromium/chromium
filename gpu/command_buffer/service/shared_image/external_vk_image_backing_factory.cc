@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -167,6 +167,14 @@ bool ExternalVkImageBackingFactory::IsSupported(
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
   if (format.is_multi_plane()) {
+    return false;
+  }
+
+  // ALPHA_8 is only used by UI and should never need GL/Vulkan interop.
+  // LUMINANCE_8 is only used with GL ES2 contexts and shouldn't be relevant for
+  // devices that support Vulkan.
+  if (format == viz::SinglePlaneFormat::kALPHA_8 ||
+      format == viz::SinglePlaneFormat::kLUMINANCE_8) {
     return false;
   }
 
