@@ -22,6 +22,8 @@ namespace attribution_reporting {
 
 class Filters;
 
+struct FilterPair;
+
 using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 
 // Set on sources.
@@ -49,9 +51,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 
   base::Value::Dict ToJson() const;
 
-  bool Matches(mojom::SourceType,
-               const Filters& positive,
-               const Filters& negative) const;
+  bool Matches(mojom::SourceType, const FilterPair&) const;
 
   bool MatchesForTesting(mojom::SourceType, const Filters&, bool negated) const;
 
@@ -66,9 +66,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 // Set on triggers.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
  public:
-  static constexpr char kFilters[] = "filters";
-  static constexpr char kNotFilters[] = "not_filters";
-
   // Filters are allowed to contain a `source_type` filter.
   static absl::optional<Filters> Create(FilterValues);
 
@@ -98,6 +95,18 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
   explicit Filters(FilterValues);
 
   FilterValues filter_values_;
+};
+
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
+  Filters positive;
+  Filters negative;
+
+  // Destructively parses the `filters` and `not_filters` fields from the given
+  // dict, if present.
+  static base::expected<FilterPair, mojom::TriggerRegistrationError> FromJSON(
+      base::Value::Dict&);
+
+  void SerializeIfNotEmpty(base::Value::Dict&) const;
 };
 
 }  // namespace attribution_reporting

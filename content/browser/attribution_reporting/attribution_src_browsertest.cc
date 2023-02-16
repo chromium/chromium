@@ -52,6 +52,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::mojom::RegistrationType;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -841,8 +842,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
   EXPECT_THAT(
       data_host->trigger_data(),
       ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-          /*filters=*/attribution_reporting::Filters(),
-          /*not_filters=*/attribution_reporting::Filters(),
+          FilterPair(),
           /*debug_key=*/Eq(absl::nullopt),
           EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(
               ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
@@ -904,40 +904,36 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(
       data_host->trigger_data(),
       ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-          /*filters=*/
-          *attribution_reporting::Filters::Create(
-              {{"w", {}}, {"x", {"y", "z"}}}),
-          /*not_filters=*/
-          *attribution_reporting::Filters::Create({{"a", {"b"}}}),
+          FilterPair{.positive = *attribution_reporting::Filters::Create(
+                         {{"w", {}}, {"x", {"y", "z"}}}),
+                     .negative = *attribution_reporting::Filters::Create(
+                         {{"a", {"b"}}})},
           /*debug_key=*/Optional(789),
           EventTriggerDataListMatches(
               EventTriggerDataListMatcherConfig(ElementsAre(
                   attribution_reporting::EventTriggerData(
                       /*data=*/1,
-                      /*priority=*/5, /*dedup_key=*/1024, /*filters=*/
-                      *attribution_reporting::Filters::Create({{"a", {"b"}}}),
-                      /*not_filters=*/
-                      *attribution_reporting::Filters::Create({{"c", {}}})),
+                      /*priority=*/5, /*dedup_key=*/1024,
+                      FilterPair{
+                          .positive = *attribution_reporting::Filters::Create(
+                              {{"a", {"b"}}}),
+                          .negative = *attribution_reporting::Filters::Create(
+                              {{"c", {}}})}),
                   attribution_reporting::EventTriggerData(
                       /*data=*/2, /*priority=*/10,
                       /*dedup_key=*/absl::nullopt,
-                      /*filters=*/attribution_reporting::Filters(),
-                      /*not_filters=*/
-                      *attribution_reporting::Filters::Create(
-                          {{"d", {"e", "f"}}, {"g", {}}}))))),
+                      FilterPair{.negative =
+                                     *attribution_reporting::Filters::Create(
+                                         {{"d", {"e", "f"}}, {"g", {}}})})))),
           *attribution_reporting::AggregatableDedupKeyList::Create(
               {attribution_reporting::AggregatableDedupKey(
-                  /*dedup_key=*/123,
-                  /*filters=*/attribution_reporting::Filters(),
-                  /*not_filters=*/attribution_reporting::Filters())}),
+                  /*dedup_key=*/123, FilterPair())}),
           /*debug_reporting=*/true,
           /*aggregatable_trigger_data=*/
           *attribution_reporting::AggregatableTriggerDataList::Create(
               {*attribution_reporting::AggregatableTriggerData::Create(
                   /*key_piece=*/absl::MakeUint128(/*high=*/0, /*low=*/1),
-                  /*source_keys=*/{"key"},
-                  /*filters=*/attribution_reporting::Filters(),
-                  /*not_filters=*/attribution_reporting::Filters())}),
+                  /*source_keys=*/{"key"}, FilterPair())}),
           /*aggregatable_values=*/
           *attribution_reporting::AggregatableValues::Create({{"key", 123}}),
           ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud))));

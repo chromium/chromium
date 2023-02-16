@@ -858,7 +858,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   const bool top_level_filters_match =
       source_to_attribute->source.common_info().filter_data().Matches(
           source_to_attribute->source.common_info().source_type(),
-          trigger_registration.filters, trigger_registration.not_filters);
+          trigger_registration.filters);
 
   attribution_info.emplace(std::move(source_to_attribute->source), trigger_time,
                            trigger_registration.debug_key,
@@ -1085,8 +1085,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   auto event_trigger = base::ranges::find_if(
       trigger.registration().event_triggers.vec(),
       [&](const attribution_reporting::EventTriggerData& event_trigger) {
-        return common_info.filter_data().Matches(
-            source_type, event_trigger.filters, event_trigger.not_filters);
+        return common_info.filter_data().Matches(source_type,
+                                                 event_trigger.filters);
       });
 
   if (event_trigger == trigger.registration().event_triggers.vec().end()) {
@@ -2690,8 +2690,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       [&](const attribution_reporting::AggregatableDedupKey&
               aggregatable_dedup_key) {
         return common_info.filter_data().Matches(
-            source_type, aggregatable_dedup_key.filters,
-            aggregatable_dedup_key.not_filters);
+            source_type, aggregatable_dedup_key.filters);
       });
 
   if (matched_dedup_key !=

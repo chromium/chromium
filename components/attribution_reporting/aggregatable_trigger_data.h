@@ -26,8 +26,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
 
   static absl::optional<AggregatableTriggerData> Create(absl::uint128 key_piece,
                                                         Keys source_keys,
-                                                        Filters filters,
-                                                        Filters not_filters);
+                                                        FilterPair);
 
   static base::expected<AggregatableTriggerData,
                         mojom::TriggerRegistrationError>
@@ -47,22 +46,18 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
 
   const Keys& source_keys() const { return source_keys_; }
 
-  const Filters& filters() const { return filters_; }
-
-  const Filters& not_filters() const { return not_filters_; }
+  const FilterPair& filters() const { return filters_; }
 
   base::Value::Dict ToJson() const;
 
  private:
   AggregatableTriggerData(absl::uint128 key_piece,
                           Keys source_keys,
-                          Filters filters,
-                          Filters not_filters);
+                          FilterPair);
 
   absl::uint128 key_piece_ = 0;
   Keys source_keys_;
-  Filters filters_;
-  Filters not_filters_;
+  FilterPair filters_;
 };
 
 using AggregatableTriggerDataList =

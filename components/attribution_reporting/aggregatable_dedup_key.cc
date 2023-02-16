@@ -32,36 +32,26 @@ AggregatableDedupKey::FromJSON(base::Value& value) {
         TriggerRegistrationError::kAggregatableDedupKeyWrongType);
   }
 
-  auto filters = Filters::FromJSON(dict->Find(Filters::kFilters));
+  auto filters = FilterPair::FromJSON(*dict);
   if (!filters.has_value()) {
     return base::unexpected(filters.error());
   }
 
-  auto not_filters = Filters::FromJSON(dict->Find(Filters::kNotFilters));
-  if (!not_filters.has_value()) {
-    return base::unexpected(not_filters.error());
-  }
-
   absl::optional<uint64_t> dedup_key = ParseDeduplicationKey(*dict);
 
-  return AggregatableDedupKey(dedup_key, std::move(*filters),
-                              std::move(*not_filters));
+  return AggregatableDedupKey(dedup_key, std::move(*filters));
 }
 
 AggregatableDedupKey::AggregatableDedupKey() = default;
 
 AggregatableDedupKey::AggregatableDedupKey(absl::optional<uint64_t> dedup_key,
-                                           Filters filters,
-                                           Filters not_filters)
-    : dedup_key(dedup_key),
-      filters(std::move(filters)),
-      not_filters(std::move(not_filters)) {}
+                                           FilterPair filters)
+    : dedup_key(dedup_key), filters(std::move(filters)) {}
 
 base::Value::Dict AggregatableDedupKey::ToJson() const {
   base::Value::Dict dict;
 
-  filters.SerializeIfNotEmpty(dict, Filters::kFilters);
-  not_filters.SerializeIfNotEmpty(dict, Filters::kNotFilters);
+  filters.SerializeIfNotEmpty(dict);
 
   SerializeDeduplicationKey(dict, dedup_key);
 

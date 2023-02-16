@@ -96,13 +96,9 @@ void SerializeListIfNotEmpty(base::Value::Dict& dict,
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
 TriggerRegistration::Parse(base::Value::Dict registration) {
-  auto filters = Filters::FromJSON(registration.Find(Filters::kFilters));
+  auto filters = FilterPair::FromJSON(registration);
   if (!filters.has_value())
     return base::unexpected(filters.error());
-
-  auto not_filters = Filters::FromJSON(registration.Find(Filters::kNotFilters));
-  if (!not_filters.has_value())
-    return base::unexpected(not_filters.error());
 
   auto aggregatable_dedup_keys =
       AggregatableDedupKeyList::Build<TriggerRegistrationError>(
@@ -148,10 +144,10 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   bool debug_reporting = ParseDebugReporting(registration);
 
   return TriggerRegistration(
-      std::move(*filters), std::move(*not_filters), debug_key,
-      std::move(*aggregatable_dedup_keys), std::move(*event_triggers),
-      std::move(*aggregatable_trigger_data), std::move(*aggregatable_values),
-      debug_reporting, *aggregation_coordinator);
+      std::move(*filters), debug_key, std::move(*aggregatable_dedup_keys),
+      std::move(*event_triggers), std::move(*aggregatable_trigger_data),
+      std::move(*aggregatable_values), debug_reporting,
+      *aggregation_coordinator);
 }
 
 // static
@@ -182,8 +178,7 @@ TriggerRegistration::Parse(base::StringPiece json) {
 TriggerRegistration::TriggerRegistration() = default;
 
 TriggerRegistration::TriggerRegistration(
-    Filters filters,
-    Filters not_filters,
+    FilterPair filters,
     absl::optional<uint64_t> debug_key,
     AggregatableDedupKeyList aggregatable_dedup_keys,
     EventTriggerDataList event_triggers,
@@ -192,7 +187,6 @@ TriggerRegistration::TriggerRegistration(
     bool debug_reporting,
     aggregation_service::mojom::AggregationCoordinator aggregation_coordinator)
     : filters(std::move(filters)),
-      not_filters(std::move(not_filters)),
       debug_key(debug_key),
       aggregatable_dedup_keys(std::move(aggregatable_dedup_keys)),
       event_triggers(std::move(event_triggers)),
@@ -216,8 +210,7 @@ TriggerRegistration& TriggerRegistration::operator=(TriggerRegistration&&) =
 base::Value::Dict TriggerRegistration::ToJson() const {
   base::Value::Dict dict;
 
-  filters.SerializeIfNotEmpty(dict, Filters::kFilters);
-  not_filters.SerializeIfNotEmpty(dict, Filters::kNotFilters);
+  filters.SerializeIfNotEmpty(dict);
 
   SerializeListIfNotEmpty(dict, kAggregatableDeduplicationKeys,
                           aggregatable_dedup_keys.vec());

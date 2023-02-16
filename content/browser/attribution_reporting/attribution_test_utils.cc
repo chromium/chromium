@@ -54,6 +54,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
 
 using ::testing::AllOf;
@@ -740,29 +741,24 @@ AttributionTrigger TriggerBuilder::Build(
   if (generate_event_trigger_data) {
     event_triggers.emplace_back(
         trigger_data_, priority_, dedup_key_,
-        /*filters=*/
-        attribution_reporting::Filters::ForSourceTypeForTesting(
-            AttributionSourceType::kNavigation),
-        /*not_filters=*/attribution_reporting::Filters());
+        FilterPair{.positive =
+                       attribution_reporting::Filters::ForSourceTypeForTesting(
+                           AttributionSourceType::kNavigation)});
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
-        /*filters=*/
-        attribution_reporting::Filters::ForSourceTypeForTesting(
-            AttributionSourceType::kEvent),
-        /*not_filters=*/attribution_reporting::Filters());
+        attribution_reporting::FilterPair{
+            .positive = attribution_reporting::Filters::ForSourceTypeForTesting(
+                AttributionSourceType::kEvent)});
   }
 
   return AttributionTrigger(
       reporting_origin_,
       attribution_reporting::TriggerRegistration(
-          /*filters=*/attribution_reporting::Filters(),
-          /*not_filters=*/attribution_reporting::Filters(), debug_key_,
+          FilterPair(), debug_key_,
           *attribution_reporting::AggregatableDedupKeyList::Create(
               {attribution_reporting::AggregatableDedupKey(
-                  /*dedup_key=*/aggregatable_dedup_key_,
-                  /*filters=*/attribution_reporting::Filters(),
-                  /*not_filters=*/attribution_reporting::Filters())}),
+                  /*dedup_key=*/aggregatable_dedup_key_, FilterPair())}),
           *attribution_reporting::EventTriggerDataList::Create(
               std::move(event_triggers)),
           *attribution_reporting::AggregatableTriggerDataList::Create(
@@ -1285,13 +1281,11 @@ EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(
     ::testing::Matcher<uint64_t> data,
     ::testing::Matcher<int64_t> priority,
     ::testing::Matcher<absl::optional<uint64_t>> dedup_key,
-    ::testing::Matcher<const attribution_reporting::Filters&> filters,
-    ::testing::Matcher<const attribution_reporting::Filters&> not_filters)
+    ::testing::Matcher<const FilterPair&> filters)
     : data(std::move(data)),
       priority(std::move(priority)),
       dedup_key(std::move(dedup_key)),
-      filters(std::move(filters)),
-      not_filters(std::move(not_filters)) {}
+      filters(std::move(filters)) {}
 
 EventTriggerDataMatcherConfig::~EventTriggerDataMatcherConfig() = default;
 
@@ -1304,15 +1298,11 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
       Field("dedup_key", &attribution_reporting::EventTriggerData::dedup_key,
             cfg.dedup_key),
       Field("filters", &attribution_reporting::EventTriggerData::filters,
-            cfg.filters),
-      Field("not_filters",
-            &attribution_reporting::EventTriggerData::not_filters,
-            cfg.not_filters));
+            cfg.filters));
 }
 
 TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
-    ::testing::Matcher<const attribution_reporting::Filters&> filters,
-    ::testing::Matcher<const attribution_reporting::Filters&> not_filters,
+    ::testing::Matcher<const FilterPair&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
     ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
         event_triggers,
@@ -1327,7 +1317,6 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
     ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
         aggregation_coordinator)
     : filters(std::move(filters)),
-      not_filters(std::move(not_filters)),
       debug_key(std::move(debug_key)),
       event_triggers(std::move(event_triggers)),
       aggregatable_dedup_keys(std::move(aggregatable_dedup_keys)),
@@ -1343,9 +1332,6 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
   return AllOf(
       Field("filters", &attribution_reporting::TriggerRegistration::filters,
             cfg.filters),
-      Field("not_filters",
-            &attribution_reporting::TriggerRegistration::not_filters,
-            cfg.not_filters),
       Field("debug_key", &attribution_reporting::TriggerRegistration::debug_key,
             cfg.debug_key),
       Field("event_triggers",
@@ -1454,9 +1440,7 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
     aggregatable_trigger_data.push_back(
         *attribution_reporting::AggregatableTriggerData::Create(
             absl::MakeUint128(/*high=*/i, /*low=*/0),
-            /*source_keys=*/{key_id},
-            /*filters=*/attribution_reporting::Filters(),
-            /*not_filters=*/attribution_reporting::Filters()));
+            /*source_keys=*/{key_id}, FilterPair()));
     aggregatable_values.emplace(std::move(key_id), histogram_values[i]);
   }
 

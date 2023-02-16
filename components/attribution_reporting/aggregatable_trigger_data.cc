@@ -118,13 +118,12 @@ void SerializeSourceKeysIfNotEmpty(base::Value::Dict& dict,
 absl::optional<AggregatableTriggerData> AggregatableTriggerData::Create(
     absl::uint128 key_piece,
     Keys source_keys,
-    Filters filters,
-    Filters not_filters) {
+    FilterPair filters) {
   if (!AreSourceKeysValid(source_keys))
     return absl::nullopt;
 
   return AggregatableTriggerData(key_piece, std::move(source_keys),
-                                 std::move(filters), std::move(not_filters));
+                                 std::move(filters));
 }
 
 // static
@@ -144,28 +143,22 @@ AggregatableTriggerData::FromJSON(base::Value& value) {
   if (!source_keys.has_value())
     return base::unexpected(source_keys.error());
 
-  auto filters = Filters::FromJSON(dict->Find(Filters::kFilters));
+  auto filters = FilterPair::FromJSON(*dict);
   if (!filters.has_value())
     return base::unexpected(filters.error());
 
-  auto not_filters = Filters::FromJSON(dict->Find(Filters::kNotFilters));
-  if (!not_filters.has_value())
-    return base::unexpected(not_filters.error());
-
   return AggregatableTriggerData(*key_piece, std::move(*source_keys),
-                                 std::move(*filters), std::move(*not_filters));
+                                 std::move(*filters));
 }
 
 AggregatableTriggerData::AggregatableTriggerData() = default;
 
 AggregatableTriggerData::AggregatableTriggerData(absl::uint128 key_piece,
                                                  Keys source_keys,
-                                                 Filters filters,
-                                                 Filters not_filters)
+                                                 FilterPair filters)
     : key_piece_(key_piece),
       source_keys_(std::move(source_keys)),
-      filters_(std::move(filters)),
-      not_filters_(std::move(not_filters)) {
+      filters_(std::move(filters)) {
   DCHECK(AreSourceKeysValid(source_keys_));
 }
 
@@ -190,8 +183,7 @@ base::Value::Dict AggregatableTriggerData::ToJson() const {
 
   SerializeSourceKeysIfNotEmpty(dict, source_keys_);
 
-  filters_.SerializeIfNotEmpty(dict, Filters::kFilters);
-  not_filters_.SerializeIfNotEmpty(dict, Filters::kNotFilters);
+  filters_.SerializeIfNotEmpty(dict);
 
   return dict;
 }

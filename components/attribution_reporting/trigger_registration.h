@@ -33,8 +33,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
 
   TriggerRegistration();
 
-  TriggerRegistration(Filters filters,
-                      Filters not_filters,
+  TriggerRegistration(FilterPair,
                       absl::optional<uint64_t> debug_key,
                       AggregatableDedupKeyList aggregatable_dedup_keys,
                       EventTriggerDataList event_triggers,
@@ -54,8 +53,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
 
   base::Value::Dict ToJson() const;
 
-  Filters filters;
-  Filters not_filters;
+  FilterPair filters;
   absl::optional<uint64_t> debug_key;
   AggregatableDedupKeyList aggregatable_dedup_keys;
   EventTriggerDataList event_triggers;

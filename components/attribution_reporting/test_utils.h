@@ -23,6 +23,7 @@ class SuitableOrigin;
 
 struct AggregatableDedupKey;
 struct EventTriggerData;
+struct FilterPair;
 struct SourceRegistration;
 struct TriggerRegistration;
 
@@ -33,6 +34,10 @@ std::ostream& operator<<(std::ostream&, const AggregationKeys&);
 bool operator==(const FilterData&, const FilterData&);
 
 std::ostream& operator<<(std::ostream&, const FilterData&);
+
+bool operator==(const FilterPair&, const FilterPair&);
+
+std::ostream& operator<<(std::ostream&, const FilterPair&);
 
 bool operator==(const Filters&, const Filters&);
 

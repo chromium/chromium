@@ -30,6 +30,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::FilterPair;
 using ::testing::ElementsAre;
 
 using AttributionFilters = ::attribution_reporting::Filters;
@@ -49,33 +50,29 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/1024),
               /*source_keys=*/{"key1", "key3"},
-              /*filters=*/
-              *AttributionFilters::Create({{"filter", {"value"}}}),
-              /*not_filters=*/AttributionFilters()),
+              FilterPair{.positive = *AttributionFilters::Create(
+                             {{"filter", {"value"}}})}),
 
           // The second trigger data applies to "key2", "key4" is ignored.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/2688),
               /*source_keys=*/{"key2", "key4"},
-              /*filters=*/
-              *AttributionFilters::Create({{"a", {"b", "c"}}}),
-              /*not_filters=*/AttributionFilters()),
+              FilterPair{.positive =
+                             *AttributionFilters::Create({{"a", {"b", "c"}}})}),
 
           // The third trigger will be ignored due to mismatched filters.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key2"},
-              /*filters=*/
-              *AttributionFilters::Create({{"filter", {}}}),
-              /*not_filters=*/AttributionFilters()),
+              FilterPair{.positive =
+                             *AttributionFilters::Create({{"filter", {}}})}),
 
           // The fourth trigger will be ignored due to matched not_filters.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key2"},
-              /*filters=*/AttributionFilters(),
-              /*not_filters=*/
-              *AttributionFilters::Create({{"filter", {"value"}}}))};
+              FilterPair{.negative = *AttributionFilters::Create(
+                             {{"filter", {"value"}}})})};
 
   absl::optional<attribution_reporting::FilterData> source_filter_data =
       attribution_reporting::FilterData::Create({{"filter", {"value"}}});

@@ -236,6 +236,12 @@ mojom("registration_mojom") {
               "namespace attribution_reporting { class Filters; }"
         },
         {
+          mojom = "attribution_reporting.mojom.FilterPair"
+          cpp = "::attribution_reporting::FilterPair"
+          forward_declaration =
+              "namespace attribution_reporting { struct FilterPair; }"
+        },
+        {
           mojom = "attribution_reporting.mojom.EventTriggerData"
           cpp = "::attribution_reporting::EventTriggerData"
           forward_declaration =

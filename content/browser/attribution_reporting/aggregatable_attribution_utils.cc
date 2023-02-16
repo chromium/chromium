@@ -63,8 +63,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   // match for the given source, and if applicable modify the bucket based on
   // the given key piece.
   for (const auto& data : aggregatable_trigger_data.vec()) {
-    if (!source_filter_data.Matches(source_type, data.filters(),
-                                    data.not_filters())) {
+    if (!source_filter_data.Matches(source_type, data.filters())) {
       ++num_trigger_data_filtered;
       continue;
     }

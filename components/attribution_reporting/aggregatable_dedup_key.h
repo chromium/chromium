@@ -28,17 +28,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableDedupKey {
 
   // The filters used to determine whether this `AggregatableDedupKey`'s dedup
   // key is used.
-  Filters filters;
-
-  // The negated filters used to determine whether this `AggregatableDedupKey`'s
-  // dedup key is used.
-  Filters not_filters;
+  FilterPair filters;
 
   AggregatableDedupKey();
 
-  AggregatableDedupKey(absl::optional<uint64_t> dedup_key,
-                       Filters filters,
-                       Filters not_filters);
+  AggregatableDedupKey(absl::optional<uint64_t> dedup_key, FilterPair);
 
   base::Value::Dict ToJson() const;
 };

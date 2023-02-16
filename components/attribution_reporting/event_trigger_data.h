@@ -39,19 +39,14 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
 
   // The filters used to determine whether this `EventTriggerData'`s fields
   // are used.
-  Filters filters;
-
-  // The negated filters used to determine whether this `EventTriggerData'`s
-  // fields are used.
-  Filters not_filters;
+  FilterPair filters;
 
   EventTriggerData();
 
   EventTriggerData(uint64_t data,
                    int64_t priority,
                    absl::optional<uint64_t> dedup_key,
-                   Filters filters,
-                   Filters not_filters);
+                   FilterPair);
 
   base::Value::Dict ToJson() const;
 };

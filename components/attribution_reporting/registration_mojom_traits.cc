@@ -154,6 +154,14 @@ bool StructTraits<attribution_reporting::mojom::FiltersDataView,
 }
 
 // static
+bool StructTraits<attribution_reporting::mojom::FilterPairDataView,
+                  attribution_reporting::FilterPair>::
+    Read(attribution_reporting::mojom::FilterPairDataView data,
+         attribution_reporting::FilterPair* out) {
+  return data.ReadPositive(&out->positive) && data.ReadNegative(&out->negative);
+}
+
+// static
 bool StructTraits<attribution_reporting::mojom::EventTriggerDataDataView,
                   attribution_reporting::EventTriggerData>::
     Read(attribution_reporting::mojom::EventTriggerDataDataView data,
@@ -163,10 +171,6 @@ bool StructTraits<attribution_reporting::mojom::EventTriggerDataDataView,
   }
 
   if (!data.ReadFilters(&out->filters)) {
-    return false;
-  }
-
-  if (!data.ReadNotFilters(&out->not_filters)) {
     return false;
   }
 
@@ -190,20 +194,14 @@ bool StructTraits<attribution_reporting::mojom::AggregatableTriggerDataDataView,
     return false;
   }
 
-  attribution_reporting::Filters filters;
+  attribution_reporting::FilterPair filters;
   if (!data.ReadFilters(&filters)) {
-    return false;
-  }
-
-  attribution_reporting::Filters not_filters;
-  if (!data.ReadNotFilters(&not_filters)) {
     return false;
   }
 
   auto aggregatable_trigger_data =
       attribution_reporting::AggregatableTriggerData::Create(
-          key_piece, std::move(source_keys), std::move(filters),
-          std::move(not_filters));
+          key_piece, std::move(source_keys), std::move(filters));
   if (!aggregatable_trigger_data) {
     return false;
   }
@@ -222,10 +220,6 @@ bool StructTraits<attribution_reporting::mojom::AggregatableDedupKeyDataView,
   }
 
   if (!data.ReadFilters(&out->filters)) {
-    return false;
-  }
-
-  if (!data.ReadNotFilters(&out->not_filters)) {
     return false;
   }
 
@@ -252,10 +246,6 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
   out->event_triggers = std::move(*event_triggers_list);
 
   if (!data.ReadFilters(&out->filters)) {
-    return false;
-  }
-
-  if (!data.ReadNotFilters(&out->not_filters)) {
     return false;
   }
 

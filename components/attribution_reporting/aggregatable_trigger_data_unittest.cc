@@ -60,8 +60,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "key_piece": "0x1234"
           })json"),
           *AggregatableTriggerData::Create(
-              /*key_piece=*/4660, /*source_keys=*/{},
-              /*filters=*/Filters(), /*not_filters=*/Filters()),
+              /*key_piece=*/4660, /*source_keys=*/{}, FilterPair()),
       },
       {
           "empty_source_keys",
@@ -70,8 +69,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "source_keys": []
           })json"),
           *AggregatableTriggerData::Create(
-              /*key_piece=*/4660, /*source_keys=*/{},
-              /*filters=*/Filters(), /*not_filters=*/Filters()),
+              /*key_piece=*/4660, /*source_keys=*/{}, FilterPair()),
       },
       {
           "non_empty_source_keys",
@@ -80,8 +78,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
             "source_keys": ["a", "b"]
           })json"),
           *AggregatableTriggerData::Create(
-              /*key_piece=*/4660, /*source_keys=*/{"a", "b"},
-              /*filters=*/Filters(), /*not_filters=*/Filters()),
+              /*key_piece=*/4660, /*source_keys=*/{"a", "b"}, FilterPair()),
       },
       {
           "filters",
@@ -91,8 +88,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
          })json"),
           *AggregatableTriggerData::Create(
               /*key_piece=*/1, /*source_keys=*/{},
-              /*filters=*/*Filters::Create({{"a", {"b", "c"}}}),
-              /*not_filters=*/Filters()),
+              FilterPair{.positive = *Filters::Create({{"a", {"b", "c"}}})}),
       },
       {
           "not_filters",
@@ -102,8 +98,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
           })json"),
           *AggregatableTriggerData::Create(
               /*key_piece=*/2, /*source_keys=*/{},
-              /*filters=*/Filters(),
-              /*not_filters=*/*Filters::Create({{"a", {"b", "c"}}})),
+              FilterPair{.negative = *Filters::Create({{"a", {"b", "c"}}})}),
       },
       {
           "not_dictionary",
@@ -209,8 +204,8 @@ TEST(AggregatableTriggerDataTest, ToJson) {
           *AggregatableTriggerData::Create(
               /*key_piece=*/1,
               /*source_keys=*/{"a", "b"},
-              /*filters=*/*Filters::Create({{"c", {}}}),
-              /*not_filters=*/*Filters::Create({{"d", {}}})),
+              FilterPair{.positive = *Filters::Create({{"c", {}}}),
+                         .negative = *Filters::Create({{"d", {}}})}),
           R"json({
             "key_piece":"0x1",
             "source_keys": ["a", "b"],

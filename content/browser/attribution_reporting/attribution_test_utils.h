@@ -941,17 +941,14 @@ struct EventTriggerDataMatcherConfig {
   ::testing::Matcher<uint64_t> data;
   ::testing::Matcher<int64_t> priority;
   ::testing::Matcher<absl::optional<uint64_t>> dedup_key;
-  ::testing::Matcher<const attribution_reporting::Filters&> filters;
-  ::testing::Matcher<const attribution_reporting::Filters&> not_filters;
+  ::testing::Matcher<const attribution_reporting::FilterPair&> filters;
 
   EventTriggerDataMatcherConfig() = delete;
   explicit EventTriggerDataMatcherConfig(
       ::testing::Matcher<uint64_t> data = ::testing::_,
       ::testing::Matcher<int64_t> priority = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> dedup_key = ::testing::_,
-      ::testing::Matcher<const attribution_reporting::Filters&> filters =
-          ::testing::_,
-      ::testing::Matcher<const attribution_reporting::Filters&> not_filters =
+      ::testing::Matcher<const attribution_reporting::FilterPair&> filters =
           ::testing::_);
   ~EventTriggerDataMatcherConfig();
 };
@@ -986,9 +983,7 @@ constexpr auto EventTriggerDataListMatches =
                        attribution_reporting::kMaxEventTriggerData>;
 
 struct TriggerRegistrationMatcherConfig {
-  ::testing::Matcher<const attribution_reporting::Filters&> filters =
-      ::testing::_;
-  ::testing::Matcher<const attribution_reporting::Filters&> not_filters =
+  ::testing::Matcher<const attribution_reporting::FilterPair&> filters =
       ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
   ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
@@ -1005,9 +1000,7 @@ struct TriggerRegistrationMatcherConfig {
 
   TriggerRegistrationMatcherConfig() = delete;
   explicit TriggerRegistrationMatcherConfig(
-      ::testing::Matcher<const attribution_reporting::Filters&> filters =
-          ::testing::_,
-      ::testing::Matcher<const attribution_reporting::Filters&> not_filters =
+      ::testing::Matcher<const attribution_reporting::FilterPair&> filters =
           ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
       ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>

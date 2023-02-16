@@ -33,20 +33,15 @@ EventTriggerData::FromJSON(base::Value& value) {
         TriggerRegistrationError::kEventTriggerDataWrongType);
   }
 
-  auto filters = Filters::FromJSON(dict->Find(Filters::kFilters));
+  auto filters = FilterPair::FromJSON(*dict);
   if (!filters.has_value())
     return base::unexpected(filters.error());
-
-  auto not_filters = Filters::FromJSON(dict->Find(Filters::kNotFilters));
-  if (!not_filters.has_value())
-    return base::unexpected(not_filters.error());
 
   uint64_t data = ParseUint64(*dict, kTriggerData).value_or(0);
   int64_t priority = ParsePriority(*dict);
   absl::optional<uint64_t> dedup_key = ParseDeduplicationKey(*dict);
 
-  return EventTriggerData(data, priority, dedup_key, std::move(*filters),
-                          std::move(*not_filters));
+  return EventTriggerData(data, priority, dedup_key, std::move(*filters));
 }
 
 EventTriggerData::EventTriggerData() = default;
@@ -54,19 +49,16 @@ EventTriggerData::EventTriggerData() = default;
 EventTriggerData::EventTriggerData(uint64_t data,
                                    int64_t priority,
                                    absl::optional<uint64_t> dedup_key,
-                                   Filters filters,
-                                   Filters not_filters)
+                                   FilterPair filters)
     : data(data),
       priority(priority),
       dedup_key(dedup_key),
-      filters(std::move(filters)),
-      not_filters(std::move(not_filters)) {}
+      filters(std::move(filters)) {}
 
 base::Value::Dict EventTriggerData::ToJson() const {
   base::Value::Dict dict;
 
-  filters.SerializeIfNotEmpty(dict, Filters::kFilters);
-  not_filters.SerializeIfNotEmpty(dict, Filters::kNotFilters);
+  filters.SerializeIfNotEmpty(dict);
 
   SerializeUint64(dict, kTriggerData, data);
   SerializePriority(dict, priority);

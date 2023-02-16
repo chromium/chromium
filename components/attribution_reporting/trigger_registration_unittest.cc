@@ -85,7 +85,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters = *Filters::Create({{"a", {"b"}}});
+            r.filters.positive = *Filters::Create({{"a", {"b"}}});
           }),
       },
       {
@@ -97,7 +97,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.not_filters = *Filters::Create({{"a", {"b"}}});
+            r.filters.negative = *Filters::Create({{"a", {"b"}}});
           }),
       },
       {
@@ -124,15 +124,12 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "event_triggers_valid",
           R"json({"event_trigger_data":[{}, {"trigger_data":"5"}]})json",
-          TriggerRegistrationWith(
-              [](TriggerRegistration& r) {
-                r.event_triggers = *EventTriggerDataList::Create(
-                    {EventTriggerData(),
-                     EventTriggerData(/*data=*/5, /*priority=*/0,
-                                      /*dedup_key=*/absl::nullopt,
-                                      /*filters=*/Filters(),
-                                      /*not_filters=*/Filters())});
-              }),
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.event_triggers = *EventTriggerDataList::Create(
+                {EventTriggerData(),
+                 EventTriggerData(/*data=*/5, /*priority=*/0,
+                                  /*dedup_key=*/absl::nullopt, FilterPair())});
+          }),
       },
       {
           "event_triggers_wrong_type",
@@ -164,14 +161,10 @@ TEST(TriggerRegistrationTest, Parse) {
             r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
                 {*AggregatableTriggerData::Create(
                      /*key_piece=*/1,
-                     /*source_keys=*/{"a"},
-                     /*filters=*/Filters(),
-                     /*not_filters=*/Filters()),
+                     /*source_keys=*/{"a"}, FilterPair()),
                  *AggregatableTriggerData::Create(
                      /*key_piece=*/2,
-                     /*source_keys=*/{"b"},
-                     /*filters=*/Filters(),
-                     /*not_filters=*/Filters())});
+                     /*source_keys=*/{"b"}, FilterPair())});
           }),
       },
       {
@@ -241,9 +234,7 @@ TEST(TriggerRegistrationTest, Parse) {
           TriggerRegistrationWith([](TriggerRegistration& r) {
             r.aggregatable_dedup_keys = *AggregatableDedupKeyList::Create(
                 {AggregatableDedupKey(),
-                 AggregatableDedupKey(/*dedup_key=*/5,
-                                      /*filters=*/Filters(),
-                                      /*not_filters=*/Filters())});
+                 AggregatableDedupKey(/*dedup_key=*/5, FilterPair())});
           }),
       },
       {
@@ -371,8 +362,7 @@ TEST(TriggerRegistrationTest, ToJson) {
       {
           TriggerRegistrationWith([](TriggerRegistration& r) {
             r.aggregatable_dedup_keys = *AggregatableDedupKeyList::Create(
-                {AggregatableDedupKey(/*dedup_key=*/1, /*filters=*/Filters(),
-                                      /*not_filters=*/Filters())});
+                {AggregatableDedupKey(/*dedup_key=*/1, FilterPair())});
             r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
                 {AggregatableTriggerData()});
             r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
@@ -380,8 +370,8 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.debug_reporting = true;
             r.event_triggers =
                 *EventTriggerDataList::Create({EventTriggerData()});
-            r.filters = *Filters::Create({{"b", {}}});
-            r.not_filters = *Filters::Create({{"c", {}}});
+            r.filters.positive = *Filters::Create({{"b", {}}});
+            r.filters.negative = *Filters::Create({{"c", {}}});
           }),
           R"json({
             "aggregation_coordinator_identifier": "aws-cloud",

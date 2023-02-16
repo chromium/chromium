@@ -41,6 +41,9 @@ enum class FilterValuesError {
   kValueTooLong,
 };
 
+constexpr char kFilters[] = "filters";
+constexpr char kNotFilters[] = "not_filters";
+
 bool IsValidForSourceOrTrigger(const FilterValues& filter_values) {
   if (filter_values.size() > kMaxFiltersPerSource)
     return false;
@@ -273,10 +276,9 @@ bool FilterData::MatchesForTesting(mojom::SourceType source_type,
 }
 
 bool FilterData::Matches(mojom::SourceType source_type,
-                         const Filters& positive,
-                         const Filters& negative) const {
-  return Matches(source_type, positive, /*negated=*/false) &&
-         Matches(source_type, negative, /*negated=*/true);
+                         const FilterPair& filters) const {
+  return Matches(source_type, filters.positive, /*negated=*/false) &&
+         Matches(source_type, filters.negative, /*negated=*/true);
 }
 
 // static
@@ -356,6 +358,28 @@ void Filters::SerializeIfNotEmpty(base::Value::Dict& dict,
   if (!filter_values_.empty()) {
     dict.Set(key, ToJson());
   }
+}
+
+// static
+base::expected<FilterPair, mojom::TriggerRegistrationError>
+FilterPair::FromJSON(base::Value::Dict& dict) {
+  auto positive = Filters::FromJSON(dict.Find(kFilters));
+  if (!positive.has_value()) {
+    return base::unexpected(positive.error());
+  }
+
+  auto negative = Filters::FromJSON(dict.Find(kNotFilters));
+  if (!negative.has_value()) {
+    return base::unexpected(negative.error());
+  }
+
+  return FilterPair{.positive = std::move(*positive),
+                    .negative = std::move(*negative)};
+}
+
+void FilterPair::SerializeIfNotEmpty(base::Value::Dict& dict) const {
+  positive.SerializeIfNotEmpty(dict, kFilters);
+  negative.SerializeIfNotEmpty(dict, kNotFilters);
 }
 
 }  // namespace attribution_reporting
