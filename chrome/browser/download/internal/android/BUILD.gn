@@ -192,12 +192,12 @@ android_resources("java_resources") {
     "java/res/layout/downloads_empty_view.xml",
     "java/res/layout/list_selection_handle_view.xml",
     "java/res/menu/download_manager_menu.xml",
-    "java/res/values-sw600dp-v17/dimens.xml",
-    "java/res/values-v17/attrs.xml",
-    "java/res/values-v17/dimens.xml",
-    "java/res/values-v17/ids.xml",
-    "java/res/values-v17/styles.xml",
+    "java/res/values-sw600dp/dimens.xml",
+    "java/res/values/attrs.xml",
+    "java/res/values/dimens.xml",
     "java/res/values/drawables.xml",
+    "java/res/values/ids.xml",
+    "java/res/values/styles.xml",
   ]
 
   deps = [
