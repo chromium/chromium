@@ -14,7 +14,7 @@ namespace extensions {
 ContentSettingsService::ContentSettingsService(content::BrowserContext* context)
     : content_settings_store_(base::MakeRefCounted<ContentSettingsStore>()) {}
 
-ContentSettingsService::~ContentSettingsService() {}
+ContentSettingsService::~ContentSettingsService() = default;
 
 // static
 ContentSettingsService* ContentSettingsService::Get(
