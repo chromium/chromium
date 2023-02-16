@@ -1,0 +1,10 @@
+"\x00\x00\x00\x00"
+"\x00\x00\x00\x00\x00\x00\x00\x00"
+
+kTypeIdActivityTracker = "\xB3\x81\x73\x5D"
+kTypeIdUserDataRecord = "\xDA\xDD\x5E\x61"
+kTypeIdGlobalLogMessage = "\xFA\x34\xF4\x4C"
+kTypeIdProcessDataRecord = "\xDA\xDE\x5E\x61"
+kTypeIdActivityTrackerFree = "\x4C\x7E\x8C\xA2"
+kTypeIdUserDataRecordFree = "\x25\x22\xA1\x9E"
+kTypeIdProcessDataRecordFree  = "\x25\x21\xA1\x9E"

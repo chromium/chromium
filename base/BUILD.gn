@@ -4641,6 +4641,12 @@ fuzzer_test("base_json_string_escape_fuzzer") {
   deps = [ "//base" ]
 }
 
+fuzzer_test("base_activity_analyzer_fuzzer") {
+  sources = [ "debug/activity_analyzer_fuzzer.cc" ]
+  deps = [ "//base" ]
+  dict = "debug/activity_analyzer_fuzzer.dict"
+}
+
 if (is_mac) {
   protoc_convert("base_mach_port_rendezvous_convert_corpus") {
     sources = [
