@@ -4,17 +4,25 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
+import com.ark.browser.ui.widget.BottomControlBar;
+import com.ark.browser.ui.widget.BottomController;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
 import com.zpj.utils.ClickHelper;
+import com.zpj.utils.ContextUtils;
+import com.zpj.utils.StatusBarUtils;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.util.ColorUtils;
 
 public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
@@ -24,6 +32,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     private final View mLauncherLayout;
     private final TabSwitcherLayout mTabSwitcherLayout;
     private final SwitcherRecyclerLayout mSwitcher;
+    private final BottomController mBottomController;
 
     public TabSwitcherManager(View view) {
         mViewHolder = view.findViewById(R.id.compositor_view_holder);
@@ -34,6 +43,10 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mSwitcher = mTabSwitcherLayout.getSwitcher();
         mSwitcher.addCallback(this);
         mSwitcher.setAdapter(new ArkTabAdapter());
+
+        BottomControlBar bottomControlBar = view.findViewById(R.id.bottom_control_bar);
+        bottomControlBar.setSwitcherManager(this);
+        mBottomController = new BottomController(view);
 
         // TODO
         ClickHelper.with(mLauncherLayout)
@@ -62,6 +75,10 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     }
 
+    public BottomController getBottomController() {
+        return mBottomController;
+    }
+
     public SwitcherRecyclerLayout getSwitcher() {
         return mSwitcher;
     }
@@ -80,8 +97,34 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     public void showSwitcher() {
         mLauncherLayout.setVisibility(View.VISIBLE);
-        mBrowserLayout.setVisibility(View.INVISIBLE);
+        hideBrowser();
         mTabSwitcherLayout.showSwitcher();
+    }
+
+    public void showBrowser() {
+        mBrowserLayout.setVisibility(View.VISIBLE);
+        Tab tab = mViewHolder.getTab();
+        if (tab != null) {
+            int color = tab.getThemeColor();
+            setStatusBarColor(color);
+            mBottomController.updatePrimaryColor(color);
+        }
+    }
+
+    public void hideBrowser() {
+        mBrowserLayout.setVisibility(View.INVISIBLE);
+        StatusBarUtils.setLightMode(ContextUtils.getActivity(mBrowserLayout.getContext()));
+    }
+
+    private void setStatusBarColor(int color) {
+        boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(color);
+        mTabSwitcherLayout.setStatusBarColor(color);
+        Log.d("LauncherManager", "setStatusBarColor color=" + color);
+        if (!useLight && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            StatusBarUtils.setDarkMode(ContextUtils.getActivity(mBrowserLayout.getContext()));
+        } else {
+            StatusBarUtils.setLightMode(ContextUtils.getActivity(mBrowserLayout.getContext()));
+        }
     }
 
     public void onRestore() {
@@ -164,7 +207,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     public void goToBrowser(boolean animated) {
         mLauncherLayout.setVisibility(View.INVISIBLE);
-        mBrowserLayout.setVisibility(View.VISIBLE);
+        showBrowser();
         mTabSwitcherLayout.showBrowser();
     }
 
@@ -211,7 +254,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 //        mSwitcherBottomBar.setVisibility(INVISIBLE);
 //        mSwitcherTopBar.setVisibility(INVISIBLE);
 
-        mBrowserLayout.setVisibility(View.INVISIBLE);
+        hideBrowser();
 
         Rect endRect = new Rect(0, 0, mTabSwitcherLayout.getWidth(), mTabSwitcherLayout.getHeight());
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1f);
@@ -241,7 +284,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 //                mBrowserLayout.layout(left, top, right, bottom);
 
 
-                mBrowserLayout.setVisibility(View.VISIBLE);
+                showBrowser();
             }
         });
         animator.addListener(new AnimatorListenerAdapter() {

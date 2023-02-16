@@ -2,6 +2,8 @@ package com.ark.browser.ui.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.ark.browser.core.bookmark.BookmarkBridge;
 import com.ark.browser.core.bookmark.BookmarkModel;
+import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
@@ -20,12 +23,14 @@ import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.widget.indicator.CoolIndicator;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.utils.KeyboardUtils;
+import com.zpj.utils.ScreenUtils;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 public class BottomController {
@@ -39,6 +44,7 @@ public class BottomController {
 //    private final FrameLayout mCustomToolbar;
 //    private final LinearLayout mBottomLoadedBar;
 
+    private final View mTitleBar;
     private final ImageView menuButton;
     private final ImageView toolButton;
     private final ImageView starButton;
@@ -61,11 +67,19 @@ public class BottomController {
         }
     };
 
+    private final int mDarkModeTint;
+    private final int mLightModeTint;
+
 
     public BottomController(View view) {
         mContext = view.getContext();
 //        mCustomToolbar = view.findViewById(R.id.custom_bottom_bar);
 //        mBottomLoadedBar = view.findViewById(R.id.bottom_loaded_view);
+
+        mDarkModeTint = Color.parseColor("#A6000000");
+        mLightModeTint = Color.WHITE;
+
+        mTitleBar = view.findViewById(R.id.title_bar);
 
         mProgressBar = view.findViewById(R.id.cool_progress_bar);
         mProgressBar.setMax(100);
@@ -221,6 +235,7 @@ public class BottomController {
             public void onUpdateUrl(Tab tab, GURL url) {
                 loadingTitle.setText(url.getSpec());
             }
+
         };
     }
 
@@ -294,6 +309,45 @@ public class BottomController {
             mBookmarkModel.destroy();
             mBookmarkModel = null;
         }
+    }
+
+    public void updatePrimaryColor(int color) {
+        if (AppConfig.isNightMode()) {
+            color = Color.BLACK;
+        }
+
+        boolean colorChanged = mPrimaryColor != color;
+        Log.d("updatePrimaryColor", "colorChanged:" + colorChanged);
+        Log.d("updatePrimaryColor", "color=" + color);
+//        if (!colorChanged) return;
+
+        mPrimaryColor = color;
+        int bgColor;
+        Log.d("updatePrimaryColor", "calculateContrast=" + androidx.core.graphics.ColorUtils.calculateContrast(Color.BLACK, Color.WHITE));
+        if (color == Color.WHITE) {
+            bgColor = Color.parseColor("#f6f6f6");
+        } else if (color == Color.BLACK) {
+            bgColor = Color.parseColor("#191F2D");
+        } else {
+            bgColor = ColorUtils.getDarkenedColor(color, 0.97f);
+        }
+
+        Log.d("updatePrimaryColor", "calculateContrast22222222="
+                + androidx.core.graphics.ColorUtils.calculateContrast(bgColor, mPrimaryColor));
+
+        boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(color);
+//        faviconImg.setBorderColor(useLight ? Color.WHITE : mContext.getResources().getColor(R.color.google_black_400));
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setCornerRadius(ScreenUtils.dp2px(10));
+        gradientDrawable.setColor(bgColor);
+        mTitleBar.setBackground(gradientDrawable);
+        int tint = useLight ? mLightModeTint : mDarkModeTint;
+        menuButton.setColorFilter(tint);
+        toolButton.setColorFilter(tint);
+        starButton.setColorFilter(tint);
+        loadingCancel.setColorFilter(tint);
+        int textColor = useLight ? Color.WHITE : mContext.getResources().getColor(R.color.google_black_400);
+        loadingTitle.setTextColor(textColor);
     }
 
 

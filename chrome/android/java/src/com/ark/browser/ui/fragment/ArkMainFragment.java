@@ -82,7 +82,6 @@ public class ArkMainFragment extends BaseFragment implements
 
     private ArkCompositorViewHolder mViewHolder;
 
-    private BottomController mBottomController;
     private TabSwitcherManager mSwitcherManager;
 
     @Nullable
@@ -228,9 +227,7 @@ public class ArkMainFragment extends BaseFragment implements
 
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
 
-        BottomControlBar bottomControlBar = findViewById(R.id.bottom_control_bar);
-        bottomControlBar.setSwitcherManager(mSwitcherManager);
-        mBottomController = new BottomController(view);
+
     }
 
     @Override
@@ -352,14 +349,14 @@ public class ArkMainFragment extends BaseFragment implements
 //                    mProgressBar.setVisibility(View.GONE);
 //                }
 //                mUrlBar.setText(page.getUrl().getSpec());
-                mBottomController.onPageAttached(page);
+                mSwitcherManager.getBottomController().onPageAttached(page);
             }
 
             @Override
             public void onPageDetached(@NonNull Tab page) {
 //                page.removeObserver(observer);
 //                mProgressBar.setVisibility(View.GONE);
-                mBottomController.onPageDetached(page);
+                mSwitcherManager.getBottomController().onPageDetached(page);
             }
 
             @Override
