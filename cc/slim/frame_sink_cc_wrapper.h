@@ -36,7 +36,8 @@ class FrameSinkCcWrapper : public FrameSink {
       mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
           client_receiver,
       scoped_refptr<viz::ContextProvider> context_provider,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager);
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      base::PlatformThreadId io_thread_id);
 
   std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink> cc_frame_sink_;
 };

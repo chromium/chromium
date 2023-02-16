@@ -42,7 +42,8 @@ TestFrameSinkImpl::TestFrameSinkImpl(
     : FrameSinkImpl(std::move(task_runner),
                     std::move(compositor_frame_sink_associated_remote),
                     std::move(client_receiver),
-                    std::move(context_provider)),
+                    std::move(context_provider),
+                    base::kInvalidThreadId),
       pending_sink_receiver_(std::move(sink_receiver)) {}
 
 TestFrameSinkImpl::~TestFrameSinkImpl() = default;

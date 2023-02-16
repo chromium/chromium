@@ -234,6 +234,11 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   BrowserMainParts* parts() { return parts_.get(); }
 
+  // This should only be called after the IO thread has been started (and will
+  // crash otherwise). May block on the thread ID being initialized if the IO
+  // thread ThreadMain has not yet run.
+  base::PlatformThreadId GetIOThreadId();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserMainLoopTest, CreateThreadsInSingleProcess);
   FRIEND_TEST_ALL_PREFIXES(

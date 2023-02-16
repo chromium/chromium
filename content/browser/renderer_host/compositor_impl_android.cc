@@ -50,12 +50,14 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/host/host_display_client.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/compositor_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -920,10 +922,16 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
       root_window_->GetSupportedRefreshRates());
   MaybeUpdateObserveBeginFrame();
 
+  base::PlatformThreadId io_thread_id =
+      base::FeatureList::IsEnabled(content::kADPFForBrowserIOThread)
+          ? BrowserMainLoop::GetInstance()->GetIOThreadId()
+          : base::kInvalidThreadId;
+
   auto frame_sink = cc::slim::FrameSink::Create(
       std::move(sink_remote), std::move(client_receiver),
       std::move(context_provider), std::move(task_runner),
-      BrowserGpuChannelHostFactory::instance()->GetGpuMemoryBufferManager());
+      BrowserGpuChannelHostFactory::instance()->GetGpuMemoryBufferManager(),
+      io_thread_id);
   host_->SetFrameSink(std::move(frame_sink));
 }
 

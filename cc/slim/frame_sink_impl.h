@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/slim/frame_sink.h"
@@ -102,7 +103,8 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
                     compositor_frame_sink_associated_remote,
                 mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
                     client_receiver,
-                scoped_refptr<viz::ContextProvider> context_provider);
+                scoped_refptr<viz::ContextProvider> context_provider,
+                base::PlatformThreadId io_thread_id);
 
   using UploadedResourceMap =
       base::flat_map<cc::UIResourceId, UploadedUIResource>;
@@ -127,6 +129,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   viz::ClientResourceProvider resource_provider_;
   // Last `HitTestRegionList` sent to viz.
   absl::optional<viz::HitTestRegionList> hit_test_region_list_;
+  base::PlatformThreadId io_thread_id_;
 
   bool needs_begin_frame_ = false;
 };

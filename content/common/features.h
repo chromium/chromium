@@ -14,10 +14,15 @@ namespace content {
 // Please keep features in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
+// Enables ADPF (Android Dynamic Performance Framework) for the browser IO
+// thread.
+BASE_DECLARE_FEATURE(kADPFForBrowserIOThread);
+
 // Unifies RenderWidgetHostViewAndroid with the other platforms in their usage
 // of OnShowWithPageVisibility. Disabling will revert the refactor and use the
 // direct ShowInternal path.
 BASE_DECLARE_FEATURE(kOnShowWithPageVisibility);
+
 // Enables skipping of calls to hideSoftInputFromWindow when there is not a
 // keyboard currently visible.
 BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);

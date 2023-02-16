@@ -1567,4 +1567,9 @@ void BrowserMainLoop::SetSmsProviderForTesting(
   sms_provider_ = std::move(provider);
 }
 
+base::PlatformThreadId BrowserMainLoop::GetIOThreadId() {
+  CHECK(io_thread_ && io_thread_->IsRunning());
+  return io_thread_->GetThreadId();
+}
+
 }  // namespace content

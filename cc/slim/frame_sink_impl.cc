@@ -42,12 +42,14 @@ FrameSinkImpl::FrameSinkImpl(
         compositor_frame_sink_associated_remote,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
         client_receiver,
-    scoped_refptr<viz::ContextProvider> context_provider)
+    scoped_refptr<viz::ContextProvider> context_provider,
+    base::PlatformThreadId io_thread_id)
     : task_runner_(std::move(task_runner)),
       pending_compositor_frame_sink_associated_remote_(
           std::move(compositor_frame_sink_associated_remote)),
       pending_client_receiver_(std::move(client_receiver)),
-      context_provider_(std::move(context_provider)) {}
+      context_provider_(std::move(context_provider)),
+      io_thread_id_(io_thread_id) {}
 
 FrameSinkImpl::~FrameSinkImpl() {
   resource_provider_.ShutdownAndReleaseAllResources();
@@ -88,6 +90,9 @@ bool FrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
 #if BUILDFLAG(IS_ANDROID)
   std::vector<int32_t> thread_ids;
   thread_ids.push_back(base::PlatformThread::CurrentId());
+  if (io_thread_id_ != base::kInvalidThreadId) {
+    thread_ids.push_back(io_thread_id_);
+  }
   frame_sink_remote_->SetThreadIds(thread_ids);
 #endif
   return true;

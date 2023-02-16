@@ -9,9 +9,14 @@ namespace content {
 // Please keep features in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kADPFForBrowserIOThread,
+             "kADPFForBrowserIOThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOnShowWithPageVisibility,
              "OnShowWithPageVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOptimizeImmHideCalls,
              "OptimizeImmHideCalls",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
@@ -32,7 +33,8 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSink {
       scoped_refptr<viz::ContextProvider> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       // Parameters below only used when wrapping cc.
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager);
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      base::PlatformThreadId io_thread_id);
 
   virtual ~FrameSink() = default;
 };
