@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -33,7 +35,7 @@ class NetworkChangeNotifierPosixTest : public testing::Test {
     auto dns_config_service = std::make_unique<TestDnsConfigService>();
     dns_config_service_ = dns_config_service.get();
     dns_config_notifier_->SetDnsConfigServiceForTesting(
-        std::move(dns_config_service));
+        std::move(dns_config_service), base::OnceClosure());
   }
 
   void FastForwardUntilIdle() {

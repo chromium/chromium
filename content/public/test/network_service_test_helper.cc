@@ -583,8 +583,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   void ReplaceSystemDnsConfig(
       ReplaceSystemDnsConfigCallback callback) override {
     network::NetworkService::GetNetworkServiceForTesting()
-        ->ReplaceSystemDnsConfigForTesting();
-    std::move(callback).Run();
+        ->ReplaceSystemDnsConfigForTesting(std::move(callback));
   }
 
   void SetTestDohConfig(net::SecureDnsMode secure_dns_mode,

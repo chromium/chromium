@@ -74,8 +74,12 @@ class NET_EXPORT_PRIVATE SystemDnsConfigChangeNotifier {
   // expecting network-stack-external notifications of DNS config changes.
   void RefreshConfig();
 
+  // Sets the DnsConfigService. If `done_cb` is non-null, this also runs
+  // dns_config_service->RefreshConfig() on the DnsConfigService sequence and
+  // then invokes `done_cb` on the current sequence.
   void SetDnsConfigServiceForTesting(
-      std::unique_ptr<DnsConfigService> dns_config_service);
+      std::unique_ptr<DnsConfigService> dns_config_service,
+      base::OnceClosure done_cb);
 
  private:
   class Core;

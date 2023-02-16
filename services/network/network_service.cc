@@ -451,7 +451,8 @@ NetworkService::~NetworkService() {
     trace_net_log_observer_.StopWatchForTraceStart();
 }
 
-void NetworkService::ReplaceSystemDnsConfigForTesting() {
+void NetworkService::ReplaceSystemDnsConfigForTesting(
+    base::OnceClosure replace_cb) {
   // Create a test `net::DnsConfigService` that will yield a dummy config once.
   auto config_service = std::make_unique<net::TestDnsConfigService>();
   config_service->SetConfigForRefresh(
@@ -462,8 +463,7 @@ void NetworkService::ReplaceSystemDnsConfigForTesting() {
   auto* notifier = net::NetworkChangeNotifier::GetSystemDnsConfigNotifier();
   DCHECK(notifier);
   notifier->SetDnsConfigServiceForTesting(  // IN-TEST
-      std::move(config_service));
-  notifier->RefreshConfig();
+      std::move(config_service), std::move(replace_cb));
 
   // Force-disable the system resolver so that HostResolverManager will actually
   // use the replacement config.

@@ -114,7 +114,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // `net::NetworkChangeNotifier` from future changes to the real configuration,
   // ensuring that our fake configuration will not be clobbered by network
   // changes that occur while tests run.
-  void ReplaceSystemDnsConfigForTesting();
+  // Once this is finished, `replace_cb` will run.
+  void ReplaceSystemDnsConfigForTesting(base::OnceClosure replace_cb);
 
   void SetTestDohConfigForTesting(net::SecureDnsMode secure_dns_mode,
                                   const net::DnsOverHttpsConfig& doh_config);

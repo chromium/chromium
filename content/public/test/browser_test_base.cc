@@ -1045,7 +1045,13 @@ void BrowserTestBase::InitializeNetworkProcess() {
                 network::NetworkService::GetNetworkServiceForTesting();
             ASSERT_TRUE(network_service);
             if (replace_system_dns_config_) {
-              network_service->ReplaceSystemDnsConfigForTesting();
+              // The test must not run before the system DNS config has been
+              // successfully replaced, see https://crrev.com/c/4247942.
+              base::RunLoop run_loop_dns_config_service(
+                  base::RunLoop::Type::kNestableTasksAllowed);
+              network_service->ReplaceSystemDnsConfigForTesting(
+                  run_loop_dns_config_service.QuitClosure());
+              run_loop_dns_config_service.Run();
             }
             if (test_doh_config_) {
               network_service->SetTestDohConfigForTesting(
