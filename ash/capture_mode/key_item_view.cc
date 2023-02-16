@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -34,10 +35,17 @@ constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kKeyItemViewFontSize = 18;
 constexpr int kKeyItemViewLineHeight = 24;
 
+SkColor GetColor() {
+  return capture_mode_util::GetColorProviderForNativeTheme()->GetColor(
+      cros_tokens::kCrosSysSystemBaseElevated);
+}
+
 }  // namespace
 
 KeyItemView::KeyItemView() {
   SetPaintToLayer();
+  SetBackground(
+      views::CreateRoundedRectBackground(GetColor(), kKeyItemHeight / 2));
   layer()->SetFillsBoundsOpaquely(false);
 }
 
@@ -45,12 +53,11 @@ KeyItemView::~KeyItemView() = default;
 
 void KeyItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  SetBackground(views::CreateRoundedRectBackground(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated),
-      height() / 2));
+  GetBackground()->SetNativeControlColor(GetColor());
   SetBorder(std::make_unique<views::HighlightBorder>(
-      height() / 2.f, views::HighlightBorder::Type::kHighlightBorder1,
+      kKeyItemHeight / 2, views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
+  SchedulePaint();
 }
 
 void KeyItemView::Layout() {
@@ -67,15 +74,17 @@ void KeyItemView::Layout() {
 gfx::Size KeyItemView::CalculatePreferredSize() const {
   // Return the fixed size if the key item contains icon or label with a single
   // character.
-  if (icon_ || (label_ && label_->GetText().length() == 1))
+  if (icon_ || (label_ && label_->GetText().length() == 1)) {
     return gfx::Size(kKeyItemMinWidth, kKeyItemHeight);
+  }
 
   int width = 0;
   for (const auto* child : children()) {
     const auto child_size = child->GetPreferredSize();
     width += child_size.width();
   }
-  width = std::max(width + 2 * kKeyItemHorizontalPadding, kKeyItemMinWidth);
+
+  width = std::max(width, kKeyItemMinWidth);
   return gfx::Size(width, kKeyItemHeight);
 }
 
@@ -105,11 +114,11 @@ void KeyItemView::SetText(const std::u16string& text) {
   // Set the border only when necessary which is the multi-character case and
   // clear the border for the single-character case in case the border was set
   // with the multi-character settings before.
-  SetBorder(text.length() == 1
-                ? nullptr
-                : views::CreateEmptyBorder(gfx::Insets::VH(
-                      kKeyItemVerticalPadding, kKeyItemHorizontalPadding)));
-
+  label_->SetBorder(
+      text.length() == 1
+          ? nullptr
+          : views::CreateEmptyBorder(gfx::Insets::VH(
+                kKeyItemVerticalPadding, kKeyItemHorizontalPadding)));
   label_->SetText(text);
 }
 
