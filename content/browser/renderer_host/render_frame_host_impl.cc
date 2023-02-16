@@ -1895,7 +1895,7 @@ int RenderFrameHostImpl::GetRoutingID() const {
   return routing_id_;
 }
 
-const blink::LocalFrameToken& RenderFrameHostImpl::GetFrameToken() {
+const blink::LocalFrameToken& RenderFrameHostImpl::GetFrameToken() const {
   return frame_token_;
 }
 
