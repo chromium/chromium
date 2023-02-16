@@ -6,8 +6,8 @@
 #define UI_GFX_SKIA_COLOR_SPACE_UTIL_H_
 
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkICC.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space_export.h"
 
 namespace gfx {
