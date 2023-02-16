@@ -309,16 +309,17 @@ component("skia") {
   public += skia_effects_public
   public += skia_effects_imagefilter_public
   public += skia_utils_chromium
+  public += skia_discardable_memory_chromium
 
   # The imported Skia gni source paths are made absolute by gn.
   defines = []
   sources += skia_sksl_sources
   sources += skia_utils_private
   sources += skia_xps_sources
+  sources += src_images_srcs
   sources += [
     "//third_party/skia/src/fonts/SkFontMgr_indirect.cpp",
     "//third_party/skia/src/fonts/SkRemotableFontMgr.cpp",
-    "//third_party/skia/src/images/SkImageEncoder.cpp",
     "//third_party/skia/src/images/SkPngEncoder.cpp",
     "//third_party/skia/src/images/SkWebpEncoder.cpp",
     "//third_party/skia/src/ports/SkGlobalInitialization_default.cpp",
