@@ -994,6 +994,11 @@ TEST_P(InputHandlerProxyTest, GestureScrollStarted) {
 }
 
 TEST_P(InputHandlerProxyTest, GestureScrollOnMainThread) {
+  // After scroll unification, we do not handle scrolls on the main thread.
+  if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    return;
+  }
+
   // We should send all events to the widget for this gesture.
   expected_disposition_ = InputHandlerProxy::DID_NOT_HANDLE;
   VERIFY_AND_RESET_MOCKS();
@@ -3636,6 +3641,11 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
 
 TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        GestureScrollTouchEventHandlerRegionAndHandlingScrollFromMainThread) {
+  // After scroll unification, we do not handle scrolls on the main thread.
+  if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    return;
+  }
+
   // The touch event hits a touch event handler and should block on main thread.
   // Since ScrollBegin doesn't allow the gesture to scroll on impl. We report
   // TouchEventHandler reason as well as HandlingScrollFromMainThread. Since we
@@ -3690,6 +3700,11 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
 
 TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        GestureScrollHandlingScrollFromMainThread) {
+  // After scroll unification, we do not handle scrolls on the main thread.
+  if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    return;
+  }
+
   // Gesture scrolling on main thread. We only record
   // HandlingScrollFromMainThread when it's the only available reason.
   SetupEvents(TestEventType::kTouch);
@@ -3878,6 +3893,11 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
 
 TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        WheelScrollWheelEventHandlerRegionAndHandlingScrollFromMainThread) {
+  // After scroll unification, we do not handle scrolls on the main thread.
+  if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    return;
+  }
+
   // Wheel scrolling on main thread. Because we also block scrolling with wheel
   // event handler, we should record that reason as well.
   SetupEvents(TestEventType::kMouseWheel);
@@ -3911,6 +3931,11 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
 
 TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        WheelScrollHandlingScrollFromMainThread) {
+  // After scroll unification, we do not handle scrolls on the main thread.
+  if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    return;
+  }
+
   // Gesture scrolling on main thread. We only record
   // HandlingScrollFromMainThread when it's the only available reason.
   SetupEvents(TestEventType::kMouseWheel);

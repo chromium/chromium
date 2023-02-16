@@ -1064,8 +1064,11 @@ InputHandlerProxy::HandleGestureScrollUpdate(
     return DROP_EVENT;
   }
 
-  if (!handling_gesture_on_impl_thread_ && !gesture_pinch_in_progress_)
-    return DID_NOT_HANDLE;
+  if (!handling_gesture_on_impl_thread_ && !gesture_pinch_in_progress_) {
+    return base::FeatureList::IsEnabled(::features::kScrollUnification)
+               ? DROP_EVENT
+               : DID_NOT_HANDLE;
+  }
 
   cc::ScrollState scroll_state = CreateScrollStateForGesture(gesture_event);
   in_inertial_scrolling_ = scroll_state.is_in_inertial_phase();
@@ -1153,7 +1156,9 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollEnd(
 
   if (!handling_gesture_on_impl_thread_) {
     DCHECK(!currently_active_gesture_device_.has_value());
-    return DID_NOT_HANDLE;
+    return base::FeatureList::IsEnabled(::features::kScrollUnification)
+               ? DROP_EVENT
+               : DID_NOT_HANDLE;
   }
 
   if (!currently_active_gesture_device_.has_value() ||
