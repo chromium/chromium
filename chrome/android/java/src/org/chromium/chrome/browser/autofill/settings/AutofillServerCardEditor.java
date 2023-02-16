@@ -151,8 +151,10 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         cardIconContainer.setImageDrawable(AutofillUiUtils.getCardIcon(getContext(), mCard,
                 R.dimen.settings_page_card_icon_width, R.dimen.settings_page_card_icon_height));
 
-        ((TextView) v.findViewById(R.id.title)).setText(mCard.getNetworkAndLastFourDigits());
-        ((TextView) v.findViewById(R.id.summary))
+        ((TextView) v.findViewById(R.id.card_name)).setText(mCard.getCardNameForAutofillDisplay());
+        ((TextView) v.findViewById(R.id.card_last_four))
+                .setText(mCard.getObfuscatedLastFourDigits());
+        ((TextView) v.findViewById(R.id.card_expiration))
                 .setText(mCard.getFormattedExpirationDate(getActivity()));
         v.findViewById(R.id.edit_server_card).setOnClickListener(view -> {
             logServerCardEditorButtonClicks(showVirtualCardEnrollmentButton()
