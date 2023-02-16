@@ -32,6 +32,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/window/dialog_client_view.h"
 
 namespace views {
@@ -1358,11 +1359,15 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
                                   ui::EF_NONE, ui::EF_NONE));
   EXPECT_FALSE(bubble->IsClosed());
 
+  views::test::PropertyWaiter minimize_waiter(
+      base::BindRepeating(&Widget::IsMinimized, base::Unretained(bubble)),
+      true);
   test::ButtonTestApi(frame->minimize_)
       .NotifyClick(ui::MouseEvent(
           ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
           ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
           ui::EF_NONE, ui::EF_NONE));
+  EXPECT_TRUE(minimize_waiter.Wait());
   EXPECT_TRUE(bubble->IsMinimized());
 }
 
