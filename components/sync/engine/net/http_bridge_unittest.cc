@@ -412,15 +412,17 @@ TEST_F(MAYBE_SyncHttpBridgeTest, AbortAndReleaseBeforeFetchComplete) {
   signal_when_created.Wait();  // Wait till we have a bridge to abort.
   ASSERT_TRUE(bridge_for_race_test());
 
-  // Schedule the fetch completion callback (but don't run it yet). Don't take
-  // a reference to the bridge to mimic URLFetcher's handling of the delegate.
+  // Schedule the fetch completion callback (but don't run it yet). Take a
+  // reference to the bridge (implicitly by binding it to the callback), to
+  // simulate what HttpBridge::MakeAsynchronousPost() does.
   ASSERT_TRUE(io_thread()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&syncer::HttpBridge::OnURLLoadComplete,
-                                base::Unretained(bridge_for_race_test()),
+                                bridge_for_race_test(),
                                 std::make_unique<std::string>("success!"))));
 
   // Abort the fetch. This should be smart enough to handle the case where
-  // the bridge is destroyed before the callback scheduled above completes.
+  // the bridge is released on the sync therad before the callback scheduled
+  // above completes.
   bridge_for_race_test()->Abort();
 
   // Wait until the sync thread releases its ref on the bridge.
@@ -428,8 +430,7 @@ TEST_F(MAYBE_SyncHttpBridgeTest, AbortAndReleaseBeforeFetchComplete) {
   ASSERT_FALSE(bridge_for_race_test());
 
   // Unleash the hounds. The fetch completion callback should fire first, and
-  // succeed even though we Release()d the bridge above because the call to
-  // Abort should have held a reference.
+  // succeed even though the sync thread already released its ref on the bridge.
   io_waiter.Signal();
 
   // Done.
