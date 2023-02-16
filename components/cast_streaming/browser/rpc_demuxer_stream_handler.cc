@@ -16,10 +16,20 @@ namespace cast_streaming::remoting {
 namespace {
 
 // The number of frames requested in each ReadUntil RPC message.
-constexpr int kNumFramesInEachReadUntil = 24;
+constexpr int kNumFramesInEachReadUntil = 16;
 
 // Minimum frequency with which RPC_DS_READUNTIL RPC messages may be sent.
-constexpr base::TimeDelta kMinReadUntilCallFequency = base::Milliseconds(200);
+// Mainly exists to avoid creating a new READUNTIL call after each individual
+// frame is read, if they are read faster than they are received from the
+// sender.
+//
+// NOTE: This may cause a few hundred extra milliseconds of delay following a
+// FLUSHUNTIL call, but this will not cause any user-visible issues.
+constexpr base::TimeDelta kMinReadUntilCallFrequency = base::Milliseconds(100);
+
+// The maximum amount of time allowed to a request before it is assumed to
+// have been dropped.
+constexpr base::TimeDelta kRequestTimeout = base::Milliseconds(500);
 
 }  // namespace
 
@@ -210,14 +220,29 @@ bool RpcDemuxerStreamHandler::MessageProcessor::OnRpcReadUntilCallback(
     absl::optional<media::AudioDecoderConfig> audio_config,
     absl::optional<media::VideoDecoderConfig> video_config,
     uint32_t total_frames_received) {
+  call_timeout_timer_.Stop();
+  failed_consecutive_read_until_requests_ = 0;
+  is_read_until_call_ongoing_ = false;
+
+  // Handle config changes.
   if (!OnRpcInitializeCallback(std::move(audio_config),
                                std::move(video_config))) {
     LOG(WARNING) << "Failed to process OnRpcReadUntilCallback.";
+
+    // If we got an invalid config, something went wrong. Give the sender a
+    // chance to send a working config rather than deadlocking.
+    OnNoBuffersAvailable();
     return false;
   }
 
   total_frames_received_ = total_frames_received;
-  is_read_until_call_pending_ = false;
+
+  // If a call was pending, make that call now.
+  if (is_read_until_call_pending_) {
+    DVLOG(1) << "Executing pending buffer request";
+    OnNoBuffersAvailable();
+  }
+
   return true;
 }
 
@@ -245,16 +270,33 @@ void RpcDemuxerStreamHandler::MessageProcessor::EnableBitstreamConverter(
 }
 
 void RpcDemuxerStreamHandler::MessageProcessor::OnNoBuffersAvailable() {
-  if (is_read_until_call_pending()) {
+  DVLOG(1) << "Requesting more buffers";
+
+  // If a call is already ongoing, queue up a new call to be made once its ACK
+  // is received.
+  if (is_read_until_call_ongoing_) {
+    is_read_until_call_pending_ = true;
+    DVLOG(1) << "Queueing request because one is already ongoing";
     return;
   }
 
-  set_read_until_call_pending();
-  auto message = CreateMessageForDemuxerStreamReadUntil(
-      local_handle(), total_frames_received() + kNumFramesInEachReadUntil);
+  is_read_until_call_pending_ = false;
+  is_read_until_call_ongoing_ = true;
 
+  // If requests have failed, its possible that either the requests was lost or
+  // the response was lost. In the latter case, creating the same call again
+  // would have no effect so instead request more buffers if the previous
+  // request failed.
+  const int requests_to_account_for =
+      1 + failed_consecutive_read_until_requests_;
+  const int frames_to_request =
+      kNumFramesInEachReadUntil * requests_to_account_for;
+  auto message = CreateMessageForDemuxerStreamReadUntil(
+      local_handle(), total_frames_received() + frames_to_request);
+
+  // Only call every |kMinReadUntilCallFrequency| at most.
   const auto now = base::TimeTicks::Now();
-  auto remaining_time = (last_request_time_ + kMinReadUntilCallFequency) - now;
+  auto remaining_time = (last_request_time_ + kMinReadUntilCallFrequency) - now;
   if (remaining_time < base::Microseconds(0)) {
     remaining_time = base::Microseconds(0);
   }
@@ -264,11 +306,29 @@ void RpcDemuxerStreamHandler::MessageProcessor::OnNoBuffersAvailable() {
       base::BindOnce(process_message_cb_, remote_handle(), std::move(message)),
       remaining_time);
   last_request_time_ = now + remaining_time;
+
+  // Start a timer to handle the case of dropped requests or ACKS, so a retry
+  // may be made.
+  call_timeout_timer_.Start(
+      FROM_HERE, kRequestTimeout + remaining_time,
+      base::BindOnce(
+          &RpcDemuxerStreamHandler::MessageProcessor::OnBufferRequestTimeout,
+          weak_factory_.GetWeakPtr()));
 }
 
 void RpcDemuxerStreamHandler::MessageProcessor::OnError() {
   auto message = CreateMessageForDemuxerStreamError();
   process_message_cb_.Run(remote_handle(), std::move(message));
+}
+
+void RpcDemuxerStreamHandler::MessageProcessor::OnBufferRequestTimeout() {
+  LOG(WARNING) << "READUNTIL rpc call dropped. Retrying...";
+
+  // NOTE: No need to persist |is_read_until_call_pending_| because the batch
+  // size increases for retries.
+  failed_consecutive_read_until_requests_++;
+  is_read_until_call_ongoing_ = false;
+  OnNoBuffersAvailable();
 }
 
 }  // namespace cast_streaming::remoting

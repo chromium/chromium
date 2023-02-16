@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/cast_streaming/browser/demuxer_stream_client.h"
 #include "components/cast_streaming/public/rpc_call_message_handler.h"
 #include "media/base/audio_decoder_config.h"
@@ -74,6 +75,8 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
   base::WeakPtr<DemuxerStreamClient> GetVideoClient();
 
  private:
+  friend class RpcDemuxerStreamHandlerTest;
+
   class MessageProcessor : public DemuxerStreamClient {
    public:
     enum class Type { kUnknown = 0, kAudio, kVideo };
@@ -116,9 +119,25 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
     bool is_read_until_call_pending() const {
       return is_read_until_call_pending_;
     }
-    void set_read_until_call_pending() { is_read_until_call_pending_ = true; }
+    bool is_read_until_call_ongoing() const {
+      return is_read_until_call_ongoing_;
+    }
 
    private:
+    void OnBufferRequestTimeout();
+
+    // DemuxerStreamClient implementation.
+    //
+    // OnNoBuffersAvailable() has the following send behavior:
+    // - When first called, an immediate call will be made.
+    // - If called again before the ACK for the above call has been received,
+    //   the |is_read_until_call_pending_| flag is set and a new call will be
+    //   made when this ACK is received.
+    // - If the ACK is not received quickly, retries will be made at regular
+    //   intervals with increasingly large requested frame counts.
+    //
+    // This retry behavior is required due to occasionally dropped messages
+    // immediately following a FlushUntil() call.
     void EnableBitstreamConverter(BitstreamConverterEnabledCB cb) override;
     void OnNoBuffersAvailable() override;
     void OnError() override;
@@ -134,7 +153,20 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
 
     uint32_t total_frames_received_ = 0;
 
+    // Whether or not this class is currently waiting for an Ack from the
+    // sender side for a READUNTIL call.
+    bool is_read_until_call_ongoing_ = false;
+
+    // Whether or not a new READUNTIL call should be made immediately following
+    // the ACK for the currently ongoing READUNTIL call.
     bool is_read_until_call_pending_ = false;
+
+    // The number of consecuitive READUNTIL calls for which an ACK has not been
+    // received within a reasonable amount of time.
+    int failed_consecutive_read_until_requests_ = 0;
+
+    // Timer to re-execute a call if no response is received.
+    base::OneShotTimer call_timeout_timer_;
 
     // Most recent callback for EnableBitstreamConverter().
     BitstreamConverterEnabledCB bitstream_converter_enabled_cb_;

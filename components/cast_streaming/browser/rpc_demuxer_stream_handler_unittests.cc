@@ -200,6 +200,30 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
         base::Unretained(this)));
   }
 
+  bool IsAudioReadUntilCallPending() {
+    return static_cast<RpcDemuxerStreamHandler::MessageProcessor*>(
+               stream_handler_.GetAudioClient().get())
+        ->is_read_until_call_pending();
+  }
+
+  bool IsAudioReadUntilCallOngoing() {
+    return static_cast<RpcDemuxerStreamHandler::MessageProcessor*>(
+               stream_handler_.GetAudioClient().get())
+        ->is_read_until_call_ongoing();
+  }
+
+  bool IsVideoReadUntilCallPending() {
+    return static_cast<RpcDemuxerStreamHandler::MessageProcessor*>(
+               stream_handler_.GetVideoClient().get())
+        ->is_read_until_call_pending();
+  }
+
+  bool IsVideoReadUntilCallOngoing() {
+    return static_cast<RpcDemuxerStreamHandler::MessageProcessor*>(
+               stream_handler_.GetVideoClient().get())
+        ->is_read_until_call_ongoing();
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -291,32 +315,60 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreAudioBuffers) {
         EXPECT_TRUE(test_audio_config_.Matches(config));
       });
   OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, absl::nullopt,
-                         uint32_t{1});
+                         uint32_t{12});
+  testing::Mock::VerifyAndClearExpectations(&client_);
 
+  // Make a call with no ACK.
   EXPECT_CALL(*this, SendMessage(_, _))
       .WillOnce(
-          CheckReadUntilCall(audio_remote_handle_, audio_local_handle_, 1));
+          CheckReadUntilCall(audio_remote_handle_, audio_local_handle_, 12));
   RequestMoreAudioBuffers();
   task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(this);
+  EXPECT_FALSE(IsAudioReadUntilCallPending());
+  EXPECT_TRUE(IsAudioReadUntilCallOngoing());
 
-  RequestMoreAudioBuffers();
-  task_environment_.RunUntilIdle();
-
+  // Callback with new config following the ACK.
   EXPECT_CALL(client_, OnNewAudioConfig(_))
       .WillOnce([this](media::AudioDecoderConfig config) {
         EXPECT_TRUE(test_audio_config_.Matches(config));
       });
   OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, absl::nullopt,
-                         uint32_t{17});
+                         uint32_t{42});
+  task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&client_);
+  EXPECT_FALSE(IsAudioReadUntilCallPending());
+  EXPECT_FALSE(IsAudioReadUntilCallOngoing());
 
-  RequestMoreAudioBuffers();
-  EXPECT_CALL(*this, SendMessage(_, _))
-      .WillOnce(
-          CheckReadUntilCall(audio_remote_handle_, audio_local_handle_, 17));
-  task_environment_.FastForwardBy(base::Seconds(1));
-
+  // Request is blocked until minimum time has passed.
   RequestMoreAudioBuffers();
   task_environment_.RunUntilIdle();
+
+  // Execute request with 2 retries.
+  EXPECT_CALL(*this, SendMessage(_, _))
+      .Times(3)
+      .WillRepeatedly(
+          CheckReadUntilCall(audio_remote_handle_, audio_local_handle_, 42));
+  task_environment_.FastForwardBy(base::Milliseconds(1250));
+  testing::Mock::VerifyAndClearExpectations(this);
+  EXPECT_FALSE(IsAudioReadUntilCallPending());
+  EXPECT_TRUE(IsAudioReadUntilCallOngoing());
+
+  // Queue up an extra call.
+  RequestMoreAudioBuffers();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(IsAudioReadUntilCallPending());
+  EXPECT_TRUE(IsAudioReadUntilCallOngoing());
+
+  // Call a second time when |is_read_until_call_pending_| is set.
+  EXPECT_CALL(*this, SendMessage(_, _))
+      .WillOnce(
+          CheckReadUntilCall(audio_remote_handle_, audio_local_handle_, 60));
+  OnRpcReadUntilCallback(audio_local_handle_, absl::nullopt, absl::nullopt,
+                         uint32_t{60});
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(IsAudioReadUntilCallPending());
+  EXPECT_TRUE(IsAudioReadUntilCallOngoing());
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreVideoBuffers) {
@@ -326,31 +378,59 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreVideoBuffers) {
       });
   OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, test_video_config_,
                          uint32_t{12});
+  testing::Mock::VerifyAndClearExpectations(&client_);
 
+  // Make a call with no ACK.
   EXPECT_CALL(*this, SendMessage(_, _))
       .WillOnce(
           CheckReadUntilCall(video_remote_handle_, video_local_handle_, 12));
   RequestMoreVideoBuffers();
   task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(this);
+  EXPECT_FALSE(IsVideoReadUntilCallPending());
+  EXPECT_TRUE(IsVideoReadUntilCallOngoing());
 
-  RequestMoreVideoBuffers();
-  task_environment_.RunUntilIdle();
-
+  // Callback with new config following the ACK.
   EXPECT_CALL(client_, OnNewVideoConfig(_))
       .WillOnce([this](media::VideoDecoderConfig config) {
         EXPECT_TRUE(test_video_config_.Matches(config));
       });
   OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, test_video_config_,
                          uint32_t{42});
+  task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&client_);
+  EXPECT_FALSE(IsVideoReadUntilCallPending());
+  EXPECT_FALSE(IsVideoReadUntilCallOngoing());
 
-  RequestMoreVideoBuffers();
-  EXPECT_CALL(*this, SendMessage(_, _))
-      .WillOnce(
-          CheckReadUntilCall(video_remote_handle_, video_local_handle_, 42));
-  task_environment_.FastForwardBy(base::Seconds(1));
-
+  // Request is blocked until minimum time has passed.
   RequestMoreVideoBuffers();
   task_environment_.RunUntilIdle();
+
+  // Execute request with 2 retries.
+  EXPECT_CALL(*this, SendMessage(_, _))
+      .Times(3)
+      .WillRepeatedly(
+          CheckReadUntilCall(video_remote_handle_, video_local_handle_, 42));
+  task_environment_.FastForwardBy(base::Milliseconds(1250));
+  testing::Mock::VerifyAndClearExpectations(this);
+  EXPECT_FALSE(IsVideoReadUntilCallPending());
+  EXPECT_TRUE(IsVideoReadUntilCallOngoing());
+
+  // Queue up an extra call.
+  RequestMoreVideoBuffers();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(IsVideoReadUntilCallPending());
+  EXPECT_TRUE(IsVideoReadUntilCallOngoing());
+
+  // Call a second time when |is_read_until_call_pending_| is set.
+  EXPECT_CALL(*this, SendMessage(_, _))
+      .WillOnce(
+          CheckReadUntilCall(video_remote_handle_, video_local_handle_, 60));
+  OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, absl::nullopt,
+                         uint32_t{60});
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(IsVideoReadUntilCallPending());
+  EXPECT_TRUE(IsVideoReadUntilCallOngoing());
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, OnAudioError) {
