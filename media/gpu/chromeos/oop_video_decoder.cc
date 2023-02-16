@@ -616,6 +616,7 @@ int OOPVideoDecoder::GetMaxDecodeRequests() const {
 
 VideoDecoderType OOPVideoDecoder::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!init_cb_);
   return VideoDecoderType::kOutOfProcess;
 }
 
