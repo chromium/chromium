@@ -8982,8 +8982,10 @@ test("unit_tests") {
     }
 
     if (enable_extensions) {
-      sources +=
-          [ "../browser/supervised_user/supervised_user_extension_unittest.cc" ]
+      sources += [
+        "../browser/supervised_user/supervised_user_extension_unittest.cc",
+        "../browser/supervised_user/supervised_user_url_filter_extensions_unittest.cc",
+      ]
     }
     if (is_chromeos) {
       sources += [ "../browser/supervised_user/chromeos/supervised_user_favicon_request_handler_unittest.cc" ]

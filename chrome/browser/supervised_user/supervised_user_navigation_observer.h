@@ -150,7 +150,7 @@ class SupervisedUserNavigationObserver
   void MaybeUpdateRequestedHosts();
 
   // Owned by SupervisedUserService.
-  raw_ptr<const SupervisedUserURLFilter> url_filter_;
+  raw_ptr<SupervisedUserURLFilter> url_filter_;
 
   // Owned by SupervisedUserServiceFactory (lifetime of Profile).
   raw_ptr<SupervisedUserService> supervised_user_service_;

@@ -7398,6 +7398,8 @@ static_library("browser") {
       "supervised_user/child_accounts/family_info_fetcher.h",
       "supervised_user/child_accounts/permission_request_creator_apiary.cc",
       "supervised_user/child_accounts/permission_request_creator_apiary.h",
+      "supervised_user/extensions_utils.cc",
+      "supervised_user/extensions_utils.h",
       "supervised_user/kids_chrome_management/kids_access_token_fetcher.cc",
       "supervised_user/kids_chrome_management/kids_access_token_fetcher.h",
       "supervised_user/kids_chrome_management/kids_chrome_management_client_factory.cc",

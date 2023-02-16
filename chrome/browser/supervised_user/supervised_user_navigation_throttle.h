@@ -58,7 +58,7 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
                             bool already_requested_permission,
                             bool is_main_frame);
 
-  raw_ptr<const SupervisedUserURLFilter> url_filter_;
+  raw_ptr<SupervisedUserURLFilter> url_filter_;
   bool deferred_;
   supervised_user::FilteringBehaviorReason reason_;
   SupervisedUserURLFilter::FilteringBehavior behavior_;

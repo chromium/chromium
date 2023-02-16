@@ -254,8 +254,10 @@ class SupervisedUserService : public KeyedService,
 
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
-  explicit SupervisedUserService(Profile* profile,
-                                 signin::IdentityManager* identity_manager);
+  explicit SupervisedUserService(
+      Profile* profile,
+      signin::IdentityManager* identity_manager,
+      ValidateURLSupportCallback check_webstore_url_callback);
 
   void SetActive(bool active);
 

@@ -249,7 +249,7 @@ base::Value::Dict HistoryEntryToValue(
         SupervisedUserServiceFactory::GetForProfile(profile);
   }
   if (supervised_user_service) {
-    const SupervisedUserURLFilter* url_filter =
+    SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
     int filtering_behavior =
         url_filter->GetFilteringBehaviorForURL(entry.url.GetWithEmptyPath());

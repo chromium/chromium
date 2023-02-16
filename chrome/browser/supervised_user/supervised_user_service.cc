@@ -268,7 +268,8 @@ void SupervisedUserService::RemoveObserver(
 
 SupervisedUserService::SupervisedUserService(
     Profile* profile,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    ValidateURLSupportCallback check_webstore_url_callback)
     : profile_(profile),
       identity_manager_(identity_manager),
       active_(false),
@@ -276,6 +277,7 @@ SupervisedUserService::SupervisedUserService(
       is_profile_active_(false),
       did_init_(false),
       did_shutdown_(false),
+      url_filter_(std::move(check_webstore_url_callback)),
       denylist_state_(DenylistLoadState::NOT_LOADED) {
   url_filter_.AddObserver(this);
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -33,6 +34,9 @@ class WebContents;
 }  // namespace content
 
 class KidsChromeManagementClient;
+
+// Callback type for additional url validations.
+typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
 
 // This class manages the filtering behavior for URLs, i.e. it tells callers
 // if a URL should be allowed or blocked. It uses information
@@ -116,7 +120,8 @@ class SupervisedUserURLFilter {
                               bool uncertain) {}
   };
 
-  SupervisedUserURLFilter();
+  explicit SupervisedUserURLFilter(
+      ValidateURLSupportCallback check_webstore_url_callback);
 
   SupervisedUserURLFilter(const SupervisedUserURLFilter&) = delete;
   SupervisedUserURLFilter& operator=(const SupervisedUserURLFilter&) = delete;
@@ -162,14 +167,14 @@ class SupervisedUserURLFilter {
 
   // Returns the filtering behavior for a given URL, based on the default
   // behavior and whether it is on a site list.
-  FilteringBehavior GetFilteringBehaviorForURL(const GURL& url) const;
+  FilteringBehavior GetFilteringBehaviorForURL(const GURL& url);
 
   // Checks for a manual setting (i.e. manual exceptions and content packs)
   // for the given URL. If there is one, returns true and writes the result
   // into |behavior|. Otherwise returns false; in this case the value of
   // |behavior| is unspecified.
   bool GetManualFilteringBehaviorForURL(const GURL& url,
-                                        FilteringBehavior* behavior) const;
+                                        FilteringBehavior* behavior);
 
   // Like |GetFilteringBehaviorForURL|, but also includes asynchronous checks
   // against a remote service. If the result is already determined by the
@@ -180,13 +185,13 @@ class SupervisedUserURLFilter {
   bool GetFilteringBehaviorForURLWithAsyncChecks(
       const GURL& url,
       FilteringBehaviorCallback callback,
-      bool skip_manual_parent_filter = false) const;
+      bool skip_manual_parent_filter = false);
 
   // Like |GetFilteringBehaviorForURLWithAsyncChecks| but used for subframes.
   bool GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
       const GURL& url,
       const GURL& main_frame_url,
-      FilteringBehaviorCallback callback) const;
+      FilteringBehaviorCallback callback);
 
   // Gets all the allowlists that the url is part of. Returns id->name of each
   // allowlist.
@@ -249,7 +254,7 @@ class SupervisedUserURLFilter {
  private:
   friend class SupervisedUserURLFilterTest;
 
-  bool IsExemptedFromGuardianApproval(const GURL& effective_url) const;
+  bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 
   bool RunAsyncChecker(const GURL& url,
                        FilteringBehaviorCallback callback) const;
@@ -257,8 +262,8 @@ class SupervisedUserURLFilter {
   FilteringBehavior GetFilteringBehaviorForURL(
       const GURL& url,
       bool manual_only,
-      supervised_user::FilteringBehaviorReason* reason) const;
-  FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url) const;
+      supervised_user::FilteringBehaviorReason* reason);
+  FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url);
 
   void CheckCallback(FilteringBehaviorCallback callback,
                      const GURL& url,
@@ -287,6 +292,8 @@ class SupervisedUserURLFilter {
   SEQUENCE_CHECKER(sequence_checker_);
 
   bool is_filter_initialized_ = false;
+
+  ValidateURLSupportCallback check_webstore_url_callback_;
 
   base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
 };

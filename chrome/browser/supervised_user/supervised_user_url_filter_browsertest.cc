@@ -279,8 +279,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
         supervised_user::kContentPackDefaultFilteringBehavior,
         base::Value(SupervisedUserURLFilter::BLOCK));
 
-    const SupervisedUserURLFilter* filter =
-        supervised_user_service_->GetURLFilter();
+    SupervisedUserURLFilter* filter = supervised_user_service_->GetURLFilter();
     ASSERT_EQ(SupervisedUserURLFilter::BLOCK,
               filter->GetFilteringBehaviorForURL(test_url));
 
@@ -325,8 +324,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
       supervised_user::kContentPackDefaultFilteringBehavior,
       base::Value(SupervisedUserURLFilter::BLOCK));
 
-  const SupervisedUserURLFilter* filter =
-      supervised_user_service_->GetURLFilter();
+  SupervisedUserURLFilter* filter = supervised_user_service_->GetURLFilter();
   ASSERT_EQ(SupervisedUserURLFilter::BLOCK,
             filter->GetFilteringBehaviorForURL(test_url));
 
@@ -365,8 +363,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
   GURL allowed_url("http://www.example.com/simple.html");
 
-  const SupervisedUserURLFilter* filter =
-      supervised_user_service_->GetURLFilter();
+  SupervisedUserURLFilter* filter = supervised_user_service_->GetURLFilter();
 
   // Set the host as allowed.
   base::Value::Dict dict;
@@ -441,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   supervised_user_settings_service->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
 
-  const SupervisedUserURLFilter* filter =
-      supervised_user_service_->GetURLFilter();
+  SupervisedUserURLFilter* filter = supervised_user_service_->GetURLFilter();
   ASSERT_EQ(SupervisedUserURLFilter::BLOCK,
             filter->GetFilteringBehaviorForURL(test_url));
 
@@ -480,8 +476,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
   supervised_user_settings_service->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
 
-  const SupervisedUserURLFilter* filter =
-      supervised_user_service_->GetURLFilter();
+  SupervisedUserURLFilter* filter = supervised_user_service_->GetURLFilter();
   ASSERT_EQ(SupervisedUserURLFilter::BLOCK,
             filter->GetFilteringBehaviorForURL(test_url));
 
@@ -512,8 +507,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
         supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
   }
 
-  const SupervisedUserURLFilter* filter =
-      supervised_user_service_->GetURLFilter();
+  SupervisedUserURLFilter* filter = supervised_user_service_->GetURLFilter();
   ASSERT_EQ(SupervisedUserURLFilter::BLOCK,
             filter->GetFilteringBehaviorForURL(test_url));
 
@@ -559,8 +553,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
   supervised_user_settings_service->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
 
-  const SupervisedUserURLFilter* filter =
-      supervised_user_service_->GetURLFilter();
+  SupervisedUserURLFilter* filter = supervised_user_service_->GetURLFilter();
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
             filter->GetFilteringBehaviorForURL(test_url.GetWithEmptyPath()));
 
