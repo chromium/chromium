@@ -10,12 +10,14 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
 #else
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/user_education/open_page_and_show_help_bubble.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
 
@@ -62,6 +64,9 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettingsWithIph(
   if (!chrome::FindBrowserWithWebContents(web_contents)) {
     return;
   }
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.EsbPromotionFlow.IphShown",
+      SafeBrowsingSettingReferralMethod::kSecurityInterstitial);
   OpenPageAndShowHelpBubble::Start(
       chrome::FindBrowserWithWebContents(web_contents), std::move(params));
 #endif

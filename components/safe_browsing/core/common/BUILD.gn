@@ -73,6 +73,7 @@ source_set("common") {
     "safe_browsing_settings_metrics.h",
     "safebrowsing_constants.cc",
     "safebrowsing_constants.h",
+    "safebrowsing_referral_methods.h",
     "safebrowsing_switches.cc",
     "safebrowsing_switches.h",
     "utils.cc",

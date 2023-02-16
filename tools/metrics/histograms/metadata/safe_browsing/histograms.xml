@@ -667,6 +667,17 @@ chromium-metrics-reviews@google.com.
       variants="MetricsCollectorTimesDisabledEnabledDuration"/>
 </histogram>
 
+<histogram name="SafeBrowsing.EsbPromotionFlow.IphShown"
+    enum="SafeBrowsingReferralMethod" expires_after="2024-01-26">
+  <owner>awado@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the amount of times the In-Product-Help (IPH) bubble is triggered on
+    the Chrome security settings page from one of the three Enhanced Safe
+    Browsing referral/promotion methods.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionPersister.AgedFileFound"
     enum="BooleanFound" expires_after="2023-07-02">
   <owner>psarouthakis@chromium.org</owner>

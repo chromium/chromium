@@ -90072,6 +90072,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="NO_STATE_ERROR"/>
 </enum>
 
+<enum name="SafeBrowsingReferralMethod">
+  <int value="0" label="SECURITY_INTERSTITIAL"/>
+  <int value="1" label="SAFETY_CHECK"/>
+  <int value="2" label="PROMOSLINGER_REFERRAL"/>
+</enum>
+
 <enum name="SafeBrowsingResponse">
   <int value="0" label="NOT_BLACKLISTED"/>
   <int value="1" label="TIMEOUT"/>
