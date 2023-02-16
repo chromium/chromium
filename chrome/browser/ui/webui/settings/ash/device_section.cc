@@ -622,6 +622,8 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_SHOW_SHORTCUT_VIEWER},
       {"keyboardKeyLauncher", IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER},
       {"keyboardKeySearch", IDS_SETTINGS_KEYBOARD_KEY_SEARCH},
+      {"keyboardRemapRestoreDefaultsLabel",
+       IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 

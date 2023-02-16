@@ -4442,6 +4442,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION" translateable="false" desc="In Device Settings, the label describing how to use the meta key to switch the behavior of the top-row keys.">
     Hold the key to switch between F keys and ChromeOS actions
   </message>
+  <message name="IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL" translateable="false" desc="In Keyboard remap keys subpage, the restore defaults button label.">
+    Restore defaults
+  </message>
   <!-- Device Keyboard page (OS settings) -->
   <message name="IDS_SETTINGS_KEYBOARD_TITLE" desc="In Device Settings, the title of the keyboard settings subpage.">
     Keyboard

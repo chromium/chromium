@@ -113,4 +113,52 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     assertTrue(!!metaKeyLabel);
     assertEquals(metaKeyLabel.textContent, 'Launcher');
   });
+
+  /**
+   * Verify that the restore defaults button will restore the remapping keys.
+   */
+  test('keyboard remap subpage restore defaults', async () => {
+    await initializeRemapKeyspage();
+
+    // Click the restore defaults button.
+    const restoreButton =
+        page.shadowRoot.querySelector('#restoreDefaultsButton');
+    assertTrue(!!restoreButton);
+    restoreButton.click();
+    await flushTasks();
+
+    // The keyboard has "Command" as metaKey, so ctrl key should be restored to
+    // void, meta key should be restored to ctrl.
+    const ctrlKeyDropdown = page.shadowRoot.querySelector('#ctrlKey');
+    assertTrue(!!ctrlKeyDropdown);
+    const metaKeyValue = ModifierKey.META.toString();
+    assertEquals(
+        ctrlKeyDropdown.shadowRoot.querySelector('select').value, metaKeyValue);
+
+    const ctrlKeyValue = ModifierKey.CONTROL.toString();
+    const metaKeyDropdown = page.shadowRoot.querySelector('#metaKey');
+    assertEquals(
+        metaKeyDropdown.shadowRoot.querySelector('select').value, ctrlKeyValue);
+
+    // Update the subpage with a new keyboard.
+    const url = new URLSearchParams(
+        'keyboardId=' + encodeURIComponent(fakeKeyboards[2].id));
+    await Router.getInstance().setCurrentRoute(
+        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+    assertTrue(!!page.keyboard);
+    await flushTasks();
+
+    restoreButton.click();
+    await flushTasks();
+    // The keyboard has "Launcher" as metaKey, ctrl key should be restored to
+    // default key mappings.
+    const altKeyValue = ModifierKey.ALT.toString();
+    const altKeyDrowDown = page.shadowRoot.querySelector('#altKey');
+    assertTrue(!!altKeyDrowDown);
+    assertEquals(
+        altKeyDrowDown.shadowRoot.querySelector('select').value, altKeyValue);
+    assertEquals(
+        metaKeyDropdown.shadowRoot.querySelector('select').value, metaKeyValue);
+  });
 });

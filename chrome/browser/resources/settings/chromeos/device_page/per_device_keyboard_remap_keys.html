@@ -1,6 +1,21 @@
-<style include="settings-shared"></style>
-<div id="container">
+<style include="settings-shared">
+  #header {
+    display: flex;
+  }
+
+  #restoreDefaultsButton {
+    margin-inline-end: 6px;
+    margin-inline-start: auto;
+  }
+</style>
+<div id="header">
   <div id="description">$i18n{remapKeyboardKeysDescription}</div>
+  <cr-button id="restoreDefaultsButton"
+      on-click="restoreDefaults">
+    $i18n{keyboardRemapRestoreDefaultsLabel}
+  </cr-button>
+</div>
+<div id="container">
   <div class="settings-box">
     <div id="metaKeyLabel" class="start"
         aria-hidden="true">[[metaKeyLabel]]</div>

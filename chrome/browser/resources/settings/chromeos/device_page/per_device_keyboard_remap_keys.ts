@@ -263,6 +263,14 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.set('fakeMetaPref.value', ModifierKey.META);
   }
 
+  private restoreDefaults(): void {
+    this.defaultInitializePrefs();
+    if (this.keyboard.metaKey === MetaKey.COMMAND) {
+      this.set('fakeMetaPref.value', ModifierKey.CONTROL);
+      this.set('fakeCtrlPref.value', ModifierKey.META);
+    }
+  }
+
   private setRemappedKey(originalKey: ModifierKey): void {
     const targetKey =
         this.keyboard.settings.modifierRemappings.get(originalKey);
