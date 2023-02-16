@@ -175,6 +175,7 @@ public class JavascriptAppModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
+    @DisabledTest(message = "https://crbug.com/1299944")
     public void testDisableRepeatedDialogs() throws TimeoutException, ExecutionException {
         sActivityTestRule.loadUrl(BEFORE_UNLOAD_URL);
         // JavaScript onbeforeunload dialogs require a user gesture.
