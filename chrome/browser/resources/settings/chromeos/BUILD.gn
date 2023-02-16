@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
@@ -274,27 +273,4 @@ generate_grd("build_oobe_grdp") {
   out_grd = "$target_gen_dir/os_settings_oobe_resources.grdp"
   input_files_base_dir = rebase_path(".", "//")
   input_files = [ "images/smart_privacy.svg" ]
-}
-
-# TODO(crbug/1315757) Gradually remove closure compilation for subfolders/pages
-# that are migrated to TypeScript
-group("closure_compile_module") {
-  deps = [ ":closure_compile_local_module" ]
-}
-
-js_type_check("closure_compile_local_module") {
-  is_polymer3 = true
-  closure_flags = os_settings_closure_flags
-
-  deps = [
-    ":lazy_load",
-    ":os_settings",
-  ]
-}
-
-js_library("os_settings") {
-  deps = [ "//ash/webui/common/resources:load_time_data.m" ]
-}
-
-js_library("lazy_load") {
 }

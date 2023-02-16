@@ -5,18 +5,11 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//crypto/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/webui_features.gni")
 import("./settings.gni")
 
 assert(!is_android, "Android does not use these settings")
-
-if (is_chromeos_ash) {
-  group("closure_compile") {
-    deps = [ "chromeos:closure_compile_module" ]
-  }
-}
 
 build_webui("build") {
   grd_prefix = "settings"
