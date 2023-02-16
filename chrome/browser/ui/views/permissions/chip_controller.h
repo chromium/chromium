@@ -92,8 +92,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
     return chip_ && chip_->GetVisible() && permission_prompt_model_;
   }
 
-  void UpdateBrowser(Browser* browser) { browser_ = browser; }
-
   views::Widget* GetBubbleWidget();
 
   PermissionPromptBubbleView* GetPromptBubbleView();

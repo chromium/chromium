@@ -82,7 +82,7 @@ bool PermissionPromptBubble::UpdateAnchor() {
   // If |browser_| changed, we need to recreate bubble for correct browser.
   if (was_browser_changed) {
     CleanUpPromptBubble();
-    ShowBubble();
+    return false;
   } else {
     prompt_bubble_->UpdateAnchorPosition();
   }
@@ -102,7 +102,6 @@ bool PermissionPromptBubble::UpdateAnchor() {
       auto* chip_controller = lbv->chip_controller();
       chip_controller->InitializePermissionPrompt(
           web_contents(), delegate()->GetWeakPtr(), base::DoNothing());
-      chip_controller->UpdateBrowser(browser());
     }
   }
 
