@@ -2527,6 +2527,7 @@ enum class ToolbarKind {
   NewTabPageCoordinator* NTPCoordinator = self.NTPCoordinator;
   DCHECK(NTPCoordinator);
   if (NTPHelper->IsActive()) {
+    [NTPCoordinator start];
     [NTPCoordinator didNavigateToNTP];
   } else {
     [NTPCoordinator didNavigateAwayFromNTP];

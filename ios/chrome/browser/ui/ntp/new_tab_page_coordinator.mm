@@ -267,11 +267,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 - (void)start {
   if (self.started) {
-    // The coordinator is already started, but the call to -start is a hint
-    // that the active WebState may have changed and the observer callback
-    // might not have happened yet.
-    [self didChangeActiveWebState:self.browser->GetWebStateList()
-                                      ->GetActiveWebState()];
     return;
   }
 
@@ -739,8 +734,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 #pragma mark - Properties
 
 - (UIViewController*)viewController {
-  // TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator.
-  [self start];
+  DCHECK(self.started);
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return self.incognitoViewController;
   } else {

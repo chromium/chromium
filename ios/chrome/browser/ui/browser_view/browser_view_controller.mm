@@ -1948,8 +1948,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
-      NewTabPageCoordinator* coordinator = self.ntpCoordinator;
-      UIViewController* viewController = coordinator.viewController;
+      NewTabPageCoordinator* NTPCoordinator = self.ntpCoordinator;
+      // TODO(crbug.com/1411808): The NTP should be started by the mediator or
+      // coordinator layer.
+      [NTPCoordinator start];
+      UIViewController* viewController = NTPCoordinator.viewController;
       viewController.view.frame = [self ntpFrameForWebState:webState];
       [viewController.view layoutIfNeeded];
       // TODO(crbug.com/873729): For a newly created WebState, the session will
@@ -1958,7 +1961,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       self.browserContainerViewController.contentView = nil;
       self.browserContainerViewController.contentViewController =
           viewController;
-      [coordinator constrainDiscoverHeaderMenuButtonNamedGuide];
+      [NTPCoordinator constrainDiscoverHeaderMenuButtonNamedGuide];
     } else {
       self.browserContainerViewController.contentView =
           [self viewForWebState:webState];
