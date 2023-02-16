@@ -913,7 +913,15 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (should_send_stop_notification)
     GetFrameLoader().Progress().ProgressCompleted();
 
-  frame_->DomWindow()->navigation()->UpdateForNavigation(*history_item_, type);
+  if (!same_item_sequence_number) {
+    // If the item sequence number didn't change, there's no need to update any
+    // Navigation API state or fire associated events. It's possible to get a
+    // same-document navigation to a same ISN when a  history navigation targets
+    // a frame that no longer exists (https://crbug.com/705550).
+    frame_->DomWindow()->navigation()->UpdateForNavigation(*history_item_,
+                                                           type);
+  }
+
   if (!frame_)
     return;
 
@@ -1403,26 +1411,37 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     }
   }
 
+  // If the item sequence number didn't change, there's no need to trigger
+  // the navigate event. It's possible to get a same-document navigation
+  // to a same ISN when a history navigation targets a frame that no longer
+  // exists (https://crbug.com/705550).
+  bool same_item_sequence_number =
+      history_item_ && history_item &&
+      history_item_->ItemSequenceNumber() == history_item->ItemSequenceNumber();
+  if (!same_item_sequence_number) {
+    auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+        url, NavigateEventType::kFragment, frame_load_type);
+    if (is_browser_initiated) {
+      params->involvement = UserNavigationInvolvement::kBrowserUI;
+    } else if (triggering_event_info ==
+               mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
+      params->involvement = UserNavigationInvolvement::kActivation;
+    }
+    params->destination_item = history_item;
+    params->is_browser_initiated = is_browser_initiated;
+    params->is_synchronously_committed_same_document =
+        is_synchronously_committed;
+    auto dispatch_result =
+        frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
+    if (dispatch_result == NavigationApi::DispatchResult::kAbort) {
+      return mojom::blink::CommitResult::Aborted;
+    } else if (dispatch_result == NavigationApi::DispatchResult::kIntercept) {
+      return mojom::blink::CommitResult::Ok;
+    }
+  }
+
   mojom::blink::SameDocumentNavigationType same_document_navigation_type =
       mojom::blink::SameDocumentNavigationType::kFragment;
-  auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
-      url, NavigateEventType::kFragment, frame_load_type);
-  if (is_browser_initiated) {
-    params->involvement = UserNavigationInvolvement::kBrowserUI;
-  } else if (triggering_event_info ==
-             mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
-    params->involvement = UserNavigationInvolvement::kActivation;
-  }
-  params->destination_item = history_item;
-  params->is_browser_initiated = is_browser_initiated;
-  params->is_synchronously_committed_same_document = is_synchronously_committed;
-  auto dispatch_result =
-      frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
-  if (dispatch_result == NavigationApi::DispatchResult::kAbort)
-    return mojom::blink::CommitResult::Aborted;
-  if (dispatch_result == NavigationApi::DispatchResult::kIntercept)
-    return mojom::blink::CommitResult::Ok;
-
   // If the requesting document is cross-origin, perform the navigation
   // asynchronously to minimize the navigator's ability to execute timing
   // attacks. If |is_synchronously_committed| is false, the navigation is
