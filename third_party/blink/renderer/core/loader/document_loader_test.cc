@@ -610,9 +610,7 @@ TEST_P(DocumentLoaderTest, StorageKeyFromNavigationParams) {
 
   url::Origin origin;
   auto nonce = base::UnguessableToken::Create();
-  StorageKey storage_key_to_commit = StorageKey::CreateWithOptionalNonce(
-      origin, net::SchemefulSite(origin), &nonce,
-      mojom::AncestorChainBit::kCrossSite);
+  StorageKey storage_key_to_commit = StorageKey::CreateWithNonce(origin, nonce);
   params->storage_key = storage_key_to_commit;
 
   LocalFrame* local_frame =
@@ -640,18 +638,18 @@ TEST_P(DocumentLoaderTest, StorageKeyCrossSiteFromNavigationParams) {
 
   net::SchemefulSite top_level_site =
       net::SchemefulSite(url::Origin::Create(GURL("https://foo.com")));
-  StorageKey storage_key_to_commit = StorageKey::CreateWithOptionalNonce(
-      url::Origin::Create(GURL(other_origin_url)), top_level_site, nullptr,
-      mojom::AncestorChainBit::kCrossSite);
+  StorageKey storage_key_to_commit =
+      StorageKey::Create(url::Origin::Create(GURL(other_origin_url)),
+                         top_level_site, mojom::AncestorChainBit::kCrossSite);
   params->storage_key = storage_key_to_commit;
 
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(other_origin_url),
-                            BlinkSchemefulSite(top_level_site), nullptr,
-                            mojom::AncestorChainBit::kCrossSite),
+  EXPECT_EQ(BlinkStorageKey::Create(SecurityOrigin::Create(other_origin_url),
+                                    BlinkSchemefulSite(top_level_site),
+                                    mojom::AncestorChainBit::kCrossSite),
             local_frame->DomWindow()->GetStorageKey());
 }
 

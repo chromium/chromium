@@ -4307,16 +4307,15 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
       // each have a different storage key when no host permissions are set.
       EXPECT_THAT(GetClientURLsForStorageKey(root_storage_key),
                   testing::UnorderedElementsAre(main_url, main_worker_url));
+      EXPECT_THAT(GetClientURLsForStorageKey(blink::StorageKey::Create(
+                      url::Origin::Create(child_url),
+                      net::SchemefulSite(root_rfh->GetLastCommittedOrigin()),
+                      blink::mojom::AncestorChainBit::kCrossSite)),
+                  testing::UnorderedElementsAre(child_url));
       EXPECT_THAT(
-          GetClientURLsForStorageKey(blink::StorageKey::CreateWithOptionalNonce(
-              url::Origin::Create(child_url),
-              net::SchemefulSite(root_rfh->GetLastCommittedOrigin()), nullptr,
-              blink::mojom::AncestorChainBit::kCrossSite)),
-          testing::UnorderedElementsAre(child_url));
-      EXPECT_THAT(
-          GetClientURLsForStorageKey(blink::StorageKey::CreateWithOptionalNonce(
+          GetClientURLsForStorageKey(blink::StorageKey::Create(
               url::Origin::Create(grandchild_url),
-              net::SchemefulSite(root_rfh->GetLastCommittedOrigin()), nullptr,
+              net::SchemefulSite(root_rfh->GetLastCommittedOrigin()),
               blink::mojom::AncestorChainBit::kCrossSite)),
           testing::UnorderedElementsAre(grandchild_url, grandchild_worker_url));
     } else {
@@ -4359,18 +4358,17 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
       // With storage partitioning enabled, the child frame should now have a
       // top level StorageKey because it is the direct child of the root
       // document and the root has host permissions to it.
-      EXPECT_THAT(
-          GetClientURLsForStorageKey(blink::StorageKey::CreateWithOptionalNonce(
-              url::Origin::Create(child_url),
-              net::SchemefulSite(url::Origin::Create(child_url)), nullptr,
-              blink::mojom::AncestorChainBit::kSameSite)),
-          testing::UnorderedElementsAre(child_url));
+      EXPECT_THAT(GetClientURLsForStorageKey(blink::StorageKey::Create(
+                      url::Origin::Create(child_url),
+                      net::SchemefulSite(url::Origin::Create(child_url)),
+                      blink::mojom::AncestorChainBit::kSameSite)),
+                  testing::UnorderedElementsAre(child_url));
       // Similarly the grandchild document should now use the child document's
       // origin as the top level site.
       EXPECT_THAT(
-          GetClientURLsForStorageKey(blink::StorageKey::CreateWithOptionalNonce(
+          GetClientURLsForStorageKey(blink::StorageKey::Create(
               url::Origin::Create(grandchild_url),
-              net::SchemefulSite(url::Origin::Create(child_url)), nullptr,
+              net::SchemefulSite(url::Origin::Create(child_url)),
               blink::mojom::AncestorChainBit::kCrossSite)),
           testing::UnorderedElementsAre(grandchild_url, grandchild_worker_url));
     } else {

@@ -1446,16 +1446,14 @@ NavigationRequest::CreateForSynchronousRendererCommit(
         blink::StorageKey::CreateWithNonce(origin, *nonce);
   } else {
     // Otherwise we need to derive the top_level_site and ancestor_chain_bit.
-    // TODO(https://crbug.com/1410254): Cleanup this logic.
     net::SchemefulSite top_level_site(top_level_origin);
-    navigation_request->commit_params_->storage_key =
-        blink::StorageKey::CreateWithOptionalNonce(
-            origin, top_level_site, nullptr,
-            render_frame_host->ComputeSiteForCookies().IsNull() ||
-                    net::SchemefulSite(origin) != top_level_site ||
-                    top_level_site.opaque()
-                ? blink::mojom::AncestorChainBit::kCrossSite
-                : blink::mojom::AncestorChainBit::kSameSite);
+    navigation_request->commit_params_->storage_key = blink::StorageKey::Create(
+        origin, top_level_site,
+        render_frame_host->ComputeSiteForCookies().IsNull() ||
+                net::SchemefulSite(origin) != top_level_site ||
+                top_level_site.opaque()
+            ? blink::mojom::AncestorChainBit::kCrossSite
+            : blink::mojom::AncestorChainBit::kSameSite);
   }
   navigation_request->commit_params_->session_storage_key =
       frame_tree_node->frame_tree().GetSessionStorageKey(

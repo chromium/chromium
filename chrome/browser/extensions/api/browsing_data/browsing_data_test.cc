@@ -291,38 +291,38 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
       url::Origin::Create(GURL("https://something.com"));
 
   // First-party key for the origin being deleted.
-  auto key1 = blink::StorageKey::CreateWithOptionalNonce(
-      kOrigin, net::SchemefulSite(kOrigin), nullptr,
-      blink::mojom::AncestorChainBit::kSameSite);
+  auto key1 =
+      blink::StorageKey::Create(kOrigin, net::SchemefulSite(kOrigin),
+                                blink::mojom::AncestorChainBit::kSameSite);
   // Third-party embedded on the origin being deleted.
-  auto key2 = blink::StorageKey::CreateWithOptionalNonce(
-      kDifferentOrigin, net::SchemefulSite(kOrigin), nullptr,
-      blink::mojom::AncestorChainBit::kCrossSite);
+  auto key2 =
+      blink::StorageKey::Create(kDifferentOrigin, net::SchemefulSite(kOrigin),
+                                blink::mojom::AncestorChainBit::kCrossSite);
   // Cross-site same origin embedded on the origin being deleted.
-  auto key3 = blink::StorageKey::CreateWithOptionalNonce(
-      kOrigin, net::SchemefulSite(kOrigin), nullptr,
-      blink::mojom::AncestorChainBit::kCrossSite);
+  auto key3 =
+      blink::StorageKey::Create(kOrigin, net::SchemefulSite(kOrigin),
+                                blink::mojom::AncestorChainBit::kCrossSite);
   // Third-party same origin embedded on a different site.
-  auto key4 = blink::StorageKey::CreateWithOptionalNonce(
-      kOrigin, net::SchemefulSite(kDifferentOrigin), nullptr,
-      blink::mojom::AncestorChainBit::kCrossSite);
+  auto key4 =
+      blink::StorageKey::Create(kOrigin, net::SchemefulSite(kDifferentOrigin),
+                                blink::mojom::AncestorChainBit::kCrossSite);
   // First-party key for an origin not being deleted.
-  auto key5 = blink::StorageKey::CreateWithOptionalNonce(
-      kDifferentOrigin, net::SchemefulSite(kDifferentOrigin), nullptr,
+  auto key5 = blink::StorageKey::Create(
+      kDifferentOrigin, net::SchemefulSite(kDifferentOrigin),
       blink::mojom::AncestorChainBit::kSameSite);
   // First-party key for a different subdomain for the origin being deleted.
-  auto key6 = blink::StorageKey::CreateWithOptionalNonce(
-      kDifferentSubdomain, net::SchemefulSite(kDifferentSubdomain), nullptr,
+  auto key6 = blink::StorageKey::Create(
+      kDifferentSubdomain, net::SchemefulSite(kDifferentSubdomain),
       blink::mojom::AncestorChainBit::kSameSite);
   // Third-party key with a top-level-site equal to a different subdomain for
   // the origin being deleted.
-  auto key7 = blink::StorageKey::CreateWithOptionalNonce(
-      kAnotherOrigin, net::SchemefulSite(kDifferentSubdomain), nullptr,
+  auto key7 = blink::StorageKey::Create(
+      kAnotherOrigin, net::SchemefulSite(kDifferentSubdomain),
       blink::mojom::AncestorChainBit::kCrossSite);
   // Cross-site different subdomain origin embedded with itself as the top-level
   // site.
-  auto key8 = blink::StorageKey::CreateWithOptionalNonce(
-      kDifferentSubdomain, net::SchemefulSite(kDifferentSubdomain), nullptr,
+  auto key8 = blink::StorageKey::Create(
+      kDifferentSubdomain, net::SchemefulSite(kDifferentSubdomain),
       blink::mojom::AncestorChainBit::kCrossSite);
 
   std::vector<blink::StorageKey> keys = {key1, key2, key3, key4,

@@ -54,18 +54,15 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
             base::UnguessableToken::Create()),
         StorageKey::CreateWithNonce(url::Origin(),
                                     base::UnguessableToken::Create()),
-        StorageKey::CreateWithOptionalNonce(
-            url::Origin::Create(GURL("http://sub2.example.com")),
-            net::SchemefulSite(
-                url::Origin::Create(GURL("https://example.com"))),
-            nullptr, blink::mojom::AncestorChainBit::kCrossSite),
-        StorageKey::CreateWithOptionalNonce(
-            url::Origin(), net::SchemefulSite(), nullptr,
-            blink::mojom::AncestorChainBit::kCrossSite),
-        StorageKey::CreateWithOptionalNonce(
-            url::Origin::Create(GURL("http://example.com")),
-            net::SchemefulSite(), nullptr,
-            blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url::Origin::Create(GURL("http://sub2.example.com")),
+                           net::SchemefulSite(url::Origin::Create(
+                               GURL("https://example.com"))),
+                           blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url::Origin(), net::SchemefulSite(),
+                           blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url::Origin::Create(GURL("http://example.com")),
+                           net::SchemefulSite(),
+                           blink::mojom::AncestorChainBit::kCrossSite),
     };
 
     for (auto& original : test_keys) {

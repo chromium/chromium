@@ -165,10 +165,9 @@ TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
 
   // Constructing expected values.
   url::Origin expected_final_origin = url::Origin::Create(parent_url);
-  blink::StorageKey expected_final_storage_key =
-      blink::StorageKey::CreateWithOptionalNonce(
-          expected_final_origin, net::SchemefulSite(expected_final_origin),
-          nullptr, blink::mojom::AncestorChainBit::kCrossSite);
+  blink::StorageKey expected_final_storage_key = blink::StorageKey::Create(
+      expected_final_origin, net::SchemefulSite(expected_final_origin),
+      blink::mojom::AncestorChainBit::kCrossSite);
   // Set should contain the set of sites between the current and top frame.
   std::set<net::SchemefulSite> party_context = {
       net::SchemefulSite(child_url_1)};
@@ -570,9 +569,9 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
   // With no host permissions the grandchild document should have a cross-site
   // storage key with the `initial_url_ext` as it's top level origin.
   blink::StorageKey expected_grandchild_no_permissions_storage_key =
-      blink::StorageKey::CreateWithOptionalNonce(
+      blink::StorageKey::Create(
           grandchild_frame->GetLastCommittedOrigin(),
-          net::SchemefulSite(url::Origin::Create(initial_url_ext)), nullptr,
+          net::SchemefulSite(url::Origin::Create(initial_url_ext)),
           blink::mojom::AncestorChainBit::kCrossSite);
 
   EXPECT_EQ(expected_grandchild_no_permissions_storage_key,
@@ -618,18 +617,18 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
   // Child host should now have a storage key that is same site and uses the
   // `child_origin` as the `top_level_site`.
   blink::StorageKey expected_child_with_permissions_storage_key =
-      blink::StorageKey::CreateWithOptionalNonce(
+      blink::StorageKey::Create(
           child_frame->GetLastCommittedOrigin(),
-          net::SchemefulSite(child_frame->GetLastCommittedOrigin()), nullptr,
+          net::SchemefulSite(child_frame->GetLastCommittedOrigin()),
           blink::mojom::AncestorChainBit::kSameSite);
   EXPECT_EQ(expected_child_with_permissions_storage_key,
             child_frame->CalculateStorageKey(
                 child_frame->GetLastCommittedOrigin(), nullptr));
 
   blink::StorageKey expected_grandchild_with_permissions_storage_key =
-      blink::StorageKey::CreateWithOptionalNonce(
+      blink::StorageKey::Create(
           grandchild_frame->GetLastCommittedOrigin(),
-          net::SchemefulSite(child_frame->GetLastCommittedOrigin()), nullptr,
+          net::SchemefulSite(child_frame->GetLastCommittedOrigin()),
           blink::mojom::AncestorChainBit::kCrossSite);
   EXPECT_EQ(expected_grandchild_with_permissions_storage_key,
             grandchild_frame->CalculateStorageKey(
@@ -673,9 +672,9 @@ TEST_F(RenderFrameHostImplTest,
   // level document should be excluded from storage key calculations and a first
   // party, same-site storage key is expected.
   blink::StorageKey expected_child_with_permissions_storage_key =
-      blink::StorageKey::CreateWithOptionalNonce(
+      blink::StorageKey::Create(
           child_frame->GetLastCommittedOrigin(),
-          net::SchemefulSite(child_frame->GetLastCommittedOrigin()), nullptr,
+          net::SchemefulSite(child_frame->GetLastCommittedOrigin()),
           blink::mojom::AncestorChainBit::kSameSite);
   EXPECT_EQ(expected_child_with_permissions_storage_key,
             child_frame->CalculateStorageKey(
@@ -687,9 +686,9 @@ TEST_F(RenderFrameHostImplTest,
   // calculation.
   GURL no_host_permissions_url = GURL("https://noHostPermissions.com/");
   blink::StorageKey expected_storage_key_no_permissions =
-      blink::StorageKey::CreateWithOptionalNonce(
+      blink::StorageKey::Create(
           url::Origin::Create(no_host_permissions_url),
-          net::SchemefulSite(url::Origin::Create(initial_url_ext)), nullptr,
+          net::SchemefulSite(url::Origin::Create(initial_url_ext)),
           blink::mojom::AncestorChainBit::kCrossSite);
   EXPECT_EQ(expected_storage_key_no_permissions,
             child_frame->CalculateStorageKey(
@@ -998,9 +997,9 @@ TEST_P(RenderFrameHostImplThirdPartyStorageTest,
   if (ThirdPartyStoragePartitioningEnabled()) {
     // child frame storage key should contain child_origin + top_level_origin if
     // third party partitioning is on.
-    EXPECT_EQ(blink::StorageKey::CreateWithOptionalNonce(
+    EXPECT_EQ(blink::StorageKey::Create(
                   url::Origin::Create(child_url),
-                  net::SchemefulSite(url::Origin::Create(initial_url)), nullptr,
+                  net::SchemefulSite(url::Origin::Create(initial_url)),
                   blink::mojom::AncestorChainBit::kCrossSite),
               child_frame->storage_key());
   } else {

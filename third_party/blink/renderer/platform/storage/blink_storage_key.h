@@ -51,11 +51,10 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // (1D) Construct for a specific first or third party context.
   // This is a common entry point when constructing a context, and callsites
   // generally must branch and call CreateWithNonce() if a nonce is set.
-  // TODO(crbug.com/1410254): Rename this to Create() and remove nonce.
-  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                  const BlinkSchemefulSite& top_level_site,
-                  const base::UnguessableToken* nonce,
-                  mojom::blink::AncestorChainBit ancestor_chain_bit);
+  static BlinkStorageKey Create(
+      scoped_refptr<const SecurityOrigin> origin,
+      const BlinkSchemefulSite& top_level_site,
+      mojom::blink::AncestorChainBit ancestor_chain_bit);
 
   // (1E) Construct for the provided isolation_info.
   // Only in StorageKey, but could be added if needed.
@@ -156,6 +155,11 @@ class PLATFORM_EXPORT BlinkStorageKey {
   bool ExactMatchForTesting(const blink::BlinkStorageKey& other) const;
 
  private:
+  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                  const BlinkSchemefulSite& top_level_site,
+                  const base::UnguessableToken* nonce,
+                  mojom::blink::AncestorChainBit ancestor_chain_bit);
+
   scoped_refptr<const SecurityOrigin> origin_;
   BlinkSchemefulSite top_level_site_;
   // Stores the value `top_level_site_` would have had if

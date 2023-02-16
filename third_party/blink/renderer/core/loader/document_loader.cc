@@ -2357,7 +2357,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     BlinkSchemefulSite top_level_site = storage_key_with_3psp.GetTopLevelSite();
     // If `security_origin` does not match `top_level_site` we must ensure
     // `ancestor_chain_bit` is kCrossSite.
-    // TODO(https://crbug.com/1410254): Cleanup this logic.
     mojom::blink::AncestorChainBit ancestor_chain_bit =
         storage_key_with_3psp.GetAncestorChainBit();
     if (BlinkSchemefulSite(security_origin) != top_level_site) {
@@ -2365,8 +2364,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     }
     // TODO(https://crbug.com/888079): Just use the storage key sent by the
     // browser once the browser will be able to compute the origin in all cases.
-    frame_->DomWindow()->SetStorageKey(BlinkStorageKey(
-        security_origin, top_level_site, nullptr, ancestor_chain_bit));
+    frame_->DomWindow()->SetStorageKey(BlinkStorageKey::Create(
+        security_origin, top_level_site, ancestor_chain_bit));
   }
 
   if (storage_key_ == session_storage_key_ ||

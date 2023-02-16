@@ -6937,16 +6937,16 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
   // `kThirdPartyStoragePartitioning` is enabled and there are no host
   // permissions set.
   if (ThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_EQ(blink::StorageKey::CreateWithOptionalNonce(
+    EXPECT_EQ(blink::StorageKey::Create(
                   url::Origin::Create(child_rfh_url),
                   net::SchemefulSite(root_rfh->GetLastCommittedOrigin()),
-                  nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+                  blink::mojom::AncestorChainBit::kCrossSite),
               child_rfh_1->storage_key());
 
-    EXPECT_EQ(blink::StorageKey::CreateWithOptionalNonce(
+    EXPECT_EQ(blink::StorageKey::Create(
                   url::Origin::Create(grandchild_rfh_url),
                   net::SchemefulSite(root_rfh->GetLastCommittedOrigin()),
-                  nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+                  blink::mojom::AncestorChainBit::kCrossSite),
               grandchild_rfh_1->storage_key());
   } else {
     // When `kThirdPartyStoragePartitioning` is disabled, the child and
@@ -6991,18 +6991,18 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
     // When `kThirdPartyStoragePartitioning` is enabled, the child rfh should
     // now have a top level StorageKey because it is the direct child of the
     // root document and the root has host permissions to it.
-    EXPECT_EQ(blink::StorageKey(blink::StorageKey::CreateWithOptionalNonce(
+    EXPECT_EQ(blink::StorageKey(blink::StorageKey::Create(
                   url::Origin::Create(child_rfh_url),
                   net::SchemefulSite(url::Origin::Create(child_rfh_url)),
-                  nullptr, blink::mojom::AncestorChainBit::kSameSite)),
+                  blink::mojom::AncestorChainBit::kSameSite)),
               child_rfh_2->storage_key());
 
     // The grandchild document should create a StorageKey using the child
     // document's origin as the top level site.
-    EXPECT_EQ(blink::StorageKey::CreateWithOptionalNonce(
+    EXPECT_EQ(blink::StorageKey::Create(
                   url::Origin::Create(grandchild_rfh_url),
                   net::SchemefulSite(url::Origin::Create(child_rfh_url)),
-                  nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+                  blink::mojom::AncestorChainBit::kCrossSite),
               grandchild_rfh_2->storage_key());
   } else {
     // When `kThirdPartyStoragePartitioning` is disabled, the child and

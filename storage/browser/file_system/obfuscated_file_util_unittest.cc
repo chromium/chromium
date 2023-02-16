@@ -194,8 +194,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
       // Once we enable third-party storage partitioning, we can create a
       // third-party StorageKey and re-assign the StorageKey value in the
       // SandboxFileSystem with this value in SetUp for default buckets.
-      storage_key_ = blink::StorageKey::CreateWithOptionalNonce(
-          storage_key_.origin(), storage_key_.top_level_site(), nullptr,
+      storage_key_ = blink::StorageKey::Create(
+          storage_key_.origin(), storage_key_.top_level_site(),
           blink::mojom::AncestorChainBit::kCrossSite);
     }
   }

@@ -79,6 +79,14 @@ BlinkStorageKey BlinkStorageKey::CreateWithNonce(
 }
 
 // static
+BlinkStorageKey BlinkStorageKey::Create(
+    scoped_refptr<const SecurityOrigin> origin,
+    const BlinkSchemefulSite& top_level_site,
+    mojom::blink::AncestorChainBit ancestor_chain_bit) {
+  return BlinkStorageKey(origin, top_level_site, nullptr, ancestor_chain_bit);
+}
+
+// static
 BlinkStorageKey BlinkStorageKey::CreateFromStringForTesting(
     const WTF::String& origin) {
   return BlinkStorageKey::CreateFirstParty(

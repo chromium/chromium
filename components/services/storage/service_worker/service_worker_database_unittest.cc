@@ -2464,9 +2464,9 @@ void DeleteAllDataForStorageKeyTest::TestDeleteAllDataForStorageKey(
         net::features::kThirdPartyStoragePartitioning);
   }
 
-  blink::StorageKey registered_key = blink::StorageKey::CreateWithOptionalNonce(
+  blink::StorageKey registered_key = blink::StorageKey::Create(
       url::Origin::Create(GURL(registered_key_origin)),
-      net::SchemefulSite(GURL(registered_key_top_level_site)), nullptr,
+      net::SchemefulSite(GURL(registered_key_top_level_site)),
       registered_key_ancestor_chain_bit);
 
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
@@ -2667,9 +2667,9 @@ void DeleteAllDataForStorageKeyTest::
 
   // Register with a third-party key for example.com -- multiple keys to
   // delete will reference this registration.
-  blink::StorageKey registered_key = blink::StorageKey::CreateWithOptionalNonce(
+  blink::StorageKey registered_key = blink::StorageKey::Create(
       url::Origin::Create(GURL("https://example.com")),
-      net::SchemefulSite(GURL("https://example.com")), nullptr,
+      net::SchemefulSite(GURL("https://example.com")),
       blink::mojom::AncestorChainBit::kCrossSite);
 
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());

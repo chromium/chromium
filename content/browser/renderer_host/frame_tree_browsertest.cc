@@ -1657,17 +1657,15 @@ IN_PROC_BROWSER_TEST_F(FrameTreeSessionStorageDeprecationTrialBrowserSecureTest,
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   const blink::StorageKey first_party =
       blink::StorageKey::CreateFirstParty(origin);
-  const blink::StorageKey third_party =
-      blink::StorageKey::CreateWithOptionalNonce(
-          origin, net::SchemefulSite(GURL("https://notexample.com")), nullptr,
-          blink::mojom::AncestorChainBit::kCrossSite);
+  const blink::StorageKey third_party = blink::StorageKey::Create(
+      origin, net::SchemefulSite(GURL("https://notexample.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
   const url::Origin opaque_origin = url::Origin();
   const blink::StorageKey opaque_first_party =
       blink::StorageKey::CreateFirstParty(opaque_origin);
-  const blink::StorageKey opaque_third_party =
-      blink::StorageKey::CreateWithOptionalNonce(
-          opaque_origin, net::SchemefulSite(GURL("https://notexample.com")),
-          nullptr, blink::mojom::AncestorChainBit::kCrossSite);
+  const blink::StorageKey opaque_third_party = blink::StorageKey::Create(
+      opaque_origin, net::SchemefulSite(GURL("https://notexample.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
   EXPECT_NE(first_party, third_party);
   EXPECT_NE(opaque_first_party, opaque_third_party);
   FrameTree& frame_tree = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -1691,18 +1689,16 @@ IN_PROC_BROWSER_TEST_F(FrameTreeSessionStorageDeprecationTrialBrowserSecureTest,
 
 IN_PROC_BROWSER_TEST_F(FrameTreeSessionStorageDeprecationTrialBrowserSecureTest,
                        GetSessionStorageKey) {
-  const blink::StorageKey dt_third_party =
-      blink::StorageKey::CreateWithOptionalNonce(
-          url::Origin::Create(GURL("https://example.com")),
-          net::SchemefulSite(GURL("https://notexample.com")), nullptr,
-          blink::mojom::AncestorChainBit::kCrossSite);
+  const blink::StorageKey dt_third_party = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://example.com")),
+      net::SchemefulSite(GURL("https://notexample.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
   const blink::StorageKey dt_first_party =
       blink::StorageKey::CreateFromStringForTesting("https://example.com");
-  const blink::StorageKey random_third_party =
-      blink::StorageKey::CreateWithOptionalNonce(
-          url::Origin::Create(GURL("https://otherexample.com")),
-          net::SchemefulSite(GURL("https://notexample.com")), nullptr,
-          blink::mojom::AncestorChainBit::kCrossSite);
+  const blink::StorageKey random_third_party = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://otherexample.com")),
+      net::SchemefulSite(GURL("https://notexample.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
   EXPECT_NE(dt_third_party, dt_first_party);
 
   // Load a page without the origin trial token.
@@ -1762,18 +1758,16 @@ class FrameTreeSessionStorageDeprecationTrialBrowserInsecureTest
 IN_PROC_BROWSER_TEST_F(
     FrameTreeSessionStorageDeprecationTrialBrowserInsecureTest,
     GetSessionStorageKeyInsecure) {
-  const blink::StorageKey dt_third_party =
-      blink::StorageKey::CreateWithOptionalNonce(
-          url::Origin::Create(GURL("http://example.com")),
-          net::SchemefulSite(GURL("http://notexample.com")), nullptr,
-          blink::mojom::AncestorChainBit::kCrossSite);
+  const blink::StorageKey dt_third_party = blink::StorageKey::Create(
+      url::Origin::Create(GURL("http://example.com")),
+      net::SchemefulSite(GURL("http://notexample.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
   const blink::StorageKey dt_first_party =
       blink::StorageKey::CreateFromStringForTesting("http://example.com");
-  const blink::StorageKey random_third_party =
-      blink::StorageKey::CreateWithOptionalNonce(
-          url::Origin::Create(GURL("http://otherexample.com")),
-          net::SchemefulSite(GURL("http://notexample.com")), nullptr,
-          blink::mojom::AncestorChainBit::kCrossSite);
+  const blink::StorageKey random_third_party = blink::StorageKey::Create(
+      url::Origin::Create(GURL("http://otherexample.com")),
+      net::SchemefulSite(GURL("http://notexample.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
   EXPECT_NE(dt_third_party, dt_first_party);
 
   // Load a page without the origin trial token.

@@ -306,10 +306,9 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   ASSERT_TRUE(CreateDirectory(file_3.DirName()));
   ASSERT_TRUE(base::WriteFile(file_3, std::string(1000, 'a')));
 
-  const blink::StorageKey storage_key_4 =
-      blink::StorageKey::CreateWithOptionalNonce(
-          storage_key_1.origin(), net::SchemefulSite(storage_key_3.origin()),
-          nullptr, blink::mojom::AncestorChainBit::kCrossSite);
+  const blink::StorageKey storage_key_4 = blink::StorageKey::Create(
+      storage_key_1.origin(), net::SchemefulSite(storage_key_3.origin()),
+      blink::mojom::AncestorChainBit::kCrossSite);
   storage::BucketLocator bucket_locator_4 =
       quota_manager()
           ->GetOrCreateBucketSync(

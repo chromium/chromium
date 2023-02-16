@@ -86,12 +86,9 @@ class BLINK_COMMON_EXPORT StorageKey {
   // (1D) Construct for a specific first or third party context.
   // This is a common entry point when constructing a context, and callsites
   // generally must branch and call CreateWithNonce() if a nonce is set.
-  // TODO(crbug.com/1410254): Rename this to Create() and remove nonce.
-  static StorageKey CreateWithOptionalNonce(
-      const url::Origin& origin,
-      const net::SchemefulSite& top_level_site,
-      const base::UnguessableToken* nonce,
-      blink::mojom::AncestorChainBit ancestor_chain_bit);
+  static StorageKey Create(const url::Origin& origin,
+                           const net::SchemefulSite& top_level_site,
+                           blink::mojom::AncestorChainBit ancestor_chain_bit);
 
   // (1E) Construct for the provided isolation_info.
   // TODO(crbug.com/1346450): This does not account for extension URLs.

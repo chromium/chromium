@@ -923,9 +923,9 @@ IN_PROC_BROWSER_TEST_F(
       {
           url::Origin::Create(kFirstPartyURL),
           net::CookiePartitionKey::FromURLForTesting(kCrossSiteURL),
-          blink::StorageKey::CreateWithOptionalNonce(
+          blink::StorageKey::Create(
               url::Origin::Create(kCrossSiteURL),
-              net::SchemefulSite(url::Origin::Create(kFirstPartyURL)), nullptr,
+              net::SchemefulSite(url::Origin::Create(kFirstPartyURL)),
               blink::mojom::AncestorChainBit::kCrossSite),
           true,
       },

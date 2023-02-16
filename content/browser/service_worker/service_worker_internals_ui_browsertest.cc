@@ -754,9 +754,9 @@ IN_PROC_BROWSER_TEST_F(
         scope, blink::mojom::ScriptType::kClassic,
         blink::mojom::ServiceWorkerUpdateViaCache::kImports);
     // Set up the storage key for the service worker
-    blink::StorageKey key = blink::StorageKey::CreateWithOptionalNonce(
+    blink::StorageKey key = blink::StorageKey::Create(
         url::Origin::Create(options.scope),
-        net::SchemefulSite(url::Origin::Create(top_level_page)), nullptr,
+        net::SchemefulSite(url::Origin::Create(top_level_page)),
         blink::mojom::AncestorChainBit::kCrossSite);
     // Register returns when the promise is resolved.
     public_context()->RegisterServiceWorker(

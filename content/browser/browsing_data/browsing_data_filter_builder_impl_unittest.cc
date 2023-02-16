@@ -143,8 +143,8 @@ void RunTestCase(
   auto origin = url::Origin::Create(GURL(test_case.origin));
   auto top_level_site =
       net::SchemefulSite(url::Origin::Create(GURL(test_case.top_level_site)));
-  auto key = blink::StorageKey::CreateWithOptionalNonce(
-      origin, top_level_site, nullptr, test_case.ancestor_chain_bit);
+  auto key = blink::StorageKey::Create(origin, top_level_site,
+                                       test_case.ancestor_chain_bit);
   EXPECT_EQ(test_case.should_match, filter.Run(key))
       << key.GetDebugString() << " should "
       << (test_case.should_match ? "" : "NOT ") << "be matched by the filter.";
@@ -487,21 +487,17 @@ TEST(BrowsingDataFilterBuilderImplTest, StorageKey) {
       // Top-level (Foo).
       blink::StorageKey::CreateFromStringForTesting("https://foo.com"),
       // Foo -> Bar.
-      blink::StorageKey::CreateWithOptionalNonce(
-          origin1, net::SchemefulSite(origin2), nullptr,
-          blink::mojom::AncestorChainBit::kCrossSite),
+      blink::StorageKey::Create(origin1, net::SchemefulSite(origin2),
+                                blink::mojom::AncestorChainBit::kCrossSite),
       // Foo -> Bar -> Foo.
-      blink::StorageKey::CreateWithOptionalNonce(
-          origin1, net::SchemefulSite(origin1), nullptr,
-          blink::mojom::AncestorChainBit::kCrossSite),
+      blink::StorageKey::Create(origin1, net::SchemefulSite(origin1),
+                                blink::mojom::AncestorChainBit::kCrossSite),
       // Bar
-      blink::StorageKey::CreateWithOptionalNonce(
-          origin2, net::SchemefulSite(origin2), nullptr,
-          blink::mojom::AncestorChainBit::kSameSite),
+      blink::StorageKey::Create(origin2, net::SchemefulSite(origin2),
+                                blink::mojom::AncestorChainBit::kSameSite),
       // Bar -> Foo
-      blink::StorageKey::CreateWithOptionalNonce(
-          origin2, net::SchemefulSite(origin1), nullptr,
-          blink::mojom::AncestorChainBit::kCrossSite),
+      blink::StorageKey::Create(origin2, net::SchemefulSite(origin1),
+                                blink::mojom::AncestorChainBit::kCrossSite),
   };
 
   // Test for OriginMatchingMode::kThirdPartiesIncluded.

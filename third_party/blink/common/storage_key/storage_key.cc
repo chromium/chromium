@@ -502,38 +502,35 @@ StorageKey StorageKey::CreateWithNonce(const url::Origin& origin,
 }
 
 // static
-StorageKey StorageKey::CreateWithOptionalNonce(
+StorageKey StorageKey::Create(
     const url::Origin& origin,
     const net::SchemefulSite& top_level_site,
-    const base::UnguessableToken* nonce,
     blink::mojom::AncestorChainBit ancestor_chain_bit) {
-  return StorageKey(origin, top_level_site, nonce, ancestor_chain_bit);
+  return StorageKey(origin, top_level_site, nullptr, ancestor_chain_bit);
 }
 
 // static
 StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info) {
+  if (isolation_info.nonce()) {
+    // If the nonce is set we can use the simpler construction path.
+    return CreateWithNonce(origin, *isolation_info.nonce());
+  }
+
   blink::mojom::AncestorChainBit ancestor_chain_bit =
       blink::mojom::AncestorChainBit::kCrossSite;
   net::SchemefulSite top_level_site =
       net::SchemefulSite(isolation_info.top_frame_origin().value());
-
-  if (isolation_info.nonce()) {
-    // If the nonce is set we have to update the top level site to match origin
-    // as that's an invariant.
-    top_level_site = net::SchemefulSite(origin);
-  } else if (!top_level_site.opaque() &&
-             net::SchemefulSite(origin) == top_level_site &&
-             !isolation_info.site_for_cookies().IsNull()) {
-    // If the top_level_site is opaque the ancestor chain bit will be CrossSite.
-    // Otherwise if the top level site matches the new origin and the
-    // site for cookies isn't empty it must be SameSite.
+  // If the top_level_site is opaque the ancestor chain bit will be CrossSite.
+  // Otherwise if the top level site matches the new origin and the
+  // site for cookies isn't empty it must be SameSite.
+  if (!top_level_site.opaque() &&
+      net::SchemefulSite(origin) == top_level_site &&
+      !isolation_info.site_for_cookies().IsNull()) {
     ancestor_chain_bit = blink::mojom::AncestorChainBit::kSameSite;
   }
-  return CreateWithOptionalNonce(origin, top_level_site,
-                                 base::OptionalToPtr(isolation_info.nonce()),
-                                 ancestor_chain_bit);
+  return Create(origin, top_level_site, ancestor_chain_bit);
 }
 
 StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {

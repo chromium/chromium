@@ -113,12 +113,12 @@ TEST(BlinkStorageKeyTest, BlinkStorageKeyRoundTripConversion) {
         BlinkStorageKey::CreateFirstParty(origin4),
         BlinkStorageKey::CreateWithNonce(origin1, nonce),
         BlinkStorageKey::CreateWithNonce(origin2, nonce),
-        BlinkStorageKey(origin1, BlinkSchemefulSite(origin2), nullptr,
-                        mojom::blink::AncestorChainBit::kCrossSite),
-        BlinkStorageKey(origin1, BlinkSchemefulSite(), nullptr,
-                        mojom::blink::AncestorChainBit::kCrossSite),
-        BlinkStorageKey(origin2, BlinkSchemefulSite(), nullptr,
-                        mojom::blink::AncestorChainBit::kCrossSite),
+        BlinkStorageKey::Create(origin1, BlinkSchemefulSite(origin2),
+                                mojom::blink::AncestorChainBit::kCrossSite),
+        BlinkStorageKey::Create(origin1, BlinkSchemefulSite(),
+                                mojom::blink::AncestorChainBit::kCrossSite),
+        BlinkStorageKey::Create(origin2, BlinkSchemefulSite(),
+                                mojom::blink::AncestorChainBit::kCrossSite),
     };
 
     for (BlinkStorageKey& key : keys) {
@@ -150,15 +150,12 @@ TEST(BlinkStorageKeyTest, StorageKeyRoundTripConversion) {
         StorageKey::CreateFirstParty(url_origin4),
         StorageKey::CreateWithNonce(url_origin1, nonce),
         StorageKey::CreateWithNonce(url_origin2, nonce),
-        StorageKey::CreateWithOptionalNonce(
-            url_origin1, net::SchemefulSite(url_origin2), nullptr,
-            blink::mojom::AncestorChainBit::kCrossSite),
-        StorageKey::CreateWithOptionalNonce(
-            url_origin1, net::SchemefulSite(), nullptr,
-            blink::mojom::AncestorChainBit::kCrossSite),
-        StorageKey::CreateWithOptionalNonce(
-            url_origin2, net::SchemefulSite(), nullptr,
-            blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url_origin1, net::SchemefulSite(url_origin2),
+                           blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url_origin1, net::SchemefulSite(),
+                           blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url_origin2, net::SchemefulSite(),
+                           blink::mojom::AncestorChainBit::kCrossSite),
     };
 
     for (const auto& key : storage_keys) {
@@ -239,7 +236,8 @@ TEST(BlinkStorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
     scope_feature_list.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning, toggle);
 
-    BlinkStorageKey storage_key(origin1, BlinkSchemefulSite(origin2), nullptr,
+    BlinkStorageKey storage_key =
+        BlinkStorageKey::Create(origin1, BlinkSchemefulSite(origin2),
                                 mojom::blink::AncestorChainBit::kCrossSite);
     EXPECT_EQ(storage_key.GetTopLevelSite(),
               BlinkSchemefulSite(toggle ? origin2 : origin1));
@@ -259,10 +257,10 @@ TEST(BlinkStorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
 TEST(BlinkStorageKeyTest, NonceRequiresMatchingOriginSiteAndCrossSite) {
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateFromString("https://foo.com");
+  scoped_refptr<const SecurityOrigin> opaque_origin =
+      SecurityOrigin::CreateUniqueOpaque();
   const BlinkSchemefulSite site(origin);
-  const BlinkSchemefulSite opaque_site;
-  const BlinkSchemefulSite other_site(
-      SecurityOrigin::CreateFromString("https://notfoo.com"));
+  const BlinkSchemefulSite opaque_site(opaque_origin);
   base::UnguessableToken nonce = base::UnguessableToken::Create();
 
   for (const bool toggle : {false, true}) {
@@ -270,28 +268,17 @@ TEST(BlinkStorageKeyTest, NonceRequiresMatchingOriginSiteAndCrossSite) {
     scope_feature_list.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning, toggle);
 
-    // A nonce key with a matching origin/site that's CrossSite works.
-    std::ignore = BlinkStorageKey(origin, site, &nonce,
-                                  mojom::blink::AncestorChainBit::kCrossSite);
+    // Test non-opaque origin.
+    BlinkStorageKey key = BlinkStorageKey::CreateWithNonce(origin, nonce);
+    EXPECT_EQ(key.GetAncestorChainBit(),
+              mojom::blink::AncestorChainBit::kCrossSite);
+    EXPECT_EQ(key.GetTopLevelSite(), site);
 
-    // A nonce key with a non-matching origin/site that's SameSite fails.
-    EXPECT_DCHECK_DEATH(
-        BlinkStorageKey(origin, opaque_site, &nonce,
-                        mojom::blink::AncestorChainBit::kSameSite));
-    EXPECT_DCHECK_DEATH(BlinkStorageKey(
-        origin, other_site, &nonce, mojom::blink::AncestorChainBit::kSameSite));
-
-    // A nonce key with a matching origin/site that's SameSite fails.
-    EXPECT_DCHECK_DEATH(BlinkStorageKey(
-        origin, site, &nonce, mojom::blink::AncestorChainBit::kSameSite));
-
-    // A nonce key with a non-matching origin/site that's CrossSite fails.
-    EXPECT_DCHECK_DEATH(
-        BlinkStorageKey(origin, opaque_site, &nonce,
-                        mojom::blink::AncestorChainBit::kCrossSite));
-    EXPECT_DCHECK_DEATH(
-        BlinkStorageKey(origin, other_site, &nonce,
-                        mojom::blink::AncestorChainBit::kCrossSite));
+    // Test opaque origin.
+    key = BlinkStorageKey::CreateWithNonce(opaque_origin, nonce);
+    EXPECT_EQ(key.GetAncestorChainBit(),
+              mojom::blink::AncestorChainBit::kCrossSite);
+    EXPECT_EQ(key.GetTopLevelSite(), opaque_site);
   }
 }
 
@@ -307,19 +294,18 @@ TEST(BlinkStorageKeyTest, OpaqueTopLevelSiteRequiresCrossSite) {
         net::features::kThirdPartyStoragePartitioning, toggle);
 
     // A non-opaque site with SameSite and CrossSite works.
-    std::ignore = BlinkStorageKey(origin, site, nullptr,
-                                  mojom::blink::AncestorChainBit::kSameSite);
-    std::ignore = BlinkStorageKey(origin, site, nullptr,
-                                  mojom::blink::AncestorChainBit::kCrossSite);
+    std::ignore = BlinkStorageKey::Create(
+        origin, site, mojom::blink::AncestorChainBit::kSameSite);
+    std::ignore = BlinkStorageKey::Create(
+        origin, site, mojom::blink::AncestorChainBit::kCrossSite);
 
     // An opaque site with CrossSite works.
-    std::ignore = BlinkStorageKey(origin, opaque_site, nullptr,
-                                  mojom::blink::AncestorChainBit::kCrossSite);
+    std::ignore = BlinkStorageKey::Create(
+        origin, opaque_site, mojom::blink::AncestorChainBit::kCrossSite);
 
     // An opaque site with SameSite fails.
-    EXPECT_DCHECK_DEATH(
-        BlinkStorageKey(origin, opaque_site, nullptr,
-                        mojom::blink::AncestorChainBit::kSameSite));
+    EXPECT_DCHECK_DEATH(BlinkStorageKey::Create(
+        origin, opaque_site, mojom::blink::AncestorChainBit::kSameSite));
   }
 }
 
@@ -338,22 +324,20 @@ TEST(BlinkStorageKeyTest, OriginAndSiteMismatchRequiresCrossSite) {
         net::features::kThirdPartyStoragePartitioning, toggle);
 
     // A matching origin and site can be SameSite or CrossSite.
-    std::ignore = BlinkStorageKey(origin, site, nullptr,
-                                  mojom::blink::AncestorChainBit::kSameSite);
-    std::ignore = BlinkStorageKey(origin, site, nullptr,
-                                  mojom::blink::AncestorChainBit::kCrossSite);
+    std::ignore = BlinkStorageKey::Create(
+        origin, site, mojom::blink::AncestorChainBit::kSameSite);
+    std::ignore = BlinkStorageKey::Create(
+        origin, site, mojom::blink::AncestorChainBit::kCrossSite);
 
     // A mismatched origin and site cannot be SameSite.
-    EXPECT_DCHECK_DEATH(
-        BlinkStorageKey(origin, other_site, nullptr,
-                        mojom::blink::AncestorChainBit::kSameSite));
-    EXPECT_DCHECK_DEATH(
-        BlinkStorageKey(opaque_origin, other_site, nullptr,
-                        mojom::blink::AncestorChainBit::kSameSite));
+    EXPECT_DCHECK_DEATH(BlinkStorageKey::Create(
+        origin, other_site, mojom::blink::AncestorChainBit::kSameSite));
+    EXPECT_DCHECK_DEATH(BlinkStorageKey::Create(
+        opaque_origin, other_site, mojom::blink::AncestorChainBit::kSameSite));
 
     // A mismatched origin and site must be CrossSite.
-    std::ignore = BlinkStorageKey(origin, other_site, nullptr,
-                                  mojom::blink::AncestorChainBit::kCrossSite);
+    std::ignore = BlinkStorageKey::Create(
+        origin, other_site, mojom::blink::AncestorChainBit::kCrossSite);
   }
 }
 
@@ -475,78 +459,75 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
   } kTestCases[] = {
       // No change in first-party key updated with same origin.
       {
-          BlinkStorageKey(origin, site, nullptr,
-                          mojom::AncestorChainBit::kSameSite),
+          BlinkStorageKey::Create(origin, site,
+                                  mojom::AncestorChainBit::kSameSite),
           origin,
           absl::nullopt,
       },
       // Change in first-party key updated with new origin.
       {
-          BlinkStorageKey(origin, site, nullptr,
-                          mojom::AncestorChainBit::kSameSite),
+          BlinkStorageKey::Create(origin, site,
+                                  mojom::AncestorChainBit::kSameSite),
           other_origin,
-          BlinkStorageKey(other_origin, site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(other_origin, site,
+                                  mojom::AncestorChainBit::kCrossSite),
       },
       // No change in third-party same-site key updated with same origin.
       {
-          BlinkStorageKey(origin, site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(origin, site,
+                                  mojom::AncestorChainBit::kCrossSite),
           origin,
           absl::nullopt,
       },
       // Change in third-party same-site key updated with same origin.
       {
-          BlinkStorageKey(origin, site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(origin, site,
+                                  mojom::AncestorChainBit::kCrossSite),
           other_origin,
-          BlinkStorageKey(other_origin, site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(other_origin, site,
+                                  mojom::AncestorChainBit::kCrossSite),
       },
       // No change in third-party key updated with same origin.
       {
-          BlinkStorageKey(origin, other_site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(origin, other_site,
+                                  mojom::AncestorChainBit::kCrossSite),
           origin,
           absl::nullopt,
       },
       // Change in third-party key updated with new origin.
       {
-          BlinkStorageKey(origin, other_site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(origin, other_site,
+                                  mojom::AncestorChainBit::kCrossSite),
           other_origin,
-          BlinkStorageKey(other_origin, other_site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(other_origin, other_site,
+                                  mojom::AncestorChainBit::kCrossSite),
       },
       // No change in opaque tls key updated with same origin.
       {
-          BlinkStorageKey(origin, opaque_site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(origin, opaque_site,
+                                  mojom::AncestorChainBit::kCrossSite),
           origin,
           absl::nullopt,
       },
       // Change in opaque tls key updated with new origin.
       {
-          BlinkStorageKey(origin, opaque_site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(origin, opaque_site,
+                                  mojom::AncestorChainBit::kCrossSite),
           other_origin,
-          BlinkStorageKey(other_origin, opaque_site, nullptr,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::Create(other_origin, opaque_site,
+                                  mojom::AncestorChainBit::kCrossSite),
       },
       // No change in nonce key updated with same origin.
       {
-          BlinkStorageKey(origin, site, &nonce,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::CreateWithNonce(origin, nonce),
           origin,
           absl::nullopt,
       },
       // Change in nonce key updated with new origin.
       {
-          BlinkStorageKey(origin, site, &nonce,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::CreateWithNonce(origin, nonce),
           other_origin,
-          BlinkStorageKey(other_origin, other_site, &nonce,
-                          mojom::AncestorChainBit::kCrossSite),
+          BlinkStorageKey::CreateWithNonce(other_origin, nonce),
       },
   };
 

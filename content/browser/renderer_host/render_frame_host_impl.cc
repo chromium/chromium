@@ -4157,9 +4157,8 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
   }
 
-  // TODO(https://crbug.com/1410254): Cleanup this logic.
-  return blink::StorageKey::CreateWithOptionalNonce(
-      new_rfh_origin, top_level_site, nullptr, ancestor_chain_bit);
+  return blink::StorageKey::Create(new_rfh_origin, top_level_site,
+                                   ancestor_chain_bit);
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
