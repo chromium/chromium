@@ -1619,6 +1619,8 @@ mojom::ManagedWireGuardPropertiesPtr GetManagedWireGuardProperties(
     NET_LOG(ERROR) << "Expected dictionary, found: " << *wg_dict;
     return wg;
   }
+  wg->ip_addresses =
+      GetManagedStringList(wg_dict, ::onc::wireguard::kIPAddresses);
   wg->private_key = GetManagedString(wg_dict, ::onc::wireguard::kPrivateKey);
   wg->public_key = GetManagedString(wg_dict, ::onc::wireguard::kPublicKey);
   wg->peers = GetManagedWireGuardPeerList(wg_dict, ::onc::wireguard::kPeers);
@@ -2161,6 +2163,8 @@ absl::optional<base::Value::Dict> GetOncFromConfigProperties(
       base::Value::Dict wireguard_dict;
       SetString(::onc::wireguard::kPrivateKey, wireguard.private_key,
                 &wireguard_dict);
+      SetStringList(::onc::wireguard::kIPAddresses, wireguard.ip_addresses,
+                    &wireguard_dict);
 
       base::Value::List peer_list;
       if (wireguard.peers) {

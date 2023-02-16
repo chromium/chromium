@@ -4,6 +4,7 @@
   "Provider": {
     "Host": "wireguard",
     "Type": "wireguard",
+    "WireGuard.IPAddress": [ "1.2.3.4", "fd00::1" ],
     "WireGuard.Peers": [
         {
           "AllowedIPs": "0.0.0.0/0",
@@ -16,7 +17,6 @@
   },
   "SaveCredentials": true,
   "StaticIPConfig": {
-    "Address": "10.20.30.101",
     "NameServers": [ "8.8.8.8", "8.8.4.4", "0.0.0.0", "0.0.0.0" ]
   }
 }

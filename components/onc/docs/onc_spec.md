@@ -1079,6 +1079,11 @@ L2TP over IPsec with pre-shared key:
 
 ### WireGuard type
 
+* **IPAddresses**
+    * (required) - **array of string**
+    * Array of IP addresses in string representation (case-insensitive for IPv6)
+      to be configured on the local WireGuard interface.
+
 * **PrivateKey**
     * (optional) - **string**
     * The base64 private key of the wireguard client peer. If not set, a random

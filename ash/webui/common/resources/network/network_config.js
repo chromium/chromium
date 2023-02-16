@@ -22,9 +22,9 @@ import './network_config_toggle.js';
 import './network_password_input.js';
 import './network_shared.css.js';
 
+import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {flush, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CertificateType, ConfigProperties, CrosNetworkConfigRemote, EAPConfigProperties, GlobalPolicy, HiddenSsidMode, IPSecConfigProperties, L2TPConfigProperties, ManagedBoolean, ManagedEAPProperties, ManagedInt32, ManagedIPSecProperties, ManagedL2TPProperties, ManagedOpenVPNProperties, ManagedProperties, ManagedString, ManagedStringList, ManagedWireGuardProperties, NetworkCertificate, OpenVPNConfigProperties, SecurityType, StartConnectResult, SubjectAltName, VpnType, WireGuardConfigProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, IPConfigType, NetworkType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -71,6 +71,33 @@ const WireGuardKeyConfigType = {
 /** @type {string}  */ const NO_USER_CERT_HASH = 'no-user-cert';
 
 /** @type {string}  */ const PLACEHOLDER_CREDENTIAL = '(credential)';
+
+/**
+ * A light-weight regular expression for testing an IPv4 address string. Note
+ * that this is not a complete check and thus some invalid input can also be
+ * accepted.
+ * @type {RegExp}
+ * @private
+ */
+const IPV4_ADDR_REGEX = /^([0-9]+\.){3}[0-9]+$/i;
+
+/**
+ * A light-weight regular expression for testing an IPv6 address string. Note
+ * that this is not a complete check and thus some invalid input can also be
+ * accepted.
+ * @type {RegExp}
+ * @private
+ */
+const IPV6_ADDR_REGEX = /^(\:?[0-9a-f]{0,4}){2,8}$/i;
+
+/**
+ * A light-weight regular expression for testing an IP CIDR string (e.g.,
+ * 192.168.1.0/24). Both IPv4 and IPv6 are accepted. Note that this is not a
+ * complete check and thus some invalid input can also be accepted.
+ * @type {RegExp}
+ * @private
+ */
+const IP_CIDR_REGEX = /^[0-9a-f\.\:]+\/[0-9]+?$/i;
 
 Polymer({
   _template: getTemplate(),
@@ -990,6 +1017,7 @@ Polymer({
    */
   getWireGuardConfigProperties_(wireguard) {
     const config = {
+      ipAddresses: this.getActiveStringList_(wireguard.ipAddresses) ?? [],
       privateKey: OncMojo.getActiveString(wireguard.privateKey),
       peers: [],
     };
@@ -997,7 +1025,7 @@ Polymer({
       for (const peer of wireguard.peers.activeValue) {
         const peerCopied = Object.assign({}, peer);
         if (this.hasGuid_()) {
-          // Shill does not return exact value for crendential fields, showing
+          // Shill does not return exact value for credential fields, showing
           // a placeholder here.
           peerCopied.presharedKey = PLACEHOLDER_CREDENTIAL;
         }
@@ -1077,12 +1105,11 @@ Polymer({
             break;
           }
           assert(vpn.wireguard);
-          assert(managedProperties.staticIpConfig);
           configVpn.wireguard =
               this.getWireGuardConfigProperties_(vpn.wireguard);
+          this.ipAddressInput_ = configVpn.wireguard.ipAddresses.join(',');
           const staticIpConfig = managedProperties.staticIpConfig;
-          this.ipAddressInput_ = staticIpConfig.ipAddress.activeValue;
-          if (staticIpConfig.nameServers) {
+          if (staticIpConfig && staticIpConfig.nameServers) {
             this.nameServersInput_ =
                 staticIpConfig.nameServers.activeValue.join(',');
           }
@@ -1949,17 +1976,45 @@ Polymer({
   },
 
   /**
-   * @param {WireGuardConfigProperties|null|undefined} wireguard
-   * @param {string|undefined} ipAddress
+   * Checks if the input ipAddresses is a comma-delimited string which contains
+   * IP addresses (v4, v6, or both).
+   * @param {string|undefined} ipAddresses
    * @return {boolean}
    * @private
    */
-  isWireGuardConfigurationValid_(wireguard, ipAddress) {
+  isValidWireGuardIpAddresses_(ipAddresses) {
+    if (!ipAddresses) {
+      return false;
+    }
+    // Currently shill only supports at most 1 IPv4 + 1 IPv6 address.
+    let v4Count = 0;
+    let v6Count = 0;
+    for (const ipAddress of ipAddresses.split(',')) {
+      if (ipAddress.match(IPV4_ADDR_REGEX)) {
+        v4Count++;
+      } else if (ipAddress.match(IPV6_ADDR_REGEX)) {
+        v6Count++;
+      } else {
+        return false;
+      }
+    }
+    if (v4Count > 1 || v6Count > 1) {
+      return false;
+    }
+    return v4Count + v6Count > 0;
+  },
+
+  /**
+   * @param {WireGuardConfigProperties|null|undefined} wireguard
+   * @param {string|undefined} ipAddresses
+   * @return {boolean}
+   * @private
+   */
+  isWireGuardConfigurationValid_(wireguard, ipAddresses) {
     if (!wireguard) {
       return false;
     }
-    // ipAddress should be a valid IPv4 address
-    if (!ipAddress || !ipAddress.match(/^([0-9]+\.){3}[0-9]+$/i)) {
+    if (!this.isValidWireGuardIpAddresses_(ipAddresses)) {
       return false;
     }
     if (this.isWireGuardUserPrivateKeyInputActive_ &&
@@ -1979,10 +2034,9 @@ Polymer({
     if (!peer.endpoint || !peer.endpoint.match(/^[a-zA-Z0-9\-\.]+:[0-9]+$/i)) {
       return false;
     }
-    // allowedIps should be comma-seperated list of IP/cidr
+    // allowedIps should be comma-separated list of IP/cidr.
     if (!peer.allowedIps ||
-        !peer.allowedIps.match(
-            /^([0-9\.]+(\/[0-9]+)?,)*[0-9\.]+(\/[0-9]+)?$/i)) {
+        !peer.allowedIps.split(',').every(s => s.match(IP_CIDR_REGEX))) {
       return false;
     }
     return true;
@@ -2182,9 +2236,9 @@ Polymer({
     assert(!!wireguard);
     propertiesToSet.typeConfig.vpn.host = 'wireguard';
     propertiesToSet.ipAddressConfigType = 'Static';
+    wireguard.ipAddresses = this.ipAddressInput_.split(',');
     propertiesToSet.staticIpConfig = {
       gateway: this.ipAddressInput_,
-      ipAddress: this.ipAddressInput_,
       routingPrefix: 32,
       type: IPConfigType.kIPv4,
     };

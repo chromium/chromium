@@ -160,6 +160,7 @@ const OncFieldSignature openvpn_fields[] = {
 
 const OncFieldSignature wireguard_fields[] = {
     {::onc::kRecommended, &kRecommendedSignature},
+    {::onc::wireguard::kIPAddresses, &kStringListSignature},
     {::onc::wireguard::kPrivateKey, &kStringSignature},
     {::onc::wireguard::kPublicKey, &kStringSignature},
     {::onc::wireguard::kPeers, &kWireGuardPeerListSignature},

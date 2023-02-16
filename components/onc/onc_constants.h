@@ -461,9 +461,9 @@ COMPONENT_EXPORT(ONC) extern const char kVerifyX509[];
 }  // namespace openvpn
 
 namespace wireguard {
-COMPONENT_EXPORT(ONC) extern const char kAddress[];
 COMPONENT_EXPORT(ONC) extern const char kAllowedIPs[];
 COMPONENT_EXPORT(ONC) extern const char kEndpoint[];
+COMPONENT_EXPORT(ONC) extern const char kIPAddresses[];
 COMPONENT_EXPORT(ONC) extern const char kPeers[];
 COMPONENT_EXPORT(ONC) extern const char kPersistentKeepalive[];
 COMPONENT_EXPORT(ONC) extern const char kPresharedKey[];

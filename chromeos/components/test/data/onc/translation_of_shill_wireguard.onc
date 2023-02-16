@@ -1,10 +1,9 @@
 { "GUID": "guid",
   "Type": "VPN",
   "Name": "MyWireGuard",
-  "IPAddressConfigType": "Static",
+  "IPAddressConfigType": "DHCP",
   "NameServersConfigType": "Static",
   "StaticIPConfig": {
-    "IPAddress": "10.20.30.101",
     "NameServers": [ "8.8.8.8", "8.8.4.4", "0.0.0.0", "0.0.0.0" ],
     "Type": "IPv4"
   },
@@ -12,6 +11,7 @@
     "Type": "WireGuard",
     "Host": "wireguard",
     "WireGuard": {
+      "IPAddresses" : [ "1.2.3.4", "fd00::1" ],
       "Peers": [
         {
           "AllowedIPs": "0.0.0.0/0",
