@@ -188,25 +188,25 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       absl::optional<gpu::Capabilities> capabilities);
 
   // Current capture target. This is cached to resolve a race where
-  // OnTargetChanged() can be called before the |capturer_| is created in
-  // OnCapturerCreated().
+  // `OnTargetChanged()` can be called before the |capturer_| is created in
+  // `OnCapturerCreated()`.
   absl::optional<viz::VideoCaptureTarget> target_;
 
   // The requested format, rate, and other capture constraints.
   media::VideoCaptureParams capture_params_;
 
-  // Set to true when MaybeSuspend() is called, and false when Resume() is
+  // Set to true when `MaybeSuspend()` is called, and false when Resume() is
   // called. This reflects the needs of the downstream client.
   bool suspend_requested_ = false;
 
   // Receives video frames from this capture device, for propagation into the
-  // video capture stack. This is set by AllocateAndStartWithReceiver(), and
-  // cleared by StopAndDeAllocate().
+  // video capture stack. This is set by `AllocateAndStartWithReceiver()`, and
+  // cleared by `StopAndDeAllocate()`.
   std::unique_ptr<media::VideoFrameReceiver> receiver_;
 
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> capturer_;
 
-  // Capabilities obtained from viz::ContextProvider.
+  // Capabilities obtained from `viz::ContextProvider`.
   absl::optional<gpu::Capabilities> gpu_capabilities_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -223,7 +223,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   std::vector<mojo::Remote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>>
       frame_callbacks_;
 
-  // Set when OnFatalError() is called. This prevents any future
+  // Set when `OnFatalError()` is called. This prevents any future
   // AllocateAndStartWithReceiver() calls from succeeding.
   absl::optional<std::string> fatal_error_message_;
 

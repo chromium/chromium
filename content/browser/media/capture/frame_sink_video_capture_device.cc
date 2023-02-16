@@ -226,6 +226,15 @@ void FrameSinkVideoCaptureDevice::SetGpuCapabilitiesOnDevice(
 
   gpu_capabilities_ = capabilities;
 
+  if (!receiver_) {
+    // It seems that we're being called after the receiver was already reset in
+    // `StopAndDeAllocate()` but before the dtor ran. If that's the case, we
+    // don't need to do anything here since either the dtor will be called
+    // shortly, or the observer will be re-initialized to a new instance in
+    // `AllocateAndStartWithReceiver()`.
+    return;
+  }
+
   if (capturer_) {
     RestartCapturerIfNeeded();
   } else {
@@ -268,6 +277,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
 
 void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiverInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(receiver_);
 
   WillStart();
 
@@ -404,6 +414,7 @@ void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
 
   MaybeStopConsuming();
   capturer_.reset();
+  context_provider_observer_.reset();
   if (receiver_) {
     receiver_.reset();
     DidStop();
