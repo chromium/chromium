@@ -730,7 +730,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupResize) {
 
 // Test to ensure that the minimum size for a borderless app is as small as
 // possible. To test the fix for b/265935069.
-#if !BUILDFLAG(IS_LINUX)  // TODO(laurila): Not yet implemented for Linux.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
                        FrameMinimumSize) {
   InstallAndLaunchWebApp(/*uses_borderless=*/true);
@@ -745,10 +744,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
   // The minimum size of a window is smaller for a borderless mode app than for
   // a normal app. The size of the borders is inconsistent (and we don't have
   // access to the exact borders from here) and varies by OS.
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_LT(helper()->frame_view()->GetMinimumSize().width(),
             BrowserViewLayout::kMainBrowserContentsMinimumWidth);
-}
+#elif BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(helper()->frame_view()->GetMinimumSize(), gfx::Size(1, 1));
 #endif
+}
 
 // TODO(https://crbug.com/1277860): Flaky.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,

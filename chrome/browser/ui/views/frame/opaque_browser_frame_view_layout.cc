@@ -138,6 +138,11 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
     const views::View* host) const {
   // Ensure that we can fit the main browser view.
   gfx::Size min_size = delegate_->GetBrowserViewMinimumSize();
+  if (delegate_->GetBorderlessModeEnabled()) {
+    // In borderless mode the window doesn't have the window controls or tab
+    // strip.
+    return min_size;
+  }
 
   // Ensure that we can, at minimum, hold our window controls and a tab strip.
   int top_width = minimum_size_for_buttons_;

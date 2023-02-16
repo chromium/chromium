@@ -191,6 +191,10 @@ gfx::Size BrowserViewLayout::GetMinimumSize(const views::View* host) const {
   // to resize the window as small as possible without introducing bugs.
   // https://crbug.com/847179.
   constexpr gfx::Size kContentsMinimumSize(1, 1);
+  if (delegate_->GetBorderlessModeEnabled()) {
+    // The minimum size of a window is unrestricted for a borderless mode app.
+    return kContentsMinimumSize;
+  }
 
   // The minimum height for the normal (tabbed) browser window's contents area.
   constexpr int kMainBrowserContentsMinimumHeight = 1;
