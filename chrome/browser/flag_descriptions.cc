@@ -253,6 +253,12 @@ const char kWebFilterInterstitialRefreshDescription[] =
     "Enable web filter interstitial refresh for Family Link users.";
 #endif  // ENABLE_SUPERVISED_USERS
 
+const char kUpcomingFollowFeaturesName[] = "Enable upcoming follow features.";
+const char kUpcomingFollowFeaturesDescription[] =
+    "This flag enables all upcoming follow features, in the experiment "
+    "arms that are most likely to be shipped. This is a meta-flag to which "
+    "features are upcoming at any given time may change.";
+
 const char kUpcomingSharingFeaturesName[] = "Enable upcoming sharing features.";
 const char kUpcomingSharingFeaturesDescription[] =
     "This flag enables all upcoming sharing features, in the experiment "

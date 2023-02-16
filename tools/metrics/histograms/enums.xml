@@ -59779,6 +59779,7 @@ from previous Chrome versions.
   <int value="-1098963611" label="ProjectorLocalPlayback:disabled"/>
   <int value="-1097977406"
       label="SupervisedUserCommittedInterstitials:enabled"/>
+  <int value="-1096694296" label="UpcomingFollowFeatures:enabled"/>
   <int value="-1096595907" label="disable-new-virtual-keyboard-behavior"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
   <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
@@ -60979,6 +60980,7 @@ from previous Chrome versions.
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
   <int value="-415186532" label="AndroidSiteSettingsUIRefresh:enabled"/>
   <int value="-414900505" label="ScrollCapture:enabled"/>
+  <int value="-414398582" label="UpcomingFollowFeatures:disabled"/>
   <int value="-413779344" label="SyncAutofillWalletUsageData:disabled"/>
   <int value="-413562235" label="MessagesForAndroidUpdatePassword:disabled"/>
   <int value="-413286115"

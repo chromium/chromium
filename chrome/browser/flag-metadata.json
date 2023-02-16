@@ -6894,6 +6894,11 @@
     "expiry_milestone": 107
   },
   {
+    "name": "upcoming-follow-features",
+    "owners": [ "ellyjones", "//chrome/browser/follow/OWNERS" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "upcoming-sharing-features",
     "owners": [ "ellyjones", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 110

@@ -168,6 +168,9 @@ extern const char kWebFilterInterstitialRefreshName[];
 extern const char kWebFilterInterstitialRefreshDescription[];
 #endif  // ENABLE_SUPERVISED_USERS
 
+extern const char kUpcomingFollowFeaturesName[];
+extern const char kUpcomingFollowFeaturesDescription[];
+
 extern const char kUpcomingSharingFeaturesName[];
 extern const char kUpcomingSharingFeaturesDescription[];
 
