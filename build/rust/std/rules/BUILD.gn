@@ -92,14 +92,14 @@ cargo_crate("alloc") {
 }
 cargo_crate("cc") {
   crate_type = "rlib"
-  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/cc-1.0.77/src/lib.rs"
+  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/cc-1.0.78/src/lib.rs"
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/cc-1.0.77/src/lib.rs" ]
+  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/cc-1.0.78/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.0.77"
+  cargo_pkg_version = "1.0.78"
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "cc"
   cargo_pkg_description = "A build-time dependency for Cargo build scripts to assist in invoking the nativeC compiler to compile native C code into a static archive to be linked into Rustcode."
@@ -288,14 +288,14 @@ cargo_crate("hashbrown") {
 }
 cargo_crate("libc") {
   crate_type = "rlib"
-  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.138/src/lib.rs"
+  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.139/src/lib.rs"
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.138/src/lib.rs" ]
+  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.139/src/lib.rs" ]
   edition = "2015"
-  cargo_pkg_version = "0.2.138"
+  cargo_pkg_version = "0.2.139"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "libc"
   cargo_pkg_description = "Raw FFI bindings to platform libraries like libc."
@@ -309,7 +309,11 @@ cargo_crate("libc") {
     "rustc-dep-of-std",
     "rustc-std-workspace-core",
   ]
-  rustflags = [ "--cfg=libc_align" ]
+  rustflags = [
+    "--cfg=libc_align",
+    "--cfg=libc_priv_mod_use",
+    "--cfg=libc_core_cvoid",
+  ]
 }
 cargo_crate("memchr") {
   crate_type = "rlib"
@@ -343,14 +347,14 @@ cargo_crate("memchr") {
 }
 cargo_crate("miniz_oxide") {
   crate_type = "rlib"
-  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/miniz_oxide-0.5.4/src/lib.rs"
+  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/miniz_oxide-0.5.3/src/lib.rs"
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/miniz_oxide-0.5.4/src/lib.rs" ]
+  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/miniz_oxide-0.5.3/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "0.5.4"
+  cargo_pkg_version = "0.5.3"
   cargo_pkg_authors = "Frommi <daniil.liferenko@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>"
   cargo_pkg_name = "miniz_oxide"
   cargo_pkg_description = "DEFLATE compression and decompression library rewritten in Rust based on miniz"
