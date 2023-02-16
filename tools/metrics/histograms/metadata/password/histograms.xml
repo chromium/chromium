@@ -3182,7 +3182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SaveUpdateUIDismissalReasonAndroid{Dialog}"
-    enum="SaveUpdatePasswordMessageDismissReason" expires_after="2023-02-26">
+    enum="SaveUpdatePasswordMessageDismissReason" expires_after="2023-07-15">
   <owner>atsvirchkova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
