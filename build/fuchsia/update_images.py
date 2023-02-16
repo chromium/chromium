@@ -141,6 +141,7 @@ def DownloadBootImages(bucket, image_hash, boot_image_names, image_root_dir):
     except subprocess.CalledProcessError as e:
       logging.exception('Failed to download image %s from URL: %s',
                         image_to_download, images_tarball_url)
+      raise e
 
 
 def _GetImageOverrideInfo() -> Optional[Dict[str, str]]:
@@ -244,6 +245,9 @@ def main():
       logging.exception("command '%s' failed with status %d.%s",
                         ' '.join(e.cmd), e.returncode,
                         ' Details: ' + e.output if e.output else '')
+      raise e
+  else:
+    logging.info('Signatures matched! Got %s', new_signature)
 
   return 0
 
