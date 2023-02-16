@@ -55,7 +55,7 @@ ActionInfo::ActionInfo(Type type) : type(type), synthesized(false) {
 
 ActionInfo::ActionInfo(const ActionInfo& other) = default;
 
-ActionInfo::~ActionInfo() {}
+ActionInfo::~ActionInfo() = default;
 
 // static
 std::unique_ptr<ActionInfo> ActionInfo::Load(

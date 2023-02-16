@@ -58,7 +58,7 @@ BluetoothManifestPermission::BluetoothManifestPermission()
     : socket_(false), low_energy_(false), peripheral_(false) {
 }
 
-BluetoothManifestPermission::~BluetoothManifestPermission() {}
+BluetoothManifestPermission::~BluetoothManifestPermission() = default;
 
 // static
 std::unique_ptr<BluetoothManifestPermission>
