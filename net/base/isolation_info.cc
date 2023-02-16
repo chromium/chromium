@@ -336,6 +336,68 @@ bool IsolationInfo::IsFrameSiteEnabled() {
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
 }
 
+std::string IsolationInfo::DebugString() const {
+  std::string s;
+  s += "request_type: ";
+  switch (request_type_) {
+    case IsolationInfo::RequestType::kMainFrame:
+      s += "kMainFrame";
+      break;
+    case IsolationInfo::RequestType::kSubFrame:
+      s += "kSubFrame";
+      break;
+    case IsolationInfo::RequestType::kOther:
+      s += "kOther";
+      break;
+  }
+
+  s += "; top_frame_origin: ";
+  if (top_frame_origin_) {
+    s += top_frame_origin_.value().GetDebugString(true);
+  } else {
+    s += "(none)";
+  }
+
+  if (IsFrameSiteEnabled()) {
+    s += "; frame_origin: ";
+    if (frame_origin_) {
+      s += frame_origin_.value().GetDebugString(true);
+    } else {
+      s += "(none)";
+    }
+  }
+
+  s += "; network_anonymization_key: ";
+  s += network_anonymization_key_.ToDebugString();
+
+  s += "; network_isolation_key: ";
+  s += network_isolation_key_.ToDebugString();
+
+  s += "; party_context: ";
+  if (party_context_) {
+    s += "{";
+    for (auto& site : party_context_.value()) {
+      s += site.GetDebugString();
+      s += ", ";
+    }
+    s += "}";
+  } else {
+    s += "(none)";
+  }
+
+  s += "; nonce: ";
+  if (nonce_) {
+    s += nonce_.value().ToString();
+  } else {
+    s += "(none)";
+  }
+
+  s += "; site_for_cookies: ";
+  s += site_for_cookies_.ToDebugString();
+
+  return s;
+}
+
 NetworkAnonymizationKey
 IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
     const absl::optional<url::Origin>& top_frame_origin,

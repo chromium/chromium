@@ -236,6 +236,8 @@ class NET_EXPORT IsolationInfo {
   // means both `frame_site_` and `top_frame_site_` are populated.
   static bool IsFrameSiteEnabled();
 
+  std::string DebugString() const;
+
  private:
   IsolationInfo(RequestType request_type,
                 const absl::optional<url::Origin>& top_frame_origin,

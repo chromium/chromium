@@ -5,6 +5,7 @@
 #include "net/base/isolation_info.h"
 
 #include <iostream>
+#include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
@@ -143,6 +144,28 @@ TEST_P(IsolationInfoTest, IsFrameSiteEnabled) {
   } else {
     EXPECT_TRUE(IsolationInfo::IsFrameSiteEnabled());
   }
+}
+
+TEST_P(IsolationInfoTest, DebugString) {
+  IsolationInfo isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin2,
+      SiteForCookies::FromOrigin(kOrigin1), kPartyContextEmpty, &kNonce1);
+  std::vector<std::string> parts;
+  parts.push_back(
+      "request_type: kMainFrame; top_frame_origin: https://a.foo.test; ");
+  if (IsolationInfo::IsFrameSiteEnabled()) {
+    parts.push_back("frame_origin: https://b.bar.test; ");
+  }
+  parts.push_back("network_anonymization_key: ");
+  parts.push_back(isolation_info.network_anonymization_key().ToDebugString());
+  parts.push_back("; network_isolation_key: ");
+  parts.push_back(isolation_info.network_isolation_key().ToDebugString());
+  parts.push_back("; party_context: {}; nonce: ");
+  parts.push_back(isolation_info.nonce().value().ToString());
+  parts.push_back(
+      "; site_for_cookies: SiteForCookies: {site=https://foo.test; "
+      "schemefully_same=true}");
+  EXPECT_EQ(isolation_info.DebugString(), base::StrCat(parts));
 }
 
 TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
