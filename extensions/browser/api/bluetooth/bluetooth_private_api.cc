@@ -152,7 +152,7 @@ BluetoothPrivateAPI::BluetoothPrivateAPI(content::BrowserContext* context)
       ->RegisterObserver(this, bt_private::OnPairing::kEventName);
 }
 
-BluetoothPrivateAPI::~BluetoothPrivateAPI() {}
+BluetoothPrivateAPI::~BluetoothPrivateAPI() = default;
 
 void BluetoothPrivateAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
@@ -458,9 +458,11 @@ void BluetoothPrivateDisconnectAllFunction::OnErrorCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BluetoothPrivateForgetDeviceFunction::BluetoothPrivateForgetDeviceFunction() {}
+BluetoothPrivateForgetDeviceFunction::BluetoothPrivateForgetDeviceFunction() =
+    default;
 
-BluetoothPrivateForgetDeviceFunction::~BluetoothPrivateForgetDeviceFunction() {}
+BluetoothPrivateForgetDeviceFunction::~BluetoothPrivateForgetDeviceFunction() =
+    default;
 
 bool BluetoothPrivateForgetDeviceFunction::CreateParams() {
   params_ = bt_private::ForgetDevice::Params::Create(args());
@@ -575,9 +577,9 @@ void BluetoothPrivateSetDiscoveryFilterFunction::OnErrorCallback() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BluetoothPrivateConnectFunction::BluetoothPrivateConnectFunction() {}
+BluetoothPrivateConnectFunction::BluetoothPrivateConnectFunction() = default;
 
-BluetoothPrivateConnectFunction::~BluetoothPrivateConnectFunction() {}
+BluetoothPrivateConnectFunction::~BluetoothPrivateConnectFunction() = default;
 
 bool BluetoothPrivateConnectFunction::CreateParams() {
   params_ = bt_private::Connect::Params::Create(args());
@@ -622,9 +624,9 @@ void BluetoothPrivateConnectFunction::OnConnect(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BluetoothPrivatePairFunction::BluetoothPrivatePairFunction() {}
+BluetoothPrivatePairFunction::BluetoothPrivatePairFunction() = default;
 
-BluetoothPrivatePairFunction::~BluetoothPrivatePairFunction() {}
+BluetoothPrivatePairFunction::~BluetoothPrivatePairFunction() = default;
 bool BluetoothPrivatePairFunction::CreateParams() {
   params_ = bt_private::Pair::Params::Create(args());
   return params_ != nullptr;

@@ -34,7 +34,7 @@ BluetoothApiPairingDelegate::BluetoothApiPairingDelegate(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-BluetoothApiPairingDelegate::~BluetoothApiPairingDelegate() {}
+BluetoothApiPairingDelegate::~BluetoothApiPairingDelegate() = default;
 
 void BluetoothApiPairingDelegate::RequestPinCode(
     device::BluetoothDevice* device) {
