@@ -372,7 +372,7 @@ BASE_FEATURE(kAutofillIgnoreUnmappableAutocompleteValues,
 // TODO(crbug.com/1339277) Remove once launched.
 BASE_FEATURE(kAutofillImprovedLabelForInference,
              "AutofillImprovedLabelForInference",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, only changed values are highlighted in preview mode.
 // TODO(crbug/1248585): Remove when launched.
