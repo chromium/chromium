@@ -40,9 +40,6 @@ defaults.set(
     pool = ci.DEFAULT_POOL,
     os = os.LINUX_DEFAULT,
     list_view = "reviver",
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
