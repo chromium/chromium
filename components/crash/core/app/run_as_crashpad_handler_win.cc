@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
-#include "components/browser_watcher/activity_report_user_stream_data_source.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/simple_string_dictionary.h"
@@ -81,15 +80,6 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
   argv.clear();
 
   crashpad::UserStreamDataSources user_stream_data_sources;
-  // Interpret an empty user data directory as a missing value.
-  if (!user_data_dir.empty()) {
-    // Register an extension to collect stability information. The extension
-    // will be invoked for any registered process' crashes, but information only
-    // exists for instrumented browser processes.
-    user_stream_data_sources.push_back(
-        std::make_unique<browser_watcher::ActivityReportUserStreamDataSource>(
-            user_data_dir));
-  }
 
 #if BUILDFLAG(ENABLE_GWP_ASAN)
   user_stream_data_sources.push_back(
