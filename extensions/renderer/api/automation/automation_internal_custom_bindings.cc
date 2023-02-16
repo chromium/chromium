@@ -115,7 +115,7 @@ AutomationInternalCustomBindings::AutomationInternalCustomBindings(
   }
 }
 
-AutomationInternalCustomBindings::~AutomationInternalCustomBindings() {}
+AutomationInternalCustomBindings::~AutomationInternalCustomBindings() = default;
 
 void AutomationInternalCustomBindings::OnMessageReceived(
     const IPC::Message& message) {
