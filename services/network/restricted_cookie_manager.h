@@ -114,6 +114,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   void GetAllForUrl(const GURL& url,
                     const net::SiteForCookies& site_for_cookies,
                     const url::Origin& top_frame_origin,
+                    bool has_storage_access,
                     mojom::CookieManagerGetOptionsPtr options,
                     GetAllForUrlCallback callback) override;
 
@@ -121,6 +122,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                           const GURL& url,
                           const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
+                          bool has_storage_access,
                           net::CookieInclusionStatus status,
                           SetCanonicalCookieCallback callback) override;
 
@@ -128,22 +130,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
+      bool has_storage_access,
       mojo::PendingRemote<mojom::CookieChangeListener> listener,
       AddChangeListenerCallback callback) override;
 
   void SetCookieFromString(const GURL& url,
                            const net::SiteForCookies& site_for_cookies,
                            const url::Origin& top_frame_origin,
+                           bool has_storage_access,
                            const std::string& cookie,
                            SetCookieFromStringCallback callback) override;
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
+                        bool has_storage_access,
                         GetCookiesStringCallback callback) override;
   void CookiesEnabledFor(const GURL& url,
                          const net::SiteForCookies& site_for_cookies,
                          const url::Origin& top_frame_origin,
+                         bool has_storage_access,
                          CookiesEnabledForCallback callback) override;
 
   // Computes the First-Party Set metadata corresponding to the given `origin`,
@@ -168,6 +174,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
+      bool has_storage_access,
       const net::CookieOptions& net_options,
       mojom::CookieManagerGetOptionsPtr options,
       GetAllForUrlCallback callback,
@@ -226,7 +233,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       net::FirstPartySetMetadata first_party_set_metadata);
 
   // Computes the CookieSettingOverrides to be used by this instance.
-  net::CookieSettingOverrides GetCookieSettingOverrides() const;
+  net::CookieSettingOverrides GetCookieSettingOverrides(
+      bool has_storage_access) const;
 
   const mojom::RestrictedCookieManagerRole role_;
   const raw_ptr<net::CookieStore> cookie_store_;

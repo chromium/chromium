@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_store_get_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/cookie_store/cookie_change_event.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
@@ -437,7 +438,7 @@ ScriptPromise CookieStore::DoRead(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   backend_->GetAllForUrl(
       cookie_url, default_site_for_cookies_, default_top_frame_origin_,
-      std::move(backend_options),
+      context->HasStorageAccess(), std::move(backend_options),
       WTF::BindOnce(backend_result_converter, WrapPersistent(resolver)));
   return resolver->Promise();
 }
@@ -518,7 +519,8 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   backend_->SetCanonicalCookie(
       *std::move(canonical_cookie), default_cookie_url_,
-      default_site_for_cookies_, default_top_frame_origin_, status,
+      default_site_for_cookies_, default_top_frame_origin_,
+      context->HasStorageAccess(), status,
       WTF::BindOnce(&CookieStore::OnSetCanonicalCookieResult,
                     WrapPersistent(resolver)));
   return resolver->Promise();
@@ -550,6 +552,7 @@ void CookieStore::StartObserving() {
       GetExecutionContext()->GetTaskRunner(TaskType::kDOMManipulation);
   backend_->AddChangeListener(
       default_cookie_url_, default_site_for_cookies_, default_top_frame_origin_,
+      GetExecutionContext()->HasStorageAccess(),
       change_listener_receiver_.BindNewPipeAndPassRemote(task_runner), {});
 }
 

@@ -733,9 +733,15 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
   auto match_options = network::mojom::CookieManagerGetOptions::New();
   match_options->name = "";
   match_options->match_type = network::mojom::CookieMatchType::STARTS_WITH;
+  // We set `has_storage_access` to true below in order to use any Storage
+  // Access grant that exists, since a frame might go through this code path and
+  // then obtain storage access in order to access cookies. Using true instead
+  // of false here means we are being conservative, since this runs an error
+  // callback if any cookies were retrieved.
   cookie_manager_->GetAllForUrl(
       envelope_->request_url().url, isolation_info.site_for_cookies(),
-      *isolation_info.top_frame_origin(), std::move(match_options),
+      *isolation_info.top_frame_origin(), /*has_storage_access=*/true,
+      std::move(match_options),
       base::BindOnce(&SignedExchangeHandler::OnGetCookies,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

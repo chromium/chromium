@@ -61,6 +61,9 @@ interface RestrictedCookieManager {
   // level frame or the script url for service workers. |site_for_cookies| is
   // used to determine if a cookie is accessed in a third-party context.
   // |top_frame_origin| is used to check for content settings.
+  // |has_storage_access| is used to opt-in to using Storage Access API
+  // permission grants. (Note: it does *not* grant access on its own, but rather
+  // allows an existing permission grant to be used, if one exists.)
   // |options| filters the returned list of cookies. The returned cookies
   // include CookieAccessResult information of the cookie.
   // Any information contained in the CookieInclusionStatus::WarningReasons
@@ -69,6 +72,7 @@ interface RestrictedCookieManager {
   GetAllForUrl(
       url.mojom.Url url, SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin,
+      bool has_storage_access,
       CookieManagerGetOptions options) => (
       array<CookieWithAccessResult> cookies);
 
@@ -79,6 +83,7 @@ interface RestrictedCookieManager {
                      url.mojom.Url url,
                      SiteForCookies site_for_cookies,
                      url.mojom.Origin top_frame_origin,
+                     bool has_storage_access,
                      CookieInclusionStatus status) => (bool success);
 
   // Subscribes to changes in the cookies transmitted in a request to an URL.
@@ -86,6 +91,7 @@ interface RestrictedCookieManager {
   // The subscription is canceled by closing the pipe.
   AddChangeListener(url.mojom.Url url, SiteForCookies site_for_cookies,
                     url.mojom.Origin top_frame_origin,
+                    bool has_storage_access,
                     pending_remote<CookieChangeListener> listener) => ();
 
   // Sets a cookie.  If setting of this cookie is not permitted either by web
@@ -103,6 +109,7 @@ interface RestrictedCookieManager {
   [Sync]
   SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
                       url.mojom.Origin top_frame_origin,
+                      bool has_storage_access,
                       string cookie) => (
                       bool site_for_cookies_ok, bool top_frame_origin_ok);
 
@@ -116,7 +123,8 @@ interface RestrictedCookieManager {
   [Sync]
   GetCookiesString(url.mojom.Url url,
                    SiteForCookies site_for_cookies,
-                   url.mojom.Origin top_frame_origin) => (
+                   url.mojom.Origin top_frame_origin,
+                   bool has_storage_access) => (
                    string cookies);
 
   // Used to check if cookies are enabled for the given URL in context of a
@@ -128,5 +136,6 @@ interface RestrictedCookieManager {
   CookiesEnabledFor(
       url.mojom.Url url,
       SiteForCookies site_for_cookies,
-      url.mojom.Origin top_frame_origin) => (bool cookies_enabled);
+      url.mojom.Origin top_frame_origin,
+      bool has_storage_access) => (bool cookies_enabled);
 };

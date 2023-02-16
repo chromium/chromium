@@ -155,8 +155,10 @@ void MediaResourceGetterImpl::GetCookies(
           RenderFrameHostImpl::FromID(render_process_id_, render_frame_id_)));
   network::mojom::RestrictedCookieManager* cookie_manager_ptr =
       cookie_manager.get();
+  // TODO(https://crbug.com/1416422): use the correct value for
+  // `has_storage_access` here, instead of passing false.
   cookie_manager_ptr->GetCookiesString(
-      url, site_for_cookies, top_frame_origin,
+      url, site_for_cookies, top_frame_origin, /*has_storage_access=*/false,
       base::BindOnce(&ReturnResultOnUIThreadAndClosePipe,
                      std::move(cookie_manager), std::move(callback)));
 }

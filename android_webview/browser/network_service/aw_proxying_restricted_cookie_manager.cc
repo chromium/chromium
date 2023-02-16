@@ -73,14 +73,15 @@ void AwProxyingRestrictedCookieManager::GetAllForUrl(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    bool has_storage_access,
     network::mojom::CookieManagerGetOptionsPtr options,
     GetAllForUrlCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (AllowCookies(url, site_for_cookies)) {
     underlying_restricted_cookie_manager_->GetAllForUrl(
-        url, site_for_cookies, top_frame_origin, std::move(options),
-        std::move(callback));
+        url, site_for_cookies, top_frame_origin, has_storage_access,
+        std::move(options), std::move(callback));
   } else {
     std::move(callback).Run(std::vector<net::CookieWithAccessResult>());
   }
@@ -91,14 +92,15 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    bool has_storage_access,
     net::CookieInclusionStatus status,
     SetCanonicalCookieCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (AllowCookies(url, site_for_cookies)) {
     underlying_restricted_cookie_manager_->SetCanonicalCookie(
-        cookie, url, site_for_cookies, top_frame_origin, status,
-        std::move(callback));
+        cookie, url, site_for_cookies, top_frame_origin, has_storage_access,
+        status, std::move(callback));
   } else {
     std::move(callback).Run(false);
   }
@@ -108,6 +110,7 @@ void AwProxyingRestrictedCookieManager::AddChangeListener(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    bool has_storage_access,
     mojo::PendingRemote<network::mojom::CookieChangeListener> listener,
     AddChangeListenerCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -124,21 +127,23 @@ void AwProxyingRestrictedCookieManager::AddChangeListener(
       proxy_listener_remote.InitWithNewPipeAndPassReceiver());
 
   underlying_restricted_cookie_manager_->AddChangeListener(
-      url, site_for_cookies, top_frame_origin, std::move(proxy_listener_remote),
-      std::move(callback));
+      url, site_for_cookies, top_frame_origin, has_storage_access,
+      std::move(proxy_listener_remote), std::move(callback));
 }
 
 void AwProxyingRestrictedCookieManager::SetCookieFromString(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    bool has_storage_access,
     const std::string& cookie,
     SetCookieFromStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (AllowCookies(url, site_for_cookies)) {
     underlying_restricted_cookie_manager_->SetCookieFromString(
-        url, site_for_cookies, top_frame_origin, cookie, std::move(callback));
+        url, site_for_cookies, top_frame_origin, has_storage_access, cookie,
+        std::move(callback));
   } else {
     std::move(callback).Run(/*site_for_cookies_ok=*/true,
                             /*top_frame_origin_ok=*/true);
@@ -149,12 +154,14 @@ void AwProxyingRestrictedCookieManager::GetCookiesString(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    bool has_storage_access,
     GetCookiesStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (AllowCookies(url, site_for_cookies)) {
     underlying_restricted_cookie_manager_->GetCookiesString(
-        url, site_for_cookies, top_frame_origin, std::move(callback));
+        url, site_for_cookies, top_frame_origin, has_storage_access,
+        std::move(callback));
   } else {
     std::move(callback).Run("");
   }
@@ -164,6 +171,7 @@ void AwProxyingRestrictedCookieManager::CookiesEnabledFor(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    bool has_storage_access,
     CookiesEnabledForCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::move(callback).Run(AllowCookies(url, site_for_cookies));

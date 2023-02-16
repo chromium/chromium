@@ -349,19 +349,22 @@ class RestrictedCookieManagerInterceptor
   void SetCookieFromString(const GURL& url,
                            const net::SiteForCookies& site_for_cookies,
                            const url::Origin& top_frame_origin,
+                           bool has_storage_access,
                            const std::string& cookie,
                            SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
-        URLToUse(url), site_for_cookies, top_frame_origin, std::move(cookie),
-        std::move(callback));
+        URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
+        std::move(cookie), std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
+                        bool has_storage_access,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
-        URLToUse(url), site_for_cookies, top_frame_origin, std::move(callback));
+        URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
+        std::move(callback));
   }
 
  private:
