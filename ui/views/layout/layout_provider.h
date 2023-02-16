@@ -138,6 +138,7 @@ enum class Emphasis {
 enum class ShapeContextTokens {
   kButtonRadius,
   kTextfieldRadius,
+  kComboboxRadius,
 };
 
 // ShapeSysTokens are tokens that map to a fixed value that aligns with UX/UI.
@@ -210,7 +211,7 @@ class VIEWS_EXPORT LayoutProvider {
   // TODO(crbug.com/1412134): Replace GetCornerRadiusMetric(Emphasis...) with
   // context tokens.
   int GetCornerRadiusMetric(ShapeContextTokens token,
-                            const gfx::Size& size) const;
+                            const gfx::Size& size = gfx::Size()) const;
 
  protected:
   static constexpr int kSmallDialogWidth = 320;

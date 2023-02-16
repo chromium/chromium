@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/views_delegate.h"
 
@@ -177,9 +178,11 @@ int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,
 
 ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
   static constexpr auto shape_token_map =
-      base::MakeFixedFlatMap<ShapeContextTokens, ShapeSysTokens>(
-          {{ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
-           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall}});
+      base::MakeFixedFlatMap<ShapeContextTokens, ShapeSysTokens>({
+          {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
+          {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
+          {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
+      });
   const auto* it = shape_token_map.find(id);
   return it == shape_token_map.end() ? ShapeSysTokens::kDefault : it->second;
 }
@@ -190,8 +193,9 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
     switch (id) {
       case ShapeContextTokens::kButtonRadius:
         return 4;
+      case ShapeContextTokens::kComboboxRadius:
       case ShapeContextTokens::kTextfieldRadius:
-        return 2;
+        return FocusRing::kDefaultCornerRadiusDp;
       default:
         return 0;
     }

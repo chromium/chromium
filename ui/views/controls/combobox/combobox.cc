@@ -57,9 +57,8 @@ namespace {
 constexpr int kBorderThickness = 1;
 
 float GetCornerRadius() {
-  return features::IsChromeRefresh2023()
-             ? LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kHigh)
-             : FocusRing::kDefaultCornerRadiusDp;
+  return LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kComboboxRadius);
 }
 
 SkColor GetTextColorForEnableState(const Combobox& combobox, bool enabled) {
