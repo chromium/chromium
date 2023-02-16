@@ -749,7 +749,6 @@ struct TraitsToImpl {
 // compiler. We have not managed to construct such an example in Chromium yet.
 template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
-  using RawPtrTraits = RawPtrTraits;
   // Type to return from ExtractAsDangling(), which is identical except
   // kMayDangle trait is added (if one isn't there already).
   using DanglingRawPtrType = raw_ptr<T, Traits | RawPtrTraits::kMayDangle>;
