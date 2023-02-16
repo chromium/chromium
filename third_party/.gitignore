@@ -134,7 +134,11 @@
 /icu4j/lib/
 /instrumented_libraries/scripts/*.tgz
 /instrumented_libraries/scripts/out/*
+/jacoco/coverage/
+/jacoco/doc/
+/jacoco/index.html
 /jacoco/lib/
+/jacoco/test/
 /javalang/src/
 /javax_inject/lib/
 /jdk/current
