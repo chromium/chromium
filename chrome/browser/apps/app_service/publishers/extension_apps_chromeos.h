@@ -153,6 +153,9 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void OnHideWebStoreIconPrefChanged() override;
   void OnSystemFeaturesPrefChanged() override;
   bool Accepts(const extensions::Extension* extension) override;
+  AppLaunchParams ModifyAppLaunchParams(const std::string& app_id,
+                                        LaunchSource launch_source,
+                                        AppLaunchParams params) override;
   void SetShowInFields(const extensions::Extension* extension,
                        App& app) override;
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;

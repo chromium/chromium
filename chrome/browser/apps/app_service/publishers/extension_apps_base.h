@@ -109,6 +109,12 @@ class ExtensionAppsBase : public AppPublisher,
   // and should therefore by handled by this publisher.
   virtual bool Accepts(const extensions::Extension* extension) = 0;
 
+  // Takes and `params` and modify it based on `app_id` and `launch_source` if
+  // needed. Returns the possibly modified params.
+  virtual AppLaunchParams ModifyAppLaunchParams(const std::string& app_id,
+                                                LaunchSource launch_source,
+                                                AppLaunchParams params);
+
   void OnExtensionsReady();
 
   // apps::AppPublisher overrides.
