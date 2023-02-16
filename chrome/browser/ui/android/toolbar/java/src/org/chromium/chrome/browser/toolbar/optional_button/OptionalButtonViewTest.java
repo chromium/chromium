@@ -8,7 +8,6 @@ import static junit.framework.Assert.assertFalse;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -35,7 +34,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.OneShotPreDrawListener;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -46,6 +47,9 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowViewGroup;
 
@@ -60,6 +64,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonViewTest.ShadowOneShotPreDrawListener;
 
 import java.util.function.BooleanSupplier;
 
@@ -67,6 +72,7 @@ import java.util.function.BooleanSupplier;
  * Unit tests for OptionalButtonView.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowOneShotPreDrawListener.class})
 public class OptionalButtonViewTest {
     private Context mActivity;
 
@@ -698,28 +704,27 @@ public class OptionalButtonViewTest {
     public void testUpdateButton_shouldWaitUntilButtonIsLaidOut() {
         ButtonDataImpl buttonData = getDataForPriceTrackingActionChip();
         ViewGroup transitionRoot = mock(ViewGroup.class);
-        Callback<Integer> mockTransitionStartedCallback = mock(Callback.class);
-        Callback<Integer> mockTransitionFinishedCallback = mock(Callback.class);
         ShadowViewGroup shadowOptionalButtonView = Shadows.shadowOf(mOptionalButtonView);
-        // Detach and re-attach to window to set isLaidOut() to false.
+        // Detach and re-attach to window to reset the isLaidOut() flag.
         shadowOptionalButtonView.callOnDetachedFromWindow();
         shadowOptionalButtonView.callOnAttachedToWindow();
 
         mOptionalButtonView.setTransitionRoot(transitionRoot);
-        mOptionalButtonView.setTransitionStartedCallback(mockTransitionStartedCallback);
-        mOptionalButtonView.setTransitionFinishedCallback(mockTransitionFinishedCallback);
-
         // Try to update the button before it's laid out.
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
-        // Click the button to ensure it was updated to the latest button data.
-        mOptionalButtonView.getButtonView().performClick();
 
-        // Usually TransitionManager would call onTransitionStart() and onTransitionEnd(), but as
-        // the button is not laid out then the transition is not executed. Instead
-        // OptionalButtonView must call them manually to update its properties.
-        verify(mockTransitionStartedCallback).onResult(anyInt());
-        verify(mockTransitionFinishedCallback).onResult(anyInt());
-        verify(buttonData.getButtonSpec().getOnClickListener()).onClick(any());
+        // We shouldn't begin a transition yet.
+        verify(mMockBeginDelayedTransition, never()).onResult(any());
+
+        // We should have set a pre draw listener instead.
+        Assert.assertNotNull(ShadowOneShotPreDrawListener.getRunnable());
+
+        // Run that listener once the view is laid out.
+        mOptionalButtonView.layout(100, 50, 10, 10);
+        ShadowOneShotPreDrawListener.getRunnable().run();
+
+        // Now we should begin our transition.
+        verify(mMockBeginDelayedTransition).onResult(any());
     }
 
     @Test
@@ -739,10 +744,35 @@ public class OptionalButtonViewTest {
         // should have no effect on the button's state after the transition.
         buttonData.setCanShow(false);
 
+        // Run that listener once the view is laid out.
+        mOptionalButtonView.layout(100, 50, 10, 10);
+        ShadowOneShotPreDrawListener.getRunnable().run();
+
+        // Normally called by TransitionManager.
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
         // Button should be visible, the property change that happened between
         // updateButtonWithAnimation and layout is ignored.
         assertEquals(View.VISIBLE, mOptionalButtonView.getVisibility());
         assertEquals(View.VISIBLE, mInnerButton.getVisibility());
         assertEquals(View.VISIBLE, mActionChipLabel.getVisibility());
+    }
+
+    @Implements(OneShotPreDrawListener.class)
+    static class ShadowOneShotPreDrawListener {
+        private static Runnable sRunnable;
+
+        @Implementation
+        protected static OneShotPreDrawListener add(
+                @NonNull View view, @NonNull Runnable runnable) {
+            sRunnable = runnable;
+
+            return null;
+        }
+
+        static Runnable getRunnable() {
+            return sRunnable;
+        }
     }
 }

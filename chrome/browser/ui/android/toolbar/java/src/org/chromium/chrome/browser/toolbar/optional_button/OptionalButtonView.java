@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.OneShotPreDrawListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -215,15 +216,13 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mButton.setEnabled(buttonData.isEnabled());
         mContentDescription = buttonSpec.getContentDescription();
 
-        startTransitionToNewButton(canAnimate);
-
-        // If the button hasn't been laid out then the transition won't actually run. This may
-        // happen if the view gets initialized while the activity is not visible (e.g. when a
-        // setting change forces an activity reset). We handle this by manually calling the
-        // onTransitionStart and onTransitionEnd methods.
+        // If the button hasn't been laid out then try again before the next draw. This may happen
+        // if the view gets initialized while the activity is not visible (e.g. when a setting
+        // change forces an activity reset).
         if (!ViewCompat.isLaidOut(this)) {
-            onTransitionStart(null);
-            onTransitionEnd(null);
+            OneShotPreDrawListener.add(this, () -> startTransitionToNewButton(canAnimate));
+        } else {
+            startTransitionToNewButton(canAnimate);
         }
     }
 
