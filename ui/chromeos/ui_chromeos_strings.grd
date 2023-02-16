@@ -1826,9 +1826,6 @@
       <message name="IDS_SETTINGS_INTERNET_NETWORK_MANAGED_SIM_LOCKED_PUK_WARNING_WITH_FAILURES" desc="Settings > Internet > Network details > Lock/unlock SIM card: Warning shown to the user indicating that the network cannot be used until a new PIN is set up and alerting the user about the number of attempts they have left to enter the correct code.">
         You have <ph name="RETRIES">$1<ex>3</ex></ph> remaining attempts.
       </message>
-      <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_SUBTITLE" desc="Subtitle for Network Summary item when the SIM is locked.">
-        SIM Locked
-      </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_WARNING" desc="Settings > Internet > Network details > Lock/unlock SIM card: Warning for SIM locked dialog when PUK is required.">
         If you fail to verify, your network access will be disabled.
       </message>

@@ -4,10 +4,6 @@
         --network-summary-item-border-top, var(--cr-separator-line));
   }
 
-  network-siminfo {
-    padding-inline-start: var(--cr-section-padding);
-  }
-
   #outerBox {
     padding: 0 var(--cr-section-padding);
   }
@@ -34,8 +30,7 @@
                         deviceState, networkStateList)]]"
       class="flex layout horizontal center link-wrapper"
       on-click="onShowDetailsTap_">
-    <div id="details" no-flex$="[[showSimInfo_(deviceState)]]"
-          aria-hidden="true">
+    <div id="details" aria-hidden="true">
       <network-icon
           id="networkIcon"
           show-technology-badge="[[showTechnologyBadge_]]"
@@ -47,21 +42,11 @@
           [[getTitleText_(activeNetworkState, deviceState)]]
         </div>
         <div id="networkState"
-            class$="[[getNetworkStateClass_(activeNetworkState,
-                        deviceState, deviceState.*)]]">
+            class$="[[getNetworkStateClass_(activeNetworkState)]]">
           [[getNetworkStateText_(activeNetworkState, deviceState.*)]]
         </div>
       </div>
     </div>
-
-    <template is="dom-if" if="[[showSimInfo_(deviceState)]]" restamp>
-      <network-siminfo
-          on-click="doNothing_"
-          network-state="[[activeNetworkState]]"
-          global-policy="[[globalPolicy]]"
-          device-state="[[deviceState]]">
-      </network-siminfo>
-    </template>
 
     <template is="dom-if" if="[[showPolicyIndicator_(activeNetworkState)]]">
       <cr-policy-indicator id="policyIndicator"

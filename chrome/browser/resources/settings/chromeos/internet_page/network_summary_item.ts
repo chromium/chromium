@@ -10,7 +10,6 @@
  */
 
 import 'chrome://resources/ash/common/network/network_icon.js';
-import 'chrome://resources/ash/common/network/network_siminfo.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
@@ -121,10 +120,6 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
   }
 
   private getNetworkStateText_(): string {
-    // If SIM Locked, show warning message instead of connection state.
-    if (this.shouldShowLockedWarningMessage_(this.deviceState)) {
-      return this.i18n('networkSimLockedSubtitle');
-    }
     if (OncMojo.deviceIsInhibited(this.deviceState)) {
       return this.i18n('internetDeviceBusy');
     }
@@ -206,57 +201,13 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     return this.getIndicatorTypeForSource(activeNetworkState.source);
   }
 
-  private showSimInfo_(deviceState: OncMojo.DeviceStateProperties|
-                       undefined): boolean {
-    if (!deviceState || deviceState.type !== NetworkType.kCellular) {
-      return false;
-    }
-
-    const {eSimSlots} = getSimSlotCount(deviceState);
-    if (eSimSlots > 0) {
-      // Do not show simInfo if we are using an eSIM enabled device.
-      return false;
-    }
-    return this.simLocked_(deviceState);
-  }
-
-  private getNetworkStateClass_(
-      activeNetworkState: OncMojo.NetworkStateProperties|undefined,
-      deviceState: OncMojo.DeviceStateProperties|undefined): string {
-    if ((this.isPortalState_(activeNetworkState!.portalState)) ||
-        this.shouldShowLockedWarningMessage_(deviceState)) {
+  private getNetworkStateClass_(activeNetworkState:
+                                    OncMojo.NetworkStateProperties|
+                                undefined): string {
+    if ((this.isPortalState_(activeNetworkState!.portalState))) {
       return 'warning-message';
     }
     return 'network-state';
-  }
-
-  private shouldShowLockedWarningMessage_(deviceState:
-                                              OncMojo.DeviceStateProperties|
-                                          undefined): boolean {
-    if (!deviceState || deviceState.type !== NetworkType.kCellular ||
-        !deviceState.simLockStatus) {
-      return false;
-    }
-
-    // If the device is eSIM capable, never show message.
-    const {eSimSlots} = getSimSlotCount(deviceState);
-    if (eSimSlots > 0) {
-      return false;
-    }
-
-    return !!deviceState.simLockStatus.lockType;
-  }
-
-  private simLocked_(deviceState: OncMojo.DeviceStateProperties|
-                     undefined): boolean {
-    if (!deviceState) {
-      return false;
-    }
-    if (!deviceState.simLockStatus) {
-      return false;
-    }
-    const simLockType = deviceState.simLockStatus.lockType;
-    return simLockType === 'sim-pin' || simLockType === 'sim-puk';
   }
 
   /**
@@ -287,14 +238,8 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       case NetworkType.kTether:
         return true;
       case NetworkType.kWiFi:
-        return deviceState.deviceState !== DeviceStateType.kUninitialized;
       case NetworkType.kCellular:
-        if (deviceState.deviceState === DeviceStateType.kUninitialized) {
-          return false;
-        }
-        // Toggle should be shown as long as we are not also showing the UI for
-        // unlocking the SIM.
-        return !this.showSimInfo_(deviceState);
+        return deviceState.deviceState !== DeviceStateType.kUninitialized;
     }
     assertNotReached();
   }
@@ -552,11 +497,6 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       activeNetworkState: OncMojo.NetworkStateProperties,
       deviceState: OncMojo.DeviceStateProperties|undefined,
       networkStateList: OncMojo.NetworkStateProperties[]): boolean {
-    // If SIM info is shown on the right side of the item, no arrow should be
-    // shown.
-    if (this.showSimInfo_(deviceState)) {
-      return false;
-    }
     if (!this.deviceIsEnabled_(deviceState)) {
       return false;
     }
