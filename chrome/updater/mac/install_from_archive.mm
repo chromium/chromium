@@ -11,6 +11,11 @@
 #include <utility>
 #include <vector>
 
+#include <poll.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -18,6 +23,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/numerics/checked_math.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -165,7 +171,20 @@ int RunExecutable(const base::FilePath& existence_checker_path,
       env_path = base::StrCat({env_path, ":", ksadmin_path->DirName().value()});
     }
 
+    base::ScopedFD read_fd, write_fd;
+    {
+      int pipefds[2] = {};
+      if (pipe(pipefds) != 0) {
+        VPLOG(1) << "pipe";
+        return static_cast<int>(InstallErrors::kExecutablePipeFailed);
+      }
+      read_fd.reset(pipefds[0]);
+      write_fd.reset(pipefds[1]);
+    }
+
     base::LaunchOptions options;
+    options.fds_to_remap.emplace_back(write_fd.get(), STDOUT_FILENO);
+    options.fds_to_remap.emplace_back(write_fd.get(), STDERR_FILENO);
     options.current_directory = unpacked_path;
     options.clear_environment = true;
     options.environment = {
@@ -186,11 +205,53 @@ int RunExecutable(const base::FilePath& existence_checker_path,
 
     int exit_code = 0;
     VLOG(1) << "Running " << command.GetCommandLineString();
-    if (!base::LaunchProcess(command, options)
-             .WaitForExitWithTimeout(timeout, &exit_code))
+    base::Process proc = base::LaunchProcess(command, options);
+
+    // Close write_fd to generate EOF in the read loop below.
+    write_fd.reset();
+
+    std::string output;
+    base::Time deadline = base::Time::Now() + timeout;
+
+    constexpr size_t kBufferSize = 1024;
+    base::CheckedNumeric<size_t> total_bytes_read = 0;
+    ssize_t read_this_pass = 0;
+    do {
+      struct pollfd fds[1] = {{.fd = read_fd.get(), .events = POLLIN}};
+      int timeout_remaining_ms =
+          static_cast<int>((deadline - base::Time::Now()).InMilliseconds());
+      if (timeout_remaining_ms < 0 || poll(fds, 1, timeout_remaining_ms) != 1) {
+        break;
+      }
+      base::CheckedNumeric<size_t> new_size =
+          base::CheckedNumeric<size_t>(output.size()) +
+          base::CheckedNumeric<size_t>(kBufferSize);
+      if (!new_size.IsValid() || !total_bytes_read.IsValid()) {
+        // Ignore the rest of the output.
+        break;
+      }
+      output.resize(new_size.ValueOrDie());
+      read_this_pass = HANDLE_EINTR(read(
+          read_fd.get(), &output[total_bytes_read.ValueOrDie()], kBufferSize));
+      if (read_this_pass >= 0) {
+        total_bytes_read += base::CheckedNumeric<size_t>(read_this_pass);
+        if (!total_bytes_read.IsValid()) {
+          // Ignore the rest of the output.
+          break;
+        }
+        output.resize(total_bytes_read.ValueOrDie());
+      }
+    } while (read_this_pass > 0);
+
+    VLOG(1) << "Output from " << executable << ": " << output;
+
+    if (!proc.WaitForExitWithTimeout(deadline - base::Time::Now(),
+                                     &exit_code)) {
       return static_cast<int>(InstallErrors::kExecutableWaitForExitFailed);
-    if (exit_code != 0)
+    }
+    if (exit_code != 0) {
       return exit_code;
+    }
     ++run_executables;
   }
   return run_executables > 0
