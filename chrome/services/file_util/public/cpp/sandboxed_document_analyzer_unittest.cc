@@ -159,13 +159,7 @@ TEST_F(SandboxedDocumentAnalyzerTest, AnalyzeCorruptedArchive) {
   EXPECT_FALSE(results.has_macros);
 }
 
-// Fails on Linux MSan. See https://crbug.com/1415215.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_CanDeleteDuringExecution DISABLED_CanDeleteDuringExecution
-#else
-#define MAYBE_CanDeleteDuringExecution CanDeleteDuringExecution
-#endif
-TEST_F(SandboxedDocumentAnalyzerTest, MAYBE_CanDeleteDuringExecution) {
+TEST_F(SandboxedDocumentAnalyzerTest, CanDeleteDuringExecution) {
   base::FilePath file_path;
   ASSERT_NO_FATAL_FAILURE(file_path = GetFilePath("doc_containing_macros.doc"));
   base::FilePath temp_path;

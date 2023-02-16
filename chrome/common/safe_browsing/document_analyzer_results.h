@@ -14,7 +14,8 @@ namespace safe_browsing {
 
 struct DocumentAnalyzerResults {
   bool success{false};
-  ClientDownloadRequest::DocumentProcessingInfo::MaldocaErrorType error_code;
+  ClientDownloadRequest::DocumentProcessingInfo::MaldocaErrorType error_code{
+      ClientDownloadRequest::DocumentProcessingInfo::OK};
   bool has_macros{false};
   std::string error_message;
   DocumentAnalyzerResults();
