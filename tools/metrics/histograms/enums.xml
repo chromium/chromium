@@ -40305,9 +40305,9 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_NavigationDownloadInSandboxWithUserGesture"/>
   <int value="2633"
       label="OBSOLETE_NavigationDownloadInSandboxWithoutUserGesture"/>
-  <int value="2634" label="LegacyTLSVersionInMainFrameResource"/>
-  <int value="2635" label="LegacyTLSVersionInSubresource"/>
-  <int value="2636" label="LegacyTLSVersionInSubframeMainResource"/>
+  <int value="2634" label="OBSOLETE_LegacyTLSVersionInMainFrameResource"/>
+  <int value="2635" label="OBSOLETE_LegacyTLSVersionInSubresource"/>
+  <int value="2636" label="OBSOLETE_LegacyTLSVersionInSubframeMainResource"/>
   <int value="2637" label="RTCMaxAudioBufferSize"/>
   <int value="2638" label="WebKitUserModifyReadWriteEffective"/>
   <int value="2639" label="WebKitUserModifyReadOnlyEffective"/>

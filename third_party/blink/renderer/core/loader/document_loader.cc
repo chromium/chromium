@@ -1938,14 +1938,6 @@ void DocumentLoader::DidCommitNavigation() {
   probe::DidCommitLoad(frame_, this);
 
   frame_->GetPage()->DidCommitLoad(frame_);
-
-  // Report legacy TLS versions after Page::DidCommitLoad, because the latter
-  // clears the console.
-  if (response_.IsLegacyTLSVersion()) {
-    GetFrameLoader().ReportLegacyTLSVersion(response_.CurrentRequestUrl(),
-                                            false /* is_subresource */,
-                                            frame_->IsAdFrame());
-  }
 }
 
 Frame* DocumentLoader::CalculateOwnerFrame() {

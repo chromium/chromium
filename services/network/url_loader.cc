@@ -1321,12 +1321,6 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
     response->ct_policy_compliance =
         url_request_->ssl_info().ct_policy_compliance;
     response->cert_status = url_request_->ssl_info().cert_status;
-    net::SSLVersion ssl_version = net::SSLConnectionStatusToVersion(
-        url_request_->ssl_info().connection_status);
-    response->is_legacy_tls_version =
-        ssl_version == net::SSLVersion::SSL_CONNECTION_VERSION_TLS1 ||
-        ssl_version == net::SSLVersion::SSL_CONNECTION_VERSION_TLS1_1;
-
     if ((options_ & mojom::kURLLoadOptionSendSSLInfoWithResponse) ||
         (net::IsCertStatusError(url_request_->ssl_info().cert_status) &&
          (options_ & mojom::kURLLoadOptionSendSSLInfoForCertificateError))) {

@@ -134,7 +134,6 @@ WebURLResponse WebURLResponse::Create(
   response.SetExpectedContentLength(head.content_length);
   response.SetHasMajorCertificateErrors(
       net::IsCertStatusError(head.cert_status));
-  response.SetIsLegacyTLSVersion(head.is_legacy_tls_version);
   response.SetHasRangeRequested(head.has_range_requested);
   response.SetTimingAllowPassed(head.timing_allow_passed);
   response.SetWasCached(!head.load_timing.request_start_time.is_null() &&
@@ -442,10 +441,6 @@ void WebURLResponse::VisitHttpHeaderFields(
 
 void WebURLResponse::SetHasMajorCertificateErrors(bool value) {
   resource_response_->SetHasMajorCertificateErrors(value);
-}
-
-void WebURLResponse::SetIsLegacyTLSVersion(bool value) {
-  resource_response_->SetIsLegacyTLSVersion(value);
 }
 
 void WebURLResponse::SetHasRangeRequested(bool value) {

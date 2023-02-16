@@ -71,7 +71,6 @@ ResourceResponse::ResourceResponse()
       have_parsed_expires_header_(false),
       have_parsed_last_modified_header_(false),
       has_major_certificate_errors_(false),
-      is_legacy_tls_version_(false),
       has_range_requested_(false),
       timing_allow_passed_(false),
       was_fetched_via_spdy_(false),

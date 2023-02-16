@@ -321,12 +321,6 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
         document_loader_->GetContentSecurityNotifier());
   }
 
-  if (response.IsLegacyTLSVersion()) {
-    frame->Loader().ReportLegacyTLSVersion(
-        response.CurrentRequestUrl(), true /* is_subresource */,
-        resource->GetResourceRequest().IsAdResource());
-  }
-
   frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(
       request, response, resource);
 

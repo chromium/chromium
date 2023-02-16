@@ -192,9 +192,6 @@ class PLATFORM_EXPORT ResourceResponse final {
     has_major_certificate_errors_ = has_major_certificate_errors;
   }
 
-  bool IsLegacyTLSVersion() const { return is_legacy_tls_version_; }
-  void SetIsLegacyTLSVersion(bool value) { is_legacy_tls_version_ = value; }
-
   bool HasRangeRequested() const { return has_range_requested_; }
   void SetHasRangeRequested(bool value) { has_range_requested_ = value; }
 
@@ -486,10 +483,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   // True if the resource was retrieved by the embedder in spite of
   // certificate errors.
   bool has_major_certificate_errors_ : 1;
-
-  // True if the response was sent over TLS 1.0 or 1.1, which are deprecated and
-  // will be removed in the future.
-  bool is_legacy_tls_version_ : 1;
 
   // This corresponds to the range-requested flag in the Fetch spec:
   // https://fetch.spec.whatwg.org/#concept-response-range-requested-flag

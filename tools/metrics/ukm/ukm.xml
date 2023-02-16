@@ -13653,6 +13653,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Net.LegacyTLSVersion">
+  <obsolete>
+    Deprecated as of 2/2023.
+  </obsolete>
   <owner>davidben@chromium.org</owner>
   <summary>
     Recorded when a resource is loaded using TLS 1.0 or TLS 1.1.
