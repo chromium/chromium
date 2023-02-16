@@ -83,7 +83,7 @@ LogSourceAccessManager::LogSourceAccessManager(content::BrowserContext* context)
               task_runner_for_redactor_,
               /* first_party_extension_ids= */ nullptr)) {}
 
-LogSourceAccessManager::~LogSourceAccessManager() {}
+LogSourceAccessManager::~LogSourceAccessManager() = default;
 
 // static
 void LogSourceAccessManager::SetMaxNumBurstAccessesForTesting(

@@ -198,7 +198,7 @@ FeedbackPrivateAPI::FeedbackPrivateAPI(content::BrowserContext* context)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-FeedbackPrivateAPI::~FeedbackPrivateAPI() {}
+FeedbackPrivateAPI::~FeedbackPrivateAPI() = default;
 
 scoped_refptr<FeedbackService> FeedbackPrivateAPI::GetService() const {
   return service_;
