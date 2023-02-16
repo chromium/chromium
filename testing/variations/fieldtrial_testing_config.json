@@ -5889,6 +5889,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "compact": "true"
+                    },
                     "enable_features": [
                         "EnableDiscoverFeedTopSyncPromo"
                     ]
