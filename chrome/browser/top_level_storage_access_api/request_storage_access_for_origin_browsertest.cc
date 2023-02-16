@@ -62,6 +62,11 @@ constexpr char kRequestOutcomeHistogram[] =
 // Path for URL of custom response
 const char* kFetchWithCredentialsPath = "/respondwithcookies";
 
+constexpr char kQueryTopLevelStorageAccessPermission[] =
+    "navigator.permissions.query({name: 'top-level-storage-access', "
+    "requestedOrigin: '%s'}).then("
+    "  (permission) => permission.state);";
+
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
   if (request.relative_url != kFetchWithCredentialsPath) {
@@ -199,6 +204,15 @@ class RequestStorageAccessForOriginBaseBrowserTest
 
   std::string ReadCookiesViaJS(content::RenderFrameHost* render_frame_host) {
     return content::EvalJs(render_frame_host, "document.cookie")
+        .ExtractString();
+  }
+
+  std::string QueryPermission(content::RenderFrameHost* render_frame_host,
+                              const std::string& requested_origin) {
+    return content::EvalJs(
+               render_frame_host,
+               base::StringPrintf(kQueryTopLevelStorageAccessPermission,
+                                  GetURL(requested_origin).spec().c_str()))
         .ExtractString();
   }
 
@@ -400,6 +414,48 @@ class RequestStorageAccessForOriginWithFirstPartySetsBrowserTest
             {blink::features::kStorageAccessAPI, {}}};
   }
 };
+
+IN_PROC_BROWSER_TEST_F(
+    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
+    PermissionQueryDefault) {
+  NavigateToPageWithFrame(kHostA);
+  EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostB), "prompt");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
+    PermissionQueryDoesNotShowDenied) {
+  NavigateToPageWithFrame(kHostA);
+
+  // First, get a rejection for `kHostD`, because it is not in the same
+  // First-Party Set.
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostD).spec()));
+
+  // Then, validate that the rejection is not exposed via query, matching the
+  // spec.
+  EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostD), "prompt");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
+    PermissionQueryCrossSiteFrame) {
+  NavigateToPageWithFrame(kHostA);
+
+  // First, grant `kHostB` access.
+  EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+  // TODO(crbug.com/1414468): this should be `granted`, but the override
+  // mechanism isn't currently implemented for queries. Switch this expectation
+  // once it is.
+  EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostB), "prompt");
+
+  NavigateFrameTo(kHostD, "/");
+
+  // The cross-site frame on `kHostD` should not be able to get the state of
+  // `kHostB` on `kHostA`.
+  EXPECT_EQ(QueryPermission(GetFrame(), kHostB), "prompt");
+}
 
 // Validate that if a top-level document requests access that cookies become
 // unblocked for just that top-level/third-party combination.
