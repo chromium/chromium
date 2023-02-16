@@ -6,19 +6,55 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/features.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/media_util.h"
+#include "media/mojo/common/media_type_converters.h"
 #include "third_party/openscreen/src/platform/base/span.h"
 
 namespace cast_streaming {
+
+base::span<uint8_t> StreamConsumer::BufferDataWrapper::Get() {
+  return base::span<uint8_t>(&pending_buffer_[pending_buffer_offset_],
+                             pending_buffer_remaining_bytes_);
+}
+
+base::span<uint8_t> StreamConsumer::BufferDataWrapper::Consume(
+    uint32_t max_size) {
+  const uint32_t current_offset = pending_buffer_offset_;
+  const uint32_t current_remaining_bytes = pending_buffer_remaining_bytes_;
+
+  const uint32_t read_size = std::min(max_size, current_remaining_bytes);
+
+  pending_buffer_offset_ += read_size;
+  pending_buffer_remaining_bytes_ -= read_size;
+  return base::span<uint8_t>(&pending_buffer_[current_offset], read_size);
+}
+
+bool StreamConsumer::BufferDataWrapper::Reset(uint32_t new_size) {
+  if (new_size > kMaxFrameSize) {
+    return false;
+  }
+
+  pending_buffer_offset_ = 0;
+  pending_buffer_remaining_bytes_ = new_size;
+  return true;
+}
+
+void StreamConsumer::BufferDataWrapper::Clear() {
+  bool success = Reset(uint32_t{0});
+  DCHECK(success);
+}
 
 StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
                                base::TimeDelta frame_duration,
                                mojo::ScopedDataPipeProducerHandle data_pipe,
                                FrameReceivedCB frame_received_cb,
-                               base::RepeatingClosure on_new_frame)
+                               base::RepeatingClosure on_new_frame,
+                               bool is_remoting)
     : receiver_(receiver),
       data_pipe_(std::move(data_pipe)),
       frame_received_cb_(std::move(frame_received_cb)),
@@ -26,6 +62,7 @@ StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
                     mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                     base::SequencedTaskRunner::GetCurrentDefault()),
       frame_duration_(frame_duration),
+      is_remoting_(is_remoting),
       on_new_frame_(std::move(on_new_frame)) {
   DCHECK(receiver_);
   receiver_->SetConsumer(this);
@@ -46,7 +83,8 @@ StreamConsumer::StreamConsumer(StreamConsumer&& other,
                      other.frame_duration_,
                      std::move(data_pipe),
                      std::move(other.frame_received_cb_),
-                     std::move(other.on_new_frame_)) {
+                     std::move(other.on_new_frame_),
+                     other.is_remoting_) {
   if (other.is_read_pending_) {
     ReadFrame(std::move(other.no_frames_available_cb_));
   }
@@ -78,17 +116,17 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
     return;
   }
 
-  uint32_t bytes_written = pending_buffer_remaining_bytes_;
-  result = data_pipe_->WriteData(pending_buffer_ + pending_buffer_offset_,
-                                 &bytes_written, MOJO_WRITE_DATA_FLAG_NONE);
+  base::span<uint8_t> span = data_wrapper_.Get();
+  uint32_t bytes_written = span.size();
+  result = data_pipe_->WriteData(span.data(), &bytes_written,
+                                 MOJO_WRITE_DATA_FLAG_NONE);
   if (result != MOJO_RESULT_OK) {
     CloseDataPipeOnError();
     return;
   }
 
-  pending_buffer_offset_ += bytes_written;
-  pending_buffer_remaining_bytes_ -= bytes_written;
-  if (pending_buffer_remaining_bytes_ != 0) {
+  data_wrapper_.Consume(bytes_written);
+  if (!data_wrapper_.empty()) {
     pipe_watcher_.ArmOrNotify();
     return;
   }
@@ -110,7 +148,7 @@ void StreamConsumer::FlushUntil(uint32_t frame_id) {
 }
 
 void StreamConsumer::MaybeSendNextFrame() {
-  if (!is_read_pending_ || pending_buffer_remaining_bytes_ > 0) {
+  if (!is_read_pending_ || !data_wrapper_.empty()) {
     return;
   }
 
@@ -124,13 +162,9 @@ void StreamConsumer::MaybeSendNextFrame() {
 
   on_new_frame_.Run();
 
-  void* buffer = nullptr;
-  uint32_t buffer_size = current_frame_buffer_size;
-  uint32_t mojo_buffer_size = current_frame_buffer_size;
-
-  if (buffer_size > kMaxFrameSize) {
+  if (!data_wrapper_.Reset(current_frame_buffer_size)) {
     LOG(ERROR) << "[ssrc:" << receiver_->ssrc() << "] "
-               << "Frame size too big: " << buffer_size;
+               << "Frame size too big: " << current_frame_buffer_size;
     CloseDataPipeOnError();
     return;
   }
@@ -138,9 +172,9 @@ void StreamConsumer::MaybeSendNextFrame() {
   openscreen::cast::EncodedFrame encoded_frame;
 
   // Write to temporary storage in case we need to drop this frame.
-  pending_buffer_offset_ = 0;
+  base::span<uint8_t> span = data_wrapper_.Get();
   encoded_frame = receiver_->ConsumeNextFrame(
-      openscreen::ByteBuffer(&pending_buffer_[0], buffer_size));
+      openscreen::ByteBuffer(span.data(), span.size()));
 
   // If the frame occurs before the id we want to flush until, drop it and try
   // again.
@@ -148,50 +182,94 @@ void StreamConsumer::MaybeSendNextFrame() {
   if (encoded_frame.frame_id <
       openscreen::cast::FrameId(int64_t{skip_until_frame_id_})) {
     VLOG(1) << "Skipping Frame " << encoded_frame.frame_id;
+
+    data_wrapper_.Clear();
     MaybeSendNextFrame();
     return;
   }
 
+  // Create the buffer, retrying if this fails.
+  //
+  // NOTE: Using CreateRemotingBuffer() is EXPECTED for all remoting streams,
+  // but REQUIRED only for certain codecs - so inconsistent behavior rather than
+  // just "not working" will be observed if the wrong call is made.
+  scoped_refptr<media::DecoderBuffer> decoder_buffer;
+  if (is_remoting_) {
+    decoder_buffer = CreateRemotingBuffer();
+  } else {
+    decoder_buffer = CreateMirroringBuffer(encoded_frame);
+  }
+
+  if (!decoder_buffer) {
+    data_wrapper_.Clear();
+    MaybeSendNextFrame();
+  }
+
+  // At this point, the frame is known to be "good".
   skip_until_frame_id_ = 0;
   no_frames_available_cb_.Reset();
 
-  pending_buffer_remaining_bytes_ = buffer_size;
-  MojoResult result = data_pipe_->BeginWriteData(
-      &buffer, &mojo_buffer_size, MOJO_BEGIN_WRITE_DATA_FLAG_NONE);
-
+  // Write the frame's data to Mojo.
+  span = data_wrapper_.Get();
+  uint32_t bytes_written = span.size();
+  auto result = data_pipe_->WriteData(span.data(), &bytes_written,
+                                      MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     pipe_watcher_.ArmOrNotify();
-    return;
-  }
-
-  if (result != MOJO_RESULT_OK) {
+    bytes_written = 0;
+  } else if (result != MOJO_RESULT_OK) {
     CloseDataPipeOnError();
     return;
   }
+  data_wrapper_.Consume(bytes_written);
 
-  // Write as much as we can to the |data_pipe_| buffer.
-  int bytes_written;
-  if (buffer_size <= mojo_buffer_size) {
-    memcpy(buffer, pending_buffer_, buffer_size);
-    pending_buffer_offset_ = buffer_size;
-    pending_buffer_remaining_bytes_ = 0;
-    bytes_written = buffer_size;
-  } else {
-    memcpy(buffer, pending_buffer_, mojo_buffer_size);
-    pending_buffer_offset_ = mojo_buffer_size;
-    pending_buffer_remaining_bytes_ = buffer_size - mojo_buffer_size;
-    bytes_written = mojo_buffer_size;
+  // Return the frame.
+  is_read_pending_ = false;
+  frame_received_cb_.Run(media::mojom::DecoderBuffer::From(*decoder_buffer));
+
+  // Wait for the mojo pipe to be writable if there is still pending data to
+  // write.
+  if (!data_wrapper_.empty()) {
+    pipe_watcher_.ArmOrNotify();
+  }
+}
+
+scoped_refptr<media::DecoderBuffer> StreamConsumer::CreateRemotingBuffer() {
+  DCHECK(is_remoting_);
+
+  auto span = data_wrapper_.Get();
+  scoped_refptr<media::DecoderBuffer> decoder_buffer =
+      remoting::ByteArrayToDecoderBuffer(span.data(), span.size());
+  if (!decoder_buffer) {
+    DLOG(WARNING) << "Deserialization failed!";
+    return nullptr;
   }
 
-  result = data_pipe_->EndWriteData(bytes_written);
-  if (result != MOJO_RESULT_OK) {
-    CloseDataPipeOnError();
-    return;
+  if (!data_wrapper_.Reset(decoder_buffer->data_size())) {
+    DLOG(WARNING) << "Buffer overflow!";
+    return nullptr;
   }
 
-  const bool is_key_frame =
+  span = data_wrapper_.Get();
+  base::span<const uint8_t> decoder_buffer_data(decoder_buffer->data(),
+                                                decoder_buffer->data_size());
+  std::copy(decoder_buffer_data.begin(), decoder_buffer_data.end(),
+            span.begin());
+
+  return decoder_buffer;
+}
+
+scoped_refptr<media::DecoderBuffer> StreamConsumer::CreateMirroringBuffer(
+    const openscreen::cast::EncodedFrame& encoded_frame) {
+  DCHECK(!is_remoting_);
+
+  scoped_refptr<media::DecoderBuffer> decoder_buffer =
+      base::MakeRefCounted<media::DecoderBuffer>(data_wrapper_.size());
+
+  decoder_buffer->set_duration(frame_duration_);
+  decoder_buffer->set_is_key_frame(
       encoded_frame.dependency ==
-      openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
+      openscreen::cast::EncodedFrame::Dependency::kKeyFrame);
 
   base::TimeDelta playout_time =
       base::Microseconds(encoded_frame.rtp_timestamp
@@ -200,9 +278,9 @@ void StreamConsumer::MaybeSendNextFrame() {
                              .count());
 
   // Some senders do not send an initial playout time of 0. To work around this,
-  // a playout offset is added here. This is only required on mirroring sessions
-  // - and will in fact break remoting where timestamps by design do NOT begin
-  // at zero.
+  // a playout offset is added here. This is NOT done when remoting is enabled
+  // because the timestamp of the first frame is used to automatically start
+  // playback in such cases.
   if (!IsCastRemotingEnabled()) {
     if (playout_offset_ == base::TimeDelta::Max()) {
       playout_offset_ = playout_time;
@@ -210,22 +288,13 @@ void StreamConsumer::MaybeSendNextFrame() {
     playout_time -= playout_offset_;
   }
 
+  decoder_buffer->set_timestamp(playout_time);
+
   DVLOG(3) << "[ssrc:" << receiver_->ssrc() << "] "
            << "Received new frame. Timestamp: " << playout_time
-           << ", is_key_frame: " << is_key_frame;
+           << ", is_key_frame: " << decoder_buffer->is_key_frame();
 
-  is_read_pending_ = false;
-  frame_received_cb_.Run(media::mojom::DecoderBuffer::New(
-      playout_time /* timestamp */, frame_duration_,
-      false /* is_end_of_stream */, buffer_size, is_key_frame,
-      media::EmptyExtraData(), media::mojom::DecryptConfigPtr(),
-      base::TimeDelta() /* front_discard */,
-      base::TimeDelta() /* back_discard */
-      ));
-
-  if (pending_buffer_remaining_bytes_ != 0) {
-    pipe_watcher_.ArmOrNotify();
-  }
+  return decoder_buffer;
 }
 
 }  // namespace cast_streaming

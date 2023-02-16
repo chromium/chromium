@@ -38,7 +38,8 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
                  base::TimeDelta frame_duration,
                  mojo::ScopedDataPipeProducerHandle data_pipe,
                  FrameReceivedCB frame_received_cb,
-                 base::RepeatingClosure on_new_frame);
+                 base::RepeatingClosure on_new_frame,
+                 bool is_remoting);
   StreamConsumer(StreamConsumer&& old_consumer,
                  openscreen::cast::Receiver* receiver,
                  mojo::ScopedDataPipeProducerHandle data_pipe);
@@ -58,8 +59,42 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   void FlushUntil(uint32_t frame_id);
 
  private:
-  // Maximum frame size that OnFramesReady() can accept.
-  static constexpr uint32_t kMaxFrameSize = 512 * 1024;
+  // Wrapper around a data buffer used for storing the data of a DecoderBuffer
+  // received from Openscreen.
+  class BufferDataWrapper {
+   public:
+    // Returns the span associated with all remaining data for this instance.
+    base::span<uint8_t> Get();
+
+    // Returns up to |max_size| more bytes of the underlying array, invalidating
+    // these bytes in the underlying buffer.
+    base::span<uint8_t> Consume(uint32_t max_size);
+
+    // Resets the underlying array to size |new_size|.
+    bool Reset(uint32_t new_size);
+
+    // Empties the underlying array.
+    void Clear();
+
+    // Returns the current size of the buffer.
+    uint32_t size() const { return pending_buffer_remaining_bytes_; }
+
+    // Returns whether this instance is empty.
+    bool empty() const { return !size(); }
+
+   private:
+    // Maximum frame size that OnFramesReady() can accept.
+    static constexpr size_t kMaxFrameSize = 512 * 1024;
+
+    // Buffer backing the spans created by this class.
+    uint8_t pending_buffer_[kMaxFrameSize];
+
+    // Current offset for data in |pending_buffer_|.
+    uint32_t pending_buffer_offset_ = 0;
+
+    // Remaining bytes to write from |pending_buffer_|.
+    uint32_t pending_buffer_remaining_bytes_ = 0;
+  };
 
   // Closes |data_pipe_| and resets the Consumer in |receiver_|. No frames will
   // be received after this call.
@@ -72,6 +107,13 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   // pending.
   void MaybeSendNextFrame();
 
+  bool WriteBufferToDataPipe();
+
+  // Creates a frame of the given type.
+  scoped_refptr<media::DecoderBuffer> CreateRemotingBuffer();
+  scoped_refptr<media::DecoderBuffer> CreateMirroringBuffer(
+      const openscreen::cast::EncodedFrame& encoded_frame);
+
   // openscreen::cast::Receiver::Consumer implementation.
   void OnFramesReady(int next_frame_buffer_size) override;
 
@@ -83,17 +125,10 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   mojo::ScopedDataPipeProducerHandle data_pipe_;
   const FrameReceivedCB frame_received_cb_;
 
+  BufferDataWrapper data_wrapper_;
+
   // Provides notifications about |data_pipe_| readiness.
   mojo::SimpleWatcher pipe_watcher_;
-
-  // Buffer used when |data_pipe_| is too full to accept the next frame size.
-  uint8_t pending_buffer_[kMaxFrameSize];
-
-  // Current offset for data |pending_buffer_| to be written to |data_pipe_|.
-  int pending_buffer_offset_ = 0;
-
-  // Remaining bytes to write from |pending_buffer_| to |data_pipe_|.
-  int pending_buffer_remaining_bytes_ = 0;
 
   // Offset for frames playout time. This is initialized by the first frame.
   base::TimeDelta playout_offset_ = base::TimeDelta::Max();
@@ -101,6 +136,8 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   const base::TimeDelta frame_duration_;
 
   bool is_read_pending_ = false;
+
+  const bool is_remoting_;
 
   base::OnceClosure no_frames_available_cb_;
 

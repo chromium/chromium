@@ -56,7 +56,8 @@ StreamingInitializationInfo CreateMirroringInitializationInfo(
                               receivers.video_receiver);
   }
 
-  return {session, std::move(audio_stream_info), std::move(video_stream_info)};
+  return {session, std::move(audio_stream_info), std::move(video_stream_info),
+          /* is_remoting = */ false};
 }
 
 }  // namespace
@@ -186,7 +187,8 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
       base::BindRepeating(&CastStreamingSession::Client::OnAudioBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(&base::OneShotTimer::Reset,
-                          base::Unretained(&data_timeout_timer_)));
+                          base::Unretained(&data_timeout_timer_)),
+      initialization_info.is_remoting);
 
   return data_pipe_consumer;
 }
@@ -218,7 +220,8 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
       base::BindRepeating(&CastStreamingSession::Client::OnVideoBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(&base::OneShotTimer::Reset,
-                          base::Unretained(&data_timeout_timer_)));
+                          base::Unretained(&data_timeout_timer_)),
+      initialization_info.is_remoting);
 
   return data_pipe_consumer;
 }

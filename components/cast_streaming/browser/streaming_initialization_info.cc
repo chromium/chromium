@@ -13,10 +13,12 @@ StreamingInitializationInfo::StreamingInitializationInfo() = default;
 StreamingInitializationInfo::StreamingInitializationInfo(
     const openscreen::cast::ReceiverSession* receiver_session,
     absl::optional<AudioStreamInfo> audio_info,
-    absl::optional<VideoStreamInfo> video_info)
+    absl::optional<VideoStreamInfo> video_info,
+    bool is_remoting_stream)
     : session(receiver_session),
       audio_stream_info(std::move(audio_info)),
-      video_stream_info(std::move(video_info)) {}
+      video_stream_info(std::move(video_info)),
+      is_remoting(is_remoting_stream) {}
 
 StreamingInitializationInfo::StreamingInitializationInfo(
     const StreamingInitializationInfo& other) = default;

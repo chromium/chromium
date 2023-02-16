@@ -108,7 +108,8 @@ void PlaybackCommandDispatcher::ConfigureRemotingAsync(
   }
 
   streaming_init_info_.emplace(receiver_session_, std::move(audio_stream_info),
-                               std::move(video_stream_info));
+                               std::move(video_stream_info),
+                               /* is_remoting = */ true);
 }
 
 void PlaybackCommandDispatcher::OnRemotingSessionEnded() {

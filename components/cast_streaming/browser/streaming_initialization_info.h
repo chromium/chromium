@@ -69,7 +69,8 @@ struct StreamingInitializationInfo {
   StreamingInitializationInfo(
       const openscreen::cast::ReceiverSession* receiver_session,
       absl::optional<AudioStreamInfo> audio_info,
-      absl::optional<VideoStreamInfo> video_info);
+      absl::optional<VideoStreamInfo> video_info,
+      bool is_remoting);
   StreamingInitializationInfo();
   StreamingInitializationInfo(const StreamingInitializationInfo& other);
   ~StreamingInitializationInfo();
@@ -85,6 +86,10 @@ struct StreamingInitializationInfo {
   // Information detailing the video stream. Will be populated iff the streaming
   // session has video.
   absl::optional<VideoStreamInfo> video_stream_info;
+
+  // Whether or not this streaming session is associated with remoting (as
+  // opposed to mirroring).
+  bool is_remoting;
 };
 
 }  // namespace cast_streaming
