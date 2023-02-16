@@ -168,7 +168,7 @@ TEST_F(PressureManagerImplTest, ThreeClients) {
   EXPECT_EQ(client3.updates()[0].state, mojom::PressureState::kFair);
 }
 
-TEST_F(PressureManagerImplTest, AddClient_NoProbe) {
+TEST_F(PressureManagerImplTest, AddClientNoProbe) {
   CreateConnection(nullptr, kDefaultSamplingIntervalForTesting);
 
   FakePressureClient client;

@@ -12,7 +12,7 @@ namespace device {
 
 using CoreTimesTest = testing::Test;
 
-TEST_F(CoreTimesTest, TimeUtilization_Balanced) {
+TEST_F(CoreTimesTest, TimeUtilizationBalanced) {
   CoreTimes baseline({105, 205, 305, 405, 505, 605, 705, 805, 905, 1005});
 
   std::vector<CoreTimes> test_cases = {
@@ -39,7 +39,7 @@ TEST_F(CoreTimesTest, TimeUtilization_Balanced) {
   }
 }
 
-TEST_F(CoreTimesTest, TimeUtilization_EmptyRange) {
+TEST_F(CoreTimesTest, TimeUtilizationEmptyRange) {
   CoreTimes baseline({105, 205, 305, 405, 505, 605, 705, 805, 905, 1005});
 
   std::vector<CoreTimes> test_cases = {
@@ -57,7 +57,7 @@ TEST_F(CoreTimesTest, TimeUtilization_EmptyRange) {
   }
 }
 
-TEST_F(CoreTimesTest, TimeUtilization_NegativeRange) {
+TEST_F(CoreTimesTest, TimeUtilizationNegativeRange) {
   CoreTimes baseline({105, 205, 305, 405, 505, 605, 705, 805, 905, 1005});
 
   std::vector<CoreTimes> test_cases = {
@@ -76,7 +76,7 @@ TEST_F(CoreTimesTest, TimeUtilization_NegativeRange) {
   }
 }
 
-TEST_F(CoreTimesTest, TimeUtilization_Computation) {
+TEST_F(CoreTimesTest, TimeUtilizationComputation) {
   CoreTimes baseline({105, 205, 305, 405, 505, 605, 705, 805, 905, 1005});
 
   struct TestCase {

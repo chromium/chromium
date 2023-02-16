@@ -48,7 +48,7 @@ class ProcfsStatCpuParserTest : public testing::Test {
   std::unique_ptr<ProcfsStatCpuParser> parser_;
 };
 
-TEST_F(ProcfsStatCpuParserTest, ProductionData_NoCrash) {
+TEST_F(ProcfsStatCpuParserTest, ProductionDataNoCrash) {
   base::FilePath production_path(ProcfsStatCpuParser::kProcfsStatPath);
   ProcfsStatCpuParser parser(production_path);
   bool parse_success = parser.Update();
@@ -77,7 +77,7 @@ TEST_F(ProcfsStatCpuParserTest, EmptyFile) {
   EXPECT_EQ(parser_->core_times().size(), 0u);
 }
 
-TEST_F(ProcfsStatCpuParserTest, SingleCore_SingleDigit) {
+TEST_F(ProcfsStatCpuParserTest, SingleCoreSingleDigit) {
   // Zero is not used as a value, because it is the initial value of CoreTimes
   // members. Avoiding that value brings assurance that Update() modified the
   // CoreTimes member.
@@ -97,7 +97,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_SingleDigit) {
   EXPECT_EQ(parser_->core_times()[0].guest_nice(), 1u);
 }
 
-TEST_F(ProcfsStatCpuParserTest, SingleCore_MultipleDigits) {
+TEST_F(ProcfsStatCpuParserTest, SingleCoreMultipleDigits) {
   // Checks that the number parser can parse numbers of various sizes. The sizes
   // are not in ascending order, to make sure that the number size isn't in sync
   // with a loop counter.
@@ -120,7 +120,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_MultipleDigits) {
   EXPECT_EQ(parser_->core_times()[0].guest_nice(), 1234567890u);
 }
 
-TEST_F(ProcfsStatCpuParserTest, SingleCore_TooManyNumbers) {
+TEST_F(ProcfsStatCpuParserTest, SingleCoreTooManyNumbers) {
   ASSERT_TRUE(WriteFakeStat("cpu0 10 11 12 13 14 15 16 17 18 19 20 21 22 23"));
   EXPECT_TRUE(parser_->Update());
 
@@ -137,7 +137,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_TooManyNumbers) {
   EXPECT_EQ(parser_->core_times()[0].guest_nice(), 19u);
 }
 
-TEST_F(ProcfsStatCpuParserTest, SingleCore_TooFewNumbers) {
+TEST_F(ProcfsStatCpuParserTest, SingleCoreTooFewNumbers) {
   const std::vector<const char*> test_cases = {
       "cpu0 1 2 3 4 5 6 7 8 9",
       "cpu0 1 2 3 4 5 6 7 8",
@@ -171,7 +171,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_TooFewNumbers) {
   }
 }
 
-TEST_F(ProcfsStatCpuParserTest, SingleCore_NoNumbers) {
+TEST_F(ProcfsStatCpuParserTest, SingleCoreNoNumbers) {
   ASSERT_TRUE(WriteFakeStat("cpu0"));
   EXPECT_TRUE(parser_->Update());
 
@@ -297,7 +297,7 @@ TEST_F(ProcfsStatCpuParserTest, InvalidNumberSkipped) {
   }
 }
 
-TEST_F(ProcfsStatCpuParserTest, SingleCore_IgnoresCounterDecrease) {
+TEST_F(ProcfsStatCpuParserTest, SingleCoreIgnoresCounterDecrease) {
   struct TestCase {
     const char* line;
     int invalid_index;

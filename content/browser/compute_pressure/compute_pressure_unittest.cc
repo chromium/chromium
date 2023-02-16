@@ -238,7 +238,7 @@ TEST_F(ComputePressureTest, UpdatePressureFactors) {
   client.updates().clear();
 }
 
-TEST_F(ComputePressureTest, AddClient_NotSupported) {
+TEST_F(ComputePressureTest, AddClientNotSupported) {
   pressure_manager_overrider_->set_is_supported(false);
 
   FakePressureClient client;

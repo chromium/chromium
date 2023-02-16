@@ -146,7 +146,7 @@ class StreamingCpuProbe : public CpuProbe {
 
 }  // namespace
 
-TEST_F(PlatformCollectorTest, EnsureStarted_SkipsFirstSample) {
+TEST_F(PlatformCollectorTest, EnsureStartedSkipsFirstSample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -171,7 +171,7 @@ TEST_F(PlatformCollectorTest, EnsureStarted_SkipsFirstSample) {
                             mojom::PressureState{mojom::PressureState::kFair}));
 }
 
-TEST_F(PlatformCollectorTest, EnsureStarted_CheckCalculateState) {
+TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateState) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -206,7 +206,7 @@ TEST_F(PlatformCollectorTest, EnsureStarted_CheckCalculateState) {
                   mojom::PressureState{mojom::PressureState::kCritical}));
 }
 
-TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Immediate) {
+TEST_F(PlatformCollectorTest, StopDelayedEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   collector_->EnsureStarted();
@@ -222,7 +222,7 @@ TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Immediate) {
                             mojom::PressureState::kCritical)));
 }
 
-TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Delayed) {
+TEST_F(PlatformCollectorTest, StopDelayedEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   collector_->EnsureStarted();
@@ -239,7 +239,7 @@ TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Delayed) {
                             mojom::PressureState::kCritical)));
 }
 
-TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Immediate) {
+TEST_F(PlatformCollectorTest, StopImmediateEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   collector_->EnsureStarted();
@@ -254,7 +254,7 @@ TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Immediate) {
                             mojom::PressureState::kCritical)));
 }
 
-TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Delayed) {
+TEST_F(PlatformCollectorTest, StopImmediateEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   collector_->EnsureStarted();

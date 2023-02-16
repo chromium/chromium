@@ -53,7 +53,7 @@ class CpuProbeLinuxTest : public testing::Test {
   std::unique_ptr<CpuProbeLinux> probe_;
 };
 
-TEST_F(CpuProbeLinuxTest, ProductionData_NoCrash) {
+TEST_F(CpuProbeLinuxTest, ProductionDataNoCrash) {
   probe_->Update();
   EXPECT_EQ(probe_->LastSample().cpu_utilization, 0.0)
       << "No baseline on first Update()";
@@ -63,7 +63,7 @@ TEST_F(CpuProbeLinuxTest, ProductionData_NoCrash) {
   EXPECT_LE(probe_->LastSample().cpu_utilization, 1.0);
 }
 
-TEST_F(CpuProbeLinuxTest, OneCore_FullInfo) {
+TEST_F(CpuProbeLinuxTest, OneCoreFullInfo) {
   ASSERT_TRUE(WriteFakeStat(R"(
 cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 0 0 0 0 0 0 0 0 0 0
@@ -93,7 +93,7 @@ softirq 900 901 902 903 904 905 906 907 908 909 910
   EXPECT_EQ(probe_->LastSample().cpu_utilization, 0.25);
 }
 
-TEST_F(CpuProbeLinuxTest, TwoCores_FullInfo) {
+TEST_F(CpuProbeLinuxTest, TwoCoresFullInfo) {
   ASSERT_TRUE(WriteFakeStat(R"(
 cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 0 0 0 0 0 0 0 0 0 0
@@ -125,7 +125,7 @@ softirq 900 901 902 903 904 905 906 907 908 909 910
   EXPECT_EQ(probe_->LastSample().cpu_utilization, 0.375);
 }
 
-TEST_F(CpuProbeLinuxTest, TwoCores_SecondCoreMissingStat) {
+TEST_F(CpuProbeLinuxTest, TwoCoresSecondCoreMissingStat) {
   ASSERT_TRUE(WriteFakeStat(R"(
 cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 0 0 0 0 0 0 0 0 0 0

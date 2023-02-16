@@ -73,10 +73,10 @@ class CoreTimes {
   double TimeUtilization(const CoreTimes& baseline) const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilization_Balanced);
-  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilization_EmptyRange);
-  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilization_NegativeRange);
-  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilization_Computation);
+  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilizationBalanced);
+  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilizationEmptyRange);
+  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilizationNegativeRange);
+  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilizationComputation);
 
   // Used by CoreTimesTest.
   CoreTimes(const std::initializer_list<uint64_t>& times);
