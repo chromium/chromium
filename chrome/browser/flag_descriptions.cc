@@ -572,13 +572,6 @@ const char kAutofillUseImprovedLabelDisambiguationDescription[] =
     "When enabled, the Autofill dropdown's suggestions' labels are displayed "
     "using the improved disambiguation format.";
 
-const char kAutoScreenBrightnessName[] = "Auto Screen Brightness model";
-const char kAutoScreenBrightnessDescription[] =
-    "Uses Auto Screen Brightness ML model (if it exists) to adjust screen "
-    "brightness based on ambient light. If disabled, screen brightness "
-    "will be controlled by the heuristic model provided by powerd (and only "
-    "on devices that have ambient light sensors).";
-
 const char kBackForwardCacheName[] = "Back-forward cache";
 const char kBackForwardCacheDescription[] =
     "If enabled, caches eligible pages after cross-site navigations."

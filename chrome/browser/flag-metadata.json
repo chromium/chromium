@@ -443,11 +443,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "auto-screen-brightness",
-    "owners": [ "jiameng", "napper" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "autocomplete-extended-suggestions",
     "owners": [ "yulunwu", "tbarzic" ],
     "expiry_milestone": 113

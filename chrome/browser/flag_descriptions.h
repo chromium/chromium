@@ -311,9 +311,6 @@ extern const char kAutofillMoreProminentPopupDescription[];
 extern const char kAutofillUseImprovedLabelDisambiguationName[];
 extern const char kAutofillUseImprovedLabelDisambiguationDescription[];
 
-extern const char kAutoScreenBrightnessName[];
-extern const char kAutoScreenBrightnessDescription[];
-
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
