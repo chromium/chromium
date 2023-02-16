@@ -5225,12 +5225,6 @@ const char kEnableGoogleAssistantAecDescription[] =
     "Enable an experimental feature that removes local feedback from audio "
     "input to help hotword and ASR when background audio is playing.";
 
-const char kEnableHeuristicStylusPalmRejectionName[] =
-    "Enable Heuristic for Stylus/Palm Rejection.";
-const char kEnableHeuristicStylusPalmRejectionDescription[] =
-    "Enable additional heuristic palm rejection logic when interacting with "
-    "stylus usage. Not intended for all devices.";
-
 const char kEnableInputEventLoggingName[] = "Enable input event logging";
 const char kEnableInputEventLoggingDescription[] =
     "Enable detailed logging of input events from touchscreens, touchpads, and "

@@ -2510,14 +2510,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-heuristic-stylus-palm-rejection",
-    "owners": [ "robsc", "napper" ],
-    // We add a heuristic that changes the way fingers are handled. We should
-    // always let users switch it off if needed. However, for now, during
-    // experiments, we set milestone deep into future.
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-hiding-mvt-shortcuts",
     "owners": [ "guiperez", "sczs" ],
     "expiry_milestone": 120

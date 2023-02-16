@@ -2985,9 +2985,6 @@ extern const char kEnableGoogleAssistantStereoInputDescription[];
 extern const char kEnableGoogleAssistantAecName[];
 extern const char kEnableGoogleAssistantAecDescription[];
 
-extern const char kEnableHeuristicStylusPalmRejectionName[];
-extern const char kEnableHeuristicStylusPalmRejectionDescription[];
-
 extern const char kEnableInputEventLoggingName[];
 extern const char kEnableInputEventLoggingDescription[];
 
