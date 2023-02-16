@@ -96,6 +96,10 @@ class RenderFrameHostOwner {
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type) = 0;
 
+  // Called to notify all frames of a page that the history user activation
+  // has been consumed, in response to an event in the renderer process.
+  virtual void DidConsumeHistoryUserActivation() = 0;
+
   // Creates a NavigationRequest  for a synchronous navigation that has
   // committed in the renderer process. Those are:
   // - same-document renderer-initiated navigations.

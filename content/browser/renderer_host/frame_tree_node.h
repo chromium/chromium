@@ -621,6 +621,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type) override;
 
+  void DidConsumeHistoryUserActivation() override;
+
   std::unique_ptr<NavigationRequest>
   CreateNavigationRequestForSynchronousRendererCommit(
       RenderFrameHostImpl* render_frame_host,

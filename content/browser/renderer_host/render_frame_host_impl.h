@@ -111,6 +111,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/fullscreen_request_token.h"
+#include "third_party/blink/public/common/frame/history_user_activation_state.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -2234,6 +2235,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type) override;
+  void DidConsumeHistoryUserActivation() override;
   void HandleAccessibilityFindInPageResult(
       blink::mojom::FindInPageResultAXParamsPtr params) override;
   void HandleAccessibilityFindInPageTermination() override;
@@ -2768,24 +2770,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
 #endif
 
   // Returns the sticky bit of the User Activation v2 state of this document.
-  bool HasStickyUserActivation() const {
-    return user_activation_state_.HasBeenActive();
-  }
-
-  bool IsActiveUserActivation() const {
-    return user_activation_state_.IsActive();
-  }
-
-  void ClearUserActivation() { user_activation_state_.Clear(); }
-
-  void ConsumeTransientUserActivation() {
-    user_activation_state_.ConsumeIfActive();
-  }
-
+  bool HasStickyUserActivation() const;
+  bool IsActiveUserActivation() const;
+  void ClearUserActivation();
+  void ConsumeTransientUserActivation();
   void ActivateUserActivation(
-      blink::mojom::UserActivationNotificationType notification_type) {
-    user_activation_state_.Activate(notification_type);
-  }
+      blink::mojom::UserActivationNotificationType notification_type);
+
+  // These are called only when RenderFrameHostOwner is iterating over all
+  // frames, not directly from the renderer.
+  bool IsHistoryUserActivationActive() const;
+  void ConsumeHistoryUserActivation();
 
   // Tells the renderer process to run the page's unload handler.
   // A completion callback is invoked by the renderer when the handler
@@ -4772,6 +4767,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The user activation state of this document.  See |UserActivationState| for
   // details on how this state is maintained.
   blink::UserActivationState user_activation_state_;
+
+  // Similar to `user_activation_state_`, but specifically for use with
+  // web-exposed history manipulation (e.g., cancelling a history navigation via
+  // the Navigation API). Activated when `user_activation_state_` is activated,
+  // but consumed separately when a page interrupts browser-initiated history
+  // navigations (e.g., after canceled history navigations or uses of
+  // CloseWatcher).
+  blink::HistoryUserActivationState history_user_activation_state_;
 
   // Used to avoid sending AXTreeData to the renderer if the renderer has not
   // been told root ID yet. See UpdateAXTreeData() for more details.

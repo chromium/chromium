@@ -43,6 +43,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/common/frame/history_user_activation_state.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
@@ -332,6 +333,11 @@ class CORE_EXPORT LocalFrame final
       LocalFrame*,
       UserActivationUpdateSource update_source =
           UserActivationUpdateSource::kRenderer);
+
+  bool IsHistoryUserActivationActive() const {
+    return history_user_activation_state_.IsActive();
+  }
+  void ConsumeHistoryUserActivation();
 
   // Registers an observer that will be notified if a VK occludes
   // the content when it raises/dismisses. The observer is a HeapHashSet
@@ -873,6 +879,14 @@ class CORE_EXPORT LocalFrame final
   bool IsLocalFrame() const override { return true; }
   bool IsRemoteFrame() const override { return false; }
 
+  void ActivateHistoryUserActivationState() override {
+    history_user_activation_state_.Activate();
+  }
+
+  void ClearHistoryUserActivationState() override {
+    history_user_activation_state_.Clear();
+  }
+
   void EnableNavigation() { --navigation_disable_count_; }
   void DisableNavigation() { ++navigation_disable_count_; }
 
@@ -1001,6 +1015,8 @@ class CORE_EXPORT LocalFrame final
   // Access content_capture_manager_ through GetOrResetContentCaptureManager()
   // because WebContentCaptureClient might already stop the capture.
   Member<ContentCaptureManager> content_capture_manager_;
+
+  HistoryUserActivationState history_user_activation_state_;
 
   InterfaceRegistry* const interface_registry_;
 

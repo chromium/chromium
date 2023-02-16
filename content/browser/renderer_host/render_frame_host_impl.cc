@@ -5499,6 +5499,37 @@ void RenderFrameHostImpl::RequestClose() {
   ClosePageIgnoringUnloadEvents();
 }
 
+bool RenderFrameHostImpl::HasStickyUserActivation() const {
+  return user_activation_state_.HasBeenActive();
+}
+
+bool RenderFrameHostImpl::IsActiveUserActivation() const {
+  return user_activation_state_.IsActive();
+}
+
+void RenderFrameHostImpl::ClearUserActivation() {
+  user_activation_state_.Clear();
+  history_user_activation_state_.Clear();
+}
+
+void RenderFrameHostImpl::ConsumeTransientUserActivation() {
+  user_activation_state_.ConsumeIfActive();
+}
+
+void RenderFrameHostImpl::ActivateUserActivation(
+    blink::mojom::UserActivationNotificationType notification_type) {
+  user_activation_state_.Activate(notification_type);
+  history_user_activation_state_.Activate();
+}
+
+bool RenderFrameHostImpl::IsHistoryUserActivationActive() const {
+  return history_user_activation_state_.IsActive();
+}
+
+void RenderFrameHostImpl::ConsumeHistoryUserActivation() {
+  history_user_activation_state_.Consume();
+}
+
 void RenderFrameHostImpl::ClosePage() {
   // This path is taken when tab/window close is initiated by either the
   // browser process or via a window.close() call through a proxy. In both
@@ -6992,6 +7023,10 @@ void RenderFrameHostImpl::UpdateUserActivationState(
 
   CHECK(owner_);  // See `owner_` invariants about `lifecycle_state_`.
   owner_->UpdateUserActivationState(update_type, notification_type);
+}
+
+void RenderFrameHostImpl::DidConsumeHistoryUserActivation() {
+  owner_->DidConsumeHistoryUserActivation();
 }
 
 void RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged(

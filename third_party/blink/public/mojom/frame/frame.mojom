@@ -373,6 +373,11 @@ interface LocalFrameHost {
   UpdateUserActivationState(UserActivationUpdateType update_type,
                             UserActivationNotificationType notification_type);
 
+  // Called when a history navigation action that could potentially be used to
+  // back-trap a user is invoked. Keeps HistoryUserActivationState in sync
+  // between renderer and browser.
+  DidConsumeHistoryUserActivation();
+
   // Provides accessibility information about a find in page result.
   HandleAccessibilityFindInPageResult(FindInPageResultAXParams params);
 

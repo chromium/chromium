@@ -485,6 +485,10 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
       mojom::blink::ResourceTimingInfoPtr timing,
       const String& server_timing_values);
 
+  // Only implemented for LocalFrames.
+  virtual void ActivateHistoryUserActivationState() {}
+  virtual void ClearHistoryUserActivationState() {}
+
   mutable FrameTree tree_node_;
 
   Member<Page> page_;

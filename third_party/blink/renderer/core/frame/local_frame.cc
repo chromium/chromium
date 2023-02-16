@@ -2441,7 +2441,6 @@ void LocalFrame::NotifyUserActivation(
                                                       notification_type);
   Client()->NotifyUserActivation();
   NotifyUserActivationInFrameTree(notification_type);
-  DomWindow()->history_user_activation_state().Activate();
 }
 
 bool LocalFrame::ConsumeTransientUserActivation(
@@ -2452,6 +2451,17 @@ bool LocalFrame::ConsumeTransientUserActivation(
         mojom::blink::UserActivationNotificationType::kNone);
   }
   return ConsumeTransientUserActivationInFrameTree();
+}
+
+void LocalFrame::ConsumeHistoryUserActivation() {
+  // Notify the frame in the browser process, which will consume the activation
+  // in all frames of the page (consistent with the loop below).
+  GetLocalFrameHostRemote().DidConsumeHistoryUserActivation();
+  for (Frame* node = &Tree().Top(); node; node = node->Tree().TraverseNext()) {
+    if (LocalFrame* local_frame_node = DynamicTo<LocalFrame>(node)) {
+      local_frame_node->history_user_activation_state_.Consume();
+    }
+  }
 }
 
 namespace {

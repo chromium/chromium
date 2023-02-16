@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_HISTORY_USER_ACTIVATION_STATE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_HISTORY_USER_ACTIVATION_STATE_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_HISTORY_USER_ACTIVATION_STATE_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_HISTORY_USER_ACTIVATION_STATE_H_
+
+#include "base/time/time.h"
 
 namespace blink {
 
@@ -23,6 +25,20 @@ namespace blink {
 // traversals. Therefore there will be cases where
 // `HistoryUserActivationState::IsActive()` is true but
 // `UserActivationState::IsActive()` is false, and vice versa.
+//
+// State Replication in Browser and Renderers
+// ==========================================
+//
+// The history user activation state is replicated in the browser process (in
+// `RenderFrameHostImpl`) and in the renderer processes (in `LocalFrame`).
+// The replicated states across the browser and renderer processes are kept in
+// sync as follows:
+//
+// [A] Activation and Clear nearly identical to UserActivationState, except that
+// they are not passed to RemoteFrames in the renderer.
+//
+// [B] Consumption of activation state already occurs in the renderer, and
+// the browser is notified via mojo message (`DidConsumeHistoryUserActivation`);
 class HistoryUserActivationState {
  public:
   HistoryUserActivationState() = default;
@@ -33,6 +49,10 @@ class HistoryUserActivationState {
   bool IsActive() const {
     return last_used_user_activation_time_ != user_activation_time_;
   }
+  // Clear() is called at the same time as UserActivationState::Clear(). It does
+  // the same thing as Consume(), but add this helper for clarity at the
+  // callsites.
+  void Clear() { Consume(); }
 
  private:
   base::TimeTicks user_activation_time_;
@@ -41,4 +61,4 @@ class HistoryUserActivationState {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_HISTORY_USER_ACTIVATION_STATE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_HISTORY_USER_ACTIVATION_STATE_H_

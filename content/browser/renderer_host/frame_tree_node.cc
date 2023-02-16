@@ -797,6 +797,12 @@ bool FrameTreeNode::UpdateUserActivationState(
   return update_result;
 }
 
+void FrameTreeNode::DidConsumeHistoryUserActivation() {
+  for (FrameTreeNode* node : frame_tree().Nodes()) {
+    node->current_frame_host()->ConsumeHistoryUserActivation();
+  }
+}
+
 void FrameTreeNode::PruneChildFrameNavigationEntries(
     NavigationEntryImpl* entry) {
   for (size_t i = 0; i < current_frame_host()->child_count(); ++i) {

@@ -143,8 +143,8 @@ CloseWatcher* CloseWatcher::CreateInternal(
   CloseWatcher* watcher =
       MakeGarbageCollected<CloseWatcher>(window, dialog_for_use_counters);
 
-  if (window->history_user_activation_state().IsActive()) {
-    window->history_user_activation_state().Consume();
+  if (window->GetFrame()->IsHistoryUserActivationActive()) {
+    window->GetFrame()->ConsumeHistoryUserActivation();
     watcher->created_with_user_activation_ = true;
     watcher->grouped_with_previous_ = false;
   } else if (!stack.HasConsumedFreeWatcher()) {
@@ -178,14 +178,16 @@ void CloseWatcher::close(bool* cancel_skipped) {
   if (IsClosed() || dispatching_cancel_ || !DomWindow())
     return;
 
-  if (DomWindow()->history_user_activation_state().IsActive()) {
+  if (DomWindow()->GetFrame()->IsHistoryUserActivationActive()) {
     Event& cancel_event = *Event::CreateCancelable(event_type_names::kCancel);
     {
       base::AutoReset<bool> scoped_committing(&dispatching_cancel_, true);
       DispatchEvent(cancel_event);
     }
     if (cancel_event.defaultPrevented()) {
-      DomWindow()->history_user_activation_state().Consume();
+      if (DomWindow()) {
+        DomWindow()->GetFrame()->ConsumeHistoryUserActivation();
+      }
       return;
     }
   } else if (dialog_for_use_counters_ &&
