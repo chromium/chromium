@@ -13,6 +13,6 @@ ExtensionSystemProvider::ExtensionSystemProvider(
     BrowserContextDependencyManager* manager)
     : BrowserContextKeyedServiceFactory(name, manager) {}
 
-ExtensionSystemProvider::~ExtensionSystemProvider() {}
+ExtensionSystemProvider::~ExtensionSystemProvider() = default;
 
 }  // namespace extensions

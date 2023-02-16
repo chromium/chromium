@@ -134,9 +134,9 @@ void ConvertBinaryDictValuesToBase64(base::Value::Dict& dict) {
 
 }  // namespace
 
-RulesFunction::RulesFunction() {}
+RulesFunction::RulesFunction() = default;
 
-RulesFunction::~RulesFunction() {}
+RulesFunction::~RulesFunction() = default;
 
 ExtensionFunction::ResponseAction RulesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(CreateParams());

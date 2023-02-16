@@ -14,7 +14,7 @@ PolicyCheck::PolicyCheck(content::BrowserContext* context,
                          scoped_refptr<const Extension> extension)
     : PreloadCheck(extension), context_(context) {}
 
-PolicyCheck::~PolicyCheck() {}
+PolicyCheck::~PolicyCheck() = default;
 
 void PolicyCheck::Start(ResultCallback callback) {
   Errors errors;

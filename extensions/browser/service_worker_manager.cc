@@ -20,7 +20,7 @@ ServiceWorkerManager::ServiceWorkerManager(
   registry_observation_.Observe(ExtensionRegistry::Get(browser_context_));
 }
 
-ServiceWorkerManager::~ServiceWorkerManager() {}
+ServiceWorkerManager::~ServiceWorkerManager() = default;
 
 void ServiceWorkerManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,

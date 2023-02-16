@@ -19,7 +19,7 @@ namespace extensions {
 AsyncApiFunction::AsyncApiFunction()
     : work_task_runner_(content::GetIOThreadTaskRunner({})) {}
 
-AsyncApiFunction::~AsyncApiFunction() {}
+AsyncApiFunction::~AsyncApiFunction() = default;
 
 bool AsyncApiFunction::RunAsync() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -80,7 +80,7 @@ std::unique_ptr<EventListener> EventListener::CreateLazyListener(
       std::move(filter)));
 }
 
-EventListener::~EventListener() {}
+EventListener::~EventListener() = default;
 
 bool EventListener::Equals(const EventListener* other) const {
   // TODO(richardzh): compare browser_context_. We are making a change with two
@@ -153,7 +153,7 @@ EventListenerMap::EventListenerMap(Delegate* delegate)
     : delegate_(delegate) {
 }
 
-EventListenerMap::~EventListenerMap() {}
+EventListenerMap::~EventListenerMap() = default;
 
 bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {
   if (HasListener(listener.get()))

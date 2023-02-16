@@ -42,7 +42,7 @@ SendResponseHelper::SendResponseHelper(ExtensionFunction* function) {
       base::BindOnce(&SendResponseHelper::OnResponse, base::Unretained(this)));
 }
 
-SendResponseHelper::~SendResponseHelper() {}
+SendResponseHelper::~SendResponseHelper() = default;
 
 bool SendResponseHelper::GetResponse() {
   EXPECT_TRUE(has_response());

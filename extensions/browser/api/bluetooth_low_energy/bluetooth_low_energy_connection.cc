@@ -26,7 +26,7 @@ BluetoothLowEnergyConnection::BluetoothLowEnergyConnection(
       persistent_(persistent),
       connection_(connection.release()) {}
 
-BluetoothLowEnergyConnection::~BluetoothLowEnergyConnection() {}
+BluetoothLowEnergyConnection::~BluetoothLowEnergyConnection() = default;
 
 device::BluetoothGattConnection* BluetoothLowEnergyConnection::GetConnection()
     const {

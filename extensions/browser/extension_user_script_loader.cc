@@ -542,7 +542,7 @@ ExtensionUserScriptLoader::ExtensionUserScriptLoader(
   }
 }
 
-ExtensionUserScriptLoader::~ExtensionUserScriptLoader() {}
+ExtensionUserScriptLoader::~ExtensionUserScriptLoader() = default;
 
 void ExtensionUserScriptLoader::AddPendingDynamicScriptIDs(
     std::set<std::string> script_ids) {

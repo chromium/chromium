@@ -122,7 +122,7 @@ ExtensionNavigationThrottle::ExtensionNavigationThrottle(
     content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle) {}
 
-ExtensionNavigationThrottle::~ExtensionNavigationThrottle() {}
+ExtensionNavigationThrottle::~ExtensionNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 ExtensionNavigationThrottle::WillStartOrRedirectRequest() {

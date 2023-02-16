@@ -23,7 +23,7 @@ LazyEventDispatcher::LazyEventDispatcher(BrowserContext* browser_context,
     : browser_context_(browser_context),
       dispatch_function_(std::move(dispatch_function)) {}
 
-LazyEventDispatcher::~LazyEventDispatcher() {}
+LazyEventDispatcher::~LazyEventDispatcher() = default;
 
 void LazyEventDispatcher::Dispatch(const Event& event,
                                    const LazyContextId& dispatch_context,

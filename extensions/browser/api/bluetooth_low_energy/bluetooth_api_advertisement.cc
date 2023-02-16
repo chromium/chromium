@@ -29,6 +29,6 @@ BluetoothApiAdvertisement::BluetoothApiAdvertisement(
   DCHECK_CURRENTLY_ON(kThreadId);
 }
 
-BluetoothApiAdvertisement::~BluetoothApiAdvertisement() {}
+BluetoothApiAdvertisement::~BluetoothApiAdvertisement() = default;
 
 }  // namespace extensions

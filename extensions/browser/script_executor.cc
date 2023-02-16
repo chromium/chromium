@@ -344,7 +344,7 @@ ScriptExecutor::ScriptExecutor(content::WebContents* web_contents)
   CHECK(web_contents_);
 }
 
-ScriptExecutor::~ScriptExecutor() {}
+ScriptExecutor::~ScriptExecutor() = default;
 
 // static
 std::string ScriptExecutor::GenerateInjectionKey(const mojom::HostID& host_id,

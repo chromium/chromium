@@ -46,7 +46,7 @@ RulesCacheDelegate::RulesCacheDelegate(Type type, bool log_storage_init_delay)
       log_storage_init_delay_(log_storage_init_delay),
       notified_registry_(false) {}
 
-RulesCacheDelegate::~RulesCacheDelegate() {}
+RulesCacheDelegate::~RulesCacheDelegate() = default;
 
 // Returns the key to use for storing whether the rules have been stored.
 // static

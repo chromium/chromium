@@ -25,7 +25,7 @@ namespace extensions {
 
 DnsResolveFunction::DnsResolveFunction() = default;
 
-DnsResolveFunction::~DnsResolveFunction() {}
+DnsResolveFunction::~DnsResolveFunction() = default;
 
 ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

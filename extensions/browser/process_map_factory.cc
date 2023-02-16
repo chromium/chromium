@@ -30,7 +30,7 @@ ProcessMapFactory::ProcessMapFactory()
   // No dependencies on other services.
 }
 
-ProcessMapFactory::~ProcessMapFactory() {}
+ProcessMapFactory::~ProcessMapFactory() = default;
 
 KeyedService* ProcessMapFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

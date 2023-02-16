@@ -423,7 +423,7 @@ base::LazyInstance<WebRequestActionFactory>::Leaky
 // WebRequestAction
 //
 
-WebRequestAction::~WebRequestAction() {}
+WebRequestAction::~WebRequestAction() = default;
 
 bool WebRequestAction::Equals(const WebRequestAction* other) const {
   return type() == other->type();
@@ -524,7 +524,7 @@ WebRequestCancelAction::WebRequestCancelAction()
                        std::numeric_limits<int>::min(),
                        STRATEGY_NONE) {}
 
-WebRequestCancelAction::~WebRequestCancelAction() {}
+WebRequestCancelAction::~WebRequestCancelAction() = default;
 
 std::string WebRequestCancelAction::GetName() const {
   return keys::kCancelRequestType;
@@ -551,7 +551,7 @@ WebRequestRedirectAction::WebRequestRedirectAction(const GURL& redirect_url)
                        STRATEGY_DEFAULT),
       redirect_url_(redirect_url) {}
 
-WebRequestRedirectAction::~WebRequestRedirectAction() {}
+WebRequestRedirectAction::~WebRequestRedirectAction() = default;
 
 bool WebRequestRedirectAction::Equals(const WebRequestAction* other) const {
   return WebRequestAction::Equals(other) &&
@@ -647,7 +647,7 @@ WebRequestRedirectByRegExAction::WebRequestRedirectByRegExAction(
       from_pattern_(std::move(from_pattern)),
       to_pattern_(to_pattern.data(), to_pattern.size()) {}
 
-WebRequestRedirectByRegExAction::~WebRequestRedirectByRegExAction() {}
+WebRequestRedirectByRegExAction::~WebRequestRedirectByRegExAction() = default;
 
 // About the syntax of the two languages:
 //
@@ -749,7 +749,7 @@ WebRequestSetRequestHeaderAction::WebRequestSetRequestHeaderAction(
       name_(name),
       value_(value) {}
 
-WebRequestSetRequestHeaderAction::~WebRequestSetRequestHeaderAction() {}
+WebRequestSetRequestHeaderAction::~WebRequestSetRequestHeaderAction() = default;
 
 bool WebRequestSetRequestHeaderAction::Equals(
     const WebRequestAction* other) const {
@@ -787,7 +787,8 @@ WebRequestRemoveRequestHeaderAction::WebRequestRemoveRequestHeaderAction(
                        STRATEGY_DEFAULT),
       name_(name) {}
 
-WebRequestRemoveRequestHeaderAction::~WebRequestRemoveRequestHeaderAction() {}
+WebRequestRemoveRequestHeaderAction::~WebRequestRemoveRequestHeaderAction() =
+    default;
 
 bool WebRequestRemoveRequestHeaderAction::Equals(
     const WebRequestAction* other) const {
@@ -827,7 +828,8 @@ WebRequestAddResponseHeaderAction::WebRequestAddResponseHeaderAction(
       name_(name),
       value_(value) {}
 
-WebRequestAddResponseHeaderAction::~WebRequestAddResponseHeaderAction() {}
+WebRequestAddResponseHeaderAction::~WebRequestAddResponseHeaderAction() =
+    default;
 
 bool WebRequestAddResponseHeaderAction::Equals(
     const WebRequestAction* other) const {
@@ -878,7 +880,8 @@ WebRequestRemoveResponseHeaderAction::WebRequestRemoveResponseHeaderAction(
       value_(value),
       has_value_(has_value) {}
 
-WebRequestRemoveResponseHeaderAction::~WebRequestRemoveResponseHeaderAction() {}
+WebRequestRemoveResponseHeaderAction::~WebRequestRemoveResponseHeaderAction() =
+    default;
 
 bool WebRequestRemoveResponseHeaderAction::Equals(
     const WebRequestAction* other) const {
@@ -930,7 +933,7 @@ WebRequestIgnoreRulesAction::WebRequestIgnoreRulesAction(
                        STRATEGY_NONE),
       ignore_tag_(ignore_tag) {}
 
-WebRequestIgnoreRulesAction::~WebRequestIgnoreRulesAction() {}
+WebRequestIgnoreRulesAction::~WebRequestIgnoreRulesAction() = default;
 
 bool WebRequestIgnoreRulesAction::Equals(const WebRequestAction* other) const {
   if (!WebRequestAction::Equals(other))
@@ -965,7 +968,7 @@ WebRequestRequestCookieAction::WebRequestRequestCookieAction(
                        STRATEGY_DEFAULT),
       request_cookie_modification_(std::move(request_cookie_modification)) {}
 
-WebRequestRequestCookieAction::~WebRequestRequestCookieAction() {}
+WebRequestRequestCookieAction::~WebRequestRequestCookieAction() = default;
 
 bool WebRequestRequestCookieAction::Equals(
     const WebRequestAction* other) const {
@@ -1013,7 +1016,7 @@ WebRequestResponseCookieAction::WebRequestResponseCookieAction(
                        STRATEGY_DEFAULT),
       response_cookie_modification_(std::move(response_cookie_modification)) {}
 
-WebRequestResponseCookieAction::~WebRequestResponseCookieAction() {}
+WebRequestResponseCookieAction::~WebRequestResponseCookieAction() = default;
 
 bool WebRequestResponseCookieAction::Equals(
     const WebRequestAction* other) const {

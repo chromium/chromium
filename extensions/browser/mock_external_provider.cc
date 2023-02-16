@@ -16,7 +16,7 @@ MockExternalProvider::MockExternalProvider(VisitorInterface* visitor,
                                            mojom::ManifestLocation location)
     : location_(location), visitor_(visitor), visit_count_(0) {}
 
-MockExternalProvider::~MockExternalProvider() {}
+MockExternalProvider::~MockExternalProvider() = default;
 
 void MockExternalProvider::UpdateOrAddExtension(const ExtensionId& id,
                                                 const std::string& version_str,

@@ -13,7 +13,7 @@ namespace extensions {
 
 ExtensionRegistry::ExtensionRegistry(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
-ExtensionRegistry::~ExtensionRegistry() {}
+ExtensionRegistry::~ExtensionRegistry() = default;
 
 // static
 ExtensionRegistry* ExtensionRegistry::Get(content::BrowserContext* context) {

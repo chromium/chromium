@@ -94,7 +94,7 @@ ExtensionAction::ExtensionAction(const Extension& extension,
   Populate(extension, manifest_data);
 }
 
-ExtensionAction::~ExtensionAction() {}
+ExtensionAction::~ExtensionAction() = default;
 
 void ExtensionAction::SetPopupUrl(int tab_id, const GURL& url) {
   // We store |url| even if it is empty, rather than removing a URL from the

@@ -283,7 +283,7 @@ bool WebRequestRulesRegistry::IsEmpty() const {
   return true;
 }
 
-WebRequestRulesRegistry::~WebRequestRulesRegistry() {}
+WebRequestRulesRegistry::~WebRequestRulesRegistry() = default;
 
 base::Time WebRequestRulesRegistry::GetExtensionInstallationTime(
     const std::string& extension_id) const {

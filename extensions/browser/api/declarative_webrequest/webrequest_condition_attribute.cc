@@ -88,9 +88,9 @@ base::LazyInstance<WebRequestConditionAttributeFactory>::Leaky
 // WebRequestConditionAttribute
 //
 
-WebRequestConditionAttribute::WebRequestConditionAttribute() {}
+WebRequestConditionAttribute::WebRequestConditionAttribute() = default;
 
-WebRequestConditionAttribute::~WebRequestConditionAttribute() {}
+WebRequestConditionAttribute::~WebRequestConditionAttribute() = default;
 
 bool WebRequestConditionAttribute::Equals(
     const WebRequestConditionAttribute* other) const {
@@ -405,7 +405,7 @@ HeaderMatcher::StringMatchTest::Create(const base::Value& data,
       new StringMatchTest(data.GetString(), type, case_sensitive));
 }
 
-HeaderMatcher::StringMatchTest::~StringMatchTest() {}
+HeaderMatcher::StringMatchTest::~StringMatchTest() = default;
 
 bool HeaderMatcher::StringMatchTest::Matches(
     const std::string& str) const {
@@ -447,7 +447,7 @@ HeaderMatcher::HeaderMatchTest::HeaderMatchTest(
     : name_match_(std::move(name_match)),
       value_match_(std::move(value_match)) {}
 
-HeaderMatcher::HeaderMatchTest::~HeaderMatchTest() {}
+HeaderMatcher::HeaderMatchTest::~HeaderMatchTest() = default;
 
 // static
 std::unique_ptr<const HeaderMatcher::HeaderMatchTest>

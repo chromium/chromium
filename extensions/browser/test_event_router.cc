@@ -9,7 +9,7 @@
 
 namespace extensions {
 
-TestEventRouter::EventObserver::~EventObserver() {}
+TestEventRouter::EventObserver::~EventObserver() = default;
 
 void TestEventRouter::EventObserver::OnDispatchEventToExtension(
     const std::string& extension_id,
@@ -20,7 +20,7 @@ void TestEventRouter::EventObserver::OnBroadcastEvent(const Event& event) {}
 TestEventRouter::TestEventRouter(content::BrowserContext* context)
     : EventRouter(context, ExtensionPrefs::Get(context)) {}
 
-TestEventRouter::~TestEventRouter() {}
+TestEventRouter::~TestEventRouter() = default;
 
 int TestEventRouter::GetEventCount(std::string event_name) const {
   if (seen_events_.count(event_name) == 0)

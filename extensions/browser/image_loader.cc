@@ -212,7 +212,7 @@ std::vector<ImageLoader::LoadResult> LoadImagesBlocking(
 ////////////////////////////////////////////////////////////////////////////////
 // ImageLoader
 
-ImageLoader::ImageLoader() {}
+ImageLoader::ImageLoader() = default;
 
 ImageLoader::~ImageLoader() {
 }

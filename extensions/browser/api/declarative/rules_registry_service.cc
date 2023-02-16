@@ -53,7 +53,7 @@ RulesRegistryService::RulesRegistryService(content::BrowserContext* context)
   }
 }
 
-RulesRegistryService::~RulesRegistryService() {}
+RulesRegistryService::~RulesRegistryService() = default;
 
 int RulesRegistryService::GetNextRulesRegistryID() {
   return ++current_rules_registry_id_;

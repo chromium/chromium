@@ -451,7 +451,7 @@ RendererStartupHelperFactory::RendererStartupHelperFactory()
   // No dependencies on other services.
 }
 
-RendererStartupHelperFactory::~RendererStartupHelperFactory() {}
+RendererStartupHelperFactory::~RendererStartupHelperFactory() = default;
 
 KeyedService* RendererStartupHelperFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

@@ -13,7 +13,7 @@ namespace extensions {
 
 PreloadCheckGroup::PreloadCheckGroup() : PreloadCheck(nullptr) {}
 
-PreloadCheckGroup::~PreloadCheckGroup() {}
+PreloadCheckGroup::~PreloadCheckGroup() = default;
 
 void PreloadCheckGroup::AddCheck(PreloadCheck* check) {
   DCHECK_EQ(0, running_checks_);

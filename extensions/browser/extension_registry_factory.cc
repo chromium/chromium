@@ -32,7 +32,7 @@ ExtensionRegistryFactory::ExtensionRegistryFactory()
   // No dependencies on other services.
 }
 
-ExtensionRegistryFactory::~ExtensionRegistryFactory() {}
+ExtensionRegistryFactory::~ExtensionRegistryFactory() = default;
 
 KeyedService* ExtensionRegistryFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

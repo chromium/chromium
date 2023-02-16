@@ -17,7 +17,7 @@ SizeConstraints::SizeConstraints(const gfx::Size& min_size,
                                  const gfx::Size& max_size)
     : minimum_size_(min_size), maximum_size_(max_size) {}
 
-SizeConstraints::~SizeConstraints() {}
+SizeConstraints::~SizeConstraints() = default;
 
 // static
 gfx::Size SizeConstraints::AddFrameToConstraints(

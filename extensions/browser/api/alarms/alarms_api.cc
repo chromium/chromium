@@ -89,7 +89,7 @@ AlarmsCreateFunction::AlarmsCreateFunction()
 AlarmsCreateFunction::AlarmsCreateFunction(base::Clock* clock)
     : clock_(clock) {}
 
-AlarmsCreateFunction::~AlarmsCreateFunction() {}
+AlarmsCreateFunction::~AlarmsCreateFunction() = default;
 
 ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
   std::unique_ptr<alarms::Create::Params> params(

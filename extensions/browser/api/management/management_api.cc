@@ -834,9 +834,11 @@ ExtensionFunction::ResponseAction ManagementSetLaunchTypeFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-ManagementGenerateAppForLinkFunction::ManagementGenerateAppForLinkFunction() {}
+ManagementGenerateAppForLinkFunction::ManagementGenerateAppForLinkFunction() =
+    default;
 
-ManagementGenerateAppForLinkFunction::~ManagementGenerateAppForLinkFunction() {}
+ManagementGenerateAppForLinkFunction::~ManagementGenerateAppForLinkFunction() =
+    default;
 
 void ManagementGenerateAppForLinkFunction::FinishCreateWebApp(
     const std::string& web_app_id,
@@ -1056,7 +1058,7 @@ ManagementEventRouter::ManagementEventRouter(content::BrowserContext* context)
       ExtensionRegistry::Get(browser_context_));
 }
 
-ManagementEventRouter::~ManagementEventRouter() {}
+ManagementEventRouter::~ManagementEventRouter() = default;
 
 void ManagementEventRouter::OnExtensionLoaded(
     content::BrowserContext* browser_context,

@@ -27,7 +27,7 @@ BluetoothLowEnergyNotifySession::BluetoothLowEnergyNotifySession(
       persistent_(persistent),
       session_(session.release()) {}
 
-BluetoothLowEnergyNotifySession::~BluetoothLowEnergyNotifySession() {}
+BluetoothLowEnergyNotifySession::~BluetoothLowEnergyNotifySession() = default;
 
 device::BluetoothGattNotifySession*
 BluetoothLowEnergyNotifySession::GetSession() const {

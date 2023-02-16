@@ -34,7 +34,7 @@ namespace NotifyFail = api::test::NotifyFail;
 namespace PassMessage = api::test::PassMessage;
 namespace WaitForRoundTrip = api::test::WaitForRoundTrip;
 
-TestExtensionFunction::~TestExtensionFunction() {}
+TestExtensionFunction::~TestExtensionFunction() = default;
 
 bool TestExtensionFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
@@ -46,14 +46,14 @@ bool TestExtensionFunction::PreRunValidation(std::string* error) {
   return true;
 }
 
-TestNotifyPassFunction::~TestNotifyPassFunction() {}
+TestNotifyPassFunction::~TestNotifyPassFunction() = default;
 
 ExtensionFunction::ResponseAction TestNotifyPassFunction::Run() {
   TestApiObserverRegistry::GetInstance()->NotifyTestPassed(browser_context());
   return RespondNow(NoArguments());
 }
 
-TestNotifyFailFunction::~TestNotifyFailFunction() {}
+TestNotifyFailFunction::~TestNotifyFailFunction() = default;
 
 ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
   std::unique_ptr<NotifyFail::Params> params(
@@ -64,7 +64,7 @@ ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-TestLogFunction::~TestLogFunction() {}
+TestLogFunction::~TestLogFunction() = default;
 
 ExtensionFunction::ResponseAction TestLogFunction::Run() {
   std::unique_ptr<Log::Params> params(Log::Params::Create(args()));
@@ -139,7 +139,7 @@ TestGetConfigFunction::TestConfigState::GetInstance() {
   return base::Singleton<TestConfigState>::get();
 }
 
-TestGetConfigFunction::~TestGetConfigFunction() {}
+TestGetConfigFunction::~TestGetConfigFunction() = default;
 
 ExtensionFunction::ResponseAction TestGetConfigFunction::Run() {
   TestConfigState* test_config_state = TestConfigState::GetInstance();
@@ -149,7 +149,7 @@ ExtensionFunction::ResponseAction TestGetConfigFunction::Run() {
       OneArgument(base::Value(test_config_state->config_state()->Clone())));
 }
 
-TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() {}
+TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() = default;
 
 ExtensionFunction::ResponseAction TestWaitForRoundTripFunction::Run() {
   std::unique_ptr<WaitForRoundTrip::Params> params(

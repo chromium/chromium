@@ -231,7 +231,7 @@ AppWindowRegistry::Factory::Factory()
           "AppWindowRegistry",
           BrowserContextDependencyManager::GetInstance()) {}
 
-AppWindowRegistry::Factory::~Factory() {}
+AppWindowRegistry::Factory::~Factory() = default;
 
 KeyedService* AppWindowRegistry::Factory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

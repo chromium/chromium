@@ -32,7 +32,7 @@ LazyEventDispatchUtil::LazyEventDispatchUtil(
       ExtensionRegistry::Get(browser_context_));
 }
 
-LazyEventDispatchUtil::~LazyEventDispatchUtil() {}
+LazyEventDispatchUtil::~LazyEventDispatchUtil() = default;
 
 void LazyEventDispatchUtil::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

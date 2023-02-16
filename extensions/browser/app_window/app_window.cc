@@ -151,7 +151,7 @@ const int AppWindow::BoundsSpecification::kUnspecifiedPosition = INT_MIN;
 AppWindow::BoundsSpecification::BoundsSpecification()
     : bounds(kUnspecifiedPosition, kUnspecifiedPosition, 0, 0) {}
 
-AppWindow::BoundsSpecification::~BoundsSpecification() {}
+AppWindow::BoundsSpecification::~BoundsSpecification() = default;
 
 void AppWindow::BoundsSpecification::ResetBounds() {
   bounds.SetRect(kUnspecifiedPosition, kUnspecifiedPosition, 0, 0);
@@ -179,7 +179,7 @@ AppWindow::CreateParams::CreateParams()
 
 AppWindow::CreateParams::CreateParams(const CreateParams& other) = default;
 
-AppWindow::CreateParams::~CreateParams() {}
+AppWindow::CreateParams::~CreateParams() = default;
 
 gfx::Rect AppWindow::CreateParams::GetInitialWindowBounds(
     const gfx::Insets& frame_insets) const {

@@ -20,7 +20,7 @@ void CheckOnValidThread() { DCHECK_CURRENTLY_ON(BrowserThread::IO); }
 
 }  // namespace
 
-InfoMap::InfoMap() {}
+InfoMap::InfoMap() = default;
 
 const ExtensionSet& InfoMap::extensions() const {
   CheckOnValidThread();

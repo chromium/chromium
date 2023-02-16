@@ -96,9 +96,9 @@ ServiceWorkerTaskQueue::~ServiceWorkerTaskQueue() {
     service_worker_context->RemoveObserver(this);
 }
 
-ServiceWorkerTaskQueue::TestObserver::TestObserver() {}
+ServiceWorkerTaskQueue::TestObserver::TestObserver() = default;
 
-ServiceWorkerTaskQueue::TestObserver::~TestObserver() {}
+ServiceWorkerTaskQueue::TestObserver::~TestObserver() = default;
 
 // static
 ServiceWorkerTaskQueue* ServiceWorkerTaskQueue::Get(BrowserContext* context) {

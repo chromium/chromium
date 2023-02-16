@@ -83,7 +83,8 @@ void ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt() {
   ShutdownNotifierFactory::GetInstance();
 }
 
-ExtensionServiceWorkerMessageFilter::~ExtensionServiceWorkerMessageFilter() {}
+ExtensionServiceWorkerMessageFilter::~ExtensionServiceWorkerMessageFilter() =
+    default;
 
 void ExtensionServiceWorkerMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,

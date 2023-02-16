@@ -23,7 +23,7 @@ ExtensionsBrowserClient* g_extension_browser_client = nullptr;
 
 }  // namespace
 
-ExtensionsBrowserClient::ExtensionsBrowserClient() {}
+ExtensionsBrowserClient::ExtensionsBrowserClient() = default;
 ExtensionsBrowserClient::~ExtensionsBrowserClient() = default;
 
 ExtensionsBrowserClient* ExtensionsBrowserClient::Get() {

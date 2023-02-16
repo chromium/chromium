@@ -30,7 +30,7 @@ ExternalInstallInfoFile::ExternalInstallInfoFile(
 ExternalInstallInfoFile::ExternalInstallInfoFile(
     ExternalInstallInfoFile&& other) = default;
 
-ExternalInstallInfoFile::~ExternalInstallInfoFile() {}
+ExternalInstallInfoFile::~ExternalInstallInfoFile() = default;
 
 ExternalInstallInfoUpdateUrl::ExternalInstallInfoUpdateUrl(
     const std::string& extension_id,
@@ -46,6 +46,6 @@ ExternalInstallInfoUpdateUrl::ExternalInstallInfoUpdateUrl(
 ExternalInstallInfoUpdateUrl::ExternalInstallInfoUpdateUrl(
     ExternalInstallInfoUpdateUrl&& other) = default;
 
-ExternalInstallInfoUpdateUrl::~ExternalInstallInfoUpdateUrl() {}
+ExternalInstallInfoUpdateUrl::~ExternalInstallInfoUpdateUrl() = default;
 
 }  // namespace extensions
