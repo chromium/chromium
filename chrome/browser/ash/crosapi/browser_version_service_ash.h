@@ -62,7 +62,7 @@ class BrowserVersionServiceAsh
   component_updater::ComponentUpdateService* const component_update_service_;
 
   // Optional delegate member for testing.
-  raw_ptr<const Delegate> delegate_for_testing_;
+  raw_ptr<const Delegate> delegate_for_testing_ = nullptr;
 
   // Support any number of connections.
   mojo::ReceiverSet<mojom::BrowserVersionService> receivers_;
