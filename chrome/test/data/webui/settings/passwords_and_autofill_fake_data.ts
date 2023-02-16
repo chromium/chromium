@@ -445,7 +445,10 @@ export class TestAutofillManager extends TestBrowserProxy implements
     // Set these to have non-empty data.
     this.data = {
       addresses: [],
-      accountInfo: {email: 'stub-user@example.com'},
+      accountInfo: {
+        email: 'stub-user@example.com',
+        isSyncEnabledForAutofillProfiles: true,
+      },
     };
 
     // Holds the last callbacks so they can be called when needed.

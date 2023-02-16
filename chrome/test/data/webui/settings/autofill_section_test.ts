@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CountryDetailManagerImpl, CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
+import {AutofillManagerImpl, CountryDetailManagerImpl, CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -39,13 +39,64 @@ suite('AutofillSectionUiTest', function() {
     const accountAddress = createAddressEntry();
     accountAddress.metadata!.source =
         chrome.autofillPrivate.AddressSource.ACCOUNT;
-    const section = await createAutofillSection([address, accountAddress], {});
+
+    const autofillManager = new TestAutofillManager();
+    autofillManager.data.addresses = [address, accountAddress];
+    autofillManager.data.accountInfo = {
+      email: 'stub-user@example.com',
+      isSyncEnabledForAutofillProfiles: true,
+    };
+    AutofillManagerImpl.setInstance(autofillManager);
+
+    const section = document.createElement('settings-autofill-section');
+    document.body.appendChild(section);
+    await autofillManager.whenCalled('getAddressList');
+
+    await flushTasks();
+
+    // await Promise.resolve();
 
     {
       const dialog = await initiateRemoving(section, 0);
-      assertFalse(
-          isVisible(dialog.$.accountAddressDescription),
+      assertTrue(
+          !isVisible(dialog.$.accountAddressDescription),
           'account notice should be invisible for non-account address');
+      assertTrue(
+          !isVisible(dialog.$.localAddressDescription),
+          'sync is enabled, an appropriate message should be visible');
+      assertTrue(
+          isVisible(dialog.$.syncAddressDescription),
+          'sync is enabled, an appropriate message should be visible');
+      dialog.$.dialog.close();
+      // Make sure closing clean-ups are finished.
+      await eventToPromise('close', dialog.$.dialog);
+    }
+
+    await flushTasks();
+
+    const changeListener =
+        autofillManager.lastCallback.setPersonalDataManagerListener;
+    assertTrue(
+        !!changeListener,
+        'PersonalDataChangedListener should be set in the section element');
+
+    // Imitate disabling sync.
+    changeListener(autofillManager.data.addresses, [], [], {
+      email: 'stub-user@example.com',
+      isSyncEnabledForAutofillProfiles: false,
+    });
+
+    {
+      const dialog = await initiateRemoving(section, 0);
+      assertTrue(
+          !isVisible(dialog.$.accountAddressDescription),
+          'account notice should be invisible for non-account address');
+      assertTrue(
+          isVisible(dialog.$.localAddressDescription),
+          'sync is disabled, an appropriate message should be visible');
+      assertTrue(
+          !isVisible(dialog.$.syncAddressDescription),
+          'sync is disabled, an appropriate message should be visible');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
@@ -57,7 +108,13 @@ suite('AutofillSectionUiTest', function() {
       const dialog = await initiateRemoving(section, 1);
       assertTrue(
           isVisible(dialog.$.accountAddressDescription),
-          'account notice should be visible for account address');
+          'account notice should be invisible for non-account address');
+      assertTrue(
+          !isVisible(dialog.$.localAddressDescription),
+          'non-account messages should not be visible');
+      assertTrue(
+          !isVisible(dialog.$.syncAddressDescription),
+          'non-account messages should not be visible');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);

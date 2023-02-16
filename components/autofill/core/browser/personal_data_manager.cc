@@ -1817,6 +1817,11 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
   GetProfileUpdateStrikeDatabase()->ClearStrikes(guid);
 }
 
+bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) const {
+  return sync_service_ != nullptr && sync_service_->CanSyncFeatureStart() &&
+         sync_service_->GetPreferredDataTypes().Has(model_type);
+}
+
 AutofillProfileMigrationStrikeDatabase*
 PersonalDataManager::GetProfileMigrationStrikeDatabase() {
   return const_cast<AutofillProfileMigrationStrikeDatabase*>(
@@ -2527,11 +2532,6 @@ bool PersonalDataManager::HasPendingQueries() {
          pending_customer_data_query_ != 0 || pending_upi_ids_query_ != 0 ||
          pending_offer_data_query_ != 0 ||
          pending_virtual_card_usage_data_query_ != 0;
-}
-
-bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) {
-  return sync_service_ != nullptr && sync_service_->CanSyncFeatureStart() &&
-         sync_service_->GetPreferredDataTypes().Has(model_type);
 }
 
 scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {

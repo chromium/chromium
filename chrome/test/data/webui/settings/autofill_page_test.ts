@@ -250,7 +250,10 @@ suite('PasswordsAndForms', function() {
       const addressList = [createAddressEntry(), createAddressEntry()];
       const cardList = [createCreditCardEntry(), createCreditCardEntry()];
       const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {email: 'stub-user@example.com'};
+      const accountInfo = {
+        email: 'stub-user@example.com',
+        isSyncEnabledForAutofillProfiles: true,
+      };
       autofillManager.lastCallback.setPersonalDataManagerListener!
           (addressList, cardList, ibanList, accountInfo);
       flush();
@@ -278,7 +281,10 @@ suite('PasswordsAndForms', function() {
       const addressList = [createAddressEntry(), createAddressEntry()];
       const cardList = [createCreditCardEntry(), createCreditCardEntry()];
       const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {email: 'stub-user@example.com'};
+      const accountInfo = {
+        email: 'stub-user@example.com',
+        isSyncEnabledForAutofillProfiles: true,
+      };
       paymentsManager.lastCallback.setPersonalDataManagerListener!
           (addressList, cardList, ibanList, accountInfo);
       flush();
@@ -306,7 +312,10 @@ suite('PasswordsAndForms', function() {
       const addressList = [createAddressEntry(), createAddressEntry()];
       const cardList = [createCreditCardEntry(), createCreditCardEntry()];
       const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {email: 'stub-user@example.com'};
+      const accountInfo = {
+        email: 'stub-user@example.com',
+        isSyncEnabledForAutofillProfiles: true,
+      };
       paymentsManager.lastCallback.setPersonalDataManagerListener!
           (addressList, cardList, ibanList, accountInfo);
       flush();

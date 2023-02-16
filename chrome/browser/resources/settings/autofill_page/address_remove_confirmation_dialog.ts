@@ -22,7 +22,9 @@ export interface SettingsAddressRemoveConfirmationDialogElement {
     body: HTMLElement,
     cancel: HTMLElement,
     dialog: CrDialogElement,
+    localAddressDescription: HTMLElement,
     remove: HTMLElement,
+    syncAddressDescription: HTMLElement,
   };
 }
 
@@ -45,7 +47,12 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
 
       isAccountAddress_: {
         type: Boolean,
-        computed: 'isAddressStoredInAccount_(address)',
+        computed: 'computeIsAccountAddress_(address)',
+      },
+
+      isProfileSyncEnabled_: {
+        type: Boolean,
+        computed: 'computeIsProfileSyncEnabled_(accountInfo)',
       },
     };
   }
@@ -53,16 +60,22 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
   address: chrome.autofillPrivate.AddressEntry;
   accountInfo?: chrome.autofillPrivate.AccountInfo;
   private isAccountAddress_: boolean;
+  private isProfileSyncEnabled_: boolean;
 
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  private isAddressStoredInAccount_(
+  private computeIsAccountAddress_(
       address: chrome.autofillPrivate.AddressEntry): boolean {
     return address.metadata !== undefined &&
         address.metadata.source ===
         chrome.autofillPrivate.AddressSource.ACCOUNT;
+  }
+
+  private computeIsProfileSyncEnabled_(
+      accountInfo?: chrome.autofillPrivate.AccountInfo): boolean {
+    return !!accountInfo?.isSyncEnabledForAutofillProfiles;
   }
 
   private onRemoveClick() {

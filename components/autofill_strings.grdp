@@ -205,8 +205,11 @@
   <message name="IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before the address deletion." formatter_data="android_java">
     This address will be deleted from your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before the address deletion." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before the address deletion (with syncing enabled)." formatter_data="android_java">
     This address will be deleted from this and your other signed-in devices
+  </message>
+  <message name="IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before a local (syncing is disabled) address deletion.">
+    This address will be deleted from this device
   </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
     A required field is empty. Fill it before saving.

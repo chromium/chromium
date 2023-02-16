@@ -317,6 +317,8 @@ absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
 
   api::autofill_private::AccountInfo api_account;
   api_account.email = account->email;
+  api_account.is_sync_enabled_for_autofill_profiles =
+      personal_data.IsSyncEnabledFor(syncer::ModelType::AUTOFILL_PROFILE);
   return std::move(api_account);
 }
 

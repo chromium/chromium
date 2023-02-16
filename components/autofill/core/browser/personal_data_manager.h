@@ -552,6 +552,9 @@ class PersonalDataManager : public KeyedService,
   // updates. Does nothing if the strike database is not available.
   void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
 
+  // Returns true if Sync is enabled for `model_type`.
+  bool IsSyncEnabledFor(syncer::ModelType model_type) const;
+
   // Used to automatically import addresses without a prompt. Should only be
   // set to true in tests.
   void set_auto_accept_address_imports_for_testing(bool auto_accept) {
@@ -892,9 +895,6 @@ class PersonalDataManager : public KeyedService,
 
   // Returns if there are any pending queries to the web database.
   bool HasPendingQueries();
-
-  // Returns true if the sync is enabled for |model_type|.
-  bool IsSyncEnabledFor(syncer::ModelType model_type);
 
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();

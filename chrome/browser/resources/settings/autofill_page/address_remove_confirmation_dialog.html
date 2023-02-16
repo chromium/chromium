@@ -2,7 +2,12 @@
   <div slot="title">$i18n{removeAddressConfirmationTitle}</div>
   <div slot="body" id="body">
     <span hidden="[[isAccountAddress_]]">
-      $i18n{removeAddressConfirmationDescription}
+      <span id="syncAddressDescription" hidden="[[!isProfileSyncEnabled_]]">
+        $i18n{removeSyncAddressConfirmationDescription}
+      </span>
+      <span id="localAddressDescription" hidden="[[isProfileSyncEnabled_]]">
+        $i18n{removeLocalAddressConfirmationDescription}
+      </span>
     </span>
     <span id="accountAddressDescription" hidden="[[!isAccountAddress_]]">
       [[i18n('deleteAccountAddressSourceNotice', accountInfo.email)]]

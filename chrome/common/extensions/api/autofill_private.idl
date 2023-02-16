@@ -8,6 +8,7 @@ namespace autofillPrivate {
   // Subset of properties from the user account (signin component, AccountInfo).
   dictionary AccountInfo {
     DOMString email;
+    boolean isSyncEnabledForAutofillProfiles;
   };
 
   // Fields used as part of an address.
