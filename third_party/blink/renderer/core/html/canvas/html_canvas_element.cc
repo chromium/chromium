@@ -536,21 +536,33 @@ void HTMLCanvasElement::SetContextCreationWasBlocked() {
 void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
   if (rect.isEmpty())
     return;
-  if (GetLayoutObject() && GetLayoutObject()->PreviousVisibilityVisible() &&
-      GetDocument().GetPage())
-    GetDocument().GetPage()->Animator().SetHasCanvasInvalidation();
+
+  // To avoid issuing invalidations multiple times, we can check |dirty_rect_|
+  // and only issue invalidations the first time it becomes non-empty.
+  if (dirty_rect_.IsEmpty()) {
+    if (LayoutObject* layout_object = GetLayoutObject()) {
+      if (layout_object->PreviousVisibilityVisible() &&
+          GetDocument().GetPage()) {
+        GetDocument().GetPage()->Animator().SetHasCanvasInvalidation();
+      }
+      if (!LowLatencyEnabled()) {
+        layout_object->SetShouldCheckForPaintInvalidation();
+      }
+    }
+  }
+
   canvas_is_clear_ = false;
-  if (GetLayoutObject() && !LowLatencyEnabled())
-    GetLayoutObject()->SetShouldCheckForPaintInvalidation();
-  if (IsRenderingContext2D() && context_->ShouldAntialias() && GetPage()) {
+  const bool is_rendering_context2d = IsRenderingContext2D();
+  if (is_rendering_context2d && context_->ShouldAntialias()) {
     gfx::RectF inflated_rect(gfx::SkIRectToRect(rect));
     inflated_rect.Outset(1);
     dirty_rect_.Union(inflated_rect);
   } else {
     dirty_rect_.Union(gfx::RectF(gfx::SkIRectToRect(rect)));
   }
-  if (IsRenderingContext2D() && canvas2d_bridge_)
+  if (is_rendering_context2d && canvas2d_bridge_) {
     canvas2d_bridge_->DidDraw();
+  }
 }
 
 void HTMLCanvasElement::PreFinalizeFrame() {
