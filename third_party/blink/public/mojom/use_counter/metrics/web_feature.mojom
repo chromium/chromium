@@ -3805,6 +3805,7 @@ enum WebFeature {
   kPopoverTypeAuto = 4464,
   kPopoverTypeManual = 4465,
   kPopoverTypeInvalid = 4466,
+  kCSSAnchorPositioning = 4467,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

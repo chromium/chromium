@@ -42236,6 +42236,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4464" label="PopoverTypeAuto"/>
   <int value="4465" label="PopoverTypeManual"/>
   <int value="4466" label="PopoverTypeInvalid"/>
+  <int value="4467" label="CSSAnchorPositioning"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

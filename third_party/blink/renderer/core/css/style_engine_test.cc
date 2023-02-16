@@ -6027,4 +6027,21 @@ TEST_F(StyleEngineTest, InitialStyleCount_EnsureComputedStyle) {
          "display:none";
 }
 
+TEST_F(StyleEngineTest, UseCountCSSAnchorPositioning) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAnchorPositioning));
+
+  SetBodyInnerHTML("<style>#foo { top: anchor(top); }");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAnchorPositioning));
+
+  ClearUseCounter(WebFeature::kCSSAnchorPositioning);
+  SetBodyInnerHTML("<style>#foo { width: anchor-size(width); }");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAnchorPositioning));
+
+  ClearUseCounter(WebFeature::kCSSAnchorPositioning);
+  SetBodyInnerHTML("<style>@position-fallback --pf {}</style>");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAnchorPositioning));
+}
+
 }  // namespace blink

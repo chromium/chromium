@@ -174,8 +174,7 @@ absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRuleSupports;
     case CSSAtRuleID::kCSSAtRulePositionFallback:
     case CSSAtRuleID::kCSSAtRuleTry:
-      // TODO(crbug.com/1309178): Add use counter.
-      return absl::nullopt;
+      return WebFeature::kCSSAnchorPositioning;
     case CSSAtRuleID::kCSSAtRuleWebkitKeyframes:
       return WebFeature::kCSSAtRuleWebkitKeyframes;
     case CSSAtRuleID::kCSSAtRuleInvalid:

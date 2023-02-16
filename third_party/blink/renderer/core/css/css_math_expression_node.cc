@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -1440,6 +1441,7 @@ class CSSMathExpressionNodeParser {
       default:
         return nullptr;
     }
+
     if (!(static_cast<CSSAnchorQueryTypes>(anchor_query_type) &
           allowed_anchor_queries_)) {
       return nullptr;
@@ -1504,6 +1506,7 @@ class CSSMathExpressionNodeParser {
     }
     if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
       if (auto* anchor_query = ParseAnchorQuery(function_id, tokens)) {
+        context_.Count(WebFeature::kCSSAnchorPositioning);
         return anchor_query;
       }
     }
