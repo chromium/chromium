@@ -1402,7 +1402,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
 
     // |autoReauthn| is default to false and can only be set when the feature
     // is enabled.
-    DCHECK(RuntimeEnabledFeatures::FedCmAutoReauthnEnabled() ||
+    DCHECK(RuntimeEnabledFeatures::FedCmAutoReauthnEnabled(context) ||
            !options->identity()->autoReauthn());
     std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
     if (auto* signal = options->getSignalOr(nullptr)) {

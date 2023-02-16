@@ -401,7 +401,11 @@ BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 // is enabled.
 const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 
-// Enables usage of the FedCM API with auto re-authentication.
+// Enables usage of the FedCM API with auto re-authentication. Note that actual
+// exposure of FedCM's auto re-authentication feature to web content is
+// controlled by the flag in RuntimeEnabledFeatures on the blink side. See also
+// the use of kSetOnlyIfOverridden in content/child/runtime_features.cc.
+// We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCmAutoReauthn,
              "FedCmAutoReauthn",
              base::FEATURE_ENABLED_BY_DEFAULT);
