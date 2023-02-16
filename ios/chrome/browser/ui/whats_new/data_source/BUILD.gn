@@ -24,6 +24,7 @@ source_set("data_source") {
     "resources:use_chrome_by_default_banner",
     "resources:whats_new_entries_plist",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/colors",
     "//ui/base",

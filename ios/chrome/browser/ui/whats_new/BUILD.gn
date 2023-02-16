@@ -40,6 +40,7 @@ source_set("whats_new") {
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
     "//ui/base",
     "//ui/strings",
     "//url",

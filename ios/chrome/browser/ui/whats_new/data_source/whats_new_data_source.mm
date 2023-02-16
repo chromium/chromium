@@ -9,9 +9,11 @@
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/version.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -118,6 +120,23 @@ NSArray<WhatsNewItem*>* WhatsNewItemsFromFileAndKey(NSString* path,
   return items;
 }
 
+NSArray<NSString*>* loadInstructionsForPasswordInOtherApps(
+    NSArray<NSString*>* instructions) {
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16.0, *)) {
+    return @[
+      l10n_util::GetNSString(
+          IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1_IOS16),
+      l10n_util::GetNSString(
+          IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2_IOS16),
+      l10n_util::GetNSString(
+          IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2),
+    ];
+  }
+#endif  // defined (__IPHONE_16_0)
+  return instructions;
+}
+
 }  // namespace
 
 NSArray<WhatsNewItem*>* WhatsNewFeatureEntries(NSString* path) {
@@ -184,7 +203,15 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
   if (!instructions) {
     return nil;
   }
-  whats_new_item.instructionSteps = instructions;
+
+  // Special case for kPasswordsInOtherApps, which has a different first step
+  // instruction on iOS 16.
+  if (whats_new_item.type == WhatsNewType::kPasswordsInOtherApps) {
+    whats_new_item.instructionSteps =
+        loadInstructionsForPasswordInOtherApps(instructions);
+  } else {
+    whats_new_item.instructionSteps = instructions;
+  }
 
   // Load the entry primary action bool.
   whats_new_item.hasPrimaryAction =

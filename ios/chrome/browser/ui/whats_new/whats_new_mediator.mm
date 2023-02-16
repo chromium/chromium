@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -83,7 +84,7 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
     case WhatsNewType::kPasswordsInOtherApps:
       base::RecordAction(base::UserMetricsAction(
           "WhatsNew.PasswordsInOtherApps.PrimaryActionTapped"));
-      [self.handler showSettingsFromViewController:self.baseViewController];
+      ios::provider::PasswordsInOtherAppsOpensSettings();
       break;
     default:
       NOTREACHED();
