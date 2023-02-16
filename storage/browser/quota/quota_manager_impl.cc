@@ -2604,6 +2604,8 @@ void QuotaManagerImpl::DidGetStorageCapacity(
 
 void QuotaManagerImpl::DidDatabaseWork(bool success, bool is_bootstrap_work) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramBoolean("Quota.QuotaDatabaseResultSuccess", success);
+
   if (success)
     return;
 

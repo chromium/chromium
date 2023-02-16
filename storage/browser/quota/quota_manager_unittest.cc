@@ -974,6 +974,40 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysForTypeWithDatabaseError) {
   EXPECT_TRUE(storage_keys.empty());
 }
 
+TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 123},
+  };
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kSync});
+  RegisterClientBucketData(fs_client, kData);
+  base::HistogramTester histograms;
+
+  auto bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket.ok());
+
+  histograms.ExpectBucketCount("Quota.QuotaDatabaseResultSuccess",
+                               /*sample=*/true, /*expected_count=*/1);
+
+  // Corrupt QuotaDatabase so any future request returns a QuotaError.
+  QuotaError corruption_error = CorruptDatabaseForTesting(
+      base::BindOnce([](const base::FilePath& db_path) {
+        ASSERT_TRUE(
+            sql::test::CorruptIndexRootPage(db_path, "buckets_by_storage_key"));
+      }));
+  ASSERT_EQ(QuotaError::kNone, corruption_error);
+
+  // Refetching the bucket with a corrupted database should return an error.
+  bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_FALSE(bucket.ok());
+  EXPECT_EQ(QuotaError::kDatabaseError, bucket.error());
+
+  histograms.ExpectBucketCount("Quota.QuotaDatabaseResultSuccess",
+                               /*sample=*/false, /*expected_count=*/1);
+}
+
 TEST_F(QuotaManagerImplTest, GetBucketsForType) {
   StorageKey storage_key_a = ToStorageKey("http://a.com/");
   StorageKey storage_key_b = ToStorageKey("http://b.com/");
