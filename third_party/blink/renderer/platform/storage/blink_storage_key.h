@@ -144,32 +144,74 @@ class PLATFORM_EXPORT BlinkStorageKey {
     return ancestor_chain_bit_;
   }
 
-  // [Block 5 - Utility] - These may or may not exist in StorageKey.
+  // [Block 5 - Shared Utility] - Keep in sync with StorageKey.
 
+  // (5A) Serialize to string for use in debugging only.
   String ToDebugString() const;
 
-  // Checks if every single member in a BlinkStorageKey matches those in
-  // `other`. Since the *_if_third_party_enabled_ fields aren't used normally
-  // this function is only useful for testing purposes. This function can be
-  // removed when  the *_if_third_party_enabled_ fields are removed.
+  // (5B) Check exact match for testing only.
+  // Checks if every single member in this key matches those in `other`.
+  // Since the *_if_third_party_enabled_ fields aren't used normally
+  // this function is only useful for testing purposes.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
   bool ExactMatchForTesting(const blink::BlinkStorageKey& other) const;
 
+  // [Block 6 - Other Utility] - These don't exist in StorageKey.
+
+  // Remove this comment if any are added.
+
  private:
+  // [Block 7 - Private Methods] - Keep in sync with StorageKey.
+
+  // (7A) Internal constructor for custom values.
+  // Note: Other than the opaque and copy/move constructors, this should be the
+  // only non-static method for initializing a storage key to keep consistency.
   BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                   const BlinkSchemefulSite& top_level_site,
                   const base::UnguessableToken* nonce,
                   mojom::blink::AncestorChainBit ancestor_chain_bit);
 
+  // (7B) Operators.
+  // Note that not all must be friends, but all are to consolidate the header.
+  PLATFORM_EXPORT
+  friend bool operator==(const BlinkStorageKey& lhs,
+                         const BlinkStorageKey& rhs);
+  PLATFORM_EXPORT
+  friend bool operator!=(const BlinkStorageKey& lhs,
+                         const BlinkStorageKey& rhs);
+  // If there were a need for an operator< it would go here.
+  PLATFORM_EXPORT
+  friend std::ostream& operator<<(std::ostream& ostream,
+                                  const BlinkStorageKey& sk);
+
+  // [Block 8 - Private Members] - Keep in sync with StorageKey.
+
+  // The current site in the given context. BlinkStorageKey is generally
+  // passed in contexts which used to pass SecurityOrigin before partitioning.
   scoped_refptr<const SecurityOrigin> origin_;
+
+  // The "top-level site"/"top-level frame"/"main frame" of the context
+  // this BlinkStorageKey was created for (for storage partitioning purposes).
+  // For extensions or related enterprise policies this may not represent the
+  // top-level site. For contexts with a `nonce_` or contexts without storage
+  // partitioning enabled, this will be the eTLD+1 of `origin_`.
   BlinkSchemefulSite top_level_site_;
+
   // Stores the value `top_level_site_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
   // serialization or comparison.
   // TODO(crbug.com/1159586): Remove when no longer needed.
   BlinkSchemefulSite top_level_site_if_third_party_enabled_ = top_level_site_;
+
+  // Optional, forcing partitioned storage and used by anonymous iframes:
+  // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
   absl::optional<base::UnguessableToken> nonce_;
+
+  // kSameSite if the entire ancestor chain is same-site with the current frame.
+  // kCrossSite otherwise. Used by service workers.
   mojom::blink::AncestorChainBit ancestor_chain_bit_{
       mojom::blink::AncestorChainBit::kCrossSite};
+
   // Stores the value `ancestor_chain_bit_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
   // serialization or comparison.
@@ -177,13 +219,6 @@ class PLATFORM_EXPORT BlinkStorageKey {
   mojom::blink::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_ =
       ancestor_chain_bit_;
 };
-
-PLATFORM_EXPORT
-bool operator==(const BlinkStorageKey&, const BlinkStorageKey&);
-PLATFORM_EXPORT
-bool operator!=(const BlinkStorageKey&, const BlinkStorageKey&);
-PLATFORM_EXPORT
-std::ostream& operator<<(std::ostream&, const BlinkStorageKey&);
 
 }  // namespace blink
 

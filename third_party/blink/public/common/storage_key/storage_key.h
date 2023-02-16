@@ -195,7 +195,19 @@ class BLINK_COMMON_EXPORT StorageKey {
     return ancestor_chain_bit_;
   }
 
-  // [Block 5 - Utility] - These may or may not exist in BlinkStorageKey.
+  // [Block 5 - Shared Utility] - Keep in sync with BlinkStorageKey.
+
+  // (5A) Serialize to string for use in debugging only.
+  std::string GetDebugString() const;
+
+  // (5B) Check exact match for testing only.
+  // Checks if every single member in this key matches those in `other`.
+  // Since the *_if_third_party_enabled_ fields aren't used normally
+  // this function is only useful for testing purposes.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
+  bool ExactMatchForTesting(const StorageKey& other) const;
+
+  // [Block 6 - Other Utility] - These don't exist in BlinkStorageKey.
 
   // Returns true if ThirdPartyStoragePartitioning feature flag is enabled.
   static bool IsThirdPartyStoragePartitioningEnabled();
@@ -212,8 +224,6 @@ class BLINK_COMMON_EXPORT StorageKey {
            net::SchemefulSite(origin_) != top_level_site_;
   }
   bool IsFirstPartyContext() const { return !IsThirdPartyContext(); }
-
-  std::string GetDebugString() const;
 
   // Provides a concise string representation suitable for memory dumps.
   // Limits the length to `max_length` chars and strips special characters.
@@ -256,64 +266,39 @@ class BLINK_COMMON_EXPORT StorageKey {
   // in contrast to that.
   bool MatchesOriginForTrustedStorageDeletion(const url::Origin& origin) const;
 
-  // Checks if every single member in a StorageKey matches those in `other`.
-  // Since the *_if_third_party_enabled_ fields aren't used normally this
-  // function is only useful for testing purposes.
-  // This function can be removed when  the *_if_third_party_enabled_ fields are
-  // removed.
-  bool ExactMatchForTesting(const StorageKey& other) const;
-
  private:
-  // This enum represents the different type of encodable partitioning
-  // attributes.
-  enum class EncodedAttribute : uint8_t {
-    kTopLevelSite = 0,
-    kNonceHigh = 1,
-    kNonceLow = 2,
-    kAncestorChainBit = 3,
-    kTopLevelSiteOpaqueNonceHigh = 4,
-    kTopLevelSiteOpaqueNonceLow = 5,
-    kTopLevelSiteOpaquePrecursor = 6,
-    kMaxValue = kTopLevelSiteOpaquePrecursor,
-  };
+  // [Block 7 - Private Methods] - Keep in sync with BlinkStorageKey.
 
+  // (7A) Internal constructor for custom values.
+  // Note: Other than the opaque and copy/move constructors, this should be the
+  // only non-static method for initializing a storage key to keep consistency.
   StorageKey(const url::Origin& origin,
              const net::SchemefulSite& top_level_site,
              const base::UnguessableToken* nonce,
              blink::mojom::AncestorChainBit ancestor_chain_bit);
 
-  // Converts the attribute type into the separator + uint8_t byte
-  // serialization. E.x.: kTopLevelSite becomes "^0"
-  static std::string SerializeAttributeSeparator(const EncodedAttribute type);
-
-  // Converts the serialized separator into an EncodedAttribute enum.
-  // E.x.: "^0" becomes kTopLevelSite.
-  // Expects `in` to have a length of 2.
-  static absl::optional<EncodedAttribute> DeserializeAttributeSeparator(
-      const base::StringPiece& in);
-
+  // (7B) Operators.
+  // Note that not all must be friends, but all are to consolidate the header.
   BLINK_COMMON_EXPORT
   friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);
-
   BLINK_COMMON_EXPORT
   friend bool operator!=(const StorageKey& lhs, const StorageKey& rhs);
-
-  // Allows StorageKey to be used as a key in STL (for example, a std::set or
-  // std::map).
   BLINK_COMMON_EXPORT
   friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
+  BLINK_COMMON_EXPORT
+  friend std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk);
 
+  // [Block 8 - Private Members] - Keep in sync with BlinkStorageKey.
+
+  // The current site in the given context. StorageKey is generally
+  // passed in contexts which used to pass Origin before partitioning.
   url::Origin origin_;
 
   // The "top-level site"/"top-level frame"/"main frame" of the context
   // this StorageKey was created for (for storage partitioning purposes).
-  //
-  // Like everything, this too has exceptions:
-  // * For extensions or related enterprise policies this may not represent the
-  // top-level site.
-  //
-  // Note that this value is populated with `origin_`'s site unless the feature
-  // flag `kThirdPartyStoragePartitioning` is enabled.
+  // For extensions or related enterprise policies this may not represent the
+  // top-level site. For contexts with a `nonce_` or contexts without storage
+  // partitioning enabled, this will be the eTLD+1 of `origin_`.
   net::SchemefulSite top_level_site_;
 
   // Stores the value `top_level_site_` would have had if
@@ -322,14 +307,12 @@ class BLINK_COMMON_EXPORT StorageKey {
   // TODO(crbug.com/1159586): Remove when no longer needed.
   net::SchemefulSite top_level_site_if_third_party_enabled_ = top_level_site_;
 
-  // An optional nonce, forcing a partitioned storage from anything else. Used
-  // by anonymous iframes:
+  // Optional, forcing partitioned storage and used by anonymous iframes:
   // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
   absl::optional<base::UnguessableToken> nonce_;
 
-  // kCrossSite if any frame in the current frame's ancestor chain is
-  // cross-site with the current frame. kSameSite if entire ancestor
-  // chain is same-site with the current frame. Used by service workers.
+  // kSameSite if the entire ancestor chain is same-site with the current frame.
+  // kCrossSite otherwise. Used by service workers.
   blink::mojom::AncestorChainBit ancestor_chain_bit_{
       blink::mojom::AncestorChainBit::kCrossSite};
 
@@ -340,9 +323,6 @@ class BLINK_COMMON_EXPORT StorageKey {
   blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_ =
       ancestor_chain_bit_;
 };
-
-BLINK_COMMON_EXPORT
-std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk);
 
 }  // namespace blink
 

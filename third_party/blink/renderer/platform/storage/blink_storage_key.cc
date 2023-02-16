@@ -278,14 +278,13 @@ bool BlinkStorageKey::ExactMatchForTesting(const BlinkStorageKey& other) const {
 }
 
 bool operator==(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
-  DCHECK(lhs.GetSecurityOrigin());
-  DCHECK(rhs.GetSecurityOrigin());
+  DCHECK(lhs.origin_);
+  DCHECK(rhs.origin_);
 
-  return lhs.GetSecurityOrigin()->IsSameOriginWith(
-             rhs.GetSecurityOrigin().get()) &&
-         lhs.GetNonce() == rhs.GetNonce() &&
-         lhs.GetTopLevelSite() == rhs.GetTopLevelSite() &&
-         lhs.GetAncestorChainBit() == rhs.GetAncestorChainBit();
+  return lhs.origin_->IsSameOriginWith(rhs.origin_.get()) &&
+         lhs.nonce_ == rhs.nonce_ &&
+         lhs.top_level_site_ == rhs.top_level_site_ &&
+         lhs.ancestor_chain_bit_ == rhs.ancestor_chain_bit_;
 }
 
 bool operator!=(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {

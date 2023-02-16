@@ -21,6 +21,46 @@
 
 namespace {
 
+// This enum represents the different type of encodable partitioning
+// attributes. These values are persisted to disk. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class EncodedAttribute : uint8_t {
+  kTopLevelSite = 0,
+  kNonceHigh = 1,
+  kNonceLow = 2,
+  kAncestorChainBit = 3,
+  kTopLevelSiteOpaqueNonceHigh = 4,
+  kTopLevelSiteOpaqueNonceLow = 5,
+  kTopLevelSiteOpaquePrecursor = 6,
+  kMaxValue = kTopLevelSiteOpaquePrecursor,
+};
+
+// Converts the attribute type into the separator + uint8_t byte
+// serialization. E.x.: kTopLevelSite becomes "^0"
+std::string SerializeAttributeSeparator(const EncodedAttribute type) {
+  // Create a size 2 string, we'll overwrite the second char later.
+  std::string ret(2, '^');
+  char digit = static_cast<uint8_t>(type) + '0';
+  ret[1] = digit;
+  return ret;
+}
+
+// Converts the serialized separator into an EncodedAttribute enum.
+// E.x.: "^0" becomes kTopLevelSite.
+// Expects `in` to have a length of 2.
+absl::optional<EncodedAttribute> DeserializeAttributeSeparator(
+    const base::StringPiece& in) {
+  DCHECK_EQ(in.size(), 2U);
+  uint8_t number = in[1] - '0';
+
+  if (number > static_cast<uint8_t>(EncodedAttribute::kMaxValue)) {
+    // Bad input, return absl::nullopt to indicate an issue.
+    return absl::nullopt;
+  }
+
+  return static_cast<EncodedAttribute>(number);
+}
+
 // Returns true if there are at least 2 chars after the '^' in `in` and the
 // second char is not '^'. Meaning that the substring is syntactically valid.
 // This is to indicate that there is a valid separator with both a '^' and a
@@ -39,7 +79,6 @@ namespace blink {
 
 // static
 absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
-  using EncodedAttribute = StorageKey::EncodedAttribute;
   // As per the Serialize() call, we have to expect one of the following
   // structures:
   // <StorageKey `key`.origin> + "/" + "^1" + <StorageKey
@@ -620,7 +659,6 @@ StorageKey::StorageKey(const url::Origin& origin,
 }
 
 std::string StorageKey::Serialize() const {
-  using EncodedAttribute = StorageKey::EncodedAttribute;
   DCHECK(!origin_.opaque());
 
   // If the storage key has a nonce, implying the top_level_site is the same as
@@ -777,30 +815,6 @@ const net::SiteForCookies StorageKey::ToNetSiteForCookies() const {
 }
 
 // static
-std::string StorageKey::SerializeAttributeSeparator(
-    const StorageKey::EncodedAttribute type) {
-  // Create a size 2 string, we'll overwrite the second char later.
-  std::string ret(2, '^');
-  char digit = static_cast<uint8_t>(type) + '0';
-  ret[1] = digit;
-  return ret;
-}
-
-// static
-absl::optional<StorageKey::EncodedAttribute>
-StorageKey::DeserializeAttributeSeparator(const base::StringPiece& in) {
-  DCHECK_EQ(in.size(), 2U);
-  uint8_t number = in[1] - '0';
-
-  if (number > static_cast<uint8_t>(StorageKey::EncodedAttribute::kMaxValue)) {
-    // Bad input, return absl::nullopt to indicate an issue.
-    return absl::nullopt;
-  }
-
-  return static_cast<StorageKey::EncodedAttribute>(number);
-}
-
-// static
 bool StorageKey::ShouldSkipKeyDueToPartitioning(
     const std::string& reg_key_string) {
   // Don't skip anything if storage partitioning is enabled.
@@ -816,10 +830,9 @@ bool StorageKey::ShouldSkipKeyDueToPartitioning(
     // Do skip if partitioning is disabled and we detect a top-level site
     // serialization scheme (opaque or otherwise) or an ancestor chain bit:
     if (attribute.has_value() &&
-        (attribute == StorageKey::EncodedAttribute::kTopLevelSite ||
-         attribute == StorageKey::EncodedAttribute::kAncestorChainBit ||
-         attribute ==
-             StorageKey::EncodedAttribute::kTopLevelSiteOpaqueNonceHigh)) {
+        (attribute == EncodedAttribute::kTopLevelSite ||
+         attribute == EncodedAttribute::kAncestorChainBit ||
+         attribute == EncodedAttribute::kTopLevelSiteOpaqueNonceHigh)) {
       return true;
     }
   }
