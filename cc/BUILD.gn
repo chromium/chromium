@@ -11,6 +11,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 cc_component("cc") {
   sources = [
     "benchmarks/benchmark_instrumentation.cc",
@@ -670,6 +674,13 @@ cc_test_static_library("test_support") {
   }
 }
 
+if (is_ios) {
+  bundle_data_from_filelist("unit_tests_bundle_data") {
+    testonly = true
+    filelist_name = "unit_tests_bundle_data.filelist"
+  }
+}
+
 cc_test("cc_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -930,6 +941,10 @@ cc_test("cc_unittests") {
       "//gpu/vulkan:test_support",
       "//gpu/vulkan/init",
     ]
+  }
+
+  if (is_ios) {
+    public_deps = [ ":unit_tests_bundle_data" ]
   }
 }
 

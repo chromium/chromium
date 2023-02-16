@@ -10,6 +10,8 @@ for more details about the presubmit API built into depot_tools.
 
 import re
 
+PRESUBMIT_VERSION = '2.0.0'
+
 USE_PYTHON3 = True
 CC_SOURCE_FILES=(r'^cc[\\/].*\.(cc|h)$',)
 
@@ -20,6 +22,19 @@ def CheckChangeLintsClean(input_api, output_api):
 
   return input_api.canned_checks.CheckChangeLintsClean(
       input_api, output_api, source_filter, lint_filters=[], verbose_level=1)
+
+def CheckChangeInBundle(input_api, output_api):
+    import sys
+    old_sys_path = sys.path[:]
+    results = []
+    try:
+        sys.path.append(input_api.change.RepositoryRoot())
+        from build.ios import presubmit_support
+        results += presubmit_support.CheckBundleData(input_api, output_api,
+                                                     'unit_tests_bundle_data')
+    finally:
+        sys.path = old_sys_path
+    return results
 
 def CheckAsserts(input_api, output_api, allowlist=CC_SOURCE_FILES,
                  denylist=None):
@@ -284,6 +299,7 @@ def CheckChangeOnUpload(input_api, output_api):
   results += CheckStdAbs(input_api, output_api)
   results += CheckPassByValue(input_api, output_api)
   results += CheckChangeLintsClean(input_api, output_api)
+  results += CheckChangeInBundle(input_api, output_api)
   results += CheckTodos(input_api, output_api)
   results += CheckDoubleAngles(input_api, output_api)
   results += CheckNamespace(input_api, output_api)
