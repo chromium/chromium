@@ -179,7 +179,7 @@ public class X509Util {
 
     /**
      * Ensures that the trust managers and certificate factory are initialized. Must be called with
-     * |sLock| held.
+     * |sLock| held. Does not initialize test infrastructure.
      */
     // FindBugs' static field initialization warnings do not handle methods that are expected to be
     // called locked.
@@ -212,17 +212,6 @@ public class X509Util {
         if (sSystemTrustAnchorCache == null) {
             sSystemTrustAnchorCache = new HashSet<Pair<X500Principal, PublicKey>>();
         }
-        if (sTestKeyStore == null) {
-            sTestKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            try {
-                sTestKeyStore.load(null);
-            } catch (IOException e) {
-                // No IO operation is attempted.
-            }
-        }
-        if (sTestTrustManager == null) {
-            sTestTrustManager = X509Util.createTrustManager(sTestKeyStore);
-        }
         if (sTrustStorageListener == null) {
             sTrustStorageListener = new TrustStorageListener();
             IntentFilter filter = new IntentFilter();
@@ -237,6 +226,26 @@ public class X509Util {
             }
             ContextUtils.registerProtectedBroadcastReceiver(
                     ContextUtils.getApplicationContext(), sTrustStorageListener, filter);
+        }
+    }
+
+    /**
+     * Ensures that test  trust managers and certificate factory are initialized. Must be called
+     * with |sLock| held.
+     */
+    private static void ensureTestInitializedLocked()
+            throws CertificateException, KeyStoreException, NoSuchAlgorithmException {
+        assert Thread.holdsLock(sLock);
+        if (sTestKeyStore == null) {
+            sTestKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            try {
+                sTestKeyStore.load(null);
+            } catch (IOException e) {
+                // No IO operation is attempted.
+            }
+        }
+        if (sTestTrustManager == null) {
+            sTestTrustManager = X509Util.createTrustManager(sTestKeyStore);
         }
     }
 
@@ -279,9 +288,10 @@ public class X509Util {
     /**
      * After each modification of test key store, trust manager has to be generated again.
      */
-    private static void reloadTestTrustManager() throws KeyStoreException,
-            NoSuchAlgorithmException {
+    private static void reloadTestTrustManager()
+            throws KeyStoreException, NoSuchAlgorithmException, CertificateException {
         assert Thread.holdsLock(sLock);
+        ensureTestInitializedLocked();
 
         sTestTrustManager = X509Util.createTrustManager(sTestKeyStore);
     }
@@ -309,21 +319,21 @@ public class X509Util {
                 new ByteArrayInputStream(derBytes));
     }
 
-    public static void addTestRootCertificate(byte[] rootCertBytes) throws CertificateException,
-            KeyStoreException, NoSuchAlgorithmException {
-        ensureInitialized();
+    public static void addTestRootCertificate(byte[] rootCertBytes)
+            throws CertificateException, KeyStoreException, NoSuchAlgorithmException {
         X509Certificate rootCert = createCertificateFromBytes(rootCertBytes);
         synchronized (sLock) {
+            ensureTestInitializedLocked();
             sTestKeyStore.setCertificateEntry(
                     "root_cert_" + Integer.toString(sTestKeyStore.size()), rootCert);
             reloadTestTrustManager();
         }
     }
 
-    public static void clearTestRootCertificates() throws NoSuchAlgorithmException,
-            CertificateException, KeyStoreException {
-        ensureInitialized();
+    public static void clearTestRootCertificates()
+            throws NoSuchAlgorithmException, CertificateException, KeyStoreException {
         synchronized (sLock) {
+            ensureTestInitializedLocked();
             try {
                 sTestKeyStore.load(null);
                 reloadTestTrustManager();
@@ -554,15 +564,21 @@ public class X509Util {
                 return new AndroidCertVerifyResult(CertVerifyStatusAndroid.FAILED);
             }
 
-            List<X509Certificate> verifiedChain;
+            List<X509Certificate> verifiedChain = null;
             try {
                 verifiedChain = checkServerTrustedIgnoringRuntimeException(
                         sDefaultTrustManager, serverCertificates, authType, host);
             } catch (CertificateException eDefaultManager) {
-                try {
-                    verifiedChain = checkServerTrustedIgnoringRuntimeException(
-                            sTestTrustManager, serverCertificates, authType, host);
-                } catch (CertificateException eTestManager) {
+                if (sTestTrustManager != null) {
+                    try {
+                        verifiedChain = checkServerTrustedIgnoringRuntimeException(
+                                sTestTrustManager, serverCertificates, authType, host);
+                    } catch (CertificateException eTestManager) {
+                        // See following if block.
+                    }
+                }
+
+                if (verifiedChain == null) {
                     // Neither of the trust managers confirms the validity of the certificate chain,
                     // log the error message returned by the system trust manager.
                     Log.i(TAG, "Failed to validate the certificate chain, error: "
