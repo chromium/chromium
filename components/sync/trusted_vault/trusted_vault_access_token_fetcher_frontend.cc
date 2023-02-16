@@ -6,7 +6,10 @@
 
 #include <utility>
 
+#include "base/types/expected.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 
 namespace syncer {
 
@@ -40,7 +43,11 @@ void TrustedVaultAccessTokenFetcherFrontend::FetchAccessToken(
     // The requester is likely not aware of a recent change to the primary
     // account yet (this is possible because requests come from another
     // sequence). Run |callback| immediately without access token.
-    std::move(callback).Run(absl::nullopt);
+    // Although |account_id| can be in persistent auth error state, it's not
+    // relevant here since primary account change is the main reason for
+    // returning nullopt, so passing false is fine.
+    std::move(callback).Run(base::unexpected(
+        TrustedVaultAccessTokenFetcher::FetchingError::kNotPrimaryAccount));
     return;
   }
 
@@ -64,13 +71,17 @@ void TrustedVaultAccessTokenFetcherFrontend::UpdatePrimaryAccountIfNeeded() {
 
   // Fulfill |pending_requests_| since they belong to the previous
   // |primary_account_|.
-  FulfillPendingRequests(absl::nullopt);
+  FulfillPendingRequests(base::unexpected(
+      TrustedVaultAccessTokenFetcher::FetchingError::kNotPrimaryAccount));
   ongoing_access_token_fetch_ = nullptr;
   primary_account_ = primary_account_info.account_id;
 }
 
 void TrustedVaultAccessTokenFetcherFrontend::StartAccessTokenFetch() {
   DCHECK(!ongoing_access_token_fetch_);
+  // Use kWaitUntilAvailable to avoid failed fetches while refresh tokens are
+  // still loading. Note, that it doesn't cause infinite waits for persistent
+  // auth errors.
   ongoing_access_token_fetch_ = std::make_unique<
       signin::PrimaryAccountAccessTokenFetcher>(
       /*ouath_consumer_name=*/"TrustedVaultAccessTokenFetcherFrontend",
@@ -88,16 +99,21 @@ void TrustedVaultAccessTokenFetcherFrontend::OnAccessTokenFetchCompleted(
   ongoing_access_token_fetch_ = nullptr;
   if (error.state() == GoogleServiceAuthError::NONE) {
     FulfillPendingRequests(access_token_info);
+  } else if (error.IsPersistentError()) {
+    FulfillPendingRequests(base::unexpected(
+        TrustedVaultAccessTokenFetcher::FetchingError::kPersistentAuthError));
   } else {
-    FulfillPendingRequests(absl::nullopt);
+    FulfillPendingRequests(base::unexpected(
+        TrustedVaultAccessTokenFetcher::FetchingError::kTransientAuthError));
   }
 }
 
 void TrustedVaultAccessTokenFetcherFrontend::FulfillPendingRequests(
-    absl::optional<signin::AccessTokenInfo> access_token_info) {
+    TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
+        access_token_or_error) {
   for (TrustedVaultAccessTokenFetcher::TokenCallback& pending_request :
        pending_requests_) {
-    std::move(pending_request).Run(access_token_info);
+    std::move(pending_request).Run(access_token_or_error);
   }
   pending_requests_.clear();
 }

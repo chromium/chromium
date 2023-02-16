@@ -15,7 +15,6 @@
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
@@ -66,7 +65,8 @@ class TrustedVaultAccessTokenFetcherFrontend
 
   // Helper method to run and clear |pending_requests_|.
   void FulfillPendingRequests(
-      absl::optional<signin::AccessTokenInfo> access_token_info);
+      TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
+          access_token_info_or_error);
 
   // Never null.
   const raw_ptr<signin::IdentityManager> identity_manager_;

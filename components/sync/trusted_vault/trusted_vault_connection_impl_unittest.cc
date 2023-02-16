@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/vault.pb.h"
@@ -86,14 +87,15 @@ class FakeTrustedVaultAccessTokenFetcher
 
   void FetchAccessToken(const CoreAccountId& account_id,
                         TokenCallback callback) override {
-    absl::optional<signin::AccessTokenInfo> access_token_info;
     if (access_token_) {
-      access_token_info = signin::AccessTokenInfo(
+      std::move(callback).Run(signin::AccessTokenInfo(
           *access_token_,
           /*expiration_time_param=*/base::Time::Now() + base::Hours(1),
-          /*id_token=*/std::string());
+          /*id_token=*/std::string()));
+    } else {
+      std::move(callback).Run(base::unexpected(
+          TrustedVaultAccessTokenFetcher::FetchingError::kTransientAuthError));
     }
-    std::move(callback).Run(access_token_info);
   }
 
  private:

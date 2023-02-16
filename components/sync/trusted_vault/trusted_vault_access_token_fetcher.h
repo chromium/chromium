@@ -6,7 +6,7 @@
 #define COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_H_
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/types/expected.h"
 
 struct CoreAccountId;
 
@@ -20,8 +20,22 @@ namespace syncer {
 // the UI thread.
 class TrustedVaultAccessTokenFetcher {
  public:
-  using TokenCallback = base::OnceCallback<void(
-      absl::optional<signin::AccessTokenInfo> access_token_info)>;
+  enum class FetchingError {
+    // Used for all transient GoogleServiceAuthErrors.
+    kTransientAuthError,
+    // Used for all persistent GoogleServiceAuthError.
+    kPersistentAuthError,
+    // Used when requested account is not primary or became not primary during
+    // the fetching.
+    kNotPrimaryAccount,
+    // Used when fetching attempt is not possible, because required dependencies
+    // were already destroyed during the browser shutdown.
+    kShutdown,
+  };
+
+  using AccessTokenInfoOrError =
+      base::expected<signin::AccessTokenInfo, FetchingError>;
+  using TokenCallback = base::OnceCallback<void(AccessTokenInfoOrError)>;
 
   TrustedVaultAccessTokenFetcher() = default;
   TrustedVaultAccessTokenFetcher(const TrustedVaultAccessTokenFetcher& other) =

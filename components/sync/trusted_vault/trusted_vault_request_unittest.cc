@@ -62,13 +62,15 @@ class FakeTrustedVaultAccessTokenFetcher
 
   void FetchAccessToken(const CoreAccountId& account_id,
                         TokenCallback callback) override {
-    absl::optional<signin::AccessTokenInfo> access_token_info;
     if (access_token_) {
-      access_token_info = signin::AccessTokenInfo(
-          *access_token_, base::Time::Now() + base::Hours(1),
-          /*id_token=*/std::string());
+      std::move(callback).Run(signin::AccessTokenInfo(
+          *access_token_,
+          /*expiration_time_param=*/base::Time::Now() + base::Hours(1),
+          /*id_token=*/std::string()));
+    } else {
+      std::move(callback).Run(base::unexpected(
+          TrustedVaultAccessTokenFetcher::FetchingError::kTransientAuthError));
     }
-    std::move(callback).Run(access_token_info);
   }
 
  private:

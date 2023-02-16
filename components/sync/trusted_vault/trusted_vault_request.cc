@@ -102,18 +102,21 @@ void TrustedVaultRequest::FetchAccessTokenAndSendRequest(
 }
 
 void TrustedVaultRequest::OnAccessTokenFetched(
-    absl::optional<signin::AccessTokenInfo> access_token_info) {
+    TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
+        access_token_info_or_error) {
   base::UmaHistogramBoolean("Sync.TrustedVaultAccessTokenFetchSuccess",
-                            access_token_info.has_value());
+                            access_token_info_or_error.has_value());
 
-  if (!access_token_info.has_value()) {
+  if (!access_token_info_or_error.has_value()) {
+    // TODO(crbug.com/1413179): expose persistent auth errors to the higher
+    // level as a dedicated status.
     RunCompletionCallbackAndMaybeDestroySelf(
         HttpStatus::kAccessTokenFetchingFailure,
         /*response_body=*/std::string());
     return;
   }
 
-  url_loader_ = CreateURLLoader(access_token_info->token);
+  url_loader_ = CreateURLLoader(access_token_info_or_error->token);
   // Destroying |this| object will cancel the request, so use of Unretained() is
   // safe here.
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
