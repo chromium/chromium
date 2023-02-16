@@ -113,7 +113,7 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
 
   callback_buffer_size_ = web_audio_device_->FramesPerBuffer();
   
-  recordreplay::Assert("[RUN-1345] callback_buffer_size_: %d", callback_buffer_size_);
+  recordreplay::Assert("[RUN-1345] callback_buffer_size_ is big: %d", (callback_buffer_size_ > RenderQuantumFrames() * 2));
   
   SendLogMessage(String::Format("%s => (device callback buffer size=%u frames)",
                                 __func__, callback_buffer_size_));
