@@ -28,19 +28,19 @@ class TestToggleButton : public ToggleButton {
 
   ~TestToggleButton() override {
     // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-    // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+    // Add/RemoveLayerFromRegions(). This is done so that the InkDrop doesn't
     // access the non-override versions in ~View.
     views::InkDrop::Remove(this);
   }
 
-  void AddLayerBeneathView(ui::Layer* layer) override {
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override {
     ++(*counter_);
-    ToggleButton::AddLayerBeneathView(layer);
+    ToggleButton::AddLayerToRegion(layer, region);
   }
 
-  void RemoveLayerBeneathView(ui::Layer* layer) override {
+  void RemoveLayerFromRegions(ui::Layer* layer) override {
     --(*counter_);
-    ToggleButton::RemoveLayerBeneathView(layer);
+    ToggleButton::RemoveLayerFromRegions(layer);
   }
 
   using View::Focus;

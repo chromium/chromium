@@ -29,9 +29,9 @@ class ClipboardHistoryDeleteButton : public CloseButton {
 
  private:
   // views::ImageButton:
-  void AddLayerBeneathView(ui::Layer* layer) override;
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void OnClickCanceled(const ui::Event& event) override;
-  void RemoveLayerBeneathView(ui::Layer* layer) override;
+  void RemoveLayerFromRegions(ui::Layer* layer) override;
 
   // Used to accommodate the ink drop layer. It ensures that the ink drop is
   // above the view background.

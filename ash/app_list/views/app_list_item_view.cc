@@ -264,8 +264,9 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
     // Set background blur for folder icon and use mask layer to clip it into
     // circle. Note that blur is only enabled in tablet mode to improve dragging
     // smoothness.
-    if (view_delegate_->IsInTabletMode())
+    if (view_delegate_->IsInTabletMode()) {
       SetBackgroundBlurEnabled(true);
+    }
     SetBackgroundExtendedState(is_icon_extended_, /*animate=*/false);
   }
 
@@ -314,8 +315,9 @@ void AppListItemView::InitializeIconLoader() {
 }
 
 AppListItemView::~AppListItemView() {
-  if (item_weak_)
+  if (item_weak_) {
     item_weak_->RemoveObserver(this);
+  }
   StopObservingImplicitAnimations();
 }
 
@@ -362,16 +364,18 @@ void AppListItemView::UpdateAppListConfig(
 }
 
 void AppListItemView::ScaleIconImmediatly(float scale_factor) {
-  if (icon_scale_ == scale_factor)
+  if (icon_scale_ == scale_factor) {
     return;
+  }
   icon_scale_ = scale_factor;
   SetIcon(icon_image_);
   layer()->SetTransform(gfx::Transform());
 }
 
 void AppListItemView::SetUIState(UIState ui_state) {
-  if (ui_state_ == ui_state)
+  if (ui_state_ == ui_state) {
     return;
+  }
 
   switch (ui_state) {
     case UI_STATE_NORMAL:
@@ -403,8 +407,9 @@ void AppListItemView::SetUIState(UIState ui_state) {
 }
 
 void AppListItemView::ScaleAppIcon(bool scale_up) {
-  if (!layer())
+  if (!layer()) {
     return;
+  }
   if (!is_folder_) {
     if (scale_up) {
       icon_scale_ = kDragDropAppIconScale;
@@ -456,8 +461,9 @@ void AppListItemView::SetTouchDragging(bool touch_dragging) {
   // TODO(b/261985897): Figure out a way to correctly direct drag operations.
   DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
 
-  if (touch_dragging_ == touch_dragging)
+  if (touch_dragging_ == touch_dragging) {
     return;
+  }
 
   touch_dragging_ = touch_dragging;
 
@@ -468,8 +474,9 @@ void AppListItemView::SetTouchDragging(bool touch_dragging) {
   SetUIState(touch_dragging_ ? UI_STATE_DRAGGING : UI_STATE_NORMAL);
 
   // EndDrag may delete |this|.
-  if (!touch_dragging)
+  if (!touch_dragging) {
     grid_delegate_->EndDrag(/*cancel=*/false);
+  }
 }
 
 void AppListItemView::SetMouseDragging(bool mouse_dragging) {
@@ -490,8 +497,9 @@ void AppListItemView::OnTouchDragTimer(
     const gfx::Point& tap_down_root_location) {
   DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
   // Show scaled up app icon to indicate draggable state.
-  if (!InitiateDrag(tap_down_location, tap_down_root_location))
+  if (!InitiateDrag(tap_down_location, tap_down_root_location)) {
     return;
+  }
 
   SetTouchDragging(true);
 }
@@ -539,8 +547,9 @@ void AppListItemView::CancelContextMenu() {
     menu_close_initiated_from_drag_ = true;
     item_menu_model_adapter_->Cancel();
   }
-  if (context_menu_for_folder_)
+  if (context_menu_for_folder_) {
     context_menu_for_folder_->Cancel();
+  }
 }
 
 gfx::Point AppListItemView::GetDragImageOffset() {
@@ -598,8 +607,9 @@ void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   DCHECK(node_data);
   Button::GetAccessibleNodeData(node_data);
 
-  if (!item_weak_)
+  if (!item_weak_) {
     return;
+  }
 
   auto app_status = item_weak_->app_status();
   switch (app_status) {
@@ -628,15 +638,17 @@ void AppListItemView::OnContextMenuModelReceived(
     ui::MenuSourceType source_type,
     std::unique_ptr<ui::SimpleMenuModel> menu_model) {
   waiting_for_context_menu_options_ = false;
-  if (!menu_model || IsShowingAppMenu())
+  if (!menu_model || IsShowingAppMenu()) {
     return;
+  }
 
   // GetContextMenuModel is asynchronous and takes a nontrivial amount of time
   // to complete. If a menu is shown after the icon has moved, |grid_delegate_|
   // gets put in a bad state because the context menu begins to receive drag
   // events, interrupting the app icon drag.
-  if (drag_state_ == DragState::kStarted)
+  if (drag_state_ == DragState::kStarted) {
     return;
+  }
 
   menu_show_initiated_from_key_ = source_type == ui::MENU_SOURCE_KEYBOARD;
 
@@ -701,14 +713,16 @@ void AppListItemView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  if (IsShowingAppMenu())
+  if (IsShowingAppMenu()) {
     return;
+  }
   // Prevent multiple requests for context menus before the current request
   // completes. If a second request is sent before the first one can respond,
   // the Chrome side delegate will become unresponsive
   // (https://crbug.com/881886).
-  if (waiting_for_context_menu_options_)
+  if (waiting_for_context_menu_options_) {
     return;
+  }
   waiting_for_context_menu_options_ = true;
   views::InkDrop::Get(this)->SetMode(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
@@ -732,8 +746,9 @@ bool AppListItemView::ShouldEnterPushedState(const ui::Event& event) {
   }
   // Don't enter pushed state for ET_GESTURE_TAP_DOWN so that hover gray
   // background does not show up during scroll.
-  if (event.type() == ui::ET_GESTURE_TAP_DOWN)
+  if (event.type() == ui::ET_GESTURE_TAP_DOWN) {
     return false;
+  }
 
   return views::Button::ShouldEnterPushedState(event);
 }
@@ -745,11 +760,13 @@ bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
     return return_value;
   }
 
-  if (!ShouldEnterPushedState(event))
+  if (!ShouldEnterPushedState(event)) {
     return true;
+  }
 
-  if (!InitiateDrag(event.location(), event.root_location()))
+  if (!InitiateDrag(event.location(), event.root_location())) {
     return true;
+  }
 
   mouse_drag_timer_.Start(FROM_HERE, base::Milliseconds(kMouseDragUIDelayInMs),
                           this, &AppListItemView::OnMouseDragTimer);
@@ -758,8 +775,9 @@ bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
 
 void AppListItemView::Layout() {
   gfx::Rect rect(GetContentsBounds());
-  if (rect.IsEmpty())
+  if (rect.IsEmpty()) {
     return;
+  }
 
   views::FocusRing::Get(this)->Layout();
 
@@ -810,8 +828,9 @@ bool AppListItemView::OnKeyPressed(const ui::KeyEvent& event) {
   // by this view are forwarded from a Textfield (SearchBoxView) and key
   // released events are not forwarded. This leaves the button in pressed
   // state.
-  if (event.key_code() == ui::VKEY_SPACE)
+  if (event.key_code() == ui::VKEY_SPACE) {
     return false;
+  }
 
   return Button::OnKeyPressed(event);
 }
@@ -820,8 +839,9 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   // Triggers the button's click handler callback, which might delete `this`.
   Button::OnMouseReleased(event);
-  if (!weak_this)
+  if (!weak_this) {
     return;
+  }
 
   if (app_list_features::IsDragAndDropRefactorEnabled()) {
     return;
@@ -874,15 +894,17 @@ bool AppListItemView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 }
 
 void AppListItemView::OnFocus() {
-  if (focus_silently_)
+  if (focus_silently_) {
     return;
+  }
   grid_delegate_->SetSelectedView(this);
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
 void AppListItemView::OnBlur() {
-  if (grid_delegate_->IsSelectedView(this))
+  if (grid_delegate_->IsSelectedView(this)) {
     grid_delegate_->ClearSelectedView();
+  }
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
@@ -959,8 +981,9 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_END:
       touch_drag_timer_.Stop();
       SetTouchDragging(false);
-      if (IsShowingAppMenu())
+      if (IsShowingAppMenu()) {
         grid_delegate_->SetSelectedView(this);
+      }
       break;
     case ui::ET_GESTURE_TWO_FINGER_TAP:
       if (touch_dragging_) {
@@ -972,8 +995,9 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
     default:
       break;
   }
-  if (!event->handled())
+  if (!event->handled()) {
     Button::OnGestureEvent(event);
+  }
 }
 
 void AppListItemView::OnThemeChanged() {
@@ -1019,8 +1043,9 @@ void AppListItemView::OnDraggedViewExit() {
 void AppListItemView::SetBackgroundBlurEnabled(bool enabled) {
   DCHECK(is_folder_);
   if (!enabled) {
-    if (icon_->layer())
+    if (icon_->layer()) {
       icon_->layer()->SetBackgroundBlur(0);
+    }
     return;
   }
   icon_->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -1029,8 +1054,9 @@ void AppListItemView::SetBackgroundBlurEnabled(bool enabled) {
 }
 
 void AppListItemView::EnsureLayer() {
-  if (layer())
+  if (layer()) {
     return;
+  }
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 }
@@ -1044,8 +1070,9 @@ void AppListItemView::FireMouseDragTimerForTest() {
 }
 
 bool AppListItemView::FireTouchDragTimerForTest() {
-  if (!touch_drag_timer_.IsRunning())
+  if (!touch_drag_timer_.IsRunning()) {
     return false;
+  }
 
   touch_drag_timer_.FireNow();
   return true;
@@ -1112,8 +1139,9 @@ void AppListItemView::OnMenuClosed() {
   menu_close_initiated_from_drag_ = false;
 
   // Keep the item focused if the menu was shown via keyboard.
-  if (!menu_show_initiated_from_key_)
+  if (!menu_show_initiated_from_key_) {
     OnBlur();
+  }
 
   if (focus_removed_by_context_menu_) {
     // Restore the last focused view when exiting the menu.
@@ -1144,8 +1172,9 @@ gfx::Rect AppListItemView::GetIconBoundsInScreen() const {
 }
 
 gfx::ImageSkia AppListItemView::GetIconImage() const {
-  if (!is_folder_)
+  if (!is_folder_) {
     return icon_->GetImage();
+  }
 
   return gfx::CanvasImageSource::MakeImageSkia<ClippedFolderIconImageSource>(
       app_list_config_->folder_icon_size(), icon_->GetImage());
@@ -1206,8 +1235,9 @@ gfx::Rect AppListItemView::GetTitleBoundsForTargetViewBounds(
 }
 
 void AppListItemView::ItemIconChanged(AppListConfigType config_type) {
-  if (config_type != app_list_config_->type())
+  if (config_type != app_list_config_->type()) {
     return;
+  }
 
   DCHECK(item_weak_);
   SetIcon(item_weak_->GetIcon(app_list_config_->type()));
@@ -1247,8 +1277,9 @@ void AppListItemView::ItemBeingDestroyed() {
   }
 
   // `EndDrag()` may delete this.
-  if (drag_state_ != DragState::kNone)
+  if (drag_state_ != DragState::kNone) {
     grid_delegate_->EndDrag(/*cancel=*/true);
+  }
 }
 
 void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
@@ -1317,13 +1348,13 @@ void AppListItemView::EnsureIconBackgroundLayer() {
       std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR));
   auto* background_layer = icon_background_layer_.layer();
   background_layer->SetName("icon_background_layer");
-  icon_->AddLayerBeneathView(background_layer);
+  icon_->AddLayerToRegion(background_layer, views::LayerRegion::kBelow);
 }
 
 void AppListItemView::OnExtendingAnimationEnded(bool extend_icon) {
   if (!extend_icon && !is_folder_ &&
       !icon_background_layer_.layer()->GetAnimator()->is_animating()) {
-    icon_->RemoveLayerBeneathView(icon_background_layer_.layer());
+    icon_->RemoveLayerFromRegions(icon_background_layer_.layer());
     icon_background_layer_.ReleaseLayer();
   }
 }

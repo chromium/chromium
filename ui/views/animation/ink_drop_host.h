@@ -166,7 +166,7 @@ class VIEWS_EXPORT InkDropHost {
   void OnInkDropHighlightedChanged();
 
   // Methods called by InkDrop for attaching its layer.
-  // TODO(pbos): Investigate using direct calls on View::AddLayerBeneathView.
+  // TODO(pbos): Investigate using direct calls on View::AddLayerToRegion.
   void AddInkDropLayer(ui::Layer* ink_drop_layer);
   void RemoveInkDropLayer(ui::Layer* ink_drop_layer);
 

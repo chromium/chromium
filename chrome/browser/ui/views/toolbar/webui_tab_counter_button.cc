@@ -456,8 +456,9 @@ class WebUITabCounterButton : public views::Button,
   // views::Button:
   void AddedToWidget() override;
   void AfterPropertyChange(const void* key, int64_t old_value) override;
-  void AddLayerBeneathView(ui::Layer* new_layer) override;
-  void RemoveLayerBeneathView(ui::Layer* old_layer) override;
+  void AddLayerToRegion(ui::Layer* new_layer,
+                        views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
   void OnThemeChanged() override;
   void Layout() override;
 
@@ -506,7 +507,7 @@ WebUITabCounterButton::WebUITabCounterButton(PressedCallback pressed_callback,
 
 WebUITabCounterButton::~WebUITabCounterButton() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // Add/RemoveLayerFromRegionsw(). This is done so that the InkDrop doesn't
   // access the non-override versions in ~View.
   views::InkDrop::Remove(this);
 }
@@ -607,12 +608,13 @@ void WebUITabCounterButton::AfterPropertyChange(const void* key,
   UpdateColors();
 }
 
-void WebUITabCounterButton::AddLayerBeneathView(ui::Layer* new_layer) {
-  ink_drop_container_->AddLayerBeneathView(new_layer);
+void WebUITabCounterButton::AddLayerToRegion(ui::Layer* new_layer,
+                                             views::LayerRegion region) {
+  ink_drop_container_->AddLayerToRegion(new_layer, region);
 }
 
-void WebUITabCounterButton::RemoveLayerBeneathView(ui::Layer* old_layer) {
-  ink_drop_container_->RemoveLayerBeneathView(old_layer);
+void WebUITabCounterButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
+  ink_drop_container_->RemoveLayerFromRegions(old_layer);
 }
 
 void WebUITabCounterButton::OnThemeChanged() {

@@ -297,7 +297,7 @@ void DownloadBubbleRowView::LoadIcon() {
 
 DownloadBubbleRowView::~DownloadBubbleRowView() {
   // Explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // Add/RemoveLayerFromRegions(). This is done so that the InkDrop doesn't
   // access the non-override versions in ~View.
   views::InkDrop::Remove(this);
 }
@@ -561,12 +561,13 @@ gfx::Size DownloadBubbleRowView::CalculatePreferredSize() const {
   return {fixed_width, GetHeightForWidth(fixed_width)};
 }
 
-void DownloadBubbleRowView::AddLayerBeneathView(ui::Layer* layer) {
-  inkdrop_container_->AddLayerBeneathView(layer);
+void DownloadBubbleRowView::AddLayerToRegion(ui::Layer* layer,
+                                             views::LayerRegion region) {
+  inkdrop_container_->AddLayerToRegion(layer, region);
 }
 
-void DownloadBubbleRowView::RemoveLayerBeneathView(ui::Layer* layer) {
-  inkdrop_container_->RemoveLayerBeneathView(layer);
+void DownloadBubbleRowView::RemoveLayerFromRegions(ui::Layer* layer) {
+  inkdrop_container_->RemoveLayerFromRegions(layer);
 }
 
 void DownloadBubbleRowView::OnWillChangeFocus(views::View* before,

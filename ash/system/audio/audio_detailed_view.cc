@@ -274,7 +274,8 @@ views::View* AudioDetailedView::AddDeviceSlider(
         ->SetColorId(cros_tokens::kCrosSysPrimary);
   }
   // Puts `slider` beneath `device_name_container`.
-  device_name_container->AddLayerBeneathView(unified_slider_view->layer());
+  device_name_container->AddLayerToRegion(unified_slider_view->layer(),
+                                          views::LayerRegion::kBelow);
   device_container->AddChildView(device_name_container);
   device_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   auto* added_device = container->AddChildView(std::move(device_container));

@@ -120,8 +120,8 @@ AssistantOnboardingSuggestionView::AssistantOnboardingSuggestionView(
 
 AssistantOnboardingSuggestionView::~AssistantOnboardingSuggestionView() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
-  // access the non-override versions in ~View.
+  // AddLayerToRegion/RemoveLayerFromRegions(). This is done so that the InkDrop
+  // doesn't access the non-override versions in ~View.
   views::InkDrop::Remove(this);
 }
 
@@ -134,17 +134,19 @@ void AssistantOnboardingSuggestionView::ChildPreferredSizeChanged(
   PreferredSizeChanged();
 }
 
-void AssistantOnboardingSuggestionView::AddLayerBeneathView(ui::Layer* layer) {
+void AssistantOnboardingSuggestionView::AddLayerToRegion(
+    ui::Layer* layer,
+    views::LayerRegion region) {
   // This routes background layers to `ink_drop_container_` instead of `this` to
   // avoid painting effects underneath our background.
-  ink_drop_container_->AddLayerBeneathView(layer);
+  ink_drop_container_->AddLayerToRegion(layer, region);
 }
 
-void AssistantOnboardingSuggestionView::RemoveLayerBeneathView(
+void AssistantOnboardingSuggestionView::RemoveLayerFromRegions(
     ui::Layer* layer) {
   // This routes background layers to `ink_drop_container_` instead of `this` to
   // avoid painting effects underneath our background.
-  ink_drop_container_->RemoveLayerBeneathView(layer);
+  ink_drop_container_->RemoveLayerFromRegions(layer);
 }
 
 void AssistantOnboardingSuggestionView::OnThemeChanged() {

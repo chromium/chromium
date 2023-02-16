@@ -46,8 +46,9 @@ class NewTabButton : public views::ImageButton,
   void AnimateToStateForTesting(views::InkDropState state);
 
   // views::ImageButton:
-  void AddLayerBeneathView(ui::Layer* new_layer) override;
-  void RemoveLayerBeneathView(ui::Layer* old_layer) override;
+  void AddLayerToRegion(ui::Layer* new_layer,
+                        views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
 
  protected:
   virtual void PaintIcon(gfx::Canvas* canvas);

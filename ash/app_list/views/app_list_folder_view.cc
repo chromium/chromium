@@ -652,7 +652,8 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   // Create a shadow under `background_view_`.
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
       SystemShadow::Type::kElevation8);
-  background_view_->AddLayerBeneathView(shadow_->GetLayer());
+  background_view_->AddLayerToRegion(shadow_->GetLayer(),
+                                     views::LayerRegion::kBelow);
 
   AppListModelProvider::Get()->AddObserver(this);
 }

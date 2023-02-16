@@ -84,7 +84,7 @@ NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
 
 NewTabButton::~NewTabButton() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // Add/RemoveLayerFromRegions(). This is done so that the InkDrop doesn't
   // access the non-override versions in ~View.
   views::InkDrop::Remove(this);
 }
@@ -103,12 +103,13 @@ void NewTabButton::AnimateToStateForTesting(views::InkDropState state) {
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(state);
 }
 
-void NewTabButton::AddLayerBeneathView(ui::Layer* new_layer) {
-  ink_drop_container_->AddLayerBeneathView(new_layer);
+void NewTabButton::AddLayerToRegion(ui::Layer* new_layer,
+                                    views::LayerRegion region) {
+  ink_drop_container_->AddLayerToRegion(new_layer, region);
 }
 
-void NewTabButton::RemoveLayerBeneathView(ui::Layer* old_layer) {
-  ink_drop_container_->RemoveLayerBeneathView(old_layer);
+void NewTabButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
+  ink_drop_container_->RemoveLayerFromRegions(old_layer);
 }
 
 SkColor NewTabButton::GetForegroundColor() const {

@@ -276,8 +276,9 @@ View::~View() {
   for (ViewObserver& observer : observers_)
     observer.OnViewIsDeleting(this);
 
-  for (ui::Layer* layer_beneath : layers_beneath_)
-    layer_beneath->RemoveObserver(this);
+  for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
+    layer->RemoveObserver(this);
+  }
 
   // Clearing properties explicitly here lets us guarantee that properties
   // outlive |this| (at least the View part of |this|). This is intentionally
@@ -700,8 +701,9 @@ void View::SetTransform(const gfx::Transform& transform) {
     layer()->ScheduleDraw();
   }
 
-  for (ui::Layer* layer_beneath : layers_beneath_)
-    layer_beneath->SetTransform(transform);
+  for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
+    layer->SetTransform(transform);
+  }
 }
 
 void View::SetPaintToLayer(ui::LayerType layer_type) {
@@ -731,35 +733,13 @@ void View::DestroyLayer() {
   CreateOrDestroyLayer();
 }
 
-void View::AddLayerBeneathView(ui::Layer* new_layer) {
-  DCHECK(new_layer);
-  DCHECK(!base::Contains(layers_beneath_, new_layer)) << "Layer already added.";
-
-  new_layer->AddObserver(this);
-  new_layer->SetVisible(GetVisible());
-  layers_beneath_.push_back(new_layer);
-
-  // If painting to a layer already, ensure |new_layer| gets added and stacked
-  // correctly. If not, this will happen on layer creation.
-  if (layer()) {
-    ui::Layer* parent_layer = layer()->parent();
-    // Note that |new_layer| may have already been added to the parent, for
-    // example when the layer of a LayerOwner is recreated.
-    if (parent_layer && parent_layer != new_layer->parent())
-      parent_layer->Add(new_layer);
-    new_layer->SetBounds(gfx::Rect(new_layer->size()) +
-                         layer()->bounds().OffsetFromOrigin());
-    if (parent())
-      parent()->ReorderLayers();
-  }
-
-  CreateOrDestroyLayer();
-
-  layer()->SetFillsBoundsOpaquely(false);
+void View::AddLayerToRegion(ui::Layer* new_layer, LayerRegion region) {
+  AddLayerToRegionImpl(
+      new_layer, region == LayerRegion::kAbove ? layers_above_ : layers_below_);
 }
 
-void View::RemoveLayerBeneathView(ui::Layer* old_layer) {
-  RemoveLayerBeneathViewKeepInLayerTree(old_layer);
+void View::RemoveLayerFromRegions(ui::Layer* old_layer) {
+  RemoveLayerFromRegionsKeepInLayerTree(old_layer);
 
   // Note that |old_layer| may have already been removed from its parent.
   ui::Layer* parent_layer = layer()->parent();
@@ -769,32 +749,48 @@ void View::RemoveLayerBeneathView(ui::Layer* old_layer) {
   CreateOrDestroyLayer();
 }
 
-void View::RemoveLayerBeneathViewKeepInLayerTree(ui::Layer* old_layer) {
-  auto layer_pos = base::ranges::find(layers_beneath_, old_layer);
-  DCHECK(layer_pos != layers_beneath_.end())
-      << "Attempted to remove a layer that was never added.";
-  layers_beneath_.erase(layer_pos);
-  old_layer->RemoveObserver(this);
+void View::RemoveLayerFromRegionsKeepInLayerTree(ui::Layer* old_layer) {
+  auto remove_layer = [old_layer, this](std::vector<ui::Layer*>& layer_vector) {
+    auto layer_pos = base::ranges::find(layer_vector, old_layer);
+    if (layer_pos == layer_vector.end()) {
+      return false;
+    }
+    layer_vector.erase(layer_pos);
+    old_layer->RemoveObserver(this);
+    return true;
+  };
+  const bool layer_removed =
+      remove_layer(layers_below_) || remove_layer(layers_above_);
+  DCHECK(layer_removed) << "Attempted to remove a layer that was never added.";
 }
 
-std::vector<ui::Layer*> View::GetLayersInOrder() {
+std::vector<ui::Layer*> View::GetLayersInOrder(ViewLayer view_layer) {
   // If not painting to a layer, there are no layers immediately related to this
   // view.
-  if (!layer())
+  if (!layer()) {
+    // If there is no View layer, there should be no layers above or below.
+    DCHECK(layers_above_.empty() && layers_below_.empty());
     return {};
+  }
 
   std::vector<ui::Layer*> result;
-  for (ui::Layer* layer_beneath : layers_beneath_)
-    result.push_back(layer_beneath);
-  result.push_back(layer());
+  for (ui::Layer* layer_below : layers_below_) {
+    result.push_back(layer_below);
+  }
+  if (view_layer == ViewLayer::kInclude) {
+    result.push_back(layer());
+  }
+  for (auto* layer_above : layers_above_) {
+    result.push_back(layer_above);
+  }
 
   return result;
 }
 
 void View::LayerDestroyed(ui::Layer* layer) {
-  // Only layers added with |AddLayerBeneathView()| are observed so |layer| can
-  // safely be removed.
-  RemoveLayerBeneathView(layer);
+  // Only layers added with |AddLayerToRegion()| or |AddLayerAboveView()|
+  // are observed so |layer| can safely be removed.
+  RemoveLayerFromRegions(layer);
 }
 
 std::unique_ptr<ui::Layer> View::RecreateLayer() {
@@ -2116,13 +2112,7 @@ void View::MoveLayerToParent(ui::Layer* parent_layer,
     local_offset_data += GetMirroredPosition().OffsetFromOrigin();
 
   if (layer() && parent_layer != layer()) {
-    // Adding the main layer can trigger a call to |SnapLayerToPixelBoundary()|.
-    // That method assumes layers beneath have already been added. Therefore
-    // layers beneath must be added first here. See crbug.com/961212.
-    for (ui::Layer* layer_beneath : layers_beneath_)
-      parent_layer->Add(layer_beneath);
-    parent_layer->Add(layer());
-
+    SetLayerParent(parent_layer);
     SetLayerBounds(size(), local_offset_data);
   } else {
     internal::ScopedChildrenLock lock(this);
@@ -2142,9 +2132,9 @@ void View::UpdateLayerVisibility() {
 void View::UpdateChildLayerVisibility(bool ancestor_visible) {
   const bool layers_visible = ancestor_visible && visible_;
   if (layer()) {
-    layer()->SetVisible(layers_visible);
-    for (ui::Layer* layer_beneath : layers_beneath_)
-      layer_beneath->SetVisible(layers_visible);
+    for (ui::Layer* layer : GetLayersInOrder()) {
+      layer->SetVisible(layers_visible);
+    }
   }
   {
     internal::ScopedChildrenLock lock(this);
@@ -2154,10 +2144,11 @@ void View::UpdateChildLayerVisibility(bool ancestor_visible) {
 }
 
 void View::DestroyLayerImpl(LayerChangeNotifyBehavior notify_parents) {
-  // Normally, adding layers beneath will trigger painting to a layer. It would
-  // leave this view in an inconsistent state if its layer were destroyed while
-  // layers beneath were still present. So, assume this doesn't happen.
-  DCHECK(layers_beneath_.empty());
+  // Normally, adding layers above or below will trigger painting to a layer.
+  // It would leave this view in an inconsistent state if its layer were
+  // destroyed while layers beneath were still present. So, assume this doesn't
+  // happen.
+  DCHECK(layers_below_.empty() && layers_above_.empty());
 
   if (!layer())
     return;
@@ -2255,7 +2246,7 @@ void View::OnDeviceScaleFactorChanged(float old_device_scale_factor,
 
 void View::CreateOrDestroyLayer() {
   if (paint_to_layer_explicitly_set_ || paint_to_layer_for_transform_ ||
-      !layers_beneath_.empty()) {
+      !layers_below_.empty() || !layers_above_.empty()) {
     // If we need to paint to a layer, make sure we have one.
     if (!layer())
       CreateLayer(ui::LAYER_TEXTURED);
@@ -2291,12 +2282,64 @@ void View::ReorderLayers() {
   }
 }
 
+void View::AddLayerToRegionImpl(ui::Layer* new_layer,
+                                std::vector<ui::Layer*>& layer_vector) {
+  DCHECK(new_layer);
+  DCHECK(!base::Contains(layer_vector, new_layer)) << "Layer already added.";
+
+  new_layer->AddObserver(this);
+  new_layer->SetVisible(GetVisible());
+  layer_vector.push_back(new_layer);
+
+  // If painting to a layer already, ensure |new_layer| gets added and stacked
+  // correctly. If not, this will happen on layer creation.
+  if (layer()) {
+    ui::Layer* const parent_layer = layer()->parent();
+    // Note that |new_layer| may have already been added to the parent, for
+    // example when the layer of a LayerOwner is recreated.
+    if (parent_layer && parent_layer != new_layer->parent()) {
+      parent_layer->Add(new_layer);
+    }
+    new_layer->SetBounds(gfx::Rect(new_layer->size()) +
+                         layer()->bounds().OffsetFromOrigin());
+    if (parent()) {
+      parent()->ReorderLayers();
+    }
+  }
+
+  CreateOrDestroyLayer();
+
+  layer()->SetFillsBoundsOpaquely(false);
+}
+
+void View::SetLayerParent(ui::Layer* parent_layer) {
+  // Adding the main layer can trigger a call to |SnapLayerToPixelBoundary()|.
+  // That method assumes layers beneath have already been added. Therefore
+  // layers above and below must be added first here. See crbug.com/961212.
+  for (ui::Layer* extra_layer : GetLayersInOrder(ViewLayer::kExclude)) {
+    parent_layer->Add(extra_layer);
+  }
+  parent_layer->Add(layer());
+  // After adding the main layer, it's relative position in the stack needs
+  // to be adjusted. This will ensure the layer is between any of the layers
+  // above and below the main layer.
+  if (!layers_below_.empty()) {
+    parent_layer->StackAbove(layer(), layers_below_.back());
+  } else if (!layers_above_.empty()) {
+    parent_layer->StackBelow(layer(), layers_above_.front());
+  }
+}
+
 void View::ReorderChildLayers(ui::Layer* parent_layer) {
   if (layer() && layer() != parent_layer) {
     DCHECK_EQ(parent_layer, layer()->parent());
+    for (ui::Layer* layer_above : layers_above_) {
+      parent_layer->StackAtBottom(layer_above);
+    }
     parent_layer->StackAtBottom(layer());
-    for (ui::Layer* layer_beneath : layers_beneath_)
-      parent_layer->StackAtBottom(layer_beneath);
+    for (ui::Layer* layer_below : layers_below_) {
+      parent_layer->StackAtBottom(layer_below);
+    }
   } else {
     // Iterate backwards through the children so that a child with a layer
     // which is further to the back is stacked above one which is further to
@@ -2838,9 +2881,11 @@ void View::SnapLayerToPixelBoundary(const LayerOffsetData& offset_data) {
     return;
 
 #if DCHECK_IS_ON()
-  // We rely on our layers beneath being parented correctly at this point.
-  for (ui::Layer* layer_beneath : layers_beneath_)
-    DCHECK_EQ(layer()->parent(), layer_beneath->parent());
+  // We rely on our layers above and below being parented correctly at this
+  // point.
+  for (ui::Layer* layer_above_below : GetLayersInOrder(ViewLayer::kExclude)) {
+    DCHECK_EQ(layer()->parent(), layer_above_below->parent());
+  }
 #endif  // DCHECK_IS_ON()
 
   if (layer()->GetCompositor() && layer()->GetCompositor()->is_pixel_canvas()) {
@@ -2848,8 +2893,9 @@ void View::SnapLayerToPixelBoundary(const LayerOffsetData& offset_data) {
                                 ? offset_data.GetSubpixelOffset()
                                 : gfx::Vector2dF();
     layer()->SetSubpixelPositionOffset(offset);
-    for (ui::Layer* layer_beneath : layers_beneath_)
-      layer_beneath->SetSubpixelPositionOffset(offset);
+    for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
+      layer->SetSubpixelPositionOffset(offset);
+    }
   }
 }
 
@@ -2926,9 +2972,8 @@ void View::SetLayerBounds(const gfx::Size& size,
   const gfx::Rect bounds = gfx::Rect(size) + offset_data.offset();
   const bool bounds_changed = (bounds != layer()->GetTargetBounds());
   layer()->SetBounds(bounds);
-  for (ui::Layer* layer_beneath : layers_beneath_) {
-    layer_beneath->SetBounds(gfx::Rect(layer_beneath->size()) +
-                             bounds.OffsetFromOrigin());
+  for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
+    layer->SetBounds(gfx::Rect(layer->size()) + bounds.OffsetFromOrigin());
   }
   SnapLayerToPixelBoundary(offset_data);
   if (bounds_changed) {
@@ -3054,9 +3099,9 @@ void View::OrphanLayers() {
   if (layer()) {
     ui::Layer* parent = layer()->parent();
     if (parent) {
-      parent->Remove(layer());
-      for (ui::Layer* layer_beneath : layers_beneath_)
-        parent->Remove(layer_beneath);
+      for (ui::Layer* layer : GetLayersInOrder()) {
+        parent->Remove(layer);
+      }
     }
 
     // The layer belonging to this View has already been orphaned. It is not
@@ -3071,12 +3116,7 @@ void View::OrphanLayers() {
 void View::ReparentLayer(ui::Layer* parent_layer) {
   DCHECK_NE(layer(), parent_layer);
   if (parent_layer) {
-    // Adding the main layer can trigger a call to |SnapLayerToPixelBoundary()|.
-    // That method assumes layers beneath have already been added. Therefore
-    // layers beneath must be added first here. See crbug.com/961212.
-    for (ui::Layer* layer_beneath : layers_beneath_)
-      parent_layer->Add(layer_beneath);
-    parent_layer->Add(layer());
+    SetLayerParent(parent_layer);
   }
   // Update the layer bounds; this needs to be called after this layer is added
   // to the new parent layer since snapping to pixel boundary will be affected

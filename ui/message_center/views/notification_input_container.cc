@@ -50,7 +50,7 @@ NotificationInputContainer::NotificationInputContainer(
 
 NotificationInputContainer::~NotificationInputContainer() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // Add/(). This is done so that the InkDrop doesn't
   // access the non-override versions in ~View.
   if (views::InkDrop::Get(this))
     views::InkDrop::Remove(this);
@@ -107,7 +107,8 @@ void NotificationInputContainer::AnimateBackground(const ui::Event& event) {
                            ui::LocatedEvent::FromIfValid(located_event.get()));
 }
 
-void NotificationInputContainer::AddLayerBeneathView(ui::Layer* layer) {
+void NotificationInputContainer::AddLayerToRegion(ui::Layer* layer,
+                                                  views::LayerRegion region) {
   if (!ink_drop_container_)
     return;
 
@@ -119,14 +120,14 @@ void NotificationInputContainer::AddLayerBeneathView(ui::Layer* layer) {
   textfield_->layer()->SetFillsBoundsOpaquely(false);
   button_->SetPaintToLayer();
   button_->layer()->SetFillsBoundsOpaquely(false);
-  ink_drop_container_->AddLayerBeneathView(layer);
+  ink_drop_container_->AddLayerToRegion(layer, region);
 }
 
-void NotificationInputContainer::RemoveLayerBeneathView(ui::Layer* layer) {
+void NotificationInputContainer::RemoveLayerFromRegions(ui::Layer* layer) {
   if (!ink_drop_container_)
     return;
 
-  ink_drop_container_->RemoveLayerBeneathView(layer);
+  ink_drop_container_->RemoveLayerFromRegions(layer);
   textfield_->DestroyLayer();
   button_->DestroyLayer();
 }

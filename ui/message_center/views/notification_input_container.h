@@ -60,8 +60,8 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
   void AnimateBackground(const ui::Event& event);
 
   // views::View:
-  void AddLayerBeneathView(ui::Layer* layer) override;
-  void RemoveLayerBeneathView(ui::Layer* layer) override;
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* layer) override;
   void OnThemeChanged() override;
   void Layout() override;
 

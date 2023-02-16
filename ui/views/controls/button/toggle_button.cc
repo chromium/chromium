@@ -222,7 +222,7 @@ ToggleButton::ToggleButton(PressedCallback callback)
 
 ToggleButton::~ToggleButton() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // Add/RemoveLayerFromRegions(). This is done so that the InkDrop doesn't
   // access the non-override versions in ~View.
   views::InkDrop::Remove(this);
 }
@@ -296,13 +296,14 @@ bool ToggleButton::GetAcceptsEvents() const {
   return accepts_events_;
 }
 
-void ToggleButton::AddLayerBeneathView(ui::Layer* layer) {
-  // Ink-drop layers should go underneath the ThumbView.
-  thumb_view_->AddLayerBeneathView(layer);
+void ToggleButton::AddLayerToRegion(ui::Layer* layer,
+                                    views::LayerRegion region) {
+  // Ink-drop layers should go above/below the ThumbView.
+  thumb_view_->AddLayerToRegion(layer, region);
 }
 
-void ToggleButton::RemoveLayerBeneathView(ui::Layer* layer) {
-  thumb_view_->RemoveLayerBeneathView(layer);
+void ToggleButton::RemoveLayerFromRegions(ui::Layer* layer) {
+  thumb_view_->RemoveLayerFromRegions(layer);
 }
 
 gfx::Size ToggleButton::CalculatePreferredSize() const {

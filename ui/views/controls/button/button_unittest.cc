@@ -745,9 +745,11 @@ class VisibilityTestButton : public TestButton {
       ADD_FAILURE();
   }
 
-  void AddLayerBeneathView(ui::Layer* layer) override { ADD_FAILURE(); }
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override {
+    ADD_FAILURE();
+  }
 
-  void RemoveLayerBeneathView(ui::Layer* layer) override { ADD_FAILURE(); }
+  void RemoveLayerFromRegions(ui::Layer* layer) override { ADD_FAILURE(); }
 };
 
 // Test that hiding or closing a Widget doesn't attempt to add a layer due to

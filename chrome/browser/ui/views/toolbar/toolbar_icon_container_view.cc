@@ -117,7 +117,7 @@ ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetFillsBoundsCompletely(false);
-  AddLayerBeneathView(border_.layer());
+  AddLayerToRegion(border_.layer(), views::LayerRegion::kBelow);
 
   views::AnimatingLayoutManager* animating_layout =
       SetLayoutManager(std::make_unique<views::AnimatingLayoutManager>());

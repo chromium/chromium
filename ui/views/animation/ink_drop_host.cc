@@ -257,11 +257,11 @@ void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   if (!AddInkDropClip(ink_drop_layer)) {
     InstallInkDropMask(ink_drop_layer);
   }
-  host_view_->AddLayerBeneathView(ink_drop_layer);
+  host_view_->AddLayerToRegion(ink_drop_layer, LayerRegion::kBelow);
 }
 
 void InkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
-  host_view_->RemoveLayerBeneathView(ink_drop_layer);
+  host_view_->RemoveLayerFromRegions(ink_drop_layer);
 
   // Remove clipping.
   ink_drop_layer->SetClipRect(gfx::Rect());

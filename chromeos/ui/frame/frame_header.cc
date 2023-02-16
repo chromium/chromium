@@ -112,7 +112,7 @@ void FrameHeader::FrameAnimatorView::StartAnimation(base::TimeDelta duration) {
 
   layer_owner_ = std::move(old_layer_owner);
 
-  AddLayerBeneathView(old_layer);
+  AddLayerToRegion(old_layer, views::LayerRegion::kBelow);
 
   // The old layer is on top and should fade out.
   old_layer->SetOpacity(1.f);
@@ -158,7 +158,7 @@ void FrameHeader::FrameAnimatorView::OnImplicitAnimationsCompleted() {
   // TODO(crbug.com/1172694): Remove this DCHECK if this is indeed the cause.
   DCHECK(layer_owner_);
   if (layer_owner_) {
-    RemoveLayerBeneathView(layer_owner_->root());
+    RemoveLayerFromRegions(layer_owner_->root());
     layer_owner_.reset();
   }
 }

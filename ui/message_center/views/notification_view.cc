@@ -321,9 +321,9 @@ NotificationView::NotificationView(
 
 NotificationView::~NotificationView() {
   // InkDrop is explicitly removed as it can have `this` as an observer
-  // installed. This is currently also required because RemoveLayerBeneathView()
-  // gets called in the destructor of InkDrop which would've called the wrong
-  // override if it destroys in a parent destructor.
+  // installed. This is currently also required because
+  // RemoveLayerFromRegions() gets called in the destructor of InkDrop which
+  // would've called the wrong override if it destroys in a parent destructor.
   views::InkDrop::Remove(this);
 }
 
@@ -594,16 +594,17 @@ bool NotificationView::IsExpandable() const {
   return false;
 }
 
-void NotificationView::AddLayerBeneathView(ui::Layer* layer) {
+void NotificationView::AddLayerToRegion(ui::Layer* layer,
+                                        views::LayerRegion region) {
   for (auto* child : GetChildrenForLayerAdjustment()) {
     child->SetPaintToLayer();
     child->layer()->SetFillsBoundsOpaquely(false);
   }
-  ink_drop_container_->AddLayerBeneathView(layer);
+  ink_drop_container_->AddLayerToRegion(layer, region);
 }
 
-void NotificationView::RemoveLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->RemoveLayerBeneathView(layer);
+void NotificationView::RemoveLayerFromRegions(ui::Layer* layer) {
+  ink_drop_container_->RemoveLayerFromRegions(layer);
   for (auto* child : GetChildrenForLayerAdjustment())
     child->DestroyLayer();
 }

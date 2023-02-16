@@ -45,13 +45,14 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
 
 ClipboardHistoryDeleteButton::~ClipboardHistoryDeleteButton() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // Add/RemoveLayerFromRegions(). This is done so that the InkDrop doesn't
   // access the non-override versions in ~View.
   views::InkDrop::Remove(this);
 }
 
-void ClipboardHistoryDeleteButton::AddLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->AddLayerBeneathView(layer);
+void ClipboardHistoryDeleteButton::AddLayerToRegion(ui::Layer* layer,
+                                                    views::LayerRegion region) {
+  ink_drop_container_->AddLayerToRegion(layer, region);
 }
 
 void ClipboardHistoryDeleteButton::OnClickCanceled(const ui::Event& event) {
@@ -61,8 +62,8 @@ void ClipboardHistoryDeleteButton::OnClickCanceled(const ui::Event& event) {
   views::Button::OnClickCanceled(event);
 }
 
-void ClipboardHistoryDeleteButton::RemoveLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->RemoveLayerBeneathView(layer);
+void ClipboardHistoryDeleteButton::RemoveLayerFromRegions(ui::Layer* layer) {
+  ink_drop_container_->RemoveLayerFromRegions(layer);
 }
 
 BEGIN_METADATA(ClipboardHistoryDeleteButton, CloseButton)

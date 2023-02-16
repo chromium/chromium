@@ -120,17 +120,18 @@ TestInkDropHost::TestInkDropHost(
       this));
 }
 
-void TestInkDropHost::AddLayerBeneathView(ui::Layer* layer) {
+void TestInkDropHost::AddLayerToRegion(ui::Layer* layer,
+                                       views::LayerRegion region) {
   ++num_ink_drop_layers_added_;
 }
 
-void TestInkDropHost::RemoveLayerBeneathView(ui::Layer* layer) {
+void TestInkDropHost::RemoveLayerFromRegions(ui::Layer* layer) {
   ++num_ink_drop_layers_removed_;
 }
 
 TestInkDropHost::~TestInkDropHost() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // Add/RemoveLayerFromRegions(). This is done so that the InkDrop doesn't
   // access the non-override versions in ~View.
   views::InkDrop::Remove(this);
 }

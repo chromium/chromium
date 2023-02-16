@@ -47,8 +47,8 @@ class TestInkDropHost : public View {
   }
 
   // View:
-  void AddLayerBeneathView(ui::Layer* layer) override;
-  void RemoveLayerBeneathView(ui::Layer* layer) override;
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* layer) override;
 
  private:
   int num_ink_drop_layers_added_ = 0;
