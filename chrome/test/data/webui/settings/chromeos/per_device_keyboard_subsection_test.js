@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeKeyboards, Router, routes, SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -13,6 +15,10 @@ suite('PerDeviceKeyboardSubsection', function() {
    * @type {?SettingsPerDeviceKeyboardSubsectionElement}
    */
   let subsection = null;
+  /**
+   * @type {?FakeInputDeviceSettingsProvider}
+   */
+  let provider = null;
 
   setup(() => {
     PolymerTest.clearBody();
@@ -20,6 +26,7 @@ suite('PerDeviceKeyboardSubsection', function() {
 
   teardown(() => {
     subsection = null;
+    provider = null;
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -27,6 +34,9 @@ suite('PerDeviceKeyboardSubsection', function() {
    * @return {!Promise}
    */
   function initializePerDeviceKeyboardSubsection() {
+    provider = new FakeInputDeviceSettingsProvider();
+    provider.setFakeKeyboards(fakeKeyboards);
+    setInputDeviceSettingsProviderForTesting(provider);
     subsection =
         document.createElement('settings-per-device-keyboard-subsection');
     assertTrue(subsection != null);
@@ -52,6 +62,61 @@ suite('PerDeviceKeyboardSubsection', function() {
     subsection.keyboard = keyboard;
     return flushTasks();
   }
+
+  /**Test that API are updated when keyboard settings change.*/
+  test('Update API when keyboard settings change', async () => {
+    await initializePerDeviceKeyboardSubsection();
+
+    const externalTopRowAreFunctionKeysButton =
+        subsection.shadowRoot.querySelector(
+            '#externalTopRowAreFunctionKeysButton');
+    externalTopRowAreFunctionKeysButton.click();
+    await flushTasks();
+    let updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    assertEquals(
+        updatedKeyboards[0].settings.topRowAreFKeys,
+        externalTopRowAreFunctionKeysButton.pref.value);
+
+    const blockMetaFunctionKeyRewritesButton =
+        subsection.shadowRoot.querySelector(
+            '#blockMetaFunctionKeyRewritesButton');
+    blockMetaFunctionKeyRewritesButton.click();
+    await flushTasks();
+    updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    assertEquals(
+        updatedKeyboards[0].settings.suppressMetaFKeyRewrites,
+        blockMetaFunctionKeyRewritesButton.pref.value);
+
+    const enableAutoRepeatButton =
+        subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
+    enableAutoRepeatButton.click();
+    await flushTasks();
+    updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    assertEquals(
+        updatedKeyboards[0].settings.autoRepeatEnabled,
+        enableAutoRepeatButton.pref.value);
+
+    const delaySlider =
+        assert(subsection.shadowRoot.querySelector('#delaySlider'));
+    MockInteractions.pressAndReleaseKeyOn(
+        delaySlider.shadowRoot.querySelector('cr-slider'), 39 /* right */, [],
+        'ArrowRight');
+    await flushTasks();
+    updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    assertEquals(
+        updatedKeyboards[0].settings.autoRepeatDelay, delaySlider.pref.value);
+
+    const repeatRateSlider =
+        assert(subsection.shadowRoot.querySelector('#repeatRateSlider'));
+    MockInteractions.pressAndReleaseKeyOn(
+        repeatRateSlider.shadowRoot.querySelector('cr-slider'), 39 /* right */,
+        [], 'ArrowRight');
+    await flushTasks();
+    updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    assertEquals(
+        updatedKeyboards[0].settings.autoRepeatInterval,
+        repeatRateSlider.pref.value);
+  });
 
   /**Test that keyboard settings data are from the keyboard provider.*/
   test('Verify keyboard settings data', async () => {

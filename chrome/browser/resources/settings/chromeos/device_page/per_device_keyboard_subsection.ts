@@ -30,7 +30,8 @@ import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
-import {Keyboard} from './input_device_settings_types.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
 const SettingsPerDeviceKeyboardSubsectionElementBase =
@@ -159,6 +160,8 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private autoRepeatIntervalsPref: chrome.settingsPrivate.PrefObject;
   private remapKeyboardKeysSublabel: string;
   private isInitialized: boolean = false;
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
 
   private updateSettingsToCurrentPrefs(): void {
     this.set(
@@ -194,6 +197,16 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     if (!this.isInitialized) {
       return;
     }
+    this.keyboard.settings = {
+      ...this.keyboard.settings,
+      autoRepeatEnabled: this.enableAutoRepeatPref.value,
+      topRowAreFKeys: this.topRowAreFunctionKeysPref.value,
+      autoRepeatDelay: this.autoRepeatDelaysPref.value,
+      autoRepeatInterval: this.autoRepeatIntervalsPref.value,
+      suppressMetaFKeyRewrites: this.blockMetaFunctionKeyRewritesPref.value,
+    };
+    this.inputDeviceSettingsProvider.setKeyboardSettings(
+        this.keyboard.id, this.keyboard.settings);
   }
 
   private async onModifierRemappingsChanged(): Promise<void> {
