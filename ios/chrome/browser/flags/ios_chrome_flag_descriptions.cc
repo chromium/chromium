@@ -161,14 +161,12 @@ extern const char kAppleCalendarExperienceKitDescription[] =
 extern const char kEmailName[] = "Email experience enable";
 extern const char kEmailDescription[] =
     "When enabled, one tapping or long pressing on an email address will "
-    "trigger the email "
-    "experience.";
+    "trigger the email experience.";
 
 extern const char kPhoneNumberName[] = "Phone number experience enable";
 extern const char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "
-    "the phone "
-    "number experience.";
+    "the phone number experience.";
 
 extern const char kEnableExpKitCalendarTextClassifierName[] =
     "Text Classifier in Experience Kit Calendar";
