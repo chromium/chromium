@@ -311,7 +311,7 @@ class AccountSelectionViewBinder {
             // part of the "Verifying..." header content description because the bottom sheet
             // closes itself automatically at the "Verifying..." stage.
             if (headerType != HeaderProperties.HeaderType.VERIFY
-                    && headerType != HeaderProperties.HeaderType.VERIFY_AUTO_SIGNIN) {
+                    && headerType != HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
                 headerTitleText.setContentDescription(title + ". "
                         + resources.getString(R.string.bottom_sheet_accessibility_description));
             } else {
@@ -321,7 +321,7 @@ class AccountSelectionViewBinder {
 
             if (key == HeaderProperties.TYPE) {
                 boolean progressBarVisible = (headerType == HeaderProperties.HeaderType.VERIFY
-                        || headerType == HeaderProperties.HeaderType.VERIFY_AUTO_SIGNIN);
+                        || headerType == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN);
                 view.findViewById(R.id.header_progress_bar)
                         .setVisibility(progressBarVisible ? View.VISIBLE : View.GONE);
                 view.findViewById(R.id.header_divider)
@@ -358,7 +358,7 @@ class AccountSelectionViewBinder {
     }
 
     /**
-     * Returns text for the {@link HeaderType.VERIFY_AUTO_SIGNIN} header.
+     * Returns text for the {@link HeaderType.VERIFY_AUTO_REAUTHN} header.
      */
     static @StringRes int getVerifyHeaderAutoStringId() {
         return R.string.verify_sheet_title_auto_signin;
@@ -369,7 +369,7 @@ class AccountSelectionViewBinder {
         if (type == HeaderProperties.HeaderType.VERIFY) {
             return resources.getString(getVerifyHeaderStringId());
         }
-        if (type == HeaderProperties.HeaderType.VERIFY_AUTO_SIGNIN) {
+        if (type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
             return resources.getString(getVerifyHeaderAutoStringId());
         }
         @StringRes

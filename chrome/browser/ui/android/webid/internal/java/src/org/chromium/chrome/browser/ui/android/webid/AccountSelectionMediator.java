@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -36,6 +37,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,6 +47,24 @@ import java.util.List;
  * to events like clicks.
  */
 class AccountSelectionMediator {
+    /**
+     * The following integers are used for histograms. Do not remove or modify existing values,
+     * but you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in
+     * sync with SheetType in chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h
+     * as well as with FedCmSheetType in tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({SheetType.ACCOUNT_SELECTION, SheetType.VERIFYING, SheetType.AUTO_REAUTHN,
+            SheetType.SIGN_IN_TO_IDP_STATIC, SheetType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface SheetType {
+        int ACCOUNT_SELECTION = 0;
+        int VERIFYING = 1;
+        int AUTO_REAUTHN = 2;
+        int SIGN_IN_TO_IDP_STATIC = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
     private final AccountSelectionComponent.Delegate mDelegate;
@@ -141,6 +162,8 @@ class AccountSelectionMediator {
 
             RecordHistogram.recordBooleanHistogram(
                     "Blink.FedCm.CloseVerifySheet.Android", mHeaderType == HeaderType.VERIFY);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Blink.FedCm.ClosedSheetType.Android", getSheetType(), SheetType.NUM_ENTRIES);
         };
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
@@ -150,6 +173,19 @@ class AccountSelectionMediator {
                 .with(HeaderProperties.RP_FOR_DISPLAY, rpForDisplay)
                 .with(HeaderProperties.TYPE, headerType)
                 .build();
+    }
+
+    private int getSheetType() {
+        switch (mHeaderType) {
+            case SIGN_IN:
+                return SheetType.ACCOUNT_SELECTION;
+            case VERIFY:
+                return SheetType.VERIFYING;
+            case VERIFY_AUTO_REAUTHN:
+                return SheetType.AUTO_REAUTHN;
+        }
+        assert false; // NOTREACHED
+        return SheetType.ACCOUNT_SELECTION;
     }
 
     private void updateAccounts(
@@ -174,10 +210,15 @@ class AccountSelectionMediator {
     }
 
     void showVerifySheet(Account account) {
-        mHeaderType = (mHeaderType == HeaderType.AUTO_SIGN_IN) ? HeaderType.VERIFY_AUTO_SIGNIN
-                                                               : HeaderType.VERIFY;
-        updateSheet(Arrays.asList(account), /*areAccountsClickable=*/false,
-                /* focusItem=*/ItemProperties.HEADER);
+        if (mHeaderType == HeaderType.SIGN_IN) {
+            mHeaderType = HeaderType.VERIFY;
+            updateSheet(Arrays.asList(account), /*areAccountsClickable=*/false,
+                    /* focusItem=*/ItemProperties.HEADER);
+        } else {
+            // We call showVerifySheet() from updateSheet()->onAccountSelected() in this case, so do
+            // not invoked updateSheet() as that would cause a loop and isn't needed.
+            assert mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN;
+        }
     }
 
     void close() {
@@ -235,7 +276,7 @@ class AccountSelectionMediator {
             accounts = Arrays.asList(mSelectedAccount);
         }
 
-        mHeaderType = isAutoSignIn ? HeaderType.AUTO_SIGN_IN : HeaderType.SIGN_IN;
+        mHeaderType = isAutoSignIn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
         updateSheet(accounts, /*areAccountsClickable=*/mSelectedAccount == null, focusItem);
         updateBackPressBehavior();
     }
@@ -253,7 +294,7 @@ class AccountSelectionMediator {
             isDataSharingConsentVisible = !mSelectedAccount.isSignIn();
         }
 
-        if (mHeaderType == HeaderType.AUTO_SIGN_IN) {
+        if (mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN) {
             assert mSelectedAccount != null;
             assert mSelectedAccount.isSignIn();
 

@@ -57,7 +57,7 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class HeaderProperties {
-        public enum HeaderType { AUTO_SIGN_IN, SIGN_IN, VERIFY, VERIFY_AUTO_SIGNIN }
+        public enum HeaderType { SIGN_IN, VERIFY, VERIFY_AUTO_REAUTHN }
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
         static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =

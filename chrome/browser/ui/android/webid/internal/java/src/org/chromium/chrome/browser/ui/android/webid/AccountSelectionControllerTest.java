@@ -464,7 +464,7 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA, CLIENT_ID_METADATA, true /* isAutoSignIn */);
 
         assertEquals(1, mSheetAccountItems.size());
-        assertEquals(HeaderType.VERIFY_AUTO_SIGNIN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 
     private void pressBack() {

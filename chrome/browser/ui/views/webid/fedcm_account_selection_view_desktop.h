@@ -31,7 +31,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   static constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
 
   // This enum is used for histograms. Do not remove or modify existing values,
-  // but you may add new values at the end and increase COUNT.
+  // but you may add new values at the end and increase COUNT. This enum should
+  // be kept in sync with SheetType in
+  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
+  // with FedCmSheetType in tools/metrics/histograms/enums.xml.
   enum SheetType {
     ACCOUNT_SELECTION = 0,
     VERIFYING = 1,
