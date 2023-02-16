@@ -173,6 +173,12 @@ export type LayoutInfo =
 export type MojoLayoutInfo = AcceleratorInfoTypes.AcceleratorLayoutInfo;
 
 /**
+ * Type alias for the ShortcutSearchHandlerInterface.
+ * TODO(longbowei): Replace with a real mojo type when implemented.
+ */
+export type ShortcutSearchHandlerInterface = Object;
+
+/**
  * Type alias for the ShortcutProviderInterface.
  * TODO(zentaro): Replace with a real mojo type when implemented.
  */
