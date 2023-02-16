@@ -566,6 +566,11 @@ void URLLoader::LoadSynchronously(
     return;
   }
 
+  if (sync_load_response
+          .has_authorization_header_between_cross_origin_redirect_) {
+    client->CountFeature(mojom::WebFeature::kAuthorizationCrossOrigin);
+  }
+
   response =
       WebURLResponse::Create(final_url, *sync_load_response.head,
                              has_devtools_request_id, context_->request_id());

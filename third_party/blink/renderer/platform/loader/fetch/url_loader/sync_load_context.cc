@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "url/origin.h"
 
 namespace blink {
 
@@ -151,6 +153,9 @@ SyncLoadContext::SyncLoadContext(
   // Initialize the final URL with the original request URL. It will be
   // overwritten on redirects.
   response_->url = request->url;
+
+  has_authorization_header_ =
+      request->headers.HasHeader(net::HttpRequestHeaders::kAuthorization);
 }
 
 SyncLoadContext::~SyncLoadContext() {}
@@ -162,6 +167,12 @@ bool SyncLoadContext::OnReceivedRedirect(
     network::mojom::URLResponseHeadPtr head,
     std::vector<std::string>* removed_headers) {
   DCHECK(!Completed());
+
+  if (has_authorization_header_ &&
+      !url::IsSameOriginWith(response_->url, redirect_info.new_url)) {
+    response_->has_authorization_header_between_cross_origin_redirect_ = true;
+  }
+
   if (removed_headers) {
     // TODO(yoav): Get the actual PermissionsPolicy here to support selective
     // removal for sync XHR.

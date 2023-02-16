@@ -56,6 +56,11 @@ struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
 
   // Used for blob response type XMLHttpRequest.
   scoped_refptr<BlobDataHandle> downloaded_blob;
+
+  // True when cross origin redirects happen with Authorization header.
+  // TODO(https://crbug.com/1393520): Remove this field once we get enough
+  // stats to make a decision.
+  bool has_authorization_header_between_cross_origin_redirect_ = false;
 };
 
 }  // namespace blink

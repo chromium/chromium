@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -123,6 +124,11 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
                        int64_t total_encoded_data_length,
                        uint64_t total_encoded_body_length,
                        int64_t total_decoded_body_length) {}
+
+  // Counts a WebFeature use.
+  // TODO(https://crbug.com/1393520): Remove this method once we get enough
+  // stats to make a decision.
+  virtual void CountFeature(blink::mojom::WebFeature) {}
 
   // Value passed to DidFinishLoading when total encoded data length isn't
   // known.

@@ -11,13 +11,20 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
@@ -27,6 +34,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/noop_url_loader.h"
@@ -47,6 +55,19 @@ const char kCnameAliasWasAdTaggedHistogram[] =
     "SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias";
 const char kCnameAliasWasBlockedHistogram[] =
     "SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias";
+
+namespace {
+
+using ::testing::_;
+
+class MockUseCounter : public GarbageCollected<MockUseCounter>,
+                       public UseCounter {
+ public:
+  MOCK_METHOD1(CountUse, void(mojom::WebFeature));
+  MOCK_METHOD1(CountDeprecation, void(mojom::WebFeature));
+};
+
+}  // namespace
 
 class ResourceLoaderTest : public testing::Test {
  public:
@@ -100,15 +121,21 @@ class ResourceLoaderTest : public testing::Test {
   ResourceFetcher* MakeResourceFetcher(
       TestResourceFetcherProperties* properties,
       FetchContext* context) {
-    return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+    ResourceFetcherInit init(
         properties->MakeDetachable(), context, CreateTaskRunner(),
         CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
-        nullptr /* back_forward_cache_loader_helper */));
+        /*back_forward_cache_loader_helper=*/nullptr);
+    use_counter_ = MakeGarbageCollected<testing::StrictMock<MockUseCounter>>();
+    init.use_counter = MakeGarbageCollected<DetachableUseCounter>(use_counter_);
+    return MakeGarbageCollected<ResourceFetcher>(std::move(init));
   }
+
+  MockUseCounter* UseCounter() const { return use_counter_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  Persistent<MockUseCounter> use_counter_;
 };
 
 std::ostream& operator<<(std::ostream& o, const ResourceLoaderTest::From& f) {
@@ -441,6 +468,77 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   // The body is not set to ResourceBuffer since the response body is requested
   // as a stream.
   EXPECT_FALSE(resource->ResourceBuffer());
+}
+
+namespace {
+
+bool WillFollowRedirect(ResourceLoader* loader, KURL new_url) {
+  auto response_head = network::mojom::URLResponseHead::New();
+  auto response =
+      WebURLResponse::Create(new_url, *response_head,
+                             /*report_security_info=*/true, /*request_id=*/1);
+  bool has_devtools_request_id = false;
+  std::vector<std::string> removed_headers;
+  return loader->WillFollowRedirect(
+      new_url, net::SiteForCookies(), /*new_referrer=*/String(),
+      network::mojom::ReferrerPolicy::kAlways, "GET", response,
+      has_devtools_request_id, &removed_headers,
+      /*insecure_scheme_was_upgraded=*/false);
+}
+
+}  // namespace
+
+TEST_F(ResourceLoaderTest, AuthorizationCrossOriginRedirect) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  FetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = MakeResourceFetcher(properties, context);
+
+  KURL url("https://a.test/");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+  request.SetHttpHeaderField(net::HttpRequestHeaders::kAuthorization,
+                             "Basic foo");
+
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
+  ResourceLoader* loader = resource->Loader();
+
+  // Redirect to the same origin. Expect no UseCounter call.
+  {
+    KURL new_url("https://a.test/foo");
+    ASSERT_TRUE(WillFollowRedirect(loader, new_url));
+    ::testing::Mock::VerifyAndClear(UseCounter());
+  }
+
+  // Redirect to a cross origin. Expect a single UseCounter call.
+  {
+    EXPECT_CALL(*UseCounter(),
+                CountUse(mojom::WebFeature::kAuthorizationCrossOrigin))
+        .Times(1);
+    KURL new_url("https://b.test");
+    ASSERT_TRUE(WillFollowRedirect(loader, new_url));
+    ::testing::Mock::VerifyAndClear(UseCounter());
+  }
+}
+
+TEST_F(ResourceLoaderTest, CrossOriginRedirect_NoAuthorization) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  FetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = MakeResourceFetcher(properties, context);
+
+  KURL url("https://a.test/");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
+  ResourceLoader* loader = resource->Loader();
+
+  // Redirect to a cross origin without Authorization header. Expect no
+  // UseCounter call.
+  KURL new_url("https://b.test");
+  ASSERT_TRUE(WillFollowRedirect(loader, new_url));
+  ::testing::Mock::VerifyAndClear(UseCounter());
 }
 
 class ResourceLoaderIsolatedCodeCacheTest : public ResourceLoaderTest {

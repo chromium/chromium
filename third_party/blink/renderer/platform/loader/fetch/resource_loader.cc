@@ -806,6 +806,14 @@ bool ResourceLoader::WillFollowRedirect(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
+  if (resource_->GetResourceRequest().HttpHeaderFields().Contains(
+          net::HttpRequestHeaders::kAuthorization) &&
+      !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
+                                     new_url)) {
+    fetcher_->GetUseCounter().CountUse(
+        mojom::WebFeature::kAuthorizationCrossOrigin);
+  }
+
   if (removed_headers) {
     FindClientHintsToRemove(Context().GetPermissionsPolicy(),
                             GURL(new_url.GetString().Utf8()), removed_headers);
@@ -1316,6 +1324,10 @@ void ResourceLoader::DidFail(const WebURLError& error,
   resource_->SetEncodedBodyLength(encoded_body_length);
   resource_->SetDecodedBodyLength(decoded_body_length);
   HandleError(ResourceError(error));
+}
+
+void ResourceLoader::CountFeature(blink::mojom::WebFeature feature) {
+  fetcher_->GetUseCounter().CountUse(feature);
 }
 
 void ResourceLoader::HandleError(const ResourceError& error) {

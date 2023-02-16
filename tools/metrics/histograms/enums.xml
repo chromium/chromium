@@ -42240,6 +42240,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4468" label="ServiceWorkerAddHandlerAfterInitialization"/>
   <int value="4469"
       label="ServiceWorkerSetAttributeHandlerAfterInitialization"/>
+  <int value="4470" label="AuthorizationCrossOrigin"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

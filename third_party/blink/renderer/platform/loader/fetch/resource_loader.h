@@ -161,6 +161,7 @@ class PLATFORM_EXPORT ResourceLoader final
                int64_t encoded_data_length,
                uint64_t encoded_body_length,
                int64_t decoded_body_length) override;
+  void CountFeature(blink::mojom::WebFeature) override;
 
   mojom::blink::CodeCacheType GetCodeCacheType() const;
   void SendCachedCodeToResource(mojo_base::BigBuffer data);

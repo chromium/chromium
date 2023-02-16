@@ -145,6 +145,11 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public WebRequestPeer {
   bool blob_finished_ = false;
   bool request_completed_ = false;
 
+  // True when the request contains Authorization header.
+  // TODO(https://crbug.com/1393520): Remove this field once we get enough
+  // stats to make a decision.
+  bool has_authorization_header_ = false;
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   class SignalHelper;
