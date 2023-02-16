@@ -53,6 +53,7 @@ AutofillWalletUsageDataSyncBridge::AutofillWalletUsageDataSyncBridge(
     : ModelTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
   DCHECK(web_data_backend_);
+  DCHECK(GetAutofillTable());
 
   LoadMetadata();
 }
@@ -74,16 +75,65 @@ absl::optional<syncer::ModelError>
 AutofillWalletUsageDataSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  NOTIMPLEMENTED();
-  return absl::nullopt;
+  // There is no local data to write, so use ApplySyncChanges.
+  return ApplySyncChanges(std::move(metadata_change_list),
+                          std::move(entity_data));
 }
 
 absl::optional<syncer::ModelError>
 AutofillWalletUsageDataSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  NOTIMPLEMENTED();
-  return absl::nullopt;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AutofillTable* table = GetAutofillTable();
+
+  // Only Virtual Card Usage Data is currently supported.
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_DELETE:
+        if (table &&
+            !table->RemoveVirtualCardUsageData(change->storage_key())) {
+          return syncer::ModelError(
+              FROM_HERE,
+              "Failed to delete virtual card usage data from table.");
+        }
+        break;
+      case syncer::EntityChange::ACTION_ADD:
+      case syncer::EntityChange::ACTION_UPDATE: {
+        // TODO(crbug.com/1412207): AddOrUpdate VirtualCardUsageData method for
+        // Autofill Table
+        DCHECK(IsEntityDataValid(change->data()));
+        VirtualCardUsageData remote = VirtualCardUsageDataFromUsageSpecifics(
+            change->data().specifics.autofill_wallet_usage());
+        if (table && table->GetVirtualCardUsageData(change->storage_key())) {
+          if (!table->UpdateVirtualCardUsageData(remote)) {
+            return syncer::ModelError(
+                FROM_HERE,
+                "Failed to update virtual card usage data in table.");
+          }
+        } else {
+          if (!table->AddVirtualCardUsageData(remote)) {
+            return syncer::ModelError(
+                FROM_HERE, "Failed to add virtual card usage data in table.");
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  // Commit the transaction to make sure the data and the metadata with the
+  // new progress marker is written down.
+  web_data_backend_->CommitChanges();
+
+  // False positives can occur here if an update doesn't change the profile.
+  // Since such false positives are fine, and since AutofillTable's API
+  // currently doesn't provide a way to detect such cases, we don't distinguish.
+  if (!entity_data.empty()) {
+    web_data_backend_->NotifyOfMultipleAutofillChanges();
+  }
+
+  return change_processor()->GetError();
 }
 
 void AutofillWalletUsageDataSyncBridge::GetData(StorageKeyList storage_keys,
@@ -128,6 +178,13 @@ std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(
 void AutofillWalletUsageDataSyncBridge::ApplyStopSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   NOTIMPLEMENTED();
+}
+
+bool AutofillWalletUsageDataSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return entity_data.specifics.has_autofill_wallet_usage() &&
+         entity_data.specifics.autofill_wallet_usage()
+             .has_virtual_card_usage_data();
 }
 
 AutofillTable* AutofillWalletUsageDataSyncBridge::GetAutofillTable() {

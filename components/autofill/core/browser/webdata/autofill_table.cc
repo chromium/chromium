@@ -2639,6 +2639,9 @@ bool AutofillTable::GetAutofillOffers(
 
 bool AutofillTable::AddVirtualCardUsageData(
     const VirtualCardUsageData& virtual_card_usage_data) {
+  if (GetVirtualCardUsageData(*virtual_card_usage_data.usage_data_id())) {
+    return false;
+  }
   sql::Statement s;
   InsertBuilder(db_, s, kVirtualCardUsageDataTable,
                 {kId, kInstrumentId, kMerchantDomain, kLastFour});
@@ -2652,9 +2655,6 @@ bool AutofillTable::UpdateVirtualCardUsageData(
       GetVirtualCardUsageData(*virtual_card_usage_data.usage_data_id());
   if (!old_data) {
     return false;
-  }
-  if (*old_data == virtual_card_usage_data) {
-    return true;
   }
 
   sql::Statement s;
@@ -2680,6 +2680,10 @@ std::unique_ptr<VirtualCardUsageData> AutofillTable::GetVirtualCardUsageData(
 
 bool AutofillTable::RemoveVirtualCardUsageData(
     const std::string& usage_data_id) {
+  if (!GetVirtualCardUsageData(usage_data_id)) {
+    return false;
+  }
+
   return DeleteWhereColumnEq(db_, kVirtualCardUsageDataTable, kId,
                              usage_data_id);
 }
