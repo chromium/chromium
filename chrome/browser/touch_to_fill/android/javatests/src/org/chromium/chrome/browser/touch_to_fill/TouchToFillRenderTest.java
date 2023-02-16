@@ -39,6 +39,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -280,6 +281,7 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @DisabledTest(message = "https://crbug.com/1416856")
     public void testShowsOneCredentialModernHalfState() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
