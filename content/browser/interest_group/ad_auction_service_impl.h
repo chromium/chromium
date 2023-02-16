@@ -13,6 +13,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -128,10 +129,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       absl::optional<blink::InterestGroupKey> winning_group_key,
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
-      std::map<
-          url::Origin,
-          std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
-          private_aggregation_requests_reserved,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter);
 
@@ -177,6 +174,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // Safe to keep as it will outlive the associated `RenderFrameHost` and
   // therefore `this`, being tied to the lifetime of the `StoragePartition`.
   const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
+
+  base::WeakPtrFactory<AdAuctionServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

@@ -82,49 +82,6 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   return true;
 }
 
-// Sends requests for the Private Aggregation API to its manager. Does nothing
-// if the manager is unavailable. The map should be keyed by reporting origin
-// of the corresponding requests.
-void SendPrivateAggregationRequests(
-    PrivateAggregationManager* private_aggregation_manager,
-    const url::Origin& main_frame_origin,
-    std::map<url::Origin,
-             std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
-        private_aggregation_requests) {
-  // Empty vectors should've been filtered out.
-  DCHECK(base::ranges::none_of(private_aggregation_requests,
-                               [](auto& it) { return it.second.empty(); }));
-
-  if (!private_aggregation_manager) {
-    return;
-  }
-
-  for (auto& [origin, requests] : private_aggregation_requests) {
-    mojo::Remote<mojom::PrivateAggregationHost> remote;
-    if (!private_aggregation_manager->BindNewReceiver(
-            origin, main_frame_origin,
-            PrivateAggregationBudgetKey::Api::kFledge,
-            remote.BindNewPipeAndPassReceiver())) {
-      continue;
-    }
-
-    for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
-         requests) {
-      DCHECK(request);
-      // All for-event contributions have already been converted to histogram
-      // contributions by filling in post auction signals before reaching here.
-      DCHECK(request->contribution->is_histogram_contribution());
-      std::vector<mojom::AggregatableReportHistogramContributionPtr>
-          contributions;
-      contributions.push_back(
-          std::move(request->contribution->get_histogram_contribution()));
-      remote->SendHistogramReport(std::move(contributions),
-                                  request->aggregation_mode,
-                                  std::move(request->debug_mode_details));
-    }
-  }
-}
-
 }  // namespace
 
 // static
@@ -288,7 +245,13 @@ void AdAuctionServiceImpl::RunAdAuction(
       &auction_worklet_manager_, &GetInterestGroupManager(),
       AttributionDataHostManager::FromBrowserContext(
           render_frame_host().GetBrowserContext()),
-      config, origin(), GetClientSecurityState(),
+      private_aggregation_manager_,
+      // Unlike other callbacks, this needs to be safe to call after destruction
+      // of the AdAuctionServiceImpl, so that the reporter can outlive it.
+      base::BindRepeating(
+          &AdAuctionServiceImpl::MaybeLogPrivateAggregationFeature,
+          weak_ptr_factory_.GetWeakPtr()),
+      config, main_frame_origin_, origin(), GetClientSecurityState(),
       GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
@@ -563,12 +526,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     absl::optional<blink::InterestGroupKey> winning_group_key,
     absl::optional<GURL> render_url,
     std::vector<GURL> ad_component_urls,
-    std::map<url::Origin,
-             std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
-        private_aggregation_requests_reserved,
     std::vector<std::string> errors,
     std::unique_ptr<InterestGroupAuctionReporter> reporter) {
-  // Remove `auction` from `auctions_` but tmeporarily keep it alive - on
+  // Remove `auction` from `auctions_` but temporarily keep it alive - on
   // success, it owns a AuctionWorkletManager::WorkletHandle for the top-level
   // auction, which `reporter` can reuse once started. Fine to delete after
   // starting the reporter.
@@ -589,14 +549,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 
   if (!render_url) {
     DCHECK(!reporter);
-    // Private aggregation requests of non-reserved event types don't need to be
-    // handled if the auction failed since they can't be triggered.
-    MaybeLogPrivateAggregationFeature(private_aggregation_requests_reserved);
-    if (!manually_aborted) {
-      SendPrivateAggregationRequests(
-          private_aggregation_manager_, main_frame_origin_,
-          std::move(private_aggregation_requests_reserved));
-    }
 
     std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
     if (auction_result_metrics) {
@@ -613,8 +565,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   }
 
   DCHECK(reporter);
-  // `reporter` has any aggregation requests generated in this case.
-  DCHECK(private_aggregation_requests_reserved.empty());
   // Should always be present with a render_url.
   DCHECK(winning_group_key);
   DCHECK(blink::IsValidFencedFrameURL(*render_url));
@@ -668,26 +618,7 @@ void AdAuctionServiceImpl::OnReporterComplete(
         base::StrCat({"Worklet error: ", error}));
   }
 
-  auto private_aggregation_requests_reserved =
-      reporter->TakeReservedPrivateAggregationRequests();
-  // TODO(crbug.com/1410340): Log non-reserved private aggregation requests as
-  // well.
-  MaybeLogPrivateAggregationFeature(private_aggregation_requests_reserved);
-
   reporters_.erase(reporter_it);
-
-  // TODO(mmenke): Move all reporting logic to the InterestGroupAuctionReporter.
-  // Interest group update logic could remain here or go there as well, but
-  // should be performed as soon as the fenced frame on navigate callback is
-  // invoked, instead of only after reporting - it should also be performed if
-  // the current frame is deleted (e.g., if an iframe runs an auction, passes
-  // the URN to the parent frame, which then deletes the iframe and then
-  // navigates a fenced frame, interest groups should still be updated. We
-  // should run the InterestGroupAuctionReporter as well, but that's potentially
-  // another issue).
-  SendPrivateAggregationRequests(
-      private_aggregation_manager_, main_frame_origin_,
-      std::move(private_aggregation_requests_reserved));
 }
 
 void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeature(

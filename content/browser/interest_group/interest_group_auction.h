@@ -45,6 +45,7 @@ namespace content {
 
 class AttributionDataHostManager;
 class InterestGroupManagerImpl;
+class PrivateAggregationManager;
 
 // An InterestGroupAuction Handles running an auction, or a component auction.
 // Consumers should use AuctionRunner, which sets up InterestGroupAuction and
@@ -438,12 +439,16 @@ class CONTENT_EXPORT InterestGroupAuction
   // Takes ownership of the `auction_config`, so that the reporter can outlive
   // other auction-related classes.
   std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
+      AttributionDataHostManager* attribution_data_host_manager,
+      PrivateAggregationManager* private_aggregation_manager,
+      InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
+          log_private_aggregation_requests_callback,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<blink::AuctionConfig> auction_config,
+      const url::Origin& main_frame_origin,
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      blink::InterestGroupSet interest_groups_that_bid,
-      AttributionDataHostManager* attribution_data_host_manager);
+      blink::InterestGroupSet interest_groups_that_bid);
 
   // Called by AuctionRunner (for component auctions, indirectly via
   // NotifyComponentConfigPromisesResolved) when all promises relevant to this

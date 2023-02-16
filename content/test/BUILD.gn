@@ -2313,6 +2313,8 @@ test("content_unittests") {
     "../browser/interest_group/subresource_url_builder_unittest.cc",
     "../browser/interest_group/test_interest_group_manager_impl.cc",
     "../browser/interest_group/test_interest_group_manager_impl.h",
+    "../browser/interest_group/test_interest_group_private_aggregation_manager.cc",
+    "../browser/interest_group/test_interest_group_private_aggregation_manager.h",
     "../browser/loader/cors_origin_pattern_setter_unittest.cc",
     "../browser/loader/file_url_loader_factory_unittest.cc",
     "../browser/loader/merkle_integrity_source_stream_unittest.cc",

@@ -1390,12 +1390,16 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 
 std::unique_ptr<InterestGroupAuctionReporter>
 InterestGroupAuction::CreateReporter(
+    AttributionDataHostManager* attribution_data_host_manager,
+    PrivateAggregationManager* private_aggregation_manager,
+    InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
+        log_private_aggregation_requests_callback,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<blink::AuctionConfig> auction_config,
+    const url::Origin& main_frame_origin,
     const url::Origin& frame_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    blink::InterestGroupSet interest_groups_that_bid,
-    AttributionDataHostManager* attribution_data_host_manager) {
+    blink::InterestGroupSet interest_groups_that_bid) {
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
   DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
@@ -1500,9 +1504,11 @@ InterestGroupAuction::CreateReporter(
 
   return std::make_unique<InterestGroupAuctionReporter>(
       interest_group_manager_, auction_worklet_manager_,
-      attribution_data_host_manager, std::move(auction_config), frame_origin,
-      std::move(client_security_state), std::move(url_loader_factory),
-      std::move(winning_bid_info), std::move(top_level_seller_winning_bid_info),
+      attribution_data_host_manager, private_aggregation_manager,
+      log_private_aggregation_requests_callback, std::move(auction_config),
+      main_frame_origin, frame_origin, std::move(client_security_state),
+      std::move(url_loader_factory), std::move(winning_bid_info),
+      std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
       std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
