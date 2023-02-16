@@ -2103,6 +2103,20 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Sandboxing.LandlockEnabled" enum="Boolean"
+    expires_after="2023-07-30">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-security-core@google.com</owner>
+  <summary>
+    Records the status of the Landlock LSM on the system. Records true if
+    Landlock is enabled, and records false if it is disabled (not configured),
+    not supported by the kernel, or responding with an error.
+
+    The state of Landlock is determined once per boot and the metric is also
+    recorded only once per boot.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Secagentd.Bpf.{Bpf}.AttachResult"
     enum="SecagentdBpfAttachResult" expires_after="2023-05-18">
   <owner>aashay@google.com</owner>
