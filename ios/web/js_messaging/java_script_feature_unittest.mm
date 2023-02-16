@@ -109,7 +109,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeature) {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
           "gcrweb", document_start_injection_time, target_frames_all);
 
-  auto any_content_world = web::ContentWorld::kAnyContentWorld;
+  auto any_content_world = web::ContentWorld::kPageContentWorld;
   web::JavaScriptFeature feature(any_content_world, {feature_script});
 
   EXPECT_EQ(any_content_world, feature.GetSupportedContentWorld());
@@ -140,7 +140,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithPlaceholder) {
             return @{placeholder : replacement};
           }));
 
-  auto any_content_world = web::ContentWorld::kAnyContentWorld;
+  auto any_content_world = web::ContentWorld::kIsolatedWorld;
   web::JavaScriptFeature feature(any_content_world, {feature_script});
 
   EXPECT_EQ(any_content_world, feature.GetSupportedContentWorld());

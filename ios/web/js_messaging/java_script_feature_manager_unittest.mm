@@ -43,15 +43,6 @@ class JavaScriptFeatureManagerTest : public web::WebTest {
   }
 };
 
-// Tests that JavaScriptFeatureManager adds base shared user scripts.
-TEST_F(JavaScriptFeatureManagerTest, Configure) {
-  ASSERT_TRUE(GetJavaScriptFeatureManager());
-  ASSERT_EQ(0ul, [GetUserContentController().userScripts count]);
-
-  GetJavaScriptFeatureManager()->ConfigureFeatures({});
-  EXPECT_EQ(6ul, [GetUserContentController().userScripts count]);
-}
-
 // Tests that JavaScriptFeatureManager adds a JavaScriptFeature for all frames
 // at document start time for the page content world.
 TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
@@ -69,7 +60,7 @@ TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 
-  EXPECT_EQ(7ul, [GetUserContentController().userScripts count]);
+  EXPECT_EQ(1ul, [GetUserContentController().userScripts count]);
   WKUserScript* user_script =
       [GetUserContentController().userScripts lastObject];
   EXPECT_TRUE(
@@ -80,7 +71,7 @@ TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
 }
 
 // Tests that JavaScriptFeatureManager adds a JavaScriptFeature for all frames
-// at document end time for any content world.
+// at document end time for the page content world.
 TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
   ASSERT_TRUE(GetJavaScriptFeatureManager());
 
@@ -92,11 +83,11 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
 
   std::unique_ptr<web::JavaScriptFeature> feature =
       std::make_unique<web::JavaScriptFeature>(
-          web::ContentWorld::kAnyContentWorld, feature_scripts);
+          web::ContentWorld::kPageContentWorld, feature_scripts);
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 
-  EXPECT_EQ(7ul, [GetUserContentController().userScripts count]);
+  EXPECT_EQ(1ul, [GetUserContentController().userScripts count]);
   WKUserScript* user_script =
       [GetUserContentController().userScripts lastObject];
   EXPECT_TRUE(
@@ -122,7 +113,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeatureIsolatedWorld) {
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 
-  EXPECT_EQ(7ul, [GetUserContentController().userScripts count]);
+  EXPECT_EQ(1ul, [GetUserContentController().userScripts count]);
   WKUserScript* user_script =
       [GetUserContentController().userScripts lastObject];
   EXPECT_TRUE(

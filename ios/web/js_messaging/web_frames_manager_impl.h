@@ -21,8 +21,8 @@ class WebState;
 class WebFramesManagerImpl : public WebFramesManager {
  public:
   // Returns the web frames manager for `web_state` and `content_world`.
-  // `content_world` must specify a specific content world so `kAnyContentWorld`
-  // is not a valid value.
+  // `content_world` must specify a specific content world so
+  // `kAllContentWorlds` is not a valid value.
   static WebFramesManagerImpl& FromWebState(web::WebState* web_state,
                                             ContentWorld content_world);
 

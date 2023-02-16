@@ -23,19 +23,6 @@ namespace {
 const char kWebJavaScriptFeatureManagerKeyName[] =
     "web_java_script_feature_manager";
 
-// Adds common features to `world`.
-void AddSharedCommonFeatures(web::JavaScriptContentWorld* world) {
-  // The scripts defined by these features were previously hardcoded into
-  // js_compile.gni and are assumed to always exist by other feature javascript
-  // (regardless of content world).
-  // TODO(crbug.com/1152112): Remove unconditional injection of these features
-  // once dependent features are migrated to JavaScriptFeatures and correctly
-  // define their dependencies.
-  world->AddFeature(web::java_script_features::GetBaseJavaScriptFeature());
-  world->AddFeature(web::java_script_features::GetCommonJavaScriptFeature());
-  world->AddFeature(web::java_script_features::GetMessageJavaScriptFeature());
-}
-
 }  // namespace
 
 namespace web {
@@ -71,20 +58,22 @@ void JavaScriptFeatureManager::ConfigureFeatures(
     std::vector<JavaScriptFeature*> features) {
   page_content_world_ = std::make_unique<JavaScriptContentWorld>(
       browser_state_, WKContentWorld.pageWorld);
-  AddSharedCommonFeatures(page_content_world_.get());
 
   isolated_world_ = std::make_unique<JavaScriptContentWorld>(
       browser_state_, WKContentWorld.defaultClientWorld);
-  AddSharedCommonFeatures(isolated_world_.get());
 
   for (JavaScriptFeature* feature : features) {
-    if (isolated_world_ && feature->GetSupportedContentWorld() !=
-                               ContentWorld::kPageContentWorld) {
-      isolated_world_->AddFeature(feature);
-    } else {
-      DCHECK_NE(feature->GetSupportedContentWorld(),
-                ContentWorld::kIsolatedWorld);
-      page_content_world_->AddFeature(feature);
+    switch (feature->GetSupportedContentWorld()) {
+      case ContentWorld::kAllContentWorlds:
+        isolated_world_->AddFeature(feature);
+        page_content_world_->AddFeature(feature);
+        break;
+      case ContentWorld::kIsolatedWorld:
+        isolated_world_->AddFeature(feature);
+        break;
+      case ContentWorld::kPageContentWorld:
+        page_content_world_->AddFeature(feature);
+        break;
     }
   }
 }

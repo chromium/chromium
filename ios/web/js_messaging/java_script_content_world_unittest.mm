@@ -19,11 +19,8 @@ namespace web {
 
 typedef WebTest JavaScriptContentWorldTest;
 
-// Tests that adding a JavaScriptFeature to a JavaScriptContentWorld adds the
-// expected user scripts and script message handlers. Also verifies that
-// features created with kAnyContentWorld can be added to the page content
-// world.
-TEST_F(JavaScriptContentWorldTest, AddFeature) {
+// Tests adding a JavaScriptFeature which only supports the page content world.
+TEST_F(JavaScriptContentWorldTest, AddPageContentWorldFeature) {
   WKWebViewConfigurationProvider& configuration_provider =
       WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
   WKUserContentController* user_content_controller =
@@ -36,42 +33,18 @@ TEST_F(JavaScriptContentWorldTest, AddFeature) {
   web::JavaScriptContentWorld world(GetBrowserState(),
                                     WKContentWorld.pageWorld);
 
-  FakeJavaScriptFeature feature(ContentWorld::kAnyContentWorld);
+  FakeJavaScriptFeature feature(ContentWorld::kPageContentWorld);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
+
   EXPECT_EQ(WKContentWorld.pageWorld, world.GetWKContentWorld());
 
   unsigned long scripts_count = [[user_content_controller userScripts] count];
-  ASSERT_GT(scripts_count, initial_scripts_count);
+  // Two scripts are added by FakeJavaScriptFeature.
+  EXPECT_EQ(initial_scripts_count + 2, scripts_count);
 }
 
-// Tests adding a JavaScriptFeature to a specific JavaScriptContentWorld. Also
-// verifies that features created with kAnyContentWorld can be added to an
-// isolated world.
-TEST_F(JavaScriptContentWorldTest, AddFeatureToSpecificWKContentWorld) {
-  WKWebViewConfigurationProvider& configuration_provider =
-      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
-  WKUserContentController* user_content_controller =
-      configuration_provider.GetWebViewConfiguration().userContentController;
-
-  unsigned long initial_scripts_count =
-      [[user_content_controller userScripts] count];
-  ASSERT_GT(initial_scripts_count, 0ul);
-
-  web::JavaScriptContentWorld world(GetBrowserState(),
-                                    WKContentWorld.defaultClientWorld);
-
-  FakeJavaScriptFeature feature(ContentWorld::kAnyContentWorld);
-  world.AddFeature(&feature);
-  EXPECT_TRUE(world.HasFeature(&feature));
-
-  EXPECT_EQ(WKContentWorld.defaultClientWorld, world.GetWKContentWorld());
-
-  unsigned long scripts_count = [[user_content_controller userScripts] count];
-  ASSERT_GT(scripts_count, initial_scripts_count);
-}
-
-// Tests adding a JavaScriptFeature which only supports isolated worlds.
+// Tests adding a JavaScriptFeature which only supports the isolated world.
 TEST_F(JavaScriptContentWorldTest, AddIsolatedWorldFeature) {
   WKWebViewConfigurationProvider& configuration_provider =
       WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
@@ -92,22 +65,12 @@ TEST_F(JavaScriptContentWorldTest, AddIsolatedWorldFeature) {
   EXPECT_EQ(WKContentWorld.defaultClientWorld, world.GetWKContentWorld());
 
   unsigned long scripts_count = [[user_content_controller userScripts] count];
-  ASSERT_GT(scripts_count, initial_scripts_count);
+  // Two scripts are added by FakeJavaScriptFeature.
+  EXPECT_EQ(initial_scripts_count + 2, scripts_count);
 }
 
-// Tests that attempting to add a JavaScriptFeature which only supports an
-// isolated world to the page content world triggers a DCHECK.
-TEST_F(JavaScriptContentWorldTest,
-       AttemptAddingIsolatedWorldFeatureToPageWorld) {
-  web::JavaScriptContentWorld world(GetBrowserState(),
-                                    WKContentWorld.pageWorld);
-  FakeJavaScriptFeature feature(ContentWorld::kIsolatedWorld);
-
-  EXPECT_DCHECK_DEATH(world.AddFeature(&feature));
-}
-
-// Tests adding a JavaScriptFeature which only supports the page content world.
-TEST_F(JavaScriptContentWorldTest, AddPageContentWorldFeature) {
+// Tests adding a JavaScriptFeature which supports all content worlds.
+TEST_F(JavaScriptContentWorldTest, AddAllContentWorldsFeature) {
   WKWebViewConfigurationProvider& configuration_provider =
       WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
   WKUserContentController* user_content_controller =
@@ -117,28 +80,25 @@ TEST_F(JavaScriptContentWorldTest, AddPageContentWorldFeature) {
       [[user_content_controller userScripts] count];
   ASSERT_GT(initial_scripts_count, 0ul);
 
-  web::JavaScriptContentWorld world(GetBrowserState(),
-                                    WKContentWorld.pageWorld);
+  FakeJavaScriptFeature feature(ContentWorld::kAllContentWorlds);
 
-  FakeJavaScriptFeature feature(ContentWorld::kPageContentWorld);
-  world.AddFeature(&feature);
-  EXPECT_TRUE(world.HasFeature(&feature));
+  web::JavaScriptContentWorld isolated_world(GetBrowserState(),
+                                             WKContentWorld.defaultClientWorld);
+  isolated_world.AddFeature(&feature);
+  EXPECT_TRUE(isolated_world.HasFeature(&feature));
+  EXPECT_EQ(WKContentWorld.defaultClientWorld,
+            isolated_world.GetWKContentWorld());
 
-  EXPECT_NSEQ(WKContentWorld.pageWorld, world.GetWKContentWorld());
+  web::JavaScriptContentWorld page_world(GetBrowserState(),
+                                         WKContentWorld.pageWorld);
+  page_world.AddFeature(&feature);
+  EXPECT_TRUE(page_world.HasFeature(&feature));
+  EXPECT_EQ(WKContentWorld.pageWorld, page_world.GetWKContentWorld());
 
   unsigned long scripts_count = [[user_content_controller userScripts] count];
-  ASSERT_GT(scripts_count, initial_scripts_count);
-}
-
-// Tests that attempting to add a JavaScriptFeature which only supports the
-// page content world to an isolated world triggers a DCHECK.
-TEST_F(JavaScriptContentWorldTest,
-       AttemptAddingPageContentWorldFeatureToIsolatedWorld) {
-  web::JavaScriptContentWorld world(GetBrowserState(),
-                                    WKContentWorld.defaultClientWorld);
-  FakeJavaScriptFeature feature(ContentWorld::kPageContentWorld);
-
-  EXPECT_DCHECK_DEATH(world.AddFeature(&feature));
+  // Two scripts are added by FakeJavaScriptFeature, but user_content_controller
+  // should now have four additional scripts, two for each world.
+  EXPECT_EQ(initial_scripts_count + 4, scripts_count);
 }
 
 }  // namespace web

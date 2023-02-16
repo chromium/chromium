@@ -25,7 +25,7 @@ WebFramesManagerImpl::Container::~Container() = default;
 
 WebFramesManagerImpl& WebFramesManagerImpl::Container::ManagerForContentWorld(
     ContentWorld content_world) {
-  DCHECK_NE(content_world, ContentWorld::kAnyContentWorld);
+  DCHECK_NE(content_world, ContentWorld::kAllContentWorlds);
 
   auto& manager = managers_[content_world];
   if (!manager) {

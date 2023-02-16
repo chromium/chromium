@@ -127,6 +127,9 @@ namespace java_script_features {
 std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
   std::vector<JavaScriptFeature*> features = {
+      GetBaseJavaScriptFeature(),
+      GetCommonJavaScriptFeature(),
+      GetMessageJavaScriptFeature(),
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),
@@ -164,7 +167,7 @@ ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature() {
 JavaScriptFeature* GetBaseJavaScriptFeature() {
   // Static storage is ok for `base_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> base_feature(
-      ContentWorld::kAnyContentWorld,
+      ContentWorld::kAllContentWorlds,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kBaseScriptName,
@@ -176,7 +179,7 @@ JavaScriptFeature* GetBaseJavaScriptFeature() {
 JavaScriptFeature* GetCommonJavaScriptFeature() {
   // Static storage is ok for `common_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> common_feature(
-      ContentWorld::kAnyContentWorld,
+      ContentWorld::kAllContentWorlds,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kCommonScriptName,
@@ -189,7 +192,7 @@ JavaScriptFeature* GetCommonJavaScriptFeature() {
 JavaScriptFeature* GetMessageJavaScriptFeature() {
   // Static storage is ok for `message_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> message_feature(
-      ContentWorld::kAnyContentWorld,
+      ContentWorld::kAllContentWorlds,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kMessageScriptName,

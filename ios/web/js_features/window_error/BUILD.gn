@@ -36,6 +36,7 @@ source_set("unittests") {
     ":window_error",
     "//base/test:test_support",
     "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//testing/gtest",
