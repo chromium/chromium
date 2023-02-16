@@ -390,5 +390,15 @@ TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
   run_loop.Run();
 }
 
+TEST_F(SandboxedRarAnalyzerTest, InvalidPath) {
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("does_not_exist"));
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+  EXPECT_FALSE(results.success);
+  EXPECT_EQ(results.analysis_result,
+            safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
+}
+
 }  // namespace
 }  // namespace safe_browsing

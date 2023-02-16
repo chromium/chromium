@@ -438,3 +438,12 @@ TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
   analyzer->Start();
   run_loop.Run();
 }
+
+TEST_F(SandboxedZipAnalyzerTest, InvalidPath) {
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunAnalyzer(dir_test_data_.AppendASCII("download_protection/does_not_exist"),
+              &results);
+  EXPECT_FALSE(results.success);
+  EXPECT_EQ(results.analysis_result,
+            safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
+}

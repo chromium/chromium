@@ -244,4 +244,13 @@ TEST_F(SandboxedSevenZipAnalyzerTest, CanDeleteDuringExecution) {
   run_loop.Run();
 }
 
+TEST_F(SandboxedSevenZipAnalyzerTest, InvalidPath) {
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunAnalyzer(dir_test_data_.Append(FILE_PATH_LITERAL("does_not_exit")),
+              &results);
+  EXPECT_FALSE(results.success);
+  EXPECT_EQ(results.analysis_result,
+            safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
+}
+
 }  // namespace safe_browsing

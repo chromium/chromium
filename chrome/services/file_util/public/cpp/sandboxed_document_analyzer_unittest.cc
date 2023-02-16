@@ -95,7 +95,6 @@ class SandboxedDocumentAnalyzerTest : public testing::Test {
 TEST_F(SandboxedDocumentAnalyzerTest, AnalyzeDocumentWithMacros) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("doc_containing_macros.doc"));
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   safe_browsing::DocumentAnalyzerResults results;
   AnalyzeDocument(path, &results);
@@ -110,7 +109,6 @@ TEST_F(SandboxedDocumentAnalyzerTest, AnalyzeDocumentWithMacros) {
 TEST_F(SandboxedDocumentAnalyzerTest, AnalyzeDocumentWithoutMacros) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("docx_without_macros.docx"));
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   safe_browsing::DocumentAnalyzerResults results;
   AnalyzeDocument(path, &results);
@@ -126,7 +124,6 @@ TEST_F(SandboxedDocumentAnalyzerTest, AnalyzeUnsupportedFileType) {
   base::FilePath temp_path;
   base::CreateTemporaryFile(&temp_path);
   base::WriteFile(temp_path, "test");
-  base::File file(temp_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   safe_browsing::DocumentAnalyzerResults results;
   AnalyzeDocument(temp_path, &results);
@@ -146,7 +143,6 @@ TEST_F(SandboxedDocumentAnalyzerTest, AnalyzeUnsupportedFileType) {
 TEST_F(SandboxedDocumentAnalyzerTest, AnalyzeCorruptedArchive) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("txt_as_xlsx.xlsx"));
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   safe_browsing::DocumentAnalyzerResults results;
   AnalyzeDocument(path, &results);
@@ -193,6 +189,16 @@ TEST_F(SandboxedDocumentAnalyzerTest, MAYBE_CanDeleteDuringExecution) {
           file_path, temp_path, base::DoNothing(), std::move(remote));
   analyzer->Start();
   run_loop.Run();
+}
+
+TEST_F(SandboxedDocumentAnalyzerTest, InvalidPath) {
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("does_not_exist"));
+
+  safe_browsing::DocumentAnalyzerResults results;
+  AnalyzeDocument(path, &results);
+
+  EXPECT_FALSE(results.success);
 }
 
 }  // namespace

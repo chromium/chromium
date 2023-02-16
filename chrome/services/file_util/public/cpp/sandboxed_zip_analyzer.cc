@@ -112,8 +112,7 @@ void SandboxedZipAnalyzer::ReportFileFailure(
     safe_browsing::ArchiveAnalyzerResults results;
     results.analysis_result = reason;
 
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), results));
+    std::move(callback_).Run(results);
   }
 }
 

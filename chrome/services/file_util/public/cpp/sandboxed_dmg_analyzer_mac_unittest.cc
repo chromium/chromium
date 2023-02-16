@@ -311,4 +311,17 @@ TEST_F(SandboxedDMGAnalyzerTest, CanDeleteDuringExecution) {
   run_loop.Run();
 }
 
+TEST_F(SandboxedDMGAnalyzerTest, InvalidPath) {
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = file_path.AppendASCII("does_not_exist");
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(file_path, &results);
+
+  EXPECT_FALSE(results.success);
+  EXPECT_EQ(results.analysis_result,
+            safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
+}
+
 }  // namespace
