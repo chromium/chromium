@@ -40,7 +40,8 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
     EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
     const base::Value& properties = args()[1];
-    absl::optional<int> result = properties.FindIntKey(
+    EXTENSION_FUNCTION_VALIDATE(properties.is_dict());
+    absl::optional<int> result = properties.GetDict().FindInt(
         extensions::context_menus_api_helpers::kGeneratedIdKey);
     EXTENSION_FUNCTION_VALIDATE(result);
     id.uid = *result;

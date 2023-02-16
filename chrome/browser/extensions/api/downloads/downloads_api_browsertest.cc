@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(1UL, result->GetList().size());
   const base::Value& item_value = result->GetList()[0];
   ASSERT_TRUE(item_value.is_dict());
-  absl::optional<int> item_id = item_value.FindIntKey("id");
+  absl::optional<int> item_id = item_value.GetDict().FindInt("id");
   ASSERT_TRUE(item_id);
   ASSERT_EQ(all_downloads[0]->GetId(), static_cast<uint32_t>(*item_id));
 }
@@ -1356,7 +1356,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_SearchId) {
   ASSERT_EQ(1UL, result->GetList().size());
   const base::Value& item_value = result->GetList()[0];
   ASSERT_TRUE(item_value.is_dict());
-  absl::optional<int> item_id = item_value.FindIntKey("id");
+  absl::optional<int> item_id = item_value.GetDict().FindInt("id");
   ASSERT_TRUE(item_id);
   ASSERT_EQ(items[0]->GetId(), static_cast<uint32_t>(*item_id));
 }

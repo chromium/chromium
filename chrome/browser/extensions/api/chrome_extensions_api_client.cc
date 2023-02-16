@@ -356,8 +356,10 @@ bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
     for (const auto& entry : *policy_list) {
-      if (entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid) == vid &&
-          entry.FindIntKey(ash::kUsbDetachableAllowlistKeyPid) == pid) {
+      const base::Value::Dict* entry_dict = entry.GetIfDict();
+      if (entry_dict &&
+          entry_dict->FindInt(ash::kUsbDetachableAllowlistKeyVid) == vid &&
+          entry_dict->FindInt(ash::kUsbDetachableAllowlistKeyPid) == pid) {
         return true;
       }
     }
