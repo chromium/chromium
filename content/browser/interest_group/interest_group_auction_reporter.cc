@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -131,7 +132,12 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
   DCHECK(!interest_groups_that_bid_.empty());
 }
 
-InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() = default;
+InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() {
+  base::UmaHistogramEnumeration("Ads.InterestGroup.Auction.FinalReporterState",
+                                navigated_to_winning_ad_
+                                    ? reporter_worklet_state_
+                                    : ReporterState::kAdNotUsed);
+}
 
 void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
@@ -212,6 +218,11 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
 void InterestGroupAuctionReporter::RequestSellerWorklet(
     const SellerWinningBidInfo* seller_info,
     const absl::optional<std::string>& top_seller_signals) {
+  if (seller_info == &top_level_seller_winning_bid_info_) {
+    reporter_worklet_state_ = ReporterState::kSellerReportResult;
+  } else {
+    reporter_worklet_state_ = ReporterState::kComponentSellerReportResult;
+  }
   seller_worklet_handle_.reset();
   // base::Unretained is safe to use for these callbacks because destroying
   // `seller_worklet_handle_` will prevent the callbacks from being invoked, if
@@ -405,6 +416,8 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
   DCHECK(!seller_worklet_handle_);
   DCHECK(!bidder_worklet_handle_);
 
+  reporter_worklet_state_ = ReporterState::kBuyerReportWin;
+
   const blink::InterestGroup& interest_group =
       winning_bid_info_.storage_interest_group->interest_group;
 
@@ -517,6 +530,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     const std::vector<std::string>& errors) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_report_win",
                                   top_level_seller_winning_bid_info_.trace_id);
+
+  reporter_worklet_state_ = ReporterState::kAllWorkletsCompleted;
 
   bidder_worklet_handle_.reset();
 

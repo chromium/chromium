@@ -530,6 +530,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.FinalReporterState"
+    enum="InterestGroupAuctionReporterState" expires_after="2023-10-31">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The final state of the InterestGroupAuctionReporter when it's destroyed.
+    Currently the lifetime of an InterestGroupAuctionReporter is scoped to the
+    frame that runs an auction, so when that frame is destroyed, any work the
+    Reporter has yet to do is aborted. This histogram serves to indicate how far
+    along a destroyed Reporter is, to help understand the priority of extending
+    an InterestGroupAuctionReporter's lifetime beyond that of the source frame.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.First6AuctionsBitsPerPage"
     units="bitfield" expires_after="2023-07-31">
   <owner>caraitto@chromium.org</owner>

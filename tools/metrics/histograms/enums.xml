@@ -53161,6 +53161,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="5" label="Data scheme"/>
 </enum>
 
+<enum name="InterestGroupAuctionReporterState">
+  <int value="0" label="The ad was never used"/>
+  <int value="1" label="Running top-level seller reportResult()"/>
+  <int value="2" label="Running component seller reportResult()"/>
+  <int value="3" label="Running buyer reportWin()"/>
+  <int value="4" label="All worklets completed running"/>
+</enum>
+
 <enum name="InterestingCookiePorts">
   <int value="0" label="Other Port"/>
   <int value="1" label="Port 80"/>

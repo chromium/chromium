@@ -51,6 +51,31 @@ class PrivateAggregationManager;
 // them, as needed.
 class CONTENT_EXPORT InterestGroupAuctionReporter {
  public:
+  // State of the InterestGroupAuctionReporter. Used to record UMA histograms
+  // the status of a reporter when it's destroyed, to get data on when reports
+  // are dropped. Since these values are reported to a metrics server, the
+  // numeric value for each state must be preserved.
+  //
+  // Public for tests.
+  enum class ReporterState {
+    // The winning ad was never navigated to, so there was nothing to report.
+    // While reporting worklets will start running in this case, this state
+    // takes precedence in histograms over the others.
+    kAdNotUsed = 0,
+    // The top-level seller's reportResult() method is being invoked (or the
+    // reporter is waiting on a process in which to do so).
+    kSellerReportResult = 1,
+    // The component seller's reportResult() method is being invoked (or the
+    // reporter is waiting on a process in which to do so).
+    kComponentSellerReportResult = 2,
+    // The buyer's reportWin() method is being invoked (or the reporter is
+    // waiting on a process in which to do so).
+    kBuyerReportWin = 3,
+    // All needed worklet reporting methods were invoked.
+    kAllWorkletsCompleted = 4,
+    kMaxValue = kAllWorkletsCompleted
+  };
+
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -383,6 +408,16 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   bool reporting_complete_ = false;
   bool navigated_to_winning_ad_ = false;
+
+  // The current reporter phase of worklet invocation. This is never kAdNotUsed,
+  // but rather one of the others, depending on worklet progress. On
+  // destruction, if `navigated_to_winning_ad_` is true, this is the logged to
+  // UMA. Otherwise, kAdNotUsed is.
+  //
+  // The initial value should never be logged, as it's overwritten on Start(),
+  // which should always be invoked, and `navigated_to_winning_ad_` starts off
+  // as false, which means kAdNotUsed will take precedence, anyways.
+  ReporterState reporter_worklet_state_ = ReporterState::kAllWorkletsCompleted;
 
   base::WeakPtrFactory<InterestGroupAuctionReporter> weak_ptr_factory_{this};
 };

@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
@@ -490,6 +491,8 @@ class InterestGroupAuctionReporterTest
       {"clack", GURL("https://buyer.clack.test/")},
       {"cluck", GURL("https://buyer.cluck.test/")},
   };
+
+  base::HistogramTester histogram_tester_;
 
   // SharedURLLoaderFactory used for reports. Reports are short-circuited by the
   // TestInterestGroupManagerImpl before they make it over the network, so this
@@ -1369,6 +1372,94 @@ TEST_F(InterestGroupAuctionReporterTest,
   WaitForCompletion();
 }
 
+// Test the case that the InterestGroupAutionReporter is destroyed while calling
+// the top-level seller's reportResult() method, before navigation. This
+// primarily serves to test UMA.
+TEST_F(InterestGroupAuctionReporterTest,
+       DestroyedDuringSellerReportResultBeforeNavigation) {
+  SetUpAndStartComponentAuction();
+
+  auction_process_manager_.WaitForWinningSellerReload();
+  std::unique_ptr<MockSellerWorklet> seller_worklet =
+      auction_process_manager_.TakeSellerWorklet(kSellerScriptUrl);
+  seller_worklet->set_expect_send_pending_signals_requests_called(false);
+  interest_group_auction_reporter_.reset();
+
+  interest_group_manager_impl_->ExpectReports({});
+  histogram_tester_.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.FinalReporterState",
+      InterestGroupAuctionReporter::ReporterState::kAdNotUsed, 1);
+}
+
+// Test the case that the InterestGroupAutionReporter is destroyed while calling
+// the top-level seller's reportResult() method, after navigation. This
+// primarily serves to test UMA.
+TEST_F(InterestGroupAuctionReporterTest, DestroyedDuringSellerReportResult) {
+  SetUpAndStartComponentAuction();
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+
+  auction_process_manager_.WaitForWinningSellerReload();
+  std::unique_ptr<MockSellerWorklet> seller_worklet =
+      auction_process_manager_.TakeSellerWorklet(kSellerScriptUrl);
+  seller_worklet->set_expect_send_pending_signals_requests_called(false);
+  interest_group_auction_reporter_.reset();
+
+  interest_group_manager_impl_->ExpectReports({});
+  histogram_tester_.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.FinalReporterState",
+      InterestGroupAuctionReporter::ReporterState::kSellerReportResult, 1);
+}
+
+// Test the case that the InterestGroupAutionReporter is destroyed while calling
+// the component seller's reportResult() method, after navigation. This
+// primarily serves to test UMA.
+TEST_F(InterestGroupAuctionReporterTest,
+       DestroyedDuringComponentSellerReportResult) {
+  SetUpAndStartComponentAuction();
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, kSellerReportUrl);
+
+  auction_process_manager_.WaitForWinningSellerReload();
+  std::unique_ptr<MockSellerWorklet> seller_worklet =
+      auction_process_manager_.TakeSellerWorklet(kComponentSellerScriptUrl);
+  seller_worklet->set_expect_send_pending_signals_requests_called(false);
+  interest_group_auction_reporter_.reset();
+
+  interest_group_manager_impl_->ExpectReports(
+      {{InterestGroupManagerImpl::ReportType::kSendReportTo,
+        kSellerReportUrl}});
+  histogram_tester_.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.FinalReporterState",
+      InterestGroupAuctionReporter::ReporterState::kComponentSellerReportResult,
+      1);
+}
+
+// Test the case that the InterestGroupAutionReporter is destroyed while calling
+// the buyer's reportWin() method, after navigation. This primarily serves to
+// test UMA.
+TEST_F(InterestGroupAuctionReporterTest, DestroyedDuringReportWin) {
+  SetUpAndStartComponentAuction();
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, kSellerReportUrl);
+  WaitForReportResultAndRunCallback(kComponentSellerScriptUrl,
+                                    kComponentSellerReportUrl);
+
+  auction_process_manager_.WaitForWinningBidderReload();
+  std::unique_ptr<MockBidderWorklet> bidder_worklet =
+      auction_process_manager_.TakeBidderWorklet(kWinningBidderScriptUrl);
+  interest_group_auction_reporter_.reset();
+
+  interest_group_manager_impl_->ExpectReports(
+      {{InterestGroupManagerImpl::ReportType::kSendReportTo, kSellerReportUrl},
+       {InterestGroupManagerImpl::ReportType::kSendReportTo,
+        kComponentSellerReportUrl}});
+  histogram_tester_.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.FinalReporterState",
+      InterestGroupAuctionReporter::ReporterState::kBuyerReportWin, 1);
+}
+
 // Test that nothing is recorded and no reports are sent in the case that the
 // reporting scripts are successfully run, but the frame is never navigated to.
 TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
@@ -1394,6 +1485,9 @@ TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
   EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
               testing::UnorderedElementsAre());
   interest_group_manager_impl_->ExpectReports({});
+  histogram_tester_.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.FinalReporterState",
+      InterestGroupAuctionReporter::ReporterState::kAdNotUsed, 1);
 }
 
 // Test multiple navigations result in only a single set of reports, and
