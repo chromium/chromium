@@ -9,6 +9,9 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
+#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -409,7 +412,17 @@ std::string IPAddressToPackedString(const IPAddress& address) {
 }
 
 IPAddress ConvertIPv4ToIPv4MappedIPv6(const IPAddress& address) {
-  DCHECK(address.IsIPv4());
+  // TODO(https://crbug.com/1414007): Remove crash key and use DCHECK() when
+  // the cause is identified.
+  if (!address.IsIPv4()) {
+    static base::debug::CrashKeyString* crash_key =
+        base::debug::AllocateCrashKeyString("ipaddress",
+                                            base::debug::CrashKeySize::Size64);
+    base::debug::ScopedCrashKeyString addr(crash_key, address.ToString());
+    bool is_valid = address.IsValid();
+    base::debug::Alias(&is_valid);
+    LOG(FATAL) << "expected an IPv4 address but got " << address.ToString();
+  }
   // IPv4-mapped addresses are formed by:
   // <80 bits of zeros>  + <16 bits of ones> + <32-bit IPv4 address>.
   base::StackVector<uint8_t, 16> bytes;
