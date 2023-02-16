@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/gl_image_native_pixmap.h"
+#include "ui/gl/gl_image_gl_texture.h"
 
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
@@ -30,7 +30,7 @@ namespace {
 const uint8_t kImageColor[] = {0x30, 0x40, 0x10, 0xFF};
 
 template <gfx::BufferFormat format>
-class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
+class GLImageGLTextureTestDelegate : public GLImageTestDelegateBase {
  public:
   bool SkipTest(GLDisplay* display) const override {
     GLDisplayEGL* display_egl = static_cast<GLDisplayEGL*>(display);
@@ -43,7 +43,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
     return false;
   }
 
-  scoped_refptr<GLImageNativePixmap> CreateSolidColorImage(
+  scoped_refptr<GLImageGLTexture> CreateSolidColorImage(
       const gfx::Size& size,
       const uint8_t color[4]) const {
     GLuint texture_id = GLTestHelper::CreateTexture(GetTextureTarget());
@@ -60,7 +60,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
                  GL_RGBA, GL_UNSIGNED_BYTE, pixels.get());
 
     auto image =
-        gl::GLImageNativePixmap::CreateFromTexture(size, format, texture_id);
+        gl::GLImageGLTexture::CreateFromTexture(size, format, texture_id);
     EXPECT_TRUE(image);
 
     glDeleteTextures(1, &texture_id);
@@ -77,20 +77,20 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
 };
 
 template <typename GLImageTestDelegate>
-class GLImageNativePixmapToDmabufTest
-    : public GLImageTest<GLImageTestDelegate> {};
+class GLImageGLTextureToDmabufTest : public GLImageTest<GLImageTestDelegate> {};
 
-TYPED_TEST_SUITE_P(GLImageNativePixmapToDmabufTest);
+TYPED_TEST_SUITE_P(GLImageGLTextureToDmabufTest);
 
-TYPED_TEST_P_WITH_EXPANSION(GLImageNativePixmapToDmabufTest,
+TYPED_TEST_P_WITH_EXPANSION(GLImageGLTextureToDmabufTest,
                             MAYBE_GLTexture2DToDmabuf) {
-  if (this->delegate_.SkipTest(this->display_))
+  if (this->delegate_.SkipTest(this->display_)) {
     return;
+  }
 
   const gfx::Size image_size(64, 64);
   const uint8_t* image_color = this->delegate_.GetImageColor();
 
-  scoped_refptr<GLImageNativePixmap> image =
+  scoped_refptr<GLImageGLTexture> image =
       this->delegate_.CreateSolidColorImage(image_size, image_color);
   ASSERT_TRUE(image);
 
@@ -101,30 +101,28 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageNativePixmapToDmabufTest,
   }
 }
 
-// This test verifies that GLImageNativePixmap can be exported as dmabuf fds.
-REGISTER_TYPED_TEST_SUITE_P_WITH_EXPANSION(GLImageNativePixmapToDmabufTest,
+// This test verifies that GLImageGLTexture can be exported as dmabuf fds.
+REGISTER_TYPED_TEST_SUITE_P_WITH_EXPANSION(GLImageGLTextureToDmabufTest,
                                            MAYBE_GLTexture2DToDmabuf);
 
 using GLImageTestTypes = testing::Types<
-    GLImageNativePixmapTestDelegate<gfx::BufferFormat::RGBX_8888>,
-    GLImageNativePixmapTestDelegate<gfx::BufferFormat::RGBA_8888>,
-    GLImageNativePixmapTestDelegate<gfx::BufferFormat::BGRX_8888>,
-    GLImageNativePixmapTestDelegate<gfx::BufferFormat::BGRA_8888>,
-    GLImageNativePixmapTestDelegate<gfx::BufferFormat::RGBA_1010102>,
-    GLImageNativePixmapTestDelegate<gfx::BufferFormat::BGRA_1010102>>;
+    GLImageGLTextureTestDelegate<gfx::BufferFormat::RGBX_8888>,
+    GLImageGLTextureTestDelegate<gfx::BufferFormat::RGBA_8888>,
+    GLImageGLTextureTestDelegate<gfx::BufferFormat::BGRX_8888>,
+    GLImageGLTextureTestDelegate<gfx::BufferFormat::BGRA_8888>,
+    GLImageGLTextureTestDelegate<gfx::BufferFormat::RGBA_1010102>,
+    GLImageGLTextureTestDelegate<gfx::BufferFormat::BGRA_1010102>>;
 
 #if !defined(MEMORY_SANITIZER)
 // Fails under MSAN: crbug.com/886995
-INSTANTIATE_TYPED_TEST_SUITE_P(GLImageNativePixmap,
-                               GLImageTest,
-                               GLImageTestTypes);
+INSTANTIATE_TYPED_TEST_SUITE_P(GLImageGLTexture, GLImageTest, GLImageTestTypes);
 
-INSTANTIATE_TYPED_TEST_SUITE_P(GLImageNativePixmap,
+INSTANTIATE_TYPED_TEST_SUITE_P(GLImageGLTexture,
                                GLImageOddSizeTest,
                                GLImageTestTypes);
 
-INSTANTIATE_TYPED_TEST_SUITE_P(GLImageNativePixmap,
-                               GLImageNativePixmapToDmabufTest,
+INSTANTIATE_TYPED_TEST_SUITE_P(GLImageGLTexture,
+                               GLImageGLTextureToDmabufTest,
                                GLImageTestTypes);
 #endif
 
