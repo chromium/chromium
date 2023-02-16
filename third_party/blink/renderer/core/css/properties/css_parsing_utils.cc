@@ -1746,6 +1746,7 @@ static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
                                       Color& result) {
   CSSValueID function_id = range.Peek().FunctionId();
   DCHECK(function_id == CSSValueID::kLab || function_id == CSSValueID::kOklab);
+  context.Count(WebFeature::kCSSColorLabOklab);
   CSSParserTokenRange args = ConsumeFunction(range);
   // Consume lightness, either a percentage or a number or "none"
   absl::optional<double> lightness;
@@ -1792,6 +1793,7 @@ static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
                                       Color& result) {
   CSSValueID function_id = range.Peek().FunctionId();
   DCHECK(function_id == CSSValueID::kLch || function_id == CSSValueID::kOklch);
+  context.Count(WebFeature::kCSSColorLchOklch);
   CSSParserTokenRange args = ConsumeFunction(range);
   // Consume lightness, either a percentage or a number
   absl::optional<double> lightness;
@@ -1913,6 +1915,8 @@ static bool ConsumeColorInterpolationSpace(
 static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
                                          const CSSParserContext& context) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kColorMix);
+  context.Count(WebFeature::kCSSColorMixFunction);
+
   if (!RuntimeEnabledFeatures::CSSColor4Enabled()) {
     return nullptr;
   }
@@ -1990,6 +1994,7 @@ static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
                                          const CSSParserContext& context,
                                          Color& result) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kColor);
+  context.Count(WebFeature::kCSSColorColorSpecifiedSpace);
 
   CSSParserTokenRange args = ConsumeFunction(range);
   // First argument is the colorspace

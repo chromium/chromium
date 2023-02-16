@@ -3809,6 +3809,10 @@ enum WebFeature {
   kServiceWorkerAddHandlerAfterInitialization = 4468,
   kServiceWorkerSetAttributeHandlerAfterInitialization = 4469,
   kAuthorizationCrossOrigin = 4470,
+  kCSSColorMixFunction = 4471,
+  kCSSColorColorSpecifiedSpace = 4472,
+  kCSSColorLabOklab = 4473,
+  kCSSColorLchOklch = 4474,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

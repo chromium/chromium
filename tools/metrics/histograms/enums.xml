@@ -42242,6 +42242,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4469"
       label="ServiceWorkerSetAttributeHandlerAfterInitialization"/>
   <int value="4470" label="AuthorizationCrossOrigin"/>
+  <int value="4471" label="CSSColorMixFunction"/>
+  <int value="4472" label="CSSColorColorSpecifiedSpace"/>
+  <int value="4473" label="CSSColorLabOklab"/>
+  <int value="4474" label="CSSColorLchOklch"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
