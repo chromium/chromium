@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
+#include "base/record_replay.h"
 #include "base/task/thread_pool/worker_thread.h"
 
 namespace base {
@@ -18,6 +19,11 @@ WorkerThreadStack::~WorkerThreadStack() = default;
 
 void WorkerThreadStack::Push(WorkerThread* worker) {
   DCHECK(!Contains(worker)) << "WorkerThread already on stack";
+
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("[RUN-597] WorkerThreadStack::Push %d", IsEmpty());
+  }
+
   if (!IsEmpty())
     stack_.back()->BeginUnusedPeriod();
   stack_.push_back(worker);
