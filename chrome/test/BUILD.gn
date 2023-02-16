@@ -10413,6 +10413,8 @@ if (!is_android) {
       "//components/consent_auditor",
       "//components/favicon/core",
       "//components/history/core/common",
+      "//components/power_bookmarks/common:test_support",
+      "//components/power_bookmarks/core",
       "//components/reading_list/features:flags",
       "//components/send_tab_to_self",
       "//components/spellcheck/common",

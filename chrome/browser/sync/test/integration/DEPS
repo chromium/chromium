@@ -5,6 +5,9 @@ specific_include_rules = {
   "local_sync_test.cc": [
     "+components/power_bookmarks",
   ],
+  "two_client_power_bookmarks_sync_test.cc": [
+    "+components/power_bookmarks",
+  ],
   "two_client_web_apps_integration_test_base.h": [
     "+chrome/browser/ui/views",
   ],

@@ -60,6 +60,7 @@ if (!is_android) {
     "../browser/sync/test/integration/two_client_extensions_sync_test.cc",
     "../browser/sync/test/integration/two_client_passwords_sync_test.cc",
     "../browser/sync/test/integration/two_client_polling_sync_test.cc",
+    "../browser/sync/test/integration/two_client_power_bookmarks_sync_test.cc",
     "../browser/sync/test/integration/two_client_preferences_sync_test.cc",
     "../browser/sync/test/integration/two_client_search_engines_sync_test.cc",
     "../browser/sync/test/integration/two_client_send_tab_to_self_sync_test.cc",
