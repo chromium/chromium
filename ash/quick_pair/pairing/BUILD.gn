@@ -13,8 +13,6 @@ source_set("pairing") {
     "fast_pair/fast_pair_pairer.h",
     "fast_pair/fast_pair_pairer_impl.cc",
     "fast_pair/fast_pair_pairer_impl.h",
-    "fast_pair/fast_pair_unpair_handler.cc",
-    "fast_pair/fast_pair_unpair_handler.h",
     "pairer_broker.h",
     "pairer_broker_impl.cc",
     "pairer_broker_impl.h",
@@ -67,7 +65,6 @@ source_set("unit_tests") {
 
   sources = [
     "fast_pair/fast_pair_pairer_impl_unittest.cc",
-    "fast_pair/fast_pair_unpair_handler_unittest.cc",
     "pairer_broker_impl_unittest.cc",
     "retroactive_pairing_detector_unittest.cc",
   ]

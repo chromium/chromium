@@ -17,7 +17,6 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer_impl.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_unpair_handler.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -51,7 +50,6 @@ PairerBrokerImpl::PairerBrokerImpl() {
 void PairerBrokerImpl::OnGetAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   adapter_ = adapter;
-  fast_pair_unpair_handler_ = std::make_unique<FastPairUnpairHandler>(adapter_);
 }
 
 PairerBrokerImpl::~PairerBrokerImpl() = default;

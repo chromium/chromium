@@ -31,7 +31,6 @@ namespace quick_pair {
 
 class Device;
 class FastPairPairer;
-class FastPairUnpairHandler;
 
 class PairerBrokerImpl final : public PairerBroker {
  public:
@@ -80,7 +79,6 @@ class PairerBrokerImpl final : public PairerBroker {
   base::flat_map<std::string, std::string> model_id_to_current_ble_address_map_;
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
-  std::unique_ptr<FastPairUnpairHandler> fast_pair_unpair_handler_;
   base::ObserverList<Observer> observers_;
 
   // Timer to provide a delay after cancelling pairing.
