@@ -45,10 +45,14 @@ def main():
     rc = xvfb.run_executable([exe], env, stdoutfile=tempfile_path)
 
     # The flatbuffer tests do not really conform to anything parsable, except
-    # that they will succeed with "ALL TESTS PASSED".
+    # that they will succeed with "ALL TESTS PASSED". We cannot test for
+    # equality because some tests operate on invalid input and produce error
+    # messages (e.g. "Field id in struct ProtoMessage has a non positive number
+    # value" in a test that verifies behavior if a proto message does contain
+    # a non positive number).
     with open(tempfile_path) as f:
       output = f.read()
-      if output != "ALL TESTS PASSED\n":
+      if "ALL TESTS PASSED\n" not in output:
         failures = [output]
 
   if args.isolated_script_test_output:
