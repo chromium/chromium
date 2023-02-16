@@ -3018,9 +3018,6 @@ extern const char kEnableOsFeedbackDescription[];
 extern const char kEnableNewShortcutMappingName[];
 extern const char kEnableNewShortcutMappingDescription[];
 
-extern const char kEnablePalmOnMaxTouchMajorName[];
-extern const char kEnablePalmOnMaxTouchMajorDescription[];
-
 extern const char kEnablePalmSuppressionName[];
 extern const char kEnablePalmSuppressionDescription[];
 

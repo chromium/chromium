@@ -5276,12 +5276,6 @@ const char kEnableNewShortcutMappingName[] = "Enable New Shortcut Mapping";
 const char kEnableNewShortcutMappingDescription[] =
     "Enables experimental new shortcut mapping";
 
-const char kEnablePalmOnMaxTouchMajorName[] =
-    "Enable Palm when Touch is Maximum";
-const char kEnablePalmOnMaxTouchMajorDescription[] =
-    "Experimental: Enable Palm detection when the touchscreen reports max "
-    "size. Not compatible with all devices.";
-
 const char kEnablePalmSuppressionName[] =
     "Enable Palm Suppression with Stylus.";
 const char kEnablePalmSuppressionDescription[] =

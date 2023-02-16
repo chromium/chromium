@@ -2836,13 +2836,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-palm-max-touch-major",
-    "owners": [ "robsc", "napper", "adlr" ],
-    // Added feature to possibly disable/enable this functionality, combined
-    //  with neural net palm detection.
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-palm-suppression",
     "owners": [ "robsc", "napper", "hcutts", "chromeos-tango@google.com" ],
     // Added feature, for testing. expiry deep in future.
