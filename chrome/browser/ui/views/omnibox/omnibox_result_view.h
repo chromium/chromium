@@ -116,7 +116,7 @@ class OmniboxResultView : public views::View {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // The parent view.
-  const raw_ptr<OmniboxPopupViewViews> popup_contents_view_;
+  const raw_ptr<OmniboxPopupViewViews> popup_view_;
 
   // The model containing results.
   raw_ptr<OmniboxEditModel> model_;

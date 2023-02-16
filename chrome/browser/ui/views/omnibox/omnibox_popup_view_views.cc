@@ -194,30 +194,6 @@ OmniboxPopupViewViews::~OmniboxPopupViewViews() {
   edit_model_->set_popup_view(nullptr);
 }
 
-void OmniboxPopupViewViews::OpenMatch(
-    size_t index,
-    WindowOpenDisposition disposition,
-    base::TimeTicks match_selection_timestamp) {
-  DCHECK(HasMatchAt(index));
-
-  // If the match has an action that takes over the match,
-  // execute the action instead of opening the match.
-  if (edit_model_->ExecuteTakeoverAction(index, disposition,
-                                         match_selection_timestamp)) {
-    return;
-  }
-
-  const AutocompleteMatch& match = edit_model_->result().match_at(index);
-  omnibox_view_->OpenMatch(match, disposition, GURL(), std::u16string(), index,
-                           match_selection_timestamp);
-}
-
-void OmniboxPopupViewViews::OpenMatch(
-    WindowOpenDisposition disposition,
-    base::TimeTicks match_selection_timestamp) {
-  OpenMatch(GetSelection().line, disposition, match_selection_timestamp);
-}
-
 gfx::Image OmniboxPopupViewViews::GetMatchIcon(
     const AutocompleteMatch& match,
     SkColor vector_icon_color) const {
@@ -526,9 +502,13 @@ void OmniboxPopupViewViews::OnGestureEvent(ui::GestureEvent* event) {
       SetSelectedIndex(index);
       break;
     case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_SCROLL_END:
-      OpenMatch(index, WindowOpenDisposition::CURRENT_TAB, event->time_stamp());
+    case ui::ET_GESTURE_SCROLL_END: {
+      DCHECK(HasMatchAt(index));
+      const AutocompleteMatch& match = edit_model_->result().match_at(index);
+      edit_model_->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
+                             u"", index, event->time_stamp());
       break;
+    }
     default:
       return;
   }

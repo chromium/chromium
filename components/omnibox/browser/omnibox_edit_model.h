@@ -223,13 +223,6 @@ class OmniboxEditModel {
       WindowOpenDisposition disposition,
       base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
-  // If the match in result() specified by `match_index` has an
-  // action that takes over the match, this executes that action
-  // with given `disposition` and returns true. Returns false otherwise.
-  bool ExecuteTakeoverAction(size_t match_index,
-                             WindowOpenDisposition disposition,
-                             base::TimeTicks match_selection_timestamp);
-
   // Asks the browser to load |match|. |index| is only used for logging, and
   // can be kNoMatch if the popup was closed, or if none of the suggestions
   // in the popup were used (in the unusual no-default-match case). In that
@@ -546,6 +539,13 @@ class OmniboxEditModel {
                        // for another action such as focusing the location bar
                        // with ctrl-l or copying the selected text with ctrl-c.
   };
+
+  // If the match in result() specified by `match_index` has an
+  // action that takes over the match, this executes that action
+  // with given `disposition` and returns true. Returns false otherwise.
+  bool ExecuteTakeoverAction(size_t match_index,
+                             WindowOpenDisposition disposition,
+                             base::TimeTicks match_selection_timestamp);
 
   // Executes the action associated with match at given `selection`
   // within result(). `disposition` may be used by actions to open

@@ -755,9 +755,8 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
     input_.set_added_default_scheme_to_typed_url(false);
   }
 
-  view_->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, alternate_nav_url,
-                   text, OmniboxPopupSelection::kNoMatch,
-                   match_selection_timestamp);
+  OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, alternate_nav_url, text,
+            OmniboxPopupSelection::kNoMatch, match_selection_timestamp);
 }
 
 void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
@@ -842,8 +841,8 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
   client_->OnInputAccepted(match);
 
   if (popup_view_) {
-    view_->OpenMatch(match, disposition, alternate_nav_url, std::u16string(),
-                     GetPopupSelection().line, match_selection_timestamp);
+    OpenMatch(match, disposition, alternate_nav_url, std::u16string(),
+              GetPopupSelection().line, match_selection_timestamp);
   }
 }
 
@@ -877,32 +876,23 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
   EmitEnteredKeywordModeHistogram(entry_method, default_search_provider);
 }
 
-bool OmniboxEditModel::ExecuteTakeoverAction(
-    size_t match_index,
-    WindowOpenDisposition disposition,
-    base::TimeTicks match_selection_timestamp) {
-  DCHECK(match_selection_timestamp != base::TimeTicks());
-  const AutocompleteMatch& match = result().match_at(match_index);
-  for (size_t action_index = 0; action_index < match.actions.size();
-       ++action_index) {
-    if (match.actions[action_index]->TakesOverMatch()) {
-      OmniboxPopupSelection selection(
-          match_index, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION,
-          action_index);
-      ExecuteAction(selection, disposition, match_selection_timestamp);
-      // A match can have at most one takeover match.
-      return true;
-    }
-  }
-  return false;
-}
-
 void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
                                  WindowOpenDisposition disposition,
                                  const GURL& alternate_nav_url,
                                  const std::u16string& pasted_text,
                                  size_t index,
                                  base::TimeTicks match_selection_timestamp) {
+  // If the match has an action that takes over the match,
+  // execute the action instead of opening the match.
+  if (ExecuteTakeoverAction(index, disposition, match_selection_timestamp)) {
+    return;
+  }
+
+  // Invalid URLs such as chrome://history can end up here.
+  if (!match.destination_url.is_valid()) {
+    return;
+  }
+
   // NULL_RESULT_MESSAGE matches are informational only and cannot be acted
   // upon. Immediately return when attempting to open one.
   if (match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
@@ -2372,6 +2362,29 @@ void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
 
 PrefService* OmniboxEditModel::GetPrefService() const {
   return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
+}
+
+bool OmniboxEditModel::ExecuteTakeoverAction(
+    size_t match_index,
+    WindowOpenDisposition disposition,
+    base::TimeTicks match_selection_timestamp) {
+  if (match_selection_timestamp == base::TimeTicks() ||
+      match_index >= result().size()) {
+    return false;
+  }
+  const AutocompleteMatch& match = result().match_at(match_index);
+  for (size_t action_index = 0; action_index < match.actions.size();
+       ++action_index) {
+    if (match.actions[action_index]->TakesOverMatch()) {
+      OmniboxPopupSelection selection(
+          match_index, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION,
+          action_index);
+      ExecuteAction(selection, disposition, match_selection_timestamp);
+      // A match can have at most one takeover match.
+      return true;
+    }
+  }
+  return false;
 }
 
 void OmniboxEditModel::ExecuteAction(

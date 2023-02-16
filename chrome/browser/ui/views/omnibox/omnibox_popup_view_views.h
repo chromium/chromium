@@ -39,14 +39,6 @@ class OmniboxPopupViewViews : public views::View,
   OmniboxPopupViewViews& operator=(const OmniboxPopupViewViews&) = delete;
   ~OmniboxPopupViewViews() override;
 
-  // Opens a match from the list specified by |index| with the type of tab or
-  // window specified by |disposition|.
-  void OpenMatch(WindowOpenDisposition disposition,
-                 base::TimeTicks match_selection_timestamp);
-  void OpenMatch(size_t index,
-                 WindowOpenDisposition disposition,
-                 base::TimeTicks match_selection_timestamp);
-
   // Returns the icon that should be displayed next to |match|. If the icon is
   // available as a vector icon, it will be |vector_icon_color|.
   gfx::Image GetMatchIcon(const AutocompleteMatch& match,
