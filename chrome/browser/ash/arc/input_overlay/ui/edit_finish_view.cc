@@ -298,16 +298,6 @@ bool EditFinishView::OnKeyReleased(const ui::KeyEvent& event) {
   return true;
 }
 
-void EditFinishView::ResetFocus() {
-  auto* focus_manager = GetFocusManager();
-  if (!focus_manager)
-    return;
-  focus_manager->ClearFocus();
-  // When it has to clear focus explicitly, set focused view back to its parent,
-  // so it can find the focused view when Tab traversal key is pressed.
-  focus_manager->SetFocusedView(parent());
-}
-
 void EditFinishView::OnDragStart(const ui::LocatedEvent& event) {
   start_drag_event_pos_ = event.location();
   start_drag_view_pos_ = origin();
@@ -331,9 +321,9 @@ void EditFinishView::OnResetButtonPressed() {
   if (!display_overlay_controller_)
     return;
   display_overlay_controller_->OnCustomizeRestore();
-  if (reset_button_->HasFocus())
+  if (reset_button_->HasFocus() || !parent())
     return;
-  ResetFocus();
+  ResetFocusTo(parent());
 }
 
 void EditFinishView::OnSaveButtonPressed() {

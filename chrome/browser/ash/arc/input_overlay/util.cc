@@ -11,6 +11,8 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
 
 namespace arc::input_overlay {
 
@@ -78,6 +80,14 @@ void ClampPosition(gfx::Point& position,
 absl::optional<std::string> GetCurrentSystemVersion() {
   return AllowReposition() ? absl::make_optional(kSystemVersionAlphaV2)
                            : absl::nullopt;
+}
+
+void ResetFocusTo(views::View* view) {
+  DCHECK(view);
+  auto* focus_manager = view->GetFocusManager();
+  if (!focus_manager)
+    return;
+  focus_manager->SetFocusedView(view);
 }
 
 bool AllowReposition() {

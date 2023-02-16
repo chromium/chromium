@@ -13,6 +13,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace arc::input_overlay {
 
 class Action;
@@ -38,6 +42,9 @@ void ClampPosition(gfx::Point& position,
 // Return the current running version of Game controls. If it is not set, it's
 // Alpha version. Otherwise, it is AlphaV2+ version.
 absl::optional<std::string> GetCurrentSystemVersion();
+
+// Reset the focus to |view|.
+void ResetFocusTo(views::View* view);
 
 // TODO(b/260937747): Update or remove when removing flags
 // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.

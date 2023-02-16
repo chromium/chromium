@@ -354,6 +354,7 @@ void ActionView::UpdateTrashButtonPosition() {
 
 void ActionView::OnDragStart(const ui::LocatedEvent& event) {
   start_drag_event_pos_ = event.location();
+  ResetFocusTo(this);
 }
 
 bool ActionView::OnDragUpdate(const ui::LocatedEvent& event) {
