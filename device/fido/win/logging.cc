@@ -165,6 +165,15 @@ std::ostream& operator<<(
   } else {
     out << ", (null)";
   }
+  if (in.dwVersion < WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_5) {
+    return out << "}";
+  }
+  out << kSep << in.dwCredLargeBlobOperation << "(";
+  if (in.cbCredLargeBlob) {
+    out << base::HexEncode(in.pbCredLargeBlob, in.cbCredLargeBlob) << ")";
+  } else {
+    out << "null)";
+  }
   if (in.dwVersion < WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_6) {
     return out << "}";
   }
@@ -235,6 +244,12 @@ std::ostream& operator<<(std::ostream& out, const WEBAUTHN_ASSERTION& in) {
     return out << "}";
   }
   out << in.Extensions;
+  out << kSep << in.dwCredLargeBlobStatus << " (";
+  if (in.pbCredLargeBlob) {
+    out << base::HexEncode(in.pbCredLargeBlob, in.cbCredLargeBlob) << ")";
+  } else {
+    out << "null)";
+  }
   if (in.dwVersion < WEBAUTHN_ASSERTION_VERSION_3) {
     return out << "}";
   }

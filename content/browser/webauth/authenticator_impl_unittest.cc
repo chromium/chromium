@@ -8234,6 +8234,26 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI_Incognito) {
               is_off_the_record);
   }
 }
+
+// Tests that attempting to make a credential with large blob = required and
+// attachment = platform on Windows fails and the request is not sent to the
+// WebAuthn API.
+// This is because largeBlob = required is ignored by the Windows platform
+// authenticator at the time of writing (Feb 2023).
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlobWinPlatform) {
+  fake_win_webauthn_api_.set_available(true);
+  fake_win_webauthn_api_.set_version(WEBAUTHN_API_VERSION_3);
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->large_blob_enable = device::LargeBlobSupport::kRequired;
+  options->authenticator_selection->resident_key =
+      device::ResidentKeyRequirement::kRequired;
+  options->authenticator_selection->authenticator_attachment =
+      device::AuthenticatorAttachment::kPlatform;
+  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  EXPECT_FALSE(fake_win_webauthn_api_.last_make_credential_options());
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 // Tests that chrome does not attempt setting the PRF extension during a

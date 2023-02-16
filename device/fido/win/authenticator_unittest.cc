@@ -10,6 +10,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -17,6 +18,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -31,6 +33,10 @@ using MakeCredentialCallbackReceiver = test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
     absl::optional<AuthenticatorMakeCredentialResponse>>;
 
+using GetAssertionCallbackReceiver = test::StatusAndValueCallbackReceiver<
+    CtapDeviceResponseCode,
+    std::vector<AuthenticatorGetAssertionResponse>>;
+
 using GetCredentialCallbackReceiver =
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
                                FidoRequestHandlerBase::RecognizedCredential>;
@@ -44,12 +50,22 @@ constexpr char kRpId[] = "project-altdeus.example.com";
 const std::vector<uint8_t> kUserId = {5, 6, 7, 8};
 constexpr char kUserName[] = "unit-aarc-noa";
 constexpr char kUserDisplayName[] = "Noa";
+const std::vector<uint8_t> kLargeBlob = {'b', 'l', 'o', 'b'};
 
 class WinAuthenticatorTest : public testing::Test {
  public:
   void SetUp() override {
     fake_webauthn_api_ = std::make_unique<FakeWinWebAuthnApi>();
     fake_webauthn_api_->set_supports_silent_discovery(true);
+    authenticator_ = std::make_unique<WinWebAuthnApiAuthenticator>(
+        /*current_window=*/nullptr, fake_webauthn_api_.get());
+  }
+
+  void SetVersion(int version) {
+    fake_webauthn_api_->set_version(version);
+    // `WinWebAuthnApiAuthenticator` does not expect the webauthn.dll version to
+    // change during its lifetime, thus needs to be recreated for each version
+    // change.
     authenticator_ = std::make_unique<WinWebAuthnApiAuthenticator>(
         /*current_window=*/nullptr, fake_webauthn_api_.get());
   }
@@ -294,14 +310,8 @@ TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
                  << ", availability="
                  << static_cast<bool>(test_case.availability));
 
-    fake_webauthn_api_->set_version(test_case.availability
-                                        ? WEBAUTHN_API_VERSION_3
-                                        : WEBAUTHN_API_VERSION_2);
-    // `WinWebAuthnApiAuthenticator` does not expect the webauthn.dll version to
-    // change during its lifetime, thus needs to be recreated for each
-    // iteration.
-    authenticator_ = std::make_unique<WinWebAuthnApiAuthenticator>(
-        /*current_window=*/nullptr, fake_webauthn_api_.get());
+    SetVersion(test_case.availability ? WEBAUTHN_API_VERSION_3
+                                      : WEBAUTHN_API_VERSION_2);
     EXPECT_EQ(authenticator_->Options().large_blob_type.has_value(),
               test_case.availability);
     PublicKeyCredentialRpEntity rp("adrestian-empire.com");
@@ -318,6 +328,146 @@ TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
     callback.WaitForCallback();
     ASSERT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
     EXPECT_EQ(callback.value()->large_blob_type.has_value(), test_case.result);
+  }
+}
+
+// Tests that making a credential with attachment=undefined forces the
+// attachment to cross-platform if large blob is required.
+// This is because largeBlob=required is ignored by the Windows platform
+// authenticator at the time of writing (Feb 2023).
+TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlobAttachmentUndefined) {
+  SetVersion(WEBAUTHN_API_VERSION_3);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  CtapMakeCredentialRequest request(
+      test_data::kClientDataJson, rp, user,
+      PublicKeyCredentialParams({{CredentialType::kPublicKey, -257}}));
+  request.authenticator_attachment = AuthenticatorAttachment::kAny;
+  fake_webauthn_api_->set_preferred_attachment(
+      WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM);
+  MakeCredentialOptions options;
+  options.large_blob_support = LargeBlobSupport::kRequired;
+  MakeCredentialCallbackReceiver callback;
+  authenticator_->MakeCredential(std::move(request), options,
+                                 callback.callback());
+  callback.WaitForCallback();
+  ASSERT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
+  EXPECT_TRUE(callback.value()->large_blob_type.has_value());
+  EXPECT_NE(*callback.value()->transport_used,
+            FidoTransportProtocol::kInternal);
+}
+
+TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobNotSupported) {
+  SetVersion(WEBAUTHN_API_VERSION_2);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  {
+    // Read large blob.
+    CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+    CtapGetAssertionOptions options;
+    options.large_blob_read = true;
+    GetAssertionCallbackReceiver callback;
+    authenticator_->GetAssertion(std::move(request), std::move(options),
+                                 callback.callback());
+    callback.WaitForCallback();
+    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
+    EXPECT_FALSE(callback.value().at(0).large_blob.has_value());
+  }
+  {
+    // Write large blob.
+    CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+    CtapGetAssertionOptions options;
+    options.large_blob_write = kLargeBlob;
+    GetAssertionCallbackReceiver callback;
+    authenticator_->GetAssertion(std::move(request), std::move(options),
+                                 callback.callback());
+    callback.WaitForCallback();
+    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
+    EXPECT_FALSE(callback.value().at(0).large_blob_written);
+  }
+}
+
+TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobError) {
+  SetVersion(WEBAUTHN_API_VERSION_3);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  fake_webauthn_api_->set_large_blob_result(
+      WEBAUTHN_CRED_LARGE_BLOB_STATUS_NOT_SUPPORTED);
+  {
+    // Read large blob.
+    CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+    CtapGetAssertionOptions options;
+    options.large_blob_read = true;
+    GetAssertionCallbackReceiver callback;
+    authenticator_->GetAssertion(std::move(request), std::move(options),
+                                 callback.callback());
+    callback.WaitForCallback();
+    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
+    EXPECT_FALSE(callback.value().at(0).large_blob.has_value());
+  }
+  {
+    // Write large blob.
+    CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+    CtapGetAssertionOptions options;
+    options.large_blob_write = kLargeBlob;
+    GetAssertionCallbackReceiver callback;
+    authenticator_->GetAssertion(std::move(request), std::move(options),
+                                 callback.callback());
+    callback.WaitForCallback();
+    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
+    EXPECT_FALSE(callback.value().at(0).large_blob_written);
+  }
+}
+
+TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobSuccess) {
+  SetVersion(WEBAUTHN_API_VERSION_3);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  {
+    // Read large blob.
+    CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+    CtapGetAssertionOptions options;
+    options.large_blob_read = true;
+    GetAssertionCallbackReceiver callback;
+    authenticator_->GetAssertion(std::move(request), std::move(options),
+                                 callback.callback());
+    callback.WaitForCallback();
+    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
+    EXPECT_FALSE(callback.value().at(0).large_blob.has_value());
+    EXPECT_FALSE(callback.value().at(0).large_blob_written);
+  }
+  {
+    // Write large blob.
+    CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+    CtapGetAssertionOptions options;
+    options.large_blob_write = kLargeBlob;
+    GetAssertionCallbackReceiver callback;
+    authenticator_->GetAssertion(std::move(request), std::move(options),
+                                 callback.callback());
+    callback.WaitForCallback();
+    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
+    EXPECT_FALSE(callback.value().at(0).large_blob.has_value());
+    EXPECT_TRUE(callback.value().at(0).large_blob_written);
+  }
+  {
+    // Read the large blob that was just written.
+    CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+    CtapGetAssertionOptions options;
+    options.large_blob_read = true;
+    GetAssertionCallbackReceiver callback;
+    authenticator_->GetAssertion(std::move(request), std::move(options),
+                                 callback.callback());
+    callback.WaitForCallback();
+    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
+    EXPECT_TRUE(callback.value().at(0).large_blob.has_value());
+    EXPECT_EQ(*callback.value().at(0).large_blob, kLargeBlob);
+    EXPECT_FALSE(callback.value().at(0).large_blob_written);
   }
 }
 
