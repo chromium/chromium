@@ -165,8 +165,12 @@
 
 - (void)setSubtitle:(NSString*)subtitle {
   if (!subtitle) {
+    // If no subtitle, hide the subtitle view to avoid taking space for nothing.
+    self.subtitleView.hidden = YES;
     return;
   }
+  // Else, ensure the subtitle view is visible.
+  self.subtitleView.hidden = NO;
 
   StringWithTags parsedString = ParseStringWithLinks(subtitle);
 
