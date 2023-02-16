@@ -830,27 +830,18 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   if (template_url != nullptr &&
       template_url->SupportsReplacement(
           template_url_service->search_terms_data())) {
-    static const bool optimize =
-        base::FeatureList::IsEnabled(omnibox::kStrippedGurlOptimization);
-    if (optimize) {
-      using CacheKey = std::tuple<const TemplateURL*, GURL, bool, bool>;
-      static base::LRUCache<CacheKey, GURL> template_cache(30);
-      const CacheKey cache_key = {template_url, url, keep_search_intent_params,
-                                  normalize_search_terms};
-      const auto& cached = template_cache.Get(cache_key);
-      if (cached != template_cache.end()) {
-        stripped_destination_url = cached->second;
-      } else if (template_url->KeepSearchTermsInURL(
-                     url, template_url_service->search_terms_data(),
-                     keep_search_intent_params, normalize_search_terms,
-                     &stripped_destination_url)) {
-        template_cache.Put(cache_key, stripped_destination_url);
-      }
-    } else {
-      template_url->KeepSearchTermsInURL(
-          url, template_url_service->search_terms_data(),
-          keep_search_intent_params, normalize_search_terms,
-          &stripped_destination_url);
+    using CacheKey = std::tuple<const TemplateURL*, GURL, bool, bool>;
+    static base::LRUCache<CacheKey, GURL> template_cache(30);
+    const CacheKey cache_key = {template_url, url, keep_search_intent_params,
+                                normalize_search_terms};
+    const auto& cached = template_cache.Get(cache_key);
+    if (cached != template_cache.end()) {
+      stripped_destination_url = cached->second;
+    } else if (template_url->KeepSearchTermsInURL(
+                   url, template_url_service->search_terms_data(),
+                   keep_search_intent_params, normalize_search_terms,
+                   &stripped_destination_url)) {
+      template_cache.Put(cache_key, stripped_destination_url);
     }
   }
 

@@ -62,14 +62,6 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
              "OmniboxRemoveSuggestionsFromClipboard",
              enabled_by_default_android_only);
 
-// Feature to enable memoizing and filtering non-doc hosts for
-// `DocumentProvider::GetURLForDeduping()`.
-// TODO(manukh) Enabled by default on 10/20/22 m109. Clean up feature code
-//  2/7/23, when m110 reaches stable.
-BASE_FEATURE(kDocumentProviderDedupingOptimization,
-             "OmniboxDocumentProviderDedupingOptimization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, uses the grouping framework (i.e.
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
 BASE_FEATURE(kGroupingFramework,
@@ -105,14 +97,6 @@ BASE_FEATURE(kPreserveDefault,
 BASE_FEATURE(kSingleSortAndCullPass,
              "OmniboxSingleSortAndCullPass",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Feature to enable memoizing URLs when replacing search terms in
-// `AutocompleteMatch::GURLToStrippedGURL()`.
-// TODO(manukh) Enabled by default on 10/20/22 m109. Clean up feature code
-//  2/7/23, when m110 reaches stable.
-BASE_FEATURE(kStrippedGurlOptimization,
-             "OmniboxStrippedGurlOptimization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature to debounce `AutocompleteController::NotifyChanged()`.
 BASE_FEATURE(kUpdateResultDebounce,

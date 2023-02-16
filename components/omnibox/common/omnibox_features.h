@@ -19,13 +19,11 @@ BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard);
 
 // Flags that affect the "twiddle" step of AutocompleteResult, e.g.,
 // `SortAndCull()`.
-BASE_DECLARE_FEATURE(kDocumentProviderDedupingOptimization);
 BASE_DECLARE_FEATURE(kGroupingFramework);
 BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
 BASE_DECLARE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls);
 BASE_DECLARE_FEATURE(kPreserveDefault);
 BASE_DECLARE_FEATURE(kSingleSortAndCullPass);
-BASE_DECLARE_FEATURE(kStrippedGurlOptimization);
 BASE_DECLARE_FEATURE(kUpdateResultDebounce);
 
 // Features below this line should be sorted alphabetically by their comments.

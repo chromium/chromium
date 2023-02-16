@@ -3831,30 +3831,6 @@
             ]
         }
     ],
-    "DesktopOmniboxPostAutocompletion": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {},
-                    "enable_features": [
-                        "OmniboxDocumentProviderDedupingOptimization",
-                        "OmniboxStrippedGurlOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxPostAutocompletionPreserveDefault": [
         {
             "platforms": [
