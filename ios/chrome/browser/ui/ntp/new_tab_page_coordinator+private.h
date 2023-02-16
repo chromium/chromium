@@ -23,6 +23,10 @@
 
 @property(nonatomic, assign) web::WebState* webState;
 
+// Tracks the visibility of the NTP to report NTP usage metrics.
+// True if the NTP view is currently displayed to the user.
+@property(nonatomic, readonly) BOOL visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COORDINATOR_PRIVATE_H_

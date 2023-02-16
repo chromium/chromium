@@ -32,30 +32,25 @@
 @property(weak, nonatomic, readwrite) UIViewController* baseViewController;
 
 // ViewController associated with this coordinator.
-@property(nonatomic, strong, readonly) UIViewController* viewController;
+@property(nonatomic, readonly) UIViewController* viewController;
 
 // The toolbar delegate to pass to ContentSuggestionsCoordinator.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
 // Returns `YES` if the coordinator is started.
-@property(nonatomic, assign, getter=isStarted) BOOL started;
+@property(nonatomic, readonly) BOOL started;
 
 // The pan gesture handler for the view controller.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
 // Allows for the in-flight enabling/disabling of the thumb strip.
-@property(nonatomic, weak, readonly) id<ThumbStripSupporting>
-    thumbStripSupporting;
+@property(nonatomic, readonly) id<ThumbStripSupporting> thumbStripSupporting;
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 // Currently selected feed.
-@property(nonatomic, assign, readonly) FeedType selectedFeed;
-
-// Tracks the visibility of the NTP to report NTP usage metrics.
-// True if the NTP view is currently displayed to the user.
-@property(nonatomic, assign, readonly) BOOL visible;
+@property(nonatomic, readonly) FeedType selectedFeed;
 
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
