@@ -217,6 +217,7 @@ void CheckWindowCreated(HWND hwnd, DWORD last_error) {
   if (!hwnd) {
     switch (last_error) {
       case ERROR_NOT_ENOUGH_MEMORY:
+      case ERROR_NO_MORE_USER_HANDLES:
         base::debug::CollectGDIUsageAndDie();
         break;
       case ERROR_ACCESS_DENIED:
