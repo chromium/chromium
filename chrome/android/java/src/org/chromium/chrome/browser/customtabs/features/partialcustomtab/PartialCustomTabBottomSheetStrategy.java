@@ -748,9 +748,8 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         int bottomY = mDisplayHeight - mNavbarHeight;
 
         if (finalY < initialY) { // Move up
-            animateTabTo(Math.abs(topY - finalY) < Math.abs(finalY - initialY)
-                            ? HeightStatus.TOP
-                            : HeightStatus.INITIAL_HEIGHT,
+            boolean toTop = Math.abs(topY - finalY) < Math.abs(finalY - initialY);
+            animateTabTo(toTop && !isFixedHeight() ? HeightStatus.TOP : HeightStatus.INITIAL_HEIGHT,
                     /*autoResize=*/false);
             return true;
         } else { // Move down
