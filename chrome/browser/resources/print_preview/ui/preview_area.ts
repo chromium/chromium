@@ -530,9 +530,6 @@ export class PrintPreviewPreviewAreaElement extends
 
   private hasTicketChanged_(): boolean {
     if (!this.marginsValid_()) {
-      // Log so that we can try to debug how this occurs. See
-      // https://crbug.com/942211
-      console.warn('Requested preview with invalid margins');
       return false;
     }
 
@@ -565,9 +562,6 @@ export class PrintPreviewPreviewAreaElement extends
 
       // Changed to custom margins from a different margins type.
       if (!this.margins) {
-        // Log so that we can try to debug how this occurs. See
-        // https://crbug.com/942211
-        console.warn('Requested preview with undefined document margins');
         return false;
       }
 
