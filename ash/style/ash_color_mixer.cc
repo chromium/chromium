@@ -405,6 +405,11 @@ void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
 
   mixer[cros_tokens::kCrosSysSystemPrimaryContainer] = {
       dark_mode ? gfx::kGoogleBlue200 : gfx::kGoogleBlue300};
+
+  // Colors for feature tile that differ from sys token mappings.
+  mixer[kColorAshTileSmallCircle] =
+      dark_mode ? ui::ColorTransform(cros_tokens::kCrosSysHighlightShape)
+                : ui::SetAlpha(gfx::kGoogleBlue600, 31);  // 12% opacity
 }
 
 }  // namespace

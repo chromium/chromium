@@ -129,7 +129,9 @@ namespace ash {
   /* Color for checkmark icon in holding space */ \
   E_CPONLY(kColorAshCheckmarkIconColor) \
   /* Color for drag image overflow badge text in holding space */ \
-  E_CPONLY(kColorAshDragImageOverflowBadgeTextColor)
+  E_CPONLY(kColorAshDragImageOverflowBadgeTextColor) \
+  /* Color for feature tile small circle */ \
+  E_CPONLY(kColorAshTileSmallCircle)
 
 #include "ui/color/color_id_macros.inc"
 

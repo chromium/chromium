@@ -184,6 +184,8 @@ void FeatureTile::CreateDrillInButton(base::RepeatingCallback<void()> callback,
 
   drill_in_button_ = AddChildView(std::move(drill_in_button));
   drill_in_arrow_ = drill_in_button_->AddChildView(std::move(drill_in_arrow));
+
+  UpdateColors();
 }
 
 void FeatureTile::UpdateColors() {
@@ -195,6 +197,18 @@ void FeatureTile::UpdateColors() {
                                 : cros_tokens::kCrosSysSystemOnBase;
     foreground_color = toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                                 : cros_tokens::kCrosSysOnSurface;
+
+    if (!features::IsJellyEnabled() && drill_in_arrow_) {
+      // TODO(b/262615213): Only the toggled states are interesting here. The
+      // un-toggled states are the defaults for `IconButton` so when Jelly
+      // launches, this can be deleted safely.
+      drill_in_arrow_->SetIconColorId(
+          toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                   : cros_tokens::kCrosSysSecondary);
+      drill_in_arrow_->SetBackgroundColorId(
+          toggled_ ? static_cast<ui::ColorId>(kColorAshTileSmallCircle)
+                   : kColorAshControlBackgroundColorInactive);
+    }
   } else {
     background_color = cros_tokens::kCrosSysDisabledContainer;
     foreground_color = cros_tokens::kCrosSysDisabled;
