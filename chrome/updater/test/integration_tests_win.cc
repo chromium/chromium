@@ -186,6 +186,33 @@ HRESULT CreateLocalServer(GUID clsid,
               .HasValue(service_name.c_str());
 }
 
+void IterateRunValues(
+    base::RepeatingCallback<void(const std::wstring&)> callback,
+    const std::wstring& prefix) {
+  for (base::win::RegistryValueIterator it(HKEY_CURRENT_USER, REGSTR_PATH_RUN,
+                                           KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const std::wstring run_name = it.Name();
+    if (base::StartsWith(run_name, prefix)) {
+      callback.Run(run_name);
+    }
+  }
+}
+
+void IterateServices(
+    base::RepeatingCallback<void(const std::wstring&)> callback,
+    const std::wstring& prefix) {
+  for (base::win::RegistryKeyIterator it(HKEY_LOCAL_MACHINE,
+                                         L"SYSTEM\\CurrentControlSet\\Services",
+                                         KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const std::wstring service_name = it.Name();
+    if (base::StartsWith(service_name, prefix)) {
+      callback.Run(service_name);
+    }
+  }
+}
+
 // Checks the installation states (installed or uninstalled) and versions (SxS
 // only, or both active and SxS). The installation state includes
 // Client/ClientState registry, COM server registration, COM service
@@ -247,8 +274,11 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
 
       if (!IsSystemInstall(scope)) {
-        EXPECT_FALSE(base::win::RegKey(root, REGSTR_PATH_RUN, KEY_READ)
-                         .HasValue(GetTaskNamePrefix(scope).c_str()));
+        IterateRunValues(base::BindRepeating([](const std::wstring& run_name) {
+                           ADD_FAILURE()
+                               << "Unexpected Run key found: " << run_name;
+                         }),
+                         base::ASCIIToWide(PRODUCT_FULLNAME_STRING));
       }
     }
   }
@@ -287,6 +317,20 @@ void CheckInstallation(UpdaterScope scope,
 
       EXPECT_EQ(is_installed,
                 !IsServiceGone(GetServiceName(is_internal_service)));
+
+// TODO(crbug.com/1378769) - this code can be enabled after the the new CIPD
+// build containing fix r1105318 is published.
+#if 0
+      if (!is_installed) {
+        IterateServices(
+            base::BindRepeating([](const std::wstring& service_name) {
+              ADD_FAILURE() << "Unexpected service found: " << service_name;
+            }),
+            base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+                          is_internal_service ? kWindowsInternalServiceName
+                                              : kWindowsServiceName}));
+      }
+#endif  // 0
     }
   }
 
@@ -310,6 +354,9 @@ void CheckInstallation(UpdaterScope scope,
                       L"*/chrome/updater/*=2"})
             .c_str());
   }
+
+  // TODO(crbug.com/1416358) - when `!is_installed`, check that no scheduled
+  // tasks exist.
 
   const absl::optional<base::FilePath> path =
       GetVersionedInstallDirectory(scope, base::Version(kUpdaterVersion));
@@ -576,15 +623,23 @@ void Clean(UpdaterScope scope) {
   }
 
   if (!IsSystemInstall(scope)) {
-    base::win::RegKey(root, REGSTR_PATH_RUN, KEY_WRITE)
-        .DeleteValue(GetTaskNamePrefix(scope).c_str());
+    IterateRunValues(base::BindRepeating([](const std::wstring& run_name) {
+                       base::win::RegKey(HKEY_CURRENT_USER, REGSTR_PATH_RUN,
+                                         KEY_WRITE)
+                           .DeleteValue(run_name.c_str());
+                     }),
+                     base::ASCIIToWide(PRODUCT_FULLNAME_STRING));
   }
 
   if (IsSystemInstall(scope)) {
-    for (const bool is_internal_service : {true, false}) {
-      EXPECT_TRUE(DeleteService(GetServiceName(is_internal_service)));
-    }
+    IterateServices(base::BindRepeating([](const std::wstring& service_name) {
+                      EXPECT_TRUE(DeleteService(service_name));
+                    }),
+                    base::ASCIIToWide(PRODUCT_FULLNAME_STRING));
   }
+
+  // TODO(crbug.com/1416358) - also uninstall scheduled tasks for previous
+  // versions.
 
   std::unique_ptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
