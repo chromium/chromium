@@ -971,6 +971,7 @@
       "wpt_internal/file-system-api",
       "wpt_internal/storage/quota/partitioned-webkitTemporaryStorage-usage-details.tentative.sub.html",
       "wpt_internal/storage/quota/partitioned-webkitPersistentStorage-quota-usage-details.tentative.sub.html",
+      "wpt_internal/web-locks/storage-deprecation-trial-enabled.https.html",
       "wpt_internal/webstorage/storage-cross-origin-redirect-local.sub.https.html",
       "wpt_internal/webstorage/storage-cross-origin-redirect-session.sub.https.html",
       "wpt_internal/webstorage/storage-deprecation-trial-disabled-local.sub.https.html",
