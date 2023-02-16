@@ -35,6 +35,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -295,6 +296,16 @@ class AppServiceFileTasksTest : public testing::Test {
     AddFakeAppWithIntentFilters(kExtensionId, std::move(filters),
                                 apps::AppType::kChromeApp, true,
                                 app_service_proxy_);
+  }
+
+  // Load an extension from the supplied manifest, then add intent filters.
+  void LoadExtension(const std::string manifest) {
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ExtensionBuilder("file handlers").AddJSON(manifest).Build();
+    auto filters = apps_util::CreateIntentFiltersForExtension(extension.get());
+    AddFakeAppWithIntentFilters(kExtensionId, std::move(filters),
+                                apps::AppType::kExtension,
+                                /*handles_intents=*/true, app_service_proxy_);
   }
 
   apps::IntentFilterPtr CreateMimeTypeFileIntentFilter(std::string action,
@@ -671,6 +682,43 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {
   EXPECT_EQ(kExtensionId, tasks[0].task_descriptor.app_id);
   EXPECT_EQ("open title", tasks[0].task_title);
   EXPECT_EQ("open", tasks[0].task_descriptor.action_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_FALSE(tasks[0].is_file_extension_match);
+}
+
+// Enable MV3 File Handlers.
+class AppServiceFileHandlersTest : public AppServiceFileTasksTestEnabled {
+ public:
+  AppServiceFileHandlersTest() {
+    feature_list_.InitAndEnableFeature(extensions_features::kFileHandlersMV3);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify App Service tasks for extensions with MV3 File Handlers.
+TEST_F(AppServiceFileHandlersTest, FindAppServiceExtension) {
+  static constexpr char kAction[] = "/open.html";
+  const std::string manifest = base::StringPrintf(R"(
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "file_handlers": [
+      {
+        "name": "Text file",
+        "action": "%s",
+        "accept": {"text/plain": ".txt"}
+      }
+    ]
+  )",
+                                                  kAction);
+  LoadExtension(manifest);
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"test.txt", kMimeTypeText}});
+
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kExtensionId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kAction, tasks[0].task_descriptor.action_id);
   EXPECT_FALSE(tasks[0].is_generic_file_handler);
   EXPECT_FALSE(tasks[0].is_file_extension_match);
 }

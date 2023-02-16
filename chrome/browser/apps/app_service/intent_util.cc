@@ -19,6 +19,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -28,6 +29,7 @@
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
+#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -293,6 +295,30 @@ apps::IntentFilters CreateIntentFiltersForChromeApp(
 apps::IntentFilters CreateIntentFiltersForExtension(
     const extensions::Extension* extension) {
 #if BUILDFLAG(IS_CHROMEOS)
+  // MV3+ manifest support for the `file_handlers` key.
+  DCHECK(extension);
+  const extensions::FileHandlersInfoMV3* intent_filter_data =
+      extensions::FileHandlersMV3::GetFileHandlers(*extension);
+  if (intent_filter_data && !intent_filter_data->empty()) {
+    apps::IntentFilters filters;
+    for (const auto& file_handler : *intent_filter_data) {
+      // Flatten mime_types and file_extensions.
+      std::vector<std::string> mime_types;
+      std::vector<std::string> file_extensions;
+      for (const auto [mime_type, file_extension_list] :
+           file_handler.accept.additional_properties) {
+        mime_types.emplace_back(mime_type);
+        for (const auto& file_extension : file_extension_list.GetList()) {
+          file_extensions.emplace_back(file_extension.GetString());
+        }
+      }
+
+      filters.push_back(CreateFileFilter({kIntentActionView}, mime_types,
+                                         file_extensions, file_handler.action));
+    }
+    return filters;
+  }
+
   FileBrowserHandler::List* handler_list =
       FileBrowserHandler::GetHandlers(extension);
   if (!handler_list) {

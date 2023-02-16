@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +28,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/value_builder.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -382,6 +384,60 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
   EXPECT_EQ(file_cond2.condition_values[1]->value,
             R"(filesystem:chrome://file-manager/.*\..*)");
 }
+
+TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlersMV3) {
+  // Extension feature flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      extensions_features::kFileHandlersMV3);
+
+  // Create extension that provides file_handlers.
+  extensions::ExtensionBuilder extension_builder("Test");
+  static const char kManifest[] = R"(
+      "version": "0.0.1",
+      "manifest_version": 3,
+      "file_handlers": [
+        {
+          "name": "Comma separated values",
+          "action": "/open-csv.html",
+          "accept": {"text/csv": ".csv"}
+        },
+        {
+          "name": "Text file",
+          "action": "/open-txt",
+          "accept": {"text/plain": ".txt"}
+        }
+      ]
+    )";
+  extension_builder.AddJSON(kManifest).BuildManifest();
+  scoped_refptr<const extensions::Extension> extension =
+      extension_builder.Build();
+
+  // Get intent filters.
+  IntentFilters filters =
+      apps_util::CreateIntentFiltersForExtension(extension.get());
+  ASSERT_EQ(filters.size(), 2u);
+
+  // "csv" filter - View action
+  const IntentFilterPtr& mime_filter = filters[0];
+  ASSERT_EQ(mime_filter->conditions.size(), 2u);
+  const Condition& view_cond = *mime_filter->conditions[0];
+  EXPECT_EQ(view_cond.condition_type, ConditionType::kAction);
+  ASSERT_EQ(view_cond.condition_values.size(), 1u);
+  EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
+
+  // "csv" filter - glob match
+  const Condition& file_cond = *mime_filter->conditions[1];
+  EXPECT_EQ(file_cond.condition_type, ConditionType::kFile);
+  ASSERT_EQ(file_cond.condition_values.size(), 2u);
+  EXPECT_EQ(file_cond.condition_values[0]->match_type,
+            PatternMatchType::kMimeType);
+  EXPECT_EQ(file_cond.condition_values[0]->value, "text/csv");
+  EXPECT_EQ(file_cond.condition_values[1]->match_type,
+            PatternMatchType::kFileExtension);
+  EXPECT_EQ(file_cond.condition_values[1]->value, ".csv");
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -49,6 +49,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -323,7 +324,16 @@ WebContents* OpenEnabledApplication(Profile* profile,
   UMA_HISTOGRAM_ENUMERATION("Extensions.HostedAppLaunchContainer",
                             params.container);
 
-  GURL url = UrlForExtension(extension, profile, params);
+  GURL url;
+  if (extensions::FileHandlersMV3::SupportsWebFileHandlers(
+          extension->manifest_version()) &&
+      params.intent->activity_name.has_value()) {
+    // `params.intent->activity_name` is actually the `action` url set in the
+    // manifest of the extension.
+    url = extension->GetResourceURL(params.intent->activity_name.value());
+  } else {
+    url = UrlForExtension(extension, profile, params);
+  }
 
   // Record v1 app launch. Platform app launch is recorded when dispatching
   // the onLaunched event.
