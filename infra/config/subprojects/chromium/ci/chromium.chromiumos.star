@@ -613,9 +613,6 @@ ci.builder(
         ),
     ),
     os = os.LINUX_DEFAULT,
-    # TODO(crbug.com/1407339): Enable when stable.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|arm",
         short_name = "sky",
