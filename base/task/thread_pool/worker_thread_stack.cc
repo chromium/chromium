@@ -20,7 +20,7 @@ WorkerThreadStack::~WorkerThreadStack() = default;
 void WorkerThreadStack::Push(WorkerThread* worker) {
   DCHECK(!Contains(worker)) << "WorkerThread already on stack";
 
-  if (recordreplay::IsRecordingOrReplaying() && !recordreplay::AreEventsDisallowed()) {
+  if (!recordreplay::AreEventsDisallowed()) {
     recordreplay::Assert("[RUN-597] WorkerThreadStack::Push %d", IsEmpty());
   }
 
