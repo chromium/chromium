@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/input/synthetic_mouse_driver.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
@@ -21,7 +22,13 @@ void SyntheticMouseDriver::DispatchEvent(SyntheticGestureTarget* target,
                                          const base::TimeTicks& timestamp) {
   mouse_event_.SetTimeStamp(timestamp);
   if (mouse_event_.GetType() != blink::WebInputEvent::Type::kUndefined) {
+    base::WeakPtr<SyntheticPointerDriver> weak_this = AsWeakPtr();
     target->DispatchInputEventToPlatform(mouse_event_);
+    // Dispatching a mouse event can cause the containing WebContents to be
+    // synchronously deleted.
+    if (!weak_this) {
+      return;
+    }
     mouse_event_.SetType(blink::WebInputEvent::Type::kUndefined);
   }
 }

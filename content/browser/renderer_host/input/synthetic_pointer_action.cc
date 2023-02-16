@@ -18,6 +18,7 @@ SyntheticPointerAction::~SyntheticPointerAction() {}
 SyntheticGesture::Result SyntheticPointerAction::ForwardInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
+  DCHECK(dispatching_controller_);
   if (state_ == GestureState::UNINITIALIZED) {
     gesture_source_type_ = params_.gesture_source_type;
     if (gesture_source_type_ ==
@@ -38,7 +39,15 @@ SyntheticGesture::Result SyntheticPointerAction::ForwardInputEvents(
   if (gesture_source_type_ == content::mojom::GestureSourceType::kDefaultInput)
     return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;
 
-  state_ = ForwardTouchOrMouseInputEvents(timestamp, target);
+  GestureState state = ForwardTouchOrMouseInputEvents(timestamp, target);
+  if (!dispatching_controller_) {
+    // A pointer gesture can cause the controller (and therefore `this`) to be
+    // synchronously deleted (e.g. clicking tab-close). Return immediately in
+    // this case.
+    return SyntheticGesture::GESTURE_ABORT;
+  }
+
+  state_ = state;
 
   if (state_ == GestureState::INVALID)
     return POINTER_ACTION_INPUT_INVALID;

@@ -19,6 +19,7 @@ SyntheticSmoothDragGesture::~SyntheticSmoothDragGesture() {
 SyntheticGesture::Result SyntheticSmoothDragGesture::ForwardInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
+  DCHECK(dispatching_controller_);
   if (!move_gesture_) {
     if (!InitializeMoveGesture(params_.gesture_source_type, target))
       return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;
@@ -59,6 +60,7 @@ bool SyntheticSmoothDragGesture::InitializeMoveGesture(
     move_params.add_slop = false;
     move_params.from_devtools_debugger = params_.from_devtools_debugger;
     move_gesture_ = std::make_unique<SyntheticSmoothMoveGesture>(move_params);
+    move_gesture_->DidQueue(dispatching_controller_);
     return true;
   }
   return false;

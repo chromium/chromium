@@ -767,14 +767,14 @@ class MockSyntheticPointerMouseActionTarget
 class DummySyntheticGestureControllerDelegate
     : public SyntheticGestureController::Delegate {
  public:
-  DummySyntheticGestureControllerDelegate() {}
+  DummySyntheticGestureControllerDelegate() = default;
 
   DummySyntheticGestureControllerDelegate(
       const DummySyntheticGestureControllerDelegate&) = delete;
   DummySyntheticGestureControllerDelegate& operator=(
       const DummySyntheticGestureControllerDelegate&) = delete;
 
-  ~DummySyntheticGestureControllerDelegate() override {}
+  ~DummySyntheticGestureControllerDelegate() override = default;
 
  private:
   // SyntheticGestureController::Delegate:
@@ -1539,6 +1539,7 @@ TEST_F(SyntheticGestureControllerTest,
 
   std::unique_ptr<SyntheticSmoothDragGesture> gesture(
       new SyntheticSmoothDragGesture(params));
+  gesture->DidQueue(controller_->GetWeakPtr());
   const base::TimeTicks timestamp;
   gesture->ForwardInputEvents(timestamp, target_);
 }
@@ -1555,6 +1556,7 @@ TEST_F(SyntheticGestureControllerTest,
 
   std::unique_ptr<SyntheticSmoothDragGesture> gesture(
       new SyntheticSmoothDragGesture(params));
+  gesture->DidQueue(controller_->GetWeakPtr());
   const base::TimeTicks timestamp;
   gesture->ForwardInputEvents(timestamp, target_);
   EXPECT_TRUE(target_->all_from_debugger());
@@ -1572,6 +1574,7 @@ TEST_F(SyntheticGestureControllerTest,
 
   std::unique_ptr<SyntheticSmoothDragGesture> gesture(
       new SyntheticSmoothDragGesture(params));
+  gesture->DidQueue(controller_->GetWeakPtr());
   const base::TimeTicks timestamp;
   gesture->ForwardInputEvents(timestamp, target_);
 }
@@ -1589,6 +1592,7 @@ TEST_F(SyntheticGestureControllerTest,
 
   std::unique_ptr<SyntheticSmoothDragGesture> gesture(
       new SyntheticSmoothDragGesture(params));
+  gesture->DidQueue(controller_->GetWeakPtr());
   const base::TimeTicks timestamp;
   gesture->ForwardInputEvents(timestamp, target_);
   EXPECT_TRUE(target_->all_from_debugger());
@@ -1603,6 +1607,7 @@ TEST_F(SyntheticGestureControllerTest,
 
   std::unique_ptr<SyntheticSmoothScrollGesture> gesture(
       new SyntheticSmoothScrollGesture(params));
+  gesture->DidQueue(controller_->GetWeakPtr());
   const base::TimeTicks timestamp;
   gesture->ForwardInputEvents(timestamp, target_);
 }
@@ -1639,6 +1644,7 @@ TEST_F(SyntheticGestureControllerTest,
 
   std::unique_ptr<SyntheticSmoothScrollGesture> gesture(
       new SyntheticSmoothScrollGesture(params));
+  gesture->DidQueue(controller_->GetWeakPtr());
   const base::TimeTicks timestamp;
   gesture->ForwardInputEvents(timestamp, target_);
 }

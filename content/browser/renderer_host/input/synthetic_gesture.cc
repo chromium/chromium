@@ -61,4 +61,10 @@ void SyntheticGesture::WaitForTargetAck(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
+void SyntheticGesture::DidQueue(
+    base::WeakPtr<SyntheticGestureController> controller) {
+  DCHECK(controller);
+  dispatching_controller_ = controller;
+}
+
 }  // namespace content

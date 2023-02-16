@@ -19,8 +19,15 @@ SyntheticTouchDriver::~SyntheticTouchDriver() {}
 void SyntheticTouchDriver::DispatchEvent(SyntheticGestureTarget* target,
                                          const base::TimeTicks& timestamp) {
   touch_event_.SetTimeStamp(timestamp);
-  if (touch_event_.GetType() != blink::WebInputEvent::Type::kUndefined)
+  if (touch_event_.GetType() != blink::WebInputEvent::Type::kUndefined) {
+    base::WeakPtr<SyntheticPointerDriver> weak_this = AsWeakPtr();
     target->DispatchInputEventToPlatform(touch_event_);
+    // Dispatching a touch event can cause the containing WebContents to be
+    // synchronously deleted.
+    if (!weak_this) {
+      return;
+    }
+  }
   touch_event_.ResetPoints();
   ResetPointerIdIndexMap();
 }

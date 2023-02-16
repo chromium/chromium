@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/input/synthetic_pointer_action.h"
+
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
+#include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -397,6 +399,23 @@ class MockSyntheticPointerPenActionTarget
   }
 };
 
+class DummySyntheticGestureControllerDelegate
+    : public SyntheticGestureController::Delegate {
+ public:
+  DummySyntheticGestureControllerDelegate() = default;
+
+  DummySyntheticGestureControllerDelegate(
+      const DummySyntheticGestureControllerDelegate&) = delete;
+  DummySyntheticGestureControllerDelegate& operator=(
+      const DummySyntheticGestureControllerDelegate&) = delete;
+
+  ~DummySyntheticGestureControllerDelegate() override = default;
+
+ private:
+  // SyntheticGestureController::Delegate:
+  bool HasGestureStopped() override { return true; }
+};
+
 class SyntheticPointerActionTest : public testing::Test {
  public:
   SyntheticPointerActionTest() {
@@ -408,10 +427,21 @@ class SyntheticPointerActionTest : public testing::Test {
 
  protected:
   template <typename MockGestureTarget>
-  void CreateSyntheticPointerActionTarget() {
-    target_ = std::make_unique<MockGestureTarget>();
+  void CreateSyntheticPointerActionTargetAndController() {
+    auto target = std::make_unique<MockGestureTarget>();
+    target_ = target.get();
     synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
         target_->GetDefaultSyntheticGestureSourceType());
+    controller_ = std::make_unique<SyntheticGestureController>(
+        &controller_delegate_, std::move(target));
+  }
+
+  std::unique_ptr<SyntheticPointerAction> CreatePointerAction(
+      const SyntheticPointerActionListParams& params) {
+    DCHECK(controller_);
+    auto pointer_action = std::make_unique<SyntheticPointerAction>(params_);
+    pointer_action->DidQueue(controller_->GetWeakPtr());
+    return pointer_action;
   }
 
   void ForwardSyntheticPointerAction() {
@@ -427,14 +457,17 @@ class SyntheticPointerActionTest : public testing::Test {
 
   int num_success_;
   int num_failure_;
-  std::unique_ptr<MockSyntheticPointerActionTarget> target_;
+  std::unique_ptr<SyntheticGestureController> controller_;
+  DummySyntheticGestureControllerDelegate controller_delegate_;
+  raw_ptr<MockSyntheticPointerActionTarget> target_;
   std::unique_ptr<SyntheticPointerAction> pointer_action_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   SyntheticPointerActionListParams params_;
 };
 
 TEST_F(SyntheticPointerActionTest, PointerTouchAction) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerTouchActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerTouchActionTarget>();
 
   // Send a touch press for one finger.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -487,7 +520,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchAction) {
   param_list4.push_back(param1);
   param_list4.push_back(param2);
   params_.PushPointerActionParamsList(param_list4);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -524,7 +557,8 @@ TEST_F(SyntheticPointerActionTest, PointerTouchAction) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerTouchActionsMultiPressRelease) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerTouchActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerTouchActionTarget>();
   int count_success = 1;
 
   // Send a touch press for one finger.
@@ -558,7 +592,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionsMultiPressRelease) {
     // Send a touch release for the second finger and not move the first finger.
     params_.PushPointerActionParamsList(param_list3);
   }
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -592,7 +626,8 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionsMultiPressRelease) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerTouchActionCancel) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerTouchActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerTouchActionTarget>();
 
   // Send a touch press for one finger.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -626,7 +661,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionCancel) {
   param_list3.push_back(param1);
   param_list3.push_back(param2);
   params_.PushPointerActionParamsList(param_list3);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -656,7 +691,8 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionCancel) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerTouchActionTypeInvalid) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerTouchActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerTouchActionTarget>();
 
   // Cannot send a touch move or touch release without sending a touch press
   // first.
@@ -665,7 +701,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionTypeInvalid) {
   param.set_pointer_id(0);
   param.set_position(gfx::PointF(54, 89));
   params_.PushPointerActionParams(param);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(0, num_success_);
@@ -675,7 +711,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionTypeInvalid) {
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_ = SyntheticPointerActionListParams();
   params_.PushPointerActionParams(param);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(0, num_success_);
@@ -687,7 +723,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionTypeInvalid) {
   params_ = SyntheticPointerActionListParams();
   params_.PushPointerActionParams(param);
   params_.PushPointerActionParams(param);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -705,7 +741,8 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionTypeInvalid) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerTouchActionFromDebugger) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerTouchActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerTouchActionTarget>();
   target_->ExpectFromDebugger();
   params_.from_devtools_debugger = true;
 
@@ -739,7 +776,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionFromDebugger) {
   param_list2.push_back(param1);
   param_list2.push_back(param2);
   params_.PushPointerActionParamsList(param_list2);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -758,7 +795,8 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionFromDebugger) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseAction) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Send a mouse move.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -782,7 +820,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseAction) {
   SyntheticPointerActionParams param4 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param4);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -814,7 +852,8 @@ TEST_F(SyntheticPointerActionTest, PointerMouseAction) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseActionMultiPress) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Press a mouse's left button.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -853,7 +892,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionMultiPress) {
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   param6.set_button(SyntheticPointerActionParams::Button::LEFT);
   params_.PushPointerActionParams(param6);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -901,7 +940,8 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionMultiPress) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseActionWithKey) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Send a mouse move.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -923,7 +963,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithKey) {
   param3.set_button(SyntheticPointerActionParams::Button::LEFT);
   param3.set_key_modifiers(6);
   params_.PushPointerActionParams(param3);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -949,7 +989,8 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithKey) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseActionWithTime) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Send a mouse move.
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -976,7 +1017,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithTime) {
   param3.set_key_modifiers(6);
   param3.set_timestamp(timestamp + base::Seconds(3));
   params_.PushPointerActionParams(param3);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -1002,13 +1043,14 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithTime) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseRelease) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Verify a mouse up sends without a prior mouse down
   SyntheticPointerActionParams param = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(1, num_success_);
@@ -1016,7 +1058,8 @@ TEST_F(SyntheticPointerActionTest, PointerMouseRelease) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseActionTypeInvalid) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Send a mouse down for one finger.
   SyntheticPointerActionParams param = SyntheticPointerActionParams(
@@ -1027,7 +1070,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionTypeInvalid) {
 
   // Cannot send a mouse down again without releasing the mouse button.
   params_.PushPointerActionParams(param);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -1045,7 +1088,8 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionTypeInvalid) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseFromDebugger) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
   target_->ExpectFromDebugger();
   params_.from_devtools_debugger = true;
 
@@ -1065,7 +1109,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseFromDebugger) {
   SyntheticPointerActionParams param3 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param3);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -1091,7 +1135,8 @@ TEST_F(SyntheticPointerActionTest, PointerMouseFromDebugger) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerPenAction) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerPenActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerPenActionTarget>();
 
   // Send a pen move.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -1114,7 +1159,7 @@ TEST_F(SyntheticPointerActionTest, PointerPenAction) {
   SyntheticPointerActionParams param4 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::LEAVE);
   params_.PushPointerActionParams(param4);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerPenActionTarget* pointer_pen_target =
@@ -1151,7 +1196,8 @@ TEST_F(SyntheticPointerActionTest, PointerPenAction) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerPenActionFromDebugger) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerPenActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerPenActionTarget>();
   target_->ExpectFromDebugger();
   params_.from_devtools_debugger = true;
 
@@ -1176,7 +1222,7 @@ TEST_F(SyntheticPointerActionTest, PointerPenActionFromDebugger) {
   SyntheticPointerActionParams param4 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::LEAVE);
   params_.PushPointerActionParams(param4);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerPenActionTarget* pointer_pen_target =
@@ -1213,8 +1259,9 @@ TEST_F(SyntheticPointerActionTest, PointerPenActionFromDebugger) {
 }
 
 TEST_F(SyntheticPointerActionTest, EmptyParams) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerPenActionTarget>();
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerPenActionTarget>();
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(1, num_success_);
@@ -1222,8 +1269,9 @@ TEST_F(SyntheticPointerActionTest, EmptyParams) {
 }
 
 TEST_F(SyntheticPointerActionTest, UsesCorrectPointerDriver) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerPenActionTarget>();
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerPenActionTarget>();
+  pointer_action_ = CreatePointerAction(params_);
 
   // Before events are forwarded, no PointerDriver is set yet.
   EXPECT_FALSE(pointer_action_->PointerDriver());
@@ -1238,7 +1286,7 @@ TEST_F(SyntheticPointerActionTest, UsesCorrectPointerDriver) {
 
   // Create a new PointerAction and set an external pointer driver on it.
   // Ensure it is used instead of creating an internal one.
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
   auto driver = SyntheticPointerDriver::Create(
       target_->GetDefaultSyntheticGestureSourceType());
   pointer_action_->SetSyntheticPointerDriver(driver->AsWeakPtr());
@@ -1248,7 +1296,8 @@ TEST_F(SyntheticPointerActionTest, UsesCorrectPointerDriver) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseActionIncreaseClickCount) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Send a mouse move.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -1288,7 +1337,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionIncreaseClickCount) {
   SyntheticPointerActionParams param7 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param7);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   // Send a fourth mouse down.
   SyntheticPointerActionParams param8 = SyntheticPointerActionParams(
@@ -1300,7 +1349,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionIncreaseClickCount) {
   SyntheticPointerActionParams param9 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param9);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -1374,7 +1423,8 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionIncreaseClickCount) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountOnOtherButton) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Send a mouse move.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -1405,7 +1455,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountOnOtherButton) {
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   param5.set_button(SyntheticPointerActionParams::Button::MIDDLE);
   params_.PushPointerActionParams(param5);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -1445,7 +1495,8 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountOnOtherButton) {
 }
 
 TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountAfterMove) {
-  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+  CreateSyntheticPointerActionTargetAndController<
+      MockSyntheticPointerMouseActionTarget>();
 
   // Send a mouse move.
   SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
@@ -1474,7 +1525,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountAfterMove) {
   SyntheticPointerActionParams param5 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param5);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   // Send a third mouse down far enough from the last one.
   SyntheticPointerActionParams param6 = SyntheticPointerActionParams(
@@ -1486,7 +1537,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountAfterMove) {
   SyntheticPointerActionParams param7 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param7);
-  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  pointer_action_ = CreatePointerAction(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =

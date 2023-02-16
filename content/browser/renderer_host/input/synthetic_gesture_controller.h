@@ -57,6 +57,8 @@ class CONTENT_EXPORT SyntheticGestureController {
   void QueueSyntheticGestureCompleteImmediately(
       std::unique_ptr<SyntheticGesture> synthetic_gesture);
 
+  // Returns true if there are more gestures in the queue after processing the
+  // current one.
   bool DispatchNextEvent(base::TimeTicks = base::TimeTicks::Now());
 
   void EnsureRendererInitialized(base::OnceClosure on_completed);
@@ -64,6 +66,10 @@ class CONTENT_EXPORT SyntheticGestureController {
   void UpdateSyntheticGestureTarget(
       std::unique_ptr<SyntheticGestureTarget> gesture_target,
       Delegate* delegate);
+
+  base::WeakPtr<SyntheticGestureController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class SyntheticGestureControllerTestBase;

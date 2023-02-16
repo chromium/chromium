@@ -57,6 +57,7 @@ SyntheticSmoothMoveGesture::~SyntheticSmoothMoveGesture() {}
 SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
+  DCHECK(dispatching_controller_);
   if (state_ == SETUP) {
     state_ = STARTED;
     current_move_segment_ = -1;
@@ -80,10 +81,19 @@ SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
       break;
     case SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT:
       ForwardMouseWheelInputEvents(timestamp, target);
+      // A mousewheel should not be able to close the WebContents.
+      DCHECK(dispatching_controller_);
       break;
     default:
       return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;
   }
+  if (!dispatching_controller_) {
+    // A pointer gesture can cause the controller (and therefore `this`) to be
+    // synchronously deleted (e.g. clicking tab-close). Return immediately in
+    // this case.
+    return SyntheticGesture::GESTURE_ABORT;
+  }
+
   return (state_ == DONE) ? SyntheticGesture::GESTURE_FINISHED
                           : SyntheticGesture::GESTURE_RUNNING;
 }
@@ -94,6 +104,7 @@ SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
 // for all input types. The gesture class can use instance of device actions.
 // Refer: crbug.com/461825
 
+// CAUTION: forwarding a pointer press/release can cause `this` to be deleted.
 void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
@@ -107,6 +118,9 @@ void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
         AddTouchSlopToFirstDistance(target);
       ComputeNextMoveSegment();
       PressPoint(target, timestamp);
+      if (!dispatching_controller_) {
+        return;
+      }
       state_ = MOVING;
       break;
     case MOVING: {
@@ -123,6 +137,9 @@ void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
           state_ = STOPPING;
         } else {
           ReleasePoint(target, event_timestamp);
+          if (!dispatching_controller_) {
+            return;
+          }
           state_ = DONE;
         }
       }
@@ -133,6 +150,9 @@ void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
         base::TimeTicks event_timestamp = current_move_segment_stop_time_ +
                                           target->PointerAssumedStoppedTime();
         ReleasePoint(target, event_timestamp);
+        if (!dispatching_controller_) {
+          return;
+        }
         state_ = DONE;
       }
       break;
@@ -210,6 +230,7 @@ void SyntheticSmoothMoveGesture::ForwardMouseWheelInputEvents(
   }
 }
 
+// CAUTION: forwarding a pointer press/release can cause `this` to be deleted.
 void SyntheticSmoothMoveGesture::ForwardMouseClickInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
@@ -221,6 +242,9 @@ void SyntheticSmoothMoveGesture::ForwardMouseClickInputEvents(
       }
       ComputeNextMoveSegment();
       PressPoint(target, timestamp);
+      if (!dispatching_controller_) {
+        return;
+      }
       state_ = MOVING;
       break;
     case MOVING: {
@@ -235,6 +259,9 @@ void SyntheticSmoothMoveGesture::ForwardMouseClickInputEvents(
           ComputeNextMoveSegment();
         } else {
           ReleasePoint(target, event_timestamp);
+          if (!dispatching_controller_) {
+            return;
+          }
           state_ = DONE;
         }
       }

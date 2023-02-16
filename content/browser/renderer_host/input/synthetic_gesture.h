@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/common/input/synthetic_gesture_params.h"
@@ -15,6 +16,7 @@
 namespace content {
 
 class SyntheticGestureTarget;
+class SyntheticGestureController;
 
 // Base class for synthetic gesture implementations. A synthetic gesture class
 // is responsible for forwarding InputEvents, simulating the gesture, to a
@@ -46,7 +48,10 @@ class CONTENT_EXPORT SyntheticGesture {
     // invalid.
     POINTER_ACTION_INPUT_INVALID,
     GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED,
-    GESTURE_RESULT_MAX = GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED
+    // Returned when the gesture causes the destruction of the dispatching
+    // controller.
+    GESTURE_ABORT,
+    GESTURE_RESULT_MAX = GESTURE_ABORT
   };
 
   // Update the state of the gesture and forward the appropriate events to the
@@ -64,7 +69,15 @@ class CONTENT_EXPORT SyntheticGesture {
   // generates a click only if its duration is longer than a threshold).
   virtual bool AllowHighFrequencyDispatch() const;
 
+  // Called when the gesture is queued with a SyntheticGestureController.
+  void DidQueue(base::WeakPtr<SyntheticGestureController> controller);
+
  protected:
+  // This is null until the gesture is queued with a controller. It must be set
+  // before calling ForwardInputEvents. A gesture can cause the destruction of
+  // the WebContents hosting its controller (e.g. click on the tab-close
+  // button). This WeakPtr is necessary to know if this happens and abort.
+  base::WeakPtr<SyntheticGestureController> dispatching_controller_;
 };
 
 }  // namespace content

@@ -39,6 +39,7 @@ SyntheticTouchpadPinchGesture::~SyntheticTouchpadPinchGesture() {}
 SyntheticGesture::Result SyntheticTouchpadPinchGesture::ForwardInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
+  DCHECK(dispatching_controller_);
   if (state_ == SETUP) {
     gesture_source_type_ = params_.gesture_source_type;
     if (gesture_source_type_ ==
@@ -53,6 +54,9 @@ SyntheticGesture::Result SyntheticTouchpadPinchGesture::ForwardInputEvents(
             content::mojom::GestureSourceType::kDefaultInput);
   if (gesture_source_type_ == content::mojom::GestureSourceType::kMouseInput) {
     ForwardGestureEvents(timestamp, target);
+
+    // A pinch gesture cannot cause `this` to be destroyed.
+    DCHECK(dispatching_controller_);
   } else {
     // Touch input should be using SyntheticTouchscreenPinchGesture.
     return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;
