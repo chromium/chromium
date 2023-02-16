@@ -80,6 +80,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 @property(nonatomic, strong) UIImageView* imageView;
 @property(nonatomic, strong) UIView* imageContainerView;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
+@property(nonatomic, strong) UIScrollView* scrollView;
 @end
 
 @implementation ConfirmationAlertViewController
@@ -132,9 +133,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   UIStackView* stackView =
       [self createStackViewWithArrangedSubviews:stackSubviews];
 
-  UIScrollView* scrollView = [self createScrollView];
-  [scrollView addSubview:stackView];
-  [self.view addSubview:scrollView];
+  self.scrollView = [self createScrollView];
+  [self.scrollView addSubview:stackView];
+  [self.view addSubview:self.scrollView];
 
   self.view.preservesSuperviewLayoutMargins = YES;
   UILayoutGuide* margins = self.view.layoutMarginsGuide;
@@ -150,15 +151,15 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // the content area. No need to contraint horizontally as we don't want
   // horizontal scroll.
   [NSLayoutConstraint activateConstraints:@[
-    [stackView.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
-    [stackView.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor
+    [stackView.topAnchor constraintEqualToAnchor:self.scrollView.topAnchor],
+    [stackView.bottomAnchor constraintEqualToAnchor:self.scrollView.bottomAnchor
                                            constant:-kScrollViewBottomInsets]
   ]];
 
   // Scroll View constraints to the height of its content. This allows to center
   // the scroll view.
-  NSLayoutConstraint* heightConstraint = [scrollView.heightAnchor
-      constraintEqualToAnchor:scrollView.contentLayoutGuide.heightAnchor];
+  NSLayoutConstraint* heightConstraint = [self.scrollView.heightAnchor
+      constraintEqualToAnchor:self.scrollView.contentLayoutGuide.heightAnchor];
   // UILayoutPriorityDefaultHigh is the default priority for content
   // compression. Setting this lower avoids compressing the content of the
   // scroll view.
@@ -213,9 +214,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
     [NSLayoutConstraint activateConstraints:@[
       [actionStackView.leadingAnchor
-          constraintGreaterThanOrEqualToAnchor:scrollView.leadingAnchor],
+          constraintGreaterThanOrEqualToAnchor:self.scrollView.leadingAnchor],
       [actionStackView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:scrollView.trailingAnchor],
+          constraintLessThanOrEqualToAnchor:self.scrollView.trailingAnchor],
       [actionStackView.centerXAnchor
           constraintEqualToAnchor:self.view.centerXAnchor],
       [actionStackView.widthAnchor
@@ -239,19 +240,20 @@ const CGFloat kFaviconBadgeSideLength = 24;
       [gradientView.bottomAnchor
           constraintEqualToAnchor:actionStackView.topAnchor],
       [gradientView.leadingAnchor
-          constraintEqualToAnchor:scrollView.leadingAnchor],
+          constraintEqualToAnchor:self.scrollView.leadingAnchor],
       [gradientView.trailingAnchor
-          constraintEqualToAnchor:scrollView.trailingAnchor],
+          constraintEqualToAnchor:self.scrollView.trailingAnchor],
       [gradientView.heightAnchor constraintEqualToConstant:kGradientHeight],
     ]];
   }
 
   [NSLayoutConstraint activateConstraints:@[
-    [scrollView.bottomAnchor
+    [self.scrollView.bottomAnchor
         constraintLessThanOrEqualToAnchor:scrollViewBottomAnchor
                                  constant:-kScrollViewBottomInsets],
-    [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [scrollView.trailingAnchor
+    [self.scrollView.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [self.scrollView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
 
@@ -264,17 +266,17 @@ const CGFloat kFaviconBadgeSideLength = 24;
     scrollViewTopConstant = self.customSpacingBeforeImageIfNoNavigationBar;
   }
   if (self.topAlignedLayout) {
-    [scrollView.topAnchor constraintEqualToAnchor:scrollViewTopAnchor
-                                         constant:scrollViewTopConstant]
+    [self.scrollView.topAnchor constraintEqualToAnchor:scrollViewTopAnchor
+                                              constant:scrollViewTopConstant]
         .active = YES;
   } else {
-    [scrollView.topAnchor
+    [self.scrollView.topAnchor
         constraintGreaterThanOrEqualToAnchor:scrollViewTopAnchor
                                     constant:scrollViewTopConstant]
         .active = YES;
 
     // Scroll View constraint to the vertical center.
-    NSLayoutConstraint* centerYConstraint = [scrollView.centerYAnchor
+    NSLayoutConstraint* centerYConstraint = [self.scrollView.centerYAnchor
         constraintEqualToAnchor:margins.centerYAnchor];
     // This needs to be lower than the height constraint, so it's deprioritized.
     // If this breaks, the scroll view is still constrained to the navigation
@@ -300,6 +302,13 @@ const CGFloat kFaviconBadgeSideLength = 24;
                      multiplier:imageAspectRatio];
     self.imageViewAspectRatioConstraint.active = YES;
   }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // Flash the scroll indicators when the view appeared.
+  [self.scrollView flashScrollIndicators];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -604,6 +613,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   scrollView.alwaysBounceVertical = NO;
   scrollView.showsHorizontalScrollIndicator = NO;
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  [scrollView setShowsVerticalScrollIndicator:YES];
   return scrollView;
 }
 
