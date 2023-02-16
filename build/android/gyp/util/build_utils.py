@@ -572,11 +572,13 @@ def MergeZips(output, input_zips, path_transform=None, compress=None):
     compress: Overrides compression setting from origin zip entries.
   """
   path_transform = path_transform or (lambda p: p)
-  added_names = set()
 
   out_zip = output
   if not isinstance(output, zipfile.ZipFile):
     out_zip = zipfile.ZipFile(output, 'w')
+
+  # Include paths in the existing zip here to avoid adding duplicate files.
+  added_names = set(out_zip.namelist())
 
   try:
     for in_file in input_zips:
