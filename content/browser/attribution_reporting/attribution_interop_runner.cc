@@ -270,27 +270,27 @@ class AttributionEventHandler : public AttributionObserver {
     base::Value::Dict output;
 
     if (!event_level_reports_.empty()) {
-      output.Set("event_level_results",
+      output.Set(kEventLevelResultsKey,
                  std::exchange(event_level_reports_, {}));
     }
 
     if (!debug_event_level_reports_.empty()) {
-      output.Set("debug_event_level_results",
+      output.Set(kDebugEventLevelResultsKey,
                  std::exchange(debug_event_level_reports_, {}));
     }
 
     if (!aggregatable_reports_.empty()) {
-      output.Set("aggregatable_results",
+      output.Set(kAggregatableResultsKey,
                  std::exchange(aggregatable_reports_, {}));
     }
 
     if (!debug_aggregatable_reports_.empty()) {
-      output.Set("debug_aggregatable_results",
+      output.Set(kDebugAggregatableResultsKey,
                  std::exchange(debug_aggregatable_reports_, {}));
     }
 
     if (!verbose_debug_reports_.empty()) {
-      output.Set("verbose_debug_reports",
+      output.Set(kVerboseDebugReportsKey,
                  std::exchange(verbose_debug_reports_, {}));
     }
 

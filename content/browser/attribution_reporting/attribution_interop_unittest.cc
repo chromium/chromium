@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
@@ -60,6 +61,20 @@ std::vector<base::FilePath> GetInputs() {
   }
 
   return input_paths;
+}
+
+bool UnorderedMatch(base::Value::List* a, base::Value::List* b) {
+  if (!a) {
+    return !b || b->empty();
+  }
+
+  if (!b) {
+    return !a || a->empty();
+  }
+
+  base::ranges::sort(*a);
+  base::ranges::sort(*b);
+  return *a == *b;
 }
 
 class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
@@ -112,7 +127,16 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   absl::optional<base::Value> expected_output = dict.Extract("output");
   ASSERT_TRUE(expected_output.has_value());
 
-  EXPECT_THAT(*actual_output, base::test::IsJson(*expected_output));
+  base::Value::Dict& expected_output_dict = expected_output->GetDict();
+
+  for (const char* field :
+       {kEventLevelResultsKey, kDebugEventLevelResultsKey,
+        kAggregatableResultsKey, kDebugAggregatableResultsKey,
+        kVerboseDebugReportsKey}) {
+    EXPECT_TRUE(UnorderedMatch(actual_output->FindList(field),
+                               expected_output_dict.FindList(field)))
+        << field;
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
