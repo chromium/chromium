@@ -3636,7 +3636,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4311284648179069796">Lesen und Ändern nicht genehmigt</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-Konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-Konten}}</translation>
 <translation id="4312866146174492540">Blockieren (Standard)</translation>
-<translation id="4314497418046265427">Mehr Produktivität, wenn du dein Smartphone mit <ph name="DEVICE_TYPE" /> verbindest</translation>
+<translation id="4314497418046265427">Produktiver arbeiten, wenn du dein Smartphone mit <ph name="DEVICE_TYPE" /> verbindest</translation>
 <translation id="4314815835985389558">Synchronisierung verwalten</translation>
 <translation id="4315933848520197627">Kontoverknüpfung aufheben</translation>
 <translation id="4316850752623536204">Website des Entwicklers</translation>
@@ -4105,7 +4105,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">Websites verbinden sich normalerweise für solche Funktionen mit HID-Geräten, für die ungewöhnliche Tastaturen, Gamecontroller und andere Geräte verwendet werden</translation>
 <translation id="4749960740855309258">Neuen Tab öffnen</translation>
-<translation id="4750185073185658673">Auf deinem Smartphone kannst du noch andere Berechtigungen prüfen. Kontrolliere außerdem, ob Bluetooth und WLAN auf dem Smartphone aktiviert sind.</translation>
+<translation id="4750185073185658673">Auf deinem Smartphone kannst du weitere Berechtigungen prüfen. Bluetooth und WLAN müssen auf dem Gerät aktiviert sein.</translation>
 <translation id="4750394297954878236">Vorschläge</translation>
 <translation id="475088594373173692">Erster Nutzer</translation>
 <translation id="4756378406049221019">Stopp/Neu laden</translation>
@@ -6302,7 +6302,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6815376457351236663">Trotzdem öffnen</translation>
 <translation id="6817174620439930047">Nachfragen, wenn eine Website versucht, mit systemexklusiven Meldungen auf MIDI-Geräte zuzugreifen (empfohlen)</translation>
 <translation id="6818198425579322765">Sprache der Seite, die übersetzt wird</translation>
-<translation id="6818547713623251698">Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone ansehen</translation>
+<translation id="6818547713623251698">Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone abrufen</translation>
 <translation id="6818802132960437751">Integrierter Virenschutz</translation>
 <translation id="6818920801736417483">Passwörter speichern?</translation>
 <translation id="6823174134746916417">Touchpad-Klick</translation>

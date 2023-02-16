@@ -1152,7 +1152,7 @@
 <translation id="3901925938762663762">만료된 카드입니다.</translation>
 <translation id="3906954721959377182">태블릿</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3921869355029467742">보안 코드 입력</translation>
+<translation id="3921869355029467742">보안 코드 입력하기</translation>
 <translation id="3927932062596804919">거부</translation>
 <translation id="393316646445601645">인터넷 및 전기 통신</translation>
 <translation id="3939773374150895049">CVC 대신 WebAuthn을 사용하시겠습니까?</translation>
@@ -2684,7 +2684,7 @@
 <translation id="7798389633136518089">클라우드 소스에서 정책을 설정하지 않아 무시되었습니다.</translation>
 <translation id="7800304661137206267">메시지 인증(<ph name="MAC" />)과 키 교환 메커니즘(<ph name="KX" />)을 설정하고 <ph name="CIPHER" />을(를) 사용하여 연결이 암호화되어 있습니다.</translation>
 <translation id="7802523362929240268">정상적인 사이트</translation>
-<translation id="7802989406998618639">은행에서 본인 인증을 할 수 있도록 <ph name="SIDE_OF_CARD" />에 <ph name="NUMBER_OF_DIGITS" />자리 보안 코드를 입력하세요.</translation>
+<translation id="7802989406998618639">은행에서 본인 인증을 할 수 있도록 <ph name="SIDE_OF_CARD" />의 <ph name="NUMBER_OF_DIGITS" />자리 보안 코드를 입력하세요.</translation>
 <translation id="780301667611848630">취소</translation>
 <translation id="7805571567667010077">조직에서 관리함</translation>
 <translation id="7805768142964895445">상태</translation>
