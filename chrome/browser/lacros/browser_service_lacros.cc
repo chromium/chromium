@@ -441,7 +441,7 @@ void BrowserServiceLacros::OnSystemInformationReady(
   }
 
   DCHECK(!callback.is_null());
-  std::move(callback).Run(base::Value(std::move(system_log_entries)));
+  std::move(callback).Run(std::move(system_log_entries));
 }
 
 void BrowserServiceLacros::OnGetCompressedHistograms(

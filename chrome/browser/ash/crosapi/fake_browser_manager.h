@@ -28,7 +28,7 @@ class FakeBrowserManager : public BrowserManager {
   }
 
   // Set up response data to be sent for the callback of Fetch.
-  void SetGetFeedbackDataResponse(base::Value response);
+  void SetGetFeedbackDataResponse(base::Value::Dict response);
 
   // Simulates crosapi mojo disconnection event observed.
   void SignalMojoDisconnected();
@@ -60,7 +60,7 @@ class FakeBrowserManager : public BrowserManager {
       mojom::CreationResult::kUnknown;
 
   // Stores the response to be sent back for GetFeedbackData callback.
-  base::Value feedback_response_;
+  base::Value::Dict feedback_response_;
 };
 
 }  // namespace crosapi

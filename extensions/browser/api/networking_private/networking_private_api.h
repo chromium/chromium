@@ -50,7 +50,7 @@ class NetworkingPrivateGetPropertiesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(absl::optional<base::Value> result,
+  void Result(absl::optional<base::Value::Dict> result,
               const absl::optional<std::string>& error);
 };
 
@@ -74,7 +74,7 @@ class NetworkingPrivateGetManagedPropertiesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(absl::optional<base::Value> result,
+  void Result(absl::optional<base::Value::Dict> result,
               const absl::optional<std::string>& error);
 };
 
@@ -98,7 +98,7 @@ class NetworkingPrivateGetStateFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Success(base::Value result);
+  void Success(base::Value::Dict result);
   void Failure(const std::string& error);
 };
 
@@ -524,7 +524,7 @@ class NetworkingPrivateGetGlobalPolicyFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(std::unique_ptr<base::Value> global_policies);
+  void Result(absl::optional<base::Value::Dict> global_policies);
 };
 
 class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
@@ -546,7 +546,7 @@ class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(std::unique_ptr<base::Value> certificate_list);
+  void Result(absl::optional<base::Value::Dict> certificate_list);
 };
 
 }  // namespace extensions

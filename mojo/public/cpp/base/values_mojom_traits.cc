@@ -41,24 +41,6 @@ bool StructTraits<mojo_base::mojom::ListValueDataView, base::Value::List>::Read(
   return true;
 }
 
-bool StructTraits<
-    mojo_base::mojom::DeprecatedDictionaryValueDataView,
-    base::Value>::Read(mojo_base::mojom::DeprecatedDictionaryValueDataView data,
-                       base::Value* value_out) {
-  mojo::MapDataView<mojo::StringDataView, mojo_base::mojom::ValueDataView> view;
-  data.GetStorageDataView(&view);
-  base::Value::Dict dict;
-  for (size_t i = 0; i < view.size(); ++i) {
-    base::StringPiece key;
-    base::Value value;
-    if (!view.keys().Read(i, &key) || !view.values().Read(i, &value))
-      return false;
-    dict.Set(key, std::move(value));
-  }
-  *value_out = base::Value(std::move(dict));
-  return true;
-}
-
 bool UnionTraits<mojo_base::mojom::ValueDataView, base::Value>::Read(
     mojo_base::mojom::ValueDataView data,
     base::Value* value_out) {

@@ -30,7 +30,7 @@ namespace extensions {
 // Linux NetworkingPrivateDelegate implementation.
 class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
  public:
-  using NetworkMap = std::map<std::u16string, base::Value>;
+  using NetworkMap = std::map<std::u16string, base::Value::Dict>;
 
   typedef std::vector<std::string> GuidList;
 
@@ -48,7 +48,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
                 DictionaryCallback success_callback,
                 FailureCallback failure_callback) override;
   void SetProperties(const std::string& guid,
-                     base::Value properties,
+                     base::Value::Dict properties,
                      bool allow_set_shared_config,
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override;
@@ -194,7 +194,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // Returns false if there is an error getting information about the
   // supplied |access_point_path|.
   bool GetAccessPointInfo(const dbus::ObjectPath& access_point_path,
-                          base::Value* access_point_info);
+                          base::Value::Dict* access_point_info);
 
   // Helper function to extract a property from a device.
   // Returns the dbus::Response object from calling Get on the supplied
@@ -208,7 +208,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // strength).
   void AddOrUpdateAccessPoint(NetworkMap* network_map,
                               const std::string& network_guid,
-                              base::Value* access_point);
+                              base::Value::Dict* access_point);
 
   // Maps the WPA security flags to a human readable string.
   void MapSecurityFlagsToString(uint32_t securityFlags, std::string* security);
@@ -248,7 +248,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   void OnNetworksChangedEventTask(std::unique_ptr<GuidList> guid_list);
 
   void GetCachedNetworkProperties(const std::string& guid,
-                                  base::Value* properties,
+                                  base::Value::Dict* properties,
                                   std::string* error);
 
   void OnNetworksChangedEventOnUIThread(const GuidList& network_guids);

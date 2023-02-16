@@ -176,7 +176,7 @@ void NetworkingPrivateServiceClient::GetState(
 
 void NetworkingPrivateServiceClient::SetProperties(
     const std::string& guid,
-    base::Value properties,
+    base::Value::Dict properties,
     bool allow_set_shared_config,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
@@ -192,7 +192,7 @@ void NetworkingPrivateServiceClient::SetProperties(
       FROM_HERE,
       base::BindOnce(&WiFiService::SetProperties,
                      base::Unretained(wifi_service_.get()), guid,
-                     std::move(properties).TakeDict(), error),
+                     std::move(properties), error),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterSetProperties,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      base::Owned(error)));
@@ -348,14 +348,12 @@ void NetworkingPrivateServiceClient::GetDeviceStateList(
 
 void NetworkingPrivateServiceClient::GetGlobalPolicy(
     GetGlobalPolicyCallback callback) {
-  std::move(callback).Run(
-      base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
+  std::move(callback).Run(base::Value::Dict());
 }
 
 void NetworkingPrivateServiceClient::GetCertificateLists(
     GetCertificateListsCallback callback) {
-  std::move(callback).Run(
-      base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
+  std::move(callback).Run(base::Value::Dict());
 }
 
 void NetworkingPrivateServiceClient::EnableNetworkType(const std::string& type,
@@ -387,7 +385,7 @@ void NetworkingPrivateServiceClient::AfterGetProperties(
     std::move(callback).Run(absl::nullopt, *error);
     return;
   }
-  std::move(callback).Run(base::Value(std::move(*properties)), absl::nullopt);
+  std::move(callback).Run(std::move(*properties), absl::nullopt);
 }
 
 void NetworkingPrivateServiceClient::AfterGetState(
@@ -403,7 +401,7 @@ void NetworkingPrivateServiceClient::AfterGetState(
   } else {
     DCHECK(!service_callbacks->get_properties_callback.is_null());
     std::move(service_callbacks->get_properties_callback)
-        .Run(base::Value(std::move(*properties)));
+        .Run(std::move(*properties));
   }
   RemoveServiceCallbacks(callback_id);
 }

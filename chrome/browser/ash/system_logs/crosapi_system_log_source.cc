@@ -40,18 +40,15 @@ void CrosapiSystemLogSource::Fetch(SysLogsSourceCallback callback) {
   }
 }
 
-void CrosapiSystemLogSource::OnGetFeedbackData(base::Value system_infos) {
+void CrosapiSystemLogSource::OnGetFeedbackData(base::Value::Dict system_infos) {
   auto response = std::make_unique<SystemLogsResponse>();
-  DCHECK(system_infos.is_dict());
-  if (system_infos.is_dict()) {
-    for (const auto item : system_infos.GetDict()) {
-      std::string log_entry_key = kLacrosLogEntryPrefix + item.first;
-      if (item.second.is_string()) {
-        response->emplace(log_entry_key, item.second.GetString());
-      } else {
-        LOG(ERROR) << "Failed to retrieve the content for log entry: "
-                   << log_entry_key;
-      }
+  for (const auto item : system_infos) {
+    std::string log_entry_key = kLacrosLogEntryPrefix + item.first;
+    if (item.second.is_string()) {
+      response->emplace(log_entry_key, item.second.GetString());
+    } else {
+      LOG(ERROR) << "Failed to retrieve the content for log entry: "
+                 << log_entry_key;
     }
   }
   std::move(callback_).Run(std::move(response));

@@ -46,7 +46,8 @@ FakeBrowserManager::FakeBrowserManager()
 
 FakeBrowserManager::~FakeBrowserManager() = default;
 
-void FakeBrowserManager::SetGetFeedbackDataResponse(base::Value response) {
+void FakeBrowserManager::SetGetFeedbackDataResponse(
+    base::Value::Dict response) {
   feedback_response_ = std::move(response);
 }
 

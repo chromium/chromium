@@ -349,12 +349,12 @@ void NetworkingPrivateChromeOS::GetState(const std::string& guid,
       ash::network_util::TranslateNetworkStateToONC(network_state);
   AppendThirdPartyProviderName(&network_properties);
 
-  std::move(success_callback).Run(base::Value(std::move(network_properties)));
+  std::move(success_callback).Run(std::move(network_properties));
 }
 
 void NetworkingPrivateChromeOS::SetProperties(
     const std::string& guid,
-    base::Value properties,
+    base::Value::Dict properties,
     bool allow_set_shared_config,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
@@ -389,7 +389,8 @@ void NetworkingPrivateChromeOS::SetProperties(
   NET_LOG(USER) << "networkingPrivate.setProperties for: "
                 << NetworkId(network);
   GetManagedConfigurationHandler()->SetProperties(
-      network->path(), properties, std::move(success_callback),
+      network->path(), base::Value(std::move(properties)),
+      std::move(success_callback),
       base::BindOnce(&NetworkHandlerFailureCallback,
                      std::move(failure_callback)));
 }
@@ -734,9 +735,10 @@ void NetworkingPrivateChromeOS::GetGlobalPolicy(
       GetManagedConfigurationHandler()->GetGlobalConfigFromPolicy(
           std::string() /* no username hash, device policy */);
 
-  if (global_network_config)
+  if (global_network_config) {
     result.MergeDictionary(global_network_config);
-  std::move(callback).Run(base::Value::ToUniquePtrValue(std::move(result)));
+  }
+  std::move(callback).Run(std::move(result.GetDict()));
 }
 
 void NetworkingPrivateChromeOS::GetCertificateLists(
@@ -746,18 +748,19 @@ void NetworkingPrivateChromeOS::GetCertificateLists(
       NetworkHandler::Get()
           ->network_certificate_handler()
           ->server_ca_certificates();
-  for (const auto& cert : server_cas)
+  for (const auto& cert : server_cas) {
     result.server_ca_certificates.push_back(GetCertDictionary(cert));
+  }
 
   std::vector<private_api::Certificate> user_cert_list;
   const std::vector<NetworkCertificateHandler::Certificate>& user_certs =
       NetworkHandler::Get()
           ->network_certificate_handler()
           ->client_certificates();
-  for (const auto& cert : user_certs)
+  for (const auto& cert : user_certs) {
     result.user_certificates.push_back(GetCertDictionary(cert));
-  std::move(callback).Run(
-      base::Value::ToUniquePtrValue(base::Value(result.ToValue())));
+  }
+  std::move(callback).Run(result.ToValue());
 }
 
 void NetworkingPrivateChromeOS::EnableNetworkType(const std::string& type,
@@ -800,9 +803,9 @@ void NetworkingPrivateChromeOS::GetPropertiesCallback(
     absl::optional<base::Value> dictionary,
     absl::optional<std::string> error) {
   if (dictionary) {
-    AppendThirdPartyProviderName(&dictionary.value().GetDict());
+    AppendThirdPartyProviderName(&dictionary->GetDict());
   }
-  std::move(callback).Run(std::move(dictionary), std::move(error));
+  std::move(callback).Run(std::move(dictionary->GetDict()), std::move(error));
 }
 
 void NetworkingPrivateChromeOS::AppendThirdPartyProviderName(

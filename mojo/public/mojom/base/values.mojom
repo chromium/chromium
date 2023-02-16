@@ -27,10 +27,7 @@ union Value {
 
 // Interfaces that only want to handle a value of dictionary or list type
 // should use base.mojom.DictionaryValue or base.mojom.ListValue in the method
-// declaration. Currently, both of these are typemapped to base::Value, though
-// once all existing usage is swapped over to the deprecated versions below,
-// the typemap will be updated to deserialize as a base::Value::Dict and
-// base::Value::List respectively instead.
+// declaration.
 [Stable]
 struct DictionaryValue {
   map<string, Value> storage;
@@ -39,13 +36,4 @@ struct DictionaryValue {
 [Stable]
 struct ListValue {
   array<Value> storage;
-};
-
-// Legacy version of the above dictionary value type, unconditionally typemapped
-// to base::Value. Though the typemap ensures that the deserialized base::Value
-// has a matching subtype, use of this will be removed in the future due to
-// lack of type safety.
-[Stable]
-struct DeprecatedDictionaryValue {
-  map<string, Value> storage;
 };

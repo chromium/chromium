@@ -154,26 +154,6 @@ ListValueSuccessOrFailureCallback ListValueAdapterCallback(
 }
 
 // This adapter will handle the call back from ash which passes back a
-// base::Value object.
-using ValueMojoCallback =
-    base::OnceCallback<void(absl::optional<base::Value> result)>;
-using ValueDelegateCallback =
-    base::OnceCallback<void(std::unique_ptr<base::Value> result)>;
-
-ValueMojoCallback ValueAdapterCallback(ValueDelegateCallback result_callback) {
-  return base::BindOnce(
-      [](ValueDelegateCallback callback, absl::optional<base::Value> result) {
-        if (!result) {
-          std::move(callback).Run(std::make_unique<base::Value>());
-        } else {
-          std::move(callback).Run(
-              std::make_unique<base::Value>(std::move(*result)));
-        }
-      },
-      std::move(result_callback));
-}
-
-// This adapter will handle the call back from ash which passes back a
 // base::Value::List object.
 using ValueListMojoCallback =
     base::OnceCallback<void(absl::optional<base::Value::List>)>;
@@ -199,7 +179,7 @@ ValueListMojoCallback ValueListAdapterCallback(
 using PropertiesMojoCallback = base::OnceCallback<void(
     crosapi::mojom::PropertiesSuccessOrErrorReturnPtr result)>;
 using PropertiesDelegateCallback =
-    base::OnceCallback<void(absl::optional<::base::Value> result,
+    base::OnceCallback<void(absl::optional<::base::Value::Dict> result,
                             const absl::optional<std::string>& error)>;
 
 PropertiesMojoCallback PropertiesAdapterCallback(
@@ -211,8 +191,8 @@ PropertiesMojoCallback PropertiesAdapterCallback(
           std::move(callback).Run(absl::nullopt,
                                   std::move(result->get_error()));
         } else {
-          std::move(callback).Run(absl::optional<::base::Value>(
-                                      std::move(result->get_success_result())),
+          std::move(callback).Run(absl::optional<::base::Value::Dict>(std::move(
+                                      result->get_success_result().GetDict())),
                                   absl::nullopt);
         }
       },
@@ -220,10 +200,10 @@ PropertiesMojoCallback PropertiesAdapterCallback(
 }
 
 // Converting the crosapi::mojom::GetDeviceStateList returned value into the
-// intenrally used datastructure DeviceStateList and forward it to the callback
+// internally used datastructure DeviceStateList and forward it to the callback
 // handler from the caller.
 using DeviceStateListPtr =
-    absl::optional<std::vector<absl::optional<::base::Value>>>;
+    absl::optional<std::vector<absl::optional<::base::Value::Dict>>>;
 
 void DeviceStateListCallbackAdapter(
     extensions::NetworkingPrivateDelegate::DeviceStateListCallback callback,
@@ -236,11 +216,11 @@ void DeviceStateListCallbackAdapter(
   }
   auto list = std::make_unique<
       extensions::NetworkingPrivateDelegate::DeviceStateList>();
-  for (size_t i = 0; i < result->size(); ++i) {
-    if (result->at(i)) {
+  for (auto& item : *result) {
+    if (item) {
       list->push_back(
           extensions::api::networking_private::DeviceStateProperties::FromValue(
-              *result->at(i)));
+              base::Value(std::move(*item))));
     } else {
       list->push_back(
           std::make_unique<
@@ -258,7 +238,7 @@ NetworkingPrivateLacros::NetworkingPrivateLacros(
     content::BrowserContext* browser_context)
     : is_primary_user_(IsPrimaryUser(browser_context)) {}
 
-NetworkingPrivateLacros::~NetworkingPrivateLacros() {}
+NetworkingPrivateLacros::~NetworkingPrivateLacros() = default;
 
 void NetworkingPrivateLacros::GetProperties(const std::string& guid,
                                             PropertiesCallback callback) {
@@ -308,7 +288,7 @@ void NetworkingPrivateLacros::GetState(const std::string& guid,
 }
 
 void NetworkingPrivateLacros::SetProperties(const std::string& guid,
-                                            base::Value properties,
+                                            base::Value::Dict properties,
                                             bool allow_set_shared_config,
                                             VoidCallback success_callback,
                                             FailureCallback failure_callback) {
@@ -512,24 +492,20 @@ void NetworkingPrivateLacros::GetGlobalPolicy(
     GetGlobalPolicyCallback callback) {
   auto* networking_private = GetNetworkingPrivateRemote();
   if (!networking_private || !is_primary_user_) {
-    std::move(callback).Run(
-        base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
-  (*networking_private)
-      ->GetGlobalPolicy(ValueAdapterCallback(std::move(callback)));
+  (*networking_private)->GetGlobalPolicy(std::move(callback));
 }
 
 void NetworkingPrivateLacros::GetCertificateLists(
     GetCertificateListsCallback callback) {
   auto* networking_private = GetNetworkingPrivateRemote();
   if (!networking_private || !is_primary_user_) {
-    std::move(callback).Run(
-        base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
-  (*networking_private)
-      ->GetCertificateLists(ValueAdapterCallback(std::move(callback)));
+  (*networking_private)->GetCertificateLists(std::move(callback));
 }
 
 void NetworkingPrivateLacros::EnableNetworkType(const std::string& type,

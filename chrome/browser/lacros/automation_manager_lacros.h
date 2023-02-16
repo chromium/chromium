@@ -47,7 +47,7 @@ class AutomationManagerLacros
                                int32_t automation_node_id,
                                const std::string& action_type,
                                int32_t request_id,
-                               base::Value optional_args) override;
+                               base::Value::Dict optional_args) override;
   void PerformAction(const ui::AXActionData& action_data) override;
   void NotifyAllAutomationExtensionsGone() override;
   void NotifyExtensionListenerAdded() override;

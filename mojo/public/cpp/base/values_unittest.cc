@@ -101,26 +101,11 @@ TEST(ValuesStructTraitsTest, DictionaryValue) {
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 
-  ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::DeprecatedDictionaryValue>(
-          in, out));
-  EXPECT_EQ(in, out);
-
   base::Value::Dict in_dict = in.GetDict().Clone();
   base::Value::Dict out_dict;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(
       in_dict, out_dict));
   EXPECT_EQ(in_dict, out_dict);
-}
-
-TEST(ValuesStructTraitsTest, SerializeInvalidDictionaryValue) {
-  base::Value in;
-  ASSERT_FALSE(in.is_dict());
-
-  base::Value out;
-  EXPECT_DCHECK_DEATH(
-      mojo::test::SerializeAndDeserialize<mojom::DeprecatedDictionaryValue>(
-          in, out));
 }
 
 TEST(ValuesStructTraitsTest, ListValue) {

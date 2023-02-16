@@ -26,7 +26,7 @@ class CrosapiSystemLogSource : public SystemLogsSource,
 
  private:
   // Callback for getting lacros feedback data.
-  void OnGetFeedbackData(base::Value system_infos);
+  void OnGetFeedbackData(base::Value::Dict system_infos);
 
   // crosapi::BrowserManagerObserver
   void OnMojoDisconnected() override;

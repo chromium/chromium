@@ -22,7 +22,7 @@ interface AutomationClient {
   PerformActionDeprecated@2(
       mojo_base.mojom.UnguessableToken tree_id, int32 automation_node_id,
       string action_type, int32 request_id,
-      mojo_base.mojom.DeprecatedDictionaryValue optional_args);
+      mojo_base.mojom.DictionaryValue optional_args);
 
   // Enables automation for the client. This will result in the client
   // repeatedly calling ReceiveEventPrototype() on the Automation interface.

@@ -107,7 +107,7 @@ void AutomationManagerLacros::PerformActionDeprecated(
     int32_t automation_node_id,
     const std::string& action_type,
     int32_t request_id,
-    base::Value optional_args) {}
+    base::Value::Dict optional_args) {}
 
 void AutomationManagerLacros::PerformAction(
     const ui::AXActionData& action_data) {

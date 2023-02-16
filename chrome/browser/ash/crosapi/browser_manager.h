@@ -215,7 +215,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // `first_non_pinned_tab_index`, and `app_name`. Note an non-empty `app_name`
   // indicates that the browser window is an app type browser window.  Also
   // note that` first_non_pinned_tab_indexes` with negative values are ignored
-  // type constratins for the `first_non_pinned_tab_index` and are enforced on
+  // type constraints for the `first_non_pinned_tab_index` and are enforced on
   // the browser side and are dropped if they don't comply with said restraints.
   void CreateBrowserWithRestoredData(
       const std::vector<GURL>& urls,
@@ -246,7 +246,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Returns true if crosapi interface supports GetFeedbackData API.
   bool GetFeedbackDataSupported() const;
 
-  using GetFeedbackDataCallback = base::OnceCallback<void(base::Value)>;
+  using GetFeedbackDataCallback = base::OnceCallback<void(base::Value::Dict)>;
   // Gathers Lacros feedback data.
   // Virtual for testing.
   virtual void GetFeedbackData(GetFeedbackDataCallback callback);
@@ -322,7 +322,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Set true if Lacros uses resource file sharing.
     bool enable_resource_file_sharing = false;
 
-    // Any addiniotal  args to start lacros with.
+    // Any additional args to start lacros with.
     std::vector<std::string> lacros_additional_args;
   };
 
@@ -420,7 +420,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Lacros-chrome is being terminated soon.
     TERMINATING,
   };
-  // Changes |state| value and potentitally notify observers of the change.
+  // Changes |state| value and potentially notify observers of the change.
   void SetState(State state);
 
   // Posts CreateLogFile() and StartWithLogFile() to the thread pool.
@@ -596,7 +596,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Launch "Go to files" if the migration error page was clicked.
   void HandleGoToFiles();
 
-  // Sets user policy to be propagated to Lacros and subsribes to the user
+  // Sets user policy to be propagated to Lacros and subscribes to the user
   // policy updates in Ash.
   void PrepareLacrosPolicies();
   policy::CloudPolicyCore* GetDeviceAccountPolicyCore();

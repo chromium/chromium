@@ -38,7 +38,7 @@ class NetworkingPrivateAsh : public mojom::NetworkingPrivate,
                             GetManagedPropertiesCallback callback) override;
   void GetState(const std::string& guid, GetStateCallback callback) override;
   void SetProperties(const std::string& guid,
-                     base::Value properties,
+                     base::Value::Dict properties,
                      bool allow_set_shared_config,
                      SetPropertiesCallback callback) override;
   void CreateNetwork(bool shared,
