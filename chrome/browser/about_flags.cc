@@ -6605,11 +6605,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePalmOnMaxTouchMajorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnablePalmOnMaxTouchMajor)},
 
-    {"enable-palm-tool-type-palm",
-     flag_descriptions::kEnablePalmOnToolTypePalmName,
-     flag_descriptions::kEnablePalmOnToolTypePalmDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ui::kEnablePalmOnToolTypePalm)},
-
     {"enable-heuristic-stylus-palm-rejection",
      flag_descriptions::kEnableHeuristicStylusPalmRejectionName,
      flag_descriptions::kEnableHeuristicStylusPalmRejectionDescription, kOsCrOS,

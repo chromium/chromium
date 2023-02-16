@@ -2849,13 +2849,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "enable-palm-tool-type-palm",
-    "owners": [ "robsc", "napper", "adlr" ],
-    // Added feature to possibly disable/enable this functionality, combined
-    //  with neural net palm detection.
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-parallel-downloading",
     "owners": [ "qinmin", "xingliu", "dtrainor" ],
     // This flag is used by dev teams on Android to disable this feature, since
