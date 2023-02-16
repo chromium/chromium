@@ -3524,11 +3524,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-zero-state-app-reinstall-suggestions",
-    "owners": [ "robsc", "napper", "jennyz", "thanhdng" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "enable-zram-writeback",
     "owners": ["bgeffon@google.com", "chromeos-memory@google.com"],
     "expiry_milestone": 118

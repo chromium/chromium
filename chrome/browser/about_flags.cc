@@ -6297,13 +6297,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAecNs)},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-zero-state-app-reinstall-suggestions",
-     flag_descriptions::kEnableAppReinstallZeroStateName,
-     flag_descriptions::kEnableAppReinstallZeroStateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnableAppReinstallZeroState)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"reduce-horizontal-fling-velocity",
      flag_descriptions::kReduceHorizontalFlingVelocityName,
      flag_descriptions::kReduceHorizontalFlingVelocityDescription, kOsAll,
