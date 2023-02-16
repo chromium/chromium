@@ -176,7 +176,7 @@ void GetMimeTypeForLocalPath(
 MimeTypeCollector::MimeTypeCollector(content::BrowserContext* context)
     : context_(context), left_(0) {}
 
-MimeTypeCollector::~MimeTypeCollector() {}
+MimeTypeCollector::~MimeTypeCollector() = default;
 
 void MimeTypeCollector::CollectForURLs(
     const std::vector<storage::FileSystemURL>& urls,

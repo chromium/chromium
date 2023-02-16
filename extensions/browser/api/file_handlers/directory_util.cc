@@ -56,7 +56,7 @@ void EntryIsDirectory(content::BrowserContext* context,
 IsDirectoryCollector::IsDirectoryCollector(content::BrowserContext* context)
     : context_(context), left_(0) {}
 
-IsDirectoryCollector::~IsDirectoryCollector() {}
+IsDirectoryCollector::~IsDirectoryCollector() = default;
 
 void IsDirectoryCollector::CollectForEntriesPaths(
     const std::vector<base::FilePath>& paths,

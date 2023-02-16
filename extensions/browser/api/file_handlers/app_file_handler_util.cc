@@ -237,7 +237,7 @@ void WritableFileChecker::Check() {
   }
 }
 
-WritableFileChecker::~WritableFileChecker() {}
+WritableFileChecker::~WritableFileChecker() = default;
 
 void WritableFileChecker::TaskDone() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
