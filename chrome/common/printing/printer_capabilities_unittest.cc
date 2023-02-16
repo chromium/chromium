@@ -37,16 +37,17 @@ void VerifyPaper(const base::Value& paper_dict,
                  const std::string& expected_vendor,
                  const gfx::Size& expected_size) {
   ASSERT_TRUE(paper_dict.is_dict());
-  const std::string* name = paper_dict.FindStringKey("custom_display_name");
+  const std::string* name =
+      paper_dict.GetDict().FindString("custom_display_name");
   ASSERT_TRUE(name);
   EXPECT_EQ(expected_name, *name);
-  const std::string* vendor = paper_dict.FindStringKey("vendor_id");
+  const std::string* vendor = paper_dict.GetDict().FindString("vendor_id");
   ASSERT_TRUE(vendor);
   EXPECT_EQ(expected_vendor, *vendor);
-  absl::optional<int> width = paper_dict.FindIntKey("width_microns");
+  absl::optional<int> width = paper_dict.GetDict().FindInt("width_microns");
   ASSERT_TRUE(width.has_value());
   EXPECT_EQ(expected_size.width(), width.value());
-  absl::optional<int> height = paper_dict.FindIntKey("height_microns");
+  absl::optional<int> height = paper_dict.GetDict().FindInt("height_microns");
   ASSERT_TRUE(height.has_value());
   EXPECT_EQ(expected_size.height(), height.value());
 }
