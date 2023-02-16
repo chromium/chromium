@@ -11,35 +11,66 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
+#include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/user_education/test/feature_promo_test_util.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/text/bytes_formatting.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "url/gurl.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsTab);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAudioIsAudible);
 
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
+
+class QuitRunLoopOnMemoryMetricsRefreshObserver
+    : public performance_manager::user_tuning::UserPerformanceTuningManager::
+          Observer {
+ public:
+  explicit QuitRunLoopOnMemoryMetricsRefreshObserver(
+      base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
+  ~QuitRunLoopOnMemoryMetricsRefreshObserver() override = default;
+
+  void OnMemoryMetricsRefreshed() override { std::move(quit_closure_).Run(); }
+
+ private:
+  base::OnceClosure quit_closure_;
+};
+
 }  // namespace
 
-class HighEfficiencyDiscardPolicyInteractiveTest
-    : public InteractiveBrowserTest {
+class HighEfficiencyInteractiveTest : public InteractiveBrowserTest {
  public:
-  HighEfficiencyDiscardPolicyInteractiveTest()
+  HighEfficiencyInteractiveTest()
       : scoped_set_tick_clock_for_testing_(&test_clock_) {
     // Start with a non-null TimeTicks, as there is no discard protection for
     // a tab with a null focused timestamp.
@@ -69,6 +100,20 @@ class HighEfficiencyDiscardPolicyInteractiveTest
     return browser()->tab_strip_model()->GetWebContentsAt(index);
   }
 
+  bool IsTabDiscarded(int tab_index) {
+    return GetWebContentsAt(tab_index)->WasDiscarded();
+  }
+
+  auto CheckTabIsDiscarded(int tab_index) {
+    return Check(base::BindLambdaForTesting(
+        [=]() { return IsTabDiscarded(tab_index); }));
+  }
+
+  auto CheckTabIsNotDiscarded(int tab_index) {
+    return Check(base::BindLambdaForTesting(
+        [=]() { return !IsTabDiscarded(tab_index); }));
+  }
+
   auto TryDiscardTab(int tab_index) {
     return Do(base::BindLambdaForTesting([=]() {
       performance_manager::user_tuning::UserPerformanceTuningManager::
@@ -77,20 +122,41 @@ class HighEfficiencyDiscardPolicyInteractiveTest
     }));
   }
 
-  auto CheckTabIsNotDiscarded(int tab_index) {
-    return Check(base::BindLambdaForTesting(
-        [=]() { return !GetWebContentsAt(tab_index)->WasDiscarded(); }));
+  // Attepmpts to discard the tab at discard_tab_index and navigates to that
+  // tab and waits for it to reload
+  auto DiscardAndSelectTab(int discard_tab_index,
+                           const ui::ElementIdentifier& contents_id) {
+    return Steps(FlushEvents(),
+                 // This has to be done on a fresh message loop to prevent
+                 // a tab being discarded while it is notifying its observers
+                 TryDiscardTab(discard_tab_index), WaitForHide(contents_id),
+                 SelectTab(kTabStripElementId, discard_tab_index),
+                 WaitForShow(contents_id));
   }
+
+  GURL GetURL(base::StringPiece path) {
+    return embedded_test_server()->GetURL("example.com", path);
+  }
+
+ private:
+  base::SimpleTestTickClock test_clock_;
+  resource_coordinator::ScopedSetTickClockForTesting
+      scoped_set_tick_clock_for_testing_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests Discarding on pages with various types of content
+class HighEfficiencyDiscardPolicyInteractiveTest
+    : public HighEfficiencyInteractiveTest {
+ public:
+  HighEfficiencyDiscardPolicyInteractiveTest() = default;
+  ~HighEfficiencyDiscardPolicyInteractiveTest() override = default;
 
   auto PressKeyboard() {
     return Do(base::BindLambdaForTesting([=]() {
       ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
                                                   false, false, false));
     }));
-  }
-
-  GURL GetURL(base::StringPiece path) {
-    return embedded_test_server()->GetURL("example.com", path);
   }
 
   void OnRecentlyAudibleCallback(const ui::ElementIdentifier& contents_id,
@@ -102,16 +168,6 @@ class HighEfficiencyDiscardPolicyInteractiveTest
           kAudioIsAudible);
     }
   }
-
-  auto LogStep(std::string message) {
-    return Do(base::BindLambdaForTesting([=]() { LOG(WARNING) << message; }));
-  }
-
- private:
-  base::SimpleTestTickClock test_clock_;
-  resource_coordinator::ScopedSetTickClockForTesting
-      scoped_set_tick_clock_for_testing_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Check that a tab playing a video in the background won't be discarded
@@ -187,9 +243,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
   input_value_updated.event = kInputValueIsUpated;
   input_value_updated.where = input_text_box;
   input_value_updated.type = StateChange::Type::kConditionTrue;
-  input_value_updated.test_function =
-      "(el) => { console.log('Current input value: ' + el.value); return "
-      "el.value === 'a'; }";
+  input_value_updated.test_function = "(el) => { return el.value === 'a'; }";
 
   RunTestSequence(
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
@@ -226,4 +280,378 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
                           GetURL("/notifications/notification_tester.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       TryDiscardTab(0), CheckTabIsNotDiscarded(0));
+}
+
+// Tests the functionality of the High Efficiency page action chip
+class HighEfficiencyChipInteractiveTest : public HighEfficiencyInteractiveTest {
+ public:
+  HighEfficiencyChipInteractiveTest() = default;
+  ~HighEfficiencyChipInteractiveTest() override = default;
+
+  void SetUpOnMainThread() override {
+    HighEfficiencyInteractiveTest::SetUpOnMainThread();
+
+    // To avoid flakes when focus changes, set the active tab strip model
+    // explicitly.
+    resource_coordinator::GetTabLifecycleUnitSource()
+        ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
+  }
+
+  PageActionIconView* GetPageActionIconView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBarView()
+        ->page_action_icon_controller()
+        ->GetIconView(PageActionIconType::kHighEfficiency);
+  }
+
+  auto CheckChipIsExpandedState() {
+    return CheckViewProperty(kHighEfficiencyChipElementId,
+                             &PageActionIconView::ShouldShowLabel, true);
+  }
+
+  auto CheckChipIsCollapsedState() {
+    return CheckViewProperty(kHighEfficiencyChipElementId,
+                             &PageActionIconView::ShouldShowLabel, false);
+  }
+
+  // Discard and reload the tab at discard_tab_index the number of times the
+  // high efficiency page action chip can expand so subsequent discards
+  // will result in the chip staying in its collapsed state
+  auto DiscardTabUntilChipStopsExpanding(
+      size_t discard_tab_index,
+      size_t non_discard_tab_index,
+      const ui::ElementIdentifier& contents_id) {
+    MultiStep result;
+    for (int i = 0; i < HighEfficiencyChipView::kChipAnimationCount; i++) {
+      MultiStep temp = std::move(result);
+      result = Steps(std::move(temp),
+                     SelectTab(kTabStripElementId, non_discard_tab_index),
+                     DiscardAndSelectTab(discard_tab_index, contents_id),
+                     CheckChipIsExpandedState());
+    }
+
+    return result;
+  }
+
+  auto NameTab(size_t index, std::string name) {
+    return NameViewRelative(
+        kTabStripElementId, name,
+        base::BindOnce([](size_t index, TabStrip* tab_strip)
+                           -> views::View* { return tab_strip->tab_at(index); },
+                       index));
+  }
+
+  auto ForceRefreshMemoryMetrics() {
+    return Do(base::BindLambdaForTesting([]() {
+      performance_manager::user_tuning::UserPerformanceTuningManager* manager =
+          performance_manager::user_tuning::UserPerformanceTuningManager::
+              GetInstance();
+
+      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+      QuitRunLoopOnMemoryMetricsRefreshObserver observer(
+          run_loop.QuitClosure());
+      base::ScopedObservation<
+          performance_manager::user_tuning::UserPerformanceTuningManager,
+          QuitRunLoopOnMemoryMetricsRefreshObserver>
+          memory_metrics_observer(&observer);
+      memory_metrics_observer.Observe(manager);
+
+      performance_manager::PerformanceManager::CallOnGraph(
+          FROM_HERE,
+          base::BindLambdaForTesting([](performance_manager::Graph* graph) {
+            auto* metrics_decorator = graph->GetRegisteredObjectAs<
+                performance_manager::ProcessMetricsDecorator>();
+            metrics_decorator->RefreshMetricsForTesting();
+          }));
+
+      run_loop.Run();
+    }));
+  }
+};
+
+// Page Action Chip should appear expanded the first three times a tab is
+// discarded and collapse all subsequent times
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest, PageActionChipShows) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kHighEfficiencyChipElementId),
+      DiscardTabUntilChipStopsExpanding(0, 1, kFirstTabContents),
+      SelectTab(kTabStripElementId, 1),
+      DiscardAndSelectTab(0, kFirstTabContents), CheckChipIsCollapsedState());
+}
+
+// Page Action chip should collapses after navigating to a tab without a chip
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       PageActionChipCollapseOnTabSwitch) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
+      EnsureNotPresent(kHighEfficiencyChipElementId),
+      DiscardAndSelectTab(0, kFirstTabContents), CheckChipIsExpandedState(),
+      SelectTab(kTabStripElementId, 1),
+      EnsureNotPresent(kHighEfficiencyChipElementId),
+      SelectTab(kTabStripElementId, 0), CheckChipIsCollapsedState(),
+      SelectTab(kTabStripElementId, 1),
+      EnsureNotPresent(kHighEfficiencyChipElementId));
+}
+
+// Page Action chip should stay collapsed when navigating between two
+// discarded tabs
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       ChipCollapseRemainCollapse) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
+      EnsureNotPresent(kHighEfficiencyChipElementId),
+      DiscardAndSelectTab(0, kFirstTabContents), CheckChipIsExpandedState(),
+      DiscardAndSelectTab(1, kSecondTabContents), CheckChipIsExpandedState(),
+      SelectTab(kTabStripElementId, 0), CheckChipIsCollapsedState(),
+      SelectTab(kTabStripElementId, 1), CheckChipIsCollapsedState());
+}
+
+// Page Action chip should only show on discarded non-chrome pages
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       ChipShowsOnNonChromeSites) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      // Discards tab on non-chrome page
+      DiscardAndSelectTab(0, kFirstTabContents),
+      WaitForShow(kHighEfficiencyChipElementId),
+
+      // Discards tab on chrome://newtab page
+      TryDiscardTab(1), WaitForHide(kSecondTabContents), CheckTabIsDiscarded(1),
+      SelectTab(kTabStripElementId, 1),
+      EnsureNotPresent(kHighEfficiencyChipElementId));
+}
+
+// Clicking on the settings link in high efficiency dialog bubble should open
+// a new tab and navigate to the performance settings page
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       BubbleSettingsLinkNavigates) {
+  constexpr char kPerformanceSettingsLinkViewName[] = "performance_link";
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      SelectTab(kTabStripElementId, 1), SelectTab(kTabStripElementId, 0),
+      CheckChipIsCollapsedState(), PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      InAnyContext(NameViewRelative(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId,
+          kPerformanceSettingsLinkViewName,
+          base::BindOnce([](views::StyledLabel* label) -> views::View* {
+            return label->GetFirstLinkForTesting();
+          }))),
+      MoveMouseTo(kPerformanceSettingsLinkViewName), ClickMouse(),
+      Check(base::BindLambdaForTesting(
+          [&]() { return browser()->tab_strip_model()->GetTabCount() == 3; })),
+      InstrumentTab(kPerformanceSettingsTab, 2),
+      WaitForWebContentsReady(kPerformanceSettingsTab,
+                              GURL(chrome::kChromeUIPerformanceSettingsURL)));
+}
+
+// High Efficiency Dialog bubble should close after clicking the "OK" button
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       CloseBubbleOnOkButtonClick) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogOkButton),
+      WaitForHide(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId));
+}
+
+// High Efficiency dialog bubble should close after clicking on the "X"
+// close button
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       CloseBubbleOnCloseButtonClick) {
+  constexpr char kDialogCloseButton[] = "dialog_close_button";
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      NameView(kDialogCloseButton, base::BindLambdaForTesting([&]() {
+                 return static_cast<views::View*>(
+                     GetPageActionIconView()
+                         ->GetBubble()
+                         ->GetBubbleFrameView()
+                         ->GetCloseButtonForTesting());
+               })),
+      PressButton(kDialogCloseButton),
+      EnsureNotPresent(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId));
+}
+
+// High Efficiency Dialog bubble should close after clicking on
+// the page action chip again
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       CloseBubbleOnChipClick) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      PressButton(kHighEfficiencyChipElementId),
+      EnsureNotPresent(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId));
+}
+
+// High Efficiency dialog bubble should close when clicking to navigate to
+// another tab
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       CloseBubbleOnTabSwitch) {
+  constexpr char kSecondTab[] = "second_tab";
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      NameTab(1, kSecondTab), MoveMouseTo(kSecondTab), ClickMouse(),
+      WaitForHide(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId));
+}
+
+// TODO(crbug.com/1416372): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BubbleCorrectlyReportingMemorySaved \
+  DISABLED_BubbleCorrectlyReportingMemorySaved
+#else
+#define MAYBE_BubbleCorrectlyReportingMemorySaved \
+  BubbleCorrectlyReportingMemorySaved
+#endif
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       MAYBE_BubbleCorrectlyReportingMemorySaved) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      ForceRefreshMemoryMetrics(), DiscardAndSelectTab(0, kFirstTabContents),
+      WaitForShow(kHighEfficiencyChipElementId),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      CheckView(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId,
+          base::BindOnce(
+              [](Browser* browser, views::StyledLabel* label) {
+                content::WebContents* web_contents =
+                    browser->tab_strip_model()->GetWebContentsAt(0);
+                auto* pre_discard_resource_usage = performance_manager::
+                    user_tuning::UserPerformanceTuningManager::
+                        PreDiscardResourceUsage::FromWebContents(web_contents);
+                int memory_estimate =
+                    pre_discard_resource_usage->memory_footprint_estimate_kb();
+                return label->GetText().find(ui::FormatBytes(
+                           memory_estimate * 1024)) != std::string::npos;
+              },
+              browser())));
+}
+
+// Tests the functionality of the High Efficiency IPH
+class HighEfficiencyInfoIPHInteractiveTest
+    : public HighEfficiencyInteractiveTest {
+ public:
+  HighEfficiencyInfoIPHInteractiveTest() = default;
+  ~HighEfficiencyInfoIPHInteractiveTest() override = default;
+
+  void SetUp() override {
+    iph_features_.InitAndEnableFeaturesWithParameters(
+        {{feature_engagement::kIPHHighEfficiencyInfoModeFeature, {}},
+         {performance_manager::features::kHighEfficiencyModeAvailable,
+          {{"default_state", "true"}, {"time_before_discard", "1h"}}}});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    HighEfficiencyInteractiveTest::SetUpOnMainThread();
+    EXPECT_TRUE(user_education::test::WaitForFeatureEngagementReady(
+        GetFeaturePromoController()));
+  }
+
+  BrowserFeaturePromoController* GetFeaturePromoController() {
+    auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
+        browser()->window()->GetFeaturePromoController());
+    return promo_controller;
+  }
+
+ private:
+  feature_engagement::test::ScopedIphFeatureList iph_features_;
+};
+
+// High Efficiency info IPH should close after clicking the "Got It"
+// default button
+IN_PROC_BROWSER_TEST_F(HighEfficiencyInfoIPHInteractiveTest,
+                       ClosesIPHOnButtonClick) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+// High Efficiency info IPH should close and navigates to the Performance
+// settings page in a new tab after clicking on the settings non-default button
+IN_PROC_BROWSER_TEST_F(HighEfficiencyInfoIPHInteractiveTest,
+                       NavigatesToSettingsPage) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      FlushEvents(),
+      // This needs to be done on a fresh message loop so that the IPH closes
+      PressButton(
+          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      Check(base::BindLambdaForTesting(
+          [=]() { return browser()->tab_strip_model()->GetTabCount() == 3; })),
+      InstrumentTab(kPerformanceSettingsTab),
+      WaitForWebContentsReady(kPerformanceSettingsTab,
+                              GURL(chrome::kChromeUIPerformanceSettingsURL)));
+}
+
+// High Efficiency IPH should close when navigating to another tab
+IN_PROC_BROWSER_TEST_F(HighEfficiencyInfoIPHInteractiveTest,
+                       ClosesIPHOnTabSwitch) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      FlushEvents(),
+      // This needs to be done on a fresh message loop so that the IPH closes
+      SelectTab(kTabStripElementId, 1),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
