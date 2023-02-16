@@ -125,16 +125,26 @@ enum SubmissionIndicatorEvent {
 };
 
 enum SubmissionSource {
-  NONE,                      // No submission signal was detected.
-  SAME_DOCUMENT_NAVIGATION,  // The form was removed in same document
-                             // navigation.
-  XHR_SUCCEEDED,             // The form was removed when XHR succeeded.
-  FRAME_DETACHED,            // The subframe or non primary main frame
-                             // containing the form was detached.
-  DOM_MUTATION_AFTER_XHR,    // The form was removed after XHR.
-  PROBABLY_FORM_SUBMITTED,   // The form was probably submitted since new page
-                             // is loaded.
-  FORM_SUBMISSION,           // Normal form submission.
+  // No submission signal was detected.
+  NONE,
+  // After a same document navigation finished, the last interacted form became
+  // inaccessible or was removed.
+  SAME_DOCUMENT_NAVIGATION,
+  // Immediately after a successful XHR, the last interacted form became
+  // inaccessible or was removed.
+  XHR_SUCCEEDED,
+  // The subframe or non-primary main frame containing the form was detached.
+  FRAME_DETACHED,
+  // After a successful XHR, the last interacted form became inaccessible or was
+  // removed (this is an asynchronous sibling of XHR_SUCCEEDED).
+  DOM_MUTATION_AFTER_XHR,
+  // A mainframe navigation was started which was initiated in the content area
+  // (i.e. not clicking on a bookmark or typing a URL in the omnibar), not by
+  // a link click. Only observed after the user interacted with a form.
+  PROBABLY_FORM_SUBMITTED,
+  // Normal form submission (i.e. user presses the submit button and no
+  // JavaScript is involved). Observed via RenderFrameObserver::WillSubmitForm.
+  FORM_SUBMISSION,
 };
 
 enum FocusedFieldType {
