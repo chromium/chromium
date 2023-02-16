@@ -773,8 +773,6 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     return;
   }
 
-  form_submitted_timestamp_ = AutofillTickClock::NowTicks();
-
   // Log metrics about the autocomplete attribute usage in the submitted form.
   LogAutocompletePredictionCollisionTypeMetrics(*submitted_form);
 
@@ -2065,7 +2063,6 @@ void BrowserAutofillManager::Reset() {
   external_delegate_->Reset();
   touch_to_fill_delegate_->Reset();
   filling_context_.clear();
-  form_submitted_timestamp_ = TimeTicks();
 }
 
 void BrowserAutofillManager::OnContextMenuShownInField(
@@ -3408,7 +3405,6 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     LogEventCountsUMAMetric(form_structure);
   }
 
-  // Log FieldInfo UKM event.
   for (const auto& autofill_field : form_structure) {
     // This reduces the UKM load by ignoring e.g. search boxes at best effort.
     if (base::FeatureList::IsEnabled(
@@ -3422,20 +3418,6 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     // Not conditions on kAutofillLogUKMEventsWithSampleRate because there may
     // be other reasons to log events.
     autofill_field->ClearLogEvents();
-  }
-
-  // Log FormSummary UKM event.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSampleRate)) {
-    AutofillMetrics::FormEventSet form_events;
-    form_events.insert_all(
-        address_form_event_logger_->GetFormEvents(form_structure.global_id()));
-    form_events.insert_all(credit_card_form_event_logger_->GetFormEvents(
-        form_structure.global_id()));
-    bool is_in_any_main_frame = driver()->IsInAnyMainFrame();
-    form_interactions_ukm_logger()->LogAutofillFormSummaryAtFormRemove(
-        form_structure, form_events, is_in_any_main_frame,
-        form_submitted_timestamp_, initial_interaction_timestamp_);
   }
 }
 
