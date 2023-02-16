@@ -137,7 +137,8 @@ id<GREYMatcher> SearchBarScrim() {
   if ([self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
       [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)] ||
       [self isRunningTest:@selector(testCountrySelection)] ||
-      [self isRunningTest:@selector(testRequiredFields)]) {
+      [self isRunningTest:@selector(testRequiredFields)] ||
+      [self isRunningTest:@selector(testAutoScrollInCountrySelector)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAccountProfilesUnionView);
   }
@@ -533,6 +534,25 @@ id<GREYMatcher> SearchBarScrim() {
       performAction:grey_tap()];
 
   [self exitSettingsMenu];
+}
+
+// Tests that when country selection view opens, the currently selected country
+// is in view.
+- (void)testAutoScrollInCountrySelector {
+  [AutofillAppInterface saveExampleProfile];
+  [self openEditProfile:kProfileLabel];
+
+  // Switch on edit mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_AUTOFILL_COUNTRY))]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:CountryEntry(@"United States")]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

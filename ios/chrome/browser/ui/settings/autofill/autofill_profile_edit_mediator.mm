@@ -110,9 +110,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   NSMutableArray<CountryItem*>* countryItems = [[NSMutableArray alloc]
       initWithCapacity:static_cast<NSUInteger>(countriesVector.size())];
-  // TODO(crbug.com/1407666): Skip the first country as it appears twice in the
-  // list.
-  for (size_t i = 0; i < countriesVector.size(); ++i) {
+  // Skip the first country as it appears twice in the
+  // list. It was relevant to other platforms where the country does not have a
+  // search option.
+  for (size_t i = 1; i < countriesVector.size(); ++i) {
     if (countriesVector[i].get()) {
       CountryItem* countryItem =
           [[CountryItem alloc] initWithType:ItemTypeCountry];
@@ -130,6 +131,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Fetches and updates the required fields for the `countryCode`.
 - (void)updateRequirementsForCountryCode:(NSString*)countryCode {
   self.selectedCountryCode = countryCode;
+  for (CountryItem* countryItem in self.allCountries) {
+    if ([self.selectedCountryCode isEqualToString:countryItem.countryCode]) {
+      countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
+    } else {
+      countryItem.accessoryType = UITableViewCellAccessoryNone;
+    }
+  }
 
   autofill::AutofillCountry country(
       base::SysNSStringToUTF8(self.selectedCountryCode),

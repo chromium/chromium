@@ -115,6 +115,21 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [self loadModel];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // Autoscroll to the selected country.
+  for (CountryItem* item in [self.tableViewModel
+           itemsInSectionWithIdentifier:SectionIdentifierCountries]) {
+    if (item.accessoryType == UITableViewCellAccessoryCheckmark) {
+      NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
+      [self.tableView scrollToRowAtIndexPath:indexPath
+                            atScrollPosition:UITableViewScrollPositionMiddle
+                                    animated:NO];
+    }
+  }
+}
+
 #pragma mark - ChromeTableViewController
 
 - (void)loadModel {
@@ -122,7 +137,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierCountries];
   [self populateCountriesSection];
-  // TODO(crbug.com/1407666): Scroll to the currently selected country.
 }
 
 #pragma mark - UITableViewDelegate
@@ -132,10 +146,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   if (@available(iOS 16.0, *)) {
     return;
   }
+
   CountryItem* item = base::mac::ObjCCastStrict<CountryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
-  item.accessoryType = UITableViewCellAccessoryCheckmark;
-
   [self.delegate didSelectCountry:item];
 }
 
