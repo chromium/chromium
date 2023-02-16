@@ -595,21 +595,3 @@ try_.gpu.optional_tests_builder(
         ],
     ),
 )
-
-# RTS builders (https://crbug.com/1203048)
-
-ios_builder(
-    name = "ios-simulator-rts",
-    mirrors = builder_config.copy_from("try/ios-simulator"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.ALWAYS,
-        ),
-    ),
-    builderless = False,
-    check_for_flakiness = True,
-    coverage_exclude_sources = "ios_test_files_and_test_utils",
-    coverage_test_types = ["overall", "unit"],
-    goma_backend = goma.backend.RBE_PROD,
-    use_clang_coverage = True,
-)
