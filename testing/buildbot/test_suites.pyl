@@ -5265,22 +5265,33 @@
     },
 
     'webrtc_chromium_wpt_tests': {
-      'wpt_tests_suite': {
+      'blink_wpt_tests': {
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
         'args': [
-          '--log-wptreport',
-          '--t',
+          '--num-retries=3',
+          '-t',
           'Release',
           'external/wpt/webrtc'
         ],
+        'isolate_name': 'blink_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate',
+        'mixins': [
+          'blink_tests_write_run_histories',
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
+          'skia_gold_test',
+        ],
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
-        'experiment_percentage': 100,
       },
     },
 

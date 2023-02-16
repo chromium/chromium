@@ -52,26 +52,36 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
-          "--t",
+          "--num-retries=3",
+          "-t",
           "Release",
-          "external/wpt/webrtc"
+          "external/wpt/webrtc",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
         ],
-        "experiment_percentage": 100,
-        "isolate_name": "wpt_tests_isolate",
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
             "--verbose"
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "wpt_tests_suite",
+        "name": "blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
   },
