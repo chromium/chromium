@@ -47,8 +47,10 @@ const char kContentSuggestionsUIModuleRefreshMinimizeSpacingParam[] =
 const char kContentSuggestionsUIModuleRefreshRemoveHeadersParam[] =
     "remove_headers";
 
-BASE_FEATURE(kHideMVTAndShortcutsForNewUsers,
-             "HideMostVisitedAndShortcutsForNewUsers",
+const char kTileAblationMVTAndShortcutsForNewUsersParam[] =
+    "TileAblationForNewUsersParam";
+BASE_FEATURE(kTileAblationMVTAndShortcutsForNewUsers,
+             "TileAblationForNewUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature disabled by default.
@@ -75,9 +77,31 @@ const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
 bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
 }
+TileAblationBehavior GetTileAblationBehavior() {
+  if (base::FeatureList::IsEnabled(kTileAblationMVTAndShortcutsForNewUsers)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+               kTileAblationMVTAndShortcutsForNewUsers,
+               kTileAblationMVTAndShortcutsForNewUsersParam,
+               /*default_value=*/false)
+               ? TileAblationBehavior::kTileAblationMVTAndShortcuts
+               : TileAblationBehavior::kTileAblationMVTOnly;
+  }
 
-bool IsHideMVTAndShortcutsEnabled() {
-  return base::FeatureList::IsEnabled(kHideMVTAndShortcutsForNewUsers);
+  return TileAblationBehavior::kDisabled;
+}
+
+bool IsTileAblationMVTAndShortcutsEnabled() {
+  return base::FeatureList::IsEnabled(kTileAblationMVTAndShortcutsForNewUsers);
+}
+bool ShouldHideShortcuts() {
+  return GetTileAblationBehavior() ==
+         TileAblationBehavior::kTileAblationMVTAndShortcuts;
+}
+bool ShouldHideMostVisited() {
+  return (GetTileAblationBehavior() ==
+              TileAblationBehavior::kTileAblationMVTAndShortcuts ||
+          GetTileAblationBehavior() ==
+              TileAblationBehavior::kTileAblationMVTOnly);
 }
 
 // Returns true if the client is bucketed into an enabled experiment group of

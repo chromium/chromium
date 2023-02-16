@@ -30,6 +30,27 @@ source_set("start_suggest") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("field_trial") {
+  sources = [
+    "field_trial_constants.cc",
+    "field_trial_constants.h",
+    "tile_ablation_field_trial.cc",
+    "tile_ablation_field_trial.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/variations",
+  ]
+  deps = [
+    ":feature_flags",
+    "//components/prefs",
+    "//components/version_info:version_info",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/common",
+  ]
+}
+
 source_set("content_suggestions") {
   sources = [
     "content_suggestions_coordinator.h",
@@ -142,6 +163,7 @@ source_set("metrics") {
     ":content_suggestions_constant",
     "//base",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
   ]
 }
 
@@ -270,11 +292,13 @@ source_set("unit_tests") {
     "content_suggestions_collection_utils_unittest.mm",
     "content_suggestions_mediator_unittest.mm",
     "content_suggestions_tile_saver_unittest.mm",
+    "tile_ablation_field_trial_unittest.mm",
   ]
   deps = [
     ":content_suggestions",
     ":content_suggestions_ui",
     ":content_suggestions_ui_util",
+    ":field_trial",
     "//base",
     "//base/test:test_support",
     "//components/favicon/core",

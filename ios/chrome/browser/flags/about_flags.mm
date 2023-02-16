@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/field_trial_constants.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
@@ -557,6 +558,13 @@ const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
      std::size(kTabInactivityThresholdThreeWeeks), nullptr},
 };
 
+const FeatureEntry::FeatureParam kTileAblationMVTOnlyForNewUsers[] = {
+    {kTileAblationMVTAndShortcutsForNewUsersParam, "true"}};
+const FeatureEntry::FeatureVariation
+    kTileAblationMVTAndShortcutsForNewUsersVariations[] = {
+        {"Hide Only Most Visited", kTileAblationMVTOnlyForNewUsers,
+         std::size(kTileAblationMVTOnlyForNewUsers), nullptr}};
+
 const FeatureEntry::FeatureParam
     kCredentialProviderExtensionPromoOnPasswordSaved[] = {
         {kCredentialProviderExtensionPromoOnPasswordSavedParam, "true"}};
@@ -865,10 +873,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                                     kFeedHeaderSettingsVariations,
                                     "FeedHeaderSettings")},
     {"enable-hiding-mvt-shortcuts",
-     flag_descriptions::kHideMVTAndShortcutsForNewUsersName,
-     flag_descriptions::kHideMVTAndShortcutsForNewUsersDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kHideMVTAndShortcutsForNewUsers)},
-
+     flag_descriptions::kTileAblationMVTAndShortcutsForNewUsersName,
+     flag_descriptions::kTileAblationMVTAndShortcutsForNewUsersDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kTileAblationMVTAndShortcutsForNewUsers,
+         kTileAblationMVTAndShortcutsForNewUsersVariations,
+         "TileAblationMVTAndShortcutsForNewUser")},
     {"shared-highlighting-amp",
      flag_descriptions::kIOSSharedHighlightingAmpName,
      flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,

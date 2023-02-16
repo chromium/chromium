@@ -4,6 +4,7 @@ specific_include_rules = {
     "+ios/chrome/browser/ui",
   ],
   "^ios_chrome_field_trials.mm": [
+    "+ios/chrome/browser/ui/content_suggestions",
     "+ios/chrome/browser/ui/first_run",
     "+ios/chrome/browser/ui/ntp",
   ],

@@ -226,11 +226,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count] && !IsHideMVTAndShortcutsEnabled()) {
+  if ([self.mostVisitedItems count] && !ShouldHideMostVisited()) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
-  if (!ShouldHideShortcutsForTrendingQueries() &&
-      !IsHideMVTAndShortcutsEnabled()) {
+  if (!ShouldHideShortcutsForTrendingQueries() && !ShouldHideShortcuts()) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
   if (IsTrendingQueriesModuleEnabled()) {
@@ -477,7 +476,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
-  if (IsHideMVTAndShortcutsEnabled()) {
+  if (ShouldHideMostVisited()) {
     return;
   }
 
@@ -527,12 +526,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if (IsHideMVTAndShortcutsEnabled()) {
+  if (ShouldHideMostVisited()) {
     return;
   }
   self.mostVisitedItems = self.freshMostVisitedItems;
   [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
-
   [self.feedDelegate contentSuggestionsWasUpdated];
 }
 
