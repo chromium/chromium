@@ -93,9 +93,6 @@ ts_library("build_ts") {
   in_files = src_ts_files + html_wrapper_files + css_wrapper_files +
              mojom_webui_files + nearby_share_shared_files
   out_dir = tsc_output_dir
-
-  # Allows .d.ts files to be generated
-  composite = true
 }
 
 preprocess_if_expr("preprocess") {
