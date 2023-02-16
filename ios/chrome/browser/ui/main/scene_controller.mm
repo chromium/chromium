@@ -2981,7 +2981,9 @@ void InjectNTP(Browser* browser) {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.sceneState.appState.mainBrowserState);
-  switch (authenticationService->GetServiceStatus()) {
+  AuthenticationService::ServiceStatus statusService =
+      authenticationService->GetServiceStatus();
+  switch (statusService) {
     case AuthenticationService::ServiceStatus::SigninDisabledByPolicy: {
       if (completion) {
         completion(/*success=*/NO);
@@ -3000,7 +3002,7 @@ void InjectNTP(Browser* browser) {
     }
     case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
     case AuthenticationService::ServiceStatus::SigninDisabledByUser: {
-      NOTREACHED();
+      NOTREACHED() << "Status service: " << static_cast<int>(statusService);
       break;
     }
   }
