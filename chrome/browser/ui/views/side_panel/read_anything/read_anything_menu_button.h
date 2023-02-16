@@ -28,6 +28,7 @@ class ReadAnythingMenuButton : public views::MenuButton {
   ~ReadAnythingMenuButton() override;
 
   void SetMenuModel(ReadAnythingMenuModel* menu_model);
+  ReadAnythingMenuModel* GetMenuModel() const;
   absl::optional<size_t> GetSelectedIndex() const;
   void SetIcon(const gfx::VectorIcon& icon, int icon_size, SkColor icon_color);
 

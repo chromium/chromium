@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -50,6 +51,10 @@ void ReadAnythingMenuButton::SetMenuModel(ReadAnythingMenuModel* menu_model) {
   menu_model_ = menu_model;
 }
 
+ReadAnythingMenuModel* ReadAnythingMenuButton::GetMenuModel() const {
+  return menu_model_;
+}
+
 absl::optional<size_t> ReadAnythingMenuButton::GetSelectedIndex() const {
   if (!menu_model_) {
     return absl::nullopt;
@@ -67,4 +72,5 @@ void ReadAnythingMenuButton::SetIcon(const gfx::VectorIcon& icon,
 }
 
 BEGIN_METADATA(ReadAnythingMenuButton, MenuButton)
+ADD_PROPERTY_METADATA(ReadAnythingMenuModel*, MenuModel)
 END_METADATA

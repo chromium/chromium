@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/geometry_export.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
@@ -77,6 +78,9 @@ void ReadAnythingContainerView::OnCoordinatorDestroyed() {
   // When the coordinator that created |this| is destroyed, clean up pointers.
   coordinator_ = nullptr;
 }
+
+BEGIN_METADATA(ReadAnythingContainerView, views::View)
+END_METADATA
 
 ReadAnythingContainerView::~ReadAnythingContainerView() {
   // If |this| is being destroyed before the associated coordinator, then

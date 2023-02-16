@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/separator.h"
@@ -32,6 +34,7 @@ class ReadAnythingToolbarView : public views::View,
                                 public ReadAnythingModel::Observer,
                                 public ReadAnythingCoordinator::Observer {
  public:
+  METADATA_HEADER(ReadAnythingToolbarView);
   class Delegate {
    public:
     virtual void OnFontSizeChanged(bool increase) = 0;

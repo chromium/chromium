@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -220,6 +221,9 @@ void ReadAnythingToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetDescription(
       l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TOOLBAR_LABEL));
 }
+
+BEGIN_METADATA(ReadAnythingToolbarView, views::View)
+END_METADATA
 
 ReadAnythingToolbarView::~ReadAnythingToolbarView() {
   // If |this| is being destroyed before the associated coordinator, then

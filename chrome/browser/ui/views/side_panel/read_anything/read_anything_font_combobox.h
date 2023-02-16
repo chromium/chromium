@@ -7,11 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
 
 class ReadAnythingFontCombobox : public views::Combobox {
  public:
+  METADATA_HEADER(ReadAnythingFontCombobox);
   class Delegate {
    public:
     virtual void OnFontChoiceChanged(int new_index) = 0;
