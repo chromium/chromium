@@ -595,7 +595,7 @@ void UnlockManagerImpl::OnAuthAttempted(mojom::AuthType auth_type) {
       kAuthAttemptTimeout);
 
   if (screenlock_type_ == ProximityAuthSystem::SIGN_IN) {
-    SendSignInChallenge();
+    NOTREACHED();
   } else {
     GetMessenger()->RequestUnlock();
   }
@@ -632,39 +632,6 @@ std::unique_ptr<ProximityMonitor> UnlockManagerImpl::CreateProximityMonitor(
     RemoteDeviceLifeCycle* life_cycle) {
   return std::make_unique<ProximityMonitorImpl>(life_cycle->GetRemoteDevice(),
                                                 life_cycle->GetChannel());
-}
-
-void UnlockManagerImpl::SendSignInChallenge() {
-  if (!life_cycle_ || !GetMessenger()) {
-    PA_LOG(ERROR) << "Not ready to send sign-in challenge";
-    return;
-  }
-
-  if (!GetMessenger()->GetChannel()) {
-    PA_LOG(ERROR) << "Channel is not ready to send sign-in challenge.";
-    return;
-  }
-
-  GetMessenger()->GetChannel()->GetConnectionMetadata(
-      base::BindOnce(&UnlockManagerImpl::OnGetConnectionMetadata,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void UnlockManagerImpl::OnGetConnectionMetadata(
-    ash::secure_channel::mojom::ConnectionMetadataPtr connection_metadata_ptr) {
-  ash::multidevice::RemoteDeviceRef remote_device =
-      life_cycle_->GetRemoteDevice();
-  proximity_auth_client_->GetChallengeForUserAndDevice(
-      remote_device.user_email(), remote_device.public_key(),
-      connection_metadata_ptr->channel_binding_data,
-      base::BindOnce(&UnlockManagerImpl::OnGotSignInChallenge,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void UnlockManagerImpl::OnGotSignInChallenge(const std::string& challenge) {
-  PA_LOG(VERBOSE) << "Got sign-in challenge, sending for decryption...";
-  if (GetMessenger())
-    GetMessenger()->RequestDecryption(challenge);
 }
 
 SmartLockState UnlockManagerImpl::GetSmartLockState() {

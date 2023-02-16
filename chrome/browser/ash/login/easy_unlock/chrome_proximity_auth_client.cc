@@ -39,21 +39,6 @@ void ChromeProximityAuthClient::FinalizeUnlock(bool success) {
     service->FinalizeUnlock(success);
 }
 
-// TODO(b/227674947): Remove this method now that sign in with Smart Lock is
-// deprecated
-void ChromeProximityAuthClient::GetChallengeForUserAndDevice(
-    const std::string& user_email,
-    const std::string& remote_public_key,
-    const std::string& channel_binding_data,
-    base::OnceCallback<void(const std::string& challenge)> callback) {
-  EasyUnlockService* easy_unlock_service = EasyUnlockService::Get(profile_);
-  if (easy_unlock_service->GetType() == EasyUnlockService::TYPE_REGULAR) {
-    PA_LOG(ERROR) << "Unable to get challenge when user is logged in.";
-    std::move(callback).Run(/*challenge=*/std::string());
-    return;
-  }
-}
-
 proximity_auth::ProximityAuthPrefManager*
 ChromeProximityAuthClient::GetPrefManager() {
   EasyUnlockService* service = EasyUnlockService::Get(profile_);

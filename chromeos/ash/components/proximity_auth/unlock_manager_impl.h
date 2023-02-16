@@ -144,21 +144,6 @@ class UnlockManagerImpl : public UnlockManager,
   // if Bluetooth is available).
   void AttemptToStartRemoteDeviceLifecycle();
 
-  // Called when auth is attempted to send the sign-in challenge to the remote
-  // device for decryption.
-  // TODO(b/227674947): This method can be removed now that sign in with Smart
-  // Lock is deprecated.
-  void SendSignInChallenge();
-
-  // Once the connection metadata is received from a ClientChannel, its channel
-  // binding data can be used to finish a sign-in request.
-  void OnGetConnectionMetadata(ash::secure_channel::mojom::ConnectionMetadataPtr
-                                   connection_metadata_ptr);
-
-  // Called with the sign-in |challenge| so we can send it to the remote device
-  // for decryption.
-  void OnGotSignInChallenge(const std::string& challenge);
-
   // Returns the current state for the Smart Lock UI.
   ash::SmartLockState GetSmartLockState();
 
