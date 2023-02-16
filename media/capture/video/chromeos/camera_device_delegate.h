@@ -244,8 +244,13 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
       uint32_t frame_number,
       const cros::mojom::CameraMetadataPtr& result_metadata) final;
 
+  // media::CameraEffectObserver AddObserver callback.
+  void OnCameraEffectObserverAdded(
+      cros::mojom::EffectsConfigPtr current_effects);
+
   // media::CameraEffectObserver implementation.
-  void OnCameraEffectChanged(cros::mojom::CameraEffect changed_effect) final;
+  void OnCameraEffectChanged(
+      const cros::mojom::EffectsConfigPtr& new_effects) final;
 
   void DoGetPhotoState(VideoCaptureDevice::GetPhotoStateCallback callback);
 
@@ -281,6 +286,9 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // supported formats and resolution, various available exposure and apeture
   // settings, etc.
   cros::mojom::CameraMetadataPtr static_metadata_;
+
+  // Records current effects that is applied to camera hal server.
+  cros::mojom::EffectsConfigPtr current_effects_;
 
   mojo::Remote<cros::mojom::Camera3DeviceOps> device_ops_;
 

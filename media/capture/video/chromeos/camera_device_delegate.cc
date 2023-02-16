@@ -826,7 +826,13 @@ void CameraDeviceDelegate::Initialize() {
       std::move(callback_ops),
       base::BindOnce(&CameraDeviceDelegate::OnInitialized, GetWeakPtr()));
   request_manager_->AddResultMetadataObserver(this);
-  CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(this);
+  // The callback passed to CameraHalDispatcherImpl will be called on a
+  // different thread inside CameraHalDispatcherImpl, so we need always
+  // post the callback onto current task runner.
+  CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
+      this, base::BindPostTaskToCurrentDefault(base::BindOnce(
+                &CameraDeviceDelegate::OnCameraEffectObserverAdded,
+                weak_ptr_factory_.GetWeakPtr())));
 
   // For Intel IPU6 platform, set power mode to high quality for CCA and low
   // power mode for others.
@@ -1516,24 +1522,27 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
   }
 }
 
+void CameraDeviceDelegate::OnCameraEffectObserverAdded(
+    cros::mojom::EffectsConfigPtr current_effects) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  current_effects_ = std::move(current_effects);
+}
+
 void CameraDeviceDelegate::OnCameraEffectChanged(
-    cros::mojom::CameraEffect changed_effect) {
+    const cros::mojom::EffectsConfigPtr& new_effects) {
   if (!ipc_task_runner_->BelongsToCurrentThread()) {
     ipc_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&CameraDeviceDelegate::OnCameraEffectChanged,
-                                  GetWeakPtr(), std::move(changed_effect)));
+                                  GetWeakPtr(), new_effects.Clone()));
     return;
   }
+
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
-  switch (changed_effect) {
-    case cros::mojom::CameraEffect::kBackgroundBlur:
-      device_context_->OnCaptureConfigurationChanged();
-      break;
-    case cros::mojom::CameraEffect::kPortraitRelight:
-    case cros::mojom::CameraEffect::kBackgroundReplace:
-    case cros::mojom::CameraEffect::kNone:
-      return;
+  if (!current_effects_.is_null() &&
+      current_effects_->blur_enabled != new_effects->blur_enabled) {
+    device_context_->OnCaptureConfigurationChanged();
   }
+  current_effects_ = new_effects.Clone();
 }
 
 void CameraDeviceDelegate::DoGetPhotoState(
