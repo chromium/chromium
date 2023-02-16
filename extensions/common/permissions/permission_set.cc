@@ -31,7 +31,7 @@ PermissionSet::PermissionSet(APIPermissionSet apis,
   InitEffectiveHosts();
 }
 
-PermissionSet::~PermissionSet() {}
+PermissionSet::~PermissionSet() = default;
 
 PermissionSet::PermissionSet(PermissionSet&& other) = default;
 

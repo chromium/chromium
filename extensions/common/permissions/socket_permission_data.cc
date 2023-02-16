@@ -78,9 +78,9 @@ const char* TypeToString(SocketPermissionRequest::OperationType type) {
 
 namespace extensions {
 
-SocketPermissionData::SocketPermissionData() {}
+SocketPermissionData::SocketPermissionData() = default;
 
-SocketPermissionData::~SocketPermissionData() {}
+SocketPermissionData::~SocketPermissionData() = default;
 
 bool SocketPermissionData::operator<(const SocketPermissionData& rhs) const {
   return entry_ < rhs.entry_;

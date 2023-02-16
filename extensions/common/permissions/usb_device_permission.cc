@@ -109,13 +109,13 @@ UsbDevicePermission::CheckParam::CheckParam(
       interface_id(interface_id),
       interface_class_allowed(IsInterfaceClassPermissionAlowed(extension)) {}
 
-UsbDevicePermission::CheckParam::~CheckParam() {}
+UsbDevicePermission::CheckParam::~CheckParam() = default;
 
 UsbDevicePermission::UsbDevicePermission(const APIPermissionInfo* info)
     : SetDisjunctionPermission<UsbDevicePermissionData, UsbDevicePermission>(
           info) {}
 
-UsbDevicePermission::~UsbDevicePermission() {}
+UsbDevicePermission::~UsbDevicePermission() = default;
 
 bool UsbDevicePermission::FromValue(
     const base::Value* value,

@@ -30,9 +30,9 @@ const ReplacementAppsInfo* GetReplacementAppsInfo(const Extension* extension) {
 
 }  // namespace
 
-ReplacementAppsInfo::ReplacementAppsInfo() {}
+ReplacementAppsInfo::ReplacementAppsInfo() = default;
 
-ReplacementAppsInfo::~ReplacementAppsInfo() {}
+ReplacementAppsInfo::~ReplacementAppsInfo() = default;
 
 // static
 bool ReplacementAppsInfo::HasReplacementWebApp(const Extension* extension) {
@@ -119,9 +119,9 @@ bool ReplacementAppsInfo::Parse(const Extension* extension,
   return true;
 }
 
-ReplacementAppsHandler::ReplacementAppsHandler() {}
+ReplacementAppsHandler::ReplacementAppsHandler() = default;
 
-ReplacementAppsHandler::~ReplacementAppsHandler() {}
+ReplacementAppsHandler::~ReplacementAppsHandler() = default;
 
 bool ReplacementAppsHandler::Parse(Extension* extension,
                                    std::u16string* error) {

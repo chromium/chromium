@@ -22,7 +22,7 @@ SettingsOverrideAPIPermission::SettingsOverrideAPIPermission(
     const std::string& setting_value)
     : APIPermission(permission), setting_value_(setting_value) {}
 
-SettingsOverrideAPIPermission::~SettingsOverrideAPIPermission() {}
+SettingsOverrideAPIPermission::~SettingsOverrideAPIPermission() = default;
 
 PermissionIDSet SettingsOverrideAPIPermission::GetPermissions() const {
   PermissionIDSet permissions;

@@ -216,7 +216,7 @@ SimpleFeature::SimpleFeature()
       is_internal_(false),
       disallow_for_service_workers_(false) {}
 
-SimpleFeature::~SimpleFeature() {}
+SimpleFeature::~SimpleFeature() = default;
 
 Feature::Availability SimpleFeature::IsAvailableToManifest(
     const HashedExtensionId& hashed_id,

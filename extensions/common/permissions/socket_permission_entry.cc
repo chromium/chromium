@@ -44,7 +44,7 @@ SocketPermissionEntry::SocketPermissionEntry()
     : pattern_(SocketPermissionRequest::NONE, std::string(), kInvalidPort),
       match_subdomains_(false) {}
 
-SocketPermissionEntry::~SocketPermissionEntry() {}
+SocketPermissionEntry::~SocketPermissionEntry() = default;
 
 bool SocketPermissionEntry::operator<(const SocketPermissionEntry& rhs) const {
   return std::tie(pattern_.type, pattern_.host, match_subdomains_,

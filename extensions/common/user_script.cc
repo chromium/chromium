@@ -100,7 +100,7 @@ UserScript::File::File(const File& other)
       relative_path_(other.relative_path_),
       url_(other.url_) {}
 
-UserScript::File::~File() {}
+UserScript::File::~File() = default;
 
 UserScript::UserScript() = default;
 UserScript::~UserScript() = default;

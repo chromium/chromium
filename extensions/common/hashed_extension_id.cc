@@ -8,7 +8,7 @@
 
 namespace extensions {
 
-HashedExtensionId::HashedExtensionId() {}
+HashedExtensionId::HashedExtensionId() = default;
 
 HashedExtensionId::HashedExtensionId(const ExtensionId& original_id)
     : value_(crx_file::id_util::HashedIdInHex(original_id)) {}

@@ -18,6 +18,6 @@ PermissionMessage::PermissionMessage(
 
 PermissionMessage::PermissionMessage(const PermissionMessage& other) = default;
 
-PermissionMessage::~PermissionMessage() {}
+PermissionMessage::~PermissionMessage() = default;
 
 }  // namespace extensions

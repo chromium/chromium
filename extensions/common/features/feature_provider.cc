@@ -85,8 +85,8 @@ const Feature* GetFeatureFromProviderByName(const std::string& provider_name,
 
 }  // namespace
 
-FeatureProvider::FeatureProvider() {}
-FeatureProvider::~FeatureProvider() {}
+FeatureProvider::FeatureProvider() = default;
+FeatureProvider::~FeatureProvider() = default;
 
 // static
 const FeatureProvider* FeatureProvider::GetByName(const std::string& name) {

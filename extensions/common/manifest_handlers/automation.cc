@@ -315,6 +315,6 @@ AutomationInfo::AutomationInfo(bool desktop,
                                bool interact)
     : desktop(desktop), matches(matches.Clone()), interact(interact) {}
 
-AutomationInfo::~AutomationInfo() {}
+AutomationInfo::~AutomationInfo() = default;
 
 }  // namespace extensions
