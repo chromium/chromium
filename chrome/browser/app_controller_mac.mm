@@ -1318,7 +1318,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
       break;
     case IDC_MANAGE_EXTENSIONS:
       if (Browser* browser = ActivateBrowser(profile))
-        chrome::ShowExtensions(browser, std::string());
+        chrome::ShowExtensions(browser);
       else
         chrome::OpenExtensionsWindow(profile);
       break;

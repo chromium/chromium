@@ -184,7 +184,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       views::CreateVectorImageButtonWithNativeTheme(
                           base::BindRepeating(
                               [](Browser* browser) {
-                                chrome::ShowExtensions(browser, std::string());
+                                chrome::ShowExtensions(browser);
                               },
                               browser_),
                           vector_icons::kSettingsIcon))

@@ -794,7 +794,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowDownloads(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_MANAGE_EXTENSIONS:
-      ShowExtensions(browser_->GetBrowserForOpeningWebUi(), std::string());
+      ShowExtensions(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_PERFORMANCE:
       ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),

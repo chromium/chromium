@@ -60,7 +60,7 @@ void OpenBookmarkManagerWindow(Profile* profile) {
 
 void OpenExtensionsWindow(Profile* profile) {
   Browser* browser = Browser::Create(Browser::CreateParams(profile, true));
-  ShowExtensions(browser, std::string());
+  ShowExtensions(browser);
   browser->window()->Show();
 }
 
