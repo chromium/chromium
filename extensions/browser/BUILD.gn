@@ -429,6 +429,8 @@ source_set("browser_sources") {
 
     # TODO(crbug.com/730220): Ideally web_view should be a separate target on
     # which the extension system depends.
+    "browser_context_data.cc",
+    "browser_context_data.h",
     "guest_view/web_view/javascript_dialog_helper.cc",
     "guest_view/web_view/javascript_dialog_helper.h",
     "guest_view/web_view/web_view_constants.cc",
@@ -881,6 +883,7 @@ source_set("unit_tests") {
     "api/web_request/web_request_permissions_unittest.cc",
     "api/web_request/web_request_time_tracker_unittest.cc",
     "app_window/app_window_geometry_cache_unittest.cc",
+    "browser_context_data_unittest.cc",
     "computed_hashes_unittest.cc",
     "content_hash_fetcher_unittest.cc",
     "content_hash_tree_unittest.cc",

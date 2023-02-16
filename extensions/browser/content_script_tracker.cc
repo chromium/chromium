@@ -20,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/browser_context_data.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
@@ -138,76 +139,6 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
 const char* RenderProcessHostUserData::kUserDataKey =
     "ContentScriptTracker's data";
 
-class BrowserContextData : public ContextData {
- public:
-  explicit BrowserContextData(content::RenderFrameHost* frame)
-      : frame_(frame) {}
-
-  ~BrowserContextData() override = default;
-
-  std::unique_ptr<ContextData> Clone() const override {
-    return std::make_unique<BrowserContextData>(frame_);
-  }
-
-  std::unique_ptr<ContextData> GetLocalParentOrOpener() const override {
-    content::RenderFrameHost* parent_or_opener = frame_->GetParent();
-    // Non primary pages(e.g. fenced frame, prerendered page, bfcache, and
-    // portals) can't look at the opener, and WebContents::GetOpener returns the
-    // opener on the primary frame tree. Thus, GetOpener should be called when
-    // |frame_| is a primary main frame.
-    if (!parent_or_opener && frame_->IsInPrimaryMainFrame()) {
-      parent_or_opener =
-          content::WebContents::FromRenderFrameHost(frame_)->GetOpener();
-    }
-    if (!parent_or_opener)
-      return nullptr;
-
-    // Renderer-side WebLocalFrameAdapter only considers local frames.
-    // Comparing processes is robust way to replicate such renderer-side checks,
-    // because out caller (DoesContentScriptMatch) accepts false positives.
-    // This comparison might be less accurate (e.g. give more false positives)
-    // than SiteInstance comparison, but comparing processes should be robust
-    // and stable as SiteInstanceGroup refactoring proceeds.
-    if (parent_or_opener->GetProcess() != frame_->GetProcess())
-      return nullptr;
-
-    return std::make_unique<BrowserContextData>(parent_or_opener);
-  }
-
-  GURL GetUrl() const override {
-    if (frame_->GetLastCommittedURL().is_empty()) {
-      // It's possible for URL to be empty when `frame_` is on the initial empty
-      // document. TODO(https://crbug.com/1197308): Consider making  `frame_`'s
-      // document's URL about:blank instead of empty in that case.
-      return GURL(url::kAboutBlankURL);
-    }
-    return frame_->GetLastCommittedURL();
-  }
-
-  url::Origin GetOrigin() const override {
-    return frame_->GetLastCommittedOrigin();
-  }
-
-  bool CanAccess(const url::Origin& target) const override {
-    // CanAccess should not be called - see the comment for
-    // kAllowInaccessibleParents in GetEffectiveDocumentURL below.
-    NOTREACHED();
-    return true;
-  }
-
-  bool CanAccess(const ContextData& target) const override {
-    // CanAccess should not be called - see the comment for
-    // kAllowInaccessibleParents in GetEffectiveDocumentURL below.
-    NOTREACHED();
-    return true;
-  }
-
-  uintptr_t GetId() const override { return frame_->GetRoutingID(); }
-
- private:
-  const raw_ptr<content::RenderFrameHost> frame_;
-};
-
 // This function approximates ScriptContext::GetEffectiveDocumentURLForInjection
 // from the renderer side.
 GURL GetEffectiveDocumentURL(
@@ -215,7 +146,7 @@ GURL GetEffectiveDocumentURL(
     const GURL& document_url,
     MatchOriginAsFallbackBehavior match_origin_as_fallback) {
   // This is a simplification to avoid calling
-  // `RenderFrameHostAdapter::CanAccess` which is unable to replicate all of
+  // `BrowserContextData::CanAccess` which is unable to replicate all of
   // WebSecurityOrigin::CanAccess checks (e.g. universal access or file
   // exceptions tracked on the renderer side).  This is okay, because our only
   // caller (DoesContentScriptMatch()) expects false positives.
@@ -415,8 +346,9 @@ std::vector<const Extension*> GetExtensionsInjectingContentScripts(
   DCHECK(registry);  // This method shouldn't be called during shutdown.
   for (const auto& it : registry->enabled_extensions()) {
     const Extension& extension = *it;
-    if (!DoContentScriptsMatch(extension, frame, url))
+    if (!DoContentScriptsMatch(extension, frame, url)) {
       continue;
+    }
 
     extensions_injecting_content_scripts.push_back(&extension);
   }
@@ -456,8 +388,9 @@ void StoreExtensionsInjectingContentScripts(
   // together with the RenderProcessHost (see also a comment inside
   // RenderProcessHostUserData::GetOrCreate).
   auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
-  for (const Extension* extension : extensions_injecting_content_scripts)
+  for (const Extension* extension : extensions_injecting_content_scripts) {
     process_data.AddContentScript(extension->id());
+  }
 }
 
 }  // namespace
@@ -468,8 +401,9 @@ ExtensionIdSet ContentScriptTracker::GetExtensionsThatRanScriptsInProcess(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const auto* process_data = RenderProcessHostUserData::Get(process);
-  if (!process_data)
+  if (!process_data) {
     return {};
+  }
 
   return process_data->content_scripts();
 }
@@ -484,8 +418,9 @@ bool ContentScriptTracker::DidProcessRunContentScriptFromExtension(
   // Check if we've been notified about the content script injection via
   // ReadyToCommitNavigation or WillExecuteCode methods.
   const auto* process_data = RenderProcessHostUserData::Get(process);
-  if (!process_data)
+  if (!process_data) {
     return false;
+  }
 
   return process_data->HasContentScript(extension_id);
 }
@@ -592,8 +527,9 @@ void ContentScriptTracker::WillExecuteCode(
 
   const Extension* extension =
       FindExtensionByHostId(process.GetBrowserContext(), host_id);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   HandleProgrammaticContentScriptInjection(PassKey(), frame, *extension);
 }
@@ -625,8 +561,9 @@ void ContentScriptTracker::WillUpdateContentScriptsInRenderer(
 
   const Extension* extension =
       FindExtensionByHostId(process.GetBrowserContext(), host_id);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
   const std::set<content::RenderFrameHost*>& frames_in_process =
