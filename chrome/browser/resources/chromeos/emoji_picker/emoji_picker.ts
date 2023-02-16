@@ -919,12 +919,14 @@ export class EmojiPicker extends PolymerElement {
         // for text group button, the highlight bar only spans its inner width,
         // which excludes both padding and margin.
         if (index < subcategoryTabs.length) {
+          const padding = this.gifSupport ?
+              constants.V2_5_EMOJI_PICKER_SIDE_PADDING :
+              constants.EMOJI_PICKER_SIDE_PADDING;
           const barInlineGap =
               constants.TAB_BUTTON_MARGIN + constants.TEXT_GROUP_BUTTON_PADDING;
           const currentTab = subcategoryTabs[index];
           bar.style.left = `${
-              (currentTab?.offsetLeft ?? 0) -
-              constants.EMOJI_PICKER_SIDE_PADDING -
+              (currentTab?.offsetLeft ?? 0) - padding -
               this.calculateTabScrollLeftPosition(this.pagination)}px`;
           bar.style.width = `${
               (subcategoryTabs[index]?.clientWidth ?? 0) - barInlineGap * 2}px`;
