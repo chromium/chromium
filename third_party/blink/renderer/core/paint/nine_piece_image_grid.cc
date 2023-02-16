@@ -4,26 +4,26 @@
 
 #include "third_party/blink/renderer/core/paint/nine_piece_image_grid.h"
 
-#include "base/numerics/clamped_math.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "ui/gfx/geometry/outsets.h"
 
 namespace blink {
 
-static int ComputeEdgeWidth(const BorderImageLength& border_slice,
+namespace {
+
+LayoutUnit ComputeEdgeWidth(const BorderImageLength& border_slice,
                             int border_side,
-                            int image_side,
+                            float image_side,
                             int box_extent) {
   if (border_slice.IsNumber())
-    return LayoutUnit(border_slice.Number() * border_side).Floor();
+    return LayoutUnit(border_slice.Number() * border_side);
   if (border_slice.length().IsAuto())
-    return image_side;
-  return ValueForLength(border_slice.length(), LayoutUnit(box_extent)).Floor();
+    return LayoutUnit(image_side);
+  return ValueForLength(border_slice.length(), LayoutUnit(box_extent));
 }
 
-static float ComputeEdgeSlice(const Length& slice,
-                              float slice_scale,
-                              float maximum) {
+float ComputeEdgeSlice(const Length& slice, float slice_scale, float maximum) {
   float resolved;
   // If the slice is a <number> (stored as a fixed Length), scale it by the
   // slice scale to get to the same space as the image.
@@ -38,24 +38,43 @@ static float ComputeEdgeSlice(const Length& slice,
   return LayoutUnit::FromFloatRound(resolved).ToFloat();
 }
 
-// Scale the width of the |start| and |end| edges using |scale_factor|.
-// Always round the width of |start|. Based on available space (|box_extent|),
-// the width of |end| is either rounded or floored. This should keep abutting
-// edges flush, while not producing potentially "uneven" widths for a
-// non-overlapping case.
-static void ScaleEdgeWidths(NinePieceImageGrid::Edge& start,
-                            NinePieceImageGrid::Edge& end,
-                            int box_extent,
-                            float scale_factor) {
-  LayoutUnit start_width(start.width);
-  start_width *= scale_factor;
-  LayoutUnit end_width(end.width);
-  end_width *= scale_factor;
-  start.width = start_width.Round();
-  int remaining = box_extent - start.width;
-  int rounded_end = end_width.Round();
-  end.width = rounded_end > remaining ? end_width.Floor() : rounded_end;
+// "Round" the edge widths, adhering to the following restrictions:
+//
+//  1) Perform rounding in the same way as for borders, thus preferring
+//     symmetry.
+//
+//  2) If edges are abutting, then distribute the space (i.e the single pixel)
+//     to the edge with the highest coverage - giving the starting edge
+//     precedence if tied.
+//
+gfx::Outsets SnapEdgeWidths(const LayoutRectOutsets& edge_widths,
+                            const gfx::Size& snapped_box_size) {
+  gfx::Outsets snapped;
+  // Allow a small deviation when checking if the the edges are abutting.
+  constexpr LayoutUnit kAbuttingEpsilon(LayoutUnit::Epsilon());
+  if (snapped_box_size.width() - edge_widths.Left() - edge_widths.Right() <=
+      kAbuttingEpsilon) {
+    snapped.set_left(edge_widths.Left().Round());
+    snapped.set_right(snapped_box_size.width() - snapped.left());
+  } else {
+    snapped.set_left(edge_widths.Left().Floor());
+    snapped.set_right(edge_widths.Right().Floor());
+  }
+  DCHECK_LE(snapped.left() + snapped.right(), snapped_box_size.width());
+
+  if (snapped_box_size.height() - edge_widths.Top() - edge_widths.Bottom() <=
+      kAbuttingEpsilon) {
+    snapped.set_top(edge_widths.Top().Round());
+    snapped.set_bottom(snapped_box_size.height() - snapped.top());
+  } else {
+    snapped.set_top(edge_widths.Top().Floor());
+    snapped.set_bottom(edge_widths.Bottom().Floor());
+  }
+  DCHECK_LE(snapped.top() + snapped.bottom(), snapped_box_size.height());
+  return snapped;
 }
+
+}  // namespace
 
 NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
                                        const gfx::SizeF& image_size,
@@ -80,54 +99,63 @@ NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
   left_.slice = ComputeEdgeSlice(image_slices.Left(), slice_scale.x(),
                                  image_size.width());
 
-  // TODO(fs): Compute edge widths to LayoutUnit, and then only round to
-  // integer at the end - after (potential) compensation for overlapping edges.
-
   // |Edge::slice| is in image-local units (physical pixels for raster images),
   // but when using it to resolve 'auto' for border-image-widths we want it to
   // be in zoomed CSS pixels, so divide by |slice_scale| and multiply by zoom.
   const gfx::Vector2dF auto_slice_adjustment(zoom / slice_scale.x(),
                                              zoom / slice_scale.y());
   const BorderImageLengthBox& border_slices = nine_piece_image.BorderSlices();
-  top_.width = sides_to_include.top
-                   ? ComputeEdgeWidth(border_slices.Top(), border_widths.top(),
-                                      top_.slice * auto_slice_adjustment.y(),
-                                      border_image_area.height())
-                   : 0;
-  right_.width =
-      sides_to_include.right
-          ? ComputeEdgeWidth(border_slices.Right(), border_widths.right(),
-                             right_.slice * auto_slice_adjustment.x(),
-                             border_image_area.width())
-          : 0;
-  bottom_.width =
-      sides_to_include.bottom
-          ? ComputeEdgeWidth(border_slices.Bottom(), border_widths.bottom(),
-                             bottom_.slice * auto_slice_adjustment.y(),
-                             border_image_area.height())
-          : 0;
-  left_.width =
-      sides_to_include.left
-          ? ComputeEdgeWidth(border_slices.Left(), border_widths.left(),
-                             left_.slice * auto_slice_adjustment.x(),
-                             border_image_area.width())
-          : 0;
+  LayoutRectOutsets resolved_widths;
+  if (sides_to_include.top) {
+    resolved_widths.SetTop(ComputeEdgeWidth(
+        border_slices.Top(), border_widths.top(),
+        top_.slice * auto_slice_adjustment.y(), border_image_area.height()));
+  }
+  if (sides_to_include.right) {
+    resolved_widths.SetRight(ComputeEdgeWidth(
+        border_slices.Right(), border_widths.right(),
+        right_.slice * auto_slice_adjustment.x(), border_image_area.width()));
+  }
+  if (sides_to_include.bottom) {
+    resolved_widths.SetBottom(ComputeEdgeWidth(
+        border_slices.Bottom(), border_widths.bottom(),
+        bottom_.slice * auto_slice_adjustment.y(), border_image_area.height()));
+  }
+  if (sides_to_include.left) {
+    resolved_widths.SetLeft(ComputeEdgeWidth(
+        border_slices.Left(), border_widths.left(),
+        left_.slice * auto_slice_adjustment.x(), border_image_area.width()));
+  }
 
   // The spec says: Given Lwidth as the width of the border image area, Lheight
   // as its height, and Wside as the border image width offset for the side, let
   // f = min(Lwidth/(Wleft+Wright), Lheight/(Wtop+Wbottom)). If f < 1, then all
   // W are reduced by multiplying them by f.
-  int border_side_width = base::ClampAdd(left_.width, right_.width).Max(1);
-  int border_side_height = base::ClampAdd(top_.width, bottom_.width).Max(1);
-  float border_side_scale_factor =
-      std::min((float)border_image_area.width() / border_side_width,
-               (float)border_image_area.height() / border_side_height);
+  const LayoutUnit border_side_width =
+      resolved_widths.Left() + resolved_widths.Right();
+  const LayoutUnit border_side_height =
+      resolved_widths.Top() + resolved_widths.Bottom();
+  const float border_side_scale_factor = std::min(
+      static_cast<float>(border_image_area.width()) / border_side_width,
+      static_cast<float>(border_image_area.height()) / border_side_height);
   if (border_side_scale_factor < 1) {
-    ScaleEdgeWidths(top_, bottom_, border_image_area.height(),
-                    border_side_scale_factor);
-    ScaleEdgeWidths(left_, right_, border_image_area.width(),
-                    border_side_scale_factor);
+    resolved_widths.SetTop(
+        LayoutUnit(resolved_widths.Top() * border_side_scale_factor));
+    resolved_widths.SetRight(
+        LayoutUnit(resolved_widths.Right() * border_side_scale_factor));
+    resolved_widths.SetBottom(
+        LayoutUnit(resolved_widths.Bottom() * border_side_scale_factor));
+    resolved_widths.SetLeft(
+        LayoutUnit(resolved_widths.Left() * border_side_scale_factor));
   }
+
+  const gfx::Outsets snapped_widths =
+      SnapEdgeWidths(resolved_widths, border_image_area.size());
+
+  top_.width = snapped_widths.top();
+  right_.width = snapped_widths.right();
+  bottom_.width = snapped_widths.bottom();
+  left_.width = snapped_widths.left();
 }
 
 // Given a rectangle, construct a subrectangle using offset, width and height.
