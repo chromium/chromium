@@ -8,13 +8,14 @@ text with their voice.
 ### User flow
 
 Dictation can be toggled on in two ways: by pressing Search + D or by pressing the
-microphone icon in the status tray. Once toggled, Dictation starts speech
+microphone icon (which has an accessibility label of "toggle dictation") in the
+status tray. Once toggled, Dictation starts speech
 recognition and the user can start speaking. If a command is recognized, then
 it will execute the command to the best of its ability; otherwise it will input
 the recognized text as-is. Dictation can be turned off in the same two ways
 mentioned above; it will automatically turn off if no speech has been
 recognized within a short period of time. Lastly, Dictation can only be used
-when focus is on an editable field (textarea, input, contenteditable, etc). 
+when focus is on an editable field (textarea, input, contenteditable, etc).
 
 ### Technical overview
 
@@ -25,9 +26,9 @@ chrome.speechRecognitionPrivate API. The API forwards all speech recognition
 results to the Dictation extension, where it parses text to see if it matched a
 command. If a command was detected, then it will verify and execute the
 command to the best of its ability; otherwise, it will input the recognized text
-using IME APIs. Throughout this flow, the main Dictation object uses the
-chrome.accessibilityPrivate API to update the Dictation UI (which lives in C++)
-so that the user is aware of Dictation's internal state.
+using input method editor (IME) APIs. Throughout this flow, the main Dictation
+object uses the chrome.accessibilityPrivate API to update the Dictation UI
+(which lives in C++) so that the user is aware of Dictation's internal state.
 
 It's also worth noting that Dictation utilizes two [DLCs](https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice/docs/developer.md): Pumpkin and SODA.
 Pumpkin is a semantic parser that allows Dictation to extract meaning out of
@@ -103,9 +104,9 @@ showing notifications to the user.
 
 ### Testing
 
-* See the `dictation/` extension directory for all JavaScript extension tests
+* See the `dictation/` extension directory for all JavaScript extension tests.
 
-* See `dictation_browsertest.cc` for C++ integration tests. Note that these
+* See [dictation_browsertest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/accessibility/dictation_browsertest.cc?q=dictation_browsertest.cc&ss=chromium%2Fchromium%2Fsrc) for C++ integration tests. Note that these
 tests hook into a JavaScript class called `DictationTestSupport` and allows the
 C++ tests to execute JavaScript or wait for information to propagate to the
 JavaScript side before continuing.
