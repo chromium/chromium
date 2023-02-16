@@ -95,7 +95,6 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
   // response to the ongoing GetBuffer() request.
   void ProvideBuffer(media::mojom::DecoderBufferPtr buffer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(buffer);
 
     // Only occurs on a FlushUntil() call. If preloading is ongoing, that will
     // occur as part of the next GetBuffer() call.
