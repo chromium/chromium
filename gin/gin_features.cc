@@ -81,6 +81,9 @@ BASE_FEATURE(kV8ExperimentalRegexpEngine,
              "V8ExperimentalRegexpEngine",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Turbofan compiler.
+BASE_FEATURE(kV8Turbofan, "V8Turbofan", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables experimental Maglev compiler.
 BASE_FEATURE(kV8Maglev, "V8Maglev", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -131,6 +134,9 @@ BASE_FEATURE(kV8SlowHistogramsSparkplug,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8SlowHistogramsSparkplugAndroid,
              "V8SlowHistogramsSparkplugAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kV8SlowHistogramsNoTurbofan,
+             "V8SlowHistogramsNoTurbofan",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kV8DelayMemoryReducer,
