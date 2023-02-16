@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.creator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -330,10 +331,10 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
             } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
                 mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
             }
-            if (mCreatorModel.get(CreatorProperties.TITLE_KEY).isEmpty()) {
+            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))) {
                 mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
             }
-            if (mCreatorModel.get(CreatorProperties.URL_KEY).isEmpty()) {
+            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))) {
                 mCreatorModel.set(CreatorProperties.URL_KEY, result.visitUrl.getSpec());
                 mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
                         UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
