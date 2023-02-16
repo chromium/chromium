@@ -17,10 +17,7 @@ namespace ash {
 // `EasyUnlockAuthAttempt` object.
 class EasyUnlockAuthAttempt {
  public:
-  // The auth type.
-  enum Type { TYPE_UNLOCK, TYPE_SIGNIN };
-
-  EasyUnlockAuthAttempt(const AccountId& account_id, Type type);
+  explicit EasyUnlockAuthAttempt(const AccountId& account_id);
 
   EasyUnlockAuthAttempt(const EasyUnlockAuthAttempt&) = delete;
   EasyUnlockAuthAttempt& operator=(const EasyUnlockAuthAttempt&) = delete;
@@ -45,7 +42,6 @@ class EasyUnlockAuthAttempt {
 
   State state_;
   const AccountId account_id_;
-  Type type_;
 };
 
 }  // namespace ash

@@ -288,10 +288,6 @@ EasyUnlockServiceRegular::GetProximityAuthPrefManager() {
   return pref_manager_.get();
 }
 
-EasyUnlockService::Type EasyUnlockServiceRegular::GetType() const {
-  return EasyUnlockService::TYPE_REGULAR;
-}
-
 AccountId EasyUnlockServiceRegular::GetAccountId() const {
   const user_manager::User* const primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();

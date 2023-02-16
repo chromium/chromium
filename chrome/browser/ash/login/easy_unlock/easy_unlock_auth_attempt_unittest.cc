@@ -125,8 +125,7 @@ class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
   ~EasyUnlockAuthAttemptUnlockTest() override {}
 
   void SetUp() override {
-    auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(
-        test_account_id1_, EasyUnlockAuthAttempt::TYPE_UNLOCK);
+    auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(test_account_id1_);
   }
 
   void TearDown() override {

@@ -43,20 +43,6 @@ void SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
 }
 
 // static
-void SmartLockMetricsRecorder::RecordAuthResultSignInSuccess(bool success) {
-  RecordAuthResultSuccess(success);
-  UMA_HISTOGRAM_BOOLEAN("SmartLock.AuthResult.SignIn", success);
-}
-
-// static
-void SmartLockMetricsRecorder::RecordAuthResultSignInFailure(
-    SmartLockAuthResultFailureReason failure_reason) {
-  RecordAuthResultSignInSuccess(false);
-  UMA_HISTOGRAM_ENUMERATION("SmartLock.AuthResult.SignIn.Failure",
-                            failure_reason);
-}
-
-// static
 void SmartLockMetricsRecorder::RecordAuthMethodChoiceUnlockPasswordState(
     SmartLockAuthEventPasswordState password_state) {
   UMA_HISTOGRAM_ENUMERATION("SmartLock.AuthMethodChoice.Unlock.PasswordState",

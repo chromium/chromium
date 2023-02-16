@@ -50,10 +50,6 @@ class SecureChannelClient;
 class EasyUnlockService : public KeyedService,
                           public proximity_auth::ScreenlockBridge::Observer {
  public:
-  // TODO(b/227674947): Delete this enum now that sign in with Smart Lock is
-  // deprecated.
-  enum Type { TYPE_REGULAR, TYPE_SIGNIN };
-
   // Gets EasyUnlockService instance.
   static EasyUnlockService* Get(Profile* profile);
 
@@ -77,9 +73,6 @@ class EasyUnlockService : public KeyedService,
   // EasyUnlock preferences.
   virtual proximity_auth::ProximityAuthPrefManager*
   GetProximityAuthPrefManager();
-
-  // Returns the EasyUnlockService type.
-  virtual Type GetType() const = 0;
 
   // Returns the user currently associated with the service.
   virtual AccountId GetAccountId() const = 0;

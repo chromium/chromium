@@ -13,13 +13,11 @@
 namespace proximity_auth {
 
 ProximityAuthSystem::ProximityAuthSystem(
-    ScreenlockType screenlock_type,
     ProximityAuthClient* proximity_auth_client,
     ash::secure_channel::SecureChannelClient* secure_channel_client)
     : secure_channel_client_(secure_channel_client),
       unlock_manager_(
-          std::make_unique<UnlockManagerImpl>(screenlock_type,
-                                              proximity_auth_client)) {}
+          std::make_unique<UnlockManagerImpl>(proximity_auth_client)) {}
 
 ProximityAuthSystem::ProximityAuthSystem(
     ash::secure_channel::SecureChannelClient* secure_channel_client,

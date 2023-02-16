@@ -43,8 +43,7 @@ class UnlockManagerImpl : public UnlockManager,
  public:
   // The |proximity_auth_client| is not owned and should outlive the constructed
   // unlock manager.
-  UnlockManagerImpl(ProximityAuthSystem::ScreenlockType screenlock_type,
-                    ProximityAuthClient* proximity_auth_client);
+  explicit UnlockManagerImpl(ProximityAuthClient* proximity_auth_client);
 
   UnlockManagerImpl(const UnlockManagerImpl&) = delete;
   UnlockManagerImpl& operator=(const UnlockManagerImpl&) = delete;
@@ -195,19 +194,11 @@ class UnlockManagerImpl : public UnlockManager,
       std::unique_ptr<base::OneShotTimer> timer);
 
   // For recording metrics.
-  void RecordGetRemoteStatusResultSuccess(
-      ProximityAuthSystem::ScreenlockType screenlock_type,
-      bool success = true);
+  void RecordGetRemoteStatusResultSuccess(bool success = true);
   void RecordGetRemoteStatusResultFailure(
-      ProximityAuthSystem::ScreenlockType screenlock_type,
       GetRemoteStatusResultFailureReason failure_reason);
   std::string GetRemoteStatusResultFailureReasonToString(
       GetRemoteStatusResultFailureReason reason);
-
-  // Whether |this| manager is being used for sign-in or session unlock.
-  // TODO(b/227674947): |screenlock_type_| and related methods can be removed
-  // now that sign in with Smart Lock is deprecated.
-  const ProximityAuthSystem::ScreenlockType screenlock_type_;
 
   // Used to call into the embedder. Expected to outlive |this| instance.
   ProximityAuthClient* proximity_auth_client_;

@@ -78,7 +78,6 @@ class EasyUnlockServiceRegular
   // EasyUnlockService implementation:
   proximity_auth::ProximityAuthPrefManager* GetProximityAuthPrefManager()
       override;
-  EasyUnlockService::Type GetType() const override;
   AccountId GetAccountId() const override;
   const base::Value::List* GetRemoteDevices() const override;
   void InitializeInternal() override;
