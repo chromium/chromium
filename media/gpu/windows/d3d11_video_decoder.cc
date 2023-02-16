@@ -949,8 +949,13 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     frame->set_hdr_metadata(picture->hdr_metadata() ? picture->hdr_metadata()
                                                     : config_.hdr_metadata());
   }
+
+  // TODO(crbug.com/1236801): WebGPU cannot import and create texture view on
+  // correct slice of texture array. Still some works need to be done in both
+  // chromium side and dawn side.
   frame->metadata().is_webgpu_compatible =
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle);
+      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) &&
+      use_single_video_decoder_texture_;
   output_cb_.Run(frame);
   return true;
 }
