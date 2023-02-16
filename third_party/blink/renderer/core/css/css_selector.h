@@ -813,7 +813,6 @@ struct VectorTraits<blink::CSSSelector> : VectorTraitsBase<blink::CSSSelector> {
   static const bool kCanInitializeWithMemset = true;
   static const bool kCanClearUnusedSlotsWithMemset = true;
   static const bool kCanMoveWithMemcpy = true;
-  static const bool kCanTraceConcurrently = true;
 };
 }  // namespace WTF
 
