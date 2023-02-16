@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
@@ -259,6 +260,11 @@ HeapProfilerController::HeapProfilerController(version_info::Channel channel,
   // destroyed in tests.
   DCHECK_EQ(g_profiling_enabled, ProfilingEnabled::kNoController);
   g_profiling_enabled = DecideIfCollectionIsEnabled(channel, process_type);
+
+  // Before starting the profiler, record the ReentryGuard's TLS slot to a crash
+  // key to debug reentry into the profiler.
+  // TODO(crbug.com/1411454): Remove this after diagnosing reentry crashes.
+  base::allocator::dispatcher::ReentryGuard::RecordTLSSlotToCrashKey();
 }
 
 HeapProfilerController::~HeapProfilerController() {

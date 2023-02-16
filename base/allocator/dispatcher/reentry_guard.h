@@ -43,6 +43,12 @@ struct BASE_EXPORT ReentryGuard {
   // (>= PTHREAD_KEY_2NDLEVEL_SIZE == 32).  c.f. heap_profiling::InitTLSSlot.
   static void InitTLSSlot();
 
+  // InitTLSSlot() is called before crash keys are available. At some point
+  // after SetCrashKeyImplementation() is called, this function should be
+  // called to record `entered_key_` to a crash key for debugging. This may
+  // allocate so it must not be called from inside an allocator hook.
+  static void RecordTLSSlotToCrashKey();
+
  private:
   static pthread_key_t entered_key_;
   const bool allowed_;
@@ -56,6 +62,7 @@ struct [[maybe_unused]] BASE_EXPORT ReentryGuard {
   constexpr explicit operator bool() const noexcept { return true; }
 
   static void InitTLSSlot();
+  static void RecordTLSSlotToCrashKey();
 };
 
 #endif
