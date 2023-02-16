@@ -130,6 +130,9 @@ bool SetupPaintForSvgText(const NGTextPainter::SvgTextPaintState& state,
   flags.setAntiAlias(true);
 
   if (style.TextShadow() &&
+      // Text shadows are disabled for clip-paths, because they are not
+      // geometry.
+      !state.IsRenderingClipPathAsMaskImage() &&
       // Text shadows are disabled when printing. http://crbug.com/258321
       !layout_parent.GetDocument().Printing()) {
     flags.setLooper(TextPainterBase::CreateDrawLooper(
