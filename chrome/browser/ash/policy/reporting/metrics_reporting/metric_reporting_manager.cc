@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_input_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_memory_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
@@ -62,6 +64,7 @@ constexpr char kNetworkTelemetry[] = "network_telemetry";
 constexpr char kPeripheralTelemetry[] = "peripheral_telemetry";
 constexpr char kDelayedPeripheralTelemetry[] = "delayed_peripheral_telemetry";
 constexpr char kDisplaysTelemetry[] = "displays_telemetry";
+constexpr char kDeviceActivityTelemetry[] = "device_activity_telemetry";
 
 }  // namespace
 
@@ -300,6 +303,7 @@ void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
   InitNetworkCollectors(profile);
   InitAudioCollectors();
   InitDisplayCollectors();
+  InitDeviceActivityCollector();
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
                               &MetricReportingManager::UploadTelemetry);
@@ -575,6 +579,21 @@ void MetricReportingManager::InitDisplayCollectors() {
       metrics::GetDefaultCollectionRate(metrics::kDefaultReportUploadFrequency),
       /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
   samplers_.push_back(std::move(displays_telemetry_sampler));
+}
+
+void MetricReportingManager::InitDeviceActivityCollector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto device_activity_sampler = std::make_unique<DeviceActivitySampler>();
+  InitPeriodicCollector(
+      kDeviceActivityTelemetry, device_activity_sampler.get(),
+      user_telemetry_report_queue_.get(),
+      /*enable_setting_path=*/::ash::kDeviceActivityHeartbeatEnabled,
+      metrics::kDeviceActivityHeartbeatEnabledDefaultValue,
+      ::ash::kDeviceActivityHeartbeatCollectionRateMs,
+      metrics::GetDefaultCollectionRate(
+          metrics::kDefaultDeviceActivityHeartbeatCollectionRate),
+      /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
+  samplers_.push_back(std::move(device_activity_sampler));
 }
 
 std::vector<CollectorBase*>

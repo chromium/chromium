@@ -174,6 +174,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitDisplayCollectors();
 
+  // Initializes a periodic collector that collects device activity state.
+  void InitDeviceActivityCollector();
+
   base::TimeDelta GetUploadDelay() const;
 
   std::vector<CollectorBase*> GetTelemetryCollectorsFromSetting(

@@ -16,6 +16,10 @@ constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
 // Default metric collection rate used for testing purposes.
 constexpr base::TimeDelta kDefaultCollectionRateForTesting = base::Minutes(2);
 
+// Default device activity heartbeat collection rate.
+constexpr base::TimeDelta kDefaultDeviceActivityHeartbeatCollectionRate =
+    base::Minutes(15);
+
 // Default event checking rate for testing purposes.
 constexpr base::TimeDelta kDefaultEventCheckingRateForTesting =
     base::Minutes(1);
@@ -37,6 +41,9 @@ constexpr base::TimeDelta kDefaultReportUploadFrequencyForTesting =
 
 // Initial metric reporting upload delay.
 constexpr base::TimeDelta kInitialUploadDelay = base::Minutes(3);
+
+// Default value for reporting device activity heartbeats.
+constexpr bool kDeviceActivityHeartbeatEnabledDefaultValue = false;
 
 // Default value for reporting device audio status.
 constexpr bool kReportDeviceAudioStatusDefaultValue = true;
