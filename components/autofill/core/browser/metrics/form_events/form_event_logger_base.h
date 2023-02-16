@@ -143,7 +143,29 @@ class FormEventLoggerBase {
   // Records UMA metrics on the funnel and key metrics, and writes logs to
   // autofill-internals.
   void RecordFunnelMetrics() const;
+  // For each key metric, a separate function is defined below. By making them
+  // virtual, derived classes can change the behavior for specific metrics.
+  // `RecordKeyMetrics()` checks the necessary pre-conditions for metrics to be
+  // emitted and calls the relevant functions.
   void RecordKeyMetrics() const;
+
+  // Whether for a submitted form, Chrome had data stored that could be
+  // filled.
+  void RecordFillingReadiness(LogBuffer& logs) const;
+
+  // Whether a user accepted a filling suggestion they saw for a form that
+  // was later submitted.
+  void RecordFillingAcceptance(LogBuffer& logs) const;
+
+  // Whether a filled form and submitted form required no fixes to filled
+  // fields.
+  void RecordFillingCorrectness(LogBuffer& logs) const;
+
+  // Whether a submitted form was filled.
+  void RecordFillingAssistance(LogBuffer& logs) const;
+
+  // Whether a (non-)autofilled form was submitted.
+  void RecordFormSubmission(LogBuffer& logs) const;
 
   // Records UMA metrics if this form submission happened as part of an ablation
   // study or the corresponding control group. This is not virtual because it is
