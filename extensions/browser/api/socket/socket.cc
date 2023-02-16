@@ -144,7 +144,7 @@ Socket::WriteRequest::WriteRequest(scoped_refptr<net::IOBuffer> io_buffer,
 
 Socket::WriteRequest::WriteRequest(WriteRequest&& other) = default;
 
-Socket::WriteRequest::~WriteRequest() {}
+Socket::WriteRequest::~WriteRequest() = default;
 
 // static
 net::NetworkTrafficAnnotationTag Socket::GetNetworkTrafficAnnotationTag() {
