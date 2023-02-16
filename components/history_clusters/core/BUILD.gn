@@ -139,6 +139,8 @@ source_set("test_support") {
     "clustering_test_utils.h",
     "history_clusters_service_test_api.cc",
     "history_clusters_service_test_api.h",
+    "test_history_clusters_service.cc",
+    "test_history_clusters_service.h",
   ]
   public_deps = [ ":core" ]
   deps = [

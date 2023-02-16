@@ -119,7 +119,9 @@ ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
       optimization_guide_decider_(optimization_guide_decider),
       engagement_score_provider_(engagement_score_provider),
       clock_(base::DefaultClock::GetInstance()) {
-  history_service_observation_.Observe(history_service);
+  if (history_service_) {
+    history_service_observation_.Observe(history_service_);
+  }
 
   if (optimization_guide_decider_) {
     optimization_guide_decider_->RegisterOptimizationTypes(

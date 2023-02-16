@@ -156,7 +156,8 @@ class HistoryClustersService : public base::SupportsUserData,
   //   if the caller wants the newest visits.
   // - `recluster`, if true, forces reclustering as if
   //   `persist_clusters_in_history_db` were false.
-  std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
+  // Virtual for testing.
+  virtual std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
       ClusteringRequestSource clustering_request_source,
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
