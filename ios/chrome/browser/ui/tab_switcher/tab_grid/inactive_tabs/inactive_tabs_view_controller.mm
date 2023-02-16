@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -32,6 +34,15 @@
   navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:navigationBar];
 
+  _gridViewController = [[GridViewController alloc] init];
+  _gridViewController.theme = GridThemeLight;
+  UIView* gridView = _gridViewController.view;
+  gridView.translatesAutoresizingMaskIntoConstraints = NO;
+  gridView.accessibilityIdentifier = kInactiveTabGridIdentifier;
+  [self addChildViewController:_gridViewController];
+  [self.view addSubview:gridView];
+  [_gridViewController didMoveToParentViewController:self];
+
   [NSLayoutConstraint activateConstraints:@[
     [navigationBar.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
@@ -39,6 +50,10 @@
         constraintEqualToAnchor:self.view.leadingAnchor],
     [navigationBar.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
+    [gridView.topAnchor constraintEqualToAnchor:navigationBar.bottomAnchor],
+    [gridView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [gridView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [gridView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
   ]];
 }
 

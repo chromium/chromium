@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class GridViewController;
 @class InactiveTabsViewController;
 
 // Protocol used to relay relevant user interactions from the
@@ -21,6 +22,9 @@
 
 // Displays the list of inactive tabs.
 @interface InactiveTabsViewController : UIViewController
+
+// The embedded grid view controller.
+@property(nonatomic, readonly) GridViewController* gridViewController;
 
 // Delegate to handle interactions.
 @property(nonatomic, weak) id<InactiveTabsViewControllerDelegate> delegate;

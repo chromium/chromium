@@ -31,6 +31,7 @@ NSString* const kTabGridRegularTabsEmptyStateIdentifier =
 NSString* const kTabGridScrollViewIdentifier = @"kTabGridScrollViewIdentifier";
 NSString* const kRegularTabGridIdentifier = @"kRegularTabGridIdentifier";
 NSString* const kIncognitoTabGridIdentifier = @"kIncognitoTabGridIdentifier";
+NSString* const kInactiveTabGridIdentifier = @"kInactiveTabGridIdentifier";
 
 NSString* const kTabGridEditButtonIdentifier = @"kTabGridEditButtonIdentifier";
 NSString* const kTabGridEditCloseTabsButtonIdentifier =

@@ -17,12 +17,24 @@ source_set("inactive_tabs") {
 source_set("inactive_tabs_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "inactive_tabs_view_controller.h",
+    "inactive_tabs_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ui/base",
+  ]
+}
+
+source_set("inactive_tabs_button") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
     "inactive_tabs_button.h",
     "inactive_tabs_button.mm",
     "inactive_tabs_button_header.h",
     "inactive_tabs_button_header.mm",
-    "inactive_tabs_view_controller.h",
-    "inactive_tabs_view_controller.mm",
   ]
   deps = [
     "//ios/chrome/app/strings",

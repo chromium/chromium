@@ -22,6 +22,7 @@ extern NSString* const kTabGridRegularTabsEmptyStateIdentifier;
 extern NSString* const kTabGridScrollViewIdentifier;
 extern NSString* const kRegularTabGridIdentifier;
 extern NSString* const kIncognitoTabGridIdentifier;
+extern NSString* const kInactiveTabGridIdentifier;
 
 extern NSString* const kTabGridEditButtonIdentifier;
 extern NSString* const kTabGridEditCloseTabsButtonIdentifier;
