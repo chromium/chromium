@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -46,10 +47,13 @@ void AshNotificationDragController::WriteDragDataForView(
       notification_view->GetDragAreaBounds();
   DCHECK(drag_area);
 
+  // Set the image to show during drag.
   const absl::optional<gfx::ImageSkia> drag_image =
       notification_view->GetDragImage();
   DCHECK(drag_image);
   data->provider().SetDragImage(*drag_image, press_pt - drag_area->origin());
+
+  notification_view->AttachDropData(data);
 }
 
 int AshNotificationDragController::GetDragOperationsForView(
@@ -105,7 +109,9 @@ void AshNotificationDragController::OnNotificationViewDragStarted(
       aura::client::GetDragDropClient(Shell::GetPrimaryRootWindow()));
 
   // Hide the message center bubble if it is open.
-  if (message_center::MessageCenter::Get()->IsMessageCenterVisible()) {
+  message_center::MessageCenter* message_center_ptr =
+      message_center::MessageCenter::Get();
+  if (message_center_ptr->IsMessageCenterVisible()) {
     StatusAreaWidget* status_area_widget =
         RootWindowController::ForWindow(
             dragged_view->GetWidget()->GetNativeView())
@@ -138,8 +144,14 @@ void AshNotificationDragController::OnNotificationViewDragStarted(
 
   // Hide the dragged notification popup if any. Assume that the notification
   // popup only shows when the message center is hidden.
-  message_center::MessageCenter::Get()->MarkSinglePopupAsShown(
-      *dragged_notification_id_,
+  // NOTE: if the dragged notification is a child of a notification group, hide
+  // the group notification popup.
+  message_center::Notification* notification =
+      message_center_ptr->FindNotificationById(*dragged_notification_id_);
+  message_center_ptr->MarkSinglePopupAsShown(
+      notification->group_child()
+          ? message_center_ptr->FindParentNotification(notification)->id()
+          : *dragged_notification_id_,
       /*mark_notification_as_read=*/true);
 }
 

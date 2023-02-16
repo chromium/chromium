@@ -31,11 +31,14 @@
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/notification_grouping_controller.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -47,6 +50,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
@@ -65,6 +69,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/message_center/views/large_image_view.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
@@ -92,6 +97,10 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
+// Used when encoding a notification drop image into binary data. The drop image
+// should be resized if either its length or its width exceeds this threshold.
+constexpr int kMaxDragImageSizeInDIP = 2000;
 
 constexpr auto kNotificationViewPadding = gfx::Insets(4);
 constexpr int kMainRightViewVerticalSpacing = 4;
@@ -248,6 +257,26 @@ void ScaleAndTranslateView(views::View* view,
       .SetDuration(
           base::Milliseconds(ash::kLargeImageScaleAndTranslateDurationMs))
       .SetTransform(view, gfx::Transform(), gfx::Tween::ACCEL_0_100_DECEL_80);
+}
+
+// Returns the HTML snippet that contains the binary data of `bitmap`. Returns
+// `absl::nullopt` if having any error.
+absl::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
+  std::vector<unsigned char> image_data;
+  if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                        &image_data)) {
+    std::string encoded_data;
+    base::Base64Encode(
+        /*input=*/std::string(image_data.cbegin(), image_data.cend()),
+        &encoded_data);
+    const std::string html = base::StrCat(
+        {"<img src=\"data:image/png;base64,", encoded_data, "\"/>"});
+    std::u16string html_in_u16;
+    if (base::UTF8ToUTF16(html.c_str(), html.size(), &html_in_u16)) {
+      return html_in_u16;
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -823,23 +852,42 @@ absl::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
     return absl::nullopt;
   }
 
-  // Assume that an Ash notification has at most one large image view.
-  views::View* large_image_view =
-      GetViewByID(message_center::NotificationViewBase::kLargeImageView);
+  // Assume that an Ash notification has at most one large image view. Fetch the
+  // image shown in the large image view.
+  return static_cast<message_center::LargeImageView*>(
+             GetViewByID(message_center::NotificationViewBase::kLargeImageView))
+      ->drawn_image();
+}
 
-  // Paint `large_image_view` on a bitmap.
-  const gfx::Size& image_view_size = large_image_view->size();
-  const views::Widget* widget = GetWidget();
-  const float scale = views::ScaleFactorForDragFromWidget(widget);
-  SkBitmap bitmap;
-  large_image_view->Paint(views::PaintInfo::CreateRootPaintInfo(
-      ui::CanvasPainter(&bitmap, image_view_size, scale,
-                        /*clear_color=*/SK_ColorTRANSPARENT,
-                        widget->GetCompositor()->is_pixel_canvas())
-          .context(),
-      image_view_size));
+void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
+  DCHECK(IsDraggable());
 
-  return gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
+  // Fetch the original image used by the large image view.
+  const gfx::ImageSkia& image =
+      static_cast<message_center::LargeImageView*>(
+          GetViewByID(message_center::NotificationViewBase::kLargeImageView))
+          ->original_image();
+  DCHECK(!image.size().IsEmpty());
+
+  // Resize `image` if either the length or the width exceeds the threshold.
+  // TODO(b/268347953): come up with a better way to restrict the image size.
+  const float ratio = static_cast<float>(kMaxDragImageSizeInDIP) /
+                      std::max(image.size().width(), image.size().height());
+  absl::optional<gfx::ImageSkia> resized_image;
+  if (!cc::MathUtil::IsWithinEpsilon(ratio, 1.f) && ratio < 1.f) {
+    gfx::SizeF resized_size(image.size());
+    resized_size.Scale(ratio);
+    resized_image.emplace(gfx::ImageSkiaOperations::CreateResizedImage(
+        image, skia::ImageOperations::RESIZE_BEST,
+        gfx::ToFlooredSize(resized_size)));
+  }
+
+  // Get the HTML snippet that contains the image binary data. Attach the HTML
+  // snippet to `data`.
+  if (const absl::optional<std::u16string> html_snippet = GetHtmlForBitmap(
+          resized_image ? *resized_image->bitmap() : *image.bitmap())) {
+    data->SetHtml(*html_snippet, /*base_url=*/GURL());
+  }
 }
 
 bool AshNotificationView::IsDraggable() const {

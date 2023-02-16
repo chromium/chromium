@@ -81,7 +81,11 @@ class ASH_EXPORT AshNotificationView
   // Returns `absl::nullopt` if the notification view is not draggable.
   absl::optional<gfx::ImageSkia> GetDragImage();
 
-  // Returns true if the notification view is draggable.
+  // Attaches the drop data. This method should be called only if this
+  // notification view is draggable.
+  void AttachDropData(ui::OSExchangeData* data);
+
+  // Returns true if this notification view is draggable.
   bool IsDraggable() const;
 
   // message_center::MessageView:

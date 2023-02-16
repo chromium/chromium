@@ -32,6 +32,7 @@ class MESSAGE_CENTER_EXPORT LargeImageView : public views::View {
 
   void SetImage(const gfx::ImageSkia& image);
 
+  const gfx::ImageSkia& original_image() const { return original_image_; }
   const gfx::ImageSkia& drawn_image() const { return drawn_image_; }
 
  private:

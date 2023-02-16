@@ -8,10 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
-#include "ash/drag_drop/mock_drag_drop_observer.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
@@ -125,6 +123,44 @@ class MessageCenterTargetVisibilityWaiter
       observation_{this};
 };
 
+// A mocked delegate to verify the notification drag-and-drop.
+class MockAshNotificationDragDropDelegate
+    : public aura::client::DragDropDelegate {
+ public:
+  // aura::client::DragDropDelegate:
+  void OnDragEntered(const ui::DropTargetEvent& event) override {}
+
+  aura::client::DragUpdateInfo OnDragUpdated(
+      const ui::DropTargetEvent& event) override {
+    return aura::client::DragUpdateInfo(
+        ui::DragDropTypes::DRAG_COPY,
+        ui::DataTransferEndpoint(ui::EndpointType::kDefault));
+  }
+
+  void OnDragExited() override {}
+
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override {
+    return base::BindOnce(&MockAshNotificationDragDropDelegate::PerformDrop,
+                          weak_ptr_factory_.GetWeakPtr());
+  }
+
+  // A mocked function to handle the html data in the drag-and-drop data.
+  MOCK_METHOD(void, HandleHtmlData, (), (const));
+
+ private:
+  void PerformDrop(std::unique_ptr<ui::OSExchangeData> data,
+                   ui::mojom::DragOperation& output_drag_op) {
+    if (data->HasHtml()) {
+      output_drag_op = ui::mojom::DragOperation::kCopy;
+      HandleHtmlData();
+    }
+  }
+
+  base::WeakPtrFactory<MockAshNotificationDragDropDelegate> weak_ptr_factory_{
+      this};
+};
+
 }  // namespace
 
 // A test base class that helps to verify notification view features.
@@ -183,7 +219,8 @@ class AshNotificationViewTestBase : public AshTestBase,
 
   // Create a test notification. All the notifications created by this function
   // will belong to the same group.
-  std::unique_ptr<Notification> CreateTestNotificationInAGroup() {
+  std::unique_ptr<Notification> CreateTestNotificationInAGroup(
+      bool has_image = false) {
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "abc@gmail.com";
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
@@ -195,6 +232,10 @@ class AshNotificationViewTestBase : public AshTestBase,
         GURL(u"http://test-url.com"), notifier_id,
         message_center::RichNotificationData(), delegate_);
     notification->set_small_image(CreateTestImage(16, 16));
+
+    if (has_image) {
+      notification->set_image(CreateTestImage(320, 240));
+    }
 
     message_center::MessageCenter::Get()->AddNotification(
         std::make_unique<message_center::Notification>(*notification));
@@ -1237,45 +1278,65 @@ class AshNotificationViewDragTest
 
   // Returns the center of drag area of `notification_view` in screen
   // coordinates.
-  gfx::Point GetDragAreaCenterInScreen(AshNotificationView* notification_view) {
+  gfx::Point GetDragAreaCenterInScreen(
+      const AshNotificationView& notification_view) {
     const absl::optional<gfx::Rect> drag_area_bounds =
-        notification_view->GetDragAreaBounds();
+        notification_view.GetDragAreaBounds();
     EXPECT_TRUE(drag_area_bounds);
     gfx::Rect drag_area_in_screen = *drag_area_bounds;
-    views::View::ConvertRectToScreen(notification_view, &drag_area_in_screen);
+    views::View::ConvertRectToScreen(&notification_view, &drag_area_in_screen);
     return drag_area_in_screen.CenterPoint();
   }
 
-  // Drags from the specific location.
-  void Drag(const gfx::Point& initial_press_point, int drag_step) {
+  // Drags `notification_view` to the center of `drop_handling_widget_`.
+  void DragNotificationToWidget(const AshNotificationView& notification_view) {
+    const gfx::Point drag_initial_point =
+        GetDragAreaCenterInScreen(notification_view);
+    const gfx::Point target_point =
+        drop_handling_widget_->GetWindowBoundsInScreen().CenterPoint();
+
     base::RunLoop run_loop;
     ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
         base::BindLambdaForTesting([&]() {
-          if (drag_step > 0) {
-            MoveDragByOneStep();
-            --drag_step;
-          } else if (!drag_step) {
-            // End drag when having enough drag updates.
-            if (DoesUseGesture()) {
-              GetEventGenerator()->ReleaseTouch();
-            } else {
-              GetEventGenerator()->ReleaseLeftButton();
-            }
+          // Move mouse/touch to `target_point` then release.
+          if (DoesUseGesture()) {
+            GetEventGenerator()->MoveTouch(target_point);
+            GetEventGenerator()->ReleaseTouch();
+          } else {
+            GetEventGenerator()->MoveMouseTo(target_point);
+            GetEventGenerator()->ReleaseLeftButton();
           }
         }),
         run_loop.QuitClosure());
 
     if (DoesUseGesture()) {
       // Press touch to trigger notification drag.
-      GetEventGenerator()->PressTouch(initial_press_point);
+      GetEventGenerator()->PressTouch(drag_initial_point);
     } else {
       // Press the mouse then move to trigger notification drag.
-      GetEventGenerator()->MoveMouseTo(initial_press_point);
+      GetEventGenerator()->MoveMouseTo(drag_initial_point);
       GetEventGenerator()->PressLeftButton();
       MoveDragByOneStep();
     }
 
     run_loop.Run();
+  }
+
+  // Returns the notification view corresponding to the given notification id.
+  // `id` can refer to either a popup notification view or a message center
+  // notification view.
+  AshNotificationView* GetViewForNotificationId(const std::string& id) {
+    if (IsPopupNotification()) {
+      // Get the notification view from the message popup collection.
+      auto* popup_view = static_cast<message_center::MessagePopupView*>(
+          notification_test_api_->GetPopupViewForId(id));
+      DCHECK(popup_view);
+      return static_cast<AshNotificationView*>(popup_view->message_view());
+    }
+
+    // Get the notification view from the message center bubble.
+    return static_cast<AshNotificationView*>(
+        notification_test_api_->GetNotificationViewForId(id));
   }
 
   // Returns true when using gesture drag rather than mouse drag, specified
@@ -1289,7 +1350,30 @@ class AshNotificationViewDragTest
   // Returns true if the quick setting revamp feature is enabled.
   bool DoesUseQsRevamp() const { return std::get<2>(GetParam()); }
 
+  const MockAshNotificationDragDropDelegate& drag_drop_delegate() const {
+    return drag_drop_delegate_;
+  }
+
+  NotificationCenterTestApi* notification_test_api() {
+    return notification_test_api_.get();
+  }
+
  private:
+  // AshNotificationViewTestBase:
+  void SetUp() override {
+    AshNotificationViewTestBase::SetUp();
+    notification_test_api_ =
+        std::make_unique<NotificationCenterTestApi>(/*tray=*/nullptr);
+
+    // Configure the widget that handles notification drop.
+    drop_handling_widget_ = CreateTestWidget(
+        /*delegate=*/nullptr, desks_util::GetActiveDeskContainerId(),
+        /*bounds=*/gfx::Rect(100, 100, 300, 300), /*show=*/true);
+    drop_handling_widget_->Show();
+    aura::client::SetDragDropDelegate(drop_handling_widget_->GetNativeView(),
+                                      &drag_drop_delegate_);
+  }
+
   // Moves drag by one step.
   void MoveDragByOneStep() {
     // The move distance for each drag move.
@@ -1302,6 +1386,12 @@ class AshNotificationViewDragTest
     }
   }
 
+  std::unique_ptr<NotificationCenterTestApi> notification_test_api_;
+
+  // A custom widget to handle notification image drop.
+  std::unique_ptr<views::Widget> drop_handling_widget_;
+  MockAshNotificationDragDropDelegate drag_drop_delegate_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1312,46 +1402,78 @@ INSTANTIATE_TEST_SUITE_P(
                      /*is_popup=*/testing::Bool(),
                      /*use_revamp_feature=*/testing::Bool()));
 
-// Verifies that dragging a notification view works as expected.
+// Verifies the drag-and-drop of an orindary notification view.
 TEST_P(AshNotificationViewDragTest, Basics) {
   // Add an image notification.
   std::unique_ptr<Notification> notification = CreateTestNotification(
       /*has_image=*/true);
-  AshNotificationView* notification_view = nullptr;
-  NotificationCenterTestApi notification_test_api(/*tray=*/nullptr);
+
   if (IsPopupNotification()) {
-    // Wait until the notification popup shows
+    // Wait until the notification popup shows.
     MessagePopupAnimationWaiter(
         GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
         .Wait();
-    auto* popup_view = static_cast<message_center::MessagePopupView*>(
-        notification_test_api.GetPopupViewForId(notification->id()));
-    DCHECK(popup_view);
-    notification_view =
-        static_cast<AshNotificationView*>(popup_view->message_view());
-  } else {
-    // Open the message center bubble.
-    notification_test_api.ToggleBubble();
-    notification_view = static_cast<AshNotificationView*>(
-        notification_test_api.GetNotificationViewForId(notification->id()));
-  }
-
-  MockDragDropObserver drag_drop_observer(
-      aura::client::GetDragDropClient(Shell::GetPrimaryRootWindow()));
-
-  // Expect that the drag on `notification_view` starts and updates.
-  constexpr int kMoveStep = 10;
-  EXPECT_CALL(drag_drop_observer, OnDragStarted);
-  EXPECT_CALL(drag_drop_observer, OnDragUpdated).Times(kMoveStep);
-
-  if (IsPopupNotification()) {
     EXPECT_FALSE(
         message_center::MessageCenter::Get()->GetPopupNotifications().empty());
   } else {
+    notification_test_api()->ToggleBubble();
     EXPECT_TRUE(message_center::MessageCenter::Get()->IsMessageCenterVisible());
   }
 
-  Drag(GetDragAreaCenterInScreen(notification_view), kMoveStep);
+  // Drag the notification view to the widget. Verify the image drop is handled.
+  EXPECT_CALL(drag_drop_delegate(), HandleHtmlData);
+  DragNotificationToWidget(*GetViewForNotificationId(notification->id()));
+
+  // The the message center bubble is closed and the popup notification is
+  // dismissed when drag ends.
+  MessageCenterTargetVisibilityWaiter(/*target_visible=*/false).Wait();
+  EXPECT_TRUE(
+      message_center::MessageCenter::Get()->GetPopupNotifications().empty());
+}
+
+// Verifies the drag-and-drop of a grouped notification view.
+TEST_P(AshNotificationViewDragTest, GroupedNotification) {
+  // Add two image notification views belonging to the same group.
+  std::unique_ptr<Notification> notification = CreateTestNotificationInAGroup(
+      /*has_image=*/true);
+  CreateTestNotificationInAGroup(/*has_image=*/true);
+
+  // Get the id of the group parent notification.
+  const std::string parent_notification_id =
+      message_center::MessageCenter::Get()
+          ->FindParentNotification(notification.get())
+          ->id();
+
+  if (IsPopupNotification()) {
+    // Wait until the notification popup shows.
+    MessagePopupAnimationWaiter(
+        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+        .Wait();
+  } else {
+    // Show the message center bubble.
+    notification_test_api()->ToggleBubble();
+  }
+
+  // Expand the parent notification.
+  AshNotificationView* group_parent_view =
+      GetViewForNotificationId(parent_notification_id);
+  group_parent_view->ToggleExpand();
+
+  // Expand the first child notification. Ensure the expansion animation ends.
+  AshNotificationView* child_view =
+      GetFirstGroupedChildNotificationView(group_parent_view);
+  child_view->ToggleExpand();
+  if (IsPopupNotification()) {
+    MessagePopupAnimationWaiter(
+        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+        .Wait();
+  } else {
+    notification_test_api()->CompleteNotificationListAnimation();
+  }
+
+  // Drag `child_view` to the widget. Verify the image drop is handled.
+  EXPECT_CALL(drag_drop_delegate(), HandleHtmlData);
+  DragNotificationToWidget(*child_view);
 
   // The the message center bubble is closed and the popup notification is
   // dismissed when drag ends.
