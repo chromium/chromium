@@ -10600,6 +10600,16 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledSkipEmptyFetchHandlerAndStartServiceWorker_20230125",
+                    "params": {
+                        "SkipEmptyFetchHandler": "true",
+                        "StartServiceWorkerForEmptyFetchHandler": "true"
+                    },
+                    "enable_features": [
+                        "ServiceWorkerSkipIgnorableFetchHandler"
+                    ]
+                },
+                {
                     "name": "EnabledSkipEmptyFetchHandler_20220829",
                     "params": {
                         "SkipEmptyFetchHandler": "true"
