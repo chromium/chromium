@@ -93,8 +93,8 @@ struct MemberHash
   }
 };
 
-// Replay's hashing function with Member<>-wrapped objects, using the registered 
-// pointer id.  
+// Replay's hashing function with Member<>-wrapped objects, using the registered
+// pointer id.
 template <typename T>
 struct MemberHashRecordReplayRegisteredPointerId
     : IntHash<cppgc::internal::MemberBase::RawStorage::IntegralType> {
@@ -137,7 +137,7 @@ struct MemberHashRecordReplayRegisteredPointerId
 
 
 // Replay's hashing function with Member<>-wrapped objects, using the function
-// RecordReplayId for the hashing key. 
+// RecordReplayId for the hashing key.
 template <typename T>
 struct MemberHashRecordReplayId
     : IntHash<cppgc::internal::MemberBase::RawStorage::IntegralType> {
@@ -151,7 +151,18 @@ struct MemberHashRecordReplayId
   // assuming the former is cheaper.
   static unsigned GetHash(const T* key) {
     if (recordreplay::IsRecordingOrReplaying()) {
-      return Base::GetHash(key->RecordReplayId());
+      int id = key->RecordReplayId();
+      // Ids are allowed to be zero if we've diverged from the recording.
+      if (recordreplay::HasDivergedFromRecording()) {
+        if (id > 0) {
+          return Base::GetHash(id);
+        } else {
+          return Base::GetHash(st.GetAsInteger());
+        }
+      } else {
+        CHECK(id > 0); // Should have been registered.
+        return Base::GetHash(id);
+      }
     } else {
       cppgc::internal::MemberBase::RawStorage st(key);
       return Base::GetHash(st.GetAsInteger());
@@ -162,7 +173,18 @@ struct MemberHashRecordReplayId
             std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
   static unsigned GetHash(const Member& m) {
     if (recordreplay::IsRecordingOrReplaying()) {
-      return Base::GetHash(m.Get()->RecordReplayId());
+      int id = m.Get()->RecordReplayId();
+      // Ids are allowed to be zero if we've diverged from the recording.
+      if (recordreplay::HasDivergedFromRecording()) {
+        if (id > 0) {
+          return Base::GetHash(id);
+        } else {
+          return Base::GetHash(m.GetRawStorage().GetAsInteger());
+        }
+      } else {
+        CHECK(id > 0); // Should have been registered.
+        return Base::GetHash(id);
+      }
     } else {
       return Base::GetHash(m.GetRawStorage().GetAsInteger());
     }
