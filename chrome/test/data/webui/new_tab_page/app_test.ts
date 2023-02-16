@@ -85,6 +85,10 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertTrue(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
+      assertEquals(
+          'true',
+          $$<HTMLElement>(
+              app, '#customizeButton')!.getAttribute('aria-pressed'));
     });
 
     test('logs height', async () => {
@@ -231,6 +235,10 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       assertDeepEquals(
           theme, app.shadowRoot!.querySelector('ntp-customize-dialog')!.theme);
+      assertEquals(
+          'true',
+          $$<HTMLElement>(
+              app, '#customizeButton')!.getAttribute('aria-pressed'));
     });
 
     test('setting theme updates ntp', async () => {
@@ -627,6 +635,10 @@ suite('NewTabPageAppTest', () => {
           1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_BUTTON));
       assertEquals(
           1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_DIALOG));
+      assertEquals(
+          'true',
+          $$<HTMLElement>(
+              app, '#customizeButton')!.getAttribute('aria-pressed'));
     });
 
     test('clicking OGB records click', () => {
@@ -832,6 +844,21 @@ suite('NewTabPageAppTest', () => {
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
       assertEquals(
           0, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
+    });
+
+    test('clicking customize button is accessible', async () => {
+      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
+      await callbackRouterRemote.$.flushForTesting();
+      assertEquals(
+          'true',
+          $$<HTMLElement>(
+              app, '#customizeButton')!.getAttribute('aria-pressed'));
+      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(false);
+      await callbackRouterRemote.$.flushForTesting();
+      assertEquals(
+          'false',
+          $$<HTMLElement>(
+              app, '#customizeButton')!.getAttribute('aria-pressed'));
     });
 
     suite('modules', () => {
