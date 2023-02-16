@@ -6333,6 +6333,7 @@ crbug.com/1229708 [ Debug Linux ] fast/events/pointerevents/pointer-event-in-slo
 crbug.com/1412477 [ Mac ] editing/spelling/cold_mode_no_leak_detached_node.html [ Failure ]
 crbug.com/1412469 [ Mac ] http/tests/serviceworker/navigation_preload/navigation-preload-resource-timing.html [ Failure ]
 crbug.com/1412469 [ Debug Linux ] http/tests/serviceworker/navigation_preload/navigation-preload-resource-timing.html [ Failure ]
+crbug.com/1406896 [ Linux ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac10.15 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
