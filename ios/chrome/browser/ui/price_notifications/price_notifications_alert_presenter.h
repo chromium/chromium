@@ -5,12 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_ALERT_PRESENTER_H_
 #define IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_ALERT_PRESENTER_H_
 
+@class PriceNotificationsTableViewItem;
+
 // Protocol for displaying Price Tracking related UIAlerts
 @protocol PriceNotificationsAlertPresenter <NSObject>
 
 // Displays the UIAlert that directs the user to the OS permission settings to
 // enable push notification permissions.
 - (void)presentPushNotificationPermissionAlert;
+
+// Displays the UIAlert that indicates to the user that an error has occurred
+// during the price tracking subscription process.
+- (void)presentStartPriceTrackingErrorAlertForItem:
+    (PriceNotificationsTableViewItem*)item;
 
 @end
 

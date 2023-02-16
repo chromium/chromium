@@ -1765,6 +1765,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT" desc="The label for the alert's button that redirects the user to Chrome's application settings in iOS">
           Go to Settings
       </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE" desc="The title for the UIAlert that informs the user that an error occurred during the price tracking subscription and unsubscription process">
+          Something Went Wrong
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_SUBSCRIBE_ERROR_ALERT_DESCRIPTION" desc="The description that informs the user that an error occurred during the price tracking subscription process.">
+          Couldn't track the price.
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT" desc="The label for the alert's button that reattempts to execute the action that originally failed">
+          Try Again
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE" desc="Title for Price Notifications table view.">
         Track Price
       </message>

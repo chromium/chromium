@@ -252,14 +252,14 @@ using PriceNotificationItems =
 // an item with the ShoppingService.
 - (void)didTrackItem:(PriceNotificationsTableViewItem*)trackableItem
         successfully:(BOOL)success {
-  if (success) {
-    trackableItem.tracking = YES;
-    [self.consumer reconfigureCellsForItems:@[ trackableItem ]];
-    [self.consumer didStartPriceTrackingForItem:trackableItem];
+  if (!success) {
+    [self.presenter presentStartPriceTrackingErrorAlertForItem:trackableItem];
+    return;
   }
 
-  // TODO(crbug.com/1400738) Implement UX flow in the event an error occurs when
-  // a user attempts to track an item.
+  trackableItem.tracking = YES;
+  [self.consumer reconfigureCellsForItems:@[ trackableItem ]];
+  [self.consumer didStartPriceTrackingForItem:trackableItem];
 }
 
 // This function handles the response from the user attempting to unsubscribe to
