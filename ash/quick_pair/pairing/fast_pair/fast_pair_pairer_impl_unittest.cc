@@ -1787,6 +1787,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagEnabled) {
   CreatePairer();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWriteAccountKeyCallback();
+  EXPECT_TRUE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -2643,6 +2644,44 @@ TEST_F(FastPairPairerImplTest,
   CreatePairer();
   task_environment()->FastForwardBy(kCreateBondTimeout);
   EXPECT_EQ(GetPairFailure(), PairFailure::kCreateBondTimeout);
+}
+
+TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kFastPairSavedDevices,
+                             features::kFastPairSavedDevicesStrictOptIn});
+
+  // The following code is what's in |CreateDevice()| except protocol is
+  // Retroactive instead of Initial.
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   Protocol::kFastPairRetroactive);
+
+  // Adds a connected handshake that has completed successfully in
+  // 'FastPairHandshakeLookup' for the mock device.
+  //
+  // When pairing starts, if the classic address can't be resolved to
+  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
+  // to return null when queried for the device to mock this behavior.
+  SetGetDeviceNullptr();
+  AddConnectedHandshake();
+  fake_fast_pair_handshake_->InvokeCallback();
+  CreatePairer();
+  SetPublicKey();
+  EXPECT_CALL(paired_callback_, Run);
+
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(account_key_failure_callback_, Run);
+  EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
+
+  // Initiates recognition of Retroactive Pair scenario.
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPaired);
+  EXPECT_FALSE(IsAccountKeySavedToFootprints());
 }
 
 }  // namespace quick_pair

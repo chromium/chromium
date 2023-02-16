@@ -70,6 +70,10 @@ constexpr base::TimeDelta kShortBanDiscoveryNotificationBanTime =
 constexpr base::TimeDelta kLongBanDiscoveryNotificationBanTime =
     base::Minutes(15);
 
+const std::vector<uint8_t> kAccountKey1{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
+                                        0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
+                                        0xCC, 0xDD, 0xEE, 0xFF};
+
 }  // namespace
 
 namespace ash {
@@ -110,6 +114,20 @@ class MediatorTest : public AshTestBase {
     std::unique_ptr<PairerBroker> pairer_broker =
         std::make_unique<MockPairerBroker>();
     mock_pairer_broker_ = static_cast<MockPairerBroker*>(pairer_broker.get());
+
+    ON_CALL(*mock_pairer_broker_, PairDevice)
+        .WillByDefault([this](scoped_refptr<Device> device) {
+          // Subsequent Pair protocol never attempts to write the account key to
+          // the device: |FastPairPairerImpl::AttemptSendAccountKey()|.
+          //
+          // V1 devices are paired via the Bluetooth Pairing Dialog and no
+          // account key is written to the device:
+          // |FastPairPairerImpl::FastPairPairerImpl(...)|.
+          if (device->protocol() != Protocol::kFastPairSubsequent &&
+              device->version() != DeviceFastPairVersion::kV1) {
+            mock_pairer_broker_->NotifyAccountKeyWrite(device, absl::nullopt);
+          }
+        });
 
     std::unique_ptr<UIBroker> ui_broker = std::make_unique<MockUIBroker>();
     mock_ui_broker_ = static_cast<MockUIBroker*>(ui_broker.get());
@@ -521,9 +539,13 @@ TEST_F(MediatorTest, NotifyPairFailure_AddressConnect) {
 
 TEST_F(MediatorTest, InvokesShowAssociateAccount) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_pairer_broker_, PairDevice);
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount);
+  retroactive_device_->set_account_key(kAccountKey1);
   fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
       retroactive_device_);
+  ASSERT_TRUE(retroactive_device_->version().value() ==
+              DeviceFastPairVersion::kHigherThanV1);
 }
 
 TEST_F(MediatorTest,
@@ -574,10 +596,12 @@ TEST_F(MediatorTest,
 
 TEST_F(MediatorTest, AssociateAccountKeyAction_AssociateAccount) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_pairer_broker_, PairDevice);
+  EXPECT_CALL(*mock_fast_pair_repository_, WriteAccountAssociationToFootprints);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
+  retroactive_device_->set_version(DeviceFastPairVersion::kHigherThanV1);
+  retroactive_device_->set_account_key(kAccountKey1);
   mock_ui_broker_->NotifyAssociateAccountAction(
-      initial_device_, AssociateAccountAction::kAssoicateAccount);
+      retroactive_device_, AssociateAccountAction::kAssoicateAccount);
 }
 
 TEST_F(MediatorTest, AssociateAccountKeyAction_LearnMore) {
@@ -902,6 +926,23 @@ TEST_F(MediatorTest, PersistsDeviceImages_AfterDeviceSubsequentPaired) {
   EXPECT_CALL(*mock_fast_pair_repository_, FetchDeviceImages).Times(1);
   EXPECT_CALL(*mock_fast_pair_repository_, PersistDeviceImages).Times(1);
   mock_pairer_broker_->NotifyDevicePaired(subsequent_device_);
+}
+
+TEST_F(MediatorTest,
+       ShowAssociateAccount_OnRetroactivePairSilentAccountKeyWrite) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  retroactive_device_->set_account_key(kAccountKey1);
+  EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount);
+  mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
+                                             /*error=*/absl::nullopt);
+}
+
+TEST_F(MediatorTest, NoShowAssociateAccount_OnInitialPairAccountKeyWrite) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  initial_device_->set_account_key(kAccountKey1);
+  EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount).Times(0);
+  mock_pairer_broker_->NotifyAccountKeyWrite(initial_device_,
+                                             /*error=*/absl::nullopt);
 }
 
 }  // namespace quick_pair

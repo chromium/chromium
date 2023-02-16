@@ -202,18 +202,19 @@ bool Mediator::IsDeviceBlockedForDiscoveryNotifications(
 }
 
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": " << device;
+  QP_LOG(VERBOSE) << __func__ << ": " << device;
 
   if (IsDeviceCurrentlyShowingNotification(device)) {
-    QP_LOG(INFO) << __func__
-                 << ": Extending notification for re-discovered device="
-                 << device_currently_showing_notification_;
+    QP_LOG(VERBOSE) << __func__
+                    << ": Extending notification for re-discovered device="
+                    << device_currently_showing_notification_;
     ui_broker_->ExtendNotification();
     return;
   } else if (device_currently_showing_notification_) {
-    QP_LOG(INFO) << __func__
-                 << ": Already showing a notification for a different device="
-                 << device_currently_showing_notification_;
+    QP_LOG(VERBOSE)
+        << __func__
+        << ": Already showing a notification for a different device="
+        << device_currently_showing_notification_;
     return;
   }
 
@@ -224,8 +225,9 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   // this means we expect the Mediator’s `OnDeviceFound` event to be triggered
   // frequently for the same device.
   if (IsDeviceBlockedForDiscoveryNotifications(device)) {
-    QP_LOG(INFO) << __func__
-                 << ": device is currently blocked for discovery notifications";
+    QP_LOG(VERBOSE)
+        << __func__
+        << ": device is currently blocked for discovery notifications";
     return;
   }
 
@@ -247,11 +249,11 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
 }
 
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": " << device;
+  QP_LOG(VERBOSE) << __func__ << ": " << device;
 }
 
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": " << device;
+  QP_LOG(VERBOSE) << __func__ << ": " << device;
 
   // SFUL metrics will cause a crash if Fast Pair is disabled when we
   // retroactive pair, so prevent a notification from popping up.
@@ -259,8 +261,16 @@ void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
   if (!feature_status_tracker_->IsFastPairEnabled()) {
     return;
   }
+
+  // Although at this point in the flow, we have not yet showed a notification
+  // a notification will immediately follow after account key writing, so we
+  // still want to block Fast Pair pairings until it is complete.
   device_currently_showing_notification_ = device;
-  ui_broker_->ShowAssociateAccount(device);
+
+  // If a device can retroactively pair, it has a fast pair version higher than
+  // V1.
+  device->set_version(DeviceFastPairVersion::kHigherThanV1);
+  pairer_broker_->PairDevice(device);
 
   // Try saving mac address to model ID mapping one more time.
   // TODO(b/235117226): we aren't really fetching device images here,
@@ -286,7 +296,7 @@ void Mediator::SetFastPairState(bool is_enabled) {
 }
 
 void Mediator::CancelPairing() {
-  QP_LOG(INFO) << __func__ << ": Clearing handshakes and pairiers.";
+  QP_LOG(VERBOSE) << __func__ << ": Clearing handshakes and pairiers.";
   // |pairer_broker_| and its children objects depend on the handshake
   // instance. Shut them down before destroying the handshakes.
   pairer_broker_->StopPairing();
@@ -294,7 +304,7 @@ void Mediator::CancelPairing() {
 }
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": Device=" << device;
+  QP_LOG(VERBOSE) << __func__ << ": Device=" << device;
   ui_broker_->RemoveNotifications();
   device_currently_showing_notification_ = nullptr;
   scanner_broker_->OnDevicePaired(device);
@@ -310,19 +320,23 @@ void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
 
 void Mediator::OnPairFailure(scoped_refptr<Device> device,
                              PairFailure failure) {
-  QP_LOG(INFO) << __func__ << ": Device=" << device << ",Failure=" << failure;
+  QP_LOG(VERBOSE) << __func__ << ": Device=" << device
+                  << ",Failure=" << failure;
   ui_broker_->ShowPairingFailed(device);
 }
 
 void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
                                  absl::optional<AccountKeyFailure> error) {
-  if (!error.has_value()) {
-    QP_LOG(INFO) << __func__ << ": Device=" << device;
+  if (error.has_value()) {
+    QP_LOG(VERBOSE) << __func__ << ": Device=" << device
+                    << ",Error=" << error.value();
     return;
   }
 
-  QP_LOG(INFO) << __func__ << ": Device=" << device
-               << ",Error=" << error.value();
+  QP_LOG(VERBOSE) << __func__ << ": Device=" << device;
+  if (device->protocol() == Protocol::kFastPairRetroactive) {
+    ui_broker_->ShowAssociateAccount(std::move(device));
+  }
 }
 
 void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
@@ -368,7 +382,7 @@ void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
 
 void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
                                  DiscoveryAction action) {
-  QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
+  QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
 
   switch (action) {
     case DiscoveryAction::kPairToDevice: {
@@ -407,13 +421,13 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
 
 void Mediator::OnPairingFailureAction(scoped_refptr<Device> device,
                                       PairingFailedAction action) {
-  QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
+  QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
   device_currently_showing_notification_ = nullptr;
 }
 
 void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
                                     CompanionAppAction action) {
-  QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
+  QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
 }
 
 void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
@@ -422,7 +436,9 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
 
   switch (action) {
     case AssociateAccountAction::kAssoicateAccount:
-      pairer_broker_->PairDevice(device);
+      DCHECK(device->account_key().has_value());
+      fast_pair_repository_->WriteAccountAssociationToFootprints(
+          device, device->account_key().value());
       ui_broker_->RemoveNotifications();
       device_currently_showing_notification_ = nullptr;
       break;
@@ -462,7 +478,7 @@ void Mediator::OnAdapterStateChanged() {
   // disable Fast Pair when the adapter is disabling.
   if (adapter_state ==
       bluetooth_config::mojom::BluetoothSystemState::kDisabling) {
-    QP_LOG(INFO) << __func__ << ": Adapter disabling, disabling Fast Pair.";
+    QP_LOG(VERBOSE) << __func__ << ": Adapter disabling, disabling Fast Pair.";
     SetFastPairState(false);
     // In addition to stopping scanning, we cancel pairing here to prevent a
     // crash that occurs mid-pair when Bluetooth is disabling.
