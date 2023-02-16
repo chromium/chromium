@@ -777,7 +777,7 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     // Allow MV3 file handlers.
     if (extensions::FileHandlersMV3::SupportsWebFileHandlers(
             extension->manifest_version()) &&
-        extensions::FileHandlersMV3::GetFileHandlers(*extension)) {
+        extensions::FileHandlersMV3::HasFileHandlers(*extension)) {
       return true;
     }
 

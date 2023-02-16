@@ -177,6 +177,12 @@ FileHandlersMV3::FileHandlersMV3() = default;
 FileHandlersMV3::~FileHandlersMV3() = default;
 
 // static
+bool FileHandlersMV3::HasFileHandlers(const Extension& extension) {
+  const FileHandlersInfoMV3* info = GetFileHandlers(extension);
+  return info && info->size() > 0;
+}
+
+// static
 const FileHandlersInfoMV3* FileHandlersMV3::GetFileHandlers(
     const Extension& extension) {
   // Guard against incompatible extension manifest versions.

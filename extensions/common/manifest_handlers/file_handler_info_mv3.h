@@ -27,6 +27,8 @@ struct FileHandlersMV3 : public Extension::ManifestData {
 
   static const FileHandlersInfoMV3* GetFileHandlers(const Extension& extension);
 
+  static bool HasFileHandlers(const Extension& extension);
+
   // Verify that MV3+ file handers are supported.
   // TODO(crbug/1179530): Remove after MV2 deprecation.
   static bool SupportsWebFileHandlers(const int manifest_version);
