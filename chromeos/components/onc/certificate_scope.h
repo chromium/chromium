@@ -8,14 +8,10 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class Value;
-}
-
-namespace chromeos {
-namespace onc {
+namespace chromeos::onc {
 
 // Describes the scope a policy-provided certificate should be applied in.
 class COMPONENT_EXPORT(CHROMEOS_ONC) CertificateScope {
@@ -41,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) CertificateScope {
   // Parses a CertificateScope from |scope_dict|, which should be a dictionary
   // containing the ONC "Scope" object.
   static absl::optional<CertificateScope> ParseFromOncValue(
-      const base::Value& scope_dict);
+      const base::Value::Dict& scope_dict);
 
   CertificateScope& operator=(const CertificateScope& other);
   bool operator<(const CertificateScope& other) const;
@@ -54,13 +50,12 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) CertificateScope {
  private:
   // If |extension_id| is empty, it means that the scope should not be
   // restricted.
-  CertificateScope(const std::string& extension_id);
+  explicit CertificateScope(const std::string& extension_id);
 
   // If empty, it means that the scope should not be restricted to an extension.
   std::string extension_id_;
 };
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace chromeos::onc
 
 #endif  // CHROMEOS_COMPONENTS_ONC_CERTIFICATE_SCOPE_H_
