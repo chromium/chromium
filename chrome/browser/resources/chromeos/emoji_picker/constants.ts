@@ -53,7 +53,10 @@ export const TRENDING = 'Trending';
 export const RECENTLY_USED = 'Recently used';
 // If more groups are added to emoji, symbol or emoticon this number will change
 export const TRENDING_GROUP_ID = '30';  // TODO(b/266024083): Make this dynamic
-export const NO_INTERNET_ERROR_MSG = 'Connect to the internet to view GIFs';
+export const NO_INTERNET_VIEW_ERROR_MSG =
+    'Connect to the internet to view GIFs';
+export const NO_INTERNET_SEARCH_ERROR_MSG =
+    'Connect to the internet to search for GIFs';
 export const SOMETHING_WENT_WRONG_ERROR_MSG = 'Something went wrong';
 // 24 hours is equivalent to 86400000 milliseconds.
 export const TWENTY_FOUR_HOURS = 86400000;

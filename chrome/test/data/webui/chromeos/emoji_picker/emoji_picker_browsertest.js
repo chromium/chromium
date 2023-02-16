@@ -196,3 +196,37 @@ var EmojiPickerGifSearchTest = class extends PolymerTest {
 TEST_F('EmojiPickerGifSearchTest', 'All', function() {
   mocha.run();
 });
+
+var EmojiPickerGifOfflineTest = class extends PolymerTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
+  }
+
+  /** @override */
+  get browsePreload() {
+    return 'chrome://emoji-picker/test_loader.html?module=' +
+        'chromeos/emoji_picker/emoji_picker_offline_gif_test.js&host=test';
+  }
+};
+
+TEST_F('EmojiPickerGifOfflineTest', 'All', function() {
+  mocha.run();
+});
+
+var EmojiPickerGifHttpErrorTest = class extends PolymerTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
+  }
+
+  /** @override */
+  get browsePreload() {
+    return 'chrome://emoji-picker/test_loader.html?module=' +
+        'chromeos/emoji_picker/emoji_picker_http_error_gif_test.js&host=test';
+  }
+};
+
+TEST_F('EmojiPickerGifHttpErrorTest', 'All', function() {
+  mocha.run();
+});

@@ -6,7 +6,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NO_INTERNET_ERROR_MSG, SOMETHING_WENT_WRONG_ERROR_MSG} from './constants.js';
+import {SOMETHING_WENT_WRONG_ERROR_MSG} from './constants.js';
 import {getTemplate} from './emoji_error.html.js';
 import {Status} from './emoji_picker.mojom-webui.js';
 import {createCustomEvent, GIF_ERROR_TRY_AGAIN} from './events.js';
@@ -23,9 +23,11 @@ export class EmojiErrorComponent extends PolymerElement {
   static get properties() {
     return {
       status: {type: Status},
+      errorMessage: {type: String},
     };
   }
   private status: Status;
+  private errorMessage: string;
 
   isGifInHttpErrorState(status: Status): boolean {
     return status === Status.kHttpError;
@@ -36,7 +38,7 @@ export class EmojiErrorComponent extends PolymerElement {
   }
 
   getErrorMessage(status: Status): string {
-    return status === Status.kNetError ? NO_INTERNET_ERROR_MSG :
+    return status === Status.kNetError ? this.errorMessage :
                                          SOMETHING_WENT_WRONG_ERROR_MSG;
   }
 

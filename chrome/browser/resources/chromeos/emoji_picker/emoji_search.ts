@@ -10,6 +10,7 @@ import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_fie
 import {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {NO_INTERNET_SEARCH_ERROR_MSG} from './constants.js';
 import {Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
@@ -45,6 +46,7 @@ export class EmojiSearch extends PolymerElement {
       status: {type: Status, value: null},
       searchQuery: {type: String, value: ''},
       nextGifPos: {type: String, value: ''},
+      errorMessage: {type: String, value: NO_INTERNET_SEARCH_ERROR_MSG},
     };
   }
   categoriesData: EmojiGroupData;
@@ -387,8 +389,9 @@ export class EmojiSearch extends PolymerElement {
     return !this.gifSupport && searchResults.length === 0;
   }
 
-  isGifInErrorState(status: Status): boolean {
-    return this.gifSupport && status !== Status.kHttpOk;
+  isGifInErrorState(status: Status, searchResults: EmojiGroupData): boolean {
+    return this.gifSupport && status !== Status.kHttpOk &&
+        searchResults.length === 0;
   }
 
   onClickTryAgain() {
