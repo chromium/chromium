@@ -100,7 +100,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
       base::BindOnce(
           &ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired,
           weak_ptr_factory_.GetWeakPtr(),
-          std::move(desired_apps_install_options), std::move(install_source),
+          std::move(desired_apps_install_options), install_source,
           std::move(callback)));
 }
 
