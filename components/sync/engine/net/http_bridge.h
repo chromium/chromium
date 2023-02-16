@@ -10,21 +10,18 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-
-class HttpBridgeTest;
 
 namespace net {
 class HttpResponseHeaders;
@@ -43,6 +40,7 @@ namespace syncer {
 class HttpBridge : public HttpPostProvider {
  public:
   HttpBridge(const std::string& user_agent,
+             scoped_refptr<base::SequencedTaskRunner> network_task_runner,
              std::unique_ptr<network::PendingSharedURLLoaderFactory>
                  pending_url_loader_factory);
 
@@ -71,30 +69,18 @@ class HttpBridge : public HttpPostProvider {
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
   void OnURLLoadUploadProgress(uint64_t position, uint64_t total);
 
-  static void SetIOCapableTaskRunnerForTest(
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
-
  protected:
   ~HttpBridge() override;
 
-  // Protected virtual so the unit test can override to shunt network requests.
+  // Protected virtual for testing.
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  CreateSharedURLLoader();
   virtual void MakeAsynchronousPost();
 
-  void set_url_loader_factory_for_testing(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-    url_loader_factory_ = url_loader_factory;
-  }
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(SyncHttpBridgeTest,
-                           AbortAndReleaseBeforeFetchComplete);
-  // Test is disabled on Android.
-  FRIEND_TEST_ALL_PREFIXES(DISABLED_SyncHttpBridgeTest,
-                           AbortAndReleaseBeforeFetchComplete);
   friend class ShuntedHttpBridge;
-  friend class ::HttpBridgeTest;
 
-  // Called on the IO loop to issue the network request. The extra level
+  // Called on the IO thread to issue the network request. The extra level
   // of indirection is so that the unit test can override this behavior but we
   // still have a function to statically pass to PostTask.
   void CallMakeAsynchronousPost() { MakeAsynchronousPost(); }
@@ -116,12 +102,11 @@ class HttpBridge : public HttpPostProvider {
   // Helper method to abort the request if we timed out.
   void OnURLLoadTimedOut();
 
-  // Used to check whether a method runs on the thread that we were created on.
-  // This is the thread that will block on MakeSynchronousPost while the IO
-  // thread fetches data from the network.
-  // This should be the main syncer thread (SyncerThread) which is what blocks
-  // on network IO through curl_easy_perform.
-  base::ThreadChecker thread_checker_;
+  // Used to check whether a method runs on the sequence that this object was
+  // created on. This is the sequence that will block on MakeSynchronousPost
+  // while the IO thread fetches data from the network. This should be the "sync
+  // thread" (really just a SequencedTaskRunner) in practice.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The user agent for all requests.
   const std::string user_agent_;
@@ -140,18 +125,18 @@ class HttpBridge : public HttpPostProvider {
   bool allow_batching_ = false;
 
   // A waitable event we use to provide blocking semantics to
-  // MakeSynchronousPost. We block created_on_loop_ while the IO loop fetches
-  // network request.
+  // MakeSynchronousPost. We block the Sync thread while the IO thread processes
+  // the network request.
   base::WaitableEvent http_post_completed_;
 
   struct URLFetchState {
     URLFetchState();
     ~URLFetchState();
-    // Our hook into the network layer is a URLFetcher. USED ONLY ON THE IO
-    // LOOP, so we can block created_on_loop_ while the fetch is in progress.
-    // NOTE: This is not a unique_ptr for a reason. It must be deleted on the
-    // same thread that created it, which isn't the same thread |this| gets
-    // deleted on. We must manually delete url_poster_ on the IO loop.
+    // Our hook into the network layer is a SimpleURLLoader. USED ONLY ON THE IO
+    // THREAD, so we can block the Sync thread while the fetch is in progress.
+    // NOTE: This must be deleted on the same thread that created it, which
+    // isn't the same thread |this| gets deleted on. We must manually delete
+    // url_loader on the IO thread.
     std::unique_ptr<network::SimpleURLLoader> url_loader;
 
     // Start and finish time of request. Set immediately before sending
