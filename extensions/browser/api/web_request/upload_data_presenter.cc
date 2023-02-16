@@ -45,7 +45,7 @@ void AppendKeyValuePair(const char* key,
 
 }  // namespace subtle
 
-UploadDataPresenter::~UploadDataPresenter() {}
+UploadDataPresenter::~UploadDataPresenter() = default;
 
 RawDataPresenter::RawDataPresenter() = default;
 

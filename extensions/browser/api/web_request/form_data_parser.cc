@@ -300,8 +300,8 @@ class FormDataParserMultipart : public FormDataParser {
   raw_ptr<const Patterns> patterns_;
 };
 
-FormDataParser::Result::Result() {}
-FormDataParser::Result::~Result() {}
+FormDataParser::Result::Result() = default;
+FormDataParser::Result::~Result() = default;
 
 void FormDataParser::Result::SetBinaryValue(base::StringPiece str) {
   value_ = base::Value(
@@ -312,7 +312,7 @@ void FormDataParser::Result::SetStringValue(std::string str) {
   value_ = base::Value(std::move(str));
 }
 
-FormDataParser::~FormDataParser() {}
+FormDataParser::~FormDataParser() = default;
 
 // static
 std::unique_ptr<FormDataParser> FormDataParser::Create(
@@ -369,7 +369,7 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
   return nullptr;
 }
 
-FormDataParser::FormDataParser() {}
+FormDataParser::FormDataParser() = default;
 
 FormDataParserUrlEncoded::FormDataParserUrlEncoded()
     : source_(nullptr),
@@ -382,7 +382,7 @@ FormDataParserUrlEncoded::FormDataParserUrlEncoded()
   args_[1] = &arg_value_;
 }
 
-FormDataParserUrlEncoded::~FormDataParserUrlEncoded() {}
+FormDataParserUrlEncoded::~FormDataParserUrlEncoded() = default;
 
 bool FormDataParserUrlEncoded::AllDataReadOK() {
   // All OK means we read the whole source.
@@ -473,7 +473,7 @@ FormDataParserMultipart::FormDataParserMultipart(
       state_(dash_boundary_pattern_.ok() ? STATE_INIT : STATE_ERROR),
       patterns_(g_patterns.Pointer()) {}
 
-FormDataParserMultipart::~FormDataParserMultipart() {}
+FormDataParserMultipart::~FormDataParserMultipart() = default;
 
 bool FormDataParserMultipart::AllDataReadOK() {
   return state_ == STATE_FINISHED;

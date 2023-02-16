@@ -948,7 +948,7 @@ void WebRequestAPI::OnExtensionUnloaded(
 // not play well with event pages. See downloads.onDeterminingFilename and
 // ExtensionDownloadsEventRouter for an alternative approach.
 ExtensionWebRequestEventRouter::EventListener::EventListener(ID id) : id(id) {}
-ExtensionWebRequestEventRouter::EventListener::~EventListener() {}
+ExtensionWebRequestEventRouter::EventListener::~EventListener() = default;
 
 // Contains info about requests that are blocked waiting for a response from
 // an extension.

@@ -20,7 +20,7 @@ PermissionHelper::PermissionHelper(content::BrowserContext* context)
       process_map_(ProcessMap::Get(context)),
       extension_registry_(ExtensionRegistry::Get(context)) {}
 
-PermissionHelper::~PermissionHelper() {}
+PermissionHelper::~PermissionHelper() = default;
 
 // static
 PermissionHelper* PermissionHelper::Get(content::BrowserContext* context) {
