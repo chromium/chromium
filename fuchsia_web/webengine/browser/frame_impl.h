@@ -76,7 +76,12 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
       content::RenderFrameHost* render_frame_host);
 
   // |context| must out-live |this|.
-  // |params| apply both to this Frame, and also to any popup Frames it creates.
+  // |params| apply both to this Frame, and also to any popup Frames it creates
+  // and must be clonable.
+  // TODO(fxbug.dev/65750): Consider removing this restriction if clients become
+  // responsible for providing parameters for [each] popup and (cloning)
+  // |params_for_popups_| is no longer necessary.
+
   // |inspect_node| will be populated with diagnostic data for this Frame.
   // DestroyFrame() is automatically called on |context| if the |frame_request|
   // channel disconnects.

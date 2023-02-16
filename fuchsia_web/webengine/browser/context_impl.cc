@@ -90,10 +90,7 @@ void ContextImpl::CreateFrameWithParams(
                 perfetto::Flow::FromPointer(this));
   }
 
-  // FrameImpl clones the params used to create it when creating popup Frames.
-  // Ensure the params can be cloned to avoid problems when handling popups.
-  // TODO(fxbug.dev/65750): Consider removing this restriction if clients
-  // become responsible for providing parameters for [each] popup.
+  // Ensure the params can be cloned as required by CreateFrameForWebContents().
   fuchsia::web::CreateFrameParams cloned_params;
   zx_status_t status = params.Clone(&cloned_params);
   if (status != ZX_OK) {

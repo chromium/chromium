@@ -191,6 +191,11 @@ bool IsHeadless() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless);
 }
 
+bool IsClonable(const fuchsia::web::CreateFrameParams& params) {
+  fuchsia::web::CreateFrameParams cloned_params;
+  return params.Clone(&cloned_params) == ZX_OK;
+}
+
 using FrameImplMap =
     base::small_map<std::map<content::WebContents*, FrameImpl*>>;
 
@@ -438,6 +443,7 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
                                            params_for_popups_.debug_name())
               : inspect::StringProperty()) {
   DCHECK(!WebContentsToFrameImplMap()[web_contents_.get()]);
+  DCHECK(IsClonable(params));
   TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/Frame created",
               perfetto::Flow::FromPointer(context_),
               perfetto::Flow::FromPointer(this));
@@ -620,8 +626,8 @@ void FrameImpl::AddNewContents(
       // The PopupFrameCreationInfo won't be needed anymore, so clear it out.
       new_contents->SetUserData(kPopupCreationInfo, nullptr);
 
-      // ContextImpl::CreateFrameForWebContents() verified that
-      // |params_for_popups_| can be cloned, so it cannot fail here.
+      // The constructor requires that the params can be cloned, so it cannot
+      // fail here.
       fuchsia::web::CreateFrameParams params;
       zx_status_t status = params_for_popups_.Clone(&params);
       ZX_DCHECK(status == ZX_OK, status);
