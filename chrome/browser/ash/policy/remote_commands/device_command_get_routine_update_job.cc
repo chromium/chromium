@@ -58,8 +58,9 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
     return false;
   }
   T enum_to_check = static_cast<T>(possible_enum);
-  if (!ash::cros_healthd::mojom::IsKnownEnumValue(enum_to_check))
+  if (!ash::cros_healthd::mojom::IsKnownEnumValue(enum_to_check)) {
     return false;
+  }
   *valid_enum_out = enum_to_check;
   return true;
 }
@@ -116,23 +117,27 @@ em::RemoteCommand_Type DeviceCommandGetRoutineUpdateJob::GetType() const {
 bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
     const std::string& command_payload) {
   absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root.has_value())
+  if (!root.has_value()) {
     return false;
-  if (!root->is_dict())
+  }
+  if (!root->is_dict()) {
     return false;
+  }
 
   const base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid integer for the routine ID.
   absl::optional<int> id = dict.FindInt(kIdFieldName);
-  if (!id.has_value())
+  if (!id.has_value()) {
     return false;
+  }
   routine_id_ = id.value();
 
   // Make sure the command payload specified a valid
   // DiagnosticRoutineCommandEnum.
   absl::optional<int> command_enum = dict.FindInt(kCommandFieldName);
-  if (!command_enum.has_value())
+  if (!command_enum.has_value()) {
     return false;
+  }
   if (!PopulateMojoEnumValueIfValid(command_enum.value(), &command_)) {
     SYSLOG(ERROR) << "Unknown DiagnosticRoutineCommandEnum in command payload: "
                   << command_enum.value();
@@ -141,8 +146,9 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
 
   // Make sure the command payload specified a boolean for include_output.
   absl::optional<bool> include_output = dict.FindBool(kIncludeOutputFieldName);
-  if (!include_output.has_value())
+  if (!include_output.has_value()) {
     return false;
+  }
   include_output_ = include_output.value();
 
   return true;

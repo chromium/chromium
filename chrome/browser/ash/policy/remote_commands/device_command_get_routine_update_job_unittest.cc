@@ -97,8 +97,9 @@ std::string CreateInteractivePayload(
     ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum user_message) {
   base::Value::Dict root_dict;
   root_dict.Set(kProgressPercentFieldName, static_cast<int>(progress_percent));
-  if (output.has_value())
+  if (output.has_value()) {
     root_dict.Set(kOutputFieldName, std::move(output.value()));
+  }
   base::Value::Dict interactive_dict;
   interactive_dict.Set(kUserMessageFieldName, static_cast<int>(user_message));
   root_dict.Set(kInteractiveUpdateFieldName, std::move(interactive_dict));
@@ -115,8 +116,9 @@ std::string CreateNonInteractivePayload(
     const std::string& status_message) {
   base::Value::Dict root_dict;
   root_dict.Set(kProgressPercentFieldName, static_cast<int>(progress_percent));
-  if (output.has_value())
+  if (output.has_value()) {
     root_dict.Set(kOutputFieldName, std::move(output.value()));
+  }
   base::Value::Dict noninteractive_dict;
   noninteractive_dict.Set(kStatusFieldName, static_cast<int>(status));
   noninteractive_dict.Set(kStatusMessageFieldName, status_message);

@@ -105,8 +105,9 @@ em::RemoteCommand GenerateCommandProto(
   if (routine.has_value()) {
     root_dict.Set(kRoutineEnumFieldName, static_cast<int>(routine.value()));
   }
-  if (params.has_value())
+  if (params.has_value()) {
     root_dict.Set(kParamsFieldName, std::move(params).value());
+  }
   std::string payload;
   base::JSONWriter::Write(root_dict, &payload);
   command_proto.set_payload(payload);

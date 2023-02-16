@@ -114,8 +114,9 @@ scoped_refptr<base::RefCountedBytes> GenerateTestPNG(const int& width,
   SkBitmap bmp;
   bmp.allocN32Pixels(width, height);
   for (int y = 0; y < height; ++y) {
-    for (int x = 0; x < width; ++x)
+    for (int x = 0; x < width; ++x) {
       *bmp.getAddr32(x, y) = background_color;
+    }
   }
   scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
   gfx::PNGCodec::ColorFormat color_format = gfx::PNGCodec::FORMAT_RGBA;
@@ -236,8 +237,9 @@ std::string DeviceCommandScreenshotTest::CreatePayloadFromResultCode(
     DeviceCommandScreenshotJob::ResultCode result_code) {
   std::string payload;
   base::Value::Dict root_dict;
-  if (result_code != DeviceCommandScreenshotJob::SUCCESS)
+  if (result_code != DeviceCommandScreenshotJob::SUCCESS) {
     root_dict.Set(kResultFieldName, result_code);
+  }
   base::JSONWriter::Write(root_dict, &payload);
   return payload;
 }

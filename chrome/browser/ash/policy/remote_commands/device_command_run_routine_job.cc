@@ -57,8 +57,9 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
     return false;
   }
   T enum_to_check = static_cast<T>(possible_enum);
-  if (!ash::cros_healthd::mojom::IsKnownEnumValue(enum_to_check))
+  if (!ash::cros_healthd::mojom::IsKnownEnumValue(enum_to_check)) {
     return false;
+  }
   *valid_enum_out = enum_to_check;
   return true;
 }
@@ -89,16 +90,19 @@ em::RemoteCommand_Type DeviceCommandRunRoutineJob::GetType() const {
 bool DeviceCommandRunRoutineJob::ParseCommandPayload(
     const std::string& command_payload) {
   absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root.has_value())
+  if (!root.has_value()) {
     return false;
-  if (!root->is_dict())
+  }
+  if (!root->is_dict()) {
     return false;
+  }
 
   base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid DiagnosticRoutineEnum.
   absl::optional<int> routine_enum = dict.FindInt(kRoutineEnumFieldName);
-  if (!routine_enum.has_value())
+  if (!routine_enum.has_value()) {
     return false;
+  }
   if (!PopulateMojoEnumValueIfValid(routine_enum.value(), &routine_enum_)) {
     SYSLOG(ERROR) << "Unknown DiagnosticRoutineEnum in command payload: "
                   << routine_enum.value();
@@ -109,8 +113,9 @@ bool DeviceCommandRunRoutineJob::ParseCommandPayload(
   // Validation of routine-specific parameters will be done before running the
   // routine, so here we just check that any dictionary was given to us.
   auto* params_dict = dict.FindDict(kParamsFieldName);
-  if (!params_dict)
+  if (!params_dict) {
     return false;
+  }
   params_dict_ = std::move(*params_dict);
 
   return true;

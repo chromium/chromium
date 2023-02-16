@@ -59,8 +59,9 @@ void CallCollectAndUpload(
 
 std::string CreatePayload(ResultCode result_code) {
   base::Value::Dict root_dict;
-  if (result_code != ResultCode::SUCCESS)
+  if (result_code != ResultCode::SUCCESS) {
     root_dict.Set(kResultFieldName, result_code);
+  }
 
   std::string payload;
   base::JSONWriter::Write(root_dict, &payload);
@@ -113,12 +114,14 @@ void DeviceCommandScreenshotJob::OnFailure(UploadJob::ErrorCode error_code) {
 bool DeviceCommandScreenshotJob::ParseCommandPayload(
     const std::string& command_payload) {
   absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root || !root->is_dict())
+  if (!root || !root->is_dict()) {
     return false;
+  }
   const std::string* upload_url =
       root->GetDict().FindString(kUploadUrlFieldName);
-  if (!upload_url)
+  if (!upload_url) {
     return false;
+  }
   upload_url_ = GURL(*upload_url);
   return true;
 }

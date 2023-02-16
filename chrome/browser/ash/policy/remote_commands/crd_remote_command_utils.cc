@@ -30,12 +30,15 @@ using chromeos::network_config::mojom::OncSource;
 
 const ash::KioskAppManagerBase* GetKioskAppManager(
     const user_manager::UserManager& user_manager) {
-  if (user_manager.IsLoggedInAsKioskApp())
+  if (user_manager.IsLoggedInAsKioskApp()) {
     return ash::KioskAppManager::Get();
-  if (user_manager.IsLoggedInAsArcKioskApp())
+  }
+  if (user_manager.IsLoggedInAsArcKioskApp()) {
     return ash::ArcKioskAppManager::Get();
-  if (user_manager.IsLoggedInAsWebKioskApp())
+  }
+  if (user_manager.IsLoggedInAsWebKioskApp()) {
     return ash::WebKioskAppManager::Get();
+  }
 
   // This method should only be invoked when we know we're in a kiosk
   // environment, so one of these app managers must exist.
@@ -114,24 +117,29 @@ base::TimeDelta GetDeviceIdleTime() {
 UserSessionType GetCurrentUserSessionType() {
   const auto& user_manager = CHECK_DEREF(user_manager::UserManager::Get());
 
-  if (!user_manager.IsUserLoggedIn())
+  if (!user_manager.IsUserLoggedIn()) {
     return UserSessionType::NO_SESSION;
-
-  if (user_manager.IsLoggedInAsAnyKioskApp()) {
-    if (IsRunningAutoLaunchedKiosk(user_manager))
-      return UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION;
-    else
-      return UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
   }
 
-  if (user_manager.IsLoggedInAsPublicAccount())
+  if (user_manager.IsLoggedInAsAnyKioskApp()) {
+    if (IsRunningAutoLaunchedKiosk(user_manager)) {
+      return UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION;
+    } else {
+      return UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
+    }
+  }
+
+  if (user_manager.IsLoggedInAsPublicAccount()) {
     return UserSessionType::MANAGED_GUEST_SESSION;
+  }
 
-  if (user_manager.IsLoggedInAsGuest())
+  if (user_manager.IsLoggedInAsGuest()) {
     return UserSessionType::GUEST_SESSION;
+  }
 
-  if (user_manager.GetActiveUser()->IsAffiliated())
+  if (user_manager.GetActiveUser()->IsAffiliated()) {
     return UserSessionType::AFFILIATED_USER_SESSION;
+  }
 
   return UserSessionType::UNAFFILIATED_USER_SESSION;
 }
