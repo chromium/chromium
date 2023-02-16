@@ -680,6 +680,9 @@ module.exports = {
     'comma-dangle': 'off',
     '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
 
+    'func-call-spacing': 'off',
+    '@typescript-eslint/func-call-spacing': 'error',
+
     '@typescript-eslint/lines-between-class-members': 'error',
 
     '@typescript-eslint/no-unused-expressions': 'error',
