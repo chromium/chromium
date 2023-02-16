@@ -46,23 +46,22 @@ function generateHtml(report) {
   }
 
   return `
-    <html lang="">
-    <head>
-      <title>WPT test results</title>
-      <style>
-        body { font-family: Roboto, serif; font-size: 13px; color: #202124; }
-        .path { font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; line-height: 180%; padding: 5px 18px; margin: 0; }
-        .top { box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px; margin: auto; padding: 60px; max-width: 1200px; }
-        .test-card { padding-left: 20px; max-width: 1200px; }
-        .divider { margin-left: 20px; height: 1px; background: #a0a0a0; }
-        .non-collapsible-item { padding-left: 27px; }
-        .stat { float: right }
-        .pass { background: #D5F2D7; }
-        .part { background: #F2EDD5; }
-        .fail { background: #F2D7D5; }
-      </style>
-    </head>
-    <body>
+    <!DOCTYPE html>
+    <html lang="en">
+    <meta charset="utf-8">
+    <title>BiDi-CDP Mapper</title>
+    <style>
+      body { font-family: Roboto, serif; font-size: 13px; color: #202124; }
+      .path { font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; line-height: 180%; padding: 5px 18px; margin: 0; }
+      .top { box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px; margin: auto; padding: 60px; max-width: 1200px; }
+      .test-card { padding-left: 20px; max-width: 1200px; }
+      .divider { margin-left: 20px; height: 1px; background: #a0a0a0; }
+      .non-collapsible-item { padding-left: 27px; }
+      .stat { float: right }
+      .pass { background: #D5F2D7; }
+      .part { background: #F2EDD5; }
+      .fail { background: #F2D7D5; }
+    </style>
     <div class="top">
       <h1>WPT test results</h1>
       <h2>
@@ -71,9 +70,7 @@ function generateHtml(report) {
       <div>
         ${report.results.map(generateTestReport).join('')}
       </div>
-    </div>
-    </body>
-    </html>`;
+    </div>`;
 }
 
 function generateTestReport(test) {
