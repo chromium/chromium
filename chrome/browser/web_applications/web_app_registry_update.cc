@@ -80,7 +80,8 @@ ScopedRegistryUpdate::ScopedRegistryUpdate(
       sync_bridge_(sync_bridge),
       commit_complete_(std::move(commit_complete)) {}
 
-ScopedRegistryUpdate::ScopedRegistryUpdate(ScopedRegistryUpdate&&) = default;
+ScopedRegistryUpdate::ScopedRegistryUpdate(ScopedRegistryUpdate&&) noexcept =
+    default;
 
 ScopedRegistryUpdate::~ScopedRegistryUpdate() {
   if (update_) {

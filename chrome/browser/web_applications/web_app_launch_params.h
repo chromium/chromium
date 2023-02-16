@@ -18,12 +18,12 @@ namespace web_app {
 struct WebAppLaunchParams {
   WebAppLaunchParams();
   WebAppLaunchParams(const WebAppLaunchParams&);
-  WebAppLaunchParams(WebAppLaunchParams&&);
+  WebAppLaunchParams(WebAppLaunchParams&&) noexcept;
 
   ~WebAppLaunchParams();
 
   WebAppLaunchParams& operator=(const WebAppLaunchParams&);
-  WebAppLaunchParams& operator=(WebAppLaunchParams&&);
+  WebAppLaunchParams& operator=(WebAppLaunchParams&&) noexcept;
 
   // Whether this launch triggered a navigation that needs to be awaited before
   // sending the launch params to the document.

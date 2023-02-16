@@ -10,14 +10,14 @@ WebAppLaunchParams::WebAppLaunchParams() = default;
 
 WebAppLaunchParams::WebAppLaunchParams(const WebAppLaunchParams&) = default;
 
-WebAppLaunchParams::WebAppLaunchParams(WebAppLaunchParams&&) = default;
+WebAppLaunchParams::WebAppLaunchParams(WebAppLaunchParams&&) noexcept = default;
 
 WebAppLaunchParams::~WebAppLaunchParams() = default;
 
 WebAppLaunchParams& WebAppLaunchParams::operator=(const WebAppLaunchParams&) =
     default;
 
-WebAppLaunchParams& WebAppLaunchParams::operator=(WebAppLaunchParams&&) =
-    default;
+WebAppLaunchParams& WebAppLaunchParams::operator=(
+    WebAppLaunchParams&&) noexcept = default;
 
 }  // namespace web_app

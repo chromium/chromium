@@ -69,7 +69,7 @@ class ScopedRegistryUpdate {
   explicit ScopedRegistryUpdate(WebAppSyncBridge* sync_bridge);
   ScopedRegistryUpdate(WebAppSyncBridge* sync_bridge,
                        base::OnceCallback<void(bool success)> commit_complete);
-  ScopedRegistryUpdate(ScopedRegistryUpdate&&);
+  ScopedRegistryUpdate(ScopedRegistryUpdate&&) noexcept;
   ScopedRegistryUpdate(const ScopedRegistryUpdate&) = delete;
   ScopedRegistryUpdate& operator=(const ScopedRegistryUpdate&) = delete;
   ~ScopedRegistryUpdate();
