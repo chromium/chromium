@@ -6,7 +6,6 @@
 
 #include "base/i18n/case_conversion.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -85,13 +84,8 @@ void ExtensionsMenuViewController::OpenSitePermissionsPage(
 
   auto site_permissions_page =
       std::make_unique<ExtensionsMenuSitePermissionsPageView>(
-          extension_name, extension_icon, extension_id, this);
+          browser_, extension_name, extension_icon, extension_id, this);
   SwitchToPage(std::move(site_permissions_page));
-}
-
-void ExtensionsMenuViewController::OpenExtensionSettings(
-    extensions::ExtensionId extension_id) {
-  chrome::ShowExtensions(browser_, extension_id);
 }
 
 void ExtensionsMenuViewController::CloseBubble() {

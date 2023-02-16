@@ -21,10 +21,6 @@ class ExtensionsMenuNavigationHandler {
   virtual void OpenSitePermissionsPage(
       extensions::ExtensionId extension_id) = 0;
 
-  // Opens the settings page for `extension_id`. This will cause the extension
-  // menu to close (handled separately).
-  virtual void OpenExtensionSettings(extensions::ExtensionId extension_id) = 0;
-
   // Closes the currently-showing extensions menu, if it exists.
   virtual void CloseBubble() = 0;
 };

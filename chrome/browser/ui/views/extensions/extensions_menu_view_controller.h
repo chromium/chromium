@@ -37,7 +37,6 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
   // ExtensionsMenuNavigationHandler:
   void OpenMainPage() override;
   void OpenSitePermissionsPage(extensions::ExtensionId extension_id) override;
-  void OpenExtensionSettings(extensions::ExtensionId extension_id) override;
   void CloseBubble() override;
 
   // TabStripModelObserver:

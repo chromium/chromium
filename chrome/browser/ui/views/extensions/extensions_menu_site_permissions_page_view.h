@@ -12,11 +12,13 @@ namespace ui {
 class ImageModel;
 }  // namespace ui
 
+class Browser;
 class ExtensionsMenuNavigationHandler;
 
 class ExtensionsMenuSitePermissionsPageView : public ExtensionsMenuPageView {
  public:
   explicit ExtensionsMenuSitePermissionsPageView(
+      Browser* browser,
       std::u16string extension_name,
       ui::ImageModel extension_icon,
       extensions::ExtensionId extension_id,

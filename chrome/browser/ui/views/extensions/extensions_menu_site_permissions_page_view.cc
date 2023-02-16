@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,6 +28,7 @@
 #include "ui/views/view_class_properties.h"
 
 ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
+    Browser* browser,
     std::u16string extension_name,
     ui::ImageModel extension_icon,
     extensions::ExtensionId extension_id,
@@ -89,10 +92,12 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                   // Settings button.
                   views::Builder<views::Separator>(),
                   views::Builder<HoverButton>(std::make_unique<HoverButton>(
-                      base::BindRepeating(&ExtensionsMenuNavigationHandler::
-                                              OpenExtensionSettings,
-                                          base::Unretained(navigation_handler),
-                                          extension_id_),
+                      base::BindRepeating(
+                          [](Browser* browser,
+                             extensions::ExtensionId extension_id) {
+                            chrome::ShowExtensions(browser, extension_id);
+                          },
+                          browser, extension_id),
                       /*icon_view=*/nullptr,
                       l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SETTINGS_BUTTON),
