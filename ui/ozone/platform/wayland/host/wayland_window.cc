@@ -176,6 +176,17 @@ absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
   // still a non toplevel window that doesn't have a parent (for example, a
   // wl_surface that is being dragged).
   if (root_surface_->entered_outputs().empty()) {
+    // The nullcheck is necessary because some tests create mock screen
+    // instead of emulating at wayland level.
+    if (IsScreenCoordinatesEnabled() &&
+        connection_->wayland_output_manager()->wayland_screen()) {
+      // If the surface hasn't entered any output yet, but the
+      // screen coordinates is enabled, try to find the screen that
+      // matches the window's bounds.
+      return connection_->wayland_output_manager()
+          ->wayland_screen()
+          ->GetOutputIdMatching(GetBoundsInDIP());
+    }
     return absl::nullopt;
   }
 

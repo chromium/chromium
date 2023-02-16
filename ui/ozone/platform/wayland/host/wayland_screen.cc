@@ -270,13 +270,18 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
 #endif
 }
 
-uint32_t WaylandScreen::GetOutputIdForDisplayId(int64_t display_id) {
+WaylandOutput::Id WaylandScreen::GetOutputIdForDisplayId(int64_t display_id) {
   auto iter = std::find_if(
       display_id_map_.begin(), display_id_map_.end(),
       [display_id](auto pair) { return pair.second == display_id; });
   if (iter != display_id_map_.end())
     return iter->first;
   return 0;
+}
+
+WaylandOutput::Id WaylandScreen::GetOutputIdMatching(const gfx::Rect& bounds) {
+  int64_t display_id = GetDisplayMatching(bounds).id();
+  return GetOutputIdForDisplayId(display_id);
 }
 
 base::WeakPtr<WaylandScreen> WaylandScreen::GetWeakPtr() {

@@ -1332,6 +1332,57 @@ TEST_P(WaylandAuraShellScreenTest,
   platform_screen_->RemoveObserver(&observer);
 }
 
+TEST_P(WaylandAuraShellScreenTest, UseCorrectScreenBeforeEnterEvent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWaylandScreenCoordinatesEnabled);
+
+  // These have to be stored on the client thread, but must be used only on the
+  // server thread.
+  wl::TestOutput* output1 = nullptr;
+  wl::TestOutput* output2 = nullptr;
+
+  gfx::Rect output1_rect;
+  PostToServerAndWait(
+      [&output1, &output1_rect](wl::TestWaylandServerThread* server) {
+        output1 = server->output();
+        ASSERT_TRUE(output1);
+        output1_rect = server->output()->GetRect();
+      });
+
+  // Add a second display with scale factor 2.
+  PostToServerAndWait([&output2](wl::TestWaylandServerThread* server) {
+    output2 = server->CreateAndInitializeOutput();
+    ASSERT_TRUE(output2);
+  });
+
+  gfx::Rect output2_rect(output1_rect.right(), 0, 800, 600);
+  PostToServerAndWait(
+      [output2, &output2_rect](wl::TestWaylandServerThread* server) {
+        output2->SetRect(output2_rect);
+        // Scale Factor 2
+        output2->xdg_output()->SetLogicalSize({400, 300});
+        output2->Flush();
+      });
+
+  WaitForAllDisplaysReady();
+
+  // Create a window on the 2nd display with scale factor 2.
+  EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(testing::_)).Times(1);
+  PlatformWindowInitProperties properties;
+  properties.bounds = gfx::Rect(output1_rect.right(), 0, 100, 100);
+  properties.type = PlatformWindowType::kWindow;
+  window_ =
+      delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
+  ASSERT_NE(widget_, gfx::kNullAcceleratedWidget);
+
+  window_->Show(false);
+
+  // Make sure that entered output is zero but the scale factor is correctly
+  // set based on the bounds.
+  EXPECT_EQ(window_->root_surface()->entered_outputs().size(), 0u);
+  EXPECT_EQ(2.f, window_->ui_scale());
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandScreenTest,
                          Values(wl::ServerConfig{}));

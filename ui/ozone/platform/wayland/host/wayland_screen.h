@@ -46,7 +46,10 @@ class WaylandScreen : public PlatformScreen {
   void OnOutputAddedOrUpdated(const WaylandOutput::Metrics& metrics);
   void OnOutputRemoved(uint32_t output_id);
 
-  uint32_t GetOutputIdForDisplayId(int64_t display_id);
+  WaylandOutput::Id GetOutputIdForDisplayId(int64_t display_id);
+
+  // Returns id of the output that matches the bounds in screen coordinates.
+  WaylandOutput::Id GetOutputIdMatching(const gfx::Rect& match_rect);
 
   base::WeakPtr<WaylandScreen> GetWeakPtr();
 
