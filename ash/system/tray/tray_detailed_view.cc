@@ -161,42 +161,48 @@ class ScrollContentsView : public views::View {
           paint_info.paint_recording_scale_y()));
       clip_recorder.ClipRect(clip_rect);
       for (auto* child : children()) {
-        if (child->GetID() != VIEW_ID_STICKY_HEADER && !child->layer())
+        if (child->GetID() != VIEW_ID_STICKY_HEADER && !child->layer()) {
           child->Paint(paint_info);
+        }
       }
     }
     // Paint sticky headers.
     for (auto* child : children()) {
-      if (child->GetID() == VIEW_ID_STICKY_HEADER && !child->layer())
+      if (child->GetID() == VIEW_ID_STICKY_HEADER && !child->layer()) {
         child->Paint(paint_info);
+      }
     }
 
     bool did_draw_shadow = false;
     // Paint header row separators.
-    for (auto& header : headers_)
+    for (auto& header : headers_) {
       did_draw_shadow =
           PaintDelineation(header, paint_info.context()) || did_draw_shadow;
+    }
 
     // Draw a shadow at the top of the viewport when scrolled, but only if a
     // header didn't already draw one. Overlap the shadow with the separator
     // that's below the header view so we don't get both a separator and a full
     // shadow.
-    if (y() != 0 && !did_draw_shadow)
+    if (y() != 0 && !did_draw_shadow) {
       DrawShadow(paint_info.context(),
                  gfx::Rect(0, 0, width(), -y() - kTraySeparatorWidth));
+    }
   }
 
   void Layout() override {
     views::View::Layout();
 
     // No sticky headers for the revamped view.
-    if (features::IsQsRevampEnabled())
+    if (features::IsQsRevampEnabled()) {
       return;
+    }
 
     headers_.clear();
     for (auto* child : children()) {
-      if (child->GetID() == VIEW_ID_STICKY_HEADER)
+      if (child->GetID() == VIEW_ID_STICKY_HEADER) {
         headers_.emplace_back(child);
+      }
     }
     PositionHeaderRows();
   }
@@ -217,8 +223,9 @@ class ScrollContentsView : public views::View {
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override {
     // No sticky headers or border insets in the revamped view.
-    if (features::IsQsRevampEnabled())
+    if (features::IsQsRevampEnabled()) {
       return;
+    }
 
     if (!details.is_add && details.parent == this) {
       headers_.erase(std::remove_if(headers_.begin(), headers_.end(),
@@ -291,8 +298,9 @@ class ScrollContentsView : public views::View {
         header.draw_separator_below = draw_separator_below;
         ShowStickyHeaderSeparator(header_view, draw_separator_below);
       }
-      if (header.natural_offset < scroll_offset)
+      if (header.natural_offset < scroll_offset) {
         break;
+      }
     }
   }
 
@@ -323,8 +331,9 @@ class ScrollContentsView : public views::View {
 
     // If the header is where it normally belongs or If the header is pushed by
     // a header directly below it, draw nothing.
-    if (view->y() == header.natural_offset || header.draw_separator_below)
+    if (view->y() == header.natural_offset || header.draw_separator_below) {
       return false;
+    }
 
     // Otherwise, draw a shadow below.
     DrawShadow(context,
@@ -365,8 +374,9 @@ TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
   box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  if (features::IsQsRevampEnabled())
+  if (features::IsQsRevampEnabled()) {
     IgnoreSeparator();
+  }
 }
 
 TrayDetailedView::~TrayDetailedView() = default;
@@ -466,14 +476,15 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
     const std::u16string& text) {
   HoverHighlightView* item = container->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
-  if (icon.is_empty())
+  if (icon.is_empty()) {
     item->AddLabelRow(text);
-  else
+  } else {
     item->AddIconAndLabel(
         gfx::CreateVectorIcon(
             icon, AshColorProvider::Get()->GetContentLayerColor(
                       AshColorProvider::ContentLayerType::kIconColorPrimary)),
         text);
+  }
   return item;
 }
 
@@ -526,6 +537,10 @@ void TrayDetailedView::Reset() {
   progress_bar_ = nullptr;
   back_button_ = nullptr;
   tri_view_ = nullptr;
+  title_label_ = nullptr;
+  sub_header_label_ = nullptr;
+  sub_header_image_view_ = nullptr;
+  title_separator_ = nullptr;
 }
 
 void TrayDetailedView::ShowProgress(double value, bool visible) {
@@ -609,11 +624,13 @@ void TrayDetailedView::TransitionToMainView() {
 void TrayDetailedView::CloseBubble() {
   // widget may be null in tests, in this case we do not need to do anything.
   views::Widget* widget = GetWidget();
-  if (!widget)
+  if (!widget) {
     return;
+  }
   // Don't close again if we're already closing.
-  if (widget->IsClosed())
+  if (widget->IsClosed()) {
     return;
+  }
   delegate_->CloseBubble();
 }
 
@@ -623,13 +640,15 @@ void TrayDetailedView::IgnoreSeparator() {
 
 void TrayDetailedView::Layout() {
   views::View::Layout();
-  if (scroller_ && !scroller_->is_bounded())
+  if (scroller_ && !scroller_->is_bounded()) {
     scroller_->ClipHeightTo(0, scroller_->height());
+  }
 }
 
 int TrayDetailedView::GetHeightForWidth(int width) const {
-  if (bounds().IsEmpty())
+  if (bounds().IsEmpty()) {
     return views::View::GetHeightForWidth(width);
+  }
 
   // The height of the bubble that contains this detailed view is set to
   // the preferred height of the default view, and that determines the
