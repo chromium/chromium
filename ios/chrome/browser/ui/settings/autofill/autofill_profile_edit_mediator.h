@@ -13,7 +13,9 @@ namespace autofill {
 class PersonalDataManager;
 }
 
+@protocol AutofillProfileEditConsumer;
 @protocol AutofillProfileEditMediatorDelegate;
+@class CountryItem;
 
 // The Mediator for viewing and editing the profile.
 @interface AutofillProfileEditMediator
@@ -24,9 +26,16 @@ class PersonalDataManager;
 - (instancetype)initWithDelegate:
                     (id<AutofillProfileEditMediatorDelegate>)delegate
              personalDataManager:(autofill::PersonalDataManager*)dataManager
+                     countryCode:(NSString*)countryCode
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Consumer of this mediator.
+@property(nonatomic, weak) id<AutofillProfileEditConsumer> consumer;
+
+// Called when the country is selected from a dropdown.
+- (void)didSelectCountry:(CountryItem*)countryItem;
 
 @end
 

@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -71,14 +74,19 @@
       autofill::PersonalDataManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
 
+  std::string countryCode = autofill::data_util::GetCountryCodeWithFallback(
+      _autofillProfile, GetApplicationContext()->GetApplicationLocale());
+
   self.mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
-      personalDataManager:personalDataManager];
+      personalDataManager:personalDataManager
+              countryCode:base::SysUTF8ToNSString(countryCode)];
 
   self.viewController = [[AutofillProfileEditTableViewController alloc]
       initWithDelegate:self.mediator
                profile:&_autofillProfile
              userEmail:[self syncingUserEmail]];
+  self.mediator.consumer = self.viewController;
 
   DCHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:self.viewController
@@ -125,7 +133,7 @@
 - (void)didSelectCountry:(CountryItem*)selectedCountry {
   [self.baseNavigationController popViewControllerAnimated:YES];
   self.isCountrySelectorPresented = NO;
-  [self.viewController didSelectCountry:selectedCountry.text];
+  [self.mediator didSelectCountry:selectedCountry];
 }
 
 #pragma mark - Private

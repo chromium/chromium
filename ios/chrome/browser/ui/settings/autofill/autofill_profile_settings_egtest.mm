@@ -80,15 +80,6 @@ const UserTypedCountryExpectedResultPair kCountryTests[] = {
     {@"Nonexistia", @""},
 };
 
-// Given a resource ID of a category of an Autofill profile, it returns a
-// NSString consisting of the resource string concatenated with "_textField".
-// This is the a11y ID of the text field corresponding to the category in the
-// edit dialog of the Autofill profile.
-NSString* GetTextFieldForID(int categoryId) {
-  return [NSString
-      stringWithFormat:@"%@_textField", l10n_util::GetNSString(categoryId)];
-}
-
 // Return the edit button from the navigation bar.
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(
@@ -145,7 +136,8 @@ id<GREYMatcher> SearchBarScrim() {
 
   if ([self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
       [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)] ||
-      [self isRunningTest:@selector(testCountrySelection)]) {
+      [self isRunningTest:@selector(testCountrySelection)] ||
+      [self isRunningTest:@selector(testRequiredFields)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAccountProfilesUnionView);
   }
@@ -235,10 +227,8 @@ id<GREYMatcher> SearchBarScrim() {
 
     // Replace the text field with the user-version of the country.
     [[EarlGrey
-        selectElementWithMatcher:grey_allOf(
-                                     grey_accessibilityID(GetTextFieldForID(
-                                         IDS_IOS_AUTOFILL_COUNTRY)),
-                                     grey_kindOfClassName(@"UITextField"), nil)]
+        selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                     IDS_IOS_AUTOFILL_COUNTRY)]
         performAction:grey_replaceText(expectation.user_typed_country)];
 
     // Switch off edit mode.
@@ -246,13 +236,10 @@ id<GREYMatcher> SearchBarScrim() {
         performAction:grey_tap()];
 
     // Verify that the country value was changed to canonical.
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityLabel(
-                       [NSString stringWithFormat:@"%@, %@",
-                                                  l10n_util::GetNSString(
-                                                      IDS_IOS_AUTOFILL_COUNTRY),
-                                                  expectation.expected_result])]
-        assertWithMatcher:grey_notNil()];
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                     IDS_IOS_AUTOFILL_COUNTRY)]
+        assertWithMatcher:grey_text(expectation.expected_result)];
   }
 
   // Go back to the list view page.
@@ -478,6 +465,68 @@ id<GREYMatcher> SearchBarScrim() {
   // Check `kCountryForSelection` is saved.
   [[EarlGrey selectElementWithMatcher:grey_text(kCountryForSelection)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Go back to the list view page.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  [self exitSettingsMenu];
+}
+
+// Checks when the country field is changed to Germany in the edit mode, the
+// city is added to the required fields. When it is emptied, the save button in
+// displayed. The profile is an account profile.
+- (void)testRequiredFields {
+  [AutofillAppInterface saveExampleAccountProfile];
+  [self openEditProfile:kProfileLabel];
+
+  // Switch on edit mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_AUTOFILL_COUNTRY))]
+      performAction:grey_tap()];
+
+  // Focus the search bar.
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
+      performAction:grey_replaceText(kCountryForSelection)];
+
+  // Verify that scrim is not visible anymore.
+  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify the `kCountryForSelection` country is visible.
+  [[EarlGrey selectElementWithMatcher:CountryEntry(kCountryForSelection)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap on `kCountryForSelection`.
+  [[EarlGrey selectElementWithMatcher:CountryEntry(kCountryForSelection)]
+      performAction:grey_tap()];
+
+  // Remove the text from the state field.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_STATE)]
+      performAction:grey_replaceText(@"")];
+
+  // The "Done" button is still visible as the state field is not a required
+  // field.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Remove the text from the city field.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_CITY)]
+      performAction:grey_replaceText(@"")];
+
+  // The "Done" button is not enabled now.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
 
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]

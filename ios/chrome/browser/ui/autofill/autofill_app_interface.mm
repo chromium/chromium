@@ -148,7 +148,8 @@ void ClearPasswordStore() {
 }
 
 // Saves an example profile in the store.
-void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager) {
+void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
+                        bool isAccountProfile) {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   // If the test profile is already in the store, adding it will be a no-op.
   // In that case, early return.
@@ -159,6 +160,9 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager) {
   }
   size_t profileCount = personalDataManager->GetProfiles().size();
 
+  if (isAccountProfile) {
+    profile.set_source_for_testing(autofill::AutofillProfile::Source::kAccount);
+  }
   personalDataManager->AddProfile(profile);
 
   ConditionBlock conditionBlock = ^bool {
@@ -376,7 +380,11 @@ class SaveCardInfobarEGTestHelper
 }
 
 + (void)saveExampleProfile {
-  AddAutofillProfile([self personalDataManager]);
+  AddAutofillProfile([self personalDataManager], false);
+}
+
++ (void)saveExampleAccountProfile {
+  AddAutofillProfile([self personalDataManager], true);
 }
 
 + (NSString*)exampleProfileName {

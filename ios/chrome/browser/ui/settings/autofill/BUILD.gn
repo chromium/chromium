@@ -24,6 +24,7 @@ source_set("autofill") {
     "autofill_edit_table_view_controller+protected.h",
     "autofill_edit_table_view_controller.h",
     "autofill_edit_table_view_controller.mm",
+    "autofill_profile_edit_consumer.h",
     "autofill_profile_edit_coordinator.h",
     "autofill_profile_edit_coordinator.mm",
     "autofill_profile_edit_mediator.h",

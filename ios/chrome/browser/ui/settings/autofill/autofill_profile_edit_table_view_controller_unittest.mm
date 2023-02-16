@@ -68,18 +68,15 @@ static NSArray* FindTextFieldDescendants(UIView* root) {
 
 @interface AutofillProfileEditTableViewControllerTestDelegate
     : NSObject <AutofillProfileEditTableViewControllerDelegate>
+@property(nonatomic, assign) BOOL isAnyRequiredFieldEmpty;
 @end
 
 @implementation AutofillProfileEditTableViewControllerTestDelegate
 
-- (void)autofillProfileEditViewController:
-            (AutofillProfileEditTableViewController*)viewController
-    willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
+- (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
 }
 
-- (void)autofillProfileEditViewController:
-            (AutofillProfileEditTableViewController*)viewController
-                   didEditAutofillProfile:(autofill::AutofillProfile*)profile {
+- (void)didEditAutofillProfile:(autofill::AutofillProfile*)profile {
 }
 
 - (void)viewDidDisappear {
@@ -225,7 +222,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestFooterTextWithEmail) {
           @"Test The address is saved in your Google Account(%@). You can "
           @"use the address across Google products on any device",
           base::SysUTF16ToNSString(kTestEmail)];
-  TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:0];
+  TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:1];
   EXPECT_NSEQ(expected_footer_text, footer.text);
 }
 

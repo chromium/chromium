@@ -16,14 +16,10 @@ class AutofillProfile;
 
 // Notifies the class that conforms this delegate to open the country selection
 // view.
-- (void)autofillProfileEditViewController:
-            (AutofillProfileEditTableViewController*)viewController
-    willSelectCountryWithCurrentlySelectedCountry:(NSString*)country;
+- (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country;
 
 // Notifies the class that conforms this delegate to save the `profile`.
-- (void)autofillProfileEditViewController:
-            (AutofillProfileEditTableViewController*)viewController
-                   didEditAutofillProfile:(autofill::AutofillProfile*)profile;
+- (void)didEditAutofillProfile:(autofill::AutofillProfile*)profile;
 
 // Notifies the class that conforms this delegate that the view has moved out of
 // the view hierarchy.

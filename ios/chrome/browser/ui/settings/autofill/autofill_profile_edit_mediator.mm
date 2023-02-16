@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"
 
@@ -37,13 +38,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // The fetched country list.
 @property(nonatomic, strong) NSArray<CountryItem*>* allCountries;
 
+// The country code that has been selected.
+@property(nonatomic, strong) NSString* selectedCountryCode;
+
 @end
 
 @implementation AutofillProfileEditMediator
 
 - (instancetype)initWithDelegate:
                     (id<AutofillProfileEditMediatorDelegate>)delegate
-             personalDataManager:(autofill::PersonalDataManager*)dataManager {
+             personalDataManager:(autofill::PersonalDataManager*)dataManager
+                     countryCode:(NSString*)countryCode {
   self = [super init];
 
   if (self) {
@@ -52,24 +57,39 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _delegate = delegate;
 
     [self loadCountries];
+    [self updateRequirementsForCountryCode:countryCode];
   }
 
   return self;
 }
 
+- (void)setConsumer:(id<AutofillProfileEditConsumer>)consumer {
+  if (_consumer == consumer) {
+    return;
+  }
+  _consumer = consumer;
+}
+
+#pragma mark - Public
+
+- (void)didSelectCountry:(CountryItem*)countryItem {
+  if ([self.selectedCountryCode isEqualToString:countryItem.countryCode]) {
+    return;
+  }
+
+  [self updateRequirementsForCountryCode:countryItem.countryCode];
+  [self.consumer didSelectCountry:countryItem.text];
+}
+
 #pragma mark - AutofillProfileEditTableViewControllerDelegate
 
-- (void)autofillProfileEditViewController:
-            (AutofillProfileEditTableViewController*)viewController
-    willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
+- (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
   [self.delegate
       willSelectCountryWithCurrentlySelectedCountry:country
                                         countryList:self.allCountries];
 }
 
-- (void)autofillProfileEditViewController:
-            (AutofillProfileEditTableViewController*)viewController
-                   didEditAutofillProfile:(autofill::AutofillProfile*)profile {
+- (void)didEditAutofillProfile:(autofill::AutofillProfile*)profile {
   _personalDataManager->UpdateProfile(*profile);
 }
 
@@ -105,6 +125,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
   self.allCountries = countryItems;
+}
+
+// Fetches and updates the required fields for the `countryCode`.
+- (void)updateRequirementsForCountryCode:(NSString*)countryCode {
+  self.selectedCountryCode = countryCode;
+
+  autofill::AutofillCountry country(
+      base::SysNSStringToUTF8(self.selectedCountryCode),
+      GetApplicationContext()->GetApplicationLocale());
+  [self.consumer setLine1Required:country.requires_line1()];
+  [self.consumer setCityRequired:country.requires_city()];
+  [self.consumer setStateRequired:country.requires_state()];
+  [self.consumer setZipRequired:country.requires_zip()];
 }
 
 @end
