@@ -551,6 +551,14 @@ void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {
   if (!bubble_) {
     ShowBubble();
   }
+
+  // System Tray bubble will never be shown in kiosk app mode. So after
+  // `ShowBubble()` is called, there's still no bubble, the calendar view should
+  // not show up.
+  if (!bubble_) {
+    return;
+  }
+
   bubble_->ShowCalendarView(calendar_metrics::CalendarViewShowSource::kTimeView,
                             calendar_metrics::GetEventType(event));
 }
