@@ -59,8 +59,9 @@ per-file chromium.perf.fyi.json=chonggu@google.com
 per-file chromium.rust.json=file://build/rust/OWNERS
 
 # WebRTC owners
-per-file chromium.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
 per-file chromium.webrtc.fyi.json=file://infra/config/subprojects/webrtc/OWNERS
+per-file chromium.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
+per-file tryserver.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
 
 # Open Screen owners.  Keep in sync with openscreen.py recipe owners.
 per-file *openscreen*.json=jophba@chromium.org
