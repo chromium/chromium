@@ -717,8 +717,8 @@ void VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP(
   origin_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoCaptureDeviceFactoryWin::DeviceInfoReady,
-                     base::UnsafeDanglingUntriaged(this),
-                     std::move(devices_info), std::move(result_callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(devices_info),
+                     std::move(result_callback)));
 
   auto it = async_ops_.find(operation);
   DCHECK(it != async_ops_.end());
