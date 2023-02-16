@@ -3847,8 +3847,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "AutocompleteStabilityAsyncProvidersFirst": "true",
-                        "AutocompleteStabilityDontCopyDoneProviders": "true"
+                        "AutocompleteStabilityAsyncProvidersFirst": "true"
                     },
                     "enable_features": [
                         "OmniboxAutocompleteStability",

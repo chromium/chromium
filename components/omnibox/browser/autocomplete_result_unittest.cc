@@ -139,10 +139,7 @@ class AutocompleteResultTest : public testing::Test {
     template_url_service_->Load();
   }
 
-  void TearDown() override {
-    task_environment_.RunUntilIdle();
-    AutocompleteResult::ClearDontCopyDoneProvidersForTesting();
-  }
+  void TearDown() override { task_environment_.RunUntilIdle(); }
 
   // Configures |match| from |data|.
   void PopulateAutocompleteMatch(const TestData& data,
@@ -662,12 +659,6 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesSkipsSpecializedSuggestions) {
 
 // Tests that transferred matches do not include the specialized match types.
 TEST_F(AutocompleteResultTest, TransferOldMatchesSkipDoneProviders) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kAutocompleteStability,
-      {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
-        "true"}});
-
   TestData last[] = {
       {0, 1, 500},  // Suggestion from done provider
       {1, 2, 400},  // Suggestion for not-done provider
@@ -680,37 +671,6 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesSkipDoneProviders) {
       {2, 3, 700},  // New suggestion from done provider
       {3, 4, 600},  // New suggestion from not-done provider
       // Skip suggestion `{0, 1, 500}`.
-      {1, 2, 400},  // Transferred suggestion from not-done provider
-  };
-
-  GetProvider(1)->done_ = true;
-  GetProvider(3)->done_ = true;
-
-  ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
-                                                    current, std::size(current),
-                                                    result, std::size(result)));
-}
-
-TEST_F(AutocompleteResultTest,
-       TransferOldMatchesSkipDoneProviders_CopyDoneProviders) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kAutocompleteStability,
-      {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
-        "false"}});
-
-  TestData last[] = {
-      {0, 1, 500},  // Suggestion from done provider
-      {1, 2, 400},  // Suggestion for not-done provider
-  };
-  TestData current[] = {
-      {2, 3, 700},  // Suggestion from done provider
-      {3, 4, 600},  // Suggestion for not-done provider
-  };
-  TestData result[] = {
-      {2, 3, 700},  // New suggestion from done provider
-      {3, 4, 600},  // New suggestion from not-done provider
-      {0, 1, 500},  // Transferred suggestion from done provider
       {1, 2, 400},  // Transferred suggestion from not-done provider
   };
 

@@ -85,11 +85,6 @@ constexpr size_t kMaxPedalCount =
 constexpr size_t kMaxPedalMatchIndex =
     is_ios ? 3 : std::numeric_limits<size_t>::max();
 
-enum class DontCopyDoneProviders { kFalse, kTrue, kUnknown };
-
-DontCopyDoneProviders g_dont_copy_done_providers =
-    DontCopyDoneProviders::kUnknown;
-
 }  // namespace
 
 // static
@@ -184,17 +179,9 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   // particularly noticeable when the user types the next char before the
   // copied matches are expired leading to outdated matches surviving multiple
   // input changes, e.g. 'gooooooooo[oogle.com]'.
-  if (g_dont_copy_done_providers == DontCopyDoneProviders::kUnknown) {
-    g_dont_copy_done_providers =
-        OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.Get()
-            ? DontCopyDoneProviders::kTrue
-            : DontCopyDoneProviders::kFalse;
-  }
-  if (g_dont_copy_done_providers == DontCopyDoneProviders::kTrue) {
-    base::EraseIf(old_matches->matches_, [](const auto& old_match) {
-      return old_match.provider && old_match.provider->done();
-    });
-  }
+  base::EraseIf(old_matches->matches_, [](const auto& old_match) {
+    return old_match.provider && old_match.provider->done();
+  });
 
   if (old_matches->empty())
     return;
@@ -1310,9 +1297,4 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
       return 1;
     return 2;
   });
-}
-
-// static
-void AutocompleteResult::ClearDontCopyDoneProvidersForTesting() {
-  g_dont_copy_done_providers = DontCopyDoneProviders::kUnknown;
 }

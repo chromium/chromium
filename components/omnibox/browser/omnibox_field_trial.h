@@ -497,11 +497,6 @@ extern const base::FeatureParam<bool>
 // be default.
 extern const base::FeatureParam<bool>
     kAutocompleteStabilityPreventDefaultPreviousMatches;
-// Matches from the previous input are temporarily copied to carry over the
-// suggestions until the new input's suggestions are ready. If enabled, only
-// providers whose suggestions are pending have their old matches copied over.
-extern const base::FeatureParam<bool>
-    kAutocompleteStabilityDontCopyDoneProviders;
 // Begin async providers before sync providers so their async requests can
 // happen in parallel. This effects only the search, history_url, document, and
 // on device head providers.
