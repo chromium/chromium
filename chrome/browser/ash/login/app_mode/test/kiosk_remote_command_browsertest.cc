@@ -10,7 +10,9 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_set_volume_job.h"
+#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -42,6 +44,10 @@ constexpr char kKioskRemoteVolumeCommandTag[] =
 // workflow: COM_KIOSK_CUJ8_TASK2_WF1
 constexpr char kKioskRemoteRebootCommandTag[] =
     "screenplay-95efa645-3d98-4638-9e5c-c0fe6f2c150d";
+
+// workflow: COM_KIOSK_CUJ8_TASK3_WF1
+constexpr char kKioskRemoteScreenshotCommandTag[] =
+    "screenplay-110c74bf-7c94-4e88-8904-95b6bbc7d649";
 
 // Test `CloudPolicyClient` that interacts with `TestingRemoteCommandsServer`.
 class TestRemoteCommandsClient : public CloudPolicyClient {
@@ -170,6 +176,25 @@ class KioskRemoteCommandTest : public KioskBaseTest {
     return signed_command;
   }
 
+  em::SignedData CreateScreenshotRemoteCommand() {
+    constexpr char kMockUploadUrl[] = "http://example.com/upload";
+    std::string command_payload;
+    {
+      base::Value::Dict root_dict;
+      root_dict.Set(policy::DeviceCommandScreenshotJob::kUploadUrlFieldName,
+                    kMockUploadUrl);
+      base::JSONWriter::Write(root_dict, &command_payload);
+    }
+    em::SignedData signed_command =
+        policy::SignedDataBuilder()
+            .WithCommandId(remote_command_server_->GetNextCommandId())
+            .WithTargetDeviceId(kDeviceId)
+            .WithCommandType(em::RemoteCommand_Type_DEVICE_SCREENSHOT)
+            .WithCommandPayload(command_payload)
+            .Build();
+    return signed_command;
+  }
+
   em::RemoteCommandResult IssueCommandAndGetResponse(em::SignedData command) {
     using ServerResponseFuture =
         base::test::TestFuture<const em::RemoteCommandResult&>;
@@ -253,5 +278,29 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, RebootWithRemoteCommand) {
             response.result());
   EXPECT_EQ(power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT,
             observer.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, ScreenshotWithRemoteCommand) {
+  base::AddFeatureIdTagToTestResult(kKioskRemoteScreenshotCommandTag);
+
+  // Launch kiosk app
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                              /*terminate_app=*/false,
+                              /*keep_app_open=*/true);
+
+  // Create a remote command, enqueue from the server, fetch from the client
+  em::SignedData screenshot_command = CreateScreenshotRemoteCommand();
+
+  // skips real image upload
+  // TODO(b/269432279): Try real upload with local url and EmbeddedTestServer
+  policy::DeviceCommandsFactoryAsh::set_commands_for_testing(true);
+
+  auto response = IssueCommandAndGetResponse(screenshot_command);
+
+  // Check that remote cmd passed
+  EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
+            response.result());
 }
 }  // namespace ash

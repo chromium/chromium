@@ -48,9 +48,6 @@ const char* const kFileTypeHeaderName = "File-Type";
 // String constant signalling that the data segment contains screenshots.
 const char* const kFileTypeScreenshotFile = "screenshot_file";
 
-// String constant identifying the upload url field in the command payload.
-const char* const kUploadUrlFieldName = "fileUploadUrl";
-
 // Helper method to hide the |screen_index| and `std::make_pair` from the
 // |DeviceCommandScreenshotJob::Delegate|.
 void CallCollectAndUpload(
@@ -71,6 +68,10 @@ std::string CreatePayload(ResultCode result_code) {
 }
 
 }  // namespace
+
+// String constant identifying the upload url field in the command payload.
+constexpr char DeviceCommandScreenshotJob::kUploadUrlFieldName[] =
+    "fileUploadUrl";
 
 DeviceCommandScreenshotJob::DeviceCommandScreenshotJob(
     std::unique_ptr<Delegate> screenshot_delegate)

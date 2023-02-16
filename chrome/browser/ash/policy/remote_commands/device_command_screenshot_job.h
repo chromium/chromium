@@ -37,6 +37,7 @@ using OnScreenshotTakenCallback =
 class DeviceCommandScreenshotJob : public RemoteCommandJob,
                                    public UploadJob::Delegate {
  public:
+  static const char kUploadUrlFieldName[];
   // When the screenshot command terminates, the result payload that gets sent
   // to the server is populated with one of the following result codes. These
   // are exposed publicly here since DeviceCommandScreenshotTest uses them.

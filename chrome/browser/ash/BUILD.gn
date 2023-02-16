@@ -2455,6 +2455,8 @@ source_set("ash") {
     "policy/remote_commands/device_command_wipe_users_job.h",
     "policy/remote_commands/device_commands_factory_ash.cc",
     "policy/remote_commands/device_commands_factory_ash.h",
+    "policy/remote_commands/fake_screenshot_delegate.cc",
+    "policy/remote_commands/fake_screenshot_delegate.h",
     "policy/remote_commands/screenshot_delegate.cc",
     "policy/remote_commands/screenshot_delegate.h",
     "policy/remote_commands/user_command_arc_job.cc",
