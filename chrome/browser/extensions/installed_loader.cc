@@ -376,14 +376,12 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       profile_util::ProfileCanUseNonComponentExtensions(profile);
   const base::TimeTicks load_start_time = base::TimeTicks::Now();
 
-  std::unique_ptr<ExtensionPrefs::ExtensionsInfo> extensions_info(
-      extension_prefs_->GetInstalledExtensionsInfo());
+  const ExtensionPrefs::ExtensionsInfo extensions_info =
+      extension_prefs_->GetInstalledExtensionsInfo();
 
   bool should_write_prefs = false;
 
-  for (size_t i = 0; i < extensions_info->size(); ++i) {
-    ExtensionInfo* info = extensions_info->at(i).get();
-
+  for (const auto& info : extensions_info) {
     // Skip extensions that were loaded from the command-line because we don't
     // want those to persist across browser restart.
     if (info->extension_location == mojom::ManifestLocation::kCommandLine)
@@ -401,7 +399,7 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       std::string error;
       scoped_refptr<const Extension> extension(file_util::LoadExtension(
           info->extension_path, info->extension_location,
-          GetCreationFlags(info), &error));
+          GetCreationFlags(info.get()), &error));
 
       if (!extension.get() || extension->id() != info->extension_id) {
         invalid_extensions_.insert(info->extension_path);
@@ -411,17 +409,16 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
         continue;
       }
 
-      extensions_info->at(i)->extension_manifest =
-          std::make_unique<base::Value::Dict>(
-              extension->manifest()->value()->Clone());
+      info->extension_manifest = std::make_unique<base::Value::Dict>(
+          extension->manifest()->value()->Clone());
       should_write_prefs = true;
     }
   }
 
-  for (size_t i = 0; i < extensions_info->size(); ++i) {
-    if (extensions_info->at(i)->extension_location !=
-        mojom::ManifestLocation::kCommandLine)
-      Load(*extensions_info->at(i), should_write_prefs);
+  for (const auto& info : extensions_info) {
+    if (info->extension_location != mojom::ManifestLocation::kCommandLine) {
+      Load(*info, should_write_prefs);
+    }
   }
 
   UMA_HISTOGRAM_COUNTS_100("Extensions.LoadAll",

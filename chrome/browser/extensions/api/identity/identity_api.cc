@@ -87,9 +87,7 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
     return;
   std::vector<CoreAccountInfo> accounts =
       identity_manager_->GetAccountsWithRefreshTokens();
-  extensions::ExtensionIdList extensions;
-  extension_prefs_->GetExtensions(&extensions);
-  for (const ExtensionId& extension_id : extensions) {
+  for (const ExtensionId& extension_id : extension_prefs_->GetExtensions()) {
     absl::optional<std::string> gaia_id = GetGaiaIdForExtension(extension_id);
     if (!gaia_id)
       continue;

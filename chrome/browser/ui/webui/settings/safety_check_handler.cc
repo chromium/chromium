@@ -286,12 +286,10 @@ void SafetyCheckHandler::CheckPasswords() {
 }
 
 void SafetyCheckHandler::CheckExtensions() {
-  extensions::ExtensionIdList extensions;
-  extension_prefs_->GetExtensions(&extensions);
   int blocklisted = 0;
   int reenabled_by_user = 0;
   int reenabled_by_admin = 0;
-  for (auto extension_id : extensions) {
+  for (const auto& extension_id : extension_prefs_->GetExtensions()) {
     extensions::BitMapBlocklistState state =
         extensions::blocklist_prefs::GetExtensionBlocklistState(
             extension_id, extension_prefs_);

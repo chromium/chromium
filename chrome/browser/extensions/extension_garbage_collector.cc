@@ -186,18 +186,18 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
     return;
   }
 
-  std::unique_ptr<ExtensionPrefs::ExtensionsInfo> info(
-      extension_prefs->GetInstalledExtensionsInfo());
+  ExtensionPrefs::ExtensionsInfo extensions_info =
+      extension_prefs->GetInstalledExtensionsInfo();
   std::multimap<std::string, base::FilePath> extension_paths;
-  for (size_t i = 0; i < info->size(); ++i) {
+  for (const auto& info : extensions_info) {
     extension_paths.insert(
-        std::make_pair(info->at(i)->extension_id, info->at(i)->extension_path));
+        std::make_pair(info->extension_id, info->extension_path));
   }
 
-  info = extension_prefs->GetAllDelayedInstallInfo();
-  for (size_t i = 0; i < info->size(); ++i) {
+  extensions_info = extension_prefs->GetAllDelayedInstallInfo();
+  for (const auto& info : extensions_info) {
     extension_paths.insert(
-        std::make_pair(info->at(i)->extension_id, info->at(i)->extension_path));
+        std::make_pair(info->extension_id, info->extension_path));
   }
 
   ExtensionService* service =

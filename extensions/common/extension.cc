@@ -820,9 +820,12 @@ ExtensionInfo::ExtensionInfo(const base::Value::Dict* manifest,
                              const base::FilePath& path,
                              ManifestLocation location)
     : extension_id(id), extension_path(path), extension_location(location) {
-  if (manifest)
+  if (manifest) {
     extension_manifest = std::make_unique<base::Value::Dict>(manifest->Clone());
+  }
 }
+
+ExtensionInfo::ExtensionInfo(ExtensionInfo&&) noexcept = default;
 
 ExtensionInfo::~ExtensionInfo() = default;
 

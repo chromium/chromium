@@ -537,9 +537,7 @@ void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,
 }
 
 void PreferenceAPI::ClearIncognitoSessionOnlyContentSettings() {
-  ExtensionIdList extension_ids;
-  ExtensionPrefs::Get(profile_)->GetExtensions(&extension_ids);
-  for (const auto& id : extension_ids) {
+  for (const auto& id : ExtensionPrefs::Get(profile_)->GetExtensions()) {
     content_settings_store()->ClearContentSettingsForExtension(
         id, kExtensionPrefsScopeIncognitoSessionOnly);
   }

@@ -45,14 +45,14 @@ size_t CalculateAllocatedGlobalRuleCount(
 // browser session has just started).
 size_t CalculateInitialAllocatedGlobalRuleCount(
     const ExtensionPrefs* extension_prefs) {
-  std::unique_ptr<ExtensionPrefs::ExtensionsInfo> extensions_info(
-      extension_prefs->GetInstalledExtensionsInfo());
+  const ExtensionPrefs::ExtensionsInfo extensions_info =
+      extension_prefs->GetInstalledExtensionsInfo();
 
   // For each extension, fetch its allocated rules count and add it to
   // |allocated_global_rule_count_|.
   size_t allocated_rule_count = 0;
   size_t allocated_global_rule_count = 0;
-  for (const auto& info : *extensions_info) {
+  for (const auto& info : extensions_info) {
     // Skip extensions that were loaded from the command-line because we don't
     // want those to persist across browser restart.
     if (info->extension_location == mojom::ManifestLocation::kCommandLine)

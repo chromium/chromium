@@ -78,8 +78,8 @@ ChromeAppSorting::AppOrdinals::~AppOrdinals() = default;
 ChromeAppSorting::ChromeAppSorting(content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       default_ordinals_created_(false) {
-  ExtensionIdList extensions;
-  ExtensionPrefs::Get(browser_context_)->GetExtensions(&extensions);
+  const ExtensionIdList extensions =
+      ExtensionPrefs::Get(browser_context_)->GetExtensions();
   registry_observation_.Observe(ExtensionRegistry::Get(browser_context_));
   InitializePageOrdinalMap(extensions);
   MigrateAppIndex(extensions);

@@ -289,8 +289,8 @@ class ExtensionPrefs : public KeyedService {
   void IncrementPref(const PrefMap& pref);
   void DecrementPref(const PrefMap& pref);
 
-  // Populates |out| with the ids of all installed extensions.
-  void GetExtensions(ExtensionIdList* out) const;
+  // Returns a list of extensions.
+  ExtensionIdList GetExtensions() const;
 
   void SetIntegerPref(const std::string& id, const PrefMap& pref, int value);
   void SetBooleanPref(const std::string& id, const PrefMap& pref, bool value);
@@ -566,8 +566,7 @@ class ExtensionPrefs : public KeyedService {
   // Saves ExtensionInfo for each installed extension with the path to the
   // version directory and the location. Blocklisted extensions won't be saved
   // and neither will external extensions the user has explicitly uninstalled.
-  // Caller takes ownership of returned structure.
-  std::unique_ptr<ExtensionsInfo> GetInstalledExtensionsInfo(
+  ExtensionsInfo GetInstalledExtensionsInfo(
       bool include_component_extensions = false) const;
 
   // Returns the ExtensionInfo from the prefs for the given extension. If the
@@ -605,7 +604,7 @@ class ExtensionPrefs : public KeyedService {
 
   // Returns information about all the extensions that have delayed install
   // information.
-  std::unique_ptr<ExtensionsInfo> GetAllDelayedInstallInfo() const;
+  ExtensionsInfo GetAllDelayedInstallInfo() const;
 
   // Returns true if there is an extension which controls the preference value
   //  for |pref_key| *and* it is specific to incognito mode.
