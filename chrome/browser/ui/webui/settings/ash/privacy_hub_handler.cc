@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_hats_trigger.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 
 namespace ash::settings {
@@ -13,6 +14,7 @@ namespace ash::settings {
 PrivacyHubHandler::PrivacyHubHandler() = default;
 
 PrivacyHubHandler::~PrivacyHubHandler() {
+  TriggerHatsIfPageWasOpened();
   privacy_hub_util::SetFrontend(nullptr);
 }
 
@@ -23,6 +25,14 @@ void PrivacyHubHandler::RegisterMessages() {
       base::BindRepeating(
           &PrivacyHubHandler::HandleInitialMicrophoneSwitchState,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "osPrivacyPageWasOpened",
+      base::BindRepeating(&PrivacyHubHandler::HandlePrivacyPageOpened,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "leftOsPrivacyPage",
+      base::BindRepeating(&PrivacyHubHandler::HandlePrivacyPageClosed,
+                          base::Unretained(this)));
 }
 
 void PrivacyHubHandler::NotifyJS(const std::string& event_name,
@@ -50,6 +60,28 @@ void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
 
 void PrivacyHubHandler::MicrophoneHardwareToggleChanged(bool muted) {
   NotifyJS("microphone-hardware-toggle-changed", base::Value(muted));
+}
+
+void PrivacyHubHandler::HandlePrivacyPageOpened(const base::Value::List& args) {
+  DCHECK(args.empty());
+
+  AllowJavascript();
+
+  privacy_page_was_opened_ = true;
+}
+
+void PrivacyHubHandler::HandlePrivacyPageClosed(const base::Value::List& args) {
+  DCHECK(args.empty());
+
+  AllowJavascript();
+
+  TriggerHatsIfPageWasOpened();
+}
+
+void PrivacyHubHandler::TriggerHatsIfPageWasOpened() {
+  if (privacy_page_was_opened_) {
+    PrivacyHubHatsTrigger::Get().ShowSurveyAfterDelayElapsed();
+  }
 }
 
 }  // namespace ash::settings

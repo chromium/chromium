@@ -12,18 +12,31 @@
 namespace ash {
 namespace {
 const HatsConfig& kHatsConfig = kPrivacyHubBaselineSurvey;
+constexpr base::TimeDelta kShowSurveyDelay = base::Seconds(40);
+}
+
+PrivacyHubHatsTrigger& PrivacyHubHatsTrigger::Get() {
+  static base::NoDestructor<PrivacyHubHatsTrigger> instance;
+  return *instance;
+}
+
+void PrivacyHubHatsTrigger::ShowSurveyAfterDelayElapsed() {
+  // The user has already seen a survey or we're about to show them one.
+  if (hats_controller_ || show_notification_timer_.IsRunning()) {
+    return;
+  }
+
+  show_notification_timer_.Start(
+      FROM_HERE, kShowSurveyDelay,
+      base::BindOnce(&PrivacyHubHatsTrigger::ShowSurveyIfSelected,
+                     base::Unretained(this)));
 }
 
 PrivacyHubHatsTrigger::PrivacyHubHatsTrigger() = default;
 PrivacyHubHatsTrigger::~PrivacyHubHatsTrigger() = default;
 
 void PrivacyHubHatsTrigger::ShowSurveyIfSelected() {
-  // The user has already seen a survey.
-  if (hats_controller_) {
-    return;
-  }
-
-  // We only show the survey if the current session is active.
+  // We only show the survey if the current session is still active.
   if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return;
   }
@@ -48,6 +61,10 @@ void PrivacyHubHatsTrigger::SetNoProfileForTesting(const bool no_profile) {
 const HatsNotificationController*
 PrivacyHubHatsTrigger::GetHatsNotificationControllerForTesting() const {
   return hats_controller_.get();
+}
+
+base::OneShotTimer& PrivacyHubHatsTrigger::GetTimerForTesting() {
+  return show_notification_timer_;
 }
 
 Profile* PrivacyHubHatsTrigger::GetProfile() const {

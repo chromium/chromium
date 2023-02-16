@@ -33,6 +33,15 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   void NotifyJS(const std::string& event_name, const base::Value& value);
 
   void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
+
+  void HandlePrivacyPageOpened(const base::Value::List& args);
+
+  void HandlePrivacyPageClosed(const base::Value::List& args);
+
+ private:
+  void TriggerHatsIfPageWasOpened();
+
+  bool privacy_page_was_opened_ = false;
 };
 
 }  // namespace ash::settings

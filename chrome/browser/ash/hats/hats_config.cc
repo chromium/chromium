@@ -179,7 +179,7 @@ const HatsConfig kHatsBluetoothRevampSurvey = {
 };
 
 // Privacy Hub Baseline experience survey -- shown 40 seconds after the user
-// stayed for more than 5 seconds on the Security and Privacy page.
+// leaves the Security and Privacy page.
 const HatsConfig kPrivacyHubBaselineSurvey = {
     ::features::kHappinessTrackingPrivacyHubBaseline,  // feature
     base::Days(1),                                     // new_device_threshold

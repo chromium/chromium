@@ -6,6 +6,8 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface PrivacyHubBrowserProxy {
   getInitialMicrophoneHardwareToggleState(): Promise<boolean>;
+  sendLeftOsPrivacyPage(): void;
+  sendOpenedOsPrivacyPage(): void;
 }
 
 let instance: PrivacyHubBrowserProxy|null = null;
@@ -13,6 +15,14 @@ let instance: PrivacyHubBrowserProxy|null = null;
 export class PrivacyHubBrowserProxyImpl implements PrivacyHubBrowserProxy {
   getInitialMicrophoneHardwareToggleState(): Promise<boolean> {
     return sendWithPromise('getInitialMicrophoneHardwareToggleState');
+  }
+
+  sendLeftOsPrivacyPage(): void {
+    chrome.send('leftOsPrivacyPage');
+  }
+
+  sendOpenedOsPrivacyPage(): void {
+    chrome.send('osPrivacyPageWasOpened');
   }
 
   static getInstance(): PrivacyHubBrowserProxy {
