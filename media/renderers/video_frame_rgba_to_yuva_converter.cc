@@ -142,19 +142,33 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   if ((!provider->GrContext() ||
        provider->ContextCapabilities().supports_yuv_rgb_conversion) &&
       src_mailbox_holder.mailbox.IsSharedImage()) {
-    SkYUVAInfo yuva_info =
-        VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(dst_video_frame);
-    gpu::Mailbox yuva_mailboxes[SkYUVAInfo::kMaxPlanes];
     ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
-    for (int plane = 0; plane < yuva_info.numPlanes(); ++plane) {
+    if (dst_video_frame->shared_image_format_type() ==
+        SharedImageFormatType::kLegacy) {
+      SkYUVAInfo yuva_info =
+          VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(
+              dst_video_frame);
+      gpu::Mailbox yuva_mailboxes[SkYUVAInfo::kMaxPlanes];
+      for (int plane = 0; plane < yuva_info.numPlanes(); ++plane) {
+        gpu::MailboxHolder dst_mailbox_holder =
+            dst_video_frame->mailbox_holder(plane);
+        ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
+        yuva_mailboxes[plane] = dst_mailbox_holder.mailbox;
+      }
+      ri->ConvertRGBAToYUVAMailboxes(
+          yuva_info.yuvColorSpace(), yuva_info.planeConfig(),
+          yuva_info.subsampling(), yuva_mailboxes, src_mailbox_holder.mailbox);
+    } else {
       gpu::MailboxHolder dst_mailbox_holder =
-          dst_video_frame->mailbox_holder(plane);
+          dst_video_frame->mailbox_holder(0);
       ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
-      yuva_mailboxes[plane] = dst_mailbox_holder.mailbox;
+
+      ri->CopySharedImage(
+          src_mailbox_holder.mailbox, dst_mailbox_holder.mailbox, GL_TEXTURE_2D,
+          0, 0, 0, 0, dst_video_frame->coded_size().width(),
+          dst_video_frame->coded_size().height(), /*unpack_flip_y=*/false,
+          /*unpack_premultiply_alpha=*/false);
     }
-    ri->ConvertRGBAToYUVAMailboxes(
-        yuva_info.yuvColorSpace(), yuva_info.planeConfig(),
-        yuva_info.subsampling(), yuva_mailboxes, src_mailbox_holder.mailbox);
   } else {
     // Create an accelerated SkImage for the source.
     auto scoped_sk_image = ScopedAcceleratedSkImage::Create(
