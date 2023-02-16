@@ -233,7 +233,15 @@ void TabHandleLayer::SetProperties(
     const float close_max_width = close_button_->bounds().width();
     int close_y;
     if (is_tab_strip_redesign_enabled) {
-      close_y = content_offset_y;
+      // Close button image is larger than divider image, so close button will
+      // appear slightly lower even the close_y are set in the same value as
+      // divider_y. Thus need this offset to account for the effect of image
+      // size difference has on close_y.
+      int close_y_offset_tsr =
+          std::max(0, (close_button_resource->size().height() -
+                       divider_resource->size().height()) /
+                          2);
+      close_y = content_offset_y - std::abs(close_y_offset_tsr);
     } else {
       close_y = (tab_handle_resource->padding().y() + height) / 2 -
                 close_button_->bounds().height() / 2;
