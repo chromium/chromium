@@ -29,6 +29,7 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 
 using base::ASCIIToUTF16;
+using RequestSource = SearchTermsData::RequestSource;
 
 namespace {
 bool IsLowerCase(const std::u16string& str) {
@@ -1077,7 +1078,7 @@ TEST_F(TemplateURLTest, RLZFromAppList) {
   EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
   ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
   TemplateURLRef::SearchTermsArgs args(u"x");
-  args.request_source = TemplateURLRef::CROS_APP_LIST;
+  args.request_source = RequestSource::CROS_APP_LIST;
   GURL result(url.url_ref().ReplaceSearchTerms(args, search_terms_data_));
   ASSERT_TRUE(result.is_valid());
   EXPECT_EQ("http://bar/?rlz=" + base::UTF16ToUTF8(rlz_string) + "&x",

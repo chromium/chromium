@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_id.h"
 #include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
@@ -25,7 +26,6 @@
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
-class SearchTermsData;
 class TemplateURL;
 
 
@@ -63,20 +63,14 @@ class TemplateURLRef {
     INDEXED
   };
 
+  using RequestSource = SearchTermsData::RequestSource;
+
   // Type to store <content_type, post_data> pair for POST URLs.
   // The |content_type|(first part of the pair) is the content-type of
   // the |post_data|(second part of the pair) which is encoded in
   // "multipart/form-data" format, it also contains the MIME boundary used in
   // the |post_data|. See http://tools.ietf.org/html/rfc2046 for the details.
   typedef std::pair<std::string, std::string> PostContent;
-
-  // Enumeration of the known search or suggest request sources. These values
-  // are not persisted or used in histograms; thus can be freely changed.
-  enum RequestSource {
-    SEARCHBOX,          // Omnibox or the NTP realbox. The default.
-    CROS_APP_LIST,      // Chrome OS app list search box.
-    NON_SEARCHBOX_NTP,  // Suggestions for the NTP surface.
-  };
 
   // This struct encapsulates arguments passed to
   // TemplateURLRef::ReplaceSearchTerms methods.  By default, only search_terms
@@ -261,7 +255,7 @@ class TemplateURLRef {
     gfx::Size image_original_size;
 
     // Source of the search or suggest request.
-    RequestSource request_source = SEARCHBOX;
+    RequestSource request_source = RequestSource::SEARCHBOX;
 
     // Whether the query is being fetched as a prefetch request before the user
     // actually searches for the search terms.

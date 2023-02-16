@@ -1257,7 +1257,7 @@ std::string TemplateURLRef::HandleReplacements(
         // empty string.  (If we don't handle this case, we hit a
         // NOTREACHED below.)
         std::u16string rlz_string = search_terms_data.GetRlzParameterValue(
-            search_terms_args.request_source == CROS_APP_LIST);
+            search_terms_args.request_source == RequestSource::CROS_APP_LIST);
         if (!rlz_string.empty()) {
           HandleReplacement("rlz", base::UTF16ToUTF8(rlz_string), replacement,
                             &url);
@@ -1291,19 +1291,17 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       case GOOGLE_SUGGEST_CLIENT:
-        HandleReplacement(
-            std::string(),
-            search_terms_data.GetSuggestClient(
-                search_terms_args.request_source == NON_SEARCHBOX_NTP),
-            replacement, &url);
+        HandleReplacement(std::string(),
+                          search_terms_data.GetSuggestClient(
+                              search_terms_args.request_source),
+                          replacement, &url);
         break;
 
       case GOOGLE_SUGGEST_REQUEST_ID:
-        HandleReplacement(
-            std::string(),
-            search_terms_data.GetSuggestRequestIdentifier(
-                search_terms_args.request_source == NON_SEARCHBOX_NTP),
-            replacement, &url);
+        HandleReplacement(std::string(),
+                          search_terms_data.GetSuggestRequestIdentifier(
+                              search_terms_args.request_source),
+                          replacement, &url);
         break;
 
       case GOOGLE_UNESCAPED_SEARCH_TERMS: {

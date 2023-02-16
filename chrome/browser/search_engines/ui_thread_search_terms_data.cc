@@ -81,30 +81,42 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
 #endif
 
 std::string UIThreadSearchTermsData::GetSuggestClient(
-    bool non_searchbox_ntp) const {
+    RequestSource request_source) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
+  switch (request_source) {
+    case RequestSource::NTP_MODULE:
+      return "chrome-android-search-resumption-module";
+    case RequestSource::JOURNEYS:
+      return "journeys";
+    case RequestSource::SEARCHBOX:
+    case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-    return non_searchbox_ntp ? "chrome-android-search-resumption-module"
-                             : "chrome";
-  }
-  return "chrome-omni";
-#else
-  return "chrome-omni";
+      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+        return "chrome";
+      }
 #endif
+      return "chrome-omni";
+  }
 }
 
 std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
-    bool non_searchbox_ntp) const {
+    RequestSource request_source) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
+  switch (request_source) {
+    case RequestSource::NTP_MODULE:
+    case RequestSource::JOURNEYS:
+      return "";
+    case RequestSource::SEARCHBOX:
+    case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-    return non_searchbox_ntp ? std::string() : "chrome-mobile-ext-ansg";
-  }
+      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+        return "chrome-mobile-ext-ansg";
+      }
 #endif
-  return "chrome-ext-ansg";
+      return "chrome-ext-ansg";
+  }
 }
 
 // It's acutally OK to call this method on any thread, but it's currently placed

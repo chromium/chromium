@@ -21,6 +21,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
+#import "components/search_engines/search_terms_data.h"
 #import "components/search_engines/template_url.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -77,6 +78,7 @@
 namespace {
 
 using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
+using RequestSource = SearchTermsData::RequestSource;
 
 // Maximum number of most visited tiles fetched.
 const NSInteger kMaxNumMostVisitedTiles = 4;
@@ -610,7 +612,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
   // Fetch Trending Queries
   TemplateURLRef::SearchTermsArgs args;
-  args.request_source = TemplateURLRef::NON_SEARCHBOX_NTP;
+  args.request_source = RequestSource::NTP_MODULE;
   _startSuggestService->FetchSuggestions(
       args,
       base::BindOnce(&StartSuggestServiceResponseBridge::OnSuggestionsReceived,

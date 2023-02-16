@@ -76,22 +76,30 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
 }
 
 std::string UIThreadSearchTermsData::GetSuggestClient(
-    bool non_searchbox_ntp) const {
+    RequestSource request_source) const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (non_searchbox_ntp) {
-    return "chrome-ios-ntp";
-  } else {
-    return "chrome";
+  switch (request_source) {
+    case RequestSource::NTP_MODULE:
+      return "chrome-ios-ntp";
+    case RequestSource::JOURNEYS:
+      return "";
+    case RequestSource::SEARCHBOX:
+    case RequestSource::CROS_APP_LIST:
+      return "chrome";
   }
 }
 
 std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
-    bool non_searchbox_ntp) const {
+    RequestSource request_source) const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (non_searchbox_ntp) {
-    return std::string();
+  switch (request_source) {
+    case RequestSource::NTP_MODULE:
+    case RequestSource::JOURNEYS:
+      return "";
+    case RequestSource::SEARCHBOX:
+    case RequestSource::CROS_APP_LIST:
+      return "chrome-ext-ansg";
   }
-  return "chrome-ext-ansg";
 }
 
 std::string UIThreadSearchTermsData::GoogleImageSearchSource() const {

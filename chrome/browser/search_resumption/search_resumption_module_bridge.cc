@@ -11,10 +11,12 @@
 #include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "components/search/start_suggest_service.h"
+#include "components/search_engines/search_terms_data.h"
 #include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
+using RequestSource = SearchTermsData::RequestSource;
 
 namespace search_resumption_module {
 SearchResumptionModuleBridge::SearchResumptionModuleBridge(JNIEnv* env,
@@ -40,7 +42,7 @@ void SearchResumptionModuleBridge::FetchSuggestions(
   }
 
   TemplateURLRef::SearchTermsArgs args;
-  args.request_source = TemplateURLRef::NON_SEARCHBOX_NTP;
+  args.request_source = RequestSource::NTP_MODULE;
   args.current_page_url = ConvertJavaStringToUTF8(env, j_page_url);
   start_suggest_service_->FetchSuggestions(
       args,

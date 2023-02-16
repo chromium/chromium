@@ -14,6 +14,15 @@
 // only be accessed on the UI thread.
 class SearchTermsData {
  public:
+  // Enumeration of the known search or suggest request sources. These values
+  // are not persisted or used in histograms; thus can be freely changed.
+  enum class RequestSource {
+    SEARCHBOX,      // Omnibox or the NTP realbox. The default.
+    CROS_APP_LIST,  // Chrome OS app list searchbox.
+    NTP_MODULE,     // Suggestions for the NTP modules.
+    JOURNEYS,       // Suggestions for the Journeys.
+  };
+
   // Utility function that takes a snapshot of a different SearchTermsData
   // instance. This is used to access SearchTermsData off the UI thread, or to
   // copy the SearchTermsData for lifetime reasons.
@@ -55,13 +64,14 @@ class SearchTermsData {
   // The suggest client parameter ("client") passed with Google suggest
   // requests.  See GetSuggestRequestIdentifier() for more details.
   // This implementation returns the empty string.
-  virtual std::string GetSuggestClient(bool non_searchbox_ntp) const;
+  virtual std::string GetSuggestClient(RequestSource request_source) const;
 
   // The suggest request identifier parameter ("gs_ri") passed with Google
   // suggest requests.   Along with suggestclient (See GetSuggestClient()),
   // this parameter controls what suggestion results are returned.
   // This implementation returns the empty string.
-  virtual std::string GetSuggestRequestIdentifier(bool non_searchbox_ntp) const;
+  virtual std::string GetSuggestRequestIdentifier(
+      RequestSource request_source) const;
 
   // Returns the value to use for replacements of type
   // GOOGLE_IMAGE_SEARCH_SOURCE.

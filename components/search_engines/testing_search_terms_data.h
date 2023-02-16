@@ -19,7 +19,7 @@ class TestingSearchTermsData : public SearchTermsData {
   std::string GoogleBaseURLValue() const override;
   std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
-  std::string GetSuggestClient(bool non_searchbox_ntp) const override;
+  std::string GetSuggestClient(RequestSource request_source) const override;
   std::string GoogleImageSearchSource() const override;
 
   // Estimates dynamic memory usage.

@@ -18,6 +18,7 @@ source_set("search_util") {
     "//chromeos/crosapi/mojom",
     "//components/bookmarks/browser",
     "//components/omnibox/browser",
+    "//components/search_engines",
     "//ui/base",
   ]
 }
