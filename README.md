@@ -26,8 +26,11 @@ gn args out/Default
 
 target_os = "android"
 target_cpu = "arm64"
-# 指定android包名
-chrome_public_manifest_package = com.baidu.duer.chromium
+treat_warnings_as_errors = false
+is_official_build = true
+ffmpeg_branding = "Chrome"
+proprietary_codecs = true
+chrome_public_manifest_package = "com.baidu.duer.chromium"
 
 
 # 编译apk
