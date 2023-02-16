@@ -110,6 +110,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // Generates fake signal for OutputNodeVolumeChanged.
   void NotifyOutputNodeVolumeChangedForTesting(uint64_t node_id, int volume);
 
+  // Generates fake signal for InputNodeGainChanged.
+  void NotifyInputNodeGainChangedForTesting(uint64_t node_id, int gain);
+
   // Generates fake hotword signal for HotwordTriggered.
   void NotifyHotwordTriggeredForTesting(uint64_t tv_sec, uint64_t tv_nsec);
 
@@ -129,6 +132,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void set_notify_volume_change_with_delay(bool notify_with_delay) {
     notify_volume_change_with_delay_ = notify_with_delay;
   }
+  void set_notify_gain_change_with_delay(bool notify_with_delay) {
+    notify_gain_change_with_delay_ = notify_with_delay;
+  }
 
   bool noise_cancellation_enabled() const {
     return noise_cancellation_enabled_;
@@ -145,6 +151,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // By default, immediately sends OutputNodeVolumeChange signal following the
   // SetOutputNodeVolume fake dbus call.
   bool notify_volume_change_with_delay_ = false;
+  // By default, immediately sends InputNodeVolumeChange signal following the
+  // SetInputNodeGain fake dbus call.
+  bool notify_gain_change_with_delay_ = false;
   bool noise_cancellation_supported_ = false;
   uint32_t battery_level_ = 0;
   uint32_t noise_cancellation_enabled_counter_ = 0;

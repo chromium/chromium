@@ -113,6 +113,7 @@ class MockObserver : public CrasAudioClient::Observer {
   MOCK_METHOD1(ActiveOutputNodeChanged, void(uint64_t node_id));
   MOCK_METHOD1(ActiveInputNodeChanged, void(uint64_t node_id));
   MOCK_METHOD2(OutputNodeVolumeChanged, void(uint64_t node_id, int volume));
+  MOCK_METHOD2(InputNodeGainChanged, void(uint64_t node_id, int gain));
   MOCK_METHOD2(HotwordTriggered, void(uint64_t tv_sec, uint64_t tv_nsec));
   MOCK_METHOD0(NumberOfActiveStreamsChanged, void());
   MOCK_METHOD1(
@@ -432,6 +433,15 @@ class CrasAudioClientTest : public testing::Test {
             this, &CrasAudioClientTest::OnConnectToOutputNodeVolumeChanged));
 
     // Set an expectation so mock_cras_proxy's monitoring
+    // InputNodeGainChanged ConnectToSignal will use
+    // OnConnectToInputNodeGainChanged() to run the callback.
+    EXPECT_CALL(
+        *mock_cras_proxy_.get(),
+        DoConnectToSignal(interface_name_, cras::kInputNodeGainChanged, _, _))
+        .WillRepeatedly(Invoke(
+            this, &CrasAudioClientTest::OnConnectToInputNodeGainChanged));
+
+    // Set an expectation so mock_cras_proxy's monitoring
     // HotwordTriggered ConnectToSignal will use OnHotwordTriggered() to
     // run the callback.
     EXPECT_CALL(
@@ -555,6 +565,12 @@ class CrasAudioClientTest : public testing::Test {
     output_node_volume_changed_handler_.Run(signal);
   }
 
+  // Send output node volume changed signal to the tested client.
+  void SendInputNodeGainChangedSignal(dbus::Signal* signal) {
+    ASSERT_FALSE(input_node_gain_changed_handler_.is_null());
+    input_node_gain_changed_handler_.Run(signal);
+  }
+
   // Send hotword triggered signal to the tested client.
   void SendHotwordTriggeredSignal(dbus::Signal* signal) {
     ASSERT_FALSE(hotword_triggered_handler_.is_null());
@@ -616,6 +632,8 @@ class CrasAudioClientTest : public testing::Test {
   dbus::ObjectProxy::SignalCallback active_input_node_changed_handler_;
   // The OutputNodeVolumeChanged signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback output_node_volume_changed_handler_;
+  // The InputNodeGainChanged signal handler given by the tested client.
+  dbus::ObjectProxy::SignalCallback input_node_gain_changed_handler_;
 
   // The HotwordTriggered signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback hotword_triggered_handler_;
@@ -717,6 +735,20 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     output_node_volume_changed_handler_ = signal_callback;
+    constexpr bool success = true;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
+                                  interface_name, signal_name, success));
+  }
+
+  // Checks the requested interface name and signal name.
+  // Used to implement the mock cras proxy.
+  void OnConnectToInputNodeGainChanged(
+      const std::string& interface_name,
+      const std::string& signal_name,
+      const dbus::ObjectProxy::SignalCallback& signal_callback,
+      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+    input_node_gain_changed_handler_ = signal_callback;
     constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
@@ -1163,6 +1195,35 @@ TEST_F(CrasAudioClientTest, OutputNodeVolumeChanged) {
 
   // Run the signal callback again and make sure the observer isn't called.
   SendOutputNodeVolumeChangedSignal(&signal);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, InputNodeGainChanged) {
+  const uint64_t kNodeId = 20003;
+  const int32_t gain = 82;
+  // Create a signal
+  dbus::Signal signal(cras::kCrasControlInterface, cras::kInputNodeGainChanged);
+  dbus::MessageWriter writer(&signal);
+  writer.AppendUint64(kNodeId);
+  writer.AppendInt32(gain);
+
+  // Set expectations
+  MockObserver observer;
+  EXPECT_CALL(observer, InputNodeGainChanged(kNodeId, gain)).Times(1);
+
+  // Add the observer.
+  client()->AddObserver(&observer);
+
+  // Run the signal callback.
+  SendInputNodeGainChangedSignal(&signal);
+
+  // Remove the observer.
+  client()->RemoveObserver(&observer);
+  EXPECT_CALL(observer, InputNodeGainChanged(_, _)).Times(0);
+
+  // Run the signal callback again and make sure the observer isn't called.
+  SendInputNodeGainChangedSignal(&signal);
 
   base::RunLoop().RunUntilIdle();
 }

@@ -209,7 +209,11 @@ void FakeCrasAudioClient::SetOutputUserMute(bool mute_on) {
 }
 
 void FakeCrasAudioClient::SetInputNodeGain(uint64_t node_id,
-                                           int32_t input_gain) {}
+                                           int32_t input_gain) {
+  if (!notify_gain_change_with_delay_) {
+    NotifyInputNodeGainChangedForTesting(node_id, input_gain);
+  }
+}
 
 void FakeCrasAudioClient::SetInputMute(bool mute_on) {
   volume_state_.input_mute = mute_on;
@@ -374,6 +378,13 @@ void FakeCrasAudioClient::NotifyOutputNodeVolumeChangedForTesting(
     int volume) {
   for (auto& observer : observers_)
     observer.OutputNodeVolumeChanged(node_id, volume);
+}
+
+void FakeCrasAudioClient::NotifyInputNodeGainChangedForTesting(uint64_t node_id,
+                                                               int gain) {
+  for (auto& observer : observers_) {
+    observer.InputNodeGainChanged(node_id, gain);
+  }
 }
 
 void FakeCrasAudioClient::NotifyHotwordTriggeredForTesting(uint64_t tv_sec,

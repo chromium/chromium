@@ -88,6 +88,14 @@ class CrasAudioClientImpl : public CrasAudioClient {
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
 
+    // Monitor the D-Bus signal for input node gain change.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface, cras::kInputNodeGainChanged,
+        base::BindRepeating(&CrasAudioClientImpl::InputNodeGainChangedReceived,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+
     // Monitor the D-Bus signal for hotword.
     cras_proxy_->ConnectToSignal(
         cras::kCrasControlInterface, cras::kHotwordTriggered,
@@ -636,13 +644,29 @@ class CrasAudioClientImpl : public CrasAudioClient {
     int volume;
 
     if (!reader.PopUint64(&node_id)) {
-      LOG(ERROR) << "Error eading signal from cras:" << signal->ToString();
+      LOG(ERROR) << "Error reading signal from cras:" << signal->ToString();
     }
     if (!reader.PopInt32(&volume)) {
-      LOG(ERROR) << "Error eading signal from cras:" << signal->ToString();
+      LOG(ERROR) << "Error reading signal from cras:" << signal->ToString();
     }
     for (auto& observer : observers_)
       observer.OutputNodeVolumeChanged(node_id, volume);
+  }
+
+  void InputNodeGainChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    uint64_t node_id;
+    int gain;
+
+    if (!reader.PopUint64(&node_id)) {
+      LOG(ERROR) << "Error reading signal from cras:" << signal->ToString();
+    }
+    if (!reader.PopInt32(&gain)) {
+      LOG(ERROR) << "Error reading signal from cras:" << signal->ToString();
+    }
+    for (auto& observer : observers_) {
+      observer.InputNodeGainChanged(node_id, gain);
+    }
   }
 
   void HotwordTriggeredReceived(dbus::Signal* signal) {
@@ -1167,6 +1191,9 @@ void CrasAudioClient::Observer::ActiveInputNodeChanged(uint64_t node_id) {}
 
 void CrasAudioClient::Observer::OutputNodeVolumeChanged(uint64_t node_id,
                                                         int volume) {}
+
+void CrasAudioClient::Observer::InputNodeGainChanged(uint64_t node_id,
+                                                     int gain) {}
 
 void CrasAudioClient::Observer::HotwordTriggered(uint64_t tv_sec,
                                                  uint64_t tv_nsec) {}
