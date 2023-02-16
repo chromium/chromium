@@ -117,7 +117,8 @@ constexpr int kActionsRowHorizontalSpacing = 8;
 constexpr auto kContentRowPadding = gfx::Insets::TLBR(16, 0, 0, 0);
 
 constexpr int kLeftContentVerticalSpacing = 4;
-constexpr int kTitleRowMinimumWidth = 186;
+constexpr int kTitleRowMinimumWidthWithIcon = 186;
+constexpr int kTitleRowMinimumWidth = 266;
 constexpr int kTitleRowSpacing = 6;
 
 constexpr auto kHeaderRowExpandedPadding = gfx::Insets::TLBR(4, 0, 8, 0);
@@ -415,6 +416,11 @@ void AshNotificationView::NotificationTitleRow::
   }
 }
 
+void AshNotificationView::NotificationTitleRow::SetMaxAvailableWidth(
+    int max_available_width) {
+  max_available_width_ = max_available_width;
+}
+
 gfx::Size AshNotificationView::NotificationTitleRow::CalculatePreferredSize()
     const {
   // TODO(crbug.com/1349528): The size constraint is not passed down from the
@@ -422,8 +428,8 @@ gfx::Size AshNotificationView::NotificationTitleRow::CalculatePreferredSize()
   // the view. The layout manager can size the view beyond this width if there
   // is available space. This works similar to applying a max width on the
   // internal labels.
-  return gfx::Size(kTitleRowMinimumWidth,
-                   GetHeightForWidth(kTitleRowMinimumWidth));
+  return gfx::Size(max_available_width_,
+                   GetHeightForWidth(max_available_width_));
 }
 
 void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
@@ -1223,6 +1229,15 @@ void AshNotificationView::CreateOrUpdateTitleView(
     title_row_->UpdateTitle(title);
     ReorderViewInLeftContent(title_row_);
   }
+
+  int max_available_width = notification.small_image().IsEmpty()
+                                ? kTitleRowMinimumWidth
+                                : kTitleRowMinimumWidthWithIcon;
+  if (shown_in_popup_) {
+    max_available_width -=
+        message_center::kNotificationWidth - kNotificationInMessageCenterWidth;
+  }
+  title_row_->SetMaxAvailableWidth(max_available_width);
 
   title_row_->UpdateTimestamp(notification.timestamp());
 }

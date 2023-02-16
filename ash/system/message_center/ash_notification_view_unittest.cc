@@ -1257,6 +1257,26 @@ TEST_F(AshNotificationViewTest, ButtonStateUpdated) {
   EXPECT_TRUE(inline_reply->button()->GetEnabled());
 }
 
+// b/269144282: Regression test to make sure the left content container and the
+// title row have the same height when the notification is expanded.
+TEST_F(AshNotificationViewTest, LeftContentAndTitleRowHeightMatches) {
+  auto notification = CreateTestNotification();
+  notification_view()->ToggleExpand();
+  ASSERT_TRUE(notification_view()->IsExpanded());
+
+  notification->set_small_image(gfx::Image());
+  notification_view()->UpdateWithNotification(*notification);
+
+  EXPECT_EQ(GetLeftContent(notification_view())->height(),
+            GetTitleRow(notification_view())->height());
+
+  notification->set_title(u"Camera and microphone are in use.");
+  notification_view()->UpdateWithNotification(*notification);
+
+  EXPECT_EQ(GetLeftContent(notification_view())->height(),
+            GetTitleRow(notification_view())->height());
+}
+
 // The test class that checks the notification drag feature with both mouse drag
 // and gesture drag.
 class AshNotificationViewDragTest

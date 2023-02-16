@@ -188,6 +188,9 @@ class ASH_EXPORT AshNotificationView
     // Perform expand/collapse animation in children views.
     void PerformExpandCollapseAnimation();
 
+    // Set the maximum available width for this view.
+    void SetMaxAvailableWidth(int max_available_width);
+
     // views::View:
     gfx::Size CalculatePreferredSize() const override;
     void OnThemeChanged() override;
@@ -202,6 +205,9 @@ class ASH_EXPORT AshNotificationView
     // Timestamp view shown alongside the title in collapsed state.
     views::Label* const title_row_divider_;
     views::Label* const timestamp_in_collapsed_view_;
+
+    // The maximum width available to the title row.
+    int max_available_width_ = 0;
 
     // Timer that updates the timestamp over time.
     base::OneShotTimer timestamp_update_timer_;
