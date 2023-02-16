@@ -70,6 +70,14 @@
     --customize-chrome-color-check-mark-top: -6px;
     padding: 0;
   }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) #customColorContainer:focus {
+      /* Set outline to hcm (high contrast mode) value. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+  }
 </style>
 <div id="headerContainer">
   <cr-icon-button on-click="onBackClick_" id="backButton"

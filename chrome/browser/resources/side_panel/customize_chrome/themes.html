@@ -86,6 +86,14 @@
     padding-top: calc(100% - 4px);
     width: calc(100% - 4px);
   }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .tile:focus {
+      /* Set outline to hcm (high contrast mode) value. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+  }
 </style>
 <div id="headerContainer">
   <cr-icon-button on-click="onBackClick_" id="backButton"

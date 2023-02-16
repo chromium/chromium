@@ -45,6 +45,14 @@
   #foreground {
     fill: var(--customize-chrome-color-foreground-color);
   }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    :host(:focus):host-context(.focus-outline-visible) {
+      /* Set outline to hcm (high contrast mode) value. */
+      outline: var(--cr-focus-outline-hcm) !important;
+    }
+  }
 </style>
 <customize-chrome-check-mark-wrapper checked="[[checked]]">
   <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"

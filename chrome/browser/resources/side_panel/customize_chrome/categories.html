@@ -51,7 +51,8 @@
   }
 
   .image-container img,
-  .image-container div {
+  .image-container div,
+  .image-container svg {
     position: absolute;
   }
 
@@ -123,19 +124,17 @@
     top: 15%;
   }
 
-  .chrome-color {
-    height: 50%;
-    width: 100%;
-  }
-
-  .chrome-color:first-child {
-    background-color: var(--google-blue-700);
+  svg {
+    height: 100%;
     top: 0;
   }
 
-  .chrome-color:nth-child(2) {
-    background-color: var(--google-blue-500);
-    top: 50%;
+  #foreground {
+    fill: var(--google-blue-700);
+  }
+
+  #background {
+    fill: var(--google-blue-500);
   }
 
   #chromeWebStore {
@@ -165,6 +164,18 @@
 
   :host-context(.focus-outline-visible) .tile:focus {
     box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .tile:focus {
+      /* Set outline to hcm (high contrast mode) value. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    #uploadIcon {
+      background-color: ButtonText;
+    }
   }
 </style>
 <div id="headerContainer">
@@ -202,8 +213,13 @@
     <customize-chrome-check-mark-wrapper
         checked="[[isChromeColorsSelected_]]">
       <div class="image-container">
-        <div class="chrome-color"></div>
-        <div class="chrome-color"></div>
+        <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink">
+          <rect id="foreground" x="0" y="0" width="50" height="50">
+          </rect>
+          <rect id="background" x="0" y="25" width="50" height="25">
+          </rect>
+        </svg>
       </div>
     </customize-chrome-check-mark-wrapper>
     <div class="label">$i18n{chromeColors}</div>
