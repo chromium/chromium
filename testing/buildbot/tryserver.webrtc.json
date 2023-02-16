@@ -40,6 +40,41 @@
       "remoting_unittests"
     ]
   },
+  "webrtc_linux_chromium": {
+    "additional_compile_targets": [
+      "blink_unittests",
+      "browser_tests",
+      "capture_unittests",
+      "content_browsertests",
+      "content_unittests",
+      "remoting_unittests"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--log-wptreport",
+          "--t",
+          "Release",
+          "external/wpt/webrtc"
+        ],
+        "experiment_percentage": 100,
+        "isolate_name": "wpt_tests_isolate",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "wpt_tests_suite",
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+      }
+    ]
+  },
   "win_chromium_compile": {
     "additional_compile_targets": [
       "blink_unittests",

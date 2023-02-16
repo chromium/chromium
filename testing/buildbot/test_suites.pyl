@@ -5264,6 +5264,26 @@
       },
     },
 
+    'webrtc_chromium_wpt_tests': {
+      'wpt_tests_suite': {
+        'args': [
+          '--log-wptreport',
+          '--t',
+          'Release',
+          'external/wpt/webrtc'
+        ],
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'isolate_name': 'wpt_tests_isolate',
+        'results_handler': 'layout tests',
+        'experiment_percentage': 100,
+      },
+    },
+
     'webview_64_cts_tests_gtest': {
       'webview_64_cts_tests': {
         'swarming': {

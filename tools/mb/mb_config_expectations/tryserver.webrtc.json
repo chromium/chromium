@@ -41,6 +41,15 @@
       "use_remoteexec": true
     }
   },
+  "webrtc_linux_chromium": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_remoteexec": true
+    }
+  },
   "win_chromium_compile": {
     "gn_args": {
       "dcheck_always_on": true,

@@ -6876,6 +6876,19 @@
           'remoting_unittests',
         ],
       },
+      'webrtc_linux_chromium': {
+        'additional_compile_targets': [
+          'blink_unittests',
+          'browser_tests',
+          'capture_unittests',
+          'content_browsertests',
+          'content_unittests',
+          'remoting_unittests',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'webrtc_chromium_wpt_tests',
+        },
+      },
       'win_chromium_compile': {
         'additional_compile_targets': [
           'blink_unittests',
