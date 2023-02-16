@@ -10,6 +10,8 @@
 
 module ash.cros_healthd.mojom;
 
+import "ash/system/diagnostics/mojom/input.mojom";
+
 // Implemented by clients who desire Bluetooth notifications.
 //
 // NextMinVersion: 1, NextIndex: 6
@@ -286,7 +288,7 @@ interface EventObserver {
 
 // Union of event info.
 //
-// NextMinVersion: 3, NextIndex: 9
+// NextMinVersion: 4, NextIndex: 10
 [Stable, Extensible]
 union EventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -308,11 +310,15 @@ union EventInfo {
   [MinVersion=1] AudioJackEventInfo audio_jack_event_info@7;
   // Sd Card event info.
   [MinVersion=2] SdCardEventInfo sd_card_event_info@8;
+  // Keyboard diagnostics event info. It is fired when users completed a
+  // keyboard diagnostic in the Diagnostics App.
+  [MinVersion=3] ash.diagnostics.mojom.KeyboardDiagnosticEventInfo
+    keyboard_diagnostic_event_info@9;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 3, NextIndex: 9
+// NextMinVersion: 5, NextIndex: 11
 [Stable, Extensible]
 enum EventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -325,4 +331,6 @@ enum EventCategoryEnum {
   kAudio = 6,
   [MinVersion=1] kAudioJack = 7,
   [MinVersion=2] kSdCard = 8,
+  [MinVersion=3] kNetwork = 9,
+  [MinVersion=4] kKeyboardDiagnostic = 10,
 };

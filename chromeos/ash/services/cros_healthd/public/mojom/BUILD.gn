@@ -17,6 +17,7 @@ mojom("mojom") {
     "wilco_ec.mojom",
   ]
   public_deps = [
+    "//ash/system/diagnostics/mojom",
     "//chromeos/ash/services/cros_healthd/private/mojom",
     "//chromeos/services/network_health/public/mojom",
     "//chromeos/services/network_health/public/mojom:types",
