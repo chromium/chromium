@@ -126,8 +126,7 @@ FrameImpl* ContextImpl::CreateFrameForWebContents(
     return nullptr;
   }
 
-  // |params.debug_name| is not currently supported.
-  // TODO(crbug.com/1051533): Determine whether it is still needed.
+  // |params.debug_name| is handled by FrameImpl.
 
   // Verify the explicit sites filter error page content. If the parameter is
   // present, it will be provided to the FrameImpl after it is created below.
