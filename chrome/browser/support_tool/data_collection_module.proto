@@ -64,3 +64,12 @@ message DataCollectionModule {
   // List of DataCollectors that will be used when Support Tool collects data.
   repeated DataCollectorType included_data_collectors = 1;
 }
+
+// Used for storing the support packet details that's requested in "Remote Log
+// Capture" device command.
+message SupportPacketDetails {
+  optional string issue_case_id = 1;
+  optional string issue_description = 2;
+  repeated DataCollectorType requested_data_collectors = 3;
+  repeated PiiType requested_pii_types = 4;
+}
