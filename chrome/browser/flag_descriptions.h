@@ -1340,6 +1340,9 @@ extern const char kParallelDownloadingDescription[];
 extern const char kPasswordImportName[];
 extern const char kPasswordImportDescription[];
 
+extern const char kPasswordsImportM2Name[];
+extern const char kPasswordsImportM2Description[];
+
 extern const char kPasswordStrengthIndicatorName[];
 extern const char kPasswordStrengthIndicatorDescription[];
 

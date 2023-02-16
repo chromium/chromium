@@ -63835,6 +63835,7 @@ from previous Chrome versions.
   <int value="1228115769" label="SiteCharacteristicsDatabase:disabled"/>
   <int value="1229299518" label="SingleTabMode:disabled"/>
   <int value="1229388323" label="AutofillEnableGoogleIssuedCard:disabled"/>
+  <int value="1229574191" label="PasswordsImportM2:enabled"/>
   <int value="1230018793" label="enable-dom-distiller"/>
   <int value="1230555479"
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:disabled"/>
@@ -64953,6 +64954,7 @@ from previous Chrome versions.
   <int value="1865068568" label="disable-audio-support-for-desktop-share"/>
   <int value="1865211159" label="ShelfStackedHotseat:disabled"/>
   <int value="1865799183" label="javascript-harmony"/>
+  <int value="1865908358" label="PasswordsImportM2:disabled"/>
   <int value="1865963858" label="tls13-variant"/>
   <int value="1866079109" label="team-drives"/>
   <int value="1866280482" label="SearchHistoryLink:disabled"/>

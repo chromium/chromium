@@ -9020,6 +9020,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordManagerRedesign)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"passwords-import-m2", flag_descriptions::kPasswordsImportM2Name,
+     flag_descriptions::kPasswordsImportM2Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::kPasswordsImportM2)},
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kDesktopPWAsAppHomePageFlagId,
      flag_descriptions::kDesktopPWAsAppHomePageName,
