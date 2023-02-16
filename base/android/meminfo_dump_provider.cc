@@ -13,8 +13,10 @@
 namespace base::android {
 
 MeminfoDumpProvider::MeminfoDumpProvider() {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, kDumpProviderName, nullptr);
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 // static
@@ -26,6 +28,7 @@ MeminfoDumpProvider& MeminfoDumpProvider::Initialize() {
 bool MeminfoDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   // This is best-effort, and will be wrong if there are other callers of
   // ActivityManager#getProcessMemoryInfo(), either in this process or from
   // another process which is allowed to do so (typically, adb).
@@ -91,6 +94,9 @@ bool MeminfoDumpProvider::OnMemoryDump(
                   static_cast<uint64_t>(other_pss_kb) * 1024);
 
   return true;
+#else   // BUILDFLAG(ENABLE_BASE_TRACING)
+  return false;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 }  // namespace base::android
