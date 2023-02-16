@@ -1182,7 +1182,7 @@
 <translation id="3906954721959377182">태블릿</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다.</translation>
-<translation id="3921869355029467742">보안 코드 입력</translation>
+<translation id="3921869355029467742">보안 코드 입력하기</translation>
 <translation id="3927932062596804919">거부</translation>
 <translation id="393316646445601645">인터넷 및 전기 통신</translation>
 <translation id="3939773374150895049">CVC 대신 WebAuthn을 사용하시겠습니까?</translation>
@@ -2772,7 +2772,7 @@
 <translation id="7800304661137206267">메시지 인증(<ph name="MAC" />)과 키 교환 메커니즘(<ph name="KX" />)을 설정하고 <ph name="CIPHER" />을(를) 사용하여 연결이 암호화되어 있습니다.</translation>
 <translation id="7800977246388195491">Chrome에서는 내 최근 방문 기록을 기반으로 관심 주제를 파악합니다. 방문하는 사이트에서 관심분야를 파악할 수도 있습니다. 나중에 사이트에서 개인 맞춤 광고를 표시하기 위해 이 정보를 요청할 수 있습니다. 나에게 광고를 표시하는 데 사용되는 주제와 사이트를 직접 선택할 수 있습니다.</translation>
 <translation id="7802523362929240268">정상적인 사이트</translation>
-<translation id="7802989406998618639">은행에서 본인 인증을 할 수 있도록 <ph name="SIDE_OF_CARD" />에 <ph name="NUMBER_OF_DIGITS" />자리 보안 코드를 입력하세요.</translation>
+<translation id="7802989406998618639">은행에서 본인 인증을 할 수 있도록 <ph name="SIDE_OF_CARD" />의 <ph name="NUMBER_OF_DIGITS" />자리 보안 코드를 입력하세요.</translation>
 <translation id="780301667611848630">취소</translation>
 <translation id="7805571567667010077">조직에서 관리함</translation>
 <translation id="7805768142964895445">상태</translation>
