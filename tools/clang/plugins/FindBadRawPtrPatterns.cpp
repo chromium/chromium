@@ -132,6 +132,51 @@ class RawPtrFieldMatcher : public MatchFinder::MatchCallback {
   std::unique_ptr<FilterFile> paths_to_exclude_;
 };
 
+const char kNeedRawRefSignature[] =
+    "[chromium-rawref] Use raw_ref<T> instead of a native reference.";
+
+class RawRefFieldMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit RawRefFieldMatcher(clang::CompilerInstance& compiler,
+                              const std::string& exclude_fields_file,
+                              const std::string& exclude_paths_file)
+      : compiler_(compiler),
+        fields_to_exclude_(std::make_unique<FilterFile>(exclude_fields_file,
+                                                        "exclude-fields")),
+        paths_to_exclude_(
+            std::make_unique<FilterFile>(exclude_paths_file, "exclude-paths")) {
+    error_need_raw_ref_signature_ = compiler_.getDiagnostics().getCustomDiagID(
+        clang::DiagnosticsEngine::Error, kNeedRawRefSignature);
+  }
+
+  void Register(MatchFinder& match_finder) {
+    auto field_decl_matcher = AffectedRawRefFieldDecl(paths_to_exclude_.get(),
+                                                      fields_to_exclude_.get());
+    match_finder.addMatcher(field_decl_matcher, this);
+  }
+  void run(const MatchFinder::MatchResult& result) override {
+    const clang::FieldDecl* field_decl =
+        result.Nodes.getNodeAs<clang::FieldDecl>("affectedFieldDecl");
+    assert(field_decl && "matcher should bind 'fieldDecl'");
+
+    const clang::TypeSourceInfo* type_source_info =
+        field_decl->getTypeSourceInfo();
+    assert(type_source_info && "assuming |type_source_info| is always present");
+
+    assert(type_source_info->getType()->isReferenceType() &&
+           "matcher should only match reference types");
+
+    compiler_.getDiagnostics().Report(field_decl->getEndLoc(),
+                                      error_need_raw_ref_signature_);
+  }
+
+ private:
+  clang::CompilerInstance& compiler_;
+  unsigned error_need_raw_ref_signature_;
+  std::unique_ptr<FilterFile> fields_to_exclude_;
+  std::unique_ptr<FilterFile> paths_to_exclude_;
+};
+
 void FindBadRawPtrPatterns(Options options,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler) {
@@ -145,6 +190,12 @@ void FindBadRawPtrPatterns(Options options,
                                    options.exclude_paths_file);
   if (options.check_raw_ptr_fields)
     field_matcher.Register(match_finder);
+
+  RawRefFieldMatcher ref_field_matcher(compiler, options.exclude_fields_file,
+                                       options.exclude_paths_file);
+  if (options.check_raw_ref_fields) {
+    ref_field_matcher.Register(match_finder);
+  }
 
   match_finder.matchAST(ast_context);
 }

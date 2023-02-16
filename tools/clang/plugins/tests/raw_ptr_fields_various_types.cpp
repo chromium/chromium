@@ -72,6 +72,12 @@ struct MyStruct {
   SomeClassAlias* alias_ptr;
   // Error expected.
   func_ptr_typedef2* ptr_to_function_ptr;
+  // Error expected.
+  SomeClassTypedef& typedef_ref;
+  // Error expected.
+  SomeClassAlias& alias_ref;
+  // Error expected.
+  func_ptr_typedef2& ref_to_function_ptr;
 
   // Char pointer fields.
   //
@@ -97,6 +103,29 @@ struct MyStruct {
   // rewriter.
   // crbug.com/1381969
   const SomeClass (*ptr_to_array)[123];
+
+  // References to templates.
+  // Error expected.
+  std::string& string_ref;
+  std::vector<char>& vector_ref;
+  SomeTemplate<char>& template_ref;
+
+  //
+  // Various integer types.
+  //
+  // Error expected.
+  int& int_ref_spelling1;
+  signed int& int_ref_spelling2;
+  long int& int_ref_spelling3;
+  unsigned& int_ref_spelling4;
+
+  //
+  // Various structs and classes.
+  //
+  // Error expected.
+  SomeClass& class_ref_spelling1;
+  class SomeClass& class_ref_spelling2;
+  my_namespace::SomeClass& class_ref_spelling3;
 };
 
 }  // namespace my_namespace

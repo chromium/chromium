@@ -87,9 +87,29 @@ ImplicitFieldDeclaration() {
   return implicit_field_decl_matcher;
 }
 
+// These represent the common conditions to skip the rewrite for reference and
+// pointer fields. This includes fields that are:
+// - listed in the --exclude-fields cmdline param or located in paths
+//   matched by --exclude-paths cmdline param
+// - "implicit" (i.e. field decls that are not explicitly present in
+//   the source code)
+// - located in Extern C context, in generated code or annotated with
+// RAW_PTR_EXCLUSION
+// - located under third_party/ except under third_party/blink as Blink
+// is part of chromium git repo.
+auto PtrAndRefExclusions(const FilterFile* paths_to_exclude,
+                         const FilterFile* fields_to_exclude) {
+  return anyOf(isExpansionInSystemHeader(), isInExternCContext(),
+               isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
+               isInGeneratedLocation(),
+               isInLocationListedInFilterFile(paths_to_exclude),
+               isFieldDeclListedInFilterFile(fields_to_exclude),
+               ImplicitFieldDeclaration());
+}
+
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
-    FilterFile* paths_to_exclude,
-    FilterFile* fields_to_exclude) {
+    const FilterFile* paths_to_exclude,
+    const FilterFile* fields_to_exclude) {
   // Supported pointer types =========
   // Given
   //   struct MyStrict {
@@ -116,13 +136,29 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
   auto field_decl_matcher =
       fieldDecl(
           allOf(hasType(supported_pointer_types_matcher),
-                unless(anyOf(const_char_pointer_matcher, isInScratchSpace(),
-                             isExpansionInSystemHeader(), isInExternCContext(),
-                             isRawPtrExclusionAnnotated(),
-                             isInThirdPartyLocation(), isInGeneratedLocation(),
-                             isInLocationListedInFilterFile(paths_to_exclude),
-                             isFieldDeclListedInFilterFile(fields_to_exclude),
-                             ImplicitFieldDeclaration()))))
+                unless(anyOf(
+                    const_char_pointer_matcher, isInScratchSpace(),
+                    PtrAndRefExclusions(paths_to_exclude, fields_to_exclude)))))
           .bind("affectedFieldDecl");
+  return field_decl_matcher;
+}
+
+clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
+    const FilterFile* paths_to_exclude,
+    const FilterFile* fields_to_exclude) {
+  // Field declarations =========
+  // Given
+  //   struct S {
+  //     int& y;
+  //   };
+  // matches |int& y|.  Doesn't match:
+  // - non-reference types
+  // - fields matching criteria elaborated in PtrAndRefExclusions
+  auto field_decl_matcher =
+      fieldDecl(allOf(has(referenceTypeLoc().bind("affectedFieldDeclType")),
+                      unless(PtrAndRefExclusions(paths_to_exclude,
+                                                 fields_to_exclude))))
+          .bind("affectedFieldDecl");
+
   return field_decl_matcher;
 }

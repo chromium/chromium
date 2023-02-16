@@ -152,6 +152,10 @@ AST_MATCHER(clang::Decl, isRawPtrExclusionAnnotated) {
   return IsAnnotated(&Node, "raw_ptr_exclusion");
 }
 
+AST_MATCHER(clang::CXXRecordDecl, isAnonymousStructOrUnion) {
+  return Node.getName().empty();
+}
+
 // Given:
 //   template <typename T, typename T2> void foo(T t, T2 t2) {};  // N1 and N4
 //   template <typename T2> void foo<int, T2>(int t, T2 t) {};    // N2
@@ -194,6 +198,13 @@ ImplicitFieldDeclaration();
 // Matches raw pointer field declarations that is a candidate for raw_ptr<T>
 // conversion.
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
-    FilterFile* paths_to_exclude, FilterFile* fields_to_exclude);
+    const FilterFile* paths_to_exclude,
+    const FilterFile* fields_to_exclude);
+
+// Matches raw reference field declarations that are candidates for raw_ref<T>
+// conversion.
+clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
+    const FilterFile* paths_to_exclude,
+    const FilterFile* fields_to_exclude);
 
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_

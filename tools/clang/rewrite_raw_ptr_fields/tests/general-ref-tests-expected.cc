@@ -90,12 +90,36 @@ int main() {
   int a = 0;
   int b = 0;
 
-  // No rewrite for anonymous struct.
   struct {
-    int& in;
-    int& out;
+    // Expected rewrite: const raw_ref<int> in;
+    const raw_ref<int> in;
+    // Expected rewrite: const raw_ref<int> out;
+    const raw_ref<int> out;
   } report_lists[]{{a, b}, {a, b}};
+
+  // Reference members of nested anonymous structs declared in a
+  // function body are rewritten because they can end up on the heap.
+  struct A {
+    struct {
+      const raw_ref<int> i;
+    } member;
+  };
+
+  A obj{a};
+  *obj.member.i++;
+
+  static struct {
+    // Expected rewrite: const raw_ref<int> member;
+    const raw_ref<int> member;
+  } st{a};
 }
+
+struct B {
+  struct {
+    // Expected rewrite: const raw_ref<int> i;
+    const raw_ref<int> i;
+  } member;
+};
 
 template <typename T>
 const T& MyTemplatedStruct<T>::get() const {

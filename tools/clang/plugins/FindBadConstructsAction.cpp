@@ -85,6 +85,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.check_raw_ptr_fields = true;
     } else if (arg == "check-stack-allocated") {
       options_.check_stack_allocated = true;
+    } else if (arg == "check-raw-ref-fields") {
+      options_.check_raw_ref_fields = true;
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;

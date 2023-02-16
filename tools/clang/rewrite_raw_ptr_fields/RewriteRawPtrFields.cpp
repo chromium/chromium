@@ -754,10 +754,6 @@ class FilteredExprWriter : public MatchFinder::MatchCallback {
   llvm::StringRef filter_tag_;
 };
 
-AST_MATCHER(clang::CXXRecordDecl, isAnonymousStructOrUnion) {
-  return Node.getName().empty();
-}
-
 class RawPtrRewriter {
  public:
   RawPtrRewriter(OutputHelper* output_helper,
@@ -1102,34 +1098,8 @@ class RawRefRewriter {
         paths_to_exclude(paths_to_exclude) {}
 
   void addMatchers() {
-    auto anonymous_struct_field_decl_matcher =
-        fieldDecl(hasParent(cxxRecordDecl(isAnonymousStructOrUnion())));
-
-    // Field declarations =========
-    // Given
-    //   struct S {
-    //     int& y;
-    //   };
-    // matches |int& y|.  Doesn't match:
-    // - non-reference types
-    // - fields of lambda-supporting classes
-    // - fields listed in the --exclude-fields cmdline param or located in paths
-    //   matched by --exclude-paths cmdline param
-    // - "implicit" fields (i.e. field decls that are not explicitly present in
-    //   the source code)
-    // - fields in anonymous structs.
-
     auto field_decl_matcher =
-        fieldDecl(allOf(has(referenceTypeLoc().bind("affectedFieldDeclType")),
-                        unless(anyOf(
-                            isExpansionInSystemHeader(), isInExternCContext(),
-                            isRawPtrExclusionAnnotated(),
-                            isInThirdPartyLocation(), isInGeneratedLocation(),
-                            isInLocationListedInFilterFile(&paths_to_exclude),
-                            isFieldDeclListedInFilterFile(&fields_to_exclude),
-                            ImplicitFieldDeclaration(),
-                            anonymous_struct_field_decl_matcher))))
-            .bind("affectedFieldDecl");
+        AffectedRawRefFieldDecl(&paths_to_exclude, &fields_to_exclude);
 
     match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
 
