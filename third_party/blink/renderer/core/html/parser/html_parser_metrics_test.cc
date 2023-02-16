@@ -46,14 +46,8 @@ class HTMLMetricsTest : public testing::Test {
   frame_test_helpers::WebViewHelper helper_;
 };
 
-#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 // https://crbug.com/1222653
-#define MAYBE_ReportSingleChunk DISABLED_ReportSingleChunk
-#else
-#define MAYBE_ReportSingleChunk ReportSingleChunk
-#endif
-TEST_F(HTMLMetricsTest, MAYBE_ReportSingleChunk) {
+TEST_F(HTMLMetricsTest, DISABLED_ReportSingleChunk) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
@@ -110,17 +104,8 @@ TEST_F(HTMLMetricsTest, MAYBE_ReportSingleChunk) {
                                       19, 1);
 }
 
-#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) ||   \
-    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_LINUX)
 // https://crbug.com/1222653
-// https://crbug.com/1406813
-#define MAYBE_HistogramReportsTwoChunks DISABLED_HistogramReportsTwoChunks
-#else
-#define MAYBE_HistogramReportsTwoChunks HistogramReportsTwoChunks
-#endif
-
-TEST_F(HTMLMetricsTest, MAYBE_HistogramReportsTwoChunks) {
+TEST_F(HTMLMetricsTest, DISABLED_HistogramReportsTwoChunks) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
