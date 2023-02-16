@@ -130,6 +130,10 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
         assert_equals(key.algorithm.hash.name.toUpperCase(), algorithm.hash.toUpperCase(), "Correct hash function");
     }
 
+    if (/^(?:Ed|X)(?:25519|448)$/.test(key.algorithm.name)) {
+        assert_false('namedCurve' in key.algorithm, "Does not have a namedCurve property");
+    }
+
     // usages is expected to be provided for a key pair, but we are checking
     // only a single key. The publicKey and privateKey portions of a key pair
     // recognize only some of the usages appropriate for a key pair.

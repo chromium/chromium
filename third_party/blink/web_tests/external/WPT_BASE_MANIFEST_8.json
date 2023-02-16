@@ -3783,6 +3783,20 @@
        null,
        {}
       ]
+     ],
+     "root-element-display-none-crash.html": [
+      "fc55719c7e87bccb9d2862464b19e19112e02711",
+      [
+       null,
+       {}
+      ]
+     ],
+     "root-element-display-none-during-transition-crash.html": [
+      "19f4143aa6a4c6c8ec63206d1e94fab56f6181c6",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-writing-modes": {
@@ -221779,6 +221793,19 @@
        {}
       ]
      ],
+     "new-content-from-root-display-none.html": [
+      "4d2ad28b17844f0b878a408cb8c04ff895aea06c",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-from-root-display-none-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "new-content-has-scrollbars.html": [
       "4024952b13ac1953d9874ad08dfcd6bf08edeadd",
       [
@@ -264152,16 +264179,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "e32e00e85f9c35fea65fa6734bc1e3579592c9a8",
-     []
-    ],
-    "mtime.json": [
-     "2eb83328647a29eb455841d82cbc49f52f712807",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -265165,7 +265182,7 @@
     },
     "util": {
      "helpers.js": [
-      "ee9d09d1251237dfd1bf8a3d4ade55d8b683bee5",
+      "b7d11fdb00a85d91ff96e485b2b031f6bc548eca",
       []
      ],
      "worker-report-crypto-subtle-presence.js": [
@@ -330616,6 +330633,10 @@
       "9ab0bda0248a35a14bec97726283f022e0473b5e",
       []
      ],
+     "new-content-from-root-display-none-ref.html": [
+      "e936a779c743ae8e0b5542ee064846ddb0749553",
+      []
+     ],
      "new-content-has-scrollbars-ref.html": [
       "eddd7330144b538455e5fa4a3609299dcb3c63c8",
       []
@@ -348980,12 +349001,12 @@
      []
     ],
     "generic-sensor-tests.js": [
-     "2f910806dfd498f49c5c75557f67f817396e68e9",
+     "65f58ee7ca2c42b77b196a57276be3c935d598b8",
      []
     ],
     "resources": {
      "generic-sensor-helpers.js": [
-      "aa101547ff1420f3ec95c96725bb8e5067a7f955",
+      "9a51a591ce116e981310c0f1eb37cfc7eac722fd",
       []
      ],
      "iframe_sensor_handler.html": [
@@ -349140,7 +349161,7 @@
      []
     ],
     "GeolocationSensor.https-expected.txt": [
-     "20cd8a1c0a8b2d2e569e356e1e4a98e466149c52",
+     "f31fc9f61c698f5989edacec9cc888725d030c86",
      []
     ],
     "GeolocationSensor.https.html.ini": [
@@ -372830,7 +372851,7 @@
      []
     ],
     "Magnetometer.https-expected.txt": [
-     "fd4f82033f5e8b5ddb21cc4b1f0494804ed70780",
+     "478aba828f8782605fa8dc57c0e6958768206b80",
      []
     ],
     "Magnetometer.https.html.ini": [
@@ -570970,6 +570991,13 @@
      ],
      "navigate-history-back-cross-document.html": [
       "cd7be6e9ad37eb1975a6a183c290cf972de10c4a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigate-history-back-noop.html": [
+      "10763c93fd20ec841acb1f1dab45d2343c5de074",
       [
        null,
        {}
