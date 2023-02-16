@@ -7,6 +7,7 @@ import os
 import subprocess
 import sys
 import tarfile
+import tempfile
 
 from common import DIR_SOURCE_ROOT
 
@@ -19,28 +20,29 @@ def DownloadAndUnpackFromCloudStorage(url, output_dir):
 
   # Pass the compressed stream directly to 'tarfile'; don't bother writing it
   # to disk first.
-  cmd = [
-      sys.executable,
-      os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'gsutil.py'), 'cp', url,
-      '-'
-  ]
+  tmp_file = 'image.tgz'
+  with tempfile.TemporaryDirectory() as tmp_d:
+    tmp_file_location = os.path.join(tmp_d, tmp_file)
+    cmd = [
+        sys.executable,
+        os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'gsutil.py'), 'cp', url,
+        tmp_file_location
+    ]
 
-  logging.debug('Running "%s"', ' '.join(cmd))
-  task = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-  tar_data = task.stdout
-  task.stdout = None  # don't want Popen.communicate() to eat the output
+    logging.debug('Running "%s"', ' '.join(cmd))
+    task = subprocess.run(cmd,
+                          stderr=subprocess.PIPE,
+                          stdout=subprocess.PIPE,
+                          check=True,
+                          encoding='utf-8')
 
-  try:
-    tarfile.open(mode='r|gz', fileobj=tar_data).extractall(path=output_dir)
-  except tarfile.ReadError as exc:
-    _, stderr_data = task.communicate()
-    stderr_data = stderr_data.decode()
-    raise subprocess.CalledProcessError(
-        task.returncode, cmd,
-        'Failed to read a tarfile from gsutil.py.\n{}'.format(
-            stderr_data if stderr_data else '')) from exc
-
-  if task.wait():
-    _, stderr_data = task.communicate()
-    stderr_data = stderr_data.decode()
-    raise subprocess.CalledProcessError(task.returncode, cmd, stderr_data)
+    try:
+      tarfile.open(name=tmp_file_location,
+                   mode='r|gz').extractall(path=output_dir)
+    except tarfile.ReadError as exc:
+      _, stderr_data = task.communicate()
+      stderr_data = stderr_data.decode()
+      raise subprocess.CalledProcessError(
+          task.returncode, cmd,
+          'Failed to read a tarfile from gsutil.py.\n{}'.format(
+              stderr_data if stderr_data else '')) from exc
