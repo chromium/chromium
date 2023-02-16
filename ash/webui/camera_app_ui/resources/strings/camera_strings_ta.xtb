@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">இணைப்பு கண்டறியப்பட்டது. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />ம் பக்கம் நீக்கப்பட்டது</translation>
 <translation id="1258009455399840361">வலஞ்சுழியில் 90 டிகிரிக்குச் சுழற்று</translation>
-<translation id="1276998909102132017">கேலரி படங்கள்</translation>
 <translation id="1300209025925956156">ஆவணத்தை ஸ்கேன் செய்யுங்கள்</translation>
 <translation id="1309250603447638106">ஆவணத்தை ஸ்கேன் செய்யும் அம்சத்திற்கான புதுப்பிப்புகள் பதிவிறக்கப்படுகின்றன</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. அவற்றைப் பயன்படுத்த Search மற்றும் இடது அம்புக்குறியை அழுத்தவும்.</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />வது பக்கத்தைத் திருத்து</translation>
-<translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> அகற்றப்பட்டது.</translation>
 <translation id="1473110567575736769">3 வினாடிகள் டைமர்</translation>
 <translation id="148783771699678004">மேல் வலதுபுறம் நகர்கிறது</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">கூடுதல் பக்கத்தை ஸ்கேன் செய்</translation>
 <translation id="1851169887664797861">கூடுதல் கேமரா கட்டுப்பாடுகள் உள்ளன</translation>
 <translation id="1851616744363735765">இடைநிறுத்தப்பட்டுள்ளது</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> ஃபைலை இடமாற்ற முடியவில்லை</translation>
 <translation id="1899697626337024495">படத் தெளிவுத்திறன்</translation>
 <translation id="1925845977604399247">கேலரிக்குச் செல்</translation>
 <translation id="199526504800285197">ரெக்கார்டிங் நிறுத்தப்பட்டது</translation>
 <translation id="1995951722691075581">சாதனத்தில் சேமிப்பிடம் குறைவாக இருப்பதால் ரெக்கார்டிங் நிறுத்தப்பட்டது. மேலும் வீடியோக்களை ரெக்கார்டு செய்ய சாதனத்தில் சேமிப்பிடத்தைக் காலியாக்க வேண்டும்.</translation>
-<translation id="2022953316617983419">QR குறியீடு</translation>
 <translation id="2036868001356139588">டைமர் காலஅளவு</translation>
 <translation id="2050339315714019657">செங்குத்து நிலை</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> செயலில் உள்ளது</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR குறியீடு</translation>
 <translation id="2244252133441425811">வீடியோ FPS தேர்வியை இயக்கு</translation>
 <translation id="2271433936731426666">முழு அளவு வீடியோ ஸ்னாப்ஷாட்டை இயக்கு</translation>
-<translation id="229579744168541441">டிஸ்கிற்கு இடமாற்று</translation>
 <translation id="2320741269052147773">இடப்புறம் நகர்த்தவும்</translation>
 <translation id="2501278716633472235">திரும்பிச் செல்</translation>
 <translation id="2501853267655415902">பதிவுசெய்வது நிறுத்தப்பட்டது</translation>
-<translation id="2501953888035679275">உங்கள் கேமராவைப் பயன்படுத்தி, படங்களை எடுக்கலாம், வீடியோக்களை ரெக்கார்டு செய்யலாம்.</translation>
 <translation id="2517472476991765520">ஸ்கேன்</translation>
 <translation id="2549985041256363841">பதிவுசெய்யத் தொடங்கு</translation>
 <translation id="2577915835281444458">ரெக்கார்டிங் விரைவில் நிறுத்தப்படும். சேமிப்பிடத்தைக் காலியாக்க சாதனச் சேமிப்பகத்திற்குச் செல்லவும்.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">மிரர் மாதிரிக்காட்சி</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> இணைக்கப்பட்டது.</translation>
 <translation id="2904654629665923749">ஆவணத்தை ஸ்கேன் செய்யும் அம்சம் கிடைக்கிறது</translation>
-<translation id="2968794441791257519">கேமராவில் எடுக்கப்படும் படங்களும் வீடியோக்களும் ‘பதிவிறக்கங்கள்’ ஃபோல்டருக்கு நகர்த்தப்படும். அவற்றை Filesஸில் பார்க்கலாம்.
-
-        சேமிப்பக அனுமதிகள் உள்ள ஆப்ஸால் அவற்றை அணுக முடியும்.</translation>
 <translation id="3067436040345934772">வலப்புறம் நகர்த்தவும்</translation>
 <translation id="3081586908890909590">வீடியோவைப் பதிவுசெய்யும் பயன்முறைக்கு மாறு</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">கட்ட வகை</translation>
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3240426699337459095">இணைப்பு நகலெடுக்கப்பட்டது</translation>
-<translation id="3259149966178251584">கேமரா தெளிவுத்திறன்</translation>
-<translation id="3305962767867348165">சரிசெய்</translation>
 <translation id="3354465018370944241">பட அமைப்புகள்</translation>
 <translation id="3411958449466169012">டைமரை முடக்கு</translation>
 <translation id="3448774564454087943">மிகவும் சிறியதாக உள்ளதால் வீடியோ சேமிக்கப்படவில்லை</translation>
 <translation id="346539236881580388">மீண்டும் எடு</translation>
 <translation id="3517926952904427380">படத்தைப் போர்ட்ரெய்ட்டில் எடுக்க முடியவில்லை</translation>
 <translation id="3566302376254083266">மேல் இடதுபுறம் நகர்கிறது</translation>
-<translation id="3569311554794739032"><ph name="FILE" /> ஃபைலை நிச்சயமாக அகற்ற விரும்புகிறீர்களா?</translation>
 <translation id="3573890771273113519">ஸ்கேன் பயன்முறைக்கு மாறு</translation>
 <translation id="3583444040776960729">ஆவணத்தின் கீழ் இடது மூலை</translation>
 <translation id="3789724198583203151">இடஞ்சுழியில் 90 டிகிரிக்குச் சுழற்று</translation>
 <translation id="3810838688059735925">வீடியோ</translation>
-<translation id="3838931309141338733">பார்கோடை ஸ்கேன் செய்</translation>
 <translation id="3892148308691398805">உரையை நகலெடு</translation>
 <translation id="4060608699153044055">சாதனத்தில் சேமிப்பிடம் குறைவாக இருப்பதால் ரெக்கார்டு செய்ய முடியவில்லை. ரெக்கார்டு செய்ய சாதனத்தில் சேமிப்பிடத்தைக் காலியாக்க வேண்டும்.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> மெ.பி.</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">இணைப்பு முகவரியை நகலெடு</translation>
 <translation id="4281620174117014503">நடுத்தரத் தெளிவுத்திறன்</translation>
 <translation id="428234092390943511">பக்கச் சிறுபடம்</translation>
-<translation id="4329152592498422850">சதுர வடிவத்தில் படமெடுக்குமாறு மாற்றவும்</translation>
 <translation id="4340659173795395806">இப்போது நீங்கள் பல பக்கங்கள் உள்ள PDFஐ உருவாக்கலாம்</translation>
 <translation id="4383571725254449280">செயல்திறன் பதிவுகளைப் பிரிண்ட் செய்தல்</translation>
 <translation id="4445542136948522167">படமெடுப்பதை நிறுத்து</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> மெகாபிக்சல்</translation>
 <translation id="4570032796877367747">முன்பக்கக் கேமரா</translation>
 <translation id="4598556348158889687">சேமிப்பிட மேலாண்மை</translation>
 <translation id="4620818268515773682">மைக்ரோஃபோனை முடக்கும். தற்போது ஒலி இயக்கப்பட்டுள்ளது</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">கேமரா ஆப்ஸ் குறித்து கருத்து தெரிவித்தமைக்கு நன்றி.
 
 படம் அல்லது வீடியோ தரம் குறித்து கருத்து தெரிவித்திருந்தால் மாதிரிப் படத்தையோ வீடியோவையோ இணைத்து என்ன தவறு உள்ளது என்பதை விளக்கவும். (உதாரணம்: படம் மிகவும் டார்க்காக உள்ளது/சப்ஜெக்ட் ஃபோகஸ் செய்யப்படவில்லை.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> மெகா பிக்சல்</translation>
 <translation id="6527303717912515753">பகிர்</translation>
 <translation id="6617916774429601017">எல்லா ரெசல்யூஷன்களையும் காட்டு</translation>
 <translation id="6631515515009660915">மிரர் பயன்முறையை முடக்கும்</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">அனைத்தையும் மீட்டமை</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="698156982839284926">3 வினாடிகள்</translation>
-<translation id="712848772518857951"><ph name="COUNT" /> உள்ளடக்கங்களை நிச்சயமாக அகற்ற விரும்புகிறீர்களா?</translation>
 <translation id="7134221860976209830">10 வினாடிகள் டைமர்</translation>
 <translation id="7191890674911603392">ரெக்கார்டு வகை</translation>
 <translation id="7243947652761655814">வீடியோ தெளிவுத்திறன்</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">படமெடுக்கும் பயன்முறைக்கு மாறு</translation>
 <translation id="8167081290930651932">படமாகச் சேமி</translation>
 <translation id="8239780215768881278">வீடியோ ஸ்னாப்ஷாட்டை எடு</translation>
-<translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8425673304802773841">கீழே சாய்க்கவும்</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />பி (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">மைக்ரோஃபோனை இயக்கும். தற்போது ஒலி முடக்கப்பட்டுள்ளது</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>

@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">لنک کا پتہ چلا۔ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">صفحہ <ph name="PAGE_NUMBER" /> حذف ہو گیا</translation>
 <translation id="1258009455399840361">گھڑی کی سمت 90 ڈگری پر گھمائیں</translation>
-<translation id="1276998909102132017">گیلری کی تصاویر</translation>
 <translation id="1300209025925956156">اپنی دستاویز اسکین کریں</translation>
 <translation id="1309250603447638106">دستاویز سکیننگ کے لیے اپ ڈیٹس ڈاؤن لوڈ کی جا رہی ہیں</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />۔ رسائی حاصل کرنے کے لیے تلاش پلس بائیں تیر کا نشان۔</translation>
 <translation id="1417314334557041815">صفحہ <ph name="INDEX" /> میں ترمیم کریں</translation>
-<translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ان پلگ ہے۔</translation>
 <translation id="1473110567575736769">3 سیکنڈ کا ٹائمر</translation>
 <translation id="148783771699678004">اوپر دائیں سمت میں جا رہا ہے</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">اضافی صفحہ اسکین کریں</translation>
 <translation id="1851169887664797861">کیمرا کے اضافی کنٹرولز دستیاب ہیں</translation>
 <translation id="1851616744363735765">موقوف</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> کو برآمد کرنے سے قاصر</translation>
 <translation id="1899697626337024495">تصویری ریزولیوشن</translation>
 <translation id="1925845977604399247">گیلری میں جائیں</translation>
 <translation id="199526504800285197">ریکارڈنگ رک گئی ہے</translation>
 <translation id="1995951722691075581">آلے میں اسٹوریج کی جگہ کم ہونے کی وجہ سے آپ ریکارڈنگ رک گئی۔ مزید ویڈیوز ریکارڈ کرنے کے لیے، آپ کو اپنے آلے پر جگہ خالی کرنے کی ضرورت ہے۔</translation>
-<translation id="2022953316617983419">‏QR کوڈ</translation>
 <translation id="2036868001356139588">ٹائمر کا دورانیہ</translation>
 <translation id="2050339315714019657">پورٹریٹ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> فعال ہے</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">‏QR کوڈ</translation>
 <translation id="2244252133441425811">‏ویڈیو FPS چنندہ کو فعال کریں</translation>
 <translation id="2271433936731426666">فُل سائز والی ویڈیو اسنیپ شاٹ کو فعال کریں</translation>
-<translation id="229579744168541441">ڈسک میں برآمد کریں</translation>
 <translation id="2320741269052147773">بائیں طرف پین کریں</translation>
 <translation id="2501278716633472235">پیچھے جائیں</translation>
 <translation id="2501853267655415902">ریکارڈنگ رک گئی</translation>
-<translation id="2501953888035679275">اپنے کیمرے سے تصاویر لیں اور ویڈیوز ریکارڈ کریں۔</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="2549985041256363841">ریکارڈنگ شروع کریں</translation>
 <translation id="2577915835281444458">ریکارڈنگ جلد ہی بند ہو جائے گی۔ اسپیس خالی کرنے کے لیے آلہ کی اسٹوریج پر جائیں۔</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">دو طرفہ مطابقت پذیر بنانے کا پیش منظر</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> پلگ ان ہے</translation>
 <translation id="2904654629665923749">دستاویز کا اسکین دستیاب ہے</translation>
-<translation id="2968794441791257519">کیمرا سے لی گئی تصاویر اور ویڈیوز ڈاؤن لوڈز فولڈر میں منتقل کر دی جائیں گی۔ آپ فائلز میں ان تک رسائی حاصل کر سکتے ہیں۔
-
-        اسٹوریج کی اجازتوں والی ایپس کو آپ کی تصاویر اور ویڈیوز تک رسائی حاصل ہوگی۔</translation>
 <translation id="3067436040345934772">دائیں طرف پین کریں</translation>
 <translation id="3081586908890909590">ویڈیو ریکارڈ کرنے کی وضع پر سوئچ کریں</translation>
 <translation id="313467653172006084">‎30 FPS</translation>
-<translation id="3183731565330012717">گرڈ کی قسم</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
-<translation id="3259149966178251584">کیمرہ ریزولیوشن</translation>
-<translation id="3305962767867348165">درست کریں</translation>
 <translation id="3354465018370944241">تصویر کی ترتیبات</translation>
 <translation id="3411958449466169012">ٹائمر آف کریں</translation>
 <translation id="3448774564454087943">ویڈیو بہت چھوٹی ہونے کی وجہ سے محفوظ نہیں ہوئی</translation>
 <translation id="346539236881580388">دوبارہ لیں</translation>
 <translation id="3517926952904427380">پورٹریٹ تصویر لینے سے قاصر</translation>
 <translation id="3566302376254083266">اوپر بائیں سمت میں جا رہا ہے</translation>
-<translation id="3569311554794739032">کیا آپ واقعی <ph name="FILE" /> کو ہٹانا چاہتے ہیں؟</translation>
 <translation id="3573890771273113519">اسکین وضع پر سوئچ کریں</translation>
 <translation id="3583444040776960729">دستاویز کا نیچے والا بایاں کونا</translation>
 <translation id="3789724198583203151">90 ڈگری پر خلاف گھڑی وار گھمائیں</translation>
 <translation id="3810838688059735925">ویڈیو</translation>
-<translation id="3838931309141338733">بارکوڈ اسکین کریں</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="4060608699153044055">آپ آلے میں اسٹوریج کی جگہ کم ہونے کی وجہ سے ریکارڈ نہیں کر سکتے۔ ریکارڈنگ شروع کرنے کے لیے آپ کو اپنے آلے پر جگہ خالی کرنے کی ضرورت ہے۔</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
 <translation id="4281620174117014503">متوسط ریزولیوشن</translation>
 <translation id="428234092390943511">صفحہ کا تھمب نیل</translation>
-<translation id="4329152592498422850">مربع تصویر لینے کی وضع پر سوئچ کریں</translation>
 <translation id="4340659173795395806">‏اب آپ متعدد صفحات کا PDF بنا سکتے ہیں</translation>
 <translation id="4383571725254449280">کارکردگی کے لاگز پرنٹ کریں</translation>
 <translation id="4445542136948522167">تصویر لینا بند کریں</translation>
-<translation id="4497569853498380347">‏‎(<ph name="ASPECT_RATIO_WIDTH" />:‎<ph name="ASPECT_RATIO_HEIGHT" />)‎ <ph name="MEGAPIXEL" /> میگا پکسل</translation>
 <translation id="4570032796877367747">سامنے کا کیمرہ</translation>
 <translation id="4598556348158889687">اسٹوریج کا نظم</translation>
 <translation id="4620818268515773682">مائیکروفون خاموش بٹن کو ٹوگل کریں خاموش کریں بٹن آف ہے</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">کیمرا ایپ پر تاثرات دینے کے لئے شکریہ۔
 
 اگر آپ کے تاثرات تصویر یا ویڈیو کے معیار کے بارے میں ہیں تو براہ کرم نمونہ کی تصویر یا ویڈیو منسلک کریں اور وضاحت کریں کہ کیا غلط ہے۔ (مثال کے طور پر، تصویر بہت گہری ہے یا مضمون فوکس میں نہیں ہے۔)</translation>
-<translation id="6420689864531458495">‏‎(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />)‎ <ph name="MEGAPIXEL" /> میگا پکسل</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6617916774429601017">تمام ریزولیوشن دکھائیں</translation>
 <translation id="6631515515009660915">دو طرفہ مطابقت پذیر بنانے کو آف کریں</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">تمام کو ری سیٹ کریں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="698156982839284926">3 سیکنڈ</translation>
-<translation id="712848772518857951">کیا آپ واقعی <ph name="COUNT" /> آئٹمز ہٹانا چاہتے ہیں؟</translation>
 <translation id="7134221860976209830">10 سیکنڈ کا ٹائمر</translation>
 <translation id="7191890674911603392">ریکارڈ کی قسم</translation>
 <translation id="7243947652761655814">ویڈیو ریزولیوشن</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">تصویر لینے کی وضع پر سوئچ کریں</translation>
 <translation id="8167081290930651932">بطور تصویر محفوظ کریں</translation>
 <translation id="8239780215768881278">ویڈیو اسنیپ شاٹ لیں</translation>
-<translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8425673304802773841">نیچے کی طرف جھکائیں</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">‏‎HD‏ <ph name="HEIGHT" />p ‎‏ (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">مائیکروفون خاموش بٹن کو ٹوگل کریں خاموش کریں بٹن آن ہے</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8730621377337864115">ہوگیا</translation>

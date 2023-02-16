@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Skakel is bespeur. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Bladsy <ph name="PAGE_NUMBER" /> is uitgevee</translation>
 <translation id="1258009455399840361">Draai 90 grade kloksgewys</translation>
-<translation id="1276998909102132017">Galeryprente</translation>
 <translation id="1300209025925956156">Skandeer jou dokument</translation>
 <translation id="1309250603447638106">Laai tans opdaterings vir dokumentskandering af</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + linkspyl om toegang te kry</translation>
 <translation id="1417314334557041815">Wysig bladsy <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Druk uit</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is uitgeprop.</translation>
 <translation id="1473110567575736769">Afteller van 3 sekondes</translation>
 <translation id="148783771699678004">Beweeg tans na regs bo</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skandeer bykomende bladsy</translation>
 <translation id="1851169887664797861">Bykomende kamerakontroles beskikbaar</translation>
 <translation id="1851616744363735765">ONDERBREEK</translation>
-<translation id="1862930711583847113">Kan nie <ph name="FILE" /> uitvoer nie</translation>
 <translation id="1899697626337024495">Fotoresolusie</translation>
 <translation id="1925845977604399247">Gaan na Galery toe</translation>
 <translation id="199526504800285197">Opname is gestop</translation>
 <translation id="1995951722691075581">Jou opname het gestop vanweë min toestelbergingspasie. Jy sal spasie op jou toestel beskikbaar moet maak as jy meer video's wil opneem.</translation>
-<translation id="2022953316617983419">QR-kode</translation>
 <translation id="2036868001356139588">Tydsduur van afteller</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> is aktief</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2244252133441425811">Aktiveer video-FPS-kieser</translation>
 <translation id="2271433936731426666">Aktiveer video-oorsig in volle grootte</translation>
-<translation id="229579744168541441">Voer uit na skyf</translation>
 <translation id="2320741269052147773">Swenk links</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
 <translation id="2501853267655415902">Opname is gestop</translation>
-<translation id="2501953888035679275">Neem foto's en neem video's op met jou kamera.</translation>
 <translation id="2517472476991765520">Skandeer</translation>
 <translation id="2549985041256363841">Begin opname</translation>
 <translation id="2577915835281444458">Opname sal binnekort stop. Gaan na toestelberging om spasie beskikbaar te maak.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Spieëlvoorskou</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is ingeprop.</translation>
 <translation id="2904654629665923749">Dokumentskandering is beskikbaar</translation>
-<translation id="2968794441791257519">Foto's en video's wat met die kamera geneem is, sal na die Aflaaie-vouer toe geskuif word. Jy kan in Lêers by hulle ingaan.
-
-        Programme met bergingtoestemmings sal toegang tot jou foto's en video's hê.</translation>
 <translation id="3067436040345934772">Swenk regs</translation>
 <translation id="3081586908890909590">Skakel oor na opneem van video</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Roostertipe</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3240426699337459095">Skakel gekopieer</translation>
-<translation id="3259149966178251584">Kameraresolusie</translation>
-<translation id="3305962767867348165">Maak reg</translation>
 <translation id="3354465018370944241">Foto-instellings</translation>
 <translation id="3411958449466169012">Afteller af</translation>
 <translation id="3448774564454087943">Video is nie gestoor nie want dis te kort</translation>
 <translation id="346539236881580388">Neem weer</translation>
 <translation id="3517926952904427380">Kan nie portretfoto neem nie</translation>
 <translation id="3566302376254083266">Beweeg tans na links bo</translation>
-<translation id="3569311554794739032">Wil jy regtig <ph name="FILE" /> verwyder?</translation>
 <translation id="3573890771273113519">Skakel oor na skandeermodus</translation>
 <translation id="3583444040776960729">Dokument se hoek links onder</translation>
 <translation id="3789724198583203151">Draai 90 grade antikloksgewys</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Skandeer strepieskode</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
 <translation id="4060608699153044055">Jy kan nie opneem nie vanweë min bergingspasie. Jy moet spasie op jou toestel beskikbaar maak as jy die opname wil begin.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopieer skakeladres</translation>
 <translation id="4281620174117014503">Mediumresolusie</translation>
 <translation id="428234092390943511">Bladsyminiprent</translation>
-<translation id="4329152592498422850">Wissel om vierkantige foto te neem</translation>
 <translation id="4340659173795395806">Jy kan nou multi-blad-PDF's skep</translation>
 <translation id="4383571725254449280">Drukwerkverrigtingloglêers</translation>
 <translation id="4445542136948522167">Hou op om foto te neem</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapieksel</translation>
 <translation id="4570032796877367747">Voorste kamera</translation>
 <translation id="4598556348158889687">Bergingbestuur</translation>
 <translation id="4620818268515773682">Wissel mikrofoondempknoppie. Demp is af</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Dankie dat jy terugvoer oor die Kamera-program gegee het.
 
 As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeldfoto of -video aanheg en beskryf wat fout is. (Byvoorbeeld, foto is te donker of onderwerp is nie in fokus nie.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapieksel</translation>
 <translation id="6527303717912515753">Deel</translation>
 <translation id="6617916774429601017">Wys alle resolusies</translation>
 <translation id="6631515515009660915">Spieël af</translation>
@@ -145,7 +128,6 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="695140971690006676">Stel alles terug</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekondes</translation>
-<translation id="712848772518857951">Wil jy regtig <ph name="COUNT" /> items verwyder?</translation>
 <translation id="7134221860976209830">Afteller van 10 sekondes</translation>
 <translation id="7191890674911603392">Soort opname</translation>
 <translation id="7243947652761655814">Videoresolusie</translation>
@@ -171,11 +153,9 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="8145038249676204903">Skakel oor na neem van foto</translation>
 <translation id="8167081290930651932">Stoor as foto</translation>
 <translation id="8239780215768881278">Neem 'n videofoto</translation>
-<translation id="8261506727792406068">Vee uit</translation>
 <translation id="8425673304802773841">Kantel af</translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8629662593426079630">360 p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Wissel mikrofoondempknoppie. Demp is aan</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8730621377337864115">Gedoen</translation>

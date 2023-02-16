@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">লিংক চিনাক্ত কৰা হৈছে। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">পৃষ্ঠা <ph name="PAGE_NUMBER" /> মচা হ’ল</translation>
 <translation id="1258009455399840361">ঘড়ীৰ কাঁটাৰ দিশত ৯০ ডিগ্ৰী ঘূৰাওক</translation>
-<translation id="1276998909102132017">গেলাৰীৰ প্ৰতিচ্ছবিসমূহ</translation>
 <translation id="1300209025925956156">আপোনাৰ নথি স্কেন কৰক</translation>
 <translation id="1309250603447638106">নথি স্কেন কৰাৰ সুবিধাটোৰ বাবে আপডে’ট ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। এক্সেছৰ বাবে ছাৰ্চ + লেফ্ট এৰ’ কী।</translation>
 <translation id="1417314334557041815">পৃষ্ঠা সম্পাদনা কৰক <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> আনপ্লাগ কৰা হ’ল।</translation>
 <translation id="1473110567575736769">৩ ছেকেণ্ডৰ টাইমাৰ</translation>
 <translation id="148783771699678004">একেবাৰে ওপৰৰ সোঁফাললৈ গতি কৰি আছে</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">অতিৰিক্ত পৃষ্ঠাখন স্কেন কৰক</translation>
 <translation id="1851169887664797861">অতিৰিক্ত কেমেৰাৰ নিয়ন্ত্ৰণ উপলব্ধ</translation>
 <translation id="1851616744363735765">পজ হৈ আছে</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> ৰপ্তানি কৰিব নোৱাৰি</translation>
 <translation id="1899697626337024495">ফট'ৰ ৰিজ'লিউশ্বন</translation>
 <translation id="1925845977604399247">গেলাৰীলৈ যাওক</translation>
 <translation id="199526504800285197">ৰেকৰ্ডিং বন্ধ কৰা হৈছে</translation>
 <translation id="1995951722691075581">ডিভাইচৰ ষ্ট’ৰেজত ঠাই কম থকাৰ বাবে আপুনি ৰেকৰ্ডিং বন্ধ হৈছে। অধিক ভিডিঅ’ ৰেকৰ্ড কৰিবলৈ, আপুনি নিজৰ ডিভাইচত ঠাই খালী কৰিব লাগিব।</translation>
-<translation id="2022953316617983419">কিউআৰ ক’ড</translation>
 <translation id="2036868001356139588">টাইমাৰৰ দৈৰ্ঘ্য</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> সক্ৰিয় হৈ আছে</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
 <translation id="2244252133441425811">ভিডিঅ’ৰ FPS বাছনিকৰ্তাক সক্ষম কৰক</translation>
 <translation id="2271433936731426666">পূৰ্ণ-আকাৰৰ ভিডিঅ’ স্নেপশ্বট সক্ষম কৰক</translation>
-<translation id="229579744168541441">ডিস্কলৈ ৰপ্তানি কৰক</translation>
 <translation id="2320741269052147773">বাওঁফালে পেন কৰক</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
 <translation id="2501853267655415902">ৰেকৰ্ডিং বন্ধ কৰা হ’ল</translation>
-<translation id="2501953888035679275">আপোনাৰ কেমেৰাৰে ফট’ উঠাওক আৰু ভিডিঅ’ ৰেকৰ্ড কৰক।</translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2549985041256363841">ৰেকৰ্ডিং কৰা আৰম্ভ কৰক</translation>
 <translation id="2577915835281444458">ৰেকৰ্ডিং সোনকালেই বন্ধ হ’ব। ঠাই খালী কৰিবলৈ ডিভাইচৰ ষ্ট’ৰেজলৈ যাওক।</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">মিৰ’ৰৰ পূৰ্বদৰ্শন</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> প্লাগ ইন কৰা হ’ল।</translation>
 <translation id="2904654629665923749">নথি স্কেন কৰাৰ সুবিধাটো উপলব্ধ</translation>
-<translation id="2968794441791257519">কেমেৰাৰে লোৱা ফট' আৰু ভিডিঅ' ডাউনল'সমূহ ফ'ল্ডাৰলৈ লৈ যোৱা হ'ব। আপুনি Filesত সেইখিনি এক্সেছ কৰিব পাৰে।
-
-        ষ্ট'ৰেজৰ অনুমতি থকা এপ্‌সমূহে আপোনাৰ ফট' আৰু ভিডিঅ'সমূহ এক্সেছ কৰিব পাৰিব।</translation>
 <translation id="3067436040345934772">সোঁফাললৈ পেন কৰক</translation>
 <translation id="3081586908890909590">ভিডিঅ' ৰেকৰ্ড কৰিবলৈ সলনি কৰক</translation>
 <translation id="313467653172006084">৩০ FPS</translation>
-<translation id="3183731565330012717">গ্ৰিডৰ প্ৰকাৰ</translation>
 <translation id="3227137524299004712">মাইক্ৰ’ফ’ন</translation>
 <translation id="3240426699337459095">লিংকটোৰ প্ৰতিলিপি কৰা হ’ল</translation>
-<translation id="3259149966178251584">কেমেৰা ৰিজ'লিউশ্বন</translation>
-<translation id="3305962767867348165">ঠিক কৰক</translation>
 <translation id="3354465018370944241">ফট’ ছেটিং</translation>
 <translation id="3411958449466169012">টাইমাৰ অফ</translation>
 <translation id="3448774564454087943">ভিডিঅ’টো অতি চুটি হোৱাৰ কাৰণে সেইটো ছেভ নহ’ল</translation>
 <translation id="346539236881580388">অন্য এখন ফট' লওক</translation>
 <translation id="3517926952904427380">প’ৰ্ট্ৰেইট ফট’ ল’ব নোৱাৰিলে</translation>
 <translation id="3566302376254083266">একেবাৰে ওপৰৰ বাওঁফাললৈ গতি কৰি আছে</translation>
-<translation id="3569311554794739032">আপুনি সঁচাকৈয়ে <ph name="FILE" /> আঁতৰাবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="3573890771273113519">স্কেন ম’ডলৈ সলনি কৰক</translation>
 <translation id="3583444040776960729">নথিৰ একেবাৰে তলৰ বাওঁফালৰ চুক</translation>
 <translation id="3789724198583203151">ঘড়ীৰ কাঁটাৰ বিপৰীত দিশত ৯০ ডিগ্ৰী ঘূৰাওক</translation>
 <translation id="3810838688059735925">ভিডিঅ’</translation>
-<translation id="3838931309141338733">বাৰক’ড স্কেন কৰক</translation>
 <translation id="3892148308691398805">পাঠৰ প্ৰতিলিপি কৰক</translation>
 <translation id="4060608699153044055">ডিভাইচৰ ষ্ট’ৰেজত ঠাই কম থকাৰ বাবে আপুনি ৰেকৰ্ড কৰিব নোৱাৰে। ৰেকৰ্ডিং আৰম্ভ কৰিবলৈ, আপুনি নিজৰ ডিভাইচত ঠাই খালী কৰিব লাগিব।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> মেগাপিক্সেল</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">লিংকৰ ঠিকনাটো প্ৰতিলিপি কৰক</translation>
 <translation id="4281620174117014503">মধ্যমীয়া ৰিজ’লিউশ্বন</translation>
 <translation id="428234092390943511">পৃষ্ঠাৰ থাম্বনেইল</translation>
-<translation id="4329152592498422850">বৰ্গাকাৰ ফট' ল'বলৈ সলনি কৰক</translation>
 <translation id="4340659173795395806">আপুনি এতিয়া একাধিক পৃষ্ঠাৰ PDF সৃষ্টি কৰিব পাৰে</translation>
 <translation id="4383571725254449280">কার্যদক্ষতাৰ লগসমূহ প্ৰিণ্ট কৰক</translation>
 <translation id="4445542136948522167">ফট' উঠোৱা বন্ধ কৰক</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> মেগা পিক্সেল</translation>
 <translation id="4570032796877367747">সন্মুখৰ কেমেৰা</translation>
 <translation id="4598556348158889687">ষ্ট’ৰেজ মেনেজমেণ্ট</translation>
 <translation id="4620818268515773682">মাইক্ৰ’ফ’ন মিউট কৰাৰ বুটামটো ট’গল কৰক। মিউট অফ কৰা হৈছে</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">কেমেৰা এপ্‌টোত মতামত দিয়াৰ বাবে ধন্যবাদ।
 
 যদি আপোনাৰ মতামতটো প্ৰতিচ্ছবি অথবা ভিডিঅ’ৰ গুণগত মান সম্পৰ্কীয়, অনুগ্ৰহ কৰি নমুনা হিচাপে এখন ফট’ অথবা এটা ভিডিঅ’ সংলগ্ন কৰক আৰু কি সমস্যা হৈছে বৰ্ণনা কৰক। (উদাহৰণস্বৰূপে, ফট’খন বহুত ক’লা হৈছে অথবা মূল বস্তুটো ফ’কাছত নাই।)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> মেগা পিক্সেল</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="6617916774429601017">আটাইবোৰ ৰিজ’লিউশ্বন দেখুৱাওক</translation>
 <translation id="6631515515009660915">মিৰ’ৰ অফ</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">সকলো ৰিছেট কৰক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="698156982839284926">৩ ছেকেণ্ড</translation>
-<translation id="712848772518857951">আপুনি সঁচাকৈয়ে <ph name="COUNT" />টা বস্তু আঁতৰাবলৈ বিচাৰেনে?</translation>
 <translation id="7134221860976209830">১০ ছেকেণ্ডৰ টাইমাৰ</translation>
 <translation id="7191890674911603392">ৰেকৰ্ডৰ প্ৰকাৰ</translation>
 <translation id="7243947652761655814">ভিডিঅ’ৰ ৰিজ’লিউশ্বন</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">ফট' উঠাবলৈ সলনি কৰক</translation>
 <translation id="8167081290930651932">ফট' ছেভ কৰক</translation>
 <translation id="8239780215768881278">ভিডিঅ’ৰ স্নেপশ্বট লওক</translation>
-<translation id="8261506727792406068">মচক</translation>
 <translation id="8425673304802773841">তললৈ হেলনীয়া কৰক</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8629662593426079630">৩৬০পি</translation>
-<translation id="8687491812650032292">এইচ্ছডি <ph name="HEIGHT" />পি (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">মাইক্ৰ’ফ’ন মিউট কৰাৰ বুটামটো ট’গল কৰক। মিউট অন কৰা হৈছে</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8730621377337864115">হ’ল</translation>

@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">লিঙ্ক শনাক্ত হয়েছে। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />টি পৃষ্ঠা মুছে ফেলা হয়েছে</translation>
 <translation id="1258009455399840361">ঘড়ির কাঁটার দিকে ৯০ ডিগ্রি ঘোরান</translation>
-<translation id="1276998909102132017">গ্যালারির ছবি</translation>
 <translation id="1300209025925956156">আপনার ডকুমেন্ট স্ক্যান করুন</translation>
 <translation id="1309250603447638106">ডকুমেন্ট স্ক্যান করার জন্য আপডেট ডাউনলোড করা হচ্ছে</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। অ্যাক্সেস করতে Search কীয়ের সাথে 'বাঁদিকের তীরচিহ্ন' একসাথে প্রেস করুন।</translation>
 <translation id="1417314334557041815">পৃষ্ঠা <ph name="INDEX" /> এডিট করুন</translation>
-<translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> আনপ্লাগ করা হয়েছে।</translation>
 <translation id="1473110567575736769">৩ সেকেন্ডের টাইমার</translation>
 <translation id="148783771699678004">উপরে ডানদিকে সরানো হচ্ছে</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">অতিরিক্ত পৃষ্ঠা স্ক্যান করুন</translation>
 <translation id="1851169887664797861">ক্যামেরার জন্য অতিরিক্ত কন্ট্রোল উপলভ্য</translation>
 <translation id="1851616744363735765">পজ করা হয়েছে</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> এক্সপোর্ট করা যাচ্ছে না</translation>
 <translation id="1899697626337024495">ফটো রেজোলিউশন</translation>
 <translation id="1925845977604399247">'গ্যালারি'তে যান</translation>
 <translation id="199526504800285197">রেকর্ডিং বন্ধ করা হয়েছে</translation>
 <translation id="1995951722691075581">ডিভাইস স্টোরেজ কম থাকার কারণে আপনার রেকর্ডিং বন্ধ হয়ে গেছে। আরও ভিডিও রেকর্ড করতে, আপনার ডিভাইসে জায়গা খালি করতে হবে।</translation>
-<translation id="2022953316617983419">QR কোড</translation>
 <translation id="2036868001356139588">টাইমারের সময়কাল</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> চালু আছে</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="2244252133441425811">ভিডিও FPS পিকার চালু করুন</translation>
 <translation id="2271433936731426666">সম্পূর্ণ সাইজের ভিডিও স্ন্যাপশট চালু করুন</translation>
-<translation id="229579744168541441">ডিস্কে এক্সপোর্ট করুন</translation>
 <translation id="2320741269052147773">বাঁদিকে প্যান করুন</translation>
 <translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="2501853267655415902">রেকর্ডিং বন্ধ করা হয়েছে</translation>
-<translation id="2501953888035679275">আপনার ক্যামেরা ব্যবহার করে ছবি তুলুন এবং ভিডিও রেকর্ড করুন।</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2549985041256363841">রেকর্ডিং শুরু করুন</translation>
 <translation id="2577915835281444458">রেকর্ডিং শীঘ্রই বন্ধ করা হবে। জায়গা খালি করতে ডিভাইস স্টোরেজে যান।</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">মিরর করার প্রিভিউ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> প্লাগ-ইন করা হয়েছে।</translation>
 <translation id="2904654629665923749">ডকুমেন্ট স্ক্যান করার সুবিধা উপলভ্য</translation>
-<translation id="2968794441791257519">ক্যামেরায় তোলা ফটো ও ভিডিও ডাউনলোড ফোল্ডারে সরিয়ে দেওয়া হবে। আপনি সেগুলি ফাইল থেকে অ্যাক্সেস করতে পারবেন।
-
-        আপনার ফটো ও ভিডিওতে স্টোরেজ ব্যবহারের অনুমতি আছে এমন অ্যাপের অ্যাক্সেস থাকবে।</translation>
 <translation id="3067436040345934772">ডানদিকে প্যান করুন</translation>
 <translation id="3081586908890909590">ভিডিও রেকর্ড মোডে পাল্টান</translation>
 <translation id="313467653172006084">৩০ FPS</translation>
-<translation id="3183731565330012717">গ্রিডের ধরন</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
 <translation id="3240426699337459095">লিঙ্ক কপি করা হয়েছে</translation>
-<translation id="3259149966178251584">ক্যামেরার রেজোলিউশন</translation>
-<translation id="3305962767867348165">ঠিক করুন</translation>
 <translation id="3354465018370944241">ফটো সেটিংস</translation>
 <translation id="3411958449466169012">টাইমার বন্ধ আছে</translation>
 <translation id="3448774564454087943">ভিডিও খুব ছোট হওয়ার কারণে সেভ করা হয়নি</translation>
 <translation id="346539236881580388">আবার তুলুন</translation>
 <translation id="3517926952904427380">পোর্ট্রেট ফটো তোলা যাচ্ছে না</translation>
 <translation id="3566302376254083266">উপরে বাঁদিকে সরানো হচ্ছে</translation>
-<translation id="3569311554794739032">আপনি কি সত্যিই <ph name="FILE" /> সরাতে চান?</translation>
 <translation id="3573890771273113519">স্ক্যান মোডে বদল করুন</translation>
 <translation id="3583444040776960729">নিচে-বাঁদিকের কোণার ডকুমেন্ট</translation>
 <translation id="3789724198583203151">ঘড়ির কাঁটার বিপরীতে ৯০ ডিগ্রি ঘোরান</translation>
 <translation id="3810838688059735925">ভিডিও</translation>
-<translation id="3838931309141338733">বারকোড স্ক্যান করুন</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="4060608699153044055">ডিভাইস স্টোরেজ কম থাকার কারণে আপনি রেকর্ড করতে পারবেন না। রেকর্ডিং শুরু করতে, আপনার ডিভাইসে জায়গা খালি করতে হবে।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> এমপি</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
 <translation id="4281620174117014503">মাঝারি রেজোলিউশন</translation>
 <translation id="428234092390943511">পৃষ্ঠা থাম্বনেল</translation>
-<translation id="4329152592498422850">চৌকো ফটো তুলতে মোড পাল্টান</translation>
 <translation id="4340659173795395806">আপনি এখন মাল্টি-পেজ পিডিএফ তৈরি করতে পারবেন</translation>
 <translation id="4383571725254449280">প্রিন্ট পারফর্ম্যান্স লগ</translation>
 <translation id="4445542136948522167">ফটো তোলা বন্ধ করুন</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> মেগা পিক্সেল</translation>
 <translation id="4570032796877367747">সামনের ক্যামেরা</translation>
 <translation id="4598556348158889687">সঞ্চয়স্থান ব্যবস্থাপনা</translation>
 <translation id="4620818268515773682">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন বন্ধ আছে</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Camera অ্যাপে আপনার মতামত দেওয়ার জন্য ধন্যবাদ।
 
 যদি আপনি কোনও ছবি বা ভিডিওর কোয়ালিটির ব্যাপারে মতামত জানাতে চান, তাহলে উদাহরণস্বরূপ একটি ফটো বা ভিডিও এখানে অ্যাটাচ করুন এবং আমাদের জানান সেটিতে কোন বিষয়টি আপনার খারাপ লেগেছে। (যেমন, ফটোতে পর্যাপ্ত আলোর অভাব রয়েছে বা যার ফটো তোলা হয়েছে, তাকে ফোকাসে রেখে ফটোটি তোলা হয়নি।)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> মেগা পিক্সেল</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6617916774429601017">সমস্ত রেজোলিউশন দেখান</translation>
 <translation id="6631515515009660915">মিরর করার ফিচার বন্ধ করুন</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">সব রিসেট করুন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="698156982839284926">৩ সেকেন্ড</translation>
-<translation id="712848772518857951">আপনি কি সত্যিই <ph name="COUNT" />টি আইটেম সরিয়ে ফেলতে চান?</translation>
 <translation id="7134221860976209830">১০ সেকেন্ডের টাইমার</translation>
 <translation id="7191890674911603392">রেকর্ডের ধরন</translation>
 <translation id="7243947652761655814">ভিডিও রেজোলিউশন</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">ফটো মোডে পাল্টান</translation>
 <translation id="8167081290930651932">ফটো ফর্ম্যাটে সেভ করুন</translation>
 <translation id="8239780215768881278">ভিডিও স্ন্যাপশট নিন</translation>
-<translation id="8261506727792406068">মুছুন</translation>
 <translation id="8425673304802773841">নীচের দিকে টিল্ট করুন</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন চালু আছে</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>

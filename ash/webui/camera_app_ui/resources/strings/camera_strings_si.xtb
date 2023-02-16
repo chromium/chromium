@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">සබැඳිය අනාවරණය කර ගන්නා ලදි. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">පිටුව <ph name="PAGE_NUMBER" /> මකන ලදි</translation>
 <translation id="1258009455399840361">දක්ෂිණාවර්තව අංශක 90ක් කරකවන්න</translation>
-<translation id="1276998909102132017">ගැලරි රූප</translation>
 <translation id="1300209025925956156">ඔබගේ ලේඛනය ස්කෑන් කරන්න</translation>
 <translation id="1309250603447638106">ලේඛන ස්කෑන් කිරීම සඳහා යාවත්කාලීන බාගැනීම</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ප්‍රවේශ වීමට සෙවීම + වම් ඊතලය.</translation>
 <translation id="1417314334557041815">පිටුව සංස්කරණය කරන්න <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> පේනුගත කිරීම ඉවත් කර ඇත.</translation>
 <translation id="1473110567575736769">තත්පර 3 කාල ගණකය</translation>
 <translation id="148783771699678004">ඉහළ දකුණු දිශාවට ගෙන යමින්</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">අතිරේක පිටුව ස්කෑන් කරන්න</translation>
 <translation id="1851169887664797861">අතිරේක කැමරා පාලන ලබා ගත හැකිය</translation>
 <translation id="1851616744363735765">විරාම කළා</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> නිර්යාත කල නොහැක</translation>
 <translation id="1899697626337024495">ඡායාරූප විභේදනය</translation>
 <translation id="1925845977604399247">ගැලරියට යන්න</translation>
 <translation id="199526504800285197">පටිගත කිරීම නතර කර ඇත</translation>
 <translation id="1995951722691075581">අඩු උපාංග ගබඩා ඉඩක් නිසා ඔබේ පටිගත කිරීම නතර විය. තවත් වීඩියෝ පටිගත කිරීමට, ඔබට ඔබේ උපාංගයෙහි ඉඩ නිදහස් කර ගැනීමට අවශ්‍ය වේ.</translation>
-<translation id="2022953316617983419">QR කේතය</translation>
 <translation id="2036868001356139588">මුහූර්තක කාල සීමාව</translation>
 <translation id="2050339315714019657">සිරස්</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ක්‍රියාත්මකයි</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR කේතය</translation>
 <translation id="2244252133441425811">වීඩියෝ FPS තෝරකය සබල කරන්න</translation>
 <translation id="2271433936731426666">පූර්ණ තරමේ වීඩියෝ සැණ රුව සබල කරන්න</translation>
-<translation id="229579744168541441">තැටියට නිර්යාත කරන්න</translation>
 <translation id="2320741269052147773">වමට පෑන් කරන්න</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
 <translation id="2501853267655415902">පටිගත කිරීම නැවතුණි</translation>
-<translation id="2501953888035679275">ඔබේ කැමරාව මඟින් ඡායාරූප ගන්න, වීඩියෝ පටිගත කරන්න.</translation>
 <translation id="2517472476991765520">ස්කෑන් කරන්න</translation>
 <translation id="2549985041256363841">පටිගත කිරීම අරඹන්න</translation>
 <translation id="2577915835281444458">පටිගත කිරීම ඉක්මනින් නතර වනු ඇත. ඉඩ නිදහස් කර ගැනීමට උපාංග ආචයනය වෙත යන්න.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">දර්පණ පෙරදසුන</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> පේනුගත කර ඇත.</translation>
 <translation id="2904654629665923749">ලේඛන ස්කෑන් කිරීම තිබේ</translation>
-<translation id="2968794441791257519">කැමරාව සමඟින් ගත් ඡායාරූප සහ වීඩියෝ බාගැනීම් ෆෝල්ඩරයට ගෙන එනු ලැබේ. ඔබට ඒවාට ගොනු තුළ ප්‍රවේශ විය හැක.
-
-ආචයන අවසර සහිත යෙදුම්වලට ඔබේ ඡායාරූප සහ වීඩියෝවලට ප්‍රවේශය ලැබෙයි.</translation>
 <translation id="3067436040345934772">දකුණට පෑන් කරන්න</translation>
 <translation id="3081586908890909590">වීඩියෝව පටිගත කිරීමට මාරු වන්න</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">ජාලක වර්ගය</translation>
 <translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
 <translation id="3240426699337459095">සබැඳිය පිටපත් කරන ලදි</translation>
-<translation id="3259149966178251584">කැමරා විභේදනය</translation>
-<translation id="3305962767867348165">නිවැරදි කරන්න</translation>
 <translation id="3354465018370944241">ඡායාරූප සැකසීම්</translation>
 <translation id="3411958449466169012">කාලගණකය ක්‍රියාවිරහිතයි</translation>
 <translation id="3448774564454087943">වීඩියෝව ඉතා කෙටි බැවින් සුරකිනු නොලැබේ</translation>
 <translation id="346539236881580388">නැවත ගන්න</translation>
 <translation id="3517926952904427380">ප්‍රතිමූර්ති ඡායාරූප ගත නොහැක</translation>
 <translation id="3566302376254083266">ඉහළ වම් දිශාවට ගෙන යමින්</translation>
-<translation id="3569311554794739032">ඔබට සැබැවින්ම <ph name="FILE" /> ඉවත් කිරීමට අවශ්‍යද?</translation>
 <translation id="3573890771273113519">ස්කෑන් කිරීමේ ප්‍රකාරයට මාරු වන්න</translation>
 <translation id="3583444040776960729">ලේඛනය පහළ වම් කෙළවර</translation>
 <translation id="3789724198583203151">වාමාවර්තව අංශක 90ක් කරකවන්න</translation>
 <translation id="3810838688059735925">වීඩියෝ</translation>
-<translation id="3838931309141338733">තීරු කේතය ස්කෑන් කරන්න</translation>
 <translation id="3892148308691398805">පෙළ පිටපත් කරන්න</translation>
 <translation id="4060608699153044055">අඩු උපාංග ආචයන ඉඩ නිසා ඔබට පටිගත කළ නොහැක. පටිගත කිරීම ආරම්භ කිරීමට, ඔබට ඔබේ උපාංගයේ ඉඩ නිදහස් කර ගැනීමට අවශ්‍ය වේ.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">ලින්ක් ලිපිනය පිටපත් කරන්න</translation>
 <translation id="4281620174117014503">මධ්‍යම විභේදනය</translation>
 <translation id="428234092390943511">පිටුවේ සිඟිති රුව</translation>
-<translation id="4329152592498422850">කොටු ඡායාරූපය ලබා ගැනීමට මාරු වන්න</translation>
 <translation id="4340659173795395806">ඔබට දැන් බහු පිටු PDF තැනීමට හැක</translation>
 <translation id="4383571725254449280">මුද්‍රණ කාර්ය සාධන සටහන්</translation>
 <translation id="4445542136948522167">ඡායාරූප ගැනීම නවත්වන්න</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) මෙගා පික්සල් <ph name="MEGAPIXEL" /></translation>
 <translation id="4570032796877367747">ඉදිරිපස කැමරාව</translation>
 <translation id="4598556348158889687">ගබඩාව කළමනාකරණය</translation>
 <translation id="4620818268515773682">මයික්‍රෆෝනය නිහඬ කිරීම ටොගල කරන්න නිහඬ කිරීම ක්‍රියාවිරහිතයි</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">කැමරා යෙදුම සඳහා ප්‍රතිපෝෂණය ලබා දීම ගැන ස්තුතියි.
 
 ඔබගේ ප්‍රතිපෝෂණය රූපයේ හෝ වීඩියෝවල ගුණාත්මකභාවය පිළිබඳ නම්, කරුණාකර නියැදි ඡායාරූපයක් හෝ වීඩියෝවක් අමුණා වැරදි දේ විස්තර කරන්න. (උදාහරණයක් ලෙස, ඡායාරූපය අඳුරු හෝ විෂය නාභිගත නොවේ.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) මෙගා පික්සල් <ph name="MEGAPIXEL" /></translation>
 <translation id="6527303717912515753">බෙදාගන්න</translation>
 <translation id="6617916774429601017">සියලු විභේදන පෙන්වන්න</translation>
 <translation id="6631515515009660915">දර්පණය ක්‍රියාවිරහිතයි</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">සියල්ල යළි සකසන්න</translation>
 <translation id="6965382102122355670">හරි</translation>
 <translation id="698156982839284926">තත්පර 3ක්</translation>
-<translation id="712848772518857951">ඔබට සැබැවින්ම අයිතම <ph name="COUNT" />ක් ඉවත් කිරීමට අවශ්‍යද?</translation>
 <translation id="7134221860976209830">තත්පර 10 කාල ගණකය</translation>
 <translation id="7191890674911603392">පටිගත කිරීමේ වර්ගය</translation>
 <translation id="7243947652761655814">වීඩියෝ විභේදනය</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">ඡායාරූපය ගැනීමට මාරු වන්න</translation>
 <translation id="8167081290930651932">ඡායාරූපයක් ලෙස සුරකින්න</translation>
 <translation id="8239780215768881278">වීඩියෝ සැණ රුවක් ගන්න</translation>
-<translation id="8261506727792406068">මකන්න</translation>
 <translation id="8425673304802773841">පහළට ඇල කරන්න</translation>
 <translation id="8428213095426709021">සැකසුම්</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">මයික්‍රෆෝනය නිහඬ කිරීම ටොගල කරන්න නිහඬ කිරීම ක්‍රියාත්මකයි</translation>
 <translation id="8712637175834984815">එය ලැබුණා</translation>
 <translation id="8730621377337864115">අවසන්</translation>

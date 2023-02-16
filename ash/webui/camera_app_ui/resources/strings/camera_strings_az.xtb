@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Keçid aşkarlanıb. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Səhifə <ph name="PAGE_NUMBER" /> silindi</translation>
 <translation id="1258009455399840361">Saat əqrəbi istiqamətində 90 dərəcə fırladın</translation>
-<translation id="1276998909102132017">Qalereya şəkilləri</translation>
 <translation id="1300209025925956156">Sənədinizi skanlayın</translation>
 <translation id="1309250603447638106">Sənədin skan edilməsi üçün güncəlləmələr endirilir</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Daxil olmaq üçün Axtarış + Sol ox.</translation>
 <translation id="1417314334557041815">Bu səhifəni redaktə edin: <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Çap edin</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> kabeli çıxarılıb.</translation>
 <translation id="1473110567575736769">3 saniyəlik taymer</translation>
 <translation id="148783771699678004">Yuxarı sağ tərəfə daşınır</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Əlavə səhifəni skan edin</translation>
 <translation id="1851169887664797861">Əlavə kamera nizamlayıcıları əlçatandır</translation>
 <translation id="1851616744363735765">DURDURULUB</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> faylını eksport etmək mümkün deyil</translation>
 <translation id="1899697626337024495">Fotonun ayırdetmə dəqiqliyi</translation>
 <translation id="1925845977604399247">Qalereyaya keçin</translation>
 <translation id="199526504800285197">Qeydə alma dayandırıldı</translation>
 <translation id="1995951722691075581">Cihaz yaddaşında yer az olduğuna görə qeydə alma dayandırıldı. Daha çox video qeydə almaq üçün cihazınızda yer boşaltmalısınız.</translation>
-<translation id="2022953316617983419">QR kodu</translation>
 <translation id="2036868001356139588">Taymer müddəti</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktivdir</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="2244252133441425811">Video FPS seçicisini aktiv edin</translation>
 <translation id="2271433936731426666">Tam ölçülü video snepşotunu aktivləşdirin</translation>
-<translation id="229579744168541441">Diskə eksport edin</translation>
 <translation id="2320741269052147773">Solu görüntüləyin</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
 <translation id="2501853267655415902">Çəkim dayandırılıb</translation>
-<translation id="2501953888035679275">Kameranız ilə foto və video çəkin.</translation>
 <translation id="2517472476991765520">Skan edin</translation>
 <translation id="2549985041256363841">Çəkməyə başlayın</translation>
 <translation id="2577915835281444458">Qeydə alma tezliklə dayandırılacaq. Yer boşaltmaq üçün cihaz yaddaşına keçin.</translation>
@@ -56,27 +50,21 @@
 <translation id="28682968802727151">Önizləməni əks etdirin</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> kabeli birləşdirilib.</translation>
 <translation id="2904654629665923749">Sənəd skanı əlçatandır</translation>
-<translation id="2968794441791257519">Kamera ilə çəkilmiş foto və videolar Endirmələr qovluğuna köçürüləcək. Onlara Fayllardan daxil ola bilərsiniz. Yaddaş icazəsi olan tətbiqlər foto və videolara daxil ola biləcək.</translation>
 <translation id="3067436040345934772">Sağı görüntüləyin</translation>
 <translation id="3081586908890909590">"Video çəkin" rejiminə keçin</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Cədvəl növü</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link kopyalandı</translation>
-<translation id="3259149966178251584">Kameranın ayırdetmə dəqiqliyi</translation>
-<translation id="3305962767867348165">Düzəldin</translation>
 <translation id="3354465018370944241">Foto ayarları</translation>
 <translation id="3411958449466169012">Taymer deaktivdir</translation>
 <translation id="3448774564454087943">Çox qısa olduğuna görə video saxlanılmadı</translation>
 <translation id="346539236881580388">Yenidən çəkin</translation>
 <translation id="3517926952904427380">Portret fotosu çəkmək alınmadı</translation>
 <translation id="3566302376254083266">Yuxarı sol tərəfə daşınır</translation>
-<translation id="3569311554794739032"><ph name="FILE" /> faylını silmək istəyirsiniz?</translation>
 <translation id="3573890771273113519">Skan rejiminə keçin</translation>
 <translation id="3583444040776960729">Sənədin aşağı sol küncü</translation>
 <translation id="3789724198583203151">Saat əqrəbinin əksi istiqamətində 90 dərəcə fırladın</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Barkodu skan edin</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
 <translation id="4060608699153044055">Cihaz yaddaşında yer az olduğuna görə qeydə ala bilməzsiniz. Qeydə almağa başlamaq üçün cihazınızda yer boşaltmalısınız.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -86,11 +74,9 @@
 <translation id="4269820728363426813">Link ünvanını kopyalayın</translation>
 <translation id="4281620174117014503">Orta ayırdetmə dəqiqliyi</translation>
 <translation id="428234092390943511">Səhifə miniatürü</translation>
-<translation id="4329152592498422850">Kvadrat foto çəkmək üçün keçid edin</translation>
 <translation id="4340659173795395806">İndi çoxsəhifəli PDF yarada bilərsiniz</translation>
 <translation id="4383571725254449280">Performans jurnallarını çap edin</translation>
 <translation id="4445542136948522167">Foto çəkməyi dayandırın</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> meqa piksel</translation>
 <translation id="4570032796877367747">Ön kamera</translation>
 <translation id="4598556348158889687">Yaddaş idarəetməsi</translation>
 <translation id="4620818268515773682">Mikrofonu səssisə keçirin. Susdurma düyməsi deaktivdir</translation>
@@ -131,7 +117,6 @@
 <translation id="6353688143752491039">Kamera tətbiqi barədə rəy bildirdiyinizə görə təşəkkür edirik.
 
 Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və ya video əlavə edərək problemi təsvir edin. (Məsələn, foto çox qaranlıqdır və ya subyekt fokusda deyil.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> meqa piksel</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
 <translation id="6617916774429601017">Bütün ayırdetmə dəqiqliklərini göstərin</translation>
 <translation id="6631515515009660915">Əksetmə deaktivdir</translation>
@@ -143,7 +128,6 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="695140971690006676">Hamısını sıfırlayın</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 saniyə</translation>
-<translation id="712848772518857951"><ph name="COUNT" /> elementi silmək istəyirsiniz?</translation>
 <translation id="7134221860976209830">10 saniyəlik taymer</translation>
 <translation id="7191890674911603392">Qeydəalma növü</translation>
 <translation id="7243947652761655814">Videonun ayırdetmə dəqiqliyi</translation>
@@ -169,11 +153,9 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="8145038249676204903">"Foto çəkin" rejiminə keçin</translation>
 <translation id="8167081290930651932">Foto olaraq yadda saxlayın</translation>
 <translation id="8239780215768881278">Video snepşotu çəkin</translation>
-<translation id="8261506727792406068">Silin</translation>
 <translation id="8425673304802773841">Aşağı əyin</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Mikrofonu səssisə keçirin. Susdurma düyməsi aktivdir</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8730621377337864115">Tamamdır</translation>

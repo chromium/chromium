@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Oppdaget link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Side <ph name="PAGE_NUMBER" /> er slettet</translation>
 <translation id="1258009455399840361">Rotér 90 grader med klokken</translation>
-<translation id="1276998909102132017">Galleribilder</translation>
 <translation id="1300209025925956156">Skann dokumentet</translation>
 <translation id="1309250603447638106">Laster ned oppdateringer for dokumentskanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Trykk på søketasten + venstrepil for å se dem.</translation>
 <translation id="1417314334557041815">Rediger side <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er koblet fra.</translation>
 <translation id="1473110567575736769">Tre sekunders nedtelling</translation>
 <translation id="148783771699678004">Beveger seg oppover mot høyre</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skann en side til</translation>
 <translation id="1851169887664797861">Flere kamerakontroller er tilgjengelige</translation>
 <translation id="1851616744363735765">SATT PÅ PAUSE</translation>
-<translation id="1862930711583847113">Kan ikke eksportere <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Bildeoppløsning</translation>
 <translation id="1925845977604399247">Gå til galleriet</translation>
 <translation id="199526504800285197">Opptaket er stanset</translation>
 <translation id="1995951722691075581">Opptaket er stanset på grunn av lite lagringsplass på enheten. For å ta opp flere videoer må du frigjøre plass på enheten.</translation>
-<translation id="2022953316617983419">QR-kode</translation>
 <translation id="2036868001356139588">Nedtellervarighet</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er aktivt</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2244252133441425811">Slå på velger for videobilder per sekund</translation>
 <translation id="2271433936731426666">Slå på full størrelse for øyeblikksbilder fra videoer</translation>
-<translation id="229579744168541441">Eksportér til disk</translation>
 <translation id="2320741269052147773">Panorer til venstre</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
 <translation id="2501853267655415902">Opptaket er stoppet</translation>
-<translation id="2501953888035679275">Ta bilder og ta opp video med kameraet.</translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2549985041256363841">Start opptak</translation>
 <translation id="2577915835281444458">Opptaket stopper snart. Gå til enhetslagringen for å frigjøre plass.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Forhåndsvisning av speiling</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er koblet til.</translation>
 <translation id="2904654629665923749">Dokumentskanning er tilgjengelig</translation>
-<translation id="2968794441791257519">Bilder og videoer som er tatt med kameraet, flyttes til mappen Nedlastinger. Du har tilgang til dem i Filer.
-
-Apper med lagringstillatelser har tilgang til bildene og videoene dine.</translation>
 <translation id="3067436040345934772">Panorer til høyre</translation>
 <translation id="3081586908890909590">Bytt til video</translation>
 <translation id="313467653172006084">30 bilder per sekund</translation>
-<translation id="3183731565330012717">Rutenettype</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Linken er kopiert</translation>
-<translation id="3259149966178251584">Kameraoppløsning</translation>
-<translation id="3305962767867348165">Fiks</translation>
 <translation id="3354465018370944241">Bildeinnstillinger</translation>
 <translation id="3411958449466169012">Nedtelling av</translation>
 <translation id="3448774564454087943">Videoen blir ikke lagret, siden den er for kort</translation>
 <translation id="346539236881580388">Ta på nytt</translation>
 <translation id="3517926952904427380">Kunne ikke ta bilde i stående format</translation>
 <translation id="3566302376254083266">Beveger seg oppover mot venstre</translation>
-<translation id="3569311554794739032">Er du sikker på at du vil fjerne <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Bytt til skannemodus</translation>
 <translation id="3583444040776960729">Dokumentets nedre venstre hjørne</translation>
 <translation id="3789724198583203151">Rotér 90 grader mot klokken</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Skann strekkoden</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
 <translation id="4060608699153044055">Du kan ikke ta opp på grunn av lite lagringsplass på enheten. For å starte opptaket må du frigjøre plass på enheten.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
 <translation id="4281620174117014503">Middels oppløsning</translation>
 <translation id="428234092390943511">Miniatyrbilde av siden</translation>
-<translation id="4329152592498422850">Bytt til kvadratisk bilde</translation>
 <translation id="4340659173795395806">Nå kan du lage flersiders PDF-filer</translation>
 <translation id="4383571725254449280">Logger over utskriftsytelse</translation>
 <translation id="4445542136948522167">Slutt å ta bilde</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Fremre kamera</translation>
 <translation id="4598556348158889687">Lagringsbehandling</translation>
 <translation id="4620818268515773682">Slå av/på mikrofonlyden. Lyden er på</translation>
@@ -133,7 +117,6 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="6353688143752491039">Takk for tilbakemeldingen om Kamera-appen.
 
 Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge ved et eksempelbilde eller en eksempelvideo og forklare hva som er galt. (Eksempel: Bildet er for mørkt, eller motivet er ute av fokus.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6617916774429601017">Vis alle oppløsninger</translation>
 <translation id="6631515515009660915">Speiling av</translation>
@@ -145,7 +128,6 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="695140971690006676">Tilbakestill alle</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekunder</translation>
-<translation id="712848772518857951">Er du sikker på at du vil fjerne de <ph name="COUNT" /> elementene?</translation>
 <translation id="7134221860976209830">Ti sekunders nedtelling</translation>
 <translation id="7191890674911603392">Posttype</translation>
 <translation id="7243947652761655814">Videooppløsning</translation>
@@ -171,11 +153,9 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="8145038249676204903">Bytt til foto</translation>
 <translation id="8167081290930651932">Lagre som bilde</translation>
 <translation id="8239780215768881278">Ta øyeblikksbilde av videoen</translation>
-<translation id="8261506727792406068">Slett</translation>
 <translation id="8425673304802773841">Vipp ned</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Slå av/på mikrofonlyden. Lyden er kuttet</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8730621377337864115">Ferdig</translation>

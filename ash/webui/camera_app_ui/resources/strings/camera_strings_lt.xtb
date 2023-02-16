@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Aptikta nuoroda. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> puslapis ištrintas</translation>
 <translation id="1258009455399840361">Pasukti 90 laipsnių pagal laikrodžio rodyklę</translation>
-<translation id="1276998909102132017">Galerijos vaizdai</translation>
 <translation id="1300209025925956156">Nuskaitykite dokumentą</translation>
 <translation id="1309250603447638106">Atsisiunčiami dokumentų nuskaitymo naujiniai</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Naudokite paieškos ir rodyklės kairėn klavišus, kad juos pasiektumėte.</translation>
 <translation id="1417314334557041815">Redaguoti <ph name="INDEX" /> psl.</translation>
-<translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1467231725790366244">Kamera „<ph name="CAMERA" />“ atjungta.</translation>
 <translation id="1473110567575736769">3 sek. laikmatis</translation>
 <translation id="148783771699678004">Perkeliama aukštyn, dešinėn</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Nuskaityti papildomą puslapį</translation>
 <translation id="1851169887664797861">Pasiekiami papildomi fotoaparato valdikliai</translation>
 <translation id="1851616744363735765">PRISTABDYTA</translation>
-<translation id="1862930711583847113">Nepavyko eksportuoti „<ph name="FILE" />“</translation>
 <translation id="1899697626337024495">Nuotraukos skyra</translation>
 <translation id="1925845977604399247">Eiti į galeriją</translation>
 <translation id="199526504800285197">Įrašymas sustabdytas</translation>
 <translation id="1995951722691075581">Įrašymas sustabdytas, nes per mažai vietos įrenginio saugykloje. Jei norite įrašyti daugiau vaizdo įrašų, turite atlaisvinti vietos įrenginyje.</translation>
-<translation id="2022953316617983419">QR kodas</translation>
 <translation id="2036868001356139588">Laikmačio trukmė</translation>
 <translation id="2050339315714019657">Stačias</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktyvus</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR kodas</translation>
 <translation id="2244252133441425811">Įgalinti vaizdo įrašų KPS rinkiklį</translation>
 <translation id="2271433936731426666">Įgalinti viso dydžio momentinę vaizdo įrašo nuotrauką</translation>
-<translation id="229579744168541441">Eksportuoti į diską</translation>
 <translation id="2320741269052147773">Pastumti kairėn</translation>
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="2501853267655415902">Įrašas sustabdytas</translation>
-<translation id="2501953888035679275">Fotografuokite ir filmuokite naudodami fotoaparatą.</translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2549985041256363841">Pradėti įrašymą</translation>
 <translation id="2577915835281444458">Įrašymas netrukus bus sustabdytas. Eikite į įrenginio saugyklą, kad atlaisvintumėte vietos.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Veidrodinio vaizdo peržiūra</translation>
 <translation id="2879583609344924966">Kamera „<ph name="CAMERA" />“ prijungta.</translation>
 <translation id="2904654629665923749">Galimas dokumentų nuskaitymas</translation>
-<translation id="2968794441791257519">Nuotraukos ir vaizdo įrašai, sukurti naudojant fotoaparatą, bus perkelti į aplanką „Atsisiuntimai“. Juos galite pasiekti Failų programoje.
-
-        Programos su saugyklos leidimais galės pasiekti jūsų nuotraukas ir vaizdo įrašus.</translation>
 <translation id="3067436040345934772">Pastumti dešinėn</translation>
 <translation id="3081586908890909590">Perjungti į filmavimo režimą</translation>
 <translation id="313467653172006084">30 KPS</translation>
-<translation id="3183731565330012717">Tinklelio tipas</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3240426699337459095">Nuoroda nukopijuota</translation>
-<translation id="3259149966178251584">Fotoaparato skyra</translation>
-<translation id="3305962767867348165">Taisyti</translation>
 <translation id="3354465018370944241">Nuotraukų nustatymai</translation>
 <translation id="3411958449466169012">Laikmatis išjungtas</translation>
 <translation id="3448774564454087943">Vaizdo įrašas neišsaugotas, nes yra per trumpas</translation>
 <translation id="346539236881580388">Perfotografuoti</translation>
 <translation id="3517926952904427380">Nepavyko nufotografuoti portretinės nuotraukos</translation>
 <translation id="3566302376254083266">Perkeliama aukštyn, kairėn</translation>
-<translation id="3569311554794739032">Ar tikrai norite pašalinti „<ph name="FILE" />“?</translation>
 <translation id="3573890771273113519">Perjungti į nuskaitymo režimą</translation>
 <translation id="3583444040776960729">Apatinis kairysis dokumento kampas</translation>
 <translation id="3789724198583203151">Pasukti 90 laipsnių prieš laikrodžio rodyklę</translation>
 <translation id="3810838688059735925">Vaizdo</translation>
-<translation id="3838931309141338733">Nuskaityti brūkšninį kodą</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
 <translation id="4060608699153044055">Negalite įrašyti, nes per mažai vietos įrenginio saugykloje. Jei norite pradėti įrašymą, turite atlaisvinti vietos įrenginyje.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopijuoti nuorodos adresą</translation>
 <translation id="4281620174117014503">Vidutinė skyra</translation>
 <translation id="428234092390943511">Puslapio miniatiūra</translation>
-<translation id="4329152592498422850">Perjungti į kvadratinės nuotraukos režimą</translation>
 <translation id="4340659173795395806">Dabar galite kurti kelių puslapių PDF</translation>
 <translation id="4383571725254449280">Spausdinti našumo žurnalus</translation>
 <translation id="4445542136948522167">Sustabdyti fotografavimą</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiks.</translation>
 <translation id="4570032796877367747">Priekinis fotoaparatas</translation>
 <translation id="4598556348158889687">Saugyklos tvarkymas</translation>
 <translation id="4620818268515773682">Perjungti mikrofono nutildymą. Nutildymas išjungtas</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Dėkojame, kad pateikiate atsiliepimą apie Fotoaparato programą.
 
 Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotraukos ar vaizdo įrašo pavyzdį ir apibūdinkite, kad negerai. (Pavyzdžiui, nuotrauka pernelyg tamsi arba objektas nesufokusuotas.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiks.</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6617916774429601017">Rodyti visas skyras</translation>
 <translation id="6631515515009660915">Veidrodinis vaizdas išjungtas</translation>
@@ -145,7 +128,6 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="695140971690006676">Nustatyti viską iš naujo</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="698156982839284926">3 sekundės</translation>
-<translation id="712848772518857951">Ar tikrai norite pašalinti <ph name="COUNT" /> element.?</translation>
 <translation id="7134221860976209830">10 sek. laikmatis</translation>
 <translation id="7191890674911603392">Įrašo tipas</translation>
 <translation id="7243947652761655814">Vaizdo įrašo skyra</translation>
@@ -171,11 +153,9 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8145038249676204903">Perjungti į fotografavimo režimą</translation>
 <translation id="8167081290930651932">Išsaugoti kaip nuotrauką</translation>
 <translation id="8239780215768881278">Užfiksuoti momentinę vaizdo įrašo nuotrauką</translation>
-<translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8425673304802773841">Nukreipti žemyn</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8629662593426079630">360 taškų</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Perjungti mikrofono nutildymą. Nutildymas įjungtas</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8730621377337864115">Atlikta</translation>

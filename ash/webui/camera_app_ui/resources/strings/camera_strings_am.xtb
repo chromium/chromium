@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">አገናኝ ተገኝቷል። <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">ገጽ <ph name="PAGE_NUMBER" /> ተሰርዟል</translation>
 <translation id="1258009455399840361">90 ዲግሪ በሰዓት አቅጣጫ አሽከርክር</translation>
-<translation id="1276998909102132017">የማዕከለ-ሥዕላት ምስሎች</translation>
 <translation id="1300209025925956156">ሰነድዎን ይቃኙ</translation>
 <translation id="1309250603447638106">ለሰነድ ቅኝት ዝማኔዎችን በማውረድ ላይ</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />። ለመድረስ ፍለጋ + የግራ ቀስት።</translation>
 <translation id="1417314334557041815">ገጽ <ph name="INDEX" />ን አርትዕ</translation>
-<translation id="1430915738399379752">አትም</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ተነቅሏል።</translation>
 <translation id="1473110567575736769">3 ሰከንዶች መቁጠሪያ</translation>
 <translation id="148783771699678004">ወደ ላይ-ቀኝ አቅጣጫ በመንቀሳቀስ ላይ</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">ተጨማሪ ገጽ ቃኝ</translation>
 <translation id="1851169887664797861">ተጨማሪ የካሜራ መቆጣጠሪያዎች ይገኛሉ</translation>
 <translation id="1851616744363735765">ላፍታ ቆሟል</translation>
-<translation id="1862930711583847113"><ph name="FILE" />ን ወደ ውጭ መላክ አልተቻለም</translation>
 <translation id="1899697626337024495">የፎቶ ምስል ጥራት</translation>
 <translation id="1925845977604399247">ወደ ማዕከለ-ሥዕላት ሂድ</translation>
 <translation id="199526504800285197">ቀረጻ ቆሟል</translation>
 <translation id="1995951722691075581">በዝቅተኛ የመሣሪያ የማከማቻ ቦታ ምክንያት የእርስዎ ቀረጻ ቆሟል። ተጨማሪ ቪድዮዎችን ለመቅረጽ በመሣሪያዎ ላይ ቦታ ማስለቀቅ አለብዎት።</translation>
-<translation id="2022953316617983419">QR ኮድ</translation>
 <translation id="2036868001356139588">የሰዓት ቆጣሪ ቆይታ ጊዜ</translation>
 <translation id="2050339315714019657">በቁመት</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ገቢር ነው</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">የQR ኮድ</translation>
 <translation id="2244252133441425811">ቪድዮ ክ/ሴ መራጭን አንቃ</translation>
 <translation id="2271433936731426666">ባለሙሉ መጠን የቪዲዮ ቅጽበተ-ፎቶን አንቃ</translation>
-<translation id="229579744168541441">ወደ ዲስክ ላክ</translation>
 <translation id="2320741269052147773">ወደ ግራ ያንፏቅቁ</translation>
 <translation id="2501278716633472235">ወደ ኋላ ተመለስ</translation>
 <translation id="2501853267655415902">ቀረጻ ቆሟል</translation>
-<translation id="2501953888035679275">በካሜራዎ ፎቶዎችን ያንሱ እና ቪዲዮዎችን ይቅረጹ።</translation>
 <translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2549985041256363841">መቅረጽ ጀምር</translation>
 <translation id="2577915835281444458">መቅዳት በቅርቡ ያቆማል። ቦታ ነፃ ለማድረግ ወደ መሣሪያ ማከማቻ ይሂዱ።</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">የመስታወት ቅድመ-እይታ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ተሰክቷል።</translation>
 <translation id="2904654629665923749">የሰነድ ቅኝት ይገኛል</translation>
-<translation id="2968794441791257519">በካሜራው የተነሱ ፎቶዎች ወይም የተቀረጹ ቪዲዮዎች ወደ የውርዶች አቃፊው ይወሰዳሉ። በፋይሎች ውስጥ ሊደርሱባቸው ይችላሉ።
-
-        የማከማቻ ፈቃዶች ያላቸው መተግበሪያዎች የእርስዎ ፎቶዎች እና ቪዲዮዎች መዳረሻ ይኖራቸዋል።</translation>
 <translation id="3067436040345934772">ወደ ቀኝ ያንፏቅቁ</translation>
 <translation id="3081586908890909590">ቪዲዮ ለመቅረጽ ቀይር</translation>
 <translation id="313467653172006084">60 ክ/ሴ</translation>
-<translation id="3183731565330012717">የፍርግርግ ዓይነት</translation>
 <translation id="3227137524299004712">ማይክሮፎን</translation>
 <translation id="3240426699337459095">አገናኝ ተቀድቷል</translation>
-<translation id="3259149966178251584">የካሜራ ምስል ጥራት</translation>
-<translation id="3305962767867348165">አስተካክል</translation>
 <translation id="3354465018370944241">የፎቶ ቅንብሮች</translation>
 <translation id="3411958449466169012">ሰዓት ቆጣሪ ጠፍቷል</translation>
 <translation id="3448774564454087943">ቪዲዮ በጣም አጭር ስለሆነ አልተቀመጠም</translation>
 <translation id="346539236881580388">ዳግም አንሳ</translation>
 <translation id="3517926952904427380">የቁም ፎቶን ማንሳት አልተቻለም</translation>
 <translation id="3566302376254083266">ወደ ላይ-ግራ አቅጣጫ በመንቀሳቀስ ላይ</translation>
-<translation id="3569311554794739032">እርግጠኛ ነዎት <ph name="FILE" />ን ማስወገድ ይፈልጋሉ?</translation>
 <translation id="3573890771273113519">ወደ የቅኝት ሁነታ ቀይር</translation>
 <translation id="3583444040776960729">የሰነድ ከታች-ግራ ጥግ</translation>
 <translation id="3789724198583203151">90 ዲግሪ በሰዓት ተቃራኒ አቅጣጫ አሽከርክር</translation>
 <translation id="3810838688059735925">ቪዲዮ</translation>
-<translation id="3838931309141338733">የአሞሌ ኮድ ይቃኙ</translation>
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
 <translation id="4060608699153044055">በዝቅተኛ የመሣሪያ የማከማቻ ቦታ ምክንያት መቅረጽ አይችሉም። ቀረጻ ለመጀመር መሣሪያዎ ላይ ቦታ ማስለቀቅ አለብዎት።</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ሜፒ</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
 <translation id="4281620174117014503">መካከለኛ ጥራት</translation>
 <translation id="428234092390943511">የገጽ ጥፍር አከል</translation>
-<translation id="4329152592498422850">የካሬ ፎቶን ለማንሳት ይቀይሩ</translation>
 <translation id="4340659173795395806">አሁን ላይ ባለብዙ ገጽ PDFን መፍጠር ይችላሉ</translation>
 <translation id="4383571725254449280">የህትመት አፈጻጸም መዝገቦች</translation>
 <translation id="4445542136948522167">ፎቶን ማንሳት አቁም</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> ሜጋ ፒክሴል</translation>
 <translation id="4570032796877367747">የፊት ካሜራ</translation>
 <translation id="4598556348158889687">የማከማቻ አስተዳደር</translation>
 <translation id="4620818268515773682">የማይክሮፎን ድምጸ-ከል መቀያየሪያ ድምፅ-ከል ጠፍቷል</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">በካሜራ መተግበሪያ ላይ ግብረመልስ ስለሰጡ እናመሰግናለን።
 
 የእርስዎ ግብረመልስ ስለምስል ወይም ቪዲዮ ጥራት ከሆነ እባክዎ ናሙና ፎቶ ወይም ቪዲዮ ያያይዙ እና ምን ችግር እንዳለበት ያብራሩ። (ለምሳሌ፣ ፎቶ በጣም ጨለማ ነው ወይም የፎቶው ዋና አካል በትኩረት ላይ አይደለም።)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> ሜጋ ፒክሴል</translation>
 <translation id="6527303717912515753">አጋራ</translation>
 <translation id="6617916774429601017">ሁሉንም ጥራቶች አሳይ</translation>
 <translation id="6631515515009660915">መስታወት ጠፍቷል</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">ሁሉንም ዳግም አስጀምር</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="698156982839284926">3 ሰከንዶች</translation>
-<translation id="712848772518857951">እውን <ph name="COUNT" /> ንጥሎችን ማስወገድ ይፈልጋሉ?</translation>
 <translation id="7134221860976209830">10 ሰከንዶች መቁጠሪያ</translation>
 <translation id="7191890674911603392">የቀረጻ ዓይነት</translation>
 <translation id="7243947652761655814">የቪዲዮ ምስል ጥራት</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">ፎቶ ለማንሳት ይቀይሩ</translation>
 <translation id="8167081290930651932">እንደ ፎቶ አስቀምጥ</translation>
 <translation id="8239780215768881278">የቪዲዮ ቅፅበተ ፎቶን ያንሱ</translation>
-<translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8425673304802773841">ወደ ታች አጋድል</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">ኤችዲ <ph name="HEIGHT" />ፒ (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">የማይክሮፎን ድምጸ-ከል መቀያየሪያ ድምጸ-ከል በርቷል</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>

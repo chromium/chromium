@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Zaznana je bila povezava. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Stran <ph name="PAGE_NUMBER" /> je izbrisana</translation>
 <translation id="1258009455399840361">Zavrti za 90 stopinj v desno</translation>
-<translation id="1276998909102132017">Slike v galeriji</translation>
 <translation id="1300209025925956156">Optično branje dokumenta</translation>
 <translation id="1309250603447638106">Prenašanje posodobitev za optično branje dokumentov</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tipka za iskanja + puščica levo za dostop.</translation>
 <translation id="1417314334557041815">Uredi stran <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Natisni</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ni priključena.</translation>
 <translation id="1473110567575736769">3-sekundni časovnik</translation>
 <translation id="148783771699678004">Premikanje proti zgornjemu desnemu kotu</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Optično preberi dodatno stran</translation>
 <translation id="1851169887664797861">Na voljo so dodatni kontrolniki kamere.</translation>
 <translation id="1851616744363735765">ZAČASNO ZAUSTAVLJENO</translation>
-<translation id="1862930711583847113">Datoteke <ph name="FILE" /> ni mogoče izvoziti</translation>
 <translation id="1899697626337024495">Ločljivost fotografije</translation>
 <translation id="1925845977604399247">V galerijo</translation>
 <translation id="199526504800285197">Snemanje je ustavljeno</translation>
 <translation id="1995951722691075581">Snemanje se je ustavilo zaradi pomanjkanja prostora za shranjevanje v napravi. Če želite posneti več videoposnetkov, morate sprostiti prostor v napravi.</translation>
-<translation id="2022953316617983419">Koda QR</translation>
 <translation id="2036868001356139588">Trajanje časovnika</translation>
 <translation id="2050339315714019657">Pokončno</translation>
 <translation id="2064538373111010176">Fotoaparat <ph name="CAMERA" /> je aktiven</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Koda QR</translation>
 <translation id="2244252133441425811">Omogoči izbirnik števila sličic na sekundo za video</translation>
 <translation id="2271433936731426666">Omogoči povzetek videoposnetka v polni velikosti</translation>
-<translation id="229579744168541441">Izvoz na disk</translation>
 <translation id="2320741269052147773">Premakni v levo</translation>
 <translation id="2501278716633472235">Nazaj</translation>
 <translation id="2501853267655415902">Snemanje je ustavljeno</translation>
-<translation id="2501953888035679275">Fotografirajte in snemajte videoposnetke s fotoaparatom.</translation>
 <translation id="2517472476991765520">Optično preberi</translation>
 <translation id="2549985041256363841">Začetek snemanja</translation>
 <translation id="2577915835281444458">Snemanje bo kmalu ustavljeno. Odprite shrambo v napravi, da sprostite prostor.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Predogled zrcaljenja</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> je priključena.</translation>
 <translation id="2904654629665923749">Na voljo je optično branje dokumentov</translation>
-<translation id="2968794441791257519">Fotografije in videoposnetki, ki ste jih posneli s fotoaparatom, bodo premaknjeni v mapo Prenosi. Do njih lahko dostopate v aplikaciji Datoteke.
-
-        Aplikacije z dovoljenji za shrambo bodo imele dostop do fotografij in videoposnetkov.</translation>
 <translation id="3067436040345934772">Premakni v desno</translation>
 <translation id="3081586908890909590">Preklop na snemanje videa</translation>
 <translation id="313467653172006084">30 sličic/s</translation>
-<translation id="3183731565330012717">Vrsta mreže</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Povezava kopirana</translation>
-<translation id="3259149966178251584">Ločljivost fotoaparata</translation>
-<translation id="3305962767867348165">Popravi</translation>
 <translation id="3354465018370944241">Nastavitve fotografij</translation>
 <translation id="3411958449466169012">Časovnik izklopljen</translation>
 <translation id="3448774564454087943">Videoposnetek se ni shranil, ker je prekratek</translation>
 <translation id="346539236881580388">Znova posnemi</translation>
 <translation id="3517926952904427380">Portretne fotografije ni bilo mogoče posneti</translation>
 <translation id="3566302376254083266">Premikanje proti zgornjemu levemu kotu</translation>
-<translation id="3569311554794739032">Ali res želite odstraniti datoteko <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Preklop na način iskanja</translation>
 <translation id="3583444040776960729">Spodnji levi kot dokumenta</translation>
 <translation id="3789724198583203151">Zavrti za 90 stopinj v levo</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Optično branje črtne kode</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
 <translation id="4060608699153044055">Snemanje ni mogoče zaradi pomanjkanja prostora za shranjevanje v napravi. Če želite začeti snemati, morate sprostiti prostor v napravi.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> mio. slikovnih pik</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopiraj naslov povezave</translation>
 <translation id="4281620174117014503">Srednja ločljivost</translation>
 <translation id="428234092390943511">Sličica strani</translation>
-<translation id="4329152592498422850">Preklop na snemanje kvadratnih fotografij</translation>
 <translation id="4340659173795395806">Zdaj lahko ustvarite večstranski PDF.</translation>
 <translation id="4383571725254449280">Tiskanje dnevnikov delovanja</translation>
 <translation id="4445542136948522167">Ustavitev fotografiranja</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> mio. slikovnih pik</translation>
 <translation id="4570032796877367747">Sprednji fotoaparat</translation>
 <translation id="4598556348158889687">Upravljanje shrambe</translation>
 <translation id="4620818268515773682">Preklopite izklop zvoka. Izklop zvoka ni aktiven.</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Hvala za povratne informacije glede aplikacije Fotoaparat.
 
 Če so povratne informacije glede kakovosti slike ali videoposnetka, priložite vzorec fotografije ali videoposnetka ter opišite, kaj je narobe. (Primer: Fotografija je pretemna ali motiv ni izostren.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mio. slikovnih pik</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6617916774429601017">Prikaz vseh ločljivosti</translation>
 <translation id="6631515515009660915">Zrcaljenje izklopljeno</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">Ponastavi vse</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="698156982839284926">3 sekunde</translation>
-<translation id="712848772518857951">Ali res želite odstraniti toliko elementov: <ph name="COUNT" />?</translation>
 <translation id="7134221860976209830">10-sekundni časovnik</translation>
 <translation id="7191890674911603392">Vrsta zapisa</translation>
 <translation id="7243947652761655814">Ločljivost videoposnetka</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">Preklop na fotografiranje</translation>
 <translation id="8167081290930651932">Shrani kot fotografijo</translation>
 <translation id="8239780215768881278">Posnetek videa</translation>
-<translation id="8261506727792406068">Izbriši</translation>
 <translation id="8425673304802773841">Nagni navzdol</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Preklopite izklop zvoka. Izklop zvoka je aktiven.</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8730621377337864115">Končano</translation>

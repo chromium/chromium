@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">پیوند شناسایی شد. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">صفحه <ph name="PAGE_NUMBER" /> حذف شد</translation>
 <translation id="1258009455399840361">چرخش ۹۰ درجه ساعت‌گرد</translation>
-<translation id="1276998909102132017">تصاویر گالری</translation>
 <translation id="1300209025925956156">اسکن سند</translation>
 <translation id="1309250603447638106">درحال بارگیری به‌روزرسانی‌های مربوط به اسکن سند</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. برای دسترسی، «جستجو + جهت‌نمای چپ» را فشار دهید.</translation>
 <translation id="1417314334557041815">ویرایش صفحه <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">چاپ</translation>
 <translation id="1467231725790366244">اتصال <ph name="CAMERA" /> قطع شد.</translation>
 <translation id="1473110567575736769">زمان‌سنج ۳ ثانیه‌ای</translation>
 <translation id="148783771699678004">درحال انتقال به‌سمت راست بالا</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">اسکن صفحه دیگر</translation>
 <translation id="1851169887664797861">کنترل‌های بیشتر دوربین دردسترس است</translation>
 <translation id="1851616744363735765">موقتاً متوقف شد</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> صادر نشد</translation>
 <translation id="1899697626337024495">وضوح عکس</translation>
 <translation id="1925845977604399247">رفتن به «گالری»</translation>
 <translation id="199526504800285197">ضبط متوقف شده است</translation>
 <translation id="1995951722691075581">ضبط متوقف شد چون فضای ذخیره‌سازی دستگاه کافی نیست. برای ضبط ویدیوهای بیشتر، باید فضای دستگاهتان را خالی کنید.</translation>
-<translation id="2022953316617983419">رمزینه پاسخ‌سریع</translation>
 <translation id="2036868001356139588">مدت تایمر</translation>
 <translation id="2050339315714019657">عمودی</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> فعال شد</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
 <translation id="2244252133441425811">‏فعال کردن انتخابگر FPS ویدیو</translation>
 <translation id="2271433936731426666">فعال کردن عکس آنی از ویدیو با اندازه کامل</translation>
-<translation id="229579744168541441">صادر کردن به دیسک</translation>
 <translation id="2320741269052147773">حرکت دادن به چپ</translation>
 <translation id="2501278716633472235">بازگشت</translation>
 <translation id="2501853267655415902">ضبط متوقف شد</translation>
-<translation id="2501953888035679275">با دوربینتان عکس بگیرید و فیلم‌برداری کنید.</translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2549985041256363841">شروع ضبط</translation>
 <translation id="2577915835281444458">ضبط به‌زودی متوقف خواهد شد. برای آزاد کردن فضا به فضای ذخیره‌سازی دستگاه بروید.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">پیش‌نمایش بازتاب</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> متصل شد.</translation>
 <translation id="2904654629665923749">اسکن سند دردسترس است</translation>
-<translation id="2968794441791257519">‏عکس‌ها و ویدیوهایی که با دوربین گرفته شده است، به پوشه «بارگیری‌ها» منتقل خواهد شد. می‌توانید در Files به آن‌ها دسترسی داشته باشید.
-
-        برنامه‌هایی که مجوز فضای ذخیره‌سازی دارند، به عکس‌ها و ویدیوهایتان دسترسی خواهند داشت.</translation>
 <translation id="3067436040345934772">حرکت دادن به راست</translation>
 <translation id="3081586908890909590">رفتن به حالت فیلم‌برداری</translation>
 <translation id="313467653172006084">۳۰ FPS</translation>
-<translation id="3183731565330012717">نوع جدول</translation>
 <translation id="3227137524299004712">میکروفن</translation>
 <translation id="3240426699337459095">پیوند کپی شد</translation>
-<translation id="3259149966178251584">وضوح دوربین</translation>
-<translation id="3305962767867348165">اصلاح</translation>
 <translation id="3354465018370944241">تنظیمات عکس</translation>
 <translation id="3411958449466169012">زمان‌سنج خاموش</translation>
 <translation id="3448774564454087943">ویدیو ذخیره نمی‌شود چون خیلی کوتاه است</translation>
 <translation id="346539236881580388">عکس گرفتن مجدد</translation>
 <translation id="3517926952904427380">عکس عمودی ممکن نیست</translation>
 <translation id="3566302376254083266">درحال انتقال به‌سمت چپ بالا</translation>
-<translation id="3569311554794739032">واقعاً می‌خواهید <ph name="FILE" /> را بردارید؟</translation>
 <translation id="3573890771273113519">رفتن به حالت اسکن</translation>
 <translation id="3583444040776960729">گوشه پایین سمت چپ سند</translation>
 <translation id="3789724198583203151">چرخش ۹۰ درجه پادساعت‌گرد</translation>
 <translation id="3810838688059735925">فیلم</translation>
-<translation id="3838931309141338733">اسکن بارکد</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="4060608699153044055">نمی‌توانید ضبط کنید چون فضای ذخیره‌سازی دستگاه کافی نیست. برای شروع ضبط، باید فضای دستگاهتان را خالی کنید.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> مگاپیکسل</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
 <translation id="4281620174117014503">وضوح متوسط</translation>
 <translation id="428234092390943511">تصویر کوچک صفحه</translation>
-<translation id="4329152592498422850">تغییر وضعیت به گرفتن عکس مربع</translation>
 <translation id="4340659173795395806">‏اکنون می‌توانید PDF چندصفحه‌ای ایجاد کنید</translation>
 <translation id="4383571725254449280">چاپ گزارش‌های عملکرد</translation>
 <translation id="4445542136948522167">توقف عکس‌برداری</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> مگاپیکسل</translation>
 <translation id="4570032796877367747">دوربین جلو</translation>
 <translation id="4598556348158889687">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="4620818268515773682">وضعیت بی‌صدا بودن میکروفون را تغییر دهید. میکروفون صدادار است</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">از بازخورد شما درباره برنامه «دوربین» متشکریم.
 
 اگر بازخوردتان درباره کیفیت تصویر یا ویدیو است، لطفاً نمونه‌ای از عکس یا ویدیو را ضمیمه کنید و مشکل را توضیح دهید. (برای مثال، عکس خیلی تیره است یا روی سوژه موردنظر فوکوس نشده است.)</translation>
-<translation id="6420689864531458495">‏(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> مگاپیکسل</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6617916774429601017">نمایش همه وضوح‌ها</translation>
 <translation id="6631515515009660915">بازتاب خاموش</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">بازنشانی همه</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="698156982839284926">۳ ثانیه</translation>
-<translation id="712848772518857951">واقعاً می‌خواهید <ph name="COUNT" /> مورد را بردارید؟</translation>
 <translation id="7134221860976209830">زمان‌سنج ۱۰ ثانیه‌ای</translation>
 <translation id="7191890674911603392">نوع ضبط</translation>
 <translation id="7243947652761655814">وضوح ویدیو</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">رفتن به حالت عکس‌برداری</translation>
 <translation id="8167081290930651932">ذخیره به‌عنوان عکس</translation>
 <translation id="8239780215768881278">گرفتن عکس آنی ویدیو</translation>
-<translation id="8261506727792406068">حذف</translation>
 <translation id="8425673304802773841">پایین کشیدن</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8629662593426079630">۳۶۰ پیکسل</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">وضعیت بی‌صدا بودن میکروفون را تغییر دهید. میکروفون بی‌صدا است</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8730621377337864115">تمام</translation>

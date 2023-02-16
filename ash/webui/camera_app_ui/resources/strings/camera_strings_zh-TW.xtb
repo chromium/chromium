@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">偵測到連結。<ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">已刪除第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="1258009455399840361">順時針旋轉 90 度</translation>
-<translation id="1276998909102132017">圖片庫圖片</translation>
 <translation id="1300209025925956156">掃描你的文件</translation>
 <translation id="1309250603447638106">正在下載文件掃描功能更新</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。按下搜尋鍵 + 向左鍵即可使用。</translation>
 <translation id="1417314334557041815">編輯第 <ph name="INDEX" /> 頁</translation>
-<translation id="1430915738399379752">列印</translation>
 <translation id="1467231725790366244">已解除連接「<ph name="CAMERA" />」。</translation>
 <translation id="1473110567575736769">3 秒計時器</translation>
 <translation id="148783771699678004">向右上移動</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">掃描其他頁面</translation>
 <translation id="1851169887664797861">已推出新的相機控制項</translation>
 <translation id="1851616744363735765">已暫停</translation>
-<translation id="1862930711583847113">無法匯出「<ph name="FILE" />」</translation>
 <translation id="1899697626337024495">相片解析度</translation>
 <translation id="1925845977604399247">前往相片庫</translation>
 <translation id="199526504800285197">已停止錄影</translation>
 <translation id="1995951722691075581">裝置儲存空間不足，因此已停止錄影。如要錄製更多影片，請先釋出裝置空間。</translation>
-<translation id="2022953316617983419">QR 圖碼</translation>
 <translation id="2036868001356139588">計時器倒數時間</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2064538373111010176">「<ph name="CAMERA" />」已啟用</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR 圖碼</translation>
 <translation id="2244252133441425811">啟用影片每秒影格數挑選器</translation>
 <translation id="2271433936731426666">啟用原尺寸影片快照</translation>
-<translation id="229579744168541441">匯出至磁碟</translation>
 <translation id="2320741269052147773">向左平移</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">已停止錄影</translation>
-<translation id="2501953888035679275">使用相機拍攝相片及錄製影片。</translation>
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2577915835281444458">系統即將停止錄製內容，請釋出裝置儲存空間。</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">鏡像預覽</translation>
 <translation id="2879583609344924966">已連接「<ph name="CAMERA" />」。</translation>
 <translation id="2904654629665923749">文件掃描功能已可使用</translation>
-<translation id="2968794441791257519">使用相機拍攝的相片和影片將移至「下載內容」資料夾，你可以在「檔案」應用程式中找到這些內容。
-
-        具備儲存空間權限的應用程式將可存取你的相片和影片。</translation>
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切換為錄影模式</translation>
 <translation id="313467653172006084">每秒畫格數：30</translation>
-<translation id="3183731565330012717">格線類型</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3240426699337459095">連結已複製</translation>
-<translation id="3259149966178251584">相機解析度</translation>
-<translation id="3305962767867348165">修正</translation>
 <translation id="3354465018370944241">相片設定</translation>
 <translation id="3411958449466169012">關閉計時器</translation>
 <translation id="3448774564454087943">無法儲存長度太短的影片</translation>
 <translation id="346539236881580388">重拍</translation>
 <translation id="3517926952904427380">無法拍攝肖像相片</translation>
 <translation id="3566302376254083266">向左上移動</translation>
-<translation id="3569311554794739032">確定要移除「<ph name="FILE" />」嗎？</translation>
 <translation id="3573890771273113519">切換為掃描模式</translation>
 <translation id="3583444040776960729">文件左下角</translation>
 <translation id="3789724198583203151">逆時針旋轉 90 度</translation>
 <translation id="3810838688059735925">影片</translation>
-<translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="4060608699153044055">裝置儲存空間不足，因此無法錄影。如要開始錄影，請先釋出裝置空間。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> 百萬像素</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4281620174117014503">中等解析度</translation>
 <translation id="428234092390943511">頁面縮圖</translation>
-<translation id="4329152592498422850">切換為正方形相片拍攝模式</translation>
 <translation id="4340659173795395806">你現在可以建立多頁 PDF 檔案</translation>
 <translation id="4383571725254449280">列印效能記錄</translation>
 <translation id="4445542136948522167">停止拍照</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />：<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> 百萬像素</translation>
 <translation id="4570032796877367747">前置鏡頭</translation>
 <translation id="4598556348158889687">儲存空間管理</translation>
 <translation id="4620818268515773682">將麥克風切換為靜音。靜音功能已關閉</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">感謝你針對相機應用程式提供意見回饋。
 
 如果你的意見是有關圖片或影片品質，請在附件中包含示例相片或影片，並且說明問題 (例如相片太暗或拍攝主體失焦)。</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />：<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> 百萬像素</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6617916774429601017">顯示所有解析度</translation>
 <translation id="6631515515009660915">關閉鏡像</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">全部重設</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="698156982839284926">3 秒</translation>
-<translation id="712848772518857951">確定要移除這 <ph name="COUNT" /> 個項目嗎？</translation>
 <translation id="7134221860976209830">10 秒計時器</translation>
 <translation id="7191890674911603392">錄製類型</translation>
 <translation id="7243947652761655814">影片解析度</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">切換為拍照模式</translation>
 <translation id="8167081290930651932">儲存為相片</translation>
 <translation id="8239780215768881278">拍攝影片快照</translation>
-<translation id="8261506727792406068">刪除</translation>
 <translation id="8425673304802773841">向下傾斜</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD 高畫質 <ph name="HEIGHT" />p (<ph name="WIDTH" />：<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">將麥克風切換為靜音。靜音功能已開啟</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8730621377337864115">完成</translation>

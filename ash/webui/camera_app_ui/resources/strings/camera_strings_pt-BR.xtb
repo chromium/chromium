@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Link detectado. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Página <ph name="PAGE_NUMBER" /> excluída</translation>
 <translation id="1258009455399840361">Girar 90 graus no sentido horário</translation>
-<translation id="1276998909102132017">Imagens da galeria</translation>
 <translation id="1300209025925956156">Digitalize seu documento</translation>
 <translation id="1309250603447638106">Fazendo o download de atualizações da digitalização de documentos</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Pressione "Pesquisa" + seta para a esquerda para acessar.</translation>
 <translation id="1417314334557041815">Editar página <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">A <ph name="CAMERA" /> foi desconectada.</translation>
 <translation id="1473110567575736769">Timer de 3 segundos</translation>
 <translation id="148783771699678004">Movendo para o canto direito de cima</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Digitalizar outra página</translation>
 <translation id="1851169887664797861">Novos controles de câmera disponíveis</translation>
 <translation id="1851616744363735765">PAUSADA</translation>
-<translation id="1862930711583847113">Não foi possível exportar <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolução da foto</translation>
 <translation id="1925845977604399247">Acessar a Galeria</translation>
 <translation id="199526504800285197">A gravação foi interrompida</translation>
 <translation id="1995951722691075581">A gravação foi interrompida porque há pouco espaço de armazenamento no dispositivo. Libere espaço para gravar mais vídeos.</translation>
-<translation id="2022953316617983419">Código QR</translation>
 <translation id="2036868001356139588">Duração do timer</translation>
 <translation id="2050339315714019657">Retrato</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ativa</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2244252133441425811">Ativar o seletor de QPS de vídeo</translation>
 <translation id="2271433936731426666">Ativar a síntese do desempenho do vídeo no tamanho original</translation>
-<translation id="229579744168541441">Exportar para o disco</translation>
 <translation id="2320741269052147773">Movimentar para a esquerda</translation>
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="2501853267655415902">A gravação foi interrompida</translation>
-<translation id="2501953888035679275">Tire fotos e grave vídeos com sua câmera.</translation>
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="2577915835281444458">A gravação vai ser interrompida em breve. Acesse o armazenamento do dispositivo para liberar espaço.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Visualização do espelhamento</translation>
 <translation id="2879583609344924966">A <ph name="CAMERA" /> foi conectada.</translation>
 <translation id="2904654629665923749">Digitalização de documentos disponível</translation>
-<translation id="2968794441791257519">As fotos e os vídeos capturados com a câmera serão movidos para a pasta "Downloads", e você poderá acessá-los no app Arquivos.
-
-        Os apps com permissões de armazenamento terão acesso a seus vídeos e fotos.</translation>
 <translation id="3067436040345934772">Movimentar para a direita</translation>
 <translation id="3081586908890909590">Alternar para gravar vídeo</translation>
 <translation id="313467653172006084">30 QPS</translation>
-<translation id="3183731565330012717">Tipo de grade</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3240426699337459095">Link copiado</translation>
-<translation id="3259149966178251584">Resolução da câmera</translation>
-<translation id="3305962767867348165">Corrigir</translation>
 <translation id="3354465018370944241">Configurações de fotos</translation>
 <translation id="3411958449466169012">Timer desativado</translation>
 <translation id="3448774564454087943">O vídeo não foi salvo porque é curto demais</translation>
 <translation id="346539236881580388">Tirar outra</translation>
 <translation id="3517926952904427380">Não foi possível capturar o retrato</translation>
 <translation id="3566302376254083266">Movendo para o canto esquerdo de cima</translation>
-<translation id="3569311554794739032">Tem certeza de que quer remover <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Mudar para o modo de digitalização</translation>
 <translation id="3583444040776960729">Canto inferior esquerdo do documento</translation>
 <translation id="3789724198583203151">Girar 90 graus no sentido anti-horário</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3838931309141338733">Ler código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="4060608699153044055">Não é possível gravar porque há pouco espaço de armazenamento no dispositivo. Libere espaço para começar a gravar.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4281620174117014503">Resolução média</translation>
 <translation id="428234092390943511">Miniatura da página</translation>
-<translation id="4329152592498422850">Alternar para tirar foto quadrada</translation>
 <translation id="4340659173795395806">Agora você pode criar PDFs com várias páginas</translation>
 <translation id="4383571725254449280">Registros de desempenho de impressão</translation>
 <translation id="4445542136948522167">Parar de tirar foto</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Câmera frontal</translation>
 <translation id="4598556348158889687">Gestão de armazenamento</translation>
 <translation id="4620818268515773682">Alterne o status do microfone. O microfone está ativado</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Agradecemos o feedback sobre o app Câmera.
 
 Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma foto ou um vídeo de amostra e descreva o problema. Por exemplo, a foto está escura demais ou não está focando.</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="6617916774429601017">Mostrar todas as resoluções</translation>
 <translation id="6631515515009660915">Espelhamento desativado</translation>
@@ -145,7 +128,6 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="695140971690006676">Redefinir tudo</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 segundos</translation>
-<translation id="712848772518857951">Tem certeza de que quer remover <ph name="COUNT" /> itens?</translation>
 <translation id="7134221860976209830">Timer de 10 segundos</translation>
 <translation id="7191890674911603392">Tipo de registro</translation>
 <translation id="7243947652761655814">Resolução do vídeo</translation>
@@ -171,11 +153,9 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8145038249676204903">Alternar para tirar foto</translation>
 <translation id="8167081290930651932">Salvar como foto</translation>
 <translation id="8239780215768881278">Fazer um instantâneo de vídeo</translation>
-<translation id="8261506727792406068">Excluir</translation>
 <translation id="8425673304802773841">Inclinar para baixo</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8629662593426079630">360 p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Alterne o status do microfone. O microfone está desativado</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8730621377337864115">Concluído</translation>

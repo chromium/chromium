@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Հայտնաբերվել է հղում։ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Էջը <ph name="PAGE_NUMBER" />-ը ջնջվեց</translation>
 <translation id="1258009455399840361">Պտտել 90 աստիճան ժամացույցի սլաքի ուղղությամբ</translation>
-<translation id="1276998909102132017">Ցուցասրահի պատկերներ</translation>
 <translation id="1300209025925956156">Փաստաթղթի սկանավորում</translation>
 <translation id="1309250603447638106">Ներբեռնվում են թարմացումներ փաստաթղթերի սկանավորման գործառույթի համար</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />։ Դրանք օգտագործելու համար սեղմեք «Որոնում»+ձախ սլաք։</translation>
 <translation id="1417314334557041815">Փոփոխել էջ <ph name="INDEX" />-ը</translation>
-<translation id="1430915738399379752">Տպում</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> սարքը միացված չէ։</translation>
 <translation id="1473110567575736769">Ժամաչափ 3 վայրկյան</translation>
 <translation id="148783771699678004">Տեղափոխվում է վերև ու աջ</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Սկանավորել լրացուցիչ էջը</translation>
 <translation id="1851169887664797861">Հասանելի են տեսախցիկի լրացուցիչ կարգավորումներ</translation>
 <translation id="1851616744363735765">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
-<translation id="1862930711583847113">Չհաջողվեց արտահանել <ph name="FILE" /> ֆայլը</translation>
 <translation id="1899697626337024495">Լուսանկարի լուծաչափը</translation>
 <translation id="1925845977604399247">Անցնել ցուցասրահ</translation>
 <translation id="199526504800285197">Տեսագրումը կանգնել է</translation>
 <translation id="1995951722691075581">Տեսագրումը կանգնեց, քանի որ սարքում բավարար տարածք չկա։ Նոր տեսագրությունների համար անհրաժեշտ է սարքում տարածք ազատել։</translation>
-<translation id="2022953316617983419">QR կոդ</translation>
 <translation id="2036868001356139588">Ժամաչափի տևողությունը</translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> տեսախցիկն ակտիվ է</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="2244252133441425811">Միացնել վայրկյանում կադրերի հաճախականության ընտրիչը տեսանյութերի համար</translation>
 <translation id="2271433936731426666">Միացնել տեսանյութի կադրերի սկզբնական չափով լուսանկարումը</translation>
-<translation id="229579744168541441">Արտահանել սկավառակ</translation>
 <translation id="2320741269052147773">Տեղաշարժել ձախ</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="2501853267655415902">Տեսագրումը դադարեցվեց</translation>
-<translation id="2501953888035679275">Լուսանկարեք և տեսագրեք ձեր տեսախցիկով:</translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2549985041256363841">Սկսել տեսագրումը</translation>
 <translation id="2577915835281444458">Տեսագրումը շուտով կկանգնի։ Տարածք ազատելու համար բացեք սարքի հիշողությունը։</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Հայելապատճենման ռեժիմ</translation>
 <translation id="2879583609344924966">Միացված է <ph name="CAMERA" /> սարքը։</translation>
 <translation id="2904654629665923749">Հասանելի է փաստաթղթերի սկանավորման գործառույթ</translation>
-<translation id="2968794441791257519">Տեսախցիկով արված լուսանկարներն ու տեսանյութերը կտեղափոխվեն «Ներբեռնումներ» պանակ։ Դրանք կարող եք գտնել նաև «Ֆայլեր» պանակում։
-
-        Հավելվածներին, որոնց թույլատրել եք օգտագործել հիշողությունը, հասանելի կդառնան ձեր լուսանկարները և տեսանյութերը:</translation>
 <translation id="3067436040345934772">Տեղաշարժել աջ</translation>
 <translation id="3081586908890909590">Տեսագրել</translation>
 <translation id="313467653172006084">30 կադր/վ</translation>
-<translation id="3183731565330012717">Ցանցի տեսակը</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="3240426699337459095">Հղումը պատճենվեց</translation>
-<translation id="3259149966178251584">Տեսախցիկի լուծաչափը</translation>
-<translation id="3305962767867348165">Շտկել</translation>
 <translation id="3354465018370944241">Լուսանկարի կարգավորումներ</translation>
 <translation id="3411958449466169012">Անջատել ժամաչափը</translation>
 <translation id="3448774564454087943">Տեսանյութը չի պահվել, քանի որ այն չափազանց կարճ էր</translation>
 <translation id="346539236881580388">Նորից լուսանկարել</translation>
 <translation id="3517926952904427380">Չհաջողվեց ուղղաձիգ դիրքով լուսանկարել</translation>
 <translation id="3566302376254083266">Տեղափոխվում է վերև ու ձախ</translation>
-<translation id="3569311554794739032">Հեռացնե՞լ <ph name="FILE" /> ֆայլը:</translation>
 <translation id="3573890771273113519">Անցնել սկանավորման ռեժիմին</translation>
 <translation id="3583444040776960729">Փաստաթղթի ներքևի ձախ անկյուն</translation>
 <translation id="3789724198583203151">Պտտել 90 աստիճան ժամացույցի սլաքի հակառակ ուղղությամբ</translation>
 <translation id="3810838688059735925">Տեսանյութ</translation>
-<translation id="3838931309141338733">Սկանավորել գծակոդը</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
 <translation id="4060608699153044055">Դուք չեք կարող տեսագրել, քանի որ սարքում բավարար տարածք չկա։ Տեսագրումը սկսելու համար անհրաժեշտ է սարքում տարածք ազատել։</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ՄՊ</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
 <translation id="4281620174117014503">Միջին լուծաչափ</translation>
 <translation id="428234092390943511">Էջի մանրապատկեր</translation>
-<translation id="4329152592498422850">Անցնել քառակուսի լուսանկարների ռեժիմին</translation>
 <translation id="4340659173795395806">Այժմ դուք կարող եք ստեղծել մի քանի էջից կազմված PDF ֆայլ</translation>
 <translation id="4383571725254449280">Տպման վիճակագրության մատյաններ</translation>
 <translation id="4445542136948522167">Դադարեցնել լուսանկարումը</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> մեգապիքսել</translation>
 <translation id="4570032796877367747">Առջևի տեսախցիկ</translation>
 <translation id="4598556348158889687">Հիշողության կառավարում</translation>
 <translation id="4620818268515773682">Միացնել/անջատել խոսափողը։ Խոսափողը միացված է։</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Շնորհակալություն «Տեսախցիկ» հավելվածի մասին կարծիք հայտնելու համար։
 
 Եթե ձեր կարծիքը պատկերի կամ տեսանյութի որակին է վերաբերում, ապա կցեք խնդրին առնչվող օրինակի ֆայլը (օր․՝ լուսանկարը շատ մուգ է կամ ֆոկուսից դուրս)։</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> մեգապիքսել</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
 <translation id="6617916774429601017">Ցույց տալ լուծաչափի բոլոր տարբերակները</translation>
 <translation id="6631515515009660915">Հայելապատճենման ռեժիմն անջատված է</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">Զրոյացնել բոլորը</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="698156982839284926">3 վայրկյան</translation>
-<translation id="712848772518857951">Ջնջե՞լ ընտրված <ph name="COUNT" /> տարրերը:</translation>
 <translation id="7134221860976209830">Ժամաչափ 10 վայրկյան</translation>
 <translation id="7191890674911603392">Տեսագրման տեսակը</translation>
 <translation id="7243947652761655814">Տեսանյութի լուծաչափը</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">Լուսանկարել</translation>
 <translation id="8167081290930651932">Պահել որպես լուսանկար</translation>
 <translation id="8239780215768881278">Լուսանկարել տեսանյութի կադր</translation>
-<translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8425673304802773841">Թեքել ներքև</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Միացնել/անջատել խոսափողը։ Խոսափողն անջատված է։</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

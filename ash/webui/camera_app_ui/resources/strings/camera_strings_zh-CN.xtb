@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">检测到链接。<ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">已删除第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="1258009455399840361">顺时针旋转 90 度</translation>
-<translation id="1276998909102132017">图库图片</translation>
 <translation id="1300209025925956156">扫描您的文件</translation>
 <translation id="1309250603447638106">正在下载“文件扫描”功能更新</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。按搜索键 + 向左键即可访问。</translation>
 <translation id="1417314334557041815">修改第 <ph name="INDEX" /> 页</translation>
-<translation id="1430915738399379752">打印</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
 <translation id="148783771699678004">正在向右上角移动</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">再扫描一页</translation>
 <translation id="1851169887664797861">已推出新的相机控件</translation>
 <translation id="1851616744363735765">已暂停</translation>
-<translation id="1862930711583847113">无法导出“<ph name="FILE" />”</translation>
 <translation id="1899697626337024495">照片分辨率</translation>
 <translation id="1925845977604399247">转至“图库”</translation>
 <translation id="199526504800285197">录制已停止</translation>
 <translation id="1995951722691075581">录制已停止，因为设备存储空间不足。若要录制更多视频，您需先释放设备上的空间。</translation>
-<translation id="2022953316617983419">二维码</translation>
 <translation id="2036868001356139588">定时器时长</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2064538373111010176">已切换到<ph name="CAMERA" /></translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">二维码</translation>
 <translation id="2244252133441425811">启用视频 FPS 选择器</translation>
 <translation id="2271433936731426666">启用完整尺寸的视频快照</translation>
-<translation id="229579744168541441">导出到磁盘</translation>
 <translation id="2320741269052147773">向左平移</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">已停止录制</translation>
-<translation id="2501953888035679275">使用相机拍照和录制视频。</translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="2577915835281444458">录制即将停止。请前往设备存储空间以释放空间。</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">镜像翻转预览画面</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />已插入。</translation>
 <translation id="2904654629665923749">“文件扫描”功能已可供使用</translation>
-<translation id="2968794441791257519">使用此相机拍摄的照片和视频将被移至“下载内容”文件夹。您可在“文件”中访问它们。
-
-        具有存储权限的应用将有权访问您的照片和视频。</translation>
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切换到录制视频模式</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">网格类型</translation>
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3240426699337459095">已复制链接</translation>
-<translation id="3259149966178251584">摄像头分辨率</translation>
-<translation id="3305962767867348165">修正</translation>
 <translation id="3354465018370944241">照片设置</translation>
 <translation id="3411958449466169012">计时器已关闭</translation>
 <translation id="3448774564454087943">未能保存此视频，因为它太短了</translation>
 <translation id="346539236881580388">重拍</translation>
 <translation id="3517926952904427380">无法拍摄人像照片</translation>
 <translation id="3566302376254083266">正在向左上角移动</translation>
-<translation id="3569311554794739032">确定要移除“<ph name="FILE" />”吗？</translation>
 <translation id="3573890771273113519">切换到扫描模式</translation>
 <translation id="3583444040776960729">文件左下角</translation>
 <translation id="3789724198583203151">逆时针旋转 90 度</translation>
 <translation id="3810838688059735925">视频</translation>
-<translation id="3838931309141338733">扫描条形码</translation>
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="4060608699153044055">无法录制，因为设备存储空间不足。若要开始录制，您需先释放设备上的空间。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4281620174117014503">中等分辨率</translation>
 <translation id="428234092390943511">页面缩略图</translation>
-<translation id="4329152592498422850">切换到正方形照片拍摄模式</translation>
 <translation id="4340659173795395806">现在您可以创建多页 PDF</translation>
 <translation id="4383571725254449280">打印性能日志</translation>
 <translation id="4445542136948522167">停止拍照</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> 百万像素</translation>
 <translation id="4570032796877367747">前置摄像头</translation>
 <translation id="4598556348158889687">存储空间管理</translation>
 <translation id="4620818268515773682">使用切换开关可将麦克风静音或取消静音。目前未静音</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">感谢您针对“相机”应用提供宝贵意见。
 
 如果您的反馈是关于图片或视频的画质，请附上示例照片或视频，并说明问题所在（例如照片太暗或摄像头无法聚焦）。</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> 百万像素</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6617916774429601017">显示所有分辨率</translation>
 <translation id="6631515515009660915">镜像已关闭</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">全部重置</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="698156982839284926">3 秒</translation>
-<translation id="712848772518857951">确定要移除这 <ph name="COUNT" /> 个文件吗？</translation>
 <translation id="7134221860976209830">10 秒定时器</translation>
 <translation id="7191890674911603392">录制类型</translation>
 <translation id="7243947652761655814">视频分辨率</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">切换到拍照模式</translation>
 <translation id="8167081290930651932">另存为照片</translation>
 <translation id="8239780215768881278">拍摄视频快照</translation>
-<translation id="8261506727792406068">删除</translation>
 <translation id="8425673304802773841">向下倾斜</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">高清 <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">使用切换开关可将麦克风静音或取消静音。目前已静音</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8730621377337864115">完成</translation>

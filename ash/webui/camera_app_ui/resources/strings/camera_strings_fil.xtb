@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Na-delete ang page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">I-rotate nang 90 degree clockwise</translation>
-<translation id="1276998909102132017">Mga larawan sa gallery</translation>
 <translation id="1300209025925956156">I-scan ang iyong dokumento</translation>
 <translation id="1309250603447638106">Dina-download ang mga update para sa pag-scan ng dokumento</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + Kaliwang arrow para i-access.</translation>
 <translation id="1417314334557041815">I-edit ang page <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">I-print</translation>
 <translation id="1467231725790366244">Hindi nakasaksak ang <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3 segundong timer</translation>
 <translation id="148783771699678004">Gumagalaw pakanan at pataas</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Mag-scan ng karagdagang page</translation>
 <translation id="1851169887664797861">Available ang mga karagdagang kontrol sa camera</translation>
 <translation id="1851616744363735765">NAKA-PAUSE</translation>
-<translation id="1862930711583847113">Hindi ma-export ang <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolution ng larawan</translation>
 <translation id="1925845977604399247">Pumunta sa Gallery</translation>
 <translation id="199526504800285197">Inihinto ang pag-record</translation>
 <translation id="1995951722691075581">Huminto ang iyong pag-record dahil sa mababang storage space ng device. Para mag-record ng higit pang video, kailangan mong magbakante ng espasyo sa iyong device.</translation>
-<translation id="2022953316617983419">QR code</translation>
 <translation id="2036868001356139588">Tagal ng timer</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064538373111010176">Aktibo ang <ph name="CAMERA" /></translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="2244252133441425811">I-enable ang tagapili ng FPS ng video</translation>
 <translation id="2271433936731426666">I-enable ang full-sized na snapshot ng video</translation>
-<translation id="229579744168541441">I-export sa disk</translation>
 <translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="2501853267655415902">Itinigil ang pag-record</translation>
-<translation id="2501953888035679275">Kumuha ng mga larawan at mag-record ng mga video gamit ang iyong camera.</translation>
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2549985041256363841">Simulang mag-record</translation>
 <translation id="2577915835281444458">Malapit nang tumigil ang pag-record. Pumunta sa storage ng device para magbakante ng space.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Preview ng mirror</translation>
 <translation id="2879583609344924966">Nakasaksak ang <ph name="CAMERA" />.</translation>
 <translation id="2904654629665923749">Available ang scan ng dokumento</translation>
-<translation id="2968794441791257519">Ililipat sa folder na Mga Download ang mga larawan at video na kinunan gamit ang camera. Maa-access mo ang mga ito sa Mga File.
-
-        Magkakaroon ng access sa iyong mga larawan at video ang mga app na may mga pahintulot sa storage.</translation>
 <translation id="3067436040345934772">Mag-pan sa kanan</translation>
 <translation id="3081586908890909590">Lumipat sa pag-record ng video</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Uri ng grid</translation>
 <translation id="3227137524299004712">Mikropono</translation>
 <translation id="3240426699337459095">Nakopya ang link</translation>
-<translation id="3259149966178251584">Resolution ng camera</translation>
-<translation id="3305962767867348165">Ayusin</translation>
 <translation id="3354465018370944241">Mga setting ng larawan</translation>
 <translation id="3411958449466169012">Naka-off ang timer</translation>
 <translation id="3448774564454087943">Hindi na-save ang video dahil masyado itong maikli</translation>
 <translation id="346539236881580388">Kunan ulit</translation>
 <translation id="3517926952904427380">Hindi makakuha ng portrait na larawan</translation>
 <translation id="3566302376254083266">Gumagalaw pakaliwa at pataas</translation>
-<translation id="3569311554794739032">Gusto mo ba talagang alisin ang <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Lumipat sa scan mode</translation>
 <translation id="3583444040776960729">Kaliwang sulok sa ibaba ng dokumento</translation>
 <translation id="3789724198583203151">I-rotate nang 90 degree counterclockwise</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">I-scan ang barcode</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="4060608699153044055">Hindi ka puwedeng mag-record dahil sa mababang storage space ng device. Para magsimulang mag-record, kailangan mong magbakante ng espasyo sa iyong device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
 <translation id="4281620174117014503">Katamtamang resolution</translation>
 <translation id="428234092390943511">Thumbnail ng page</translation>
-<translation id="4329152592498422850">Lumipat para kumuha ng parisukat na larawan</translation>
 <translation id="4340659173795395806">Puwede ka na ngayong gumawa ng maraming page na PDF</translation>
 <translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>
 <translation id="4445542136948522167">Ihinto ang pagkuha ng larawan</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="4570032796877367747">Camera sa harap</translation>
 <translation id="4598556348158889687">Pamamahala sa storage</translation>
 <translation id="4620818268515773682">I-toggle ang pagkaka-mute ng mikropono. Naka-off ang mute</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Salamat sa pagbibigay ng feedback sa Camera app.
 
 Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng halimbawang larawan o video at ilarawan kung ano ang mali rito. (Halimbawa, masyadong madilim ang larawan o hindi naka-focus ang paksa.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6617916774429601017">Ipakita ang lahat ng resolution</translation>
 <translation id="6631515515009660915">Naka-off ang Mirror</translation>
@@ -145,7 +128,6 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="695140971690006676">I-reset lahat</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 segundo</translation>
-<translation id="712848772518857951">Gusto mo ba talagang alisin ang <ph name="COUNT" /> (na) item?</translation>
 <translation id="7134221860976209830">10 segundong timer</translation>
 <translation id="7191890674911603392">Uri ng pag-record</translation>
 <translation id="7243947652761655814">Resolution ng video</translation>
@@ -171,11 +153,9 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>
 <translation id="8167081290930651932">I-save bilang Larawan</translation>
 <translation id="8239780215768881278">Kumuha ng video snapshot</translation>
-<translation id="8261506727792406068">I-delete</translation>
 <translation id="8425673304802773841">I-tilt pababa</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">I-toggle ang pagkaka-mute ng mikropono. Naka-on ang mute</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8730621377337864115">Tapos na</translation>

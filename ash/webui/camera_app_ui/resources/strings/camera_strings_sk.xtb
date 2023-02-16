@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Bol rozpoznaný odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. strana bola odstránená</translation>
 <translation id="1258009455399840361">Otočiť o 90 stupňov v smere hodinových ručičiek</translation>
-<translation id="1276998909102132017">Obrázky galérie</translation>
 <translation id="1300209025925956156">Skenovanie dokumentu</translation>
 <translation id="1309250603447638106">Sťahujú sa aktualizácie na skenovanie dokumentov</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Prístup získate stlačením klávesa vyhľadávania + šípky doľava.</translation>
 <translation id="1417314334557041815">Upraviť stránku <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojená.</translation>
 <translation id="1473110567575736769">Trojsekundový časovač</translation>
 <translation id="148783771699678004">Presúvate doprava nahor</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skenovať ďalšiu stránku</translation>
 <translation id="1851169887664797861">K dispozícii je ďalšie ovládanie kamery</translation>
 <translation id="1851616744363735765">POZASTAVENÉ</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> sa nepodarilo exportovať</translation>
 <translation id="1899697626337024495">Rozlíšenie fotky</translation>
 <translation id="1925845977604399247">Prejsť do galérie</translation>
 <translation id="199526504800285197">Nahrávanie bolo zastavené</translation>
 <translation id="1995951722691075581">Nahrávanie bolo zastavené, pretože v zariadení nie je dostatok priestoru. Ak chcete nahrávať ďalšie videá, musíte v zariadení uvoľniť priestor.</translation>
-<translation id="2022953316617983419">QR kód</translation>
 <translation id="2036868001356139588">Trvanie časovača</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2064538373111010176">Aktívny fotoaparát: <ph name="CAMERA" /></translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2244252133441425811">Povoliť výber počtu sním./s videa</translation>
 <translation id="2271433936731426666">Povoliť prehľad stavu videa v plnej veľkosti</translation>
-<translation id="229579744168541441">Exportovať na disk</translation>
 <translation id="2320741269052147773">Posunúť doľava</translation>
 <translation id="2501278716633472235">Prejsť späť</translation>
 <translation id="2501853267655415902">Zaznamenávanie bolo zastavené</translation>
-<translation id="2501953888035679275">Foťte a zaznamenávajte videá fotoaparátom.</translation>
 <translation id="2517472476991765520">Skenovať</translation>
 <translation id="2549985041256363841">Spustiť zaznamenávanie</translation>
 <translation id="2577915835281444458">Nahrávanie bude čoskoro zastavené. Prejdite do úložiska zariadenia a uvoľnite priestor.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Ukážka zrkadlenia</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je pripojená.</translation>
 <translation id="2904654629665923749">K dispozícii je skenovanie dokumentov</translation>
-<translation id="2968794441791257519">Fotky a videá nasnímané fotoaparátom budú presunuté do priečinka Stiahnuté súbory. Dostanete sa k nim v Súboroch.
-
-        Fotky aj videá budú môcť používať aplikácie s povoleniami pre úložisko.</translation>
 <translation id="3067436040345934772">Posunutie doprava</translation>
 <translation id="3081586908890909590">Prepnúť na zaznamenávanie videa</translation>
 <translation id="313467653172006084">30 sním./s</translation>
-<translation id="3183731565330012717">Typ mriežky</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3240426699337459095">Odkaz bol skopírovaný</translation>
-<translation id="3259149966178251584">Rozlíšenie fotoaparátu</translation>
-<translation id="3305962767867348165">Opraviť</translation>
 <translation id="3354465018370944241">Nastavenia fotiek</translation>
 <translation id="3411958449466169012">Vypnúť časovač</translation>
 <translation id="3448774564454087943">Video sa neuložilo, pretože je príliš krátke</translation>
 <translation id="346539236881580388">Odfotiť znova</translation>
 <translation id="3517926952904427380">Nepodarilo sa nasnímať portrétovú fotku</translation>
 <translation id="3566302376254083266">Presúvate doľava nahor</translation>
-<translation id="3569311554794739032">Naozaj chcete odstrániť <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Prepnúť na režim skenovania</translation>
 <translation id="3583444040776960729">Ľavý dolný roh dokumentu</translation>
 <translation id="3789724198583203151">Otočiť o 90 stupňov proti smeru hodinových ručičiek</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Skenovať čiarový kód</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>
 <translation id="4060608699153044055">Nemôžete nahrávať, pretože v zariadení nie je dostatok priestoru. Ak chcete začať nahrávať, musíte v zariadení uvoľniť priestor.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
 <translation id="4281620174117014503">Stredné rozlíšenie</translation>
 <translation id="428234092390943511">Miniatúra stránky</translation>
-<translation id="4329152592498422850">Prepnúť na snímanie štvorcových fotiek</translation>
 <translation id="4340659173795395806">Teraz môžete vytvoriť viacstránkový súbor PDF</translation>
 <translation id="4383571725254449280">Tlačiť denníky výkonnosti</translation>
 <translation id="4445542136948522167">Zastaviť fotenie</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Mpx</translation>
 <translation id="4570032796877367747">Predný fotoaparát</translation>
 <translation id="4598556348158889687">Správa úložiska</translation>
 <translation id="4620818268515773682">Prepínač vypnutia zvuku mikrofónu. Zvuk je zapnutý.</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Ďakujeme za spätnú väzbu na aplikáciu Fotoaparát.
 
 Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a opíšte, čo nie je v poriadku. (Napríklad fotka je príliš tmavá alebo snímaný objekt nie je zaostrený).</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Mpx</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6617916774429601017">Zobraziť všetky rozlíšenia</translation>
 <translation id="6631515515009660915">Vypnutie zrkadlenia</translation>
@@ -145,7 +128,6 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="695140971690006676">Resetovať všetko</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekundy</translation>
-<translation id="712848772518857951">Naozaj chcete odstrániť položky (počet: <ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">Desaťsekundový časovač</translation>
 <translation id="7191890674911603392">Typ záznamu</translation>
 <translation id="7243947652761655814">Rozlíšenie videa</translation>
@@ -171,11 +153,9 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="8145038249676204903">Prepnúť na fotenie</translation>
 <translation id="8167081290930651932">Uložiť ako fotku</translation>
 <translation id="8239780215768881278">Vytvoriť snímku videa</translation>
-<translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8425673304802773841">Naklonenie nadol</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Prepínač vypnutia zvuku mikrofónu. Zvuk je vypnutý.</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="8730621377337864115">Hotovo</translation>

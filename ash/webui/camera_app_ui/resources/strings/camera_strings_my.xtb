@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">လင့်ခ်တွေ့ရှိသည်။ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို ဖျက်ပြီးပြီ</translation>
 <translation id="1258009455399840361">၉၀ ဒီဂရီ နာရီလက်တံအတိုင်း လှည့်ရန်</translation>
-<translation id="1276998909102132017">ပြခန်းပုံများ</translation>
 <translation id="1300209025925956156">သင့်မှတ်တမ်းဖိုင်ကို စကင်ဖတ်ခြင်း</translation>
 <translation id="1309250603447638106">မှတ်တမ်းစကင်ဖတ်ခြင်းအတွက် အပ်ဒိတ်များ ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />။ ကြည့်ရန် Search + ‘ဘယ်ညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> စာမျက်နှာကို တည်းဖြတ်ရန်</translation>
-<translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ကို ပလတ်ဖြုတ်ထားသည်။</translation>
 <translation id="1473110567575736769">၃ စက္ကန့် အချိန်တိုင်းစက်</translation>
 <translation id="148783771699678004">ညာဘက်အပေါ် ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">နောက်ထပ်စာမျက်နှာ စကင်ဖတ်ရန်</translation>
 <translation id="1851169887664797861">နောက်ထပ် ကင်မရာအထိန်းအချုပ်များ ရနိုင်သည်</translation>
 <translation id="1851616744363735765">ခေတ္တရပ်ထားသည်</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> ကို ထုတ်ယူ၍မရပါ</translation>
 <translation id="1899697626337024495">ဓာတ်ပုံ ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="1925845977604399247">‘ပြခန်း’ သို့သွားရန်</translation>
 <translation id="199526504800285197">မှတ်တမ်းတင်ခြင်း ရပ်သွားသည်</translation>
 <translation id="1995951722691075581">စက်သိုလှောင်ခန်းနေရာ နည်းနေသဖြင့် မှတ်တမ်းတင်ခြင်း ရပ်သွားသည်။ နောက်ထပ်ဗီဒီယိုများ မှတ်တမ်းတင်ရန် သင့်စက်တွင် နေရာလွတ် ပြုလုပ်ရမည်။</translation>
-<translation id="2022953316617983419">QR ကုဒ်</translation>
 <translation id="2036868001356139588">တိုင်မာကြာချိန်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ကို ရွေးထားသည်</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR ကုဒ်</translation>
 <translation id="2244252133441425811">ဗီဒီယို တစ်စက္ကန့်တွင် ဖရိမ်နှုန်း ရွေးချယ်ရေးစနစ် ဖွင့်ရန်</translation>
 <translation id="2271433936731426666">အရွယ်အစားအပြည့် ဗီဒီယိုလျှပ်တစ်ပြက်ရိုက်ချက် ဖွင့်ရန်</translation>
-<translation id="229579744168541441">ဒစ်ခ်သို့ ထုတ်ယူရန်</translation>
 <translation id="2320741269052147773">ဘယ်ဘက်ရွှေ့ကြည့်ရန်</translation>
 <translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
 <translation id="2501853267655415902">ရိုက်ကူးခြင်း ရပ်သွားပါပြီ</translation>
-<translation id="2501953888035679275">သင့်ကင်မရာဖြင့် ဓာတ်ပုံနှင့် ဗီဒီယိုများ ရိုက်ကူးပါ။</translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2549985041256363841">စတင်ရိုက်ကူးရန်</translation>
 <translation id="2577915835281444458">မှတ်တမ်းတင်ခြင်း မကြာမီ ရပ်မည်။ နေရာလွတ်ပြုလုပ်ရန် စက်သိုလှောင်ခန်းသို့ သွားပါ။</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">မှန်အစမ်းကြည့်ရန်</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ကို ပလတ်တပ်ထားသည်။</translation>
 <translation id="2904654629665923749">မှတ်တမ်းစကင်ဖတ်နိုင်ပြီ</translation>
-<translation id="2968794441791257519">ကင်မရာဖြင့်ရိုက်ကူးထားသော ဓာတ်ပုံနှင့် ဗီဒီယိုများကို 'ဒေါင်းလုဒ်များ' ဖိုင်တွဲသို့ ရွှေ့ပါမည်။ ၎င်းတို့ကို Files ထဲတွင် ဝင်သုံးနိုင်ပါသည်။
-
-သိုလှောင်ခန်း ခွင့်ပြုချက်ရထားသည့် အက်ပ်များသည် သင့်ဓာတ်ပုံနှင့် ဗီဒီယိုများကို သုံးခွင့်ရှိပါမည်။</translation>
 <translation id="3067436040345934772">ညာဘက် ရွှေ့ကြည့်ရန်</translation>
 <translation id="3081586908890909590">ဗီဒီယိုရိုက်ခြင်းမုဒ်သို့ ပြောင်းရန်</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">ဇယားကွက် ပုံစံ</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
 <translation id="3240426699337459095">လင့်ခ်ကူးယူပြီးပါပြီ</translation>
-<translation id="3259149966178251584">ကင်မရာ ပုံရိပ်ပြတ်သားကိန်း</translation>
-<translation id="3305962767867348165">ပြင်ဆင်ရန်</translation>
 <translation id="3354465018370944241">ဓာတ်ပုံဆက်တင်များ</translation>
 <translation id="3411958449466169012">အချိန်တိုင်းကိရိယာ ပိတ်ရန်</translation>
 <translation id="3448774564454087943">ဗီဒီယိုအလွန်တိုသဖြင့် သိမ်းမထားပါ</translation>
 <translation id="346539236881580388">ပြန်ရိုက်ရန်</translation>
 <translation id="3517926952904427380">ထောင်လိုက်ဓာတ်ပုံ ရိုက်၍မရပါ</translation>
 <translation id="3566302376254083266">ဘယ်ဘက်အပေါ် ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
-<translation id="3569311554794739032">"<ph name="FILE" />" ကို သင် တကယ် ဖယ်ရှားလိုသလား။</translation>
 <translation id="3573890771273113519">စကင်ဖတ်သည့်မုဒ်သို့ ပြောင်းရန်</translation>
 <translation id="3583444040776960729">မှတ်တမ်း၏ ဘယ်ဘက်ထောင့်အောက်ခြေ</translation>
 <translation id="3789724198583203151">၉၀ ဒီဂရီ နာရီလက်တံပြောင်းပြန် လှည့်ရန်</translation>
 <translation id="3810838688059735925">ဗီဒီယို</translation>
-<translation id="3838931309141338733">ဘားကုဒ်ကို စကင်ဖတ်ရန်</translation>
 <translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
 <translation id="4060608699153044055">စက်သိုလှောင်ခန်းနေရာ နည်းနေသဖြင့် မှတ်တမ်းတင်၍မရပါ။ စတင်မှတ်တမ်းတင်ရန် သင့်စက်တွင် နေရာလွတ် ပြုလုပ်ရမည်။</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
 <translation id="4281620174117014503">အလယ်အလတ် ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="428234092390943511">စာမျက်နှာ ပုံသေး</translation>
-<translation id="4329152592498422850">စတုရန်းမုဒ် ဓာတ်ပုံရိုက်ရန်အတွက် ပြောင်းရန်</translation>
 <translation id="4340659173795395806">စာမျက်နှာများပါသည့် PDF ကို ယခုပြုလုပ်နိုင်ပါပြီ</translation>
 <translation id="4383571725254449280">စွမ်းဆောင်ရည် မှတ်တမ်းများကို ပုံနှိပ်ရန်</translation>
 <translation id="4445542136948522167">ဓာတ်ပုံရိုက်ခြင်း ရပ်တန့်ရန်</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> မီဂါပစ်ဆယ်</translation>
 <translation id="4570032796877367747">အရှေ့ကင်မရာ</translation>
 <translation id="4598556348158889687">သိုလှောင်ခန်းစီမံခန့်ခွဲမှု</translation>
 <translation id="4620818268515773682">မိုက်ခရိုဖုန်း အသံပိတ် ခလုတ်။ အသံတိတ်ခြင်း ပိတ်</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">'ကင်မရာ' အက်ပ်ကို အကြံပြုချက်ပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။
 
 သင့်အကြံပြုချက်သည် ရုပ်ပုံ (သို့) ဗီဒီယိုအရည်အသွေးနှင့် ပတ်သက်ပါက နမူနာဓာတ်ပုံ (သို့) ဗီဒီယိုကို ပူးတွဲပေးပြီး ဘာမှားနေသည်ကို ဖော်ပြပါ။ (ဥပမာ ဓာတ်ပုံ အလွန်မှောင်နေသည် (သို့) အရာဝတ္ထု ဆုံချက်မပြတ်ပါ။)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> မီဂါပစ်ဆယ်</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="6617916774429601017">ပုံရိပ်ပြတ်သားကိန်းအားလုံး ပြပါ</translation>
 <translation id="6631515515009660915">မှန်ပိတ်ရန်</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">အားလုံး ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">၃ စက္ကန့်</translation>
-<translation id="712848772518857951"><ph name="COUNT" /> ခုကို ဖယ်ရှားလိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="7134221860976209830">၁၀ စက္ကန့် အချိန်တိုင်းစက်</translation>
 <translation id="7191890674911603392">ဖမ်းယူမှုပုံစံ</translation>
 <translation id="7243947652761655814">ဗီဒီယို ပုံရိပ်ပြတ်သားကိန်း</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">ဓာတ်ပုံရိုက်ခြင်းမုဒ်သို့ ပြောင်းရန်</translation>
 <translation id="8167081290930651932">ဓာတ်ပုံအဖြစ် သိမ်းရန်</translation>
 <translation id="8239780215768881278">ဗီဒီယို လျှပ်တစ်ပြက် ရိုက်ရန်</translation>
-<translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8425673304802773841">အောက်သို့ စောင်းရန်</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">မိုက်ခရိုဖုန်း အသံပိတ် ခလုတ်။ အသံတိတ်ခြင်း ဖွင့်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>

@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Tuvastati link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. leht on kustutatud</translation>
 <translation id="1258009455399840361">Pööra 90 kraadi päripäeva</translation>
-<translation id="1276998909102132017">Galerii pildid</translation>
 <translation id="1300209025925956156">Dokumendi skannimine</translation>
 <translation id="1309250603447638106">Dokumendi skannimiseks värskenduste allalaadimine</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Juurdepääsemine: Otsing + vasaknool.</translation>
 <translation id="1417314334557041815">Muuda <ph name="INDEX" />. lehte</translation>
-<translation id="1430915738399379752">Printimine</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> on eemaldatud.</translation>
 <translation id="1473110567575736769">3-sekundiline taimer</translation>
 <translation id="148783771699678004">Liigub paremale üles</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skanni veel üks leht</translation>
 <translation id="1851169887664797861">Saadaval on kaamera täiendavad juhtnupud</translation>
 <translation id="1851616744363735765">PEATATUD</translation>
-<translation id="1862930711583847113">Faili <ph name="FILE" /> ei saa eksportida</translation>
 <translation id="1899697626337024495">Foto eraldusvõime</translation>
 <translation id="1925845977604399247">Ava galerii</translation>
 <translation id="199526504800285197">Salvestamine peatati</translation>
 <translation id="1995951722691075581">Salvestamine peatati, sest seadmes on liiga vähe salvestusruumi. Kui soovite rohkem videoid salvestada, vabastage seadmes rohkem ruumi.</translation>
-<translation id="2022953316617983419">QR-kood</translation>
 <translation id="2036868001356139588">Taimeri kestus</translation>
 <translation id="2050339315714019657">Vertikaalpaigutus</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> on aktiivne</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-kood</translation>
 <translation id="2244252133441425811">Luba video kaadrisageduse valija</translation>
 <translation id="2271433936731426666">Luba video täissuuruses hetktõmmis</translation>
-<translation id="229579744168541441">Ekspordi kettale</translation>
 <translation id="2320741269052147773">Panoraami vasakule</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
 <translation id="2501853267655415902">Salvestamine on peatatud</translation>
-<translation id="2501953888035679275">Jäädvustage oma kaameraga fotosid ja salvestage videoid.</translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2549985041256363841">Alusta salvestamist</translation>
 <translation id="2577915835281444458">Salvestamine peatatakse varsti. Vabastage seadmes salvestusruumi.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Peegeldamise eelvaade</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> on ühendatud.</translation>
 <translation id="2904654629665923749">Dokumendi skannimine on saadaval</translation>
-<translation id="2968794441791257519">Kaameraga tehtud fotod ja videod teisaldatakse kausta Allalaadimised. Pääsete neile juurde jaotises Failid.
-
-Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja videotele.</translation>
 <translation id="3067436040345934772">Panoraami paremale</translation>
 <translation id="3081586908890909590">Vaheta video salvestamise režiimile</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Võrgustiku tüüp</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link on kopeeritud</translation>
-<translation id="3259149966178251584">Kaamera eraldusvõime</translation>
-<translation id="3305962767867348165">Paranda</translation>
 <translation id="3354465018370944241">Foto seaded</translation>
 <translation id="3411958449466169012">Taimer on välja lülitatud</translation>
 <translation id="3448774564454087943">Videot ei salvestatud, sest see on liiga lühike</translation>
 <translation id="346539236881580388">Tee uuesti</translation>
 <translation id="3517926952904427380">Portreefotot ei saa jäädvustada</translation>
 <translation id="3566302376254083266">Liigub vasakule üles</translation>
-<translation id="3569311554794739032">Kas soovite faili <ph name="FILE" /> kindlasti eemaldada?</translation>
 <translation id="3573890771273113519">Lülitumine skannimisrežiimi</translation>
 <translation id="3583444040776960729">Dokumendi vasak alanurk</translation>
 <translation id="3789724198583203151">Pööra 90 kraadi vastupäeva</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Skannige ribakood</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="4060608699153044055">Te ei saa salvestada, sest seadmes on liiga vähe salvestusruumi. Salvestamise alustamiseks peate oma seadmes ruumi vabastama.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
 <translation id="4281620174117014503">Keskmine eraldusvõime</translation>
 <translation id="428234092390943511">Lehe pisipilt</translation>
-<translation id="4329152592498422850">Vaheta ruudukujulise foto jäädvustamiseks</translation>
 <translation id="4340659173795395806">Nüüd saate luua mitme lehega PDF-e</translation>
 <translation id="4383571725254449280">Toimivuslogide trükkimine</translation>
 <translation id="4445542136948522167">Peata foto jäädvustamine</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapikslit</translation>
 <translation id="4570032796877367747">Esikaamera</translation>
 <translation id="4598556348158889687">Salvestusruumi haldus</translation>
 <translation id="4620818268515773682">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on välja lülitatud</translation>
@@ -133,7 +117,6 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="6353688143752491039">Täname, et andsite tagasisidet rakenduse Kaamera kohta.
 
 Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena näidisfoto või -video ja kirjeldage, mis on valesti. (Näiteks foto on liiga tume või objekt pole teravustatud.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapikslit</translation>
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="6617916774429601017">Kuva kõik eraldusvõimed</translation>
 <translation id="6631515515009660915">Peegeldamine on välja lülitatud</translation>
@@ -145,7 +128,6 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="695140971690006676">Lähtesta kõik</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekundit</translation>
-<translation id="712848772518857951">Kas soovite kindlasti eemaldada need <ph name="COUNT" /> üksust?</translation>
 <translation id="7134221860976209830">10-sekundiline taimer</translation>
 <translation id="7191890674911603392">Kirjetüüp</translation>
 <translation id="7243947652761655814">Video eraldusvõime</translation>
@@ -171,11 +153,9 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8145038249676204903">Vaheta foto jäädvustamise režiimile</translation>
 <translation id="8167081290930651932">Salvesta fotona</translation>
 <translation id="8239780215768881278">Jäädvusta video hetktõmmis</translation>
-<translation id="8261506727792406068">Kustuta</translation>
 <translation id="8425673304802773841">Kalluta alla</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on sisse lülitatud</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8730621377337864115">Valmis</translation>

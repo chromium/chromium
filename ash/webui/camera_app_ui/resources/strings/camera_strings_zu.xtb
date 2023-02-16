@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Isixhumanisi sitholiwe. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Ikhasi <ph name="PAGE_NUMBER" /> lisuliwe</translation>
 <translation id="1258009455399840361">Zungezisa u-90 degrees ngokwewashi</translation>
-<translation id="1276998909102132017">Izithombe zegalari</translation>
 <translation id="1300209025925956156">Skena idokhumenti yakho</translation>
 <translation id="1309250603447638106">Idawuniloda izibuyekezo zokuskena amadokhumenti</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Sesha + Umcibisholo ongakwesokunxele ukuze ufinyelele.</translation>
 <translation id="1417314334557041815">Hlela ikhasi <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Phrinta</translation>
 <translation id="1467231725790366244">I-<ph name="CAMERA" /> ayixhunywanga.</translation>
 <translation id="1473110567575736769">Isibali sikhathi samasekhondi ama-3</translation>
 <translation id="148783771699678004">Ihambela ngasohlangothini oluphezulu ngakwesokudla</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skena ikhasi elengeziwe</translation>
 <translation id="1851169887664797861">Izilawuli zekhamera ezengeziwe ziyatholakala</translation>
 <translation id="1851616744363735765">KUPHUNYUZIWE</translation>
-<translation id="1862930711583847113">Ayiwkazi ukukhipha i-<ph name="FILE" /></translation>
 <translation id="1899697626337024495">Ukulungiswa kwesithombe</translation>
 <translation id="1925845977604399247">Iya Kugalari</translation>
 <translation id="199526504800285197">Ukurekhoda kumisiwe</translation>
 <translation id="1995951722691075581">Ukurekhoda kwakho kumisiwe ngenxa yesikhala sesitoreji sedivayisi esiphansi. Ukuze urekhode amavidiyo wakho, udinga ukukhulula isikhala kudivayisi yakho.</translation>
-<translation id="2022953316617983419">Ikhodi ye-QR</translation>
 <translation id="2036868001356139588">Ubude besikhathi</translation>
 <translation id="2050339315714019657">Ukuma ngobude</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> iyasebenza</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Ikhodi ye-QR</translation>
 <translation id="2244252133441425811">Nika amandla isikhethi sevidiyo ye-FPS</translation>
 <translation id="2271433936731426666">Nika amandla isifinyezo sevidiyo enosayizi ogcwele</translation>
-<translation id="229579744168541441">Thumela kudiski</translation>
 <translation id="2320741269052147773">Jikisela ngakwesobunxele</translation>
 <translation id="2501278716633472235">Iya emuva</translation>
 <translation id="2501853267655415902">Ukurekhoda kumisiwe</translation>
-<translation id="2501953888035679275">Thatha izithombe uphinde urekhode amavidiyo ngekhamera yakho.</translation>
 <translation id="2517472476991765520">Skena</translation>
 <translation id="2549985041256363841">Qala ukuqopha</translation>
 <translation id="2577915835281444458">Ukurekhoda kuzomisa maduze. Hamba kusitoreji sedivayisi ukuze uvule isikhala.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Ukuhlola kuqala isibuko</translation>
 <translation id="2879583609344924966">I-<ph name="CAMERA" /> ixhunyiwe.</translation>
 <translation id="2904654629665923749">Ukuskena idokhumenti kuyatholakala</translation>
-<translation id="2968794441791257519">Izithombe namavidiyo ezithethwe ngekhamera zizoyiswa kufolda yokulanda. Ungazifinyelela kumafayela.
-
-        Izinhlelo zokusebenza ezinemvume yesitoreji zizofinyelela izithombe namavidiyo akho.</translation>
 <translation id="3067436040345934772">Jikisela ngakwesokudla</translation>
 <translation id="3081586908890909590">Shintshela ekurekhodeni ividiyo</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Uhlobo lwe-Grid</translation>
 <translation id="3227137524299004712">Imakrofoni</translation>
 <translation id="3240426699337459095">Isixhumanisi sikopishiwe</translation>
-<translation id="3259149966178251584">Ukulungiswa kwekhamera</translation>
-<translation id="3305962767867348165">Lungisa</translation>
 <translation id="3354465018370944241">Izilungiselelo zesithombe</translation>
 <translation id="3411958449466169012">Isibali sikhathi sivaliwe</translation>
 <translation id="3448774564454087943">Ividiyo ayilondoloziwe ngoba imfushane kakhulu</translation>
 <translation id="346539236881580388">Thatha futhi</translation>
 <translation id="3517926952904427380">Ayikwazi ukuthatha isithombe sokuma ngobude</translation>
 <translation id="3566302376254083266">Ihambela ngasohlangothini lwesobunxele phezulu</translation>
-<translation id="3569311554794739032">Ufuna ngempela ukukhipha <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Shintshela kwimodi yokuskena</translation>
 <translation id="3583444040776960729">Idokhumenti ekhoneni eliphansi kwesobunxele</translation>
 <translation id="3789724198583203151">Zungezisa u-90 degrees ngokuphambana nezinti zewashi</translation>
 <translation id="3810838688059735925">Ividiyo</translation>
-<translation id="3838931309141338733">Skena ibhakhodi</translation>
 <translation id="3892148308691398805">Kopisha umbhalo</translation>
 <translation id="4060608699153044055">Awukwazi ukurekhoda ngenxa yesikhala sesitoreji esincane. Ukuze uqale ukurekhoda, udinga ukukhulula isikhala kudivayisi yakho.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopisha ikheli lesixhumanisi</translation>
 <translation id="4281620174117014503">Ukucaca okumaphakathi</translation>
 <translation id="428234092390943511">Isithonjana sekhasi</translation>
-<translation id="4329152592498422850">Shintsha ukuze uthathe isithombe esiyisikwele</translation>
 <translation id="4340659173795395806">Manje usungakha i-PDF enamakhasi amaningi</translation>
 <translation id="4383571725254449280">Amalogu okusebenza kokuphrinta</translation>
 <translation id="4445542136948522167">Yeka ukuthatha isithombe</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> i-mega pixel</translation>
 <translation id="4570032796877367747">Ikhamera ephambili</translation>
 <translation id="4598556348158889687">Ukuphathwa kwesitoreji</translation>
 <translation id="4620818268515773682">Guqula ukuthulisa imakrofoni. Ukuthulisa kuvaliwe</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Siyabonga ngokunikeza impendulo kuhlelo lokusebenza Lekhamera.
 
 Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamathisele isampula yesithombe noma yevidiyo bese uchaza ukuthi iyini inkinga. (Ngokwesibonelo, isithombe simnyama kakhulu noma into ayigxilile.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> i-mega pixel</translation>
 <translation id="6527303717912515753">Yabelana</translation>
 <translation id="6617916774429601017">Bonisa konke ukucaca</translation>
 <translation id="6631515515009660915">Isibuko sivaliwe</translation>
@@ -145,7 +128,6 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="695140971690006676">Setha kabusha konke</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 amasekhondi</translation>
-<translation id="712848772518857951">Ingabe uyafuna ngempela ukususa izinto ezingu-<ph name="COUNT" />?</translation>
 <translation id="7134221860976209830">Isibali sikhathi samasekhondi ayi-10</translation>
 <translation id="7191890674911603392">Uhlobo lokurekhoda</translation>
 <translation id="7243947652761655814">Ukulungiswa kwevidiyo</translation>
@@ -171,11 +153,9 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="8145038249676204903">Shintshela ekuthatheni isithombe</translation>
 <translation id="8167081290930651932">Londoloza Njengesithombe</translation>
 <translation id="8239780215768881278">Thatha isifinyezo sevidiyo</translation>
-<translation id="8261506727792406068">Susa</translation>
 <translation id="8425673304802773841">Yisa phansi</translation>
 <translation id="8428213095426709021">Izilungiselelo</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">I-HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Guqula ukuthulisa imakrofoni. Ukuthulisa kuviliwe</translation>
 <translation id="8712637175834984815">Ngiyitholile</translation>
 <translation id="8730621377337864115">Kwenziwe</translation>

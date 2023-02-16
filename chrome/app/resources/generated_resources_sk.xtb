@@ -1432,6 +1432,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2251809247798634662">Nové okno inkognito</translation>
 <translation id="2252017960592955005">Ochrana pred špehovaním (beta)</translation>
 <translation id="225240747099314620">Povoliť identifikátory pre chránený obsah (môže sa vyžadovať reštart počítača)</translation>
+<translation id="2253318212986772520">Súbor PPD sa pre tlačiareň <ph name="PRINTER_NAME" /> nepodarilo načítať.</translation>
 <translation id="2255077166240162850">Toto zariadenie bolo uzamknuté a používa inú doménu či režim.</translation>
 <translation id="2255317897038918278">Časová pečiatka od spoločnosti Microsoft</translation>
 <translation id="2256115617011615191">Reštartovať</translation>
@@ -2900,6 +2901,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3582057310199111521">Zadané na podvodnom webe a nájdené v rámci porušenia ochrany údajov</translation>
 <translation id="3582299299336701326">Svetlé obrazovky môžete stmaviť a tmavé zosvetliť. Inverziu farieb zapnete alebo vypnete klávesovou skratkou Hľadať + Ctrl + H.</translation>
 <translation id="3584169441612580296">Čítať a meniť fotky, hudbu a ďalšie médiá z tohto počítača</translation>
+<translation id="3584527007414070635">Pokračujte položkou <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Aplikácia <ph name="APPLICATION_NAME" /> vyžaduje, aby bola k dispozícii služba OneDrive.</translation>
 <translation id="3586806079541226322">Súbor nie je možné otvoriť</translation>
 <translation id="3587438013689771191">Prečítajte si viac o téme: <ph name="SUBPAGE_TITLE" /></translation>
@@ -3858,6 +3860,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4443536555189480885">&amp;Pomocník</translation>
 <translation id="4444304522807523469">Mať prístup ku skenerom dokumentov pripojeným cez USB alebo v miestnej sieti</translation>
 <translation id="4444512841222467874">Ak nie je dostatok miesta, môže dôjsť k automatickému odstráneniu používateľov a dát.</translation>
+<translation id="4445446646109808714">Licenčná zmluva s koncovým používateľom: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Zrkadlené</translation>
 <translation id="4448914100439890108">Skryť heslo používateľa <ph name="USERNAME" /> v doméne <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Vaše používateľské meno patrí do pracovného účtu vašej organizácie. Ak chcete do tohto účtu zaregistrovať zariadenia, najprv overte vlastníctvo domény v Správcovskej konzole. Na overenie budete potrebovať správcovské oprávnenia pre daný účet.</translation>

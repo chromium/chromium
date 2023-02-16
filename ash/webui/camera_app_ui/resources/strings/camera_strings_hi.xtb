@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">लिंक पहचाना गया. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">पेज <ph name="PAGE_NUMBER" /> मिटाया गया</translation>
 <translation id="1258009455399840361">घड़ी की दिशा में 90 डिग्री घुमाएं</translation>
-<translation id="1276998909102132017">गैलरी की इमेज</translation>
 <translation id="1300209025925956156">अपना दस्तावेज़ स्कैन करें</translation>
 <translation id="1309250603447638106">दस्तावेज़ को स्कैन करने की सुविधा से जुड़े अपडेट डाउनलोड हो रहे हैं</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ऐक्सेस करने के लिए, खोज बटन + लेफ़्ट ऐरो दबाएं.</translation>
 <translation id="1417314334557041815">पेज <ph name="INDEX" /> में बदलाव करें</translation>
-<translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> अनप्लग किया गया.</translation>
 <translation id="1473110567575736769">तीन सेकंड का टाइमर</translation>
 <translation id="148783771699678004">सबसे ऊपर दाईं ओर जा रहा है</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">अतिरिक्त पेज को स्कैन करें</translation>
 <translation id="1851169887664797861">कैमरे के लिए अतिरिक्त कंट्रोल उपलब्ध हैं</translation>
 <translation id="1851616744363735765">रिकॉर्डिंग रोकी गई</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> को एक्सपोर्ट नहीं किया जा सका</translation>
 <translation id="1899697626337024495">फ़ोटो रिज़ॉल्यूशन</translation>
 <translation id="1925845977604399247">गैलरी में जाएं</translation>
 <translation id="199526504800285197">वीडियो रिकॉर्डिंग रोक दी गई है</translation>
 <translation id="1995951722691075581">डिवाइस का स्टोरेज कम होने की वजह से, वीडियो रिकॉर्डिंग रुक गई है. ज़्यादा वीडियो रिकॉर्ड करने के लिए, आपको अपने डिवाइस पर कुछ जगह खाली करनी होगी.</translation>
-<translation id="2022953316617983419">क्यूआर कोड</translation>
 <translation id="2036868001356139588">टाइमर का कुल समय</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> चालू है</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">क्यूआर कोड</translation>
 <translation id="2244252133441425811">वीडियो के लिए, FPS (फ़्रेम प्रति सेकंड) चुनने की सुविधा चालू करें</translation>
 <translation id="2271433936731426666">वीडियो का फ़ुल साइज़ स्नैपशॉट लेने की सुविधा चालू करें</translation>
-<translation id="229579744168541441">डिस्क में ले जाएं</translation>
 <translation id="2320741269052147773">बाईं ओर पैन करें</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2501853267655415902">रिकॉर्डिंग रुक गई है</translation>
-<translation id="2501953888035679275">अपने कैमरे से फ़ोटो खींचें और वीडियो रिकॉर्ड करें.</translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2549985041256363841">रिकॉर्ड करना शुरू करें</translation>
 <translation id="2577915835281444458">रिकॉर्डिंग जल्द ही बंद हो जाएगी. जगह खाली करने के लिए, डिवाइस के स्टोरेज पर जाएं.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">मिरर के कंट्रोल पैनल की झलक</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> प्लग किया गया.</translation>
 <translation id="2904654629665923749">दस्तावेज़ को स्कैन करने की सुविधा उपलब्ध है</translation>
-<translation id="2968794441791257519">कैमरे से ली गई फ़ोटो और वीडियो को 'डाउनलोड' फ़ोल्डर में ले जाया जाएगा. आप उन्हें फ़ाइल में जाकर ऐक्सेस कर सकते हैं.
-
-        मेमोरी की अनुमतियों वाले ऐप्लिकेशन आपकी फ़ोटो और वीडियो ऐक्सेस कर पाएंगे.</translation>
 <translation id="3067436040345934772">दाईं ओर पैन करें</translation>
 <translation id="3081586908890909590">वीडियो रिकॉर्डिंग मोड पर जाएं</translation>
 <translation id="313467653172006084">30 FPS (फ़्रेम प्रति सेकंड)</translation>
-<translation id="3183731565330012717">ग्रिड के प्रकार</translation>
 <translation id="3227137524299004712">माइक्रोफ़ोन</translation>
 <translation id="3240426699337459095">लिंक कॉपी की गई</translation>
-<translation id="3259149966178251584">कैमरे का रिज़ॉल्यूशन</translation>
-<translation id="3305962767867348165">ठीक करें</translation>
 <translation id="3354465018370944241">फ़ोटो सेटिंग</translation>
 <translation id="3411958449466169012">टाइमर बंद करें</translation>
 <translation id="3448774564454087943">वीडियो बहुत छोटा होने की वजह से सेव नहीं किया गया है</translation>
 <translation id="346539236881580388">फिर से लें</translation>
 <translation id="3517926952904427380">पोर्ट्रेट फ़ोटो नहीं ली जा सकी</translation>
 <translation id="3566302376254083266">सबसे ऊपर बाईं ओर जा रहा है</translation>
-<translation id="3569311554794739032">क्या आप वाकई <ph name="FILE" /> को हटाना चाहते हैं?</translation>
 <translation id="3573890771273113519">स्कैन मोड पर स्विच करें</translation>
 <translation id="3583444040776960729">दस्ताेवज़ का सबसे नीचे वाला बायां कोना</translation>
 <translation id="3789724198583203151">घड़ी की उल्टी दिशा में 90 डिग्री घुमाएं</translation>
 <translation id="3810838688059735925">वीडियो</translation>
-<translation id="3838931309141338733">बारकोड स्कैन करें</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
 <translation id="4060608699153044055">डिवाइस का स्टोरेज कम होने की वजह से, वीडियो रिकॉर्डिंग नहीं की जा सकती. रिकॉर्डिंग शुरू करने के लिए, आपको अपने डिवाइस पर कुछ जगह खाली करनी होगी.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> एमपी</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
 <translation id="4281620174117014503">मीडियम रिज़ॉल्यूशन</translation>
 <translation id="428234092390943511">पेज का थंबनेल</translation>
-<translation id="4329152592498422850">चौकोर फ़ोटो खींचने के लिए स्विच करें</translation>
 <translation id="4340659173795395806">अब आपके पास कई पेजों वाली PDF बनाने की सुविधा उपलब्ध है</translation>
 <translation id="4383571725254449280">परफ़ॉर्मेंस लॉग प्रिंट करें</translation>
 <translation id="4445542136948522167">फ़ोटो न खींचें</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> मेगापिक्सेल</translation>
 <translation id="4570032796877367747">सामने का कैमरा</translation>
 <translation id="4598556348158889687">डिवाइस की मेमोरी का प्रबंधन</translation>
 <translation id="4620818268515773682">माइक्रोफ़ोन को म्यूट करने वाले बटन को टॉगल करें. म्यूट बटन बंद है</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">कैमरा ऐप्लिकेशन पर अपने सुझाव, शिकायत या राय भेजने के लिए धन्यवाद.
 
 अगर आपकी शिकायत इमेज या वीडियो की क्वालिटी को लेकर है, तो कृपया नमूने के रूप में एक फ़ोटो या वीडियो जोड़ें और बताएं कि उसमें क्या गलत है. (उदाहरण के लिए, फ़ोटो बहुत गहरे रंग की है या जिसकी फ़ोटो लेनी है उस पर फ़ोकस नहीं है.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> मेगापिक्सेल</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="6617916774429601017">रिज़ॉल्यूशन के सभी विकल्प दिखाएं</translation>
 <translation id="6631515515009660915">'मिरर' बटन बंद कर दिया गया है</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">सभी को रीसेट करें</translation>
 <translation id="6965382102122355670">ठीक है</translation>
 <translation id="698156982839284926">तीन सेकंड</translation>
-<translation id="712848772518857951">क्या आप वाकई <ph name="COUNT" /> आइटम हटाना चाहते हैं?</translation>
 <translation id="7134221860976209830">10 सेकंड का टाइमर</translation>
 <translation id="7191890674911603392">रिकॉर्ड टाइप</translation>
 <translation id="7243947652761655814">वीडियो का रिज़ॉल्यूशन</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">फ़ोटो खींचने वाले मोड पर जाएं</translation>
 <translation id="8167081290930651932">फ़ोटो फ़ॉर्मैट में सेव करें</translation>
 <translation id="8239780215768881278">वीडियो के स्नैपशॉट लें</translation>
-<translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8425673304802773841">नीचे झुकाएं</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">एचडी <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">माइक्रोफ़ोन को म्यूट करने वाले बटन को टॉगल करें. म्यूट बटन चालू है</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8730621377337864115">हो गया</translation>

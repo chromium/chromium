@@ -733,6 +733,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4895488851634969361">Batareya doludur.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% batareya</translation>
+<translation id="491504982845934899">Cihaz ayarlamasından sonra aktivləşdirin (<ph name="NETWORK_NAME" />)</translation>
 <translation id="4917385247580444890">Güclü</translation>
 <translation id="4918086044614829423">Qəbul edin</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> hazırda kameranızdan istifadə edir</translation>
@@ -1329,6 +1330,7 @@ Yeni quraşdırma</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8131994907636310308">Sıralama bildirişini bağlayın</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> şəbəkəsinə qoşuldu</translation>
+<translation id="8138705869659070104">Cihazı ayarlayıb, aktiv edin</translation>
 <translation id="813913629614996137">Başladılır...</translation>
 <translation id="8142441511840089262">2 dəfə klikləyin</translation>
 <translation id="8142699993796781067">Şəxsi şəbəkə</translation>

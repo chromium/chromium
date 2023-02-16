@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Препознаен е линк. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Страницата <ph name="PAGE_NUMBER" /> е избришана</translation>
 <translation id="1258009455399840361">Ротирајте 90 степени во насока на стрелките на часовникот</translation>
-<translation id="1276998909102132017">Слики од галеријата</translation>
 <translation id="1300209025925956156">Скенирајте го документот</translation>
 <translation id="1309250603447638106">Преземете ги ажурирањата за скенирање документи</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + стрелка налево за пристап.</translation>
 <translation id="1417314334557041815">Изменете ја страницата <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Печати</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> е исклучена.</translation>
 <translation id="1473110567575736769">Тајмер од 3 секунди</translation>
 <translation id="148783771699678004">Се преместува горе десно</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Скенирај дополнителна страница</translation>
 <translation id="1851169887664797861">Достапни се дополнителни контроли за камерата</translation>
 <translation id="1851616744363735765">ПАУЗИРАНО</translation>
-<translation id="1862930711583847113">Не може да се извезе <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Фоторезолуција</translation>
 <translation id="1925845977604399247">Оди во галеријата</translation>
 <translation id="199526504800285197">Снимањето е запрено</translation>
 <translation id="1995951722691075581">Снимањето запре поради недоволен простор за складирање на уредот. За да снимите уште видеа, треба да ослободите простор на уредот.</translation>
-<translation id="2022953316617983419">QR-код</translation>
 <translation id="2036868001356139588">Времетраење на тајмерот</translation>
 <translation id="2050339315714019657">Портрет</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> е активна</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2244252133441425811">Овозможете избирач на FPS за видео</translation>
 <translation id="2271433936731426666">Овозможете слика на состојбата на видеото со целосна големина</translation>
-<translation id="229579744168541441">Извези на диск</translation>
 <translation id="2320741269052147773">Движење надесно</translation>
 <translation id="2501278716633472235">Врати се</translation>
 <translation id="2501853267655415902">Снимањето е запрено</translation>
-<translation id="2501953888035679275">Фотографирајте и снимајте видеа со камерата.</translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2549985041256363841">Започни со снимање</translation>
 <translation id="2577915835281444458">Снимањето наскоро ќе запре. Одете на капацитетот на уредот за да ослободите простор.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Преглед на отсликување</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> е приклучена.</translation>
 <translation id="2904654629665923749">Достапно е скенирање документи</translation>
-<translation id="2968794441791257519">Фотографиите и видеата снимени со камерата ќе се преместат во папката „Преземања“. До нив може да пристапувате од „Датотеки“.
-
-        Апликациите со дозволи за складирање ќе имаат пристап до вашите фотографии и видеа.</translation>
 <translation id="3067436040345934772">Движење надесно</translation>
 <translation id="3081586908890909590">Префрли на снимање видео</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Тип решетка</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Врската е копирана</translation>
-<translation id="3259149966178251584">Резолуција на камерата</translation>
-<translation id="3305962767867348165">Поправи</translation>
 <translation id="3354465018370944241">Поставки за фотографија</translation>
 <translation id="3411958449466169012">Исклучен тајмер</translation>
 <translation id="3448774564454087943">Видеото не се зачува бидејќи е прекратко</translation>
 <translation id="346539236881580388">Фотографирај пак</translation>
 <translation id="3517926952904427380">Не може да фотографира во портрет</translation>
 <translation id="3566302376254083266">Се преместува горе лево</translation>
-<translation id="3569311554794739032">Дали навистина сакате да ја отстраните <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Префрли на режим на скенирање</translation>
 <translation id="3583444040776960729">Долен лев агол на документот</translation>
 <translation id="3789724198583203151">Ротирајте 90 степени спротивно од стрелките на часовникот</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3838931309141338733">Скенирајте го бар-кодот</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="4060608699153044055">Не може да снимате поради недоволен простор за складирање на уредот. За да започнете со снимање, треба да ослободите простор на вашиот уред.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Копирај ја адресата на линкот</translation>
 <translation id="4281620174117014503">Резолуција на аудиовизуелни содржини</translation>
 <translation id="428234092390943511">Сликичка на страница</translation>
-<translation id="4329152592498422850">Префрли на фотографирање во квадратна форма</translation>
 <translation id="4340659173795395806">Сега можете да создавате PDF-датотеки со повеќе страници</translation>
 <translation id="4383571725254449280">Евиденција за изведба на печатењето</translation>
 <translation id="4445542136948522167">Сопри го фотографирањето</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксели</translation>
 <translation id="4570032796877367747">Предна камера</translation>
 <translation id="4598556348158889687">Управување со меморијата</translation>
 <translation id="4620818268515773682">Исклучете го звукот на микрофонот. Копчето за исклучување звук е исклучено</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Фала за повратните информации за апликацијата „Камера“.
 
 Ако повратните информации се за квалитетот на сликата или видеото, прикачете пример од фотографија или видео и опишете што не е во ред. (На пример, фотографијата е претемна или предметот не е во фокус.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксели</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="6617916774429601017">Прикажи ги сите резолуции</translation>
 <translation id="6631515515009660915">Исклучено е отсликување</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">Ресетирај ги сите</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="698156982839284926">3 секунди</translation>
-<translation id="712848772518857951">Дали навистина сакате да отстраните <ph name="COUNT" /> ставки?</translation>
 <translation id="7134221860976209830">Тајмер од 10 секунди</translation>
 <translation id="7191890674911603392">Тип снимка</translation>
 <translation id="7243947652761655814">Видеорезолуција</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">Префрли на фотографирање</translation>
 <translation id="8167081290930651932">Зачувај како фотографија</translation>
 <translation id="8239780215768881278">Создајте слика од видеото</translation>
-<translation id="8261506727792406068">Избриши</translation>
 <translation id="8425673304802773841">Навалете надолу</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" /> пиксели (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Исклучете го звукот на микрофонот. Копчето за исклучување звук е вклучено</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8730621377337864115">Готово</translation>

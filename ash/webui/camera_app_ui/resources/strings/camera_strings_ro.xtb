@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">A fost detectat un link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Pagina <ph name="PAGE_NUMBER" /> a fost ștearsă</translation>
 <translation id="1258009455399840361">Rotește spre dreapta cu 90 de grade</translation>
-<translation id="1276998909102132017">Imagini din galerie</translation>
 <translation id="1300209025925956156">Scanează documentul</translation>
 <translation id="1309250603447638106">Se descarcă actualizările pentru scanarea documentelor</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasta de căutare + săgeată spre stânga pentru acces.</translation>
 <translation id="1417314334557041815">Editează pagina <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Printează</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> este deconectată.</translation>
 <translation id="1473110567575736769">Cronometru de 3 secunde</translation>
 <translation id="148783771699678004">Se deplasează în sus, spre dreapta</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Scanează o pagină suplimentară</translation>
 <translation id="1851169887664797861">Comenzi pentru cameră suplimentare disponibile</translation>
 <translation id="1851616744363735765">ÎNTRERUPTĂ</translation>
-<translation id="1862930711583847113">Fișierul <ph name="FILE" /> nu poate fi exportat</translation>
 <translation id="1899697626337024495">Rezoluție foto</translation>
 <translation id="1925845977604399247">Accesează Galeria</translation>
 <translation id="199526504800285197">Înregistrarea a fost oprită</translation>
 <translation id="1995951722691075581">Înregistrarea s-a oprit din cauza spațiului de stocare redus de pe dispozitiv. Pentru a înregistra mai multe videoclipuri, trebuie să eliberezi spațiu pe dispozitiv.</translation>
-<translation id="2022953316617983419">Cod QR</translation>
 <translation id="2036868001356139588">Durata temporizatorului</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> s-a activat</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2244252133441425811">Activează selectorul de CPS pentru videoclipuri</translation>
 <translation id="2271433936731426666">Activează instantaneul video la dimensiune completă</translation>
-<translation id="229579744168541441">Exportă pe disc</translation>
 <translation id="2320741269052147773">Deplasează spre stânga</translation>
 <translation id="2501278716633472235">Înapoi</translation>
 <translation id="2501853267655415902">Înregistrarea s-a oprit</translation>
-<translation id="2501953888035679275">Fotografiază și înregistrează videoclipuri cu camera foto.</translation>
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2549985041256363841">Pornește înregistrarea</translation>
 <translation id="2577915835281444458">Înregistrarea se va opri în curând. Accesează stocarea dispozitivului pentru a elibera spațiu.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Previzualizarea oglindirii</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> este conectată.</translation>
 <translation id="2904654629665923749">Este disponibilă scanarea documentelor</translation>
-<translation id="2968794441791257519">Fotografiile și videoclipurile făcute cu camera foto vor fi mutate în dosarul Descărcări. Le poți accesa în Fișiere.
-
-        Aplicațiile cu permisiuni de stocare vor avea acces la fotografiile și videoclipurile tale.</translation>
 <translation id="3067436040345934772">Deplasează la dreapta</translation>
 <translation id="3081586908890909590">Comută pentru a înregistra un videoclip</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Tipul grilei</translation>
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3240426699337459095">Linkul a fost copiat</translation>
-<translation id="3259149966178251584">Rezoluția camerei</translation>
-<translation id="3305962767867348165">Remediază</translation>
 <translation id="3354465018370944241">Setări pentru fotografii</translation>
 <translation id="3411958449466169012">Temporizator dezactivat</translation>
 <translation id="3448774564454087943">Videoclipul nu va fi salvat, deoarece este prea scurt</translation>
 <translation id="346539236881580388">Refă</translation>
 <translation id="3517926952904427380">Nu se poate face fotografia portret</translation>
 <translation id="3566302376254083266">Se deplasează în sus, spre stânga</translation>
-<translation id="3569311554794739032">Sigur vrei să elimini <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Comută la modul de scanare</translation>
 <translation id="3583444040776960729">Colțul din stânga jos al documentului</translation>
 <translation id="3789724198583203151">Rotește spre stânga cu 90 de grade</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Scanează codul de bare</translation>
 <translation id="3892148308691398805">Copiază textul</translation>
 <translation id="4060608699153044055">Nu poți înregistra din cauza spațiului de stocare redus de pe dispozitiv. Pentru a începe înregistrarea, trebuie să eliberezi spațiu pe dispozitiv.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Copiază adresa linkului</translation>
 <translation id="4281620174117014503">Rezoluție medie</translation>
 <translation id="428234092390943511">Miniatură pentru pagină</translation>
-<translation id="4329152592498422850">Comută pentru a face o fotografie pătrată</translation>
 <translation id="4340659173795395806">Acum poți crea PDF-uri cu mai multe pagini</translation>
 <translation id="4383571725254449280">Printează jurnalele de performanță</translation>
 <translation id="4445542136948522167">Nu mai fotografia</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixeli</translation>
 <translation id="4570032796877367747">Camera foto frontală</translation>
 <translation id="4598556348158889687">Gestionarea stocării</translation>
 <translation id="4620818268515773682">Comută dezactivarea sunetului microfonului. Dezactivarea sunetului este dezactivată</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Mulțumim pentru feedbackul privind aplicația Cameră foto.
 
 Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează un exemplu de fotografie sau de videoclip și descrie problema. (De exemplu, fotografia este prea întunecată sau focalizarea nu este realizată pe subiect.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixeli</translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="6617916774429601017">Afișează toate rezoluțiile</translation>
 <translation id="6631515515009660915">Oglindirea a fost dezactivată</translation>
@@ -145,7 +128,6 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="695140971690006676">Resetează-le pe toate</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 secunde</translation>
-<translation id="712848772518857951">Sigur dorești să elimini <ph name="COUNT" /> elemente?</translation>
 <translation id="7134221860976209830">Cronometru de 10 secunde</translation>
 <translation id="7191890674911603392">Tip de înregistrare</translation>
 <translation id="7243947652761655814">Rezoluție video</translation>
@@ -171,11 +153,9 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="8145038249676204903">Comută pentru a fotografia</translation>
 <translation id="8167081290930651932">Salvează ca fotografie</translation>
 <translation id="8239780215768881278">Fă un instantaneu video</translation>
-<translation id="8261506727792406068">Șterge</translation>
 <translation id="8425673304802773841">Înclină în jos</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Comută dezactivarea sunetului microfonului. Dezactivarea sunetului este activată</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8730621377337864115">Terminat</translation>

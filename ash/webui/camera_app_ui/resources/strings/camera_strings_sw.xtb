@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Kiungo kimetambuliwa. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Ukurasa wa <ph name="PAGE_NUMBER" /> umefutwa</translation>
 <translation id="1258009455399840361">Zungusha kwa digrii 90 katika mzunguko wa saa</translation>
-<translation id="1276998909102132017">Picha za matunzio</translation>
 <translation id="1300209025925956156">Changanua hati yako</translation>
 <translation id="1309250603447638106">Kinapakua masasisho ya kuchanganua hati</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Bonyeza kitufe cha Utafutaji pamoja na kishale cha Kushoto ili uvifikie.</translation>
 <translation id="1417314334557041815">Badilisha ukurasa <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Chapisha</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> imechomolewa.</translation>
 <translation id="1473110567575736769">Kipima muda wa sekunde tatu</translation>
 <translation id="148783771699678004">Inasogezwa upande wa juu kulia</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Changanua ukurasa wa ziada</translation>
 <translation id="1851169887664797861">Vidhibiti vya ziada vya kamera vinapatikana</translation>
 <translation id="1851616744363735765">IMESITISHWA</translation>
-<translation id="1862930711583847113">Imeshindwa kutuma <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Ubora wa picha</translation>
 <translation id="1925845977604399247">Nenda kwenye Matunzio</translation>
 <translation id="199526504800285197">Imeacha kurekodi</translation>
 <translation id="1995951722691075581">Imeacha kurekodi kwa sababu kifaa kina nafasi ndogo ya kuhifadhi. Ili urekodi video nyingi zaidi, unahitaji kufuta faili ili uongeze nafasi ya kuhifadhi kwenye kifaa chako.</translation>
-<translation id="2022953316617983419">Msimbo wa QR</translation>
 <translation id="2036868001356139588">Urefu wa kipima muda</translation>
 <translation id="2050339315714019657">Wima</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> inatumika</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Msimbo wa QR</translation>
 <translation id="2244252133441425811">Washa kiteua kasi ya picha kwa sekunde cha video (FPS)</translation>
 <translation id="2271433936731426666">Washa kipengele cha kijipicha cha video chenye ukubwa kamili</translation>
-<translation id="229579744168541441">Tuma kwenye diski</translation>
 <translation id="2320741269052147773">Geuza kushoto</translation>
 <translation id="2501278716633472235">Rudi nyuma</translation>
 <translation id="2501853267655415902">Imeacha kurekodi</translation>
-<translation id="2501953888035679275">Piga picha na urekodi video ukitumia kamera yako.</translation>
 <translation id="2517472476991765520">Tafuta</translation>
 <translation id="2549985041256363841">Anza kurekodi</translation>
 <translation id="2577915835281444458">Itaaacha kurekodi hivi punde. Nenda kwenye hifadhi ya kifaa ufute faili ili uongeze nafasi.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Onyesho la kukagua hali ya kuakisi</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> imechomekwa.</translation>
 <translation id="2904654629665923749">Kipengele cha kuchanganua hati kinapatikana</translation>
-<translation id="2968794441791257519">Itahamishia picha na video ulizopigwa kwa kamera kwenye folda ya Vipakuliwa. Unaweza kuzifikia kwenye Faili.
-
-        Programu zilizo na ruhusa za hifadhi zitaweza kufikia picha na video zako.</translation>
 <translation id="3067436040345934772">Geuza kulia</translation>
 <translation id="3081586908890909590">Rekodi video</translation>
 <translation id="313467653172006084">FPS 30</translation>
-<translation id="3183731565330012717">Aina ya gridi</translation>
 <translation id="3227137524299004712">Maikrofoni</translation>
 <translation id="3240426699337459095">Kiungo kimenakiliwa</translation>
-<translation id="3259149966178251584">Ubora wa kamera</translation>
-<translation id="3305962767867348165">Rekebisha</translation>
 <translation id="3354465018370944241">Mipangilio ya picha</translation>
 <translation id="3411958449466169012">Zima kipima muda</translation>
 <translation id="3448774564454087943">Video haijahifadhiwa kwa sababu ni fupi mno</translation>
 <translation id="346539236881580388">Piga picha tena</translation>
 <translation id="3517926952904427380">Imeshindwa kupiga picha ya wima</translation>
 <translation id="3566302376254083266">Inasogezwa upande wa juu kushoto</translation>
-<translation id="3569311554794739032">Una uhakika ungependa kuondoa <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Badilisha utumie hali ya kuchanganua</translation>
 <translation id="3583444040776960729">Pembe ya chini kushoto ya hati</translation>
 <translation id="3789724198583203151">Zungusha kwa digrii 90 kinyume cha saa</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Changanua msimbo wa mistari</translation>
 <translation id="3892148308691398805">Nakili maandishi</translation>
 <translation id="4060608699153044055">Huwezi kurekodi kwa sababu kifaa kina nafasi ndogo ya kuhifadhi. Ili uanze kurekodi unahitaji kufuta faili ili uongeze nafasi kwenye kifaa chako.</translation>
 <translation id="4061162772429051350">MP <ph name="MAGAPIXELS_AMOUNT" /></translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Nakili anwani ya kiungo</translation>
 <translation id="4281620174117014503">Ubora wa wastani</translation>
 <translation id="428234092390943511">Kijipicha cha ukurasa</translation>
-<translation id="4329152592498422850">Badili ili upige picha ya mraba</translation>
 <translation id="4340659173795395806">Sasa unaweza kuanzisha faili ya PDF yenye kurasa nyingi</translation>
 <translation id="4383571725254449280">Chapisha kumbukumbu za utendaji</translation>
 <translation id="4445542136948522167">Acha kupiga picha</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) megapikseli <ph name="MEGAPIXEL" /></translation>
 <translation id="4570032796877367747">Kamera ya mbele</translation>
 <translation id="4598556348158889687">Udhibiti wa hifadhi</translation>
 <translation id="4620818268515773682">Geuza ili uzime sauti ya maikrofoni. Sauti haijazimwa</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Asante kwa kutoa maoni kuhusu programu ya Kamera.
 
 Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa picha au video kisha uelezee tatizo lililopo. (Kwa mfano, hakuna mwangaza wa kutosha kwenye picha au kinachopigwa picha hakijaangaziwa vizuri.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) megapikseli <ph name="MEGAPIXEL" /></translation>
 <translation id="6527303717912515753">Shiriki</translation>
 <translation id="6617916774429601017">Onyesha hali zote za ubora</translation>
 <translation id="6631515515009660915">Zima kipengele cha kuakisi</translation>
@@ -145,7 +128,6 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="695140971690006676">Weka vyote upya</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="698156982839284926">Sekunde 3</translation>
-<translation id="712848772518857951">Una uhakika ungependa kuondoa vipengee <ph name="COUNT" />?</translation>
 <translation id="7134221860976209830">Kipima muda wa sekunde 10</translation>
 <translation id="7191890674911603392">Aina ya kurekodi</translation>
 <translation id="7243947652761655814">Ubora wa video</translation>
@@ -171,11 +153,9 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="8145038249676204903">Piga picha</translation>
 <translation id="8167081290930651932">Hifadhi ikiwa Picha</translation>
 <translation id="8239780215768881278">Rekodi muhtasari wa video</translation>
-<translation id="8261506727792406068">Futa</translation>
 <translation id="8425673304802773841">Inamisha chini</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Geuza ili uzime sauti ya maikrofoni. Sauti imezimwa</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>

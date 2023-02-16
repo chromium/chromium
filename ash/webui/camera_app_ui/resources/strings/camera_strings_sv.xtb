@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Länk har identifierats. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Sida <ph name="PAGE_NUMBER" /> har raderats</translation>
 <translation id="1258009455399840361">Rotera 90 grader medurs</translation>
-<translation id="1276998909102132017">Bilder i galleriet</translation>
 <translation id="1300209025925956156">Skanna dokumentet</translation>
 <translation id="1309250603447638106">Laddar ned uppdateringar för dokumentskanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Sök + vänsterpil för att få åtkomst.</translation>
 <translation id="1417314334557041815">Redigera sida <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> är inte ansluten.</translation>
 <translation id="1473110567575736769">Timer för 3 sekunder</translation>
 <translation id="148783771699678004">Flyttas uppåt åt höger</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skanna ytterligare en sida</translation>
 <translation id="1851169887664797861">Ytterligare kamerakontroller tillgängliga</translation>
 <translation id="1851616744363735765">PAUSAD</translation>
-<translation id="1862930711583847113">Det gick inte att exportera <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Fotoupplösning</translation>
 <translation id="1925845977604399247">Besök galleriet</translation>
 <translation id="199526504800285197">Inspelningen har avslutats</translation>
 <translation id="1995951722691075581">Inspelningen avslutades eftersom lagringsutrymmet är nästan fullt på enheten. Du måste frigöra utrymme på enheten om du vill spela in fler videor.</translation>
-<translation id="2022953316617983419">QR-kod</translation>
 <translation id="2036868001356139588">Timerns längd</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-kod</translation>
 <translation id="2244252133441425811">Aktivera FPS-väljare för video</translation>
 <translation id="2271433936731426666">Aktivera ögonblicksvideo i full storlek</translation>
-<translation id="229579744168541441">Exportera till disk</translation>
 <translation id="2320741269052147773">Panorera åt vänster</translation>
 <translation id="2501278716633472235">Föregående</translation>
 <translation id="2501853267655415902">Inspelningen stoppades</translation>
-<translation id="2501953888035679275">Ta foton och spela in video med kameran.</translation>
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
 <translation id="2577915835281444458">Inspelning avslutas snart. Gå till enhetens lagringsutrymme för att frigöra utrymme.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Spegla förhandsgranskning</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> är ansluten.</translation>
 <translation id="2904654629665923749">Dokumentskanning tillgängligt</translation>
-<translation id="2968794441791257519">Videor och foton du tagit med kameran flyttas till mappen Nedladdningar. Du kan öppna dem i Filer.
-
-        Fotona och videorna blir tillgängliga för appar som har åtkomstbehörighet till lagringsutrymmet.</translation>
 <translation id="3067436040345934772">Panorera åt höger</translation>
 <translation id="3081586908890909590">Byt till videoinspelning</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Typ av rutnät</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Länken har kopierats</translation>
-<translation id="3259149966178251584">Kameraupplösning</translation>
-<translation id="3305962767867348165">Åtgärda</translation>
 <translation id="3354465018370944241">Fotoinställningar</translation>
 <translation id="3411958449466169012">Timer av</translation>
 <translation id="3448774564454087943">Videon sparas inte eftersom den är för kort</translation>
 <translation id="346539236881580388">Ta om</translation>
 <translation id="3517926952904427380">Det gick inte att ta porträttfoto</translation>
 <translation id="3566302376254083266">Flyttas uppåt åt vänster</translation>
-<translation id="3569311554794739032">Vill du ta bort <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Byt till skanningsläge</translation>
 <translation id="3583444040776960729">Nedre vänstra hörnet på dokumentet</translation>
 <translation id="3789724198583203151">Rotera 90 grader moturs</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Läs av streckkod</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="4060608699153044055">Det går inte att spela in eftersom det inte finns tillräckligt med lagringsutrymme på enheten. Du måste frigöra utrymme på enheten innan du kan börja spela in.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopiera länkadress</translation>
 <translation id="4281620174117014503">Medelhög upplösning</translation>
 <translation id="428234092390943511">Sidminiatyr</translation>
-<translation id="4329152592498422850">Byt till att ta kvadratiskt foto</translation>
 <translation id="4340659173795395806">Nu kan du skapa PDF:er med flera sidor</translation>
 <translation id="4383571725254449280">Skriva ut resultatloggar</translation>
 <translation id="4445542136948522167">Sluta ta foton</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Främre kamera</translation>
 <translation id="4598556348158889687">Lagringshantering</translation>
 <translation id="4620818268515773682">Aktivera eller inaktivera Ljud av för mikrofonen. Ljud av inaktiverat för mikrofonen</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Tack för att du ger feedback om Kamera-appen.
 
 Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild eller exempelvideo och beskriver problemet. (Till exempel: fotot är för mörkt eller motivet är inte i fokus.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Dela</translation>
 <translation id="6617916774429601017">Visa alla upplösningar</translation>
 <translation id="6631515515009660915">Spegling av</translation>
@@ -145,7 +128,6 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="695140971690006676">Återställ alla</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">Tre sekunder</translation>
-<translation id="712848772518857951">Vill du ta bort <ph name="COUNT" /> objekt?</translation>
 <translation id="7134221860976209830">Timer för 10 sekunder</translation>
 <translation id="7191890674911603392">Inspelningstyp</translation>
 <translation id="7243947652761655814">Videoupplösning</translation>
@@ -171,11 +153,9 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="8145038249676204903">Byt till fotoläge</translation>
 <translation id="8167081290930651932">Spara som foto</translation>
 <translation id="8239780215768881278">Spela in en ögonblicksvideo</translation>
-<translation id="8261506727792406068">Radera</translation>
 <translation id="8425673304802773841">Vrid nedåt</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Aktivera eller inaktivera Ljud av för mikrofonen. Ljud av aktiverat för mikrofonen</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8730621377337864115">Klart</translation>

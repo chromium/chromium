@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Кнопка "Продолжить поиск в истории". Нажмите Ввод, чтобы посмотреть похожие действия в истории Chrome.</translation>
 <translation id="1101672080107056897">Действие при ошибке</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Пропущены обязательные поля. Заполните их.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: выберите разрешение</translation>
 <translation id="1112828774174131240">Антиквариат и коллекционные изделия</translation>
@@ -1150,7 +1151,7 @@
 <translation id="3823019343150397277">Код IBAN</translation>
 <translation id="3823402221513322552">Вашим браузером управляет <ph name="BROWSER_DOMAIN" />, а вашим профилем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Если вы используете прокси-сервер...</translation>
-<translation id="3826050100957962900">Предложения войти в аккаунт от третьих сторон</translation>
+<translation id="3826050100957962900">Вход через сторонние сервисы</translation>
 <translation id="3827112369919217609">Абсолютный</translation>
 <translation id="3827666161959873541">Семейные фильмы</translation>
 <translation id="3828924085048779000">Пустые кодовые фразы запрещены.</translation>
@@ -1314,6 +1315,7 @@
 <translation id="4223404254440398437">Доступ к микрофону запрещен</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Выполните диагностику сети<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Разрешено отправлять запрос на использование камеры и ее перемещение</translation>
+<translation id="4231448684371260244">8 x 13 дюймов</translation>
 <translation id="4235360514405112390">Действительный</translation>
 <translation id="4250431568374086873">Подключение к сайту защищено не полностью</translation>
 <translation id="4250680216510889253">Нет</translation>
@@ -2015,6 +2017,7 @@
 <translation id="5992691462791905444">Укороченная фальцовка гармошкой</translation>
 <translation id="5992805036496113940">Посмотреть информацию, на основе которой вам показывается реклама</translation>
 <translation id="5995727681868049093">Настроить параметры конфиденциальности и безопасности в аккаунте Google</translation>
+<translation id="5996887213716993070">Поле "<ph name="FIELD" />" должно быть заполнено.</translation>
 <translation id="5997247540087773573">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, измените его прямо сейчас и проверьте сохраненные пароли в Google Менеджере паролей.</translation>
 <translation id="6000758707621254961">Количество результатов поиска по запросу "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="6005765687956866568">Автоматически указанные сведения были удалены из формы</translation>
@@ -2754,6 +2757,7 @@
 <translation id="7766518757692125295">Юбка</translation>
 <translation id="7773005668374414287">В том же порядке лицевой стороной вверх</translation>
 <translation id="7785790577395078482">этот планшет</translation>
+<translation id="7786368602962652765">Пропущено обязательное поле. Заполните его.</translation>
 <translation id="7790488044432570133">Сайты, которые вы посещаете, могут запрашивать у Chrome информацию для оценки эффективности рекламы. Chrome разрешает сайтам собирать некоторые типы данные, например о том, в какое время суток.</translation>
 <translation id="7791011319128895129">Не выпущено</translation>
 <translation id="7791196057686275387">Прессование</translation>
@@ -3185,6 +3189,7 @@
 <translation id="8899807382908246773">Навязчивая реклама</translation>
 <translation id="8903921497873541725">Увеличить</translation>
 <translation id="890493561996401738">Кнопка удаления подсказки. Нажмите Ввод, чтобы удалить. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
+<translation id="8910898109640902752">8 x 10 дюймов</translation>
 <translation id="8912362522468806198">Аккаунт Google</translation>
 <translation id="8913778647360618320">Кнопка управления способами оплаты. Нажмите Ввод, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
 <translation id="8922013791253848639">Всегда разрешать рекламу на этом сайте</translation>

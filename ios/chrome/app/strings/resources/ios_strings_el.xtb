@@ -101,6 +101,7 @@
 <translation id="1608337082864370066">Αναζήτηση για την αντιγραμμένη εικόνα</translation>
 <translation id="1612730193129642006">Εμφάνιση πλέγματος καρτελών</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> επαναχρησιμοποιημένοι κωδικοί πρόσβασης</translation>
 <translation id="1641113438599504367">Ασφαλής περιήγηση</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1650222530560417226">Πατήστε το κουμπί "Έναρξη καταγραφής" για να συλλέξετε τα μελλοντικά αρχεία καταγραφής της κονσόλας JavaScript και τα σφάλματα από όλες τις καρτέλες. Τα αρχεία καταγραφής θα συλλέγονται (και θα αποθηκεύονται μόνο στη μνήμη) έως ότου κλείσει αυτή η σελίδα ή πατηθεί η επιλογή "Διακοπή καταγραφής".</translation>
@@ -192,6 +193,7 @@
 <translation id="2411749908844615428">{count,plural, =1{Διατίθεται {count} αποθηκευμένη διεύθυνση πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένες διευθύνσεις πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="2421004566762153674">Αποκλεισμός cookie τρίτου μέρους</translation>
 <translation id="2421044535038393232">Συνέχιση επεξεργασίας</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} παραβιασμένος κωδικός πρόσβασης}other{{COUNT} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
 <translation id="2434405374328098816">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον χρήστη "<ph name="USERNAME" />" στον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
 <translation id="2451654228769116489">Καρφίτσωμα καρτέλας</translation>
@@ -199,6 +201,7 @@
 <translation id="2469960372084740698">Να απενεργοποιηθεί η Ασφαλής περιήγηση;</translation>
 <translation id="2473876017985765807">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Δεν έχει επιλεγεί</translation>
+<translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
 <translation id="2496626742194544812">Μετάβαση στην πρώτη καρτέλα</translation>
 <translation id="2500374554657206846">Επιλογές για την αποθήκευση κωδικού πρόσβασης</translation>
@@ -334,6 +337,7 @@
 <translation id="345565170154308620">Διαχείριση κωδικών πρόσβασης…</translation>
 <translation id="3469166899695866866">Διακοπή λήψης;</translation>
 <translation id="3470502288861289375">Αντιγραφή…</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{για {COUNT} ιστότοπο ή εφαρμογή}other{για {COUNT} ιστοτόπους και εφαρμογές}}</translation>
 <translation id="3474624961160222204">Συνέχεια <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Μήνας λήξης</translation>
 <translation id="3482959374254649722">Συγχρονισμός των καρτελών σας…</translation>
@@ -380,6 +384,7 @@
 <translation id="3818293389945649617">Εύρεση επόμενου</translation>
 <translation id="3819183753496523827">Είστε εκτός σύνδεσης. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="3835964409414434850">Μετάβαση στην επόμενη καρτέλα</translation>
+<translation id="3838691874161539578">Ελέγξτε τους αποθηκευμένους κωδικούς πρόσβασης για να ενισχύσετε την ασφάλειά σας και να παραμείνετε ασφαλείς στο διαδίκτυο.</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3851938967634752633">Οι κωδικοί πρόσβασης για τους ιστοτόπους <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> και <ph name="NUMBER_OF_ACCOUNTS" /> ακόμη λογαριασμούς θα διαγραφούν. Οι λογαριασμοί σας δεν θα διαγραφούν.</translation>
 <translation id="3858860766373142691">Όνομα</translation>
@@ -433,8 +438,8 @@
 <translation id="4237377247299956313">Πατήστε <ph name="BEGIN_BOLD" />Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Εισαγωγή φράσης πρόσβασης</translation>
 <translation id="4249955472157341256">Ταξινόμηση με βάση την πιο πρόσφατη</translation>
-<translation id="42618743927498729">Λάβετε μια ειδοποίηση σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο.</translation>
 <translation id="4263576668337963058">Εμφάνιση διαθέσιμων ενεργειών σελίδας</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{Παραβλέψατε {COUNT} προειδοποίηση}other{Παραβλέψατε {COUNT} προειδοποιήσεις}}</translation>
 <translation id="4272631900155121838">Για να σαρώσετε έναν κώδικα QR, ενεργοποιήστε την κάμερα από τις ρυθμίσεις</translation>
 <translation id="4277990410970811858">Ασφαλής περιήγηση</translation>
 <translation id="4281844954008187215">Όροι Παροχής Υπηρεσιών</translation>
@@ -481,6 +486,7 @@
 <translation id="4630540211544979320">Μετάφραση σελίδων</translation>
 <translation id="4634124774493850572">Χρήση κωδικού πρόσβασης</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
+<translation id="4642472735733036929">Η παρακολούθηση τιμής σταμάτησε</translation>
 <translation id="4650125387981512669">Συνέχεια ως <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Αυτή η λειτουργία ενεργοποιείται όταν συνδέεστε στον Λογαριασμό σας Google.</translation>
 <translation id="4659667755519643272">Εισαγωγή στην εναλλαγή καρτελών</translation>
@@ -555,6 +561,7 @@
 <translation id="5118764316110575523">Ανενεργό</translation>
 <translation id="5119391094379141756">Επιλέξτε το Chrome</translation>
 <translation id="5132942445612118989">Συγχρονίστε κωδικούς πρόσβασης, ιστορικό και πολλά άλλα σε όλες τις συσκευές</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ασθενής κωδικός πρόσβασης}other{{COUNT} ασθενείς κωδικοί πρόσβασης}}</translation>
 <translation id="5149188072385105201">Προσθήκη κωδικού πρόσβασης…</translation>
 <translation id="5150492518600715772">Αποστολή στη συσκευή σας</translation>
 <translation id="5168414296986405587">Δημιουργήθηκε για iPadOS</translation>
@@ -638,6 +645,7 @@
 <translation id="5804241973901381774">Άδειες</translation>
 <translation id="5812974770859303494">Προσθήκη σε…</translation>
 <translation id="581659025233126501">Ενεργοποίηση συγχρονισμού</translation>
+<translation id="5817176759448082654">Έλεγχος κωδικού πρόσβασης</translation>
 <translation id="5819208479324046259">Διαχείριση από <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Αποθηκεύστε κωδικούς πρόσβασης, τρόπους πληρωμής και διευθύνσεις για αυτόματη συμπλήρωση από το Chrome αργότερα.</translation>
 <translation id="5834415013958049700">Εικόνα Lens που αντιγράψατε</translation>
@@ -839,6 +847,7 @@
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Πρόσφατες καρτέλες</translation>
 <translation id="7006788746334555276">Ρυθμίσεις περιεχομένου</translation>
+<translation id="7014087399239955356">Έλεγχος κωδικών πρόσβασης…</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7062545763355031412">Αποδοχή και εναλλαγή λογαριασμών</translation>
@@ -893,6 +902,7 @@
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7531345132340165516">Τρέχων ιστότοπος</translation>
 <translation id="7537586195939242955">Δεν είναι δυνατή η εγκατάσταση του πάσου σας στο Passbook.</translation>
+<translation id="754655535278952384">Έγινε έλεγχος <ph name="TIME" /></translation>
 <translation id="7553234618121028547">Για απενεργοποίηση, ανοίξτε τις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" /> και μεταβείτε στις Επιλογές κωδικών πρόσβασης.</translation>
 <translation id="7554645225856321710">Κλείσιμο όλων</translation>
 <translation id="7554791636758816595">Νέα καρτέλα</translation>
@@ -971,6 +981,7 @@
 <translation id="806745655614357130">Διατήρηση των δεδομένων μου ξεχωριστά</translation>
 <translation id="8073670137947914548">Η λήψη ολοκληρώθηκε</translation>
 <translation id="8073872304774253879">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
+<translation id="8077675488769462025">Ανενεργές καρτέλες</translation>
 <translation id="8079602123447022758">Αυτή η ρύθμιση είναι διαχειριζόμενη. Πατήστε δύο φορές για περισσότερες πληροφορίες.</translation>
 <translation id="8080028325999236607">Κλείσ. όλων των καρτελών</translation>
 <translation id="8084285576995584326">Ελέγξτε τα δεδομένα του Λογαριασμού σας Google</translation>
@@ -1005,6 +1016,7 @@
 <translation id="8343993175958086504">Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας και χρησιμοποιήστε τα σε οποιαδήποτε συσκευή.</translation>
 <translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>
 <translation id="8386068868580335421">Επαναφορά</translation>
+<translation id="8393889347136007944">Καρτέλες που δεν έχουν χρησιμοποιηθεί για <ph name="THRESHOLD" /> ημέρες</translation>
 <translation id="8407669440184693619">Δεν βρέθηκαν κωδικοί πρόσβασης για αυτόν τον ιστότοπο</translation>
 <translation id="842017693807136194">Σε σύνδεση με</translation>
 <translation id="8427613705947111202">Μενού → Ρυθμίσεις → Κωδικοί πρόσβασης</translation>

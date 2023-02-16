@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">Ново търсене</translation>
 <translation id="1209206284964581585">Скриване засега</translation>
 <translation id="1219674500290482172">Не може да се установи връзка с интернет.</translation>
+<translation id="1226238226094914652">Паролите са достъпни на всичките ви устройства</translation>
 <translation id="122699739164161391">Затваряне на всички раздели</translation>
 <translation id="1229222343402087523">Търсене на ${searchPhrase} в Chrome</translation>
 <translation id="1242044645101871359">Влезте отново</translation>
@@ -198,6 +199,7 @@
 <translation id="2469960372084740698">Да се изключи ли „Безопасно сърфиране“?</translation>
 <translation id="2473876017985765807">Вече запазихте парола за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не е избрано</translation>
+<translation id="2479148705183875116">Към настройките</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2496626742194544812">Към първия раздел</translation>
 <translation id="2500374554657206846">Опции за запазване на паролата</translation>
@@ -205,6 +207,7 @@
 <translation id="2529021024822217800">Отваряне на всички</translation>
 <translation id="2556092377360758201">Без защита (не се препоръчва)</translation>
 <translation id="2562041823070056534">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
+<translation id="2576499762020411840">Използване и запазване на пароли в профила ви в Google</translation>
 <translation id="2578571896248130439">Изпращане на уеб страницата</translation>
 <translation id="2584132361465095047">Добавяне на профил…</translation>
 <translation id="2600682495497606169">Изчистване на „бисквитките“ от сайта</translation>
@@ -410,6 +413,7 @@
 <translation id="4063300985191096908">Към емисията</translation>
 <translation id="408404951701638773">До лентата за търсене вече се стига по-лесно</translation>
 <translation id="4092655288299341041">Показване на помощна информация</translation>
+<translation id="4101942614374785540">Паролите вече се запазват в профила ви в Google (<ph name="ACCOUNT" />). Можете да ги използвате навсякъде, където сте влезли в него. За да изключите това, отворете <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Открива опасни събития, когато се случват, и ви предупреждава за тях.</translation>
 <translation id="411254640334432676">Изтеглянето не бе успешно.</translation>
 <translation id="4112644173421521737">Търсене</translation>
@@ -430,7 +434,6 @@
 <translation id="4237377247299956313">Докоснете <ph name="BEGIN_BOLD" />Стандартно прилож. за браузър<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Въвеждане на пропуск</translation>
 <translation id="4249955472157341256">Сортиране по актуалност</translation>
-<translation id="42618743927498729">Ще получавате сигнал при понижение на цената в който и да е сайт.</translation>
 <translation id="4263576668337963058">Показване на наличните действия за страницата</translation>
 <translation id="4272631900155121838">За да сканирате код за бърза реакция, активирайте камерата от настройките</translation>
 <translation id="4277990410970811858">Безопасно сърфиране</translation>
@@ -693,6 +696,7 @@
 <translation id="6184086493125982861">Показване на разделите</translation>
 <translation id="6187302354554850004">Последно синхр.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Непрочетени</translation>
+<translation id="6193424046394092997">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“}other{Отметките бяха запазени в(ъв) „{title}“}}</translation>
 <translation id="6196207969502475924">Гласово търсене</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затваряне на {COUNT} раздел}other{Затваряне на {COUNT} раздела}}</translation>
 <translation id="6219550825416862075">Добре дошли отново</translation>
@@ -838,6 +842,7 @@
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7062545763355031412">Приемане и превключване на профилите</translation>
 <translation id="7080806333218412752">Изпраща URL адресите до „Безопасно сърфиране“ за проверка. Също така изпраща малка извадка от страници, изтеглени файлове, активност на разширенията и системна информация, за да помага за откриването на нови заплахи. Временно свързва тези данни с профила ви в Google, докато сте в него, за да ви защитава в приложенията на Google.</translation>
+<translation id="7083860864742905105">Когато функцията е включена, паролите се запазват в(ъв) <ph name="ACCOUNT" />. Когато е изключена, те се запазват само на това устройство.</translation>
 <translation id="7095110968493193530">Към Google Мениджър на пароли за <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Скорошни раздели</translation>
 <translation id="7102005569666697658">Изтегля се… <ph name="FILE_SIZE" /></translation>
@@ -913,6 +918,7 @@
 <translation id="7756478488453921771">„Меню → Настройки → Начини на плащане“</translation>
 <translation id="7765158879357617694">Преместване</translation>
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
+<translation id="777572173400717978">{count,plural, =1{Запазихте отметка}other{Запазихте отметки}}</translation>
 <translation id="7781011649027948662">Да се преведе ли страницата?</translation>
 <translation id="7781069478569868053">Нов раздел в браузъра</translation>
 <translation id="7781829728241885113">Вчера</translation>
@@ -964,6 +970,7 @@
 <translation id="806745655614357130">Оставяне на данните отделно</translation>
 <translation id="8073670137947914548">Изтеглянето завърши</translation>
 <translation id="8073872304774253879">Подобряване на търсенията и сърфирането</translation>
+<translation id="8077675488769462025">Неактивни раздели</translation>
 <translation id="8079602123447022758">Тази настройка се управлява. За повече информация докоснете два пъти</translation>
 <translation id="8080028325999236607">Затваряне на разделите</translation>
 <translation id="8084285576995584326">Управление на данните в профила ви в Google</translation>
@@ -998,6 +1005,7 @@
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="8386068868580335421">Нулиране</translation>
+<translation id="8393889347136007944">Разделите не са използвани от <ph name="THRESHOLD" /> дни</translation>
 <translation id="8407669440184693619">Няма намерени пароли за този сайт</translation>
 <translation id="842017693807136194">Влезли сте със:</translation>
 <translation id="8427613705947111202">Меню → Настройки → Пароли</translation>

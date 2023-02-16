@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Link detected. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> deleted</translation>
 <translation id="1258009455399840361">Rotate 90 degrees clockwise</translation>
-<translation id="1276998909102132017">Gallery images</translation>
 <translation id="1300209025925956156">Scan your document</translation>
 <translation id="1309250603447638106">Downloading updates for document scanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + left arrow to access.</translation>
 <translation id="1417314334557041815">Edit page <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Print</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is unplugged.</translation>
 <translation id="1473110567575736769">Three seconds timer</translation>
 <translation id="148783771699678004">Moving in top-right direction</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Scan additional page</translation>
 <translation id="1851169887664797861">Additional camera controls available</translation>
 <translation id="1851616744363735765">PAUSED</translation>
-<translation id="1862930711583847113">Unable to export <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Photo resolution</translation>
 <translation id="1925845977604399247">Go to Gallery</translation>
 <translation id="199526504800285197">Recording has been stopped</translation>
 <translation id="1995951722691075581">Your recording stopped because of low device storage space. To record more videos, you need to free up space on your device.</translation>
-<translation id="2022953316617983419">QR code</translation>
 <translation id="2036868001356139588">Timer duration</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> active</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2244252133441425811">Enable video FPS picker</translation>
 <translation id="2271433936731426666">Enable full-sized video snapshot</translation>
-<translation id="229579744168541441">Export to disk</translation>
 <translation id="2320741269052147773">Pan left</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2501853267655415902">Recording stopped</translation>
-<translation id="2501953888035679275">Take photos and record videos with your camera.</translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2549985041256363841">Start recording</translation>
 <translation id="2577915835281444458">Recording will stop soon. Go to device storage to free up space.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Mirror preview</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is plugged in.</translation>
 <translation id="2904654629665923749">Document scan available</translation>
-<translation id="2968794441791257519">Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
-
-        Apps with storage permissions will have access to your photos and videos.</translation>
 <translation id="3067436040345934772">Pan right</translation>
 <translation id="3081586908890909590">Switch to record video</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Grid type</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3240426699337459095">Link copied</translation>
-<translation id="3259149966178251584">Camera resolution</translation>
-<translation id="3305962767867348165">Fix</translation>
 <translation id="3354465018370944241">Photo settings</translation>
 <translation id="3411958449466169012">Timer off</translation>
 <translation id="3448774564454087943">Video hasn't been saved as it's too short</translation>
 <translation id="346539236881580388">Retake</translation>
 <translation id="3517926952904427380">Unable to take portrait photo</translation>
 <translation id="3566302376254083266">Moving in top-left direction</translation>
-<translation id="3569311554794739032">Do you really want to remove <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Switch to scan mode</translation>
 <translation id="3583444040776960729">Document bottom-left corner</translation>
 <translation id="3789724198583203151">Rotate 90 degrees anti-clockwise</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Scan barcode</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="4060608699153044055">You can't record because of low device storage space. To start recording, you need to free up space on your device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4281620174117014503">Medium resolution</translation>
 <translation id="428234092390943511">Page thumbnail</translation>
-<translation id="4329152592498422850">Switch to take square photo</translation>
 <translation id="4340659173795395806">You can now create multi-page PDF</translation>
 <translation id="4383571725254449280">Print performance logs</translation>
 <translation id="4445542136948522167">Stop taking photo</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="4570032796877367747">Front camera</translation>
 <translation id="4598556348158889687">Storage management</translation>
 <translation id="4620818268515773682">Toggle microphone mute. Mute is off</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Thanks for giving feedback on the Camera app.
 
 If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6617916774429601017">Show all resolutions</translation>
 <translation id="6631515515009660915">Mirror off</translation>
@@ -145,7 +128,6 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="695140971690006676">Reset all</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 seconds</translation>
-<translation id="712848772518857951">Do you really want to remove <ph name="COUNT" /> items?</translation>
 <translation id="7134221860976209830">10 seconds timer</translation>
 <translation id="7191890674911603392">Record type</translation>
 <translation id="7243947652761655814">Video resolution</translation>
@@ -171,11 +153,9 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="8145038249676204903">Switch to take photo</translation>
 <translation id="8167081290930651932">Save as photo</translation>
 <translation id="8239780215768881278">Take video snapshot</translation>
-<translation id="8261506727792406068">Delete</translation>
 <translation id="8425673304802773841">Tilt down</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Toggle microphone mute. Mute is on</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8730621377337864115">Done</translation>

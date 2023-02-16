@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Phát hiện thấy đường liên kết. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Đã xoá trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Xoay 90 độ theo chiều kim đồng hồ</translation>
-<translation id="1276998909102132017">Ảnh trong thư viện</translation>
 <translation id="1300209025925956156">Quét tài liệu của bạn</translation>
 <translation id="1309250603447638106">Đang tải bản cập nhật xuống để sử dụng tính năng quét tài liệu</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Hãy nhấn tổ hợp phím Tìm kiếm + Mũi tên trái để truy cập.</translation>
 <translation id="1417314334557041815">Chỉnh sửa trang <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">In</translation>
 <translation id="1467231725790366244">Đã rút <ph name="CAMERA" /> khỏi thiết bị.</translation>
 <translation id="1473110567575736769">Đồng hồ hẹn giờ 3 giây</translation>
 <translation id="148783771699678004">Đang di chuyển theo hướng lên trên và sang phải</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Quét trang bổ sung</translation>
 <translation id="1851169887664797861">Hiện đã có thêm các tùy chọn điều khiển máy ảnh</translation>
 <translation id="1851616744363735765">ĐÃ TẠM DỪNG</translation>
-<translation id="1862930711583847113">Không thể xuất <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Độ phân giải của ảnh</translation>
 <translation id="1925845977604399247">Truy cập Thư viện</translation>
 <translation id="199526504800285197">Quá trình quay video đã dừng</translation>
 <translation id="1995951722691075581">Quá trình quay video đã dừng vì thiết bị sắp hết dung lượng lưu trữ. Để quay thêm video, bạn cần giải phóng dung lượng trên thiết bị.</translation>
-<translation id="2022953316617983419">Mã QR</translation>
 <translation id="2036868001356139588">Thời lượng bộ hẹn giờ</translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> đang hoạt động</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="2244252133441425811">Bật bộ chọn FPS video</translation>
 <translation id="2271433936731426666">Cho phép ảnh chụp nhanh có kích thước đầy đủ khi quay video</translation>
-<translation id="229579744168541441">Xuất ra đĩa</translation>
 <translation id="2320741269052147773">Xoay trái</translation>
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="2501853267655415902">Đã dừng quay</translation>
-<translation id="2501953888035679275">Chụp ảnh và quay video bằng máy ảnh.</translation>
 <translation id="2517472476991765520">Quét</translation>
 <translation id="2549985041256363841">Bắt đầu ghi</translation>
 <translation id="2577915835281444458">Quá trình ghi sắp dừng lại. Hãy chuyển đến bộ nhớ của thiết bị để giải phóng dung lượng.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Xem trước gương</translation>
 <translation id="2879583609344924966">Đã cắm <ph name="CAMERA" /> vào thiết bị.</translation>
 <translation id="2904654629665923749">Có tính năng quét tài liệu</translation>
-<translation id="2968794441791257519">Ảnh và video mà bạn chụp và quay bằng máy ảnh sẽ được chuyển đến thư mục Tệp đã tải xuống. Bạn có thể truy cập vào những nội dung này trong ứng dụng Files.
-
-        Ứng dụng có quyền truy cập vào bộ nhớ sẽ có quyền truy cập vào ảnh và video của bạn.</translation>
 <translation id="3067436040345934772">Xoay phải</translation>
 <translation id="3081586908890909590">Chuyển sang quay video</translation>
 <translation id="313467653172006084">30 khung hình/giây</translation>
-<translation id="3183731565330012717">Loại lưới</translation>
 <translation id="3227137524299004712">Micrô</translation>
 <translation id="3240426699337459095">Đã sao chép đường liên kết</translation>
-<translation id="3259149966178251584">Độ phân giải của máy ảnh</translation>
-<translation id="3305962767867348165">Khắc phục</translation>
 <translation id="3354465018370944241">Cài đặt ảnh</translation>
 <translation id="3411958449466169012">Tắt bộ tính giờ</translation>
 <translation id="3448774564454087943">Không lưu được video vì thời lượng quá ngắn</translation>
 <translation id="346539236881580388">Chụp lại</translation>
 <translation id="3517926952904427380">Không thể chụp ảnh chân dung</translation>
 <translation id="3566302376254083266">Đang di chuyển theo hướng lên trên và sang trái</translation>
-<translation id="3569311554794739032">Bạn có thực sự muốn xóa <ph name="FILE" /> không?</translation>
 <translation id="3573890771273113519">Chuyển sang chế độ quét</translation>
 <translation id="3583444040776960729">Góc dưới cùng bên trái của tài liệu</translation>
 <translation id="3789724198583203151">Xoay 90 độ ngược chiều kim đồng hồ</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Quét mã vạch</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="4060608699153044055">Bạn không thể quay video vì thiết bị sắp hết dung lượng lưu trữ. Để bắt đầu quay video, bạn cần giải phóng dung lượng trên thiết bị.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Sao chép địa chỉ liên kết</translation>
 <translation id="4281620174117014503">Độ phân giải trung bình</translation>
 <translation id="428234092390943511">Hình thu nhỏ của trang</translation>
-<translation id="4329152592498422850">Chuyển sang chụp ảnh vuông</translation>
 <translation id="4340659173795395806">Hiện bạn có thể tạo tệp PDF có nhiều trang</translation>
 <translation id="4383571725254449280">In nhật ký hiệu suất</translation>
 <translation id="4445542136948522167">Dừng chụp ảnh</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Máy ảnh mặt trước</translation>
 <translation id="4598556348158889687">Quản lý bộ nhớ</translation>
 <translation id="4620818268515773682">Bật/tắt micrô. Chế độ tắt tiếng đang tắt</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Cảm ơn bạn đã cung cấp ý kiến phản hồi về ứng dụng Máy ảnh.
 
 Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc video, vui lòng đính kèm ví dụ về ảnh hoặc video và mô tả vấn đề bạn gặp phải. (Ví dụ: ảnh quá tối hoặc chủ thể trong ảnh không nét.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6617916774429601017">Hiện mọi độ phân giải</translation>
 <translation id="6631515515009660915">Tắt gương</translation>
@@ -145,7 +128,6 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="695140971690006676">Đặt lại tất cả</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 giây</translation>
-<translation id="712848772518857951">Bạn có thực sự muốn xóa <ph name="COUNT" /> mục không?</translation>
 <translation id="7134221860976209830">Đồng hồ hẹn giờ 10 giây</translation>
 <translation id="7191890674911603392">Loại bản ghi</translation>
 <translation id="7243947652761655814">Độ phân giải video</translation>
@@ -171,11 +153,9 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="8145038249676204903">Chuyển sang chụp ảnh</translation>
 <translation id="8167081290930651932">Lưu dưới dạng Ảnh</translation>
 <translation id="8239780215768881278">Chụp ảnh từ video</translation>
-<translation id="8261506727792406068">Xoá</translation>
 <translation id="8425673304802773841">Xoay xuống</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Bật/tắt micrô. Chế độ tắt tiếng đang bật</translation>
 <translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8730621377337864115">Xong</translation>

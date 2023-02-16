@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">U zbulua një lidhje. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Faqja <ph name="PAGE_NUMBER" /> u fshi</translation>
 <translation id="1258009455399840361">Rrotulloje 90 gradë në drejtim të akrepave të orës</translation>
-<translation id="1276998909102132017">Imazhet e galerisë</translation>
 <translation id="1300209025925956156">Skano dokumentin tënd</translation>
 <translation id="1309250603447638106">Po shkarkohen përditësimet për skanimin e dokumenteve</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Kërko + Shigjeta majtas për t'u qasur.</translation>
 <translation id="1417314334557041815">Modifiko faqen <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Printo</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> është shkëputur.</translation>
 <translation id="1473110567575736769">Kohëmatësi me 3 sekonda</translation>
 <translation id="148783771699678004">Po zhvendoset djathtas për lart</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skano një faqe shtesë</translation>
 <translation id="1851169887664797861">Ofrohen kontrolle shtesë të kamerës</translation>
 <translation id="1851616744363735765">NË PAUZË</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> nuk mund të eksportohet</translation>
 <translation id="1899697626337024495">Rezolucioni i fotografisë</translation>
 <translation id="1925845977604399247">Shko te "Galeria"</translation>
 <translation id="199526504800285197">Regjistrimi ka ndaluar</translation>
 <translation id="1995951722691075581">Regjistrimi yt ndaloi për shkak të nivelit të ulët të hapësirës ruajtëse të pajisjes. Për të regjistruar video të tjera, duhet të lirosh hapësirën në pajisjen tënde.</translation>
-<translation id="2022953316617983419">Kodi QR</translation>
 <translation id="2036868001356139588">Kohëzgjatja e kohëmatësit</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktive</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="2244252133441425811">Aktivizo zgjedhësin e shpejtësisë FPS të videos</translation>
 <translation id="2271433936731426666">Aktivizo përmbledhjen e videos në madhësi të plotë</translation>
-<translation id="229579744168541441">Eksporto në disk</translation>
 <translation id="2320741269052147773">Zgjero majtas</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2501853267655415902">Regjistrimi ndaloi</translation>
-<translation id="2501953888035679275">Nxirr fotografi dhe regjistro video me kamerën tënde.</translation>
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2549985041256363841">Nis regjistrimin</translation>
 <translation id="2577915835281444458">Regjistrimi do të ndalojë së shpejti. Shko te hapësira ruajtëse e pajisjes për të liruar hapësirën.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Pamja paraprake e pasqyrës</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> është lidhur.</translation>
 <translation id="2904654629665923749">Skanimi i dokumenteve është i disponueshëm</translation>
-<translation id="2968794441791257519">Fotografitë dhe videot e nxjerra me kamerën do të zhvendosen te dosja "Shkarkimet". Mund të qasesh tek ato te "Skedarët".
-
-Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fotografitë dhe videot e tua.</translation>
 <translation id="3067436040345934772">Zgjero djathtas</translation>
 <translation id="3081586908890909590">Kalo te regjistrimi i videos</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Lloji i rrjetës</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
-<translation id="3259149966178251584">Rezolucioni i kamerës</translation>
-<translation id="3305962767867348165">Rregullo</translation>
 <translation id="3354465018370944241">Cilësimet e fotografive</translation>
 <translation id="3411958449466169012">Çaktivizo kohëmatësin</translation>
 <translation id="3448774564454087943">Videoja nuk është ruajtur duke qenë se është shumë e shkurtër</translation>
 <translation id="346539236881580388">Nxirr përsëri</translation>
 <translation id="3517926952904427380">Nuk mund të nxjerrësh një fotografi portret</translation>
 <translation id="3566302376254083266">Po zhvendoset majtas për lart</translation>
-<translation id="3569311554794739032">Vërtet dëshiron të heqësh <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Kalo te modaliteti i skanimit</translation>
 <translation id="3583444040776960729">Këndi poshtë majtas i dokumentit</translation>
 <translation id="3789724198583203151">Rrotulloje 90 gradë në drejtim të kundërt të akrepave të orës</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Skano bardkodin</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="4060608699153044055">Nuk mund të regjistrosh për shkak të nivelit të ulët të hapësirës ruajtëse të pajisjes. Për të filluar të regjistrosh, duhet të lirosh hapësirën në pajisjen tënde.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
 <translation id="4281620174117014503">Rezolucion mesatar</translation>
 <translation id="428234092390943511">Miniatura e faqes</translation>
-<translation id="4329152592498422850">Ndërroje për të nxjerrë një fotografi katrore</translation>
 <translation id="4340659173795395806">Tani mund të krijosh skedarë PDF me shumë faqe</translation>
 <translation id="4383571725254449280">Evidencat për cilësinë e funksionimit të printimit</translation>
 <translation id="4445542136948522167">Ndalo nxjerrjen e fotografive</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Kamera e përparme</translation>
 <translation id="4598556348158889687">Menaxhimi i hapësirës ruajtëse</translation>
 <translation id="4620818268515773682">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është joaktiv</translation>
@@ -133,7 +117,6 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="6353688143752491039">Faleminderit për komentet e dhëna për aplikacionin e "Kamerës".
 
 Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngjit një fotografi ose video shembull dhe përshkruaj problemin. (Për shembull, fotografia është shumë e errët ose subjekti nuk është në fokus.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6617916774429601017">Shfaq të gjitha rezolucionet</translation>
 <translation id="6631515515009660915">Çaktivizo pasqyrën</translation>
@@ -145,7 +128,6 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="695140971690006676">Rivendos të gjitha</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="698156982839284926">3 sekonda</translation>
-<translation id="712848772518857951">Dëshiron vërtet që të heqësh <ph name="COUNT" /> artikuj?</translation>
 <translation id="7134221860976209830">Kohëmatësi me 10 sekonda</translation>
 <translation id="7191890674911603392">Lloji i regjistrimit</translation>
 <translation id="7243947652761655814">Rezolucioni i videos</translation>
@@ -171,11 +153,9 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8145038249676204903">Kalo te nxjerrja e fotografive</translation>
 <translation id="8167081290930651932">Ruaje si fotografi</translation>
 <translation id="8239780215768881278">Shkrep një pamje të çastit të videos</translation>
-<translation id="8261506727792406068">Fshi</translation>
 <translation id="8425673304802773841">Ano për poshtë</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është aktiv</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8730621377337864115">U krye</translation>

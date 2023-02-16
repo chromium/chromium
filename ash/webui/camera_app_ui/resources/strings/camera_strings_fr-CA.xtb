@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> supprimée</translation>
 <translation id="1258009455399840361">Faire pivoter de 90 degrés dans le sens des aiguilles d'une montre</translation>
-<translation id="1276998909102132017">Galerie d'images</translation>
 <translation id="1300209025925956156">Numériser votre document</translation>
 <translation id="1309250603447638106">Téléchargement des mises à jour pour la numérisation de documents en cours…</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Recherche et flèche vers la gauche pour y accéder.</translation>
 <translation id="1417314334557041815">Modifier la page <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Imprimer</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> est débranchée.</translation>
 <translation id="1473110567575736769">Minuterie de trois secondes</translation>
 <translation id="148783771699678004">Déplacement vers la partie supérieure droite</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Numériser une page supplémentaire</translation>
 <translation id="1851169887664797861">De nouvelles commandes sont offertes pour l'appareil photo</translation>
 <translation id="1851616744363735765">INTERROMPU</translation>
-<translation id="1862930711583847113">Impossible d'exporter <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Résolution des photos</translation>
 <translation id="1925845977604399247">Accéder à la galerie</translation>
 <translation id="199526504800285197">L'enregistrement a été interrompu</translation>
 <translation id="1995951722691075581">Votre enregistrement s'est arrêté en raison d'un espace de stockage insuffisant sur l'appareil. Pour enregistrer plus de vidéos, vous devez libérer de l'espace sur votre appareil.</translation>
-<translation id="2022953316617983419">Code QR</translation>
 <translation id="2036868001356139588">Durée de la minuterie</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064538373111010176">Élément de menu <ph name="CAMERA" /> actif</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2244252133441425811">Activer le sélecteur d'i/s pour la captation vidéo</translation>
 <translation id="2271433936731426666">Activer l'aperçu de la vidéo en taille réelle</translation>
-<translation id="229579744168541441">Exporter sur le disque</translation>
 <translation id="2320741269052147773">Panoramique vers la gauche</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2501853267655415902">Enregistrement interrompu</translation>
-<translation id="2501953888035679275">Prenez des photos et enregistrez des vidéos avec votre appareil photo.</translation>
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2549985041256363841">Commencer l'enregistrement</translation>
 <translation id="2577915835281444458">L'enregistrement va bientôt s'arrêter. Accédez au stockage de l'appareil pour libérer de l'espace.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Aperçu du miroir</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
 <translation id="2904654629665923749">Numérisation de documents disponible</translation>
-<translation id="2968794441791257519">Les photos que vous prenez et les vidéos que vous enregistrez avec l'appareil photo seront déplacées dans le dossier des téléchargements. Vous pourrez y accéder dans Fichiers.
-
-        Les applications disposant d'autorisations d'accès à l'espace de stockage pourront accéder à vos photos et à vos vidéos.</translation>
 <translation id="3067436040345934772">Panoramique vers la droite</translation>
 <translation id="3081586908890909590">Passer au mode vidéo</translation>
 <translation id="313467653172006084">30 i/s</translation>
-<translation id="3183731565330012717">Type de grille</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3240426699337459095">Lien copié</translation>
-<translation id="3259149966178251584">Résolution de l'appareil photo</translation>
-<translation id="3305962767867348165">Corriger</translation>
 <translation id="3354465018370944241">Paramètres photo</translation>
 <translation id="3411958449466169012">Minuterie désactivée</translation>
 <translation id="3448774564454087943">Impossible d'enregistrer la vidéo parce qu'elle est trop courte</translation>
 <translation id="346539236881580388">Recommencer</translation>
 <translation id="3517926952904427380">Impossible de prendre une photo en mode portrait</translation>
 <translation id="3566302376254083266">Déplacement vers la partie supérieure gauche</translation>
-<translation id="3569311554794739032">Voulez-vous vraiment supprimer <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Passer en mode numérisation</translation>
 <translation id="3583444040776960729">Coin inférieur gauche du document</translation>
 <translation id="3789724198583203151">Faire pivoter de 90 degrés dans le sens inverse des aiguilles d'une montre</translation>
 <translation id="3810838688059735925">Vidéo</translation>
-<translation id="3838931309141338733">Numériser le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="4060608699153044055">Vous ne pouvez pas enregistrer en raison du faible espace de stockage de l'appareil. Pour commencer l'enregistrement, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4281620174117014503">Résolution moyenne</translation>
 <translation id="428234092390943511">Miniature de la page</translation>
-<translation id="4329152592498422850">Bouton permettant de prendre une photo carrée</translation>
 <translation id="4340659173795395806">Vous pouvez maintenant créer un PDF multipage</translation>
 <translation id="4383571725254449280">Imprimer les journaux de performance</translation>
 <translation id="4445542136948522167">Ne pas prendre la photo</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> mégapixels</translation>
 <translation id="4570032796877367747">Appareil photo avant</translation>
 <translation id="4598556348158889687">Gestion du stockage</translation>
 <translation id="4620818268515773682">Activer/désactiver le son du microphone. Le son est activé</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Merci de nous avoir fait part de vos commentaires à propos de l'application Appareil photo.
 
 Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuillez joindre un échantillon de photo ou de vidéo et décrire la situation. (Par exemple, la photo est trop sombre ou la mise au point du sujet est floue.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> à <ph name="WIDTH" /> x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mégapixels</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6617916774429601017">Afficher toutes les résolutions</translation>
 <translation id="6631515515009660915">Miroir désactivé</translation>
@@ -145,7 +128,6 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="695140971690006676">Tout réinitialiser</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 secondes</translation>
-<translation id="712848772518857951">Voulez-vous vraiment supprimer <ph name="COUNT" /> éléments?</translation>
 <translation id="7134221860976209830">Minuterie de 10 secondes</translation>
 <translation id="7191890674911603392">Type d'enregistrement</translation>
 <translation id="7243947652761655814">Résolution vidéo</translation>
@@ -171,11 +153,9 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="8145038249676204903">Passer au mode photo</translation>
 <translation id="8167081290930651932">Enregistrer en tant que photo</translation>
 <translation id="8239780215768881278">Prendre un instantané vidéo</translation>
-<translation id="8261506727792406068">Supprimer</translation>
 <translation id="8425673304802773841">Incliner vers le bas</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Activer/désactiver le son du microphone. Le son est désactivé</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8730621377337864115">Terminé</translation>

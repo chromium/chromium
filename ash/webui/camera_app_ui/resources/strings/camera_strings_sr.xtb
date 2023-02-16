@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Линк је откривен. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. страница је избрисана</translation>
 <translation id="1258009455399840361">Ротирај за 90 степени удесно</translation>
-<translation id="1276998909102132017">Слике у галерији</translation>
 <translation id="1300209025925956156">Скенирајте документ</translation>
 <translation id="1309250603447638106">Преузимају се ажурирања за скенирање докумената</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Тастер за претрагу + стрелица налево да бисте приступили.</translation>
 <translation id="1417314334557041815">Измени <ph name="INDEX" />. страницу</translation>
-<translation id="1430915738399379752">Штампај</translation>
 <translation id="1467231725790366244">Камера <ph name="CAMERA" /> је искључена.</translation>
 <translation id="1473110567575736769">Тајмер за 3 секунде</translation>
 <translation id="148783771699678004">Креће се удесно нагоре</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Скенирај додатну страницу</translation>
 <translation id="1851169887664797861">Доступне су додатне контроле за камеру</translation>
 <translation id="1851616744363735765">ПАУЗИРАНО</translation>
-<translation id="1862930711583847113">Извоз датотеке <ph name="FILE" /> није успео</translation>
 <translation id="1899697626337024495">Резолуција слике</translation>
 <translation id="1925845977604399247">Иди у галерију</translation>
 <translation id="199526504800285197">Снимање је заустављено</translation>
 <translation id="1995951722691075581">Снимање је заустављено због недовољно меморијског простора на уређају. Да бисте снимили још видео снимака, треба да ослободите простор на уређају.</translation>
-<translation id="2022953316617983419">QR кôд</translation>
 <translation id="2036868001356139588">Трајање тајмера</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> је активна</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR кôд</translation>
 <translation id="2244252133441425811">Омогући бирач броја кадрова у секунди за видео</translation>
 <translation id="2271433936731426666">Омогући преглед видеа пуне величине</translation>
-<translation id="229579744168541441">Извези на диск</translation>
 <translation id="2320741269052147773">Померање улево</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Снимање је заустављено</translation>
-<translation id="2501953888035679275">Снимајте слике и видео снимке помоћу камере.</translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2549985041256363841">Започни снимање</translation>
 <translation id="2577915835281444458">Снимање ће се ускоро зауставити. Отворите меморијски простор на уређају да бисте ослободили простор.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Преглед пресликавања</translation>
 <translation id="2879583609344924966">Камера <ph name="CAMERA" /> је прикључена.</translation>
 <translation id="2904654629665923749">Доступно је скенирање докумената</translation>
-<translation id="2968794441791257519">Слике и видео снимци који су снимљени помоћу камере ће се преместити у фолдер Преузимања. Можете да им приступите у Датотекама.
-
-        Апликације са дозволама за приступ меморијском простору ће имати приступ сликама и видео снимцима.</translation>
 <translation id="3067436040345934772">Померање удесно</translation>
 <translation id="3081586908890909590">Пређи на режим за снимање видеа</translation>
 <translation id="313467653172006084">30 кадр/с</translation>
-<translation id="3183731565330012717">Тип мреже</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Линк је копиран</translation>
-<translation id="3259149966178251584">Резолуција камере</translation>
-<translation id="3305962767867348165">Поправи</translation>
 <translation id="3354465018370944241">Подешавања слика</translation>
 <translation id="3411958449466169012">Искључи тајмер</translation>
 <translation id="3448774564454087943">Видео није сачуван јер је прекратак</translation>
 <translation id="346539236881580388">Поново сними</translation>
 <translation id="3517926952904427380">Снимање портрета није успело</translation>
 <translation id="3566302376254083266">Креће се улево нагоре</translation>
-<translation id="3569311554794739032">Желите ли стварно да уклоните датотеку <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Пређите на режим скенирања</translation>
 <translation id="3583444040776960729">Доњи леви угао документа</translation>
 <translation id="3789724198583203151">Ротирај за 90 степени улево</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3838931309141338733">Скенирај бар-код</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="4060608699153044055">Не можете да снимате због недовољно меморијског простора на уређају. Да бисте почели да снимате, треба да ослободите простор на уређају.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Копирај адресу линка</translation>
 <translation id="4281620174117014503">Средња резолуција</translation>
 <translation id="428234092390943511">Сличица странице</translation>
-<translation id="4329152592498422850">Пређи на режим за снимање квадратних слика</translation>
 <translation id="4340659173795395806">Сада можете да направите PDF са више страница</translation>
 <translation id="4383571725254449280">Евиденције о учинку штампања</translation>
 <translation id="4445542136948522167">Заустави снимање слике</translation>
-<translation id="4497569853498380347">Мегапиксели: <ph name="MEGAPIXEL" /> (<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />)</translation>
 <translation id="4570032796877367747">Предња камера</translation>
 <translation id="4598556348158889687">Управљање меморијским простором</translation>
 <translation id="4620818268515773682">Искључите звук микрофона. Дугме за искључивање звука је искључено</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Хвала вам на слању повратних информација о апликацији Камера.
 
 Ако су повратне информације у вези са квалитетом слике или видеа, приложите узорак слике или видеа и опишите шта није у реду. (На пример, слика је превише тамна или субјекат није у фокусу.)</translation>
-<translation id="6420689864531458495">Мегапиксели: <ph name="MEGAPIXEL" /> (<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />)</translation>
 <translation id="6527303717912515753">Дели</translation>
 <translation id="6617916774429601017">Покажи све резолуције</translation>
 <translation id="6631515515009660915">Пресликавање је искључено</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">Ресетуј све</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="698156982839284926">3 секунде</translation>
-<translation id="712848772518857951">Желите ли стварно да уклоните ове ставке (<ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">Тајмер за 10 секунди</translation>
 <translation id="7191890674911603392">Тип записа</translation>
 <translation id="7243947652761655814">Резолуција видео снимка</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">Пређи на режим за снимање слика</translation>
 <translation id="8167081290930651932">Сачувај као слику</translation>
 <translation id="8239780215768881278">Направите видео-снимак</translation>
-<translation id="8261506727792406068">Избриши</translation>
 <translation id="8425673304802773841">Нагињање надоле</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" /> пиксела (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Укључите звук микрофона. Дугме за искључивање звука је укључено</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8730621377337864115">Готово</translation>

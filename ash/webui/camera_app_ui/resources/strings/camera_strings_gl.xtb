@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Detectouse unha ligazón. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Eliminouse a páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Xirar 90 graos cara á dereita</translation>
-<translation id="1276998909102132017">Imaxes da galería</translation>
 <translation id="1300209025925956156">Escanea o teu documento</translation>
 <translation id="1309250603447638106">Descargando actualizacións para a función de escanear documentos</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Para acceder a eles, preme Buscar + Frecha esquerda.</translation>
 <translation id="1417314334557041815">Editar páxina <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">Desconectouse a cámara <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
 <translation id="148783771699678004">Desprazándose cara arriba á dereita</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Escanear páxina adicional</translation>
 <translation id="1851169887664797861">Hai dispoñibles novos controis da cámara</translation>
 <translation id="1851616744363735765">EN PAUSA</translation>
-<translation id="1862930711583847113">Non se puido exportar o ficheiro <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolución da foto</translation>
 <translation id="1925845977604399247">Ir á galería</translation>
 <translation id="199526504800285197">Detívose a gravación</translation>
 <translation id="1995951722691075581">A gravación detívose porque tes pouco espazo de almacenamento no dispositivo. Para gravar máis vídeos, terás que liberar espazo.</translation>
-<translation id="2022953316617983419">Código QR</translation>
 <translation id="2036868001356139588">Duración do temporizador</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> (dispositivo activado)</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2244252133441425811">Activar selector de fps do vídeo</translation>
 <translation id="2271433936731426666">Activar instantánea de vídeo de tamaño completo</translation>
-<translation id="229579744168541441">Exportar ao disco</translation>
 <translation id="2320741269052147773">Desprazar cara á esquerda</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2501853267655415902">Detívose a gravación</translation>
-<translation id="2501953888035679275">Saca fotos e grava vídeos coa cámara.</translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="2577915835281444458">Deterase a gravación pronto. Vai ao almacenamento do dispositivo para liberar espazo.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Vista previa do espello</translation>
 <translation id="2879583609344924966">Conectouse a cámara <ph name="CAMERA" />.</translation>
 <translation id="2904654629665923749">Opción de escaneado de documentos dispoñible</translation>
-<translation id="2968794441791257519">As fotos e os vídeos realizados coa cámara pasarán ao cartafol Descargas. Podes acceder a eles en Ficheiros.
-
-        As aplicacións con permisos de almacenamento terán acceso ás túas fotos e vídeos.</translation>
 <translation id="3067436040345934772">Desprazar cara á dereita</translation>
 <translation id="3081586908890909590">Cambiar a gravar vídeo</translation>
 <translation id="313467653172006084">30 fps</translation>
-<translation id="3183731565330012717">Tipo de grade</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3240426699337459095">Copiouse a ligazón</translation>
-<translation id="3259149966178251584">Resolución da cámara</translation>
-<translation id="3305962767867348165">Fixar</translation>
 <translation id="3354465018370944241">Configuración de fotos</translation>
 <translation id="3411958449466169012">Temporizador desactivado</translation>
 <translation id="3448774564454087943">Non se gardou o vídeo porque é demasiado curto</translation>
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3517926952904427380">Non se puido facer a foto de retrato</translation>
 <translation id="3566302376254083266">Desprazándose cara arriba e á esquerda</translation>
-<translation id="3569311554794739032">Seguro que queres eliminar <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Cambiar a modo de escaneo</translation>
 <translation id="3583444040776960729">Esquina inferior esquerda do documento</translation>
 <translation id="3789724198583203151">Xirar 90 graos cara á esquerda</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3838931309141338733">Escanear código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="4060608699153044055">Non podes realizar gravacións porque tes pouco espazo de almacenamento no dispositivo. Para comezar a gravar, terás que liberar espazo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
 <translation id="4281620174117014503">Resolución media</translation>
 <translation id="428234092390943511">Miniatura da páxina</translation>
-<translation id="4329152592498422850">Cambiar para facer unha foto cadrada</translation>
 <translation id="4340659173795395806">Agora podes crear ficheiros PDF de varias páxinas</translation>
 <translation id="4383571725254449280">Rexistros de rendemento de impresión</translation>
 <translation id="4445542136948522167">Deixar de sacar foto</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxeles</translation>
 <translation id="4570032796877367747">Cámara dianteira</translation>
 <translation id="4598556348158889687">Xestión do almacenamento</translation>
 <translation id="4620818268515773682">Silenciar micrófono. A función de silenciar está desactivada</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Grazas polo teu comentario sobre a aplicación Cámara.
 
 Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un vídeo de mostra e indica cal é o problema (por exemplo, a foto está demasiado escura ou desenfocada).</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxeles</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6617916774429601017">Mostrar todas as resolucións</translation>
 <translation id="6631515515009660915">Espello desactivado</translation>
@@ -145,7 +128,6 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="695140971690006676">Restablecer todo</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="698156982839284926">3 segundos</translation>
-<translation id="712848772518857951">Seguro que queres quitar os <ph name="COUNT" /> elementos?</translation>
 <translation id="7134221860976209830">Temporizador de 10 segundos</translation>
 <translation id="7191890674911603392">Tipo de gravación</translation>
 <translation id="7243947652761655814">Resolución de vídeo</translation>
@@ -171,11 +153,9 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="8145038249676204903">Cambiar a modo de cámara de fotos</translation>
 <translation id="8167081290930651932">Gardar como foto</translation>
 <translation id="8239780215768881278">Crear instantánea do vídeo</translation>
-<translation id="8261506727792406068">Eliminar</translation>
 <translation id="8425673304802773841">Inclinar cara abaixo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8629662593426079630">360 p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Activar son do micrófono. A función de silenciar está activada</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8730621377337864115">Feito</translation>

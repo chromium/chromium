@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Εντοπίστηκε σύνδεσμος. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Η σελίδα <ph name="PAGE_NUMBER" /> διαγράφηκε</translation>
 <translation id="1258009455399840361">Περιστροφή 90 μοιρών δεξιόστροφα</translation>
-<translation id="1276998909102132017">Εικόνες gallery</translation>
 <translation id="1300209025925956156">Σάρωση του εγγράφου σας</translation>
 <translation id="1309250603447638106">Λήψη ενημερώσεων για τη σάρωση εγγράφων</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Αναζήτηση + αριστερό βέλος για πρόσβαση.</translation>
 <translation id="1417314334557041815">Επεξεργασία σελίδας <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1467231725790366244">Η κάμερα <ph name="CAMERA" /> είναι αποσυνδεδεμένη.</translation>
 <translation id="1473110567575736769">Χρονόμετρο 3 δευτερολέπτων</translation>
 <translation id="148783771699678004">Μετακινείται με κατεύθυνση προς τα επάνω και δεξιά</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Σάρωση επιπλέον σελίδας</translation>
 <translation id="1851169887664797861">Υπάρχουν διαθέσιμα επιπλέον στοιχεία ελέγχου κάμερας</translation>
 <translation id="1851616744363735765">ΣΕ ΠΑΥΣΗ</translation>
-<translation id="1862930711583847113">Δεν είναι δυνατή η εξαγωγή του αρχείου <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Ανάλυση φωτογραφίας</translation>
 <translation id="1925845977604399247">Μετάβαση στο Gallery</translation>
 <translation id="199526504800285197">Η εγγραφή διακόπηκε</translation>
 <translation id="1995951722691075581">Η εγγραφή σας διακόπηκε λόγω περιορισμένου αποθηκευτικού χώρου συσκευής. Για να εγγράψετε περισσότερα βίντεο, θα πρέπει να ελευθερώσετε χώρο στη συσκευή σας.</translation>
-<translation id="2022953316617983419">Κωδικός QR</translation>
 <translation id="2036868001356139588">Διάρκεια χρονομέτρου</translation>
 <translation id="2050339315714019657">Κάθετα</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ενεργή</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Κωδικός QR</translation>
 <translation id="2244252133441425811">Ενεργοποίηση εργαλείου επιλογής καρέ ανά δευτερόλεπτο στο βίντεο</translation>
 <translation id="2271433936731426666">Ενεργοποίηση στιγμιότυπου οθόνης βίντεο σε πλήρες μέγεθος</translation>
-<translation id="229579744168541441">Εξαγωγή σε δίσκο</translation>
 <translation id="2320741269052147773">Μετακίνηση αριστερά</translation>
 <translation id="2501278716633472235">Επιστροφή</translation>
 <translation id="2501853267655415902">Η εγγραφή διακόπηκε</translation>
-<translation id="2501953888035679275">Τραβήξτε φωτογραφίες και βίντεο με την κάμερά σας.</translation>
 <translation id="2517472476991765520">Σάρωση</translation>
 <translation id="2549985041256363841">Έναρξη εγγραφής</translation>
 <translation id="2577915835281444458">Η εγγραφή θα διακοπεί σύντομα. Μεταβείτε στον αποθηκευτικό χώρο της συσκευής για να ελευθερώσετε χώρο.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Προεπισκόπηση κατοπτρισμού</translation>
 <translation id="2879583609344924966">Η κάμερα <ph name="CAMERA" /> είναι συνδεδεμένη.</translation>
 <translation id="2904654629665923749">Διατίθεται λειτουργία σάρωσης εγγράφων</translation>
-<translation id="2968794441791257519">Οι φωτογραφίες και τα βίντεο που λήφθηκαν με την κάμερα θα μετακινηθούν στον φάκελο "Λήψεις". Μπορείτε να αποκτήσετε πρόσβαση σε αυτά στα Αρχεία.
-
-        Οι εφαρμογές με άδειες αποθηκευτικού χώρου θα έχουν πρόσβαση στις φωτογραφίες και τα βίντεό σας.</translation>
 <translation id="3067436040345934772">Μετακίνηση δεξιά</translation>
 <translation id="3081586908890909590">Μετάβαση στη λειτουργία εγγραφής βίντεο</translation>
 <translation id="313467653172006084">30 καρέ ανά δευτερόλεπτο</translation>
-<translation id="3183731565330012717">Τύπος πλέγματος</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
 <translation id="3240426699337459095">Ο σύνδεσμος αντιγράφηκε</translation>
-<translation id="3259149966178251584">Ανάλυση κάμερας</translation>
-<translation id="3305962767867348165">Διόρθωση</translation>
 <translation id="3354465018370944241">Ρυθμίσεις φωτογραφιών</translation>
 <translation id="3411958449466169012">Χρονόμετρο ανενεργό</translation>
 <translation id="3448774564454087943">Το βίντεο δεν αποθηκεύτηκε επειδή είναι πολύ σύντομο</translation>
 <translation id="346539236881580388">Νέα λήψη</translation>
 <translation id="3517926952904427380">Δεν είναι δυνατή η λήψη φωτογραφίας πορτραίτου.</translation>
 <translation id="3566302376254083266">Μετακινείται με κατεύθυνση προς τα επάνω και αριστερά</translation>
-<translation id="3569311554794739032">Είστε βέβαιοι ότι θέλετε να καταργήσετε το αρχείο <ph name="FILE" />;</translation>
 <translation id="3573890771273113519">Αλλαγή σε λειτουργία σάρωσης</translation>
 <translation id="3583444040776960729">Κάτω αριστερή γωνία του εγγράφου</translation>
 <translation id="3789724198583203151">Περιστροφή 90 μοιρών αριστερόστροφα</translation>
 <translation id="3810838688059735925">Βίντεο</translation>
-<translation id="3838931309141338733">Σάρωση γραμμωτού κώδικα</translation>
 <translation id="3892148308691398805">Αντιγραφή κειμένου</translation>
 <translation id="4060608699153044055">Δεν είναι δυνατή η εγγραφή λόγω περιορισμένου αποθηκευτικού χώρου συσκευής. Για να ξεκινήσετε την εγγραφή, θα πρέπει να ελευθερώσετε χώρο στη συσκευή σας.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Αντιγρ. διεύθυνσης συνδέσμου</translation>
 <translation id="4281620174117014503">Μεσαία ανάλυση</translation>
 <translation id="428234092390943511">Μικρογραφία σελίδας</translation>
-<translation id="4329152592498422850">Μετάβαση στη λειτουργία λήψης τετράγωνης φωτογραφίας</translation>
 <translation id="4340659173795395806">Μπορείτε πλέον να δημιουργείτε PDF πολλών σελίδων.</translation>
 <translation id="4383571725254449280">Εκτύπωση αρχείου καταγραφής απόδοσης</translation>
 <translation id="4445542136948522167">Διακοπή λήψης φωτογραφίας</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Μπροστινή κάμερα</translation>
 <translation id="4598556348158889687">Διαχείριση αποθηκευτικού χώρου</translation>
 <translation id="4620818268515773682">Εναλλαγή σίγασης μικροφώνου. Η σίγαση είναι απενεργοποιημένη</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Σας ευχαριστούμε για την υποβολή σχολίων για την εφαρμογή Κάμερα.
 
 Εάν τα σχόλιά σας αφορούν την ποιότητα φωτογραφίας ή βίντεο, επισυνάψτε ένα δείγμα εικόνας ή βίντεο και περιγράψτε το πρόβλημα. (Για παράδειγμα, η φωτογραφία είναι υπερβολικά σκοτεινή ή δεν είναι εστιασμένο το θέμα.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Κοινοποίηση</translation>
 <translation id="6617916774429601017">Εμφάνιση όλων των αναλύσεων</translation>
 <translation id="6631515515009660915">Κατοπτρισμός ανενεργός</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">Επαναφορά όλων</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 δευτερόλεπτα</translation>
-<translation id="712848772518857951">Είστε βέβαιοι ότι θέλετε να καταργήσετε <ph name="COUNT" /> στοιχεία;</translation>
 <translation id="7134221860976209830">Χρονόμετρο 10 δευτερολέπτων</translation>
 <translation id="7191890674911603392">Τύπος εγγραφής</translation>
 <translation id="7243947652761655814">Ανάλυση βίντεο</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">Μετάβαση στη λειτουργία λήψης φωτογραφίας</translation>
 <translation id="8167081290930651932">Αποθήκευση ως φωτογραφίας</translation>
 <translation id="8239780215768881278">Λήψη στιγμιότυπου βίντεο</translation>
-<translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8425673304802773841">Κλίση προς τα κάτω</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Εναλλαγή σίγασης μικροφώνου. Η σίγαση είναι ενεργοποιημένη</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>

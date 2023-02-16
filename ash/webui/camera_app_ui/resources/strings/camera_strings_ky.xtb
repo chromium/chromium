@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Шилтеме аныкталды. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> барак жок кылынды</translation>
 <translation id="1258009455399840361">Сааттын жебеси боюнча 90 градуска буруу</translation>
-<translation id="1276998909102132017">Галерея сүрөттөрү</translation>
 <translation id="1300209025925956156">Документиңизди скандоо</translation>
 <translation id="1309250603447638106">Документти скандоо функциясы үчүн жаңыртуулар жүктөлүп алынууда</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Кирүү үчүн Search + солго жебени басыңыз.</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />-бетти түзөтүү</translation>
-<translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ажыратылды.</translation>
 <translation id="1473110567575736769">3 секунддук таймер</translation>
 <translation id="148783771699678004">Жогорку оң жакка жылууда</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Кошумча бетти скандоо</translation>
 <translation id="1851169887664797861">Камераны көзөмөлдөй турган кошумча каражаттар бар</translation>
 <translation id="1851616744363735765">ТЫНДЫРЫЛДЫ</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> файлын экспорттоо мүмкүн болбой жатат</translation>
 <translation id="1899697626337024495">Сүрөттүн дааналыгы</translation>
 <translation id="1925845977604399247">Галереяга өтүү</translation>
 <translation id="199526504800285197">Видео тартуу токтотулду</translation>
 <translation id="1995951722691075581">Түзмөктүн сактагычында орун аз болгондуктан, видео тартуу токтоп калды. Көбүрөөк видео тартуу үчүн түзмөгүңүздөн орун бошотуңуз.</translation>
-<translation id="2022953316617983419">QR коду</translation>
 <translation id="2036868001356139588">Таймердин узактыгы</translation>
 <translation id="2050339315714019657">Тигинен</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> жигердүү</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR коду</translation>
 <translation id="2244252133441425811">Видеодогу кадр/сек. тандагычты иштетүү</translation>
 <translation id="2271433936731426666">Толук экрандагы видеону жаздыруу учурунда тартылып алынган сүрөттү иштетүү</translation>
-<translation id="229579744168541441">Дискке өткөрүү</translation>
 <translation id="2320741269052147773">Солго жылдырып кароо</translation>
 <translation id="2501278716633472235">Артка кайтуу</translation>
 <translation id="2501853267655415902">Жаздыруу токтотулду</translation>
-<translation id="2501953888035679275">Камера менен сүрөт жана видео тартасыз.</translation>
 <translation id="2517472476991765520">Скандоо</translation>
 <translation id="2549985041256363841">Жаздырып баштоо</translation>
 <translation id="2577915835281444458">Бир аздан кийин видео тартылбай калат. Орун бошотуу үчүн түзмөктүн сактагычына өтүңүз.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Чагылдырууну алдын ала көрүү</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> сайылып турат.</translation>
 <translation id="2904654629665923749">Документти скандоо функциясы жеткиликтүү</translation>
-<translation id="2968794441791257519">Бул камера менен тартылган сүрөттөр менен видеолор "Жүктөлүп алынгандар" папкасына жылдырылат. Аларды "Файлдар" папкасынан көрө аласыз.
-
-       Түзмөктүн сактагычына кире алган колдонмолор сүрөттөрүңүз жана видеолоруңуз менен иштей алышат.</translation>
 <translation id="3067436040345934772">Оңго жылдырып кароо</translation>
 <translation id="3081586908890909590">Видео режимине которулуу</translation>
 <translation id="313467653172006084">30 кадр/сек</translation>
-<translation id="3183731565330012717">Торчонун түрү</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Шилтеме көчүрүлдү</translation>
-<translation id="3259149966178251584">Камеранын дааналыгы</translation>
-<translation id="3305962767867348165">Оңдоо</translation>
 <translation id="3354465018370944241">Сүрөттүн параметрлери</translation>
 <translation id="3411958449466169012">Таймер өчүк</translation>
 <translation id="3448774564454087943">Видео өтө кыска болгондуктан, сакталган жок</translation>
 <translation id="346539236881580388">Кайра тартуу</translation>
 <translation id="3517926952904427380">Сүрөткө тигинен тартылбай жатат</translation>
 <translation id="3566302376254083266">Жогорку сол жакка жылууда</translation>
-<translation id="3569311554794739032">"<ph name="FILE" />" файлын чын эле өчүрөсүзбү?</translation>
 <translation id="3573890771273113519">Скандоо режимине которулуу</translation>
 <translation id="3583444040776960729">Документтин төмөнкү сол бурчу</translation>
 <translation id="3789724198583203151">Сааттын жебесине каршы 90 градуска буруу</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3838931309141338733">Штрихкодду скандоо</translation>
 <translation id="3892148308691398805">Текстти көчүрүү</translation>
 <translation id="4060608699153044055">Түзмөктүн сактагычында орун аз болгондуктан, видео тартууга болбойт. Видео тартып баштоо үчүн түзмөгүңүздөн орун бошотуңуз.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мпикс.</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
 <translation id="4281620174117014503">Орточо резолюция</translation>
 <translation id="428234092390943511">Беттин эскизи</translation>
-<translation id="4329152592498422850">Чарчы сүрөт тартуу режимине которулуу</translation>
 <translation id="4340659173795395806">Эми бир нече беттен турган PDF файлын түзө аласыз</translation>
 <translation id="4383571725254449280">Басып чыгаруу майнаптуулугунун таржымалы</translation>
 <translation id="4445542136948522167">Сүрөткө тартууну токтотуу</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мега-пиксель</translation>
 <translation id="4570032796877367747">Маңдайкы камера</translation>
 <translation id="4598556348158889687">Сактагычты башкаруу</translation>
 <translation id="4620818268515773682">Микрофондун үнүн өчүрүү/күйгүзүү. Үнсүз режим өчүк</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Камера колдонмосу жөнүндө пикириңизди айтканыңыз үчүн ыраазычылык билдиребиз.
 
 Эгер сүрөттүн же видеонун сапаты жөнүндө пикир билдирип жатсаңыз, анын үлгүсүн тиркеп, маселе эмнеде экенин түшүндүрүңүз. (Мисалы, сүрөт өтө караңгы же объект бүдөмүк болуп турат.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мега-пиксель</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="6617916774429601017">Бардык резолюцияларды көрсөтүү</translation>
 <translation id="6631515515009660915">Чагылдыруу өчүк</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">Баарын баштапкы абалга келтирүү</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 секунд</translation>
-<translation id="712848772518857951"><ph name="COUNT" /> файлды чын эле өчүрөсүзбү?</translation>
 <translation id="7134221860976209830">10 секунддук таймер</translation>
 <translation id="7191890674911603392">Жаздыруу түрү</translation>
 <translation id="7243947652761655814">Видеонун дааналыгы</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">Сүрөт режимине которулуу</translation>
 <translation id="8167081290930651932">Сүрөт катары сактоо</translation>
 <translation id="8239780215768881278">Видео жаздыруу учурунда сүрөткө тартып алуу</translation>
-<translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8425673304802773841">Төмөн кыйшайтуу</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Микрофондун үнүн өчүрүү/күйгүзүү. Үнсүз режим күйүк</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8730621377337864115">Бүттү</translation>

@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">लिंक भेट्टियो। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">पेज <ph name="PAGE_NUMBER" /> मेटाइयो</translation>
 <translation id="1258009455399840361">घडी घुम्ने दिशामा ९० डिग्री घुमाउनुहोस्</translation>
-<translation id="1276998909102132017">ग्यालेरीका फोटो</translation>
 <translation id="1300209025925956156">डकुमेन्ट स्क्यान गर्नुहोस्</translation>
 <translation id="1309250603447638106">डकुमेन्ट स्क्यान गर्ने सुविधासम्बम्धी अपडेटहरू डाउनलोड गरिँदै छ</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। प्रयोग गर्न खोज बटन + लेफ्ट एरो थिच्नुहोस्।</translation>
 <translation id="1417314334557041815">पेज <ph name="INDEX" /> सम्पादन गर्नुहोस्</translation>
-<translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> निकालिएको छ।</translation>
 <translation id="1473110567575736769">३ सेकेन्डको टाइमर</translation>
 <translation id="148783771699678004">सिरानको दायाँतिर सारिँदै छ</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">अतिरिक्त पेज स्क्यान गर्नुहोस्</translation>
 <translation id="1851169887664797861">क्यामेरासम्बन्धी थप कन्ट्रोलहरू उपलब्ध छन्</translation>
 <translation id="1851616744363735765">रोकियो</translation>
-<translation id="1862930711583847113"><ph name="FILE" /> निर्यात गर्न सकिएन</translation>
 <translation id="1899697626337024495">तस्बिरको रिजोल्युसन</translation>
 <translation id="1925845977604399247">ग्यालेरीमा जानुहोस्</translation>
 <translation id="199526504800285197">रेकर्डिङ रोकिएको छ</translation>
 <translation id="1995951722691075581">डिभाइसको भण्डारणमा खाली ठाउँ कम भएकाले तपाईंको रेकर्डिङ रोकियो। तपाईं अझ धेरै भिडियोहरू रेकर्ड गर्न चाहनुहुन्छ भने तपाईंले आफ्नो डिभाइसको भण्डारणमा ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
-<translation id="2022953316617983419">QR कोड</translation>
 <translation id="2036868001356139588">टाइमरको अवधि</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> सक्रिय भयो</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2244252133441425811">भिडियोको FPS पिकर अन गर्नुहोस्</translation>
 <translation id="2271433936731426666">पूर्ण आकारको भिडियो स्न्यापसट अन गरियोस्</translation>
-<translation id="229579744168541441">निर्यात गरी डिस्कमा पठाउनुहोस्</translation>
 <translation id="2320741269052147773">बायाँतिर प्यान गर्नुहोस्</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2501853267655415902">रेकर्डिङ गर्न छाडियो</translation>
-<translation id="2501953888035679275">आफ्नो क्यामेरामार्फत तस्बिरहरू खिच्नुहोस् र भिडियोहरू रेकर्ड गर्नुहोस्।</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2549985041256363841">रेकर्डिङ सुरु गर्नुहोस्</translation>
 <translation id="2577915835281444458">रेकर्डिङ चाँडै नै बन्द हुने छ। डिभाइसको भण्डारणमा गएर त्यसमा ठाउँ खाली गर्नुहोस्।</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">प्रिभ्यू मिरर गर्नुहोस्</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> जोडिएको छ।</translation>
 <translation id="2904654629665923749">डकुमेन्ट स्क्यान गर्ने सुविधा उपलब्ध छ</translation>
-<translation id="2968794441791257519">क्यामेरामार्फत खिचिएका तस्बिर र भिडियोहरू डाउनलोडहरू नामक फोल्डरमा सारिने छ। तपाईं फाइलहरू नामक फोल्डरमा गई तिनीहरूमाथि पहुँच राख्न सक्नुहुन्छ।
-
-भण्डारणको अनुमति भएका एपहरूले तपाईंका तस्बिर र भिडियोहरूमाथि पहुँच राख्न सक्ने छन्।</translation>
 <translation id="3067436040345934772">दायाँतिर प्यान गर्नुहोस्</translation>
 <translation id="3081586908890909590">भिडियो रेकर्ड गर्ने मोड प्रयोग गर्नुहोस्</translation>
 <translation id="313467653172006084">३० FPS</translation>
-<translation id="3183731565330012717">ग्रिडको प्रकार</translation>
 <translation id="3227137524299004712">माइक्रोफोन</translation>
 <translation id="3240426699337459095">लिंक प्रतिलिपि गरियो</translation>
-<translation id="3259149966178251584">क्यामेराको रिजोल्युसन</translation>
-<translation id="3305962767867348165">सच्याउनुहोस्</translation>
 <translation id="3354465018370944241">फोटोसम्बन्धी सेटिङ</translation>
 <translation id="3411958449466169012">टाइमर अफ गर्नुहोस्</translation>
 <translation id="3448774564454087943">यो भिडियो ज्यादै छोटो भएकाले भिडियो सेभ गरिएन</translation>
 <translation id="346539236881580388">पुनः खिच्नुहोस्</translation>
 <translation id="3517926952904427380">पोर्ट्रेट तस्बिर खिच्न सकिएन</translation>
 <translation id="3566302376254083266">सिरानको बायाँतिर सारिँदै छ</translation>
-<translation id="3569311554794739032">तपाईंले <ph name="FILE" /> हटाउन खोज्नुभएकै हो त?</translation>
 <translation id="3573890771273113519">स्क्यान मोड प्रयोग गर्नुहोस्</translation>
 <translation id="3583444040776960729">कागजातको पुछारको बायाँ कुना</translation>
 <translation id="3789724198583203151">घडी घुम्ने दिशाको विपरीत दिशामा ९० डिग्री घुमाउनुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
-<translation id="3838931309141338733">बारकोड स्क्यान गर्नुहोस्</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="4060608699153044055">डिभाइसको भण्डारणमा खाली ठाउँ कम भएकाले तपाईं रेकर्ड गर्न सक्नुहुन्न। तपाईं रेकर्डिङ सुरु गर्न चाहनुहुन्छ भने तपाईंले आफ्नो डिभाइसको भण्डारणमा ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> मेगापिक्सेल</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
 <translation id="4281620174117014503">मध्यम रिजोल्युसन</translation>
 <translation id="428234092390943511">पेजको थम्बनेल</translation>
-<translation id="4329152592498422850">वर्गाकार तस्बिर खिच्न थाल्नुहोस्</translation>
 <translation id="4340659173795395806">तपाईं अब एकभन्दा बढी पेज भएको PDF बनाउन सक्नुहुन्छ</translation>
 <translation id="4383571725254449280">प्रिन्ट सम्पादनका लगहरू</translation>
 <translation id="4445542136948522167">तस्बिर खिच्न छाड्नुहोस्‌</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> मेगा पिक्सेल</translation>
 <translation id="4570032796877367747">अगाडिको क्यामेरा</translation>
 <translation id="4598556348158889687">भण्डारणको व्यवस्थापन</translation>
 <translation id="4620818268515773682">माइक्रोफोनका हकमा म्युट गर्ने सुविधासम्बन्धी सेटिङ टगल गर्नुहोस्। म्युट गर्ने सुविधा अफ छ</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">क्यामेरा एपका बारेमा प्रतिक्रिया दिनुभएकोमा धन्यवाद।
 
 तपाईंको प्रतिक्रिया फोटो वा भिडियोको गुणस्तरका सम्बन्धमा हो भने कृपया फोटो वा भिडियोको एउटा नमुना एट्याच गर्नुहोस् र उक्त फोटो वा भिडियोमा के समस्या छ भन्ने कुरा बताउनुहोस्। (उदाहरणका लागि, फोटो ज्यादै अँध्यारो छ वा जुन कुराको फोटो खिच्नु पर्ने हो त्यो कुरा फोकसबाहिर छ।)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> मेगा पिक्सेल</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="6617916774429601017">सबै रिजोल्युसनहरू देखाइयोस्</translation>
 <translation id="6631515515009660915">मिरर अफ गर्नुहोस्</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">सबै रिसेट गर्नुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="698156982839284926">३ सेकेन्ड</translation>
-<translation id="712848772518857951">तपाईंले <ph name="COUNT" /> वस्तुहरू हटाउन खोज्नुभएकै हो त?</translation>
 <translation id="7134221860976209830">१० सेकेन्डको टाइमर</translation>
 <translation id="7191890674911603392">रेकर्डको प्रकार</translation>
 <translation id="7243947652761655814">भिडियोको रिजोल्युसन</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">तस्बिर खिच्ने मोड प्रयोग गर्नुहोस्</translation>
 <translation id="8167081290930651932">फोटोका रूपमा सेभ गर्नुहोस्</translation>
 <translation id="8239780215768881278">भिडियो स्न्यापसट खिच्नुहोस्</translation>
-<translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8425673304802773841">तलतिर ढल्काइयोस्</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8629662593426079630">३६० पिक्सेल</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" /> पिक्सेल (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">माइक्रोफोनका हकमा म्युट गर्ने सुविधासम्बन्धी सेटिङ टगल गर्नुहोस्। म्युट गर्ने सुविधा अन छ</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8730621377337864115">गरियो</translation>

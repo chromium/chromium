@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Linkki havaittu. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Sivu <ph name="PAGE_NUMBER" /> poistettu</translation>
 <translation id="1258009455399840361">Kierrä 90 astetta myötäpäivään</translation>
-<translation id="1276998909102132017">Gallerian kuvat</translation>
 <translation id="1300209025925956156">Skannaa dokumenttisi</translation>
 <translation id="1309250603447638106">Ladataan dokumenttien skannauksen päivityksiä</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Käytä valitsemalla Haku + vasen nuoli.</translation>
 <translation id="1417314334557041815">Muokkaa sivua <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Tulosta</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> on irrotettu.</translation>
 <translation id="1473110567575736769">3 sekunnin ajastin</translation>
 <translation id="148783771699678004">Siirretään yläoikealle</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skannaa toinen sivu</translation>
 <translation id="1851169887664797861">Lisää kameran säätimiä käytettävissä</translation>
 <translation id="1851616744363735765">KESKEYTETTY</translation>
-<translation id="1862930711583847113">Vienti epäonnistui: <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Kuvaresoluutio</translation>
 <translation id="1925845977604399247">Siirry galleriaan</translation>
 <translation id="199526504800285197">Tallennus on päättynyt</translation>
 <translation id="1995951722691075581">Tallennus päättyi, koska laitteen tallennustila on vähissä. Sinun on vapautettava tilaa laitteelta, jotta voit tallentaa lisää videoita.</translation>
-<translation id="2022953316617983419">QR-koodi</translation>
 <translation id="2036868001356139588">Ajastimen kesto</translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> on aktiivinen.</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="2244252133441425811">Ota videon FPS-valitsin käyttöön</translation>
 <translation id="2271433936731426666">Ota käyttöön täysikokoinen videotilasto</translation>
-<translation id="229579744168541441">Vie paikalliselle levylle</translation>
 <translation id="2320741269052147773">Panoroi vasemmalle</translation>
 <translation id="2501278716633472235">Takaisin</translation>
 <translation id="2501853267655415902">Tallennus lopetettu</translation>
-<translation id="2501953888035679275">Ota kuvia ja kuvaa videoita kameralla.</translation>
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
 <translation id="2577915835281444458">Tallennus loppuu pian. Siirry laitteen tallennustilaan, jotta voit vapauttaa lisää tilaa.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Peilin esikatselu</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> on kytketty.</translation>
 <translation id="2904654629665923749">Dokumenttien skannaus käytettävissä</translation>
-<translation id="2968794441791257519">Kameralla otetut kuvat ja videot siirretään Lataukset-kansioon. Voit käyttää niitä avaamalla Tiedostot.
-
-        Jos sovelluksella on tallennustilan käyttöoikeus, se voi käyttää kuvia ja videoita.</translation>
 <translation id="3067436040345934772">Panoroi oikealle</translation>
 <translation id="3081586908890909590">Vaihda videon kuvaamiseen</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Ruudukkotyyppi</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3240426699337459095">Linkki kopioitu</translation>
-<translation id="3259149966178251584">Kameran resoluutio</translation>
-<translation id="3305962767867348165">Korjaa</translation>
 <translation id="3354465018370944241">Valokuva-asetukset</translation>
 <translation id="3411958449466169012">Ajastin pois</translation>
 <translation id="3448774564454087943">Videota ei tallennettu, koska se on liian lyhyt</translation>
 <translation id="346539236881580388">Uusi otos</translation>
 <translation id="3517926952904427380">Muotokuvan ottaminen epäonnistui</translation>
 <translation id="3566302376254083266">Siirretään ylävasemmalle</translation>
-<translation id="3569311554794739032">Haluatko varmasti, että <ph name="FILE" /> poistetaan?</translation>
 <translation id="3573890771273113519">Vaihda skannaustilaan</translation>
 <translation id="3583444040776960729">Dokumentin vasen alakulma</translation>
 <translation id="3789724198583203151">Kierrä 90 astetta vastapäivään</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Skannaa viivakoodi</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
 <translation id="4060608699153044055">Et voi tallentaa, koska laitteen tallennustila on vähissä. Sinun on vapautettava tilaa laitteelta, jotta voit aloittaa tallennuksen.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
 <translation id="4281620174117014503">Keskitason resoluutio</translation>
 <translation id="428234092390943511">Sivun pikkukuva</translation>
-<translation id="4329152592498422850">Vaihda neliökuviin</translation>
 <translation id="4340659173795395806">Voit nyt luoda monisivuisia PDF-tiedostoja</translation>
 <translation id="4383571725254449280">Tulosta kehityslokit</translation>
 <translation id="4445542136948522167">Lopeta kuvan ottaminen</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseliä</translation>
 <translation id="4570032796877367747">Etukamera</translation>
 <translation id="4598556348158889687">Tallennustilan hallinta</translation>
 <translation id="4620818268515773682">Mikrofonin mykistys päälle tai pois päältä. Mykistys ei ole päällä</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Kiitos, että annoit palautetta Kamera-sovelluksesta.
 
 Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai ‑video ja kuvaile ongelmaa (esim. kuva on liian tumma, tai sitä ei ole tarkennettu kohteeseen).</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseliä</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6617916774429601017">Näytä kaikki resoluutiot</translation>
 <translation id="6631515515009660915">Peili pois päältä</translation>
@@ -145,7 +128,6 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="695140971690006676">Palauta kaikki</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekuntia</translation>
-<translation id="712848772518857951">Haluatko varmasti poistaa <ph name="COUNT" /> kohdetta?</translation>
 <translation id="7134221860976209830">10 sekunnin ajastin</translation>
 <translation id="7191890674911603392">Tietuetyyppi</translation>
 <translation id="7243947652761655814">Videon resoluutio</translation>
@@ -171,11 +153,9 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="8145038249676204903">Vaihda kuvan ottamiseen</translation>
 <translation id="8167081290930651932">Tallenna kuvana</translation>
 <translation id="8239780215768881278">Ota kuvakaappaus videosta</translation>
-<translation id="8261506727792406068">Poista</translation>
 <translation id="8425673304802773841">Kallista alaspäin</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Mikrofonin mykistys päälle tai pois päältä. Mykistys on päällä</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8730621377337864115">Valmis</translation>

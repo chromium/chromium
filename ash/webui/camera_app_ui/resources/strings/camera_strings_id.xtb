@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Link terdeteksi. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Halaman <ph name="PAGE_NUMBER" /> dihapus</translation>
 <translation id="1258009455399840361">Putar 90 derajat searah jarum jam</translation>
-<translation id="1276998909102132017">Foto galeri</translation>
 <translation id="1300209025925956156">Pindai dokumen Anda</translation>
 <translation id="1309250603447638106">Mendownload update untuk pemindaian dokumen</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Penelusuran + Panah kiri untuk mengakses.</translation>
 <translation id="1417314334557041815">Edit halaman <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Cetak</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> dicabut.</translation>
 <translation id="1473110567575736769">Timer 3 detik</translation>
 <translation id="148783771699678004">Berpindah ke arah kanan atas</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Pindai halaman tambahan</translation>
 <translation id="1851169887664797861">Kontrol kamera tambahan tersedia</translation>
 <translation id="1851616744363735765">DIJEDA</translation>
-<translation id="1862930711583847113">Tidak dapat mengekspor <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolusi foto</translation>
 <translation id="1925845977604399247">Buka Galeri</translation>
 <translation id="199526504800285197">Perekaman telah dihentikan</translation>
 <translation id="1995951722691075581">Perekaman dihentikan karena ruang penyimpanan perangkat hampir penuh. Untuk merekam lebih banyak video, Anda perlu mengosongkan ruang penyimpanan di perangkat.</translation>
-<translation id="2022953316617983419">Kode QR</translation>
 <translation id="2036868001356139588">Durasi timer</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktif</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Kode QR</translation>
 <translation id="2244252133441425811">Aktifkan pemilih FPS video</translation>
 <translation id="2271433936731426666">Aktifkan ringkasan video ukuran penuh</translation>
-<translation id="229579744168541441">Ekspor ke disk</translation>
 <translation id="2320741269052147773">Geser ke kiri</translation>
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2501853267655415902">Perekaman dihentikan</translation>
-<translation id="2501953888035679275">Mengambil foto dan merekam video dengan kamera.</translation>
 <translation id="2517472476991765520">Pindai</translation>
 <translation id="2549985041256363841">Mulai merekam</translation>
 <translation id="2577915835281444458">Perekaman akan segera berhenti. Buka penyimpanan perangkat untuk mengosongkan ruang penyimpanan.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Pratinjau cermin</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> dicolokkan.</translation>
 <translation id="2904654629665923749">Pemindaian dokumen tersedia</translation>
-<translation id="2968794441791257519">Foto dan video yang diambil dengan kamera akan dipindahkan ke folder Download. Anda dapat mengaksesnya di File.
-
-        Aplikasi yang memiliki izin penyimpanan dapat mengakses foto dan video.</translation>
 <translation id="3067436040345934772">Geser ke kanan</translation>
 <translation id="3081586908890909590">Beralih ke mode merekam video</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Jenis petak</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Tautan disalin</translation>
-<translation id="3259149966178251584">Resolusi kamera</translation>
-<translation id="3305962767867348165">Perbaiki</translation>
 <translation id="3354465018370944241">Setelan foto</translation>
 <translation id="3411958449466169012">Timer nonaktif</translation>
 <translation id="3448774564454087943">Video tidak disimpan karena terlalu pendek</translation>
 <translation id="346539236881580388">Ambil ulang</translation>
 <translation id="3517926952904427380">Tidak dapat mengambil foto potret</translation>
 <translation id="3566302376254083266">Berpindah ke arah kiri atas</translation>
-<translation id="3569311554794739032">Yakin ingin menghapus <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Beralih ke mode pindai</translation>
 <translation id="3583444040776960729">Pojok kiri bawah dokumen</translation>
 <translation id="3789724198583203151">Putar 90 derajat berlawanan arah jarum jam</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Pindai kode batang</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="4060608699153044055">Anda tidak dapat merekam karena ruang penyimpanan perangkat hampir penuh. Untuk mulai merekam, Anda perlu mengosongkan ruang penyimpanan di perangkat.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Salin URL</translation>
 <translation id="4281620174117014503">Resolusi sedang</translation>
 <translation id="428234092390943511">Thumbnail halaman</translation>
-<translation id="4329152592498422850">Beralih ke mode mengambil foto persegi</translation>
 <translation id="4340659173795395806">Anda kini dapat membuat PDF multi-halaman</translation>
 <translation id="4383571725254449280">Log performa cetak</translation>
 <translation id="4445542136948522167">Berhenti mengambil foto</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Kamera depan</translation>
 <translation id="4598556348158889687">Pengelolaan penyimpanan</translation>
 <translation id="4620818268515773682">Aktifkan/nonaktifkan tombol bisukan mikrofon. Bisukan nonaktif</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Terima kasih telah memberikan masukan tentang aplikasi Kamera.
 
 Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh foto atau video serta deskripsikan masalahnya. (Misalnya, foto terlalu gelap atau subjek tidak berada dalam fokus.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="6527303717912515753">Bagikan</translation>
 <translation id="6617916774429601017">Tampilkan semua resolusi</translation>
 <translation id="6631515515009660915">Cermin nonaktif</translation>
@@ -145,7 +128,6 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="695140971690006676">Reset semua</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="698156982839284926">3 detik</translation>
-<translation id="712848772518857951">Yakin ingin menghapus <ph name="COUNT" /> item?</translation>
 <translation id="7134221860976209830">Timer 10 detik</translation>
 <translation id="7191890674911603392">Jenis perekaman</translation>
 <translation id="7243947652761655814">Resolusi video</translation>
@@ -171,11 +153,9 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8145038249676204903">Beralih ke mode mengambil foto</translation>
 <translation id="8167081290930651932">Simpan sebagai Foto</translation>
 <translation id="8239780215768881278">Ambil ringkasan video</translation>
-<translation id="8261506727792406068">Hapus</translation>
 <translation id="8425673304802773841">Miringkan ke bawah</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Aktifkan/nonaktifkan tombol bisukan mikrofon. Bisukan aktif</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8730621377337864115">Selesai</translation>

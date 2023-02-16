@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">זוהה קישור. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">דף מס' <ph name="PAGE_NUMBER" /> נמחק</translation>
 <translation id="1258009455399840361">סיבוב ב-90 מעלות בכיוון השעון</translation>
-<translation id="1276998909102132017">תמונות מהגלריה</translation>
 <translation id="1300209025925956156">סריקת המסמך</translation>
 <translation id="1309250603447638106">מתבצעת הורדה של עדכונים לסריקת מסמכים</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ניתן לגשת אליהם באמצעות חיפוש + חץ שמאלה.</translation>
 <translation id="1417314334557041815">עריכת דף מס' <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">הדפסה</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> מנותקת.</translation>
 <translation id="1473110567575736769">טיימר ל-3 שניות</translation>
 <translation id="148783771699678004">מתבצעת תזוזה לימין למעלה</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">סריקה של דף נוסף</translation>
 <translation id="1851169887664797861">יש פקדים נוספים למצלמה</translation>
 <translation id="1851616744363735765">מושהית</translation>
-<translation id="1862930711583847113">לא ניתן לייצא את <ph name="FILE" /></translation>
 <translation id="1899697626337024495">רזולוציית תמונה</translation>
 <translation id="1925845977604399247">מעבר לגלריה</translation>
 <translation id="199526504800285197">צילום הסרטון הופסק</translation>
 <translation id="1995951722691075581">צילום הסרטון הופסק כי אין מספיק מקום אחסון במכשיר. כדי לצלם עוד סרטונים, עליך לפנות מקום במכשיר.</translation>
-<translation id="2022953316617983419">‏קוד QR</translation>
 <translation id="2036868001356139588">משך זמן בטיימר</translation>
 <translation id="2050339315714019657">לאורך</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> פעילה</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2244252133441425811">‏הפעלת הכלי לבחירת FPS בסרטונים</translation>
 <translation id="2271433936731426666">הפעלת תמונת מצב לגבי הסרטון בגודל מלא</translation>
-<translation id="229579744168541441">ייצוא לדיסק</translation>
 <translation id="2320741269052147773">הזזה שמאלה</translation>
 <translation id="2501278716633472235">חזרה</translation>
 <translation id="2501853267655415902">צילום הסרטון הופסק</translation>
-<translation id="2501953888035679275">צילום תמונות וסרטונים באמצעות המצלמה.</translation>
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2549985041256363841">צילום סרטון</translation>
 <translation id="2577915835281444458">ההקלטה תיפסק בקרוב. יש לעבור להגדרות האחסון במכשיר כדי לפנות מקום.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">תצוגה מקדימה של השיקוף</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> מחוברת.</translation>
 <translation id="2904654629665923749">סריקת המסמכים זמינה</translation>
-<translation id="2968794441791257519">תמונות וסרטונים שצולמו בעזרת המצלמה יועברו אל התיקייה 'הורדות'. אפשר לגשת אליהם דרך 'קבצים'.
-
-        אפליקציות עם הרשאות אחסון יוכלו לגשת אל התמונות והסרטונים שלך.</translation>
 <translation id="3067436040345934772">הזזה ימינה</translation>
 <translation id="3081586908890909590">מעבר לצילום וידאו</translation>
 <translation id="313467653172006084">30FPS</translation>
-<translation id="3183731565330012717">סוג רשת</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
 <translation id="3240426699337459095">הקישור הועתק</translation>
-<translation id="3259149966178251584">רזולוציית המצלמה</translation>
-<translation id="3305962767867348165">תיקון</translation>
 <translation id="3354465018370944241">הגדרות תמונה</translation>
 <translation id="3411958449466169012">טיימר כבוי</translation>
 <translation id="3448774564454087943">הסרטון לא נשמר כי הוא קצר מדי</translation>
 <translation id="346539236881580388">צילום חוזר</translation>
 <translation id="3517926952904427380">לא ניתן לצלם תמונת דיוקן</translation>
 <translation id="3566302376254083266">מתבצעת תזוזה לשמאל למעלה</translation>
-<translation id="3569311554794739032">להסיר את <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">מעבר למצב סריקה</translation>
 <translation id="3583444040776960729">הפינה הימנית התחתונה במסמך</translation>
 <translation id="3789724198583203151">סיבוב ב-90 מעלות נגד כיוון השעון</translation>
 <translation id="3810838688059735925">סרטון</translation>
-<translation id="3838931309141338733">סריקת ברקוד</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="4060608699153044055">לא ניתן לצלם כי אין מספיק מקום אחסון במכשיר. כדי לצלם סרטון, עליך לפנות מקום במכשיר.</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
 <translation id="4281620174117014503">רזולוציה בינונית</translation>
 <translation id="428234092390943511">תמונה ממוזערת של הדף</translation>
-<translation id="4329152592498422850">מעבר לצילום תמונה מרובעת</translation>
 <translation id="4340659173795395806">‏עכשיו אפשר ליצור קובץ PDF שמכיל מספר דפים</translation>
 <translation id="4383571725254449280">הדפסת יומני ביצועים</translation>
 <translation id="4445542136948522167">הפסקת הצילום</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:‏<ph name="ASPECT_RATIO_HEIGHT" />)‏ <ph name="MEGAPIXEL" /> מגה-פיקסל</translation>
 <translation id="4570032796877367747">מצלמה קדמית</translation>
 <translation id="4598556348158889687">ניהול אחסון</translation>
 <translation id="4620818268515773682">החלפת המצב של השתקת המיקרופון. ההשתקה כבויה</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">תודה על המשוב ששלחת לגבי אפליקציית המצלמה.
 
 אם המשוב מתייחס לאיכות התמונה או הסרטון, יש לצרף תמונה או סרטון לדוגמה ולתאר מה השתבש (לדוגמה, התמונה כהה מדי או שנושא התמונה לא בפוקוס).</translation>
-<translation id="6420689864531458495">‏(<ph name="ASPECT_RATIO_WIDTH" />:‏<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />)‏ <ph name="MEGAPIXEL" /> מגה-פיקסל</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6617916774429601017">הצגת כל הרזולוציות</translation>
 <translation id="6631515515009660915">השיקוף כבוי</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">איפוס של הכול</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="698156982839284926">3 שניות</translation>
-<translation id="712848772518857951">להסיר <ph name="COUNT" /> פריטים?</translation>
 <translation id="7134221860976209830">טיימר ל-10 שניות</translation>
 <translation id="7191890674911603392">סוג רשומה</translation>
 <translation id="7243947652761655814">רזולוציית הווידאו</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">מעבר לצילום תמונות</translation>
 <translation id="8167081290930651932">שמירה כתמונה</translation>
 <translation id="8239780215768881278">צילום תמונה מהסרטון</translation>
-<translation id="8261506727792406068">מחיקה</translation>
 <translation id="8425673304802773841">הטייה מטה</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">‏איכות HD ‏– ‎<ph name="HEIGHT" />p ‏(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">החלפת המצב של השתקת המיקרופון. ההשתקה פועלת</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8730621377337864115">בוצע</translation>

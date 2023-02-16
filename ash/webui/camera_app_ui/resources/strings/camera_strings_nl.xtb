@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Link gevonden. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Pagina <ph name="PAGE_NUMBER" /> verwijderd</translation>
 <translation id="1258009455399840361">90 graden rechtsom draaien</translation>
-<translation id="1276998909102132017">Galerij-afbeeldingen</translation>
 <translation id="1300209025925956156">Je document scannen</translation>
 <translation id="1309250603447638106">Updates voor het scannen van documenten downloaden</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Zoeken + pijl-links om ze te openen.</translation>
 <translation id="1417314334557041815">Pagina <ph name="INDEX" /> bewerken</translation>
-<translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is niet aangesloten.</translation>
 <translation id="1473110567575736769">Timer 3 seconden</translation>
 <translation id="148783771699678004">Beweegt naar rechtsboven</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Extra pagina scannen</translation>
 <translation id="1851169887664797861">Nieuwe camera-opties beschikbaar</translation>
 <translation id="1851616744363735765">ONDERBROKEN</translation>
-<translation id="1862930711583847113">Kan <ph name="FILE" /> niet exporteren</translation>
 <translation id="1899697626337024495">Fotoresolutie</translation>
 <translation id="1925845977604399247">Naar Galerij</translation>
 <translation id="199526504800285197">Opname is gestopt</translation>
 <translation id="1995951722691075581">Je opname is gestopt vanwege onvoldoende opslagruimte op het apparaat. Als je meer video's wilt opnemen, moet je ruimte vrijmaken op je apparaat.</translation>
-<translation id="2022953316617983419">QR-code</translation>
 <translation id="2036868001356139588">Timerduur</translation>
 <translation id="2050339315714019657">Staand</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> actief</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-code</translation>
 <translation id="2244252133441425811">FPS-kiezer voor video aanzetten</translation>
 <translation id="2271433936731426666">Videomomentopname op volledig formaat aanzetten</translation>
-<translation id="229579744168541441">Exporteren naar schijf</translation>
 <translation id="2320741269052147773">Naar links schuiven</translation>
 <translation id="2501278716633472235">Terug</translation>
 <translation id="2501853267655415902">Opname gestopt</translation>
-<translation id="2501953888035679275">Maak foto's en neem video's op met je camera.</translation>
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2549985041256363841">Opname starten</translation>
 <translation id="2577915835281444458">De opname wordt binnenkort gestopt. Ga naar de apparaatopslag om ruimte vrij te maken.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Voorbeeld van spiegelen</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is aangesloten.</translation>
 <translation id="2904654629665923749">Scan van document beschikbaar</translation>
-<translation id="2968794441791257519">Foto's en video's die zijn gemaakt met de camera worden verplaatst naar de map Downloads. Je kunt ze vinden via Bestanden.
-
-        Apps met opslagmachtiging hebben toegang tot je foto's en video's.</translation>
 <translation id="3067436040345934772">Naar rechts schuiven</translation>
 <translation id="3081586908890909590">Naar video opnemen</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Rastertype</translation>
 <translation id="3227137524299004712">Microfoon</translation>
 <translation id="3240426699337459095">Link gekopieerd</translation>
-<translation id="3259149966178251584">Cameraresolutie</translation>
-<translation id="3305962767867348165">Corrigeren</translation>
 <translation id="3354465018370944241">Foto-instellingen</translation>
 <translation id="3411958449466169012">Timer uit</translation>
 <translation id="3448774564454087943">De video is niet opgeslagen omdat deze te kort is</translation>
 <translation id="346539236881580388">Opnieuw maken</translation>
 <translation id="3517926952904427380">Kan geen portretfoto maken</translation>
 <translation id="3566302376254083266">Beweegt naar linksboven</translation>
-<translation id="3569311554794739032">Weet je zeker dat je <ph name="FILE" /> wilt verwijderen?</translation>
 <translation id="3573890771273113519">Overschakelen naar scanmodus</translation>
 <translation id="3583444040776960729">Linkerbenedenhoek van document</translation>
 <translation id="3789724198583203151">90 graden linksom draaien</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3838931309141338733">Streepjescode scannen</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="4060608699153044055">Je kunt niet opnemen vanwege onvoldoende opslagruimte op het apparaat. Als je wilt opnemen, moet je ruimte vrijmaken op je apparaat.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="4281620174117014503">Gemiddelde resolutie</translation>
 <translation id="428234092390943511">Paginathumbnail</translation>
-<translation id="4329152592498422850">Schakel over om vierkante foto te maken</translation>
 <translation id="4340659173795395806">Je kunt nu pdf's met meerdere pagina's maken</translation>
 <translation id="4383571725254449280">Prestatielogboeken afdrukken</translation>
 <translation id="4445542136948522167">Foto maken stoppen</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Camera aan voorzijde</translation>
 <translation id="4598556348158889687">Opslagbeheer</translation>
 <translation id="4620818268515773682">Geluid uitzetten voor microfoon schakelen. Geluid uit staat uit</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Bedankt dat je feedback over de Camera-app geeft.
 
 Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbeeldfoto of -video bij en beschrijf wat het probleem is. (Voorbeeld: de foto is te donker of het onderwerp is niet scherp in beeld.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Delen</translation>
 <translation id="6617916774429601017">Alle resoluties tonen</translation>
 <translation id="6631515515009660915">Spiegelen uit</translation>
@@ -145,7 +128,6 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="695140971690006676">Alles resetten</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 seconden</translation>
-<translation id="712848772518857951">Weet je zeker dat je <ph name="COUNT" /> items wilt verwijderen?</translation>
 <translation id="7134221860976209830">Timer van 10 seconden</translation>
 <translation id="7191890674911603392">Opnametype</translation>
 <translation id="7243947652761655814">Videoresolutie</translation>
@@ -171,11 +153,9 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8145038249676204903">Naar foto maken</translation>
 <translation id="8167081290930651932">Opslaan als foto</translation>
 <translation id="8239780215768881278">Videomomentopname maken</translation>
-<translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8425673304802773841">Naar beneden kantelen</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Geluid uitzetten voor microfoon schakelen. Geluid uit staat aan</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8730621377337864115">Klaar</translation>

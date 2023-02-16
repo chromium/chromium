@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Link észlelve. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. oldal törölve</translation>
 <translation id="1258009455399840361">Forgatás 90 fokkal az óramutató járásával megegyezően</translation>
-<translation id="1276998909102132017">Galériaképek</translation>
 <translation id="1300209025925956156">Dokumentum beolvasása</translation>
 <translation id="1309250603447638106">Frissítések letöltése a dokumentumbeolvasáshoz…</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Megtekintésükhöz nyomja le a Keresés + Balra nyíl billentyűparancsot.</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />. oldal szerkesztése</translation>
-<translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> nincs csatlakoztatva.</translation>
 <translation id="1473110567575736769">Három másodperces időzítő</translation>
 <translation id="148783771699678004">Mozgatás a jobb felső sarok irányába</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">További oldal beolvasása</translation>
 <translation id="1851169887664797861">Újabb kameravezérlők állnak rendelkezésre</translation>
 <translation id="1851616744363735765">SZÜNETEL</translation>
-<translation id="1862930711583847113">Nem lehet exportálni: <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Fotó felbontása</translation>
 <translation id="1925845977604399247">Ugrás a galériába</translation>
 <translation id="199526504800285197">A felvétel leállt</translation>
 <translation id="1995951722691075581">A felvétel leállt, mert az eszközön kevés a tárhely. További videók rögzítéséhez tárhelyet kell felszabadítania az eszközön.</translation>
-<translation id="2022953316617983419">QR-kód</translation>
 <translation id="2036868001356139588">Időzítés hossza</translation>
 <translation id="2050339315714019657">Álló</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktív</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-kód</translation>
 <translation id="2244252133441425811">FPS-választó engedélyezése a videóknál</translation>
 <translation id="2271433936731426666">Teljes méretű videó-pillanatkép engedélyezése</translation>
-<translation id="229579744168541441">Exportálás lemezre</translation>
 <translation id="2320741269052147773">Pásztázás balra</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2501853267655415902">A felvétel leállt</translation>
-<translation id="2501953888035679275">Fotókat és videókat készíthet a kamerával.</translation>
 <translation id="2517472476991765520">Szkennelés</translation>
 <translation id="2549985041256363841">Felvétel megkezdése</translation>
 <translation id="2577915835281444458">A felvétel hamarosan leáll. Szabadítson fel tárhelyet az eszközön.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Tükrözés előnézete</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> csatlakoztatva.</translation>
 <translation id="2904654629665923749">A dokumentumbeolvasás készen áll a használatra</translation>
-<translation id="2968794441791257519">A kamerával készített fotók és videók a Letöltések mappába kerülnek. A Fájlok alkalmazásban férhet hozzájuk.
-
-        A tárhelyengedéllyel rendelkező alkalmazások hozzáférhetnek a fotókhoz és a videókhoz.</translation>
 <translation id="3067436040345934772">Pásztázás jobbra</translation>
 <translation id="3081586908890909590">Váltás videófelvételre</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Rács típusa</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link másolva</translation>
-<translation id="3259149966178251584">Kamera felbontása</translation>
-<translation id="3305962767867348165">Rögzítés</translation>
 <translation id="3354465018370944241">Fotóbeállítások</translation>
 <translation id="3411958449466169012">Időzítés ki</translation>
 <translation id="3448774564454087943">A videót nem mentette a rendszer, mert túl rövid</translation>
 <translation id="346539236881580388">Új kép készítése</translation>
 <translation id="3517926952904427380">Nem sikerült portréfotót készíteni</translation>
 <translation id="3566302376254083266">Mozgatás a bal felső sarok irányába</translation>
-<translation id="3569311554794739032">Biztosan eltávolítja a következő fájlt: <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Váltás a beolvasási módra</translation>
 <translation id="3583444040776960729">Dokumentum bal alsó sarka</translation>
 <translation id="3789724198583203151">Forgatás 90 fokkal az óramutató járásával ellentétesen</translation>
 <translation id="3810838688059735925">Videó</translation>
-<translation id="3838931309141338733">Vonalkód beolvasása</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="4060608699153044055">Nem tud felvételt készíteni, mert az eszközön kevés a tárhely. A felvétel elindításához tárhelyet kell felszabadítania az eszközön.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Link másolása</translation>
 <translation id="4281620174117014503">Közepes felbontás</translation>
 <translation id="428234092390943511">Oldal indexképe</translation>
-<translation id="4329152592498422850">Váltás négyzet alakú fotó készítésére</translation>
 <translation id="4340659173795395806">Most már többoldalas PDF-fájlt is létrehozhat</translation>
 <translation id="4383571725254449280">Teljesítménynaplók nyomtatása</translation>
 <translation id="4445542136948522167">Fotókészítés leállítása</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Elülső kamera</translation>
 <translation id="4598556348158889687">Tárhelykezelés</translation>
 <translation id="4620818268515773682">Oldja fel a mikrofon némítását. A némítás ki van kapcsolva.</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Köszönjük a Kamera alkalmazással kapcsolatban küldött visszajelzését.
 
 Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mellékeljen valamilyen mintafotót vagy -videót, és ismertesse a problémát. (Például túl sötét a fotó, vagy a kép tárgya nincs fókuszban.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="6617916774429601017">Minden felbontás megjelenítése</translation>
 <translation id="6631515515009660915">Tükrözés ki</translation>
@@ -145,7 +128,6 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="695140971690006676">Az összes visszaállítása</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 másodperc</translation>
-<translation id="712848772518857951">Biztosan eltávolít <ph name="COUNT" /> elemet?</translation>
 <translation id="7134221860976209830">Tíz másodperces időzítő</translation>
 <translation id="7191890674911603392">Rögzítés típusa</translation>
 <translation id="7243947652761655814">Videó felbontása</translation>
@@ -171,11 +153,9 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8145038249676204903">Váltás fotókészítésre</translation>
 <translation id="8167081290930651932">Mentés fotóként</translation>
 <translation id="8239780215768881278">Pillanatkép készítése a videóból</translation>
-<translation id="8261506727792406068">Törlés</translation>
 <translation id="8425673304802773841">Billentés lefelé</translation>
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> × <ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Némítsa el a mikrofont. A némítás be van kapcsolva.</translation>
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8730621377337864115">Kész</translation>

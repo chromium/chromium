@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Enllaç detectat. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">S'ha suprimit la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Gira 90 graus en sentit horari</translation>
-<translation id="1276998909102132017">Imatges de la galeria</translation>
 <translation id="1300209025925956156">Escaneja el document</translation>
 <translation id="1309250603447638106">S'estan baixant les actualitzacions per a l'escaneig de documents</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Cerca+fletxa esquerra per accedir-hi.</translation>
 <translation id="1417314334557041815">Edita la pàgina <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> no està endollada.</translation>
 <translation id="1473110567575736769">Temporitzador de 3 segons</translation>
 <translation id="148783771699678004">S'està movent cap a la part superior dreta</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Escaneja una pàgina més</translation>
 <translation id="1851169887664797861">Controls de càmera addicionals disponibles</translation>
 <translation id="1851616744363735765">EN PAUSA</translation>
-<translation id="1862930711583847113">No es pot exportar <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolució de la foto</translation>
 <translation id="1925845977604399247">Ves a Galeria</translation>
 <translation id="199526504800285197">La gravació s'ha aturat</translation>
 <translation id="1995951722691075581">La gravació s'ha aturat perquè queda poc espai d'emmagatzematge al dispositiu. Per gravar més vídeos, has d'alliberar espai al dispositiu.</translation>
-<translation id="2022953316617983419">Codi QR</translation>
 <translation id="2036868001356139588">Durada del temporitzador</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> activa</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Codi QR</translation>
 <translation id="2244252133441425811">Activa el selector d'FPS per a vídeos</translation>
 <translation id="2271433936731426666">Activa la instantània del vídeo a mida completa</translation>
-<translation id="229579744168541441">Exporta al disc</translation>
 <translation id="2320741269052147773">Desplaça cap a l'esquerra</translation>
 <translation id="2501278716633472235">Torna</translation>
 <translation id="2501853267655415902">S'ha aturat la gravació</translation>
-<translation id="2501953888035679275">Fes fotos i grava vídeos amb la càmera.</translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
 <translation id="2577915835281444458">La gravació s'aturarà aviat. Ves a l'emmagatzematge del dispositiu per alliberar espai.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Previsualització del mirall</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> està endollada.</translation>
 <translation id="2904654629665923749">L'escaneig de documents està disponible</translation>
-<translation id="2968794441791257519">Les fotos i els vídeos que es facin amb la càmera es mouran a la carpeta Baixades. Pots accedir-hi des de Fitxers.
-
-        Les aplicacions amb permisos d'emmagatzematge tindran accés a les fotos i als vídeos.</translation>
 <translation id="3067436040345934772">Desplaça cap a la dreta</translation>
 <translation id="3081586908890909590">Canvia al mode per gravar vídeo</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Tipus de quadrícula</translation>
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="3240426699337459095">S'ha copiat l'enllaç.</translation>
-<translation id="3259149966178251584">Resolució de la càmera</translation>
-<translation id="3305962767867348165">Corregeix</translation>
 <translation id="3354465018370944241">Configuració de les fotos</translation>
 <translation id="3411958449466169012">Desactiva el temporitzador</translation>
 <translation id="3448774564454087943">El vídeo no s'ha desat perquè és massa curt</translation>
 <translation id="346539236881580388">Repeteix</translation>
 <translation id="3517926952904427380">No es pot fer una foto vertical</translation>
 <translation id="3566302376254083266">S'està movent cap a la part superior esquerra</translation>
-<translation id="3569311554794739032">Confirmes que vols suprimir <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Canvia al mode d'escaneig</translation>
 <translation id="3583444040776960729">Extrem inferior esquerre del document</translation>
 <translation id="3789724198583203151">Gira 90 graus en sentit antihorari</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3838931309141338733">Escaneja el codi de barres</translation>
 <translation id="3892148308691398805">Copia el text</translation>
 <translation id="4060608699153044055">No pots gravar perquè queda poc espai d'emmagatzematge al dispositiu. Per començar a gravar, has d'alliberar espai al dispositiu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
 <translation id="4281620174117014503">Resolució mitjana</translation>
 <translation id="428234092390943511">Miniatura de la pàgina</translation>
-<translation id="4329152592498422850">Botó per fer una foto quadrada</translation>
 <translation id="4340659173795395806">Ara pots crear fitxers PDF de diverses pàgines</translation>
 <translation id="4383571725254449280">Registres de rendiment d'impressió</translation>
 <translation id="4445542136948522167">No facis la foto</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxels</translation>
 <translation id="4570032796877367747">Càmera frontal</translation>
 <translation id="4598556348158889687">Gestió de l'emmagatzematge</translation>
 <translation id="4620818268515773682">Silencia el micròfon. La funció Silencia està desactivada.</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Gràcies per proporcionar suggeriments sobre l'aplicació Càmera.
 
 Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adjunta una foto o un vídeo de mostra i descriu quin problema hi ha. Per exemple, la foto és massa fosca o el motiu central no està enfocat.</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxels</translation>
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="6617916774429601017">Mostra totes les resolucions</translation>
 <translation id="6631515515009660915">Mirall desactivat</translation>
@@ -145,7 +128,6 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="695140971690006676">Reinicia-ho tot</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="698156982839284926">3 segons</translation>
-<translation id="712848772518857951">Confirmes que vols suprimir <ph name="COUNT" /> elements?</translation>
 <translation id="7134221860976209830">Temporitzador de 10 segons</translation>
 <translation id="7191890674911603392">Tipus de gravació</translation>
 <translation id="7243947652761655814">Resolució del vídeo</translation>
@@ -171,11 +153,9 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="8145038249676204903">Canvia al mode per fer fotos</translation>
 <translation id="8167081290930651932">Desa com a foto</translation>
 <translation id="8239780215768881278">Fes una captura de vídeo</translation>
-<translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8425673304802773841">Inclina cap avall</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD de <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Deixa de silenciar el micròfon. La funció Silencia està activada.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8730621377337864115">Fet</translation>

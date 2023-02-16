@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Кнопка "Відновити сеанс"; натисніть Enter, щоб відновити сеанс і переглянути релевантні дії в історії Chrome.</translation>
 <translation id="1101672080107056897">Помилка дії</translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Деякі обов’язкові поля порожні. Заповніть їх, перш ніж зберегти.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Виберіть тип для дозволу "<ph name="PERMISSION_NAME" />"</translation>
 <translation id="1112828774174131240">Антикваріат і предмети колекціонування</translation>
@@ -1315,6 +1316,7 @@
 <translation id="4223404254440398437">Користуватися мікрофоном заборонено</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Проведіть діагностику мережі<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Може просити дозвіл використовувати й переміщувати камеру</translation>
+<translation id="4231448684371260244">8 x 13 дюйм.</translation>
 <translation id="4235360514405112390">Дійсний</translation>
 <translation id="4250431568374086873">Ваше з’єднання з цим сайтом не повністю захищене</translation>
 <translation id="4250680216510889253">Ні</translation>
@@ -2016,6 +2018,7 @@
 <translation id="5992691462791905444">Зігнути гармошкою</translation>
 <translation id="5992805036496113940">Перегляньте інформацію, яка використовується для показу оголошень</translation>
 <translation id="5995727681868049093">Керуйте своєю інформацією, конфіденційністю й безпекою в обліковому записі Google</translation>
+<translation id="5996887213716993070">Заповніть поле "<ph name="FIELD" />"</translation>
 <translation id="5997247540087773573">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів Google радить негайно його змінити й перевірити збережені паролі.</translation>
 <translation id="6000758707621254961">Результатів для запиту "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="6005765687956866568">Автоматично заповнену інформацію було вилучено з форми</translation>
@@ -2755,6 +2758,7 @@
 <translation id="7766518757692125295">З полями</translation>
 <translation id="7773005668374414287">Однаковий порядок лицевою стороною вгору</translation>
 <translation id="7785790577395078482">цього планшета</translation>
+<translation id="7786368602962652765">Обов’язкове поле порожнє. Заповніть його, перш ніж зберегти.</translation>
 <translation id="7790488044432570133">Сайти, які ви відвідуєте, можуть запитувати в Chrome інформацію, що допоможе їм оцінити ефективність своїх оголошень. Chrome дозволяє сайтам збирати лише певні типи даних, зокрема про час доби, коли вам було показано рекламу.</translation>
 <translation id="7791011319128895129">Не випущено</translation>
 <translation id="7791196057686275387">Скріпити</translation>
@@ -3187,6 +3191,7 @@
 <translation id="8899807382908246773">Нав’язливі оголошення</translation>
 <translation id="8903921497873541725">Збільшити масштаб</translation>
 <translation id="890493561996401738">Кнопка видалення підказки: натисніть Enter, щоб видалити, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="8910898109640902752">8 x 10 дюйм.</translation>
 <translation id="8912362522468806198">Обліковий запис Google</translation>
 <translation id="8913778647360618320">Кнопка "Керувати способами оплати"; натисніть Enter, щоб керувати платежами й даними кредитної картки в налаштуваннях Chrome</translation>
 <translation id="8922013791253848639">Завжди дозволяти показ реклами на цьому сайті</translation>

@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Выяўлена спасылка. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Старонка <ph name="PAGE_NUMBER" /> выдалена</translation>
 <translation id="1258009455399840361">Павярнуць на 90 градусаў па гадзіннікавай стрэлцы</translation>
-<translation id="1276998909102132017">Відарысы ў галерэі</translation>
 <translation id="1300209025925956156">Сканіраванне дакумента</translation>
 <translation id="1309250603447638106">Ідзе спампоўванне абнаўленняў для функцыі сканіравання дакументаў</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Каб перайсці да іх, націсніце кнопку Пошук + стрэлка ўлева.</translation>
 <translation id="1417314334557041815">Рэдагаваць старонку <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Друк</translation>
 <translation id="1467231725790366244">Камера "<ph name="CAMERA" />" адключана.</translation>
 <translation id="1473110567575736769">Таймер на 3 секунды</translation>
 <translation id="148783771699678004">Перамяшчаецца ўправа ўверх</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Сканіраваць яшчэ адну старонку</translation>
 <translation id="1851169887664797861">Дадатковыя элементы кіравання камерай даступныя</translation>
 <translation id="1851616744363735765">ПРЫПЫНЕНА</translation>
-<translation id="1862930711583847113">Не ўдалося экспартаваць файл "<ph name="FILE" />"</translation>
 <translation id="1899697626337024495">Раздзяляльнасць фота</translation>
 <translation id="1925845977604399247">Перайсці ў галерэю</translation>
 <translation id="199526504800285197">Запіс спынены</translation>
 <translation id="1995951722691075581">Запіс спынены: мала месца ў сховішчы прылады. Каб запісаць больш відэа, вызваліце месца.</translation>
-<translation id="2022953316617983419">QR-код</translation>
 <translation id="2036868001356139588">Час таймера</translation>
 <translation id="2050339315714019657">Кніжная</translation>
 <translation id="2064538373111010176">Камера <ph name="CAMERA" /> актыўная</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2244252133441425811">Уключыць сродак выбару частаты кадраў для відэа</translation>
 <translation id="2271433936731426666">Пры здымцы відэа рабіць фотаздымкі максімальна магчымага памеру</translation>
-<translation id="229579744168541441">Экспарт на дыск</translation>
 <translation id="2320741269052147773">Зрушыць улева</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Запіс спынены</translation>
-<translation id="2501953888035679275">Здымка камерай фота і відэа.</translation>
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2549985041256363841">Пачаць запіс</translation>
 <translation id="2577915835281444458">Запіс хутка спыніцца. Вызваліце месца ў сховішчы прылады.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Перадпрагляд у рэжыме люстэрка</translation>
 <translation id="2879583609344924966">Камера "<ph name="CAMERA" />" падключана.</translation>
 <translation id="2904654629665923749">Сканіраванне дакументаў даступнае</translation>
-<translation id="2968794441791257519">Фота і відэа, знятыя на камеру, будуць перамешчаны ў папку "Спампоўкі". Іх можна знайсці ў Файлах.
-
-        Доступ да іх будуць мець праграмы з дазволам на сховішча.</translation>
 <translation id="3067436040345934772">Зрушыць управа</translation>
 <translation id="3081586908890909590">Пераключыцца на здымку відэа</translation>
 <translation id="313467653172006084">30 кадр/c</translation>
-<translation id="3183731565330012717">Тып сеткі</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3240426699337459095">Спасылка скапіравана</translation>
-<translation id="3259149966178251584">Раздзяляльнасць камеры</translation>
-<translation id="3305962767867348165">Выправіць</translation>
 <translation id="3354465018370944241">Налады фота</translation>
 <translation id="3411958449466169012">Таймер выключаны</translation>
 <translation id="3448774564454087943">Відэа не захавана, бо яно занадта кароткае</translation>
 <translation id="346539236881580388">Перазняць</translation>
 <translation id="3517926952904427380">Не ўдалося зрабіць фотапартрэт</translation>
 <translation id="3566302376254083266">Перамяшчаецца ўлева ўверх</translation>
-<translation id="3569311554794739032">Сапраўды выдаліць файл "<ph name="FILE" />"?</translation>
 <translation id="3573890771273113519">Пераключыцца ў рэжым сканіравання</translation>
 <translation id="3583444040776960729">Левы ніжні вугал дакумента</translation>
 <translation id="3789724198583203151">Павярнуць на 90 градусаў супраць гадзіннікавай стрэлкі</translation>
 <translation id="3810838688059735925">Відэа</translation>
-<translation id="3838931309141338733">Сканіраваць штрыхкод</translation>
 <translation id="3892148308691398805">Скапіраваць тэкст</translation>
 <translation id="4060608699153044055">Запіс немагчымы: мала месца ў сховішчы прылады. Каб пачаць запіс, вызваліце месца.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мпікс</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
 <translation id="4281620174117014503">Сярэдняя раздзяляльнасць</translation>
 <translation id="428234092390943511">Мініяцюра старонкі</translation>
-<translation id="4329152592498422850">Пераключыць на здымку квадратных фота</translation>
 <translation id="4340659173795395806">Цяпер вы можаце ствараць PDF-файлы з мноствам старонак</translation>
 <translation id="4383571725254449280">Журналы прадукцыйнасці друку</translation>
 <translation id="4445542136948522167">Спыніць фотаздымку</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Мпікс</translation>
 <translation id="4570032796877367747">Пярэдняя камера</translation>
 <translation id="4598556348158889687">Кіраванне сховішчам</translation>
 <translation id="4620818268515773682">Уключыць або выключыць мікрафон. Мікрафон уключаны</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Дзякуй за водгук аб праграме "Камера".
 
 Калі ваш водгук тычыцца якасці відарыса або відэа, далучыце прыклад фота або відэа і апішыце праблему. (Напрыклад, калі фота занадта цёмнае, або прадмет размыты.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />×<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Мпікс</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6617916774429601017">Паказаць усе раздзяляльнасці</translation>
 <translation id="6631515515009660915">Рэжым люстэрка выключаны</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">Скінуць усе</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="698156982839284926">3 секунды</translation>
-<translation id="712848772518857951">Сапраўды выдаліць элементы (<ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">Таймер на 10 секунд</translation>
 <translation id="7191890674911603392">Тып запісу</translation>
 <translation id="7243947652761655814">Раздзяляльнасць відэа</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">Пераключыцца на здымку фота</translation>
 <translation id="8167081290930651932">Захаваць як фота</translation>
 <translation id="8239780215768881278">Зрабіць здымак экрана</translation>
-<translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8425673304802773841">Нахіліць уніз</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Уключыць або выключыць мікрафон. Мікрафон выключаны</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8730621377337864115">Гатова</translation>

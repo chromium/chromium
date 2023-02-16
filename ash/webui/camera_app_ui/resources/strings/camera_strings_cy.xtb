@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Mae dolen wedi'i chanfod. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Tudalen <ph name="PAGE_NUMBER" /> wedi'i dileu</translation>
 <translation id="1258009455399840361">Cylchdroi 90 gradd yn glocwedd</translation>
-<translation id="1276998909102132017">Lluniau'r oriel</translation>
 <translation id="1300209025925956156">Sganio eich dogfen</translation>
 <translation id="1309250603447638106">Lawrlwytho diweddariadau ar gyfer sganio dogfennau</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + Saeth dde i gael mynediad.</translation>
 <translation id="1417314334557041815">Golygu tudalen <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Argraffu</translation>
 <translation id="1467231725790366244">Mae <ph name="CAMERA" /> wedi'i ddadblygio.</translation>
 <translation id="1473110567575736769">Amserydd 3 eiliad</translation>
 <translation id="148783771699678004">Yn symud i'r cyfeiriad de uchaf</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Sganio tudalen ychwanegol</translation>
 <translation id="1851169887664797861">Mae rheolyddion camera ychwanegol ar gael</translation>
 <translation id="1851616744363735765">SEIBIWYD</translation>
-<translation id="1862930711583847113">Methu ag allforio <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Eglurder llun</translation>
 <translation id="1925845977604399247">Mynd i Gallery</translation>
 <translation id="199526504800285197">Mae recordio wedi'i stopio</translation>
 <translation id="1995951722691075581">Stopiodd eich recordio oherwydd lle storio dyfais isel. I recordio rhagor o fideos, mae angen i chi ryddhau le storio ar eich dyfais.</translation>
-<translation id="2022953316617983419">Cod QR</translation>
 <translation id="2036868001356139588">Hyd yr amserydd</translation>
 <translation id="2050339315714019657">Portread</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> gweithredol</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2244252133441425811">Galluogi dewisydd FPS fideo</translation>
 <translation id="2271433936731426666">Galluogi ciplun fideo maint llawn</translation>
-<translation id="229579744168541441">Allforio i ddisg</translation>
 <translation id="2320741269052147773">Panio i'r chwith</translation>
 <translation id="2501278716633472235">Mynd yn ôl</translation>
 <translation id="2501853267655415902">Mae'r recordio wedi'i stopio</translation>
-<translation id="2501953888035679275">Tynnu lluniau a recordio fideos gyda'ch camera.</translation>
 <translation id="2517472476991765520">Sganio</translation>
 <translation id="2549985041256363841">Dechrau recordio</translation>
 <translation id="2577915835281444458">Bydd recordio yn stopio cyn bo hir. Ewch i storfa'r ddyfais i ryddhau le storio.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Rhagolwg adlewyrchu</translation>
 <translation id="2879583609344924966">Mae <ph name="CAMERA" /> wedi'i blygio i mewn.</translation>
 <translation id="2904654629665923749">Mae sganio dogfennau ar gael</translation>
-<translation id="2968794441791257519">Bydd lluniau a fideos a dynnir gyda'r camera yn cael eu symud i'r ffolder Lawrlwythiadau. Gallwch gael mynediad atynt yn Files.
-
-        Bydd apiau sydd â chaniatadau storio yn gallu cael mynediad at eich lluniau a'ch fideos.</translation>
 <translation id="3067436040345934772">Panio i'r dde</translation>
 <translation id="3081586908890909590">Newid i recordio fideo</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">Math o grid</translation>
 <translation id="3227137524299004712">Meicroffon</translation>
 <translation id="3240426699337459095">Cafodd y ddolen ei chopïo</translation>
-<translation id="3259149966178251584">Cydraniad camera</translation>
-<translation id="3305962767867348165">Datrys</translation>
 <translation id="3354465018370944241">Gosodiadau llun</translation>
 <translation id="3411958449466169012">Mae'r amserydd wedi'i ddiffodd</translation>
 <translation id="3448774564454087943">Nid yw'r fideo wedi'i gadw gan ei fod yn rhy fyr</translation>
 <translation id="346539236881580388">Tynnu'r llun eto</translation>
 <translation id="3517926952904427380">Ni ellir tynnu llun portread</translation>
 <translation id="3566302376254083266">Yn symud i'r cyfeiriad chwith uchaf</translation>
-<translation id="3569311554794739032">Ydych chi wir eisiau tynnu <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Newid i'r modd sganio</translation>
 <translation id="3583444040776960729">Cornel chwith isaf y ddogfen</translation>
 <translation id="3789724198583203151">Cylchdroi 90 gradd yn wrthglocwedd</translation>
 <translation id="3810838688059735925">Fideo</translation>
-<translation id="3838931309141338733">Sganio cod bar</translation>
 <translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="4060608699153044055">Ni allwch recordio oherwydd lle storio dyfais isel. I ddechrau recordio, mae angen i chi ryddhau le storio ar eich dyfais.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Copïo cyfeiriad y ddolen</translation>
 <translation id="4281620174117014503">Cydraniad canolig</translation>
 <translation id="428234092390943511">Mân-lun tudalen</translation>
-<translation id="4329152592498422850">Newidiwch i dynnu llun sgwâr</translation>
 <translation id="4340659173795395806">Nawr gallwch greu PDF aml-dudalen</translation>
 <translation id="4383571725254449280">Argraffu logiau perfformiad</translation>
 <translation id="4445542136948522167">Stopio tynnu llun</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapicsel</translation>
 <translation id="4570032796877367747">Camera blaen</translation>
 <translation id="4598556348158889687">Rheoli'r storfa</translation>
 <translation id="4620818268515773682">Toglo distewi'r meicroffon. Mae distewi wedi'i ddiffodd</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Diolch am roi adborth am yr ap Camera.
 
 Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo enghreifftiol a disgrifiwch beth sy'n bod. (Er enghraifft, mae'r llun yn rhy dywyll neu nid yw'r ffocws ar y goddrych.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega picsel</translation>
 <translation id="6527303717912515753">Rhannu</translation>
 <translation id="6617916774429601017">Dangos yr holl gydraniadau</translation>
 <translation id="6631515515009660915">Adlewyrchu wedi'i ddiffodd</translation>
@@ -145,7 +128,6 @@ Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo
 <translation id="695140971690006676">Ailosod popeth</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="698156982839284926">3 eiliad</translation>
-<translation id="712848772518857951">Ydych chi wir eisiau tynnu <ph name="COUNT" /> eitem?</translation>
 <translation id="7134221860976209830">Amserydd 10 eiliad</translation>
 <translation id="7191890674911603392">Math o recordio</translation>
 <translation id="7243947652761655814">Cydraniad fideo</translation>
@@ -171,11 +153,9 @@ Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo
 <translation id="8145038249676204903">Newid i dynnu llun</translation>
 <translation id="8167081290930651932">Cadw fel Llun</translation>
 <translation id="8239780215768881278">Tynnu llun o'r fideo</translation>
-<translation id="8261506727792406068">Dileu</translation>
 <translation id="8425673304802773841">Gogwyddo i lawr</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Toglo distewi'r meicroffon. Mae distewi ymlaen</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>

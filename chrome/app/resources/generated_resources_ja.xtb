@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Android アプリを起動できるようにディスク領域を解放します。</translation>
 <translation id="1033780634303702874">シリアル デバイスへのアクセス</translation>
 <translation id="1034484273907870301">タブレット モードのサムネイル タブバー</translation>
+<translation id="1035875743511577452">[テーマを変更] をクリックして、アーティスト、自然などから着想を得たテーマをお探しください。</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1036511912703768636">これらの USB デバイスへのアクセス</translation>
 <translation id="1038168778161626396">暗号化のみ</translation>
@@ -1373,6 +1374,7 @@
 <translation id="2203088913459920044">名前には文字、数字、特殊文字を使用できます</translation>
 <translation id="220321590587754225">接続できませんでした。もう一度お試しください。</translation>
 <translation id="2203903197029773650">Google アカウントでログインすると、<ph name="BRAND" /> でパスワードを確認できるようになります。</translation>
+<translation id="2204020417499639567">メールを入力しました。</translation>
 <translation id="2204034823255629767">すべての入力内容の読み取りと変更</translation>
 <translation id="2204387456724731099">このテキストを翻訳できませんでした</translation>
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
@@ -1562,6 +1564,7 @@
 <translation id="2352662711729498748">1 MB 未満</translation>
 <translation id="2352810082280059586">ロック画面のメモは<ph name="LOCK_SCREEN_APP_NAME" />に自動的に保存されます。最新のメモはロック画面に表示されます。</translation>
 <translation id="2353297238722298836">カメラとマイクを使用できます</translation>
+<translation id="2353910600995338714">エクスポートが完了しました</translation>
 <translation id="2355314311311231464">アカウントの詳細を取得できなかったため、プロピジョニングに失敗しました。もう一度お試しください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2355477091455974894">省エネツールのオプション</translation>
 <translation id="2355604387869345912">インスタント テザリングをオンにする</translation>
@@ -1824,6 +1827,7 @@
 <translation id="2603355571917519942">Voice Match は設定済みです</translation>
 <translation id="2604129989323098489">サイトは通常、ウィンドウをインテリジェントに開いて配置できるように（ドキュメントや全画面コンテンツを並べて表示するなど）、ディスプレイに関する情報をリクエストします</translation>
 <translation id="2604255671529671813">ネットワーク接続エラー</translation>
+<translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> の住所フォームを入力しました。</translation>
 <translation id="2605668923777146443">Better Together のオプションを確認するには、[<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />] にアクセスしてください。</translation>
 <translation id="2606246518223360146">データをリンク</translation>
 <translation id="2606454609872547359">いいえ（ChromeVox なしで続行する）</translation>
@@ -2415,6 +2419,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">データ ディレクトリの作成に失敗しました</translation>
 <translation id="3124111068741548686">USER ハンドル</translation>
+<translation id="3124332159330678621">Chrome をカスタマイズして、ブラウザのデザインを一新</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">充電やパフォーマンスに関する問題を回避するには、対応する Dell または USB Type-C の電源アダプターを使用してください。</translation>
 <translation id="3127862849166875294">Linux のディスクサイズ変更</translation>
@@ -3039,6 +3044,7 @@
 <translation id="3713091615825314967">自動更新が有効になっています。</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3714195043138862580">このデモデバイスはプロビジョニングを解除されている状態です。</translation>
+<translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> を入力しました。</translation>
 <translation id="3719826155360621982">トップページ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google の設定</translation>
@@ -3645,6 +3651,7 @@
 <translation id="426652736638196239">この IBAN はこのデバイスにのみ保存されます</translation>
 <translation id="4266679478228765574">フォルダを削除した場合、共有は停止されますがファイルは削除されません。</translation>
 <translation id="4267455501101322486">教育リソースにアクセスするためのアカウントを追加するには、保護者の方に許可してもらってください</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{パスワードは見つかりませんでした}=1{1 件の結果が見つかりました}other{{COUNT} 件の結果が見つかりました}}</translation>
 <translation id="4267924571297947682">保護者に権限の付与を依頼する</translation>
 <translation id="4267953847983678297">モバイル ネットワークに自動接続する</translation>
 <translation id="4268025649754414643">キーの暗号化</translation>
@@ -3924,6 +3931,7 @@
 <translation id="4522890784888918985">子アカウントはサポートされていません</translation>
 <translation id="4523876148417776526">XML サイトリストはまだ取得されていません。</translation>
 <translation id="4524832533047962394">指定の登録モードは、このバージョンのオペレーティング システムではサポートされていません。最新バージョンであることをご確認ください。</translation>
+<translation id="4526853756266614740">画像を選択してテーマをすぐに適用</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4527929807707405172">逆スクロールを有効にする。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">翻訳の提案</translation>
@@ -4223,6 +4231,7 @@
 <translation id="4800839971935185386">新しい名前とアイコンを確認</translation>
 <translation id="4801448226354548035">アカウントを非表示にする</translation>
 <translation id="4801512016965057443">モバイル データ ローミングを許可する</translation>
+<translation id="4804311503028830356">戻る矢印をクリックすると、他のオプションが表示されます</translation>
 <translation id="4804818685124855865">切断</translation>
 <translation id="4804827417948292437">アボカド</translation>
 <translation id="4806457879608775995">以下の利用規約を確認してデータをコントロールしてください</translation>
@@ -5377,6 +5386,7 @@
 <translation id="5877064549588274448">チャンネルが変更されました。変更を適用するには、デバイスを再起動してください。</translation>
 <translation id="5877584842898320529">選択したプリンタは利用できないか、正しくインストールされていません。<ph name="BR" />プリンタを確認するか、別のプリンタを選択してみてください。</translation>
 <translation id="5878945009165002849">ID サービスからのログイン メッセージをブロックする</translation>
+<translation id="5881710783061958569">その場合は、<ph name="BRAND" /> に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
 <translation id="5882449899683447569">エラーが発生したため、パスワードはインポートされませんでした</translation>
 <translation id="5882919346125742463">既知のネットワーク</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を自動ブロックしました</translation>
@@ -8244,6 +8254,7 @@
 <translation id="8498214519255567734">薄明かりの下でも画面を見やすくします</translation>
 <translation id="8498395510292172881">Chrome で続きを読む</translation>
 <translation id="8499083585497694743">マイクのミュートを解除</translation>
+<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />自動入力メタデータ<ph name="END_LINK1" />を送信する</translation>
 <translation id="8502536196501630039">Google Play のアプリを使用するには、まずアプリを復元する必要があります。一部のデータは失われている可能性があります。</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="850382998924680137">今日表示</translation>

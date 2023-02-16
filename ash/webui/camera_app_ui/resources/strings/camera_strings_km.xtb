@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">បានរកឃើញ​តំណ។ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">បានលុបទំព័រទី <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">បង្វិល 90 ដឺក្រេ​ស្របទ្រនិច​នាឡិកា</translation>
-<translation id="1276998909102132017">រូបភាព​ក្នុងសាលរូបភាព</translation>
 <translation id="1300209025925956156">ស្កេន​ឯកសារ​របស់អ្នក</translation>
 <translation id="1309250603447638106">កំពុងទាញយកកំណែ​ថ្មីសម្រាប់ការស្កេនឯកសារ</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />។ Search + ព្រួញទៅ​ឆ្វេង ដើម្បីចូលប្រើ។</translation>
 <translation id="1417314334557041815">កែ​ទំព័រទី <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">បោះពុម្ព</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ត្រូវបានផ្ដាច់។</translation>
 <translation id="1473110567575736769">កម្មវិធីកំណត់ម៉ោងរាប់ថយក្រោយ 3 វិនាទី</translation>
 <translation id="148783771699678004">កំពុងផ្លាស់ទី​ក្នុងទិសដៅ​ខាងស្ដាំផ្នែកខាងលើ</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">ស្កេនទំព័របន្ថែម</translation>
 <translation id="1851169887664797861">មាន​ការគ្រប់គ្រង​កាមេរ៉ាបន្ថែម</translation>
 <translation id="1851616744363735765">បាន​ផ្អាក</translation>
-<translation id="1862930711583847113">មិនអាច​នាំចេញ <ph name="FILE" /> បានទេ</translation>
 <translation id="1899697626337024495">កម្រិតច្បាស់នៃរូបថត</translation>
 <translation id="1925845977604399247">ចូលទៅ​កាន់សាលរូបភាព</translation>
 <translation id="199526504800285197">ការថត​ត្រូវបាន​បញ្ឈប់</translation>
 <translation id="1995951722691075581">ការថត​របស់អ្នក​បានឈប់ ដោយសារ​ទំហំផ្ទុក​របស់ឧបករណ៍​នៅសល់តិច។ ដើម្បីថត​វីដេអូ​ច្រើនទៀត អ្នកត្រូវតែ​សម្អាតទំហំផ្ទុក​​នៅលើ​ឧបករណ៍​របស់អ្នក។</translation>
-<translation id="2022953316617983419">​កូដ QR</translation>
 <translation id="2036868001356139588">រយៈពេល​កម្មវិធី​កំណត់ម៉ោង</translation>
 <translation id="2050339315714019657">បញ្ឈរ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ដំណើរការ</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">កូដ QR</translation>
 <translation id="2244252133441425811">បើកផ្ទាំងជ្រើសរើស FPS នៃវីដេអូ</translation>
 <translation id="2271433936731426666">បើកការសង្ខេប​អំពីវីដេអូ​ដែលមានទំហំពេញ</translation>
-<translation id="229579744168541441">នាំចេញ​ទៅក្នុងថាស</translation>
 <translation id="2320741269052147773">រំកិល​ទៅឆ្វេង</translation>
 <translation id="2501278716633472235">ត្រលប់ក្រោយ</translation>
 <translation id="2501853267655415902">បាន​បញ្ឈប់​ការ​ថត</translation>
-<translation id="2501953888035679275">ថតរូប និង​ថតវីដេអូ​ដោយ​ប្រើ​កាមេរ៉ា​របស់អ្នក។</translation>
 <translation id="2517472476991765520">ស្កេន</translation>
 <translation id="2549985041256363841">ចាប់​ផ្តើម​ថត</translation>
 <translation id="2577915835281444458">ការថត​នឹង​ឈប់​ក្នុងពេល​ឆាប់ៗនេះ។ សូមចូលទៅ​កាន់​ទំហំផ្ទុក​ឧបករណ៍ ដើម្បី​សម្អាតទំហំផ្ទុក។</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">ការមើល​កញ្ចក់​សាកល្បង</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ត្រូវបានភ្ជាប់។</translation>
 <translation id="2904654629665923749">អាចប្រើការស្កេនឯកសារបាន</translation>
-<translation id="2968794441791257519">រូបថត និង​វីដេអូ​ដែល​ថត​ដោយប្រើកាមេរ៉ា​​នឹងផ្លាស់ទី​ទៅក្នុង​ថត​ទាញយក។ អ្នកអាច​ចូលប្រើរូបថត និងវីដេអូទាំងនោះ​នៅក្នុង​កម្មវិធី Files ។
-
-        កម្មវិធី​ដែលមាន​ការអនុញ្ញាត​ចូលប្រើ​ទំហំផ្ទុកនឹងមាន​សិទ្ធិ​ចូលប្រើ​រូបថត​ និងវីដេអូ​របស់អ្នក។</translation>
 <translation id="3067436040345934772">រំកិល​ទៅស្ដាំ</translation>
 <translation id="3081586908890909590">ប្ដូរទៅ​ថត​វីដេអូ</translation>
 <translation id="313467653172006084">30 FPS</translation>
-<translation id="3183731565330012717">ប្រភេទក្រឡា</translation>
 <translation id="3227137524299004712">ម៉ៃក្រូហ្វូន</translation>
 <translation id="3240426699337459095">បានចម្លងតំណ</translation>
-<translation id="3259149966178251584">កម្រិតច្បាស់កាមេរ៉ា</translation>
-<translation id="3305962767867348165">កែ</translation>
 <translation id="3354465018370944241">ការកំណត់​រូបថត</translation>
 <translation id="3411958449466169012">បិទកម្មវិធី​កំណត់ម៉ោង</translation>
 <translation id="3448774564454087943">វីដេអូមិនត្រូវ​បានរក្សាទុក​ទេ ដោយសារ​វាខ្លីពេក</translation>
 <translation id="346539236881580388">ថតឡើងវិញ</translation>
 <translation id="3517926952904427380">មិនអាច​ថតរូប​បញ្ឈរ​បានទេ</translation>
 <translation id="3566302376254083266">កំពុងផ្លាស់ទី​ក្នុងទិសដៅ​ខាងឆ្វេងផ្នែកខាងលើ</translation>
-<translation id="3569311554794739032">តើអ្នកពិតជា​ចង់លុប <ph name="FILE" /> មែនឬ?</translation>
 <translation id="3573890771273113519">ប្ដូរទៅ​មុខងារ​ស្កេន</translation>
 <translation id="3583444040776960729">ជ្រុងខាងក្រោមផ្នែកខាងឆ្វេងនៃឯកសារ</translation>
 <translation id="3789724198583203151">បង្វិល 90 ដឺក្រេ​បញ្ច្រាស​ទ្រនិច​នាឡិកា</translation>
 <translation id="3810838688059735925">វីដេអូ</translation>
-<translation id="3838931309141338733">ស្កេន​បារកូដ</translation>
 <translation id="3892148308691398805">ចម្លង​អត្ថបទ</translation>
 <translation id="4060608699153044055">អ្នកមិនអាច​ថត​បានទេ ដោយសារ​ទំហំផ្ទុក​របស់​ឧបករណ៍​នៅសល់តិច។ ដើម្បីចាប់ផ្ដើម​ថត អ្នកត្រូវ​សម្អាតទំហំផ្ទុក​នៅលើ​ឧបករណ៍​របស់អ្នក។</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">ចម្លងអាសយដ្ឋានតំណ</translation>
 <translation id="4281620174117014503">កម្រិតគុណភាព​មធ្យម</translation>
 <translation id="428234092390943511">រូបក្របតំណាងទំព័រ</translation>
-<translation id="4329152592498422850">ប្ដូរទៅ​ថតរូប​ទម្រង់ការ៉េ</translation>
 <translation id="4340659173795395806">ឥឡូវនេះ អ្នក​អាច​បង្កើត PDF ច្រើន​ទំព័រ​បានហើយ</translation>
 <translation id="4383571725254449280">កំណត់​ហេតុប្រតិបត្តិការនៃការបោះពុម្ព</translation>
 <translation id="4445542136948522167">ឈប់ថតរូប</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> មេហ្គាភីកសែល</translation>
 <translation id="4570032796877367747">កាមេរ៉ាមុខ</translation>
 <translation id="4598556348158889687">ការគ្រប់គ្រងទំហំផ្ទុក</translation>
 <translation id="4620818268515773682">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន។ ការបិទសំឡេង​ត្រូវបានបិទ</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">សូមអរគុណសម្រាប់ការផ្ដល់មតិកែលម្អចំពោះកម្មវិធីកាមេរ៉ា។
 
 ប្រសិនបើមតិកែលម្អរបស់អ្នកពាក់ព័ន្ធនឹងគុណភាពរូបភាព ឬវីដេអូ សូមភ្ជាប់ជាមួយសំណាករូបថត ឬវីដេអូ និងរៀបរាប់ថាមានបញ្ហាអ្វី។ (ឧទាហរណ៍ រូបថតងងឹតជ្រុល ឬមានលក្ខណៈព្រាល។)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> មេហ្គាភីកសែល</translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
 <translation id="6617916774429601017">បង្ហាញកម្រិតគុណភាពទាំងអស់</translation>
 <translation id="6631515515009660915">បិទ​កញ្ចក់</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">កំណត់​ឡើងវិញ​ទាំងអស់</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
 <translation id="698156982839284926">3 វិនាទី</translation>
-<translation id="712848772518857951">តើអ្នក​ពិតជា​ចង់​លុប​ធាតុ <ph name="COUNT" /> មែនឬ?</translation>
 <translation id="7134221860976209830">កម្មវិធីកំណត់ម៉ោងរាប់ថយក្រោយ 10 វិនាទី</translation>
 <translation id="7191890674911603392">ប្រភេទនៃការថត</translation>
 <translation id="7243947652761655814">កម្រិតច្បាស់នៃ​វីដេអូ</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">ប្ដូរទៅថតរូប</translation>
 <translation id="8167081290930651932">រក្សាទុកជារូបថត</translation>
 <translation id="8239780215768881278">ថតវីដេអូខ្លី</translation>
-<translation id="8261506727792406068">លុប</translation>
 <translation id="8425673304802773841">ផ្អៀង​ចុះក្រោម</translation>
 <translation id="8428213095426709021">ការកំណត់</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន។ ការបិទសំឡេង​ត្រូវបានបើក</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
 <translation id="8730621377337864115">រួចរាល់</translation>

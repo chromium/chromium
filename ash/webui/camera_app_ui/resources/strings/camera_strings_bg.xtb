@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Разпозната е връзка. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Страница <ph name="PAGE_NUMBER" /> бе изтрита</translation>
 <translation id="1258009455399840361">Завъртане на 90 градуса по часовниковата стрелка</translation>
-<translation id="1276998909102132017">Изображения в галерията</translation>
 <translation id="1300209025925956156">Сканиране на документ</translation>
 <translation id="1309250603447638106">Изтеглят се актуализации за сканиране на документи</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. За достъп натиснете клавиша „търсене“ + стрелката за наляво.</translation>
 <translation id="1417314334557041815">Редактиране на страница <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Печат</translation>
 <translation id="1467231725790366244">Устройството <ph name="CAMERA" /> е изключено.</translation>
 <translation id="1473110567575736769">Таймер за 3 секунди</translation>
 <translation id="148783771699678004">Премества се нагоре и надясно</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Сканиране на допълнителна страница</translation>
 <translation id="1851169887664797861">Налице са допълнителни контроли за камерата</translation>
 <translation id="1851616744363735765">НА ПАУЗА</translation>
-<translation id="1862930711583847113">Файлът „<ph name="FILE" />“ не може да се експортира</translation>
 <translation id="1899697626337024495">Разделителна способност за снимките</translation>
 <translation id="1925845977604399247">Към галерията</translation>
 <translation id="199526504800285197">Записването е спряно</translation>
 <translation id="1995951722691075581">Записът ви спря поради недостатъчно място в хранилището на устройството. За да записвате още видеоклипове, трябва да освободите място.</translation>
-<translation id="2022953316617983419">QR код</translation>
 <translation id="2036868001356139588">Продължителност на таймера</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> е активна</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="2244252133441425811">Активиране на инструмента за избор на кадри в секунда за видеоклипа</translation>
 <translation id="2271433936731426666">Активиране на пълния размер на моментната снимка от видеоклипа</translation>
-<translation id="229579744168541441">Експортиране към диска</translation>
 <translation id="2320741269052147773">Панорамно придвижване наляво</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Записването спря</translation>
-<translation id="2501953888035679275">Правете снимки и записвайте видеоклипове с камерата си.</translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
 <translation id="2577915835281444458">Записването скоро ще спре. Отворете хранилището на устройството, за да освободите място.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Визуализация на огледалното обръщане</translation>
 <translation id="2879583609344924966">Устройството <ph name="CAMERA" /> е свързано.</translation>
 <translation id="2904654629665923749">Налице е сканиране на документи</translation>
-<translation id="2968794441791257519">Направените с камерата снимки и видеоклипове ще бъдат преместени в папката „Изтегляния“. Можете да осъществите достъп до тях от „Файлове“.
-
-Приложенията с разрешения за хранилището ще имат достъп до снимките и видеоклиповете ви.</translation>
 <translation id="3067436040345934772">Панорамно придвижване надясно</translation>
 <translation id="3081586908890909590">Превключване към режима за запис на видеоклипове</translation>
 <translation id="313467653172006084">30 кдр/сек</translation>
-<translation id="3183731565330012717">Тип решетка</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
-<translation id="3259149966178251584">Разделителна способност на камерата</translation>
-<translation id="3305962767867348165">Коригиране</translation>
 <translation id="3354465018370944241">Настройки за снимките</translation>
 <translation id="3411958449466169012">Таймерът е изключен</translation>
 <translation id="3448774564454087943">Видеоклипът не е запазен, тъй като е прекалено кратък</translation>
 <translation id="346539236881580388">Повторно заснемане</translation>
 <translation id="3517926952904427380">Не може да се направи вертикална снимка</translation>
 <translation id="3566302376254083266">Премества се нагоре и наляво</translation>
-<translation id="3569311554794739032">Наистина ли искате да премахнете „<ph name="FILE" />“?</translation>
 <translation id="3573890771273113519">Превключване към режима на сканиране</translation>
 <translation id="3583444040776960729">Долен ляв ъгъл на документа</translation>
 <translation id="3789724198583203151">Завъртане на 90 градуса обратно на часовниковата стрелка</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3838931309141338733">Сканиране на баркод</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="4060608699153044055">Не можете да записвате поради недостатъчно място в хранилището на устройството. За целта трябва да освободите място.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксела</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Копиране на адреса на връзката</translation>
 <translation id="4281620174117014503">Средна разделителна способност</translation>
 <translation id="428234092390943511">Миниизображение на страницата</translation>
-<translation id="4329152592498422850">Превключвател за правене на квадратна снимка</translation>
 <translation id="4340659173795395806">Вече можете да създавате PDF файлове с няколко страници</translation>
 <translation id="4383571725254449280">Печат на регистрационните файлове за ефективността</translation>
 <translation id="4445542136948522167">Спиране на правенето на снимка</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксела</translation>
 <translation id="4570032796877367747">Предна камера</translation>
 <translation id="4598556348158889687">Управление на хранилището</translation>
 <translation id="4620818268515773682">Превключване на спирането на звука на микрофона. Функцията за спиране на звука е изключена</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Благодарим ви, че предоставихте отзиви за приложението „Камера“.
 
 Ако те се отнасят за качеството на изображение или видеоклип, моля, прикачете откъс и опишете какво не е наред. (Например снимката е твърде тъмна или предметът не е на фокус.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксела</translation>
 <translation id="6527303717912515753">Споделяне</translation>
 <translation id="6617916774429601017">Показване на всички разделителни способности</translation>
 <translation id="6631515515009660915">Изключване на огледалното обръщане</translation>
@@ -145,7 +128,6 @@
 <translation id="695140971690006676">Повторно задаване на всичко</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 секунди</translation>
-<translation id="712848772518857951">Наистина ли искате да премахнете <ph name="COUNT" /> елемента?</translation>
 <translation id="7134221860976209830">Таймер за 10 секунди</translation>
 <translation id="7191890674911603392">Тип запис</translation>
 <translation id="7243947652761655814">Разделителна способност за видеоклиповете</translation>
@@ -171,11 +153,9 @@
 <translation id="8145038249676204903">Превключване към режима за правене на снимки</translation>
 <translation id="8167081290930651932">Запазване като снимка</translation>
 <translation id="8239780215768881278">Моментна снимка от видеоклипа</translation>
-<translation id="8261506727792406068">Изтриване</translation>
 <translation id="8425673304802773841">Накланяне надолу</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD при <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Превключване на спирането на звука на микрофона. Функцията за спиране на звука е включена</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8730621377337864115">Готово</translation>

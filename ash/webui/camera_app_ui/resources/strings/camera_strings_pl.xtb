@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Wykryto link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Usunięto stronę <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Obróć o 90 stopni w prawo</translation>
-<translation id="1276998909102132017">Zdjęcia z galerii</translation>
 <translation id="1300209025925956156">Skanowanie dokumentu</translation>
 <translation id="1309250603447638106">Pobieram aktualizacje dotyczące skanowania dokumentów</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Wyszukaj + strzałka w lewo, aby przejść.</translation>
 <translation id="1417314334557041815">Edytuj stronę <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Drukuj</translation>
 <translation id="1467231725790366244">Odłączono kamerę <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3-sekundowy samowyzwalacz</translation>
 <translation id="148783771699678004">Przesuwam w kierunku prawego górnego rogu</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skanuj dodatkową stronę</translation>
 <translation id="1851169887664797861">Dostępne dodatkowe ustawienia aparatu</translation>
 <translation id="1851616744363735765">WSTRZYMANO</translation>
-<translation id="1862930711583847113">Nie udało się wyeksportować pliku <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Rozdzielczość zdjęcia</translation>
 <translation id="1925845977604399247">Otwórz galerię</translation>
 <translation id="199526504800285197">Nagrywanie zostało zatrzymane</translation>
 <translation id="1995951722691075581">Nagrywanie zostało zatrzymane z powodu zbyt małej ilości miejsca na urządzeniu. Aby nagrać więcej filmów, musisz zwolnić miejsce.</translation>
-<translation id="2022953316617983419">Kod QR</translation>
 <translation id="2036868001356139588">Czas samowyzwalacza</translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2064538373111010176">Aparat <ph name="CAMERA" /> jest aktywny</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="2244252133441425811">Włącz selektor FPS dla filmów</translation>
 <translation id="2271433936731426666">Włącz funkcję stopklatki w pełnym rozmiarze</translation>
-<translation id="229579744168541441">Eksportuj na dysk</translation>
 <translation id="2320741269052147773">Przesuń w lewo</translation>
 <translation id="2501278716633472235">Wróć</translation>
 <translation id="2501853267655415902">Nagrywanie zatrzymane</translation>
-<translation id="2501953888035679275">Aparatem możesz robić zdjęcia i nagrywać filmy.</translation>
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
 <translation id="2577915835281444458">Nagrywanie zostanie wkrótce zatrzymane. Aby zwolnić miejsce, przejdź do pamięci urządzenia.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Podgląd odbicia lustrzanego</translation>
 <translation id="2879583609344924966">Podłączono kamerę <ph name="CAMERA" />.</translation>
 <translation id="2904654629665923749">Dostępne jest skanowanie dokumentów</translation>
-<translation id="2968794441791257519">Zdjęcia i filmy pochodzące z aparatu zostaną przeniesione do folderu Pobrane pliki. Dostęp do nich możesz uzyskać w aplikacji Pliki.
-
-        Do Twoich zdjęć i filmów będą mieć dostęp aplikacje z uprawnieniami dostępu do pamięci.</translation>
 <translation id="3067436040345934772">Przesuń w prawo</translation>
 <translation id="3081586908890909590">Przełącz, by nagrać film</translation>
 <translation id="313467653172006084">30 kl./s</translation>
-<translation id="3183731565330012717">Typ siatki</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link skopiowany</translation>
-<translation id="3259149966178251584">Rozdzielczość aparatu</translation>
-<translation id="3305962767867348165">Rozwiąż problem</translation>
 <translation id="3354465018370944241">Ustawienia zdjęć</translation>
 <translation id="3411958449466169012">Wyłącz licznik</translation>
 <translation id="3448774564454087943">Film nie został zapisany, ponieważ jest za krótki</translation>
 <translation id="346539236881580388">Zrób ponownie</translation>
 <translation id="3517926952904427380">Nie można zrobić zdjęcia w orientacji pionowej</translation>
 <translation id="3566302376254083266">Przesuwam w kierunku lewego górnego rogu</translation>
-<translation id="3569311554794739032">Czy na pewno chcesz usunąć plik <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Przełącz w tryb skanowania</translation>
 <translation id="3583444040776960729">Lewy dolny róg dokumentu</translation>
 <translation id="3789724198583203151">Obróć o 90 stopni w lewo</translation>
 <translation id="3810838688059735925">Wideo</translation>
-<translation id="3838931309141338733">Zeskanuj kod kreskowy</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="4060608699153044055">Nie możesz nagrywać, ponieważ na urządzeniu brakuje miejsca. Najpierw musisz zwolnić miejsce.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpix</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Kopiuj adres linku</translation>
 <translation id="4281620174117014503">Rozdzielczość średnia</translation>
 <translation id="428234092390943511">Miniatura strony</translation>
-<translation id="4329152592498422850">Przełącz, by zrobić kwadratowe zdjęcie</translation>
 <translation id="4340659173795395806">Możesz teraz utworzyć wielostronicowy plik PDF</translation>
 <translation id="4383571725254449280">Drukuj dzienniki wydajności</translation>
 <translation id="4445542136948522167">Nie rób zdjęcia</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Mpix</translation>
 <translation id="4570032796877367747">Przedni aparat</translation>
 <translation id="4598556348158889687">Zarządzanie pamięcią</translation>
 <translation id="4620818268515773682">Przełącz przycisk wyciszenia mikrofonu. Wyciszenie jest wyłączone</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Dziękujemy za opinię o aplikacji Aparat.
 
 Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe zdjęcie lub film i opisz, na czym polega problem (na przykład zdjęcie jest za ciemne lub obiekt jest nieostry).</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Mpix</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
 <translation id="6617916774429601017">Pokaż wszystkie rozdzielczości</translation>
 <translation id="6631515515009660915">Odbicie lustrzane wyłączone</translation>
@@ -145,7 +128,6 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="695140971690006676">Zresetuj wszystko</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekundy</translation>
-<translation id="712848772518857951">Czy na pewno chcesz usunąć te elementy (<ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">10-sekundowy samowyzwalacz</translation>
 <translation id="7191890674911603392">Typ rekordu</translation>
 <translation id="7243947652761655814">Rozdzielczość wideo</translation>
@@ -171,11 +153,9 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="8145038249676204903">Przełącz, by zrobić zdjęcie</translation>
 <translation id="8167081290930651932">Zapisz jako zdjęcie</translation>
 <translation id="8239780215768881278">Zapisz stopklatkę</translation>
-<translation id="8261506727792406068">Usuń</translation>
 <translation id="8425673304802773841">Pochyl w dół</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Przełącz przycisk wyciszenia mikrofonu. Wyciszenie jest włączone</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8730621377337864115">Gotowe</translation>

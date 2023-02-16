@@ -201,6 +201,7 @@
 <translation id="2469960372084740698">გსურთ, გამორთოთ Safe Browsing?</translation>
 <translation id="2473876017985765807">თქვენ უკვე შეინახეთ პაროლი ვებსაიტისთვის: <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">არ არის არჩეული</translation>
+<translation id="2479148705183875116">პარამეტრებზე გადასვლა</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="2496626742194544812">პირველ ჩანართზე გადასვლა</translation>
 <translation id="2500374554657206846">პაროლის შენახვის ვარიანტები</translation>
@@ -349,7 +350,6 @@
 <translation id="3527085408025491307">საქაღალდე</translation>
 <translation id="3529024052484145543">დაუცველი</translation>
 <translation id="3530206579861815432">სწრაფად იპოვეთ გახსნილი და ბოლო დროს დახურული ჩანართები თქვენი ყველა მოწყობილობიდან.</translation>
-<translation id="3532949712013449743">თქვენ მიიღებთ გაფრთხილებას, როცა რომელიმე საიტზე ფასი დაიკლებს. ეს გვერდი შენახულია <ph name="BEGIN_LINK" />მობილურ სანიშნეებში<ph name="END_LINK" />.</translation>
 <translation id="3533202363250687977">ყველა ინკოგნიტო ჩანართის დახურვა</translation>
 <translation id="3533436815740441613">ახალი ჩანართი</translation>
 <translation id="3540141921715814660">სანიშნეებში დამატება</translation>
@@ -438,7 +438,6 @@
 <translation id="4237377247299956313">შეეხეთ <ph name="BEGIN_BOLD" />ბრაუზერის ნაგულისხმევ აპს<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">შეიყვანეთ საიდუმლო ფრაზა</translation>
 <translation id="4249955472157341256">დალაგება უახლესის მიხედვით</translation>
-<translation id="42618743927498729">მიიღეთ გაფრთხილება, როცა რომელიმე საიტზე ფასი დაიკლებს.</translation>
 <translation id="4263576668337963058">გვერდთან დაკავშირებული ხელმისაწვდომი ქმედებების ჩვენება</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{თქვენ დახურეთ {COUNT} გაფრთხილება}other{თქვენ დახურეთ {COUNT} გაფრთხილება}}</translation>
 <translation id="4272631900155121838">QR კოდის სკანირებისთვის, ჩართეთ კამერა პარამეტრებიდან</translation>

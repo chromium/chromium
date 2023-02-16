@@ -8,12 +8,10 @@
 <translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Síðu <ph name="PAGE_NUMBER" /> var eytt</translation>
 <translation id="1258009455399840361">Snúa um 90 gráður réttsælis</translation>
-<translation id="1276998909102132017">Myndir úr galleríi</translation>
 <translation id="1300209025925956156">Skannaðu skjalið</translation>
 <translation id="1309250603447638106">Sækir uppfærslur fyrir skjalaskönnun</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Leit + Vinstri ör til að opna.</translation>
 <translation id="1417314334557041815">Breyta síðu <ph name="INDEX" /></translation>
-<translation id="1430915738399379752">Prenta</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er ekki í sambandi.</translation>
 <translation id="1473110567575736769">3 sekúndna teljari</translation>
 <translation id="148783771699678004">Færist upp og til hægri</translation>
@@ -28,12 +26,10 @@
 <translation id="1843105061469674856">Skanna viðbótarsíðu</translation>
 <translation id="1851169887664797861">Viðbótarstýringar tiltækar fyrir myndavél</translation>
 <translation id="1851616744363735765">HLÉ</translation>
-<translation id="1862930711583847113">Ekki tókst að flytja <ph name="FILE" /> út</translation>
 <translation id="1899697626337024495">Upplausn mynda</translation>
 <translation id="1925845977604399247">Opna gallerí</translation>
 <translation id="199526504800285197">Upptaka var stöðvuð</translation>
 <translation id="1995951722691075581">Upptakan stöðvaðist sökum of lítils geymslurýmis í tækinu. Til að taka upp fleiri myndskeið þarftu fyrst að losa um pláss í tækinu.</translation>
-<translation id="2022953316617983419">QR-kóði</translation>
 <translation id="2036868001356139588">Tími niðurteljara</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er virk</translation>
@@ -42,11 +38,9 @@
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="2244252133441425811">Kveikja á vali á ramma/sek. fyrir myndskeið</translation>
 <translation id="2271433936731426666">Virkja myndskeiðsyfirlit í fullri stærð</translation>
-<translation id="229579744168541441">Flytja út á disk</translation>
 <translation id="2320741269052147773">Hliðra til vinstri</translation>
 <translation id="2501278716633472235">Fara til baka</translation>
 <translation id="2501853267655415902">Upptaka var stöðvuð</translation>
-<translation id="2501953888035679275">Taktu myndir og taktu upp myndskeið með myndavélinni þinni.</translation>
 <translation id="2517472476991765520">Leita</translation>
 <translation id="2549985041256363841">Hefja upptöku</translation>
 <translation id="2577915835281444458">Upptöku lýkur fljótlega. Opnaðu geymslurými tækisins til að losa um pláss.</translation>
@@ -56,29 +50,21 @@
 <translation id="28682968802727151">Forskoðun speglunar</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er í sambandi.</translation>
 <translation id="2904654629665923749">Skjalaskönnun tiltæk</translation>
-<translation id="2968794441791257519">Myndir og myndskeið sem tekin eru með myndavélinni verða flutt í niðurhalsmöppuna. Þú getur fengið aðgang að þeim í „Skrár“.
-
-        Forrit sem hafa heimild fyrir aðgangi að geymslu hafa aðgang að myndunum þínum og myndskeiðum.</translation>
 <translation id="3067436040345934772">Hliðra til hægri</translation>
 <translation id="3081586908890909590">Skipta yfir í upptöku myndskeiðs</translation>
 <translation id="313467653172006084">30 rammar á sekúndu</translation>
-<translation id="3183731565330012717">Gerð töflu</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
 <translation id="3240426699337459095">Tengill afritaður</translation>
-<translation id="3259149966178251584">Upplausn myndavélar</translation>
-<translation id="3305962767867348165">Lagfæra</translation>
 <translation id="3354465018370944241">Myndastillingar</translation>
 <translation id="3411958449466169012">Slökkt á teljara</translation>
 <translation id="3448774564454087943">Ekki er hægt að vista myndskeiðið því það er of stutt</translation>
 <translation id="346539236881580388">Taka aftur</translation>
 <translation id="3517926952904427380">Ekki tókst að taka andlitsmynd</translation>
 <translation id="3566302376254083266">Færist upp og til vinstri</translation>
-<translation id="3569311554794739032">Viltu örugglega fjarlægja <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Skipta yfir í skönnunarstillingu</translation>
 <translation id="3583444040776960729">Neðra, vinstra horn skjals</translation>
 <translation id="3789724198583203151">Snúa um 90 gráður rangsælis</translation>
 <translation id="3810838688059735925">Myndskeið</translation>
-<translation id="3838931309141338733">Skanna strikamerki</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
 <translation id="4060608699153044055">Þú getur ekki tekið upp sökum of lítils geymslurýmis í tækinu. Til að hefja upptöku þarftu fyrst að losa um pláss í tækinu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
@@ -88,11 +74,9 @@
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
 <translation id="4281620174117014503">Miðlungsupplausn</translation>
 <translation id="428234092390943511">Smámynd síðu</translation>
-<translation id="4329152592498422850">Skipta yfir í töku ferningslaga mynda</translation>
 <translation id="4340659173795395806">Nú geturðu búið til PDF með mörgum síðum</translation>
 <translation id="4383571725254449280">Prenta afkastaannála</translation>
 <translation id="4445542136948522167">Hætta að taka mynd</translation>
-<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixlar</translation>
 <translation id="4570032796877367747">Fremri myndavél</translation>
 <translation id="4598556348158889687">Stjórnun geymslu</translation>
 <translation id="4620818268515773682">Kveikja/slökkva á hljóðnema. Slökkt er á þöggun</translation>
@@ -133,7 +117,6 @@
 <translation id="6353688143752491039">Takk fyrir að senda ábendingu um myndavélaforritið.
 
 Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við sýnishorn af mynd eða myndskeiði og lýsa því sem er að. (Til dæmis: myndin er of dökk eða myndefnið er ekki í fókus.)</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixlar</translation>
 <translation id="6527303717912515753">Deila</translation>
 <translation id="6617916774429601017">Sýna allar upplausnir</translation>
 <translation id="6631515515009660915">Slökkt á speglun</translation>
@@ -145,7 +128,6 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="695140971690006676">Endurstilla allt</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="698156982839284926">3 sekúndur</translation>
-<translation id="712848772518857951">Viltu örugglega fjarlægja <ph name="COUNT" /> atriði?</translation>
 <translation id="7134221860976209830">10 sekúndna teljari</translation>
 <translation id="7191890674911603392">Gerð upptöku</translation>
 <translation id="7243947652761655814">Upplausn myndskeiðs</translation>
@@ -171,11 +153,9 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="8145038249676204903">Skipta yfir í myndatöku</translation>
 <translation id="8167081290930651932">Vista sem mynd</translation>
 <translation id="8239780215768881278">Taka skyndimynd í upptöku</translation>
-<translation id="8261506727792406068">Eyða</translation>
 <translation id="8425673304802773841">Halla niður</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8629662593426079630">360p</translation>
-<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8711011893539266636">Kveikja/slökkva á hljóðnema. Kveikt er á þöggun</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8730621377337864115">Lokið</translation>
