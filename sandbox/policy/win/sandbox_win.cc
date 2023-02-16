@@ -1021,12 +1021,10 @@ ResultCode SandboxWin::StartSandboxedProcess(
     tag = delegate->GetSandboxTag();
 
   auto policy = g_broker_services->CreatePolicy(tag);
-  auto time_policy_created = timer.Elapsed();
   ResultCode result = GeneratePolicyForSandboxedProcess(
       cmd_line, process_type, handles_to_inherit, delegate, policy.get());
   if (SBOX_ALL_OK != result)
     return result;
-  auto time_policy_generated = timer.Elapsed();
 
   TRACE_EVENT_BEGIN0("startup", "StartProcessWithAccess::LAUNCHPROCESS");
 
@@ -1036,7 +1034,6 @@ ResultCode SandboxWin::StartSandboxedProcess(
       cmd_line.GetProgram().value().c_str(),
       cmd_line.GetCommandLineString().c_str(), std::move(policy), &last_error,
       &temp_process_info);
-  auto time_process_spawned = timer.Elapsed();
 
   base::win::ScopedProcessInformation target(temp_process_info);
 
@@ -1060,32 +1057,13 @@ ResultCode SandboxWin::StartSandboxedProcess(
 
   delegate->PostSpawnTarget(target.process_handle());
   CHECK(ResumeThread(target.thread_handle()) != static_cast<DWORD>(-1));
-  auto time_process_resumed = timer.Elapsed();
 
   // Record timing histogram on sandboxed & launched success.
   // We're interested in the happy fast case so have a low maximum.
   if (SBOX_ALL_OK == result) {
-    const auto kLowBound = base::Microseconds(5);
-    const auto kHighBound = base::Microseconds(100000);
-    const int kBuckets = 50;
     base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.CreatePolicyDuration",
-        time_policy_created, kLowBound, kHighBound, kBuckets);
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.GeneratePolicyDuration",
-        time_policy_generated - time_policy_created, kLowBound, kHighBound,
-        kBuckets);
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.SpawnTargetDuration",
-        time_process_spawned - time_policy_generated, kLowBound, kHighBound,
-        kBuckets);
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.PostSpawnTargetDuration",
-        time_process_resumed - time_process_spawned, kLowBound, kHighBound,
-        kBuckets);
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.TotalDuration", time_process_resumed,
-        kLowBound, kHighBound, kBuckets);
+        "Process.Sandbox.StartSandboxedWin.TotalDuration", timer.Elapsed(),
+        base::Microseconds(5), base::Microseconds(100000), 50);
   }
 
   *process = base::Process(target.TakeProcessHandle());
