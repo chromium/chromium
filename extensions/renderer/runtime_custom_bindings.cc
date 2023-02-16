@@ -23,7 +23,7 @@ namespace extensions {
 RuntimeCustomBindings::RuntimeCustomBindings(ScriptContext* context)
     : ObjectBackedNativeHandler(context) {}
 
-RuntimeCustomBindings::~RuntimeCustomBindings() {}
+RuntimeCustomBindings::~RuntimeCustomBindings() = default;
 
 void RuntimeCustomBindings::AddRoutes() {
   RouteHandlerFunction(

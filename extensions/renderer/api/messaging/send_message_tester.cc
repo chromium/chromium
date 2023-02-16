@@ -24,7 +24,7 @@ SendMessageTester::SendMessageTester(TestIPCMessageSender* ipc_sender,
       next_port_id_(next_port_id),
       api_namespace_(api_namespace) {}
 
-SendMessageTester::~SendMessageTester() {}
+SendMessageTester::~SendMessageTester() = default;
 
 v8::Local<v8::Value> SendMessageTester::TestSendMessage(
     const std::string& args,

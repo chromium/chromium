@@ -159,8 +159,8 @@ bool Validate(const ArgumentSpec* spec,
 
 }  // namespace
 
-DeclarativeContentHooksDelegate::DeclarativeContentHooksDelegate() {}
-DeclarativeContentHooksDelegate::~DeclarativeContentHooksDelegate() {}
+DeclarativeContentHooksDelegate::DeclarativeContentHooksDelegate() = default;
+DeclarativeContentHooksDelegate::~DeclarativeContentHooksDelegate() = default;
 
 void DeclarativeContentHooksDelegate::InitializeTemplate(
     v8::Isolate* isolate,

@@ -161,7 +161,7 @@ const std::string& ExtensionThrottleEntry::GetURLIdForDebugging() const {
   return url_id_;
 }
 
-ExtensionThrottleEntry::~ExtensionThrottleEntry() {}
+ExtensionThrottleEntry::~ExtensionThrottleEntry() = default;
 
 void ExtensionThrottleEntry::Initialize() {
   sliding_window_release_time_ = base::TimeTicks::Now();

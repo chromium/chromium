@@ -22,7 +22,7 @@
 
 namespace extensions {
 
-WebRequestHooks::WebRequestHooks() {}
+WebRequestHooks::WebRequestHooks() = default;
 WebRequestHooks::~WebRequestHooks() = default;
 
 bool WebRequestHooks::CreateCustomEvent(v8::Local<v8::Context> context,

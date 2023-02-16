@@ -17,7 +17,7 @@ namespace extensions {
 
 ExtensionJSRunner::ExtensionJSRunner(ScriptContext* script_context)
     : script_context_(script_context) {}
-ExtensionJSRunner::~ExtensionJSRunner() {}
+ExtensionJSRunner::~ExtensionJSRunner() = default;
 
 void ExtensionJSRunner::RunJSFunction(v8::Local<v8::Function> function,
                                       v8::Local<v8::Context> context,

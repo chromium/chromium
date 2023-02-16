@@ -49,7 +49,7 @@ GinPort::GinPort(v8::Local<v8::Context> context,
                               weak_factory_.GetWeakPtr()));
 }
 
-GinPort::~GinPort() {}
+GinPort::~GinPort() = default;
 
 gin::WrapperInfo GinPort::kWrapperInfo = {gin::kEmbedderNativeGin};
 

@@ -81,7 +81,7 @@ NativeRendererMessagingService::NativeRendererMessagingService(
     NativeExtensionBindingsSystem* bindings_system)
     : bindings_system_(bindings_system),
       one_time_message_handler_(bindings_system) {}
-NativeRendererMessagingService::~NativeRendererMessagingService() {}
+NativeRendererMessagingService::~NativeRendererMessagingService() = default;
 
 void NativeRendererMessagingService::ValidateMessagePort(
     ScriptContextSetIterable* context_set,

@@ -135,7 +135,7 @@ bool WillListenerReplyAsync(absl::optional<base::Value> result) {
 OneTimeMessageHandler::OneTimeMessageHandler(
     NativeExtensionBindingsSystem* bindings_system)
     : bindings_system_(bindings_system) {}
-OneTimeMessageHandler::~OneTimeMessageHandler() {}
+OneTimeMessageHandler::~OneTimeMessageHandler() = default;
 
 bool OneTimeMessageHandler::HasPort(ScriptContext* script_context,
                                     const PortId& port_id) {

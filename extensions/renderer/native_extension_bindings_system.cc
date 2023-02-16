@@ -437,7 +437,7 @@ NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
       "feedbackPrivate", std::make_unique<FeedbackPrivateHooksDelegate>());
 }
 
-NativeExtensionBindingsSystem::~NativeExtensionBindingsSystem() {}
+NativeExtensionBindingsSystem::~NativeExtensionBindingsSystem() = default;
 
 void NativeExtensionBindingsSystem::DidCreateScriptContext(
     ScriptContext* context) {

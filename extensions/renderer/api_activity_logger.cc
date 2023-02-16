@@ -44,7 +44,7 @@ APIActivityLogger::APIActivityLogger(IPCMessageSender* ipc_sender,
                                      ScriptContext* context)
     : ObjectBackedNativeHandler(context), ipc_sender_(ipc_sender) {}
 
-APIActivityLogger::~APIActivityLogger() {}
+APIActivityLogger::~APIActivityLogger() = default;
 
 void APIActivityLogger::AddRoutes() {
   RouteHandlerFunction(

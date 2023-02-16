@@ -158,11 +158,11 @@ WakeEventPage::RequestData::RequestData(int thread_id,
                                         OnResponseCallback on_response)
     : thread_id(thread_id), on_response(std::move(on_response)) {}
 
-WakeEventPage::RequestData::~RequestData() {}
+WakeEventPage::RequestData::~RequestData() = default;
 
-WakeEventPage::WakeEventPage() {}
+WakeEventPage::WakeEventPage() = default;
 
-WakeEventPage::~WakeEventPage() {}
+WakeEventPage::~WakeEventPage() = default;
 
 void WakeEventPage::MakeRequest(const std::string& extension_id,
                                 OnResponseCallback on_response) {

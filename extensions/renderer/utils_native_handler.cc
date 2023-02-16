@@ -13,7 +13,7 @@ namespace extensions {
 UtilsNativeHandler::UtilsNativeHandler(ScriptContext* context)
     : ObjectBackedNativeHandler(context) {}
 
-UtilsNativeHandler::~UtilsNativeHandler() {}
+UtilsNativeHandler::~UtilsNativeHandler() = default;
 
 void UtilsNativeHandler::AddRoutes() {
   RouteHandlerFunction("deepCopy",

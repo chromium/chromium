@@ -33,9 +33,9 @@ ContextVector::iterator FindContext(ContextVector* contexts,
 
 }  // namespace
 
-WorkerScriptContextSet::WorkerScriptContextSet() {}
+WorkerScriptContextSet::WorkerScriptContextSet() = default;
 
-WorkerScriptContextSet::~WorkerScriptContextSet() {}
+WorkerScriptContextSet::~WorkerScriptContextSet() = default;
 
 void WorkerScriptContextSet::ForEach(
     const std::string& extension_id,

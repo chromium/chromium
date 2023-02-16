@@ -9,8 +9,8 @@
 
 namespace extensions {
 
-StringSourceMap::StringSourceMap() {}
-StringSourceMap::~StringSourceMap() {}
+StringSourceMap::StringSourceMap() = default;
+StringSourceMap::~StringSourceMap() = default;
 
 v8::Local<v8::String> StringSourceMap::GetSource(
     v8::Isolate* isolate,

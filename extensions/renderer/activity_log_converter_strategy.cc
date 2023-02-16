@@ -57,9 +57,9 @@ std::unique_ptr<base::Value> SummarizeV8Value(v8::Isolate* isolate,
 
 }  // namespace
 
-ActivityLogConverterStrategy::ActivityLogConverterStrategy() {}
+ActivityLogConverterStrategy::ActivityLogConverterStrategy() = default;
 
-ActivityLogConverterStrategy::~ActivityLogConverterStrategy() {}
+ActivityLogConverterStrategy::~ActivityLogConverterStrategy() = default;
 
 bool ActivityLogConverterStrategy::FromV8Object(
     v8::Local<v8::Object> value,

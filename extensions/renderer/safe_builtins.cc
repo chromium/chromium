@@ -241,7 +241,7 @@ std::unique_ptr<v8::Extension> SafeBuiltins::CreateV8Extension() {
 
 SafeBuiltins::SafeBuiltins(ScriptContext* context) : context_(context) {}
 
-SafeBuiltins::~SafeBuiltins() {}
+SafeBuiltins::~SafeBuiltins() = default;
 
 v8::Local<v8::Object> SafeBuiltins::GetArray() const {
   return Load("Array", context_->v8_context());

@@ -58,7 +58,7 @@ class LoadWatcher : public content::RenderFrameObserver {
 RenderFrameObserverNatives::RenderFrameObserverNatives(ScriptContext* context)
     : ObjectBackedNativeHandler(context) {}
 
-RenderFrameObserverNatives::~RenderFrameObserverNatives() {}
+RenderFrameObserverNatives::~RenderFrameObserverNatives() = default;
 
 void RenderFrameObserverNatives::AddRoutes() {
   RouteHandlerFunction(

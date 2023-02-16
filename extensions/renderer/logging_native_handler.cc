@@ -15,7 +15,7 @@ namespace extensions {
 LoggingNativeHandler::LoggingNativeHandler(ScriptContext* context)
     : ObjectBackedNativeHandler(context) {}
 
-LoggingNativeHandler::~LoggingNativeHandler() {}
+LoggingNativeHandler::~LoggingNativeHandler() = default;
 
 void LoggingNativeHandler::AddRoutes() {
   RouteHandlerFunction("DCHECK",

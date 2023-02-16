@@ -155,7 +155,7 @@ std::vector<v8::Local<v8::Value>> MassageRequestUpdateCheckResults(
 RuntimeHooksDelegate::RuntimeHooksDelegate(
     NativeRendererMessagingService* messaging_service)
     : messaging_service_(messaging_service) {}
-RuntimeHooksDelegate::~RuntimeHooksDelegate() {}
+RuntimeHooksDelegate::~RuntimeHooksDelegate() = default;
 
 // static
 RequestResult RuntimeHooksDelegate::GetURL(

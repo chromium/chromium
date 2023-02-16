@@ -38,7 +38,7 @@ MessageTarget MessageTarget::ForNativeApp(const std::string& native_app) {
 
 MessageTarget::MessageTarget(MessageTarget&& other) = default;
 MessageTarget::MessageTarget(const MessageTarget& other) = default;
-MessageTarget::~MessageTarget() {}
+MessageTarget::~MessageTarget() = default;
 
 bool MessageTarget::operator==(const MessageTarget& other) const {
   return type == other.type && extension_id == other.extension_id &&

@@ -20,7 +20,7 @@ namespace extensions {
 MessagingBindings::MessagingBindings(ScriptContext* context)
     : ObjectBackedNativeHandler(context) {}
 
-MessagingBindings::~MessagingBindings() {}
+MessagingBindings::~MessagingBindings() = default;
 
 void MessagingBindings::AddRoutes() {
   // TODO(fsamuel, kalman): Move BindToGC out of messaging natives.

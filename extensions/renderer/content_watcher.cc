@@ -71,7 +71,7 @@ FrameContentWatcher::FrameContentWatcher(
       content::RenderFrameObserverTracker<FrameContentWatcher>(render_frame),
       css_selectors_(css_selectors) {}
 
-FrameContentWatcher::~FrameContentWatcher() {}
+FrameContentWatcher::~FrameContentWatcher() = default;
 
 void FrameContentWatcher::OnDestruct() {
   delete this;
@@ -140,8 +140,8 @@ void FrameContentWatcher::NotifyBrowserOfChange() {
 
 }  // namespace
 
-ContentWatcher::ContentWatcher() {}
-ContentWatcher::~ContentWatcher() {}
+ContentWatcher::ContentWatcher() = default;
+ContentWatcher::~ContentWatcher() = default;
 
 void ContentWatcher::OnWatchPages(
     const std::vector<std::string>& new_css_selectors_utf8) {

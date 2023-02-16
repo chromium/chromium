@@ -6,11 +6,11 @@
 
 namespace extensions {
 
-TestTickClock::TestTickClock() {}
+TestTickClock::TestTickClock() = default;
 
 TestTickClock::TestTickClock(base::TimeTicks now) : now_ticks_(now) {}
 
-TestTickClock::~TestTickClock() {}
+TestTickClock::~TestTickClock() = default;
 
 base::TimeTicks TestTickClock::NowTicks() const {
   return now_ticks_;

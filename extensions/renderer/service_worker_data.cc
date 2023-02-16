@@ -19,6 +19,6 @@ ServiceWorkerData::ServiceWorkerData(
       v8_schema_registry_(new V8SchemaRegistry),
       bindings_system_(std::move(bindings_system)) {}
 
-ServiceWorkerData::~ServiceWorkerData() {}
+ServiceWorkerData::~ServiceWorkerData() = default;
 
 }  // namespace extensions
