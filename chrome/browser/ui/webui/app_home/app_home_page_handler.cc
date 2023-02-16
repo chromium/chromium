@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -54,7 +53,6 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
-#include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
 
 using content::WebUI;
@@ -67,8 +65,6 @@ namespace webapps {
 namespace {
 
 const int kWebAppIconSize = 64;
-
-const size_t kMaxShortNameLength = 45;
 
 // The Youtube app is incorrectly hardcoded to be a 'bookmark app'. However, it
 // is a platform app.
@@ -313,9 +309,8 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   GURL start_url = registrar.GetAppStartUrl(app_id);
   app_info->start_url = start_url;
 
-  std::u16string name = base::UTF8ToUTF16(registrar.GetAppShortName(app_id));
-  app_info->name = base::UTF16ToUTF8(
-      gfx::TruncateString(name, kMaxShortNameLength + 1, gfx::CHARACTER_BREAK));
+  std::string name = registrar.GetAppShortName(app_id);
+  app_info->name = name;
 
   app_info->icon_url = apps::AppIconSource::GetIconURL(app_id, kWebAppIconSize);
 
@@ -348,9 +343,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
   GURL start_url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
   app_info->start_url = start_url;
 
-  std::u16string name = base::UTF8ToUTF16(extension->name());
-  app_info->name = base::UTF16ToUTF8(
-      gfx::TruncateString(name, kMaxShortNameLength + 1, gfx::CHARACTER_BREAK));
+  app_info->name = extension->name();
 
   app_info->icon_url = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_LARGE,

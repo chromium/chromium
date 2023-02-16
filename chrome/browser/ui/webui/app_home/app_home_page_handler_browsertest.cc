@@ -290,23 +290,6 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, GetApps) {
   EXPECT_TRUE(app_infos[0]->may_uninstall);
 }
 
-IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, LongAppName) {
-  AppId installed_app_id =
-      InstallTestWebApp(WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                        "Long App Title Test This Title Is Longer Than 45 "
-                        "Characters So Should Get Cut Off");
-
-  std::unique_ptr<TestAppHomePageHandler> page_handler =
-      GetAppHomePageHandler();
-
-  base::test::TestFuture<std::vector<app_home::mojom::AppInfoPtr>> future;
-  page_handler->GetApps(future.GetCallback());
-  auto app_infos = future.Take();
-
-  EXPECT_EQ("Long App Title Test This Title Is Longer Than\xE2\x80\xA6",
-            app_infos[0]->name);
-}
-
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, ForceInstalledApp) {
   AppId installed_app_id =
       InstallTestWebApp(WebappInstallSource::EXTERNAL_POLICY);
