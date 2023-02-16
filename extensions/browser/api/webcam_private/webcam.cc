@@ -6,8 +6,8 @@
 
 namespace extensions {
 
-Webcam::Webcam() {}
-Webcam::~Webcam() {}
+Webcam::Webcam() = default;
+Webcam::~Webcam() = default;
 
 WebcamResource::WebcamResource(const std::string& owner_extension_id,
                                Webcam* webcam,

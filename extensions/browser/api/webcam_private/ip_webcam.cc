@@ -14,7 +14,7 @@ namespace extensions {
 
 IpWebcam::IpWebcam(const std::string& device_id) : device_id_(device_id) {}
 
-IpWebcam::~IpWebcam() {}
+IpWebcam::~IpWebcam() = default;
 
 void IpWebcam::GetPan(const GetPTZCompleteCallback& callback) {
   IpPeripheralServiceClient::Get()->GetPan(device_id_, std::move(callback));
