@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 
+#import <vector>
+
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
@@ -254,22 +257,23 @@
 - (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
                                          anchorView:(UIView*)anchorView
                                          anchorRect:(CGRect)anchorRect {
-  auto it = std::find_if(
-      self.mediator.credentials.begin(), self.mediator.credentials.end(),
-      [password](password_manager::CredentialUIEntry credential) {
-        return
-            [password.signonRealm
-                isEqualToString:[NSString stringWithUTF8String:
-                                              credential.GetFirstSignonRealm()
-                                                  .c_str()]] &&
-            [password.username isEqualToString:base::SysUTF16ToNSString(
-                                                   credential.username)] &&
-            [password.password
-                isEqualToString:base::SysUTF16ToNSString(credential.password)];
+  // `self.mediator.credentials` returns a different copy on each call, so cache
+  // in a single local variable for use below.
+  std::vector<password_manager::CredentialUIEntry> credentials =
+      self.mediator.credentials;
+  auto it = base::ranges::find_if(
+      credentials,
+      [password](const password_manager::CredentialUIEntry& credential) {
+        return credential.GetFirstSignonRealm() ==
+                   base::SysNSStringToUTF8(password.signonRealm) &&
+               credential.username ==
+                   base::SysNSStringToUTF16(password.username) &&
+               credential.password ==
+                   base::SysNSStringToUTF16(password.password);
       });
-  if (it != self.mediator.credentials.end()) {
-    int index = std::distance(self.mediator.credentials.begin(), it);
-    DCHECK((unsigned long)index < self.mediator.credentials.size());
+  if (it != credentials.end()) {
+    int index = std::distance(credentials.begin(), it);
+    DCHECK((unsigned long)index < credentials.size());
 
     [self showPasswordDeleteDialogWithOrigins:password.origins
                           compromisedPassword:password.isCompromised
