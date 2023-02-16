@@ -104,6 +104,10 @@ export class ThemesElement extends ThemesElementBase {
     this.registerHelpBubble(CHROME_THEME_BACK_ELEMENT_ID, this.$.backButton);
   }
 
+  focusOnBackButton() {
+    this.$.backButton.focus();
+  }
+
   private onThemesRendered_() {
     const firstTile = this.root!.querySelector('.tile.theme');
     if (firstTile) {

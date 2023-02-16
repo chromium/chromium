@@ -45,7 +45,7 @@ suite('AppTest', () => {
     // Test initial page state.
     assertTrue(
         customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
-    assertTrue(document.hasFocus());
+    assertEquals(document.body, document.activeElement);
 
     // Send event for edit theme being clicked.
     customizeChromeApp.$.appearanceElement.dispatchEvent(
@@ -53,6 +53,7 @@ suite('AppTest', () => {
     // Current page should now be categories.
     assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
         'iron-selected'));
+    assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for category selected.
     customizeChromeApp.$.categoriesPage.dispatchEvent(
@@ -61,14 +62,14 @@ suite('AppTest', () => {
     // Current page should now be themes.
     assertTrue(
         customizeChromeApp.$.themesPage.classList.contains('iron-selected'));
+    assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for back click.
     customizeChromeApp.$.themesPage.dispatchEvent(new Event('back-click'));
     // Current page should now be categories.
     assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
         'iron-selected'));
-    // The document should still have focus.
-    assertTrue(document.hasFocus());
+    assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for upload image.
     customizeChromeApp.$.categoriesPage.dispatchEvent(
@@ -76,10 +77,12 @@ suite('AppTest', () => {
     // Current page should now be overview.
     assertTrue(
         customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
+    assertEquals(customizeChromeApp, document.activeElement);
 
     // Set page back to categories.
     customizeChromeApp.$.appearanceElement.dispatchEvent(
         new Event('edit-theme-click'));
+    assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for chrome colors select.
     customizeChromeApp.$.categoriesPage.dispatchEvent(
@@ -87,6 +90,7 @@ suite('AppTest', () => {
     // Current page should now be chrome colors.
     assertTrue(customizeChromeApp.$.chromeColorsPage.classList.contains(
         'iron-selected'));
+    assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for back click.
     customizeChromeApp.$.chromeColorsPage.dispatchEvent(
@@ -94,16 +98,14 @@ suite('AppTest', () => {
     // Current page should now be categories.
     assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
         'iron-selected'));
-    // The document should still have focus.
-    assertTrue(document.hasFocus());
+    assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for back click.
     customizeChromeApp.$.categoriesPage.dispatchEvent(new Event('back-click'));
     // Current page should now be overview.
     assertTrue(
         customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
-    // The document should still have focus.
-    assertTrue(document.hasFocus());
+    assertEquals(customizeChromeApp, document.activeElement);
   });
 
   test('app requests scroll to section update', () => {

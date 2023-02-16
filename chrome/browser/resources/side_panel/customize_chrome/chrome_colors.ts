@@ -108,6 +108,10 @@ export class ChromeColorsElement extends PolymerElement {
         this.setThemeListenerId_!);
   }
 
+  focusOnBackButton() {
+    this.$.backButton.focus();
+  }
+
   private computeIsDefaultColorSelected_(): boolean {
     return this.selectedColor_.type === ColorType.DEFAULT;
   }
