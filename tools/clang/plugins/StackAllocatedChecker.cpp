@@ -103,6 +103,9 @@ bool StackAllocatedChecker::IsStackAllocated(clang::CXXRecordDecl* record) {
 }
 
 void StackAllocatedChecker::Check(clang::CXXRecordDecl* record) {
+  if (!record->isCompleteDefinition()) {
+    return;
+  }
   // If this type is stack allocated, no need to check fields.
   if (IsStackAllocated(record)) {
     return;

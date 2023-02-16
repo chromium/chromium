@@ -6,7 +6,6 @@
 #define TOOLS_CLANG_PLUGINS_STACKALLOCATEDCHECKER_H_
 
 #include <map>
-#include <vector>
 
 namespace clang {
 class CompilerInstance;
