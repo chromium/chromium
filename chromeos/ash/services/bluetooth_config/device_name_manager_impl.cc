@@ -31,7 +31,7 @@ bool IsNicknameValid(const std::string& nickname) {
 void DeviceNameManagerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDeviceIdToNicknameMapPrefName,
-                                   base::Value(base::Value::Type::DICT));
+                                   base::Value::Dict());
 }
 
 DeviceNameManagerImpl::DeviceNameManagerImpl(

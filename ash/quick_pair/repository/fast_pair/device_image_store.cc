@@ -9,6 +9,7 @@
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "ash/shell.h"
+#include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -16,8 +17,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // Alias DeviceImageInfo for convenience.
 using bluetooth_config::DeviceImageInfo;
@@ -147,16 +147,17 @@ void DeviceImageStore::LoadPersistedImagesFromPrefs() {
   }
   const base::Value::Dict& device_image_store =
       local_state->GetDict(kDeviceImageStorePref);
-  for (std::pair<const std::string&, const base::Value&> record :
-       device_image_store) {
-    absl::optional<DeviceImageInfo> images =
-        DeviceImageInfo::FromDictionaryValue(record.second);
+  for (auto [model_id, image_dict] : device_image_store) {
+    absl::optional<DeviceImageInfo> images;
+    if (image_dict.is_dict()) {
+      images = DeviceImageInfo::FromDictionaryValue(image_dict.GetDict());
+    }
     if (!images) {
       QP_LOG(WARNING) << __func__
                       << ": Failed to load persisted images from prefs.";
       continue;
     }
-    model_id_to_images_[record.first] = images.value();
+    model_id_to_images_[model_id] = images.value();
   }
 }
 
@@ -223,5 +224,4 @@ void DeviceImageStore::RefreshCacheForTest() {
   LoadPersistedImagesFromPrefs();
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
