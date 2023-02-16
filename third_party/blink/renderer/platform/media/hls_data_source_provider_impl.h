@@ -29,7 +29,7 @@ class HlsDataSourceProviderImpl : public media::HlsDataSourceProvider {
       media::MediaLog* media_log,
       UrlIndex* url_index,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       const base::TickClock* tick_clock);
 
   void SetOwner(media::HlsDemuxer* owner) override;
@@ -62,7 +62,7 @@ class HlsDataSourceProviderImpl : public media::HlsDataSourceProvider {
   std::unique_ptr<media::MediaLog> media_log_;
   UrlIndex* url_index_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
   media::HlsDemuxer* owner_ = nullptr;
 

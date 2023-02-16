@@ -21,7 +21,7 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
       std::unique_ptr<MultiBufferDataSource> mb_data_source,
       absl::optional<media::hls::types::ByteRange> range,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner)
       : media::HlsDataSource(DetermineSize(*mb_data_source, range)),
         provider_(std::move(provider)),
         mb_data_source_(std::move(mb_data_source)),
@@ -34,7 +34,7 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
     DCHECK(main_task_runner_->BelongsToCurrentThread());
   }
   ~HlsDataSourceImpl() override {
-    DCHECK(media_task_runner_->BelongsToCurrentThread());
+    DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
     // Notify the provider that we've been destroyed so it can remove the
     // `MultiBufferDataSource` from its active set.
@@ -49,7 +49,7 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
             size_t size,
             uint8_t* buffer,
             ReadCb callback) override {
-    DCHECK(media_task_runner_->BelongsToCurrentThread());
+    DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
     // Read into the byterange, if one was given.
     // Caller will be using 0-based positions regardless.
@@ -108,14 +108,14 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
   std::unique_ptr<MultiBufferDataSource> mb_data_source_;
   absl::optional<media::hls::types::ByteRange> range_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 };
 
 HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
     media::MediaLog* media_log,
     UrlIndex* url_index,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const base::TickClock* tick_clock)
     : media_log_(media_log->Clone()),
       url_index_(url_index),
