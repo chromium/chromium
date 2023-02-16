@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -261,11 +260,11 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
   // window-management is an alias for window-placement (crbug.com/1328581).
   // Track usage of the alias used.
   if (feature_name == "window-placement") {
-    Deprecation::CountDeprecation(
-        execution_context_, WebFeature::kWindowPlacementPermissionPolicyParsed);
+    UseCounter::Count(this->execution_context_,
+                      WebFeature::kWindowPlacementPermissionPolicyParsed);
   }
   if (feature_name == "window-management") {
-    UseCounter::Count(execution_context_,
+    UseCounter::Count(this->execution_context_,
                       WebFeature::kWindowManagementPermissionPolicyParsed);
   }
   const String& effective_feature_name =
