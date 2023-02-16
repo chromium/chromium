@@ -90,7 +90,12 @@ class PLATFORM_EXPORT StatsCollectingEncoder
 
   const std::unique_ptr<webrtc::VideoEncoder> encoder_;
   webrtc::EncodedImageCallback* encoded_callback_{nullptr};
-  size_t highest_observed_spatial_index_ = 0;
+  // We only care about the highest layer...
+  // - In simulcast, the stream index refers to the simulcast index.
+  // - In SVC, the stream index refers to the spatial index.
+  // The mixed simulcast-SVC case is not considered because it is not supported
+  // by WebRTC.
+  size_t highest_observed_stream_index_ = 0;
 
   bool first_frame_encoded_{false};
   base::TimeTicks last_check_for_simultaneous_encoders_;

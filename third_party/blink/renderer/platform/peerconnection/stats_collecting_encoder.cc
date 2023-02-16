@@ -60,11 +60,11 @@ int StatsCollectingEncoder::InitEncode(
   // In the case the underlying encoder is RTCVideoEncoder,
   // encoder_->InitEncode() doesn't return until any previously existing HW
   // encoder has been deleted and the new encoder is initialized.
-  // `highest_observed_spatial_index_` can therefore be safely accessed after
+  // `highest_observed_stream_index_` can therefore be safely accessed after
   // the call to encoder->InitEncode().
   int ret = encoder_->InitEncode(codec_settings, settings);
   // Reset to the default value.
-  highest_observed_spatial_index_ = 0;
+  highest_observed_stream_index_ = 0;
   return ret;
 }
 
@@ -158,16 +158,17 @@ webrtc::EncodedImageCallback::Result StatsCollectingEncoder::OnEncodedImage(
   webrtc::EncodedImageCallback::Result result =
       encoded_callback_->OnEncodedImage(encoded_image, codec_specific_info);
 
-  const size_t encoded_image_spatial_idx =
-      encoded_image.SpatialIndex().value_or(0);
-  highest_observed_spatial_index_ =
-      std::max(highest_observed_spatial_index_, encoded_image_spatial_idx);
+  const size_t encoded_image_stream_index =
+      encoded_image.SimulcastIndex().value_or(
+          encoded_image.SpatialIndex().value_or(0));
+  highest_observed_stream_index_ =
+      std::max(highest_observed_stream_index_, encoded_image_stream_index);
 
   if (stats_collection_finished() ||
-      encoded_image_spatial_idx != highest_observed_spatial_index_) {
+      encoded_image_stream_index != highest_observed_stream_index_) {
     // Return early if we've already finished the stats collection or if this is
-    // a lower spatial layer. We only do stats collection for the highest
-    // observed spatial layer.
+    // a lower stream layer. We only do stats collection for the highest
+    // observed stream layer.
     return result;
   }
 
