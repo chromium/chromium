@@ -83,7 +83,8 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
           ETextOrientation::kSideways) {
     // `writing-mode: horizontal-tb` or `text-orientation: sideways`
     // `baseline` is ascent for not `vertical-lr`, descent for `vertical-lr`.
-    const LayoutUnit baseline = *initial_letter_box_fragment.FirstBaseline();
+    const LayoutUnit baseline =
+        initial_letter_box_fragment.FirstBaseline().value_or(LayoutUnit());
     const LayoutUnit ascent = paragraph_style.IsFlippedLinesWritingMode()
                                   ? block_size - baseline
                                   : baseline;

@@ -726,6 +726,21 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextCombineFake) {
                 *To<LayoutBlockFlow>(GetLayoutObjectByElementId("target"))));
 }
 
+// http://crbug.com/1413969
+TEST_F(NGInlineLayoutAlgorithmTest, EmptyInitialLetter) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/15px Ahem; }"
+      "#sample::first-letter { initial-letter: 3; }");
+  SetBodyInnerHTML("<div id=sample><span> </span></div>");
+  const char* const expected = R"DUMP(
+{Line #descendants=2 LTR Standard} "0,0 0x15"
+{Box #descendants=1 AtomicInlineLTR Standard} "0,40 0x0"
+)DUMP";
+  EXPECT_EQ(expected, AsFragmentItemsString(*To<LayoutBlockFlow>(
+                          GetLayoutObjectByElementId("sample"))));
+}
+
 TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLRightAligned) {
   LoadAhem();
   InsertStyleElement(
