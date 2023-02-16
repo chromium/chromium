@@ -202,25 +202,10 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
 // Creates a label for the suggestion's main text.
 std::unique_ptr<views::Label> CreateMainTextLabel(
     const Suggestion::Text& main_text,
-    int text_style,
-    gfx::Font::Weight font_weight) {
-  if (!main_text.is_primary) {
-    return std::make_unique<views::Label>(
-        main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_PRIMARY);
-  }
-
-  auto label = std::make_unique<views::Label>(
-      main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT, text_style);
-
-  // TODO(crbug.com/1411172): This presumably does not do anything, since
-  // font_weight is always `gfx::Font::Weight::NORMAL`. Remove once that is
-  // confirmed.
-  if (font_weight != label->font_list().GetFontWeight()) {
-    label->SetFontList(label->font_list().DeriveWithWeight(font_weight));
-  }
-
-  return label;
+    int text_style) {
+  return std::make_unique<views::Label>(
+      main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      !main_text.is_primary ? views::style::STYLE_PRIMARY : text_style);
 }
 
 // Creates a label for the suggestion's minor text.
@@ -529,8 +514,7 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
-      kSuggestion.main_text, views::style::TextStyle::STYLE_PRIMARY,
-      gfx::Font::Weight::NORMAL);
+      kSuggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
   FormatLabel(*main_text_label, kSuggestion.main_text);
   AddSuggestionContentToView(kSuggestion, std::move(main_text_label),
                              CreateMinorTextLabel(kSuggestion.minor_text),
@@ -629,8 +613,7 @@ PopupPasswordSuggestionStrategy::CreateContent() {
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
-      kSuggestion.main_text, views::style::TextStyle::STYLE_PRIMARY,
-      gfx::Font::Weight::NORMAL);
+      kSuggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
   main_text_label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
 
   AddSuggestionContentToView(kSuggestion, std::move(main_text_label),
@@ -732,8 +715,7 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
       views::MenuConfig::instance().touchable_menu_height);
 
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(kSuggestion.main_text, views::style::STYLE_SECONDARY,
-                          gfx::Font::Weight::NORMAL);
+      CreateMainTextLabel(kSuggestion.main_text, views::style::STYLE_SECONDARY);
   main_text_label->SetEnabled(!kSuggestion.is_loading);
   view->TrackLabel(view->AddChildView(std::move(main_text_label)));
 
