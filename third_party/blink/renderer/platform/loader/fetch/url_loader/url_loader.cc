@@ -118,7 +118,7 @@ class URLLoader::Context : public WebRequestPeer {
   scoped_refptr<base::SingleThreadTaskRunner> GetMaybeUnfreezableTaskRunner();
 
   void Cancel();
-  void Freeze(WebLoaderFreezeMode mode);
+  void Freeze(LoaderFreezeMode mode);
   void DidChangePriority(WebURLRequest::Priority new_priority,
                          int intra_priority_value);
   void Start(std::unique_ptr<network::ResourceRequest> request,
@@ -182,7 +182,7 @@ class URLLoader::Context : public WebRequestPeer {
   scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
   mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle_;
-  WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
+  LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   const Vector<String> cors_exempt_header_list_;
   base::WaitableEvent* terminate_sync_load_event_;
 
@@ -246,7 +246,7 @@ void URLLoader::Context::Cancel() {
   loader_ = nullptr;
 }
 
-void URLLoader::Context::Freeze(WebLoaderFreezeMode mode) {
+void URLLoader::Context::Freeze(LoaderFreezeMode mode) {
   if (request_id_ != -1) {
     resource_request_sender_->Freeze(mode);
   }
@@ -320,7 +320,7 @@ void URLLoader::Context::Start(
   }
 
   if (sync_load_response) {
-    DCHECK_EQ(freeze_mode_, WebLoaderFreezeMode::kNone);
+    DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kNone);
 
     loader_options |= network::mojom::kURLLoadOptionSynchronous;
     request->load_flags |= net::LOAD_IGNORE_LIMITS;
@@ -350,8 +350,8 @@ void URLLoader::Context::Start(
       std::move(throttles), std::move(resource_load_info_notifier_wrapper),
       back_forward_cache_loader_helper_);
 
-  if (freeze_mode_ != WebLoaderFreezeMode::kNone) {
-    resource_request_sender_->Freeze(WebLoaderFreezeMode::kStrict);
+  if (freeze_mode_ != LoaderFreezeMode::kNone) {
+    resource_request_sender_->Freeze(LoaderFreezeMode::kStrict);
   }
 }
 
@@ -609,7 +609,7 @@ void URLLoader::Cancel() {
   }
 }
 
-void URLLoader::Freeze(WebLoaderFreezeMode mode) {
+void URLLoader::Freeze(LoaderFreezeMode mode) {
   if (context_) {
     context_->Freeze(mode);
   }

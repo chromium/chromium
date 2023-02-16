@@ -50,7 +50,7 @@ class NoNetworkURLLoader : public URLLoader {
     // We simply never call back, simulating load times that are larger
     // than the test runtime.
   }
-  void Freeze(WebLoaderFreezeMode mode) override {
+  void Freeze(LoaderFreezeMode mode) override {
     // Ignore.
   }
   void DidChangePriority(WebURLRequest::Priority new_priority,

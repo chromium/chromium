@@ -39,7 +39,6 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -48,6 +47,7 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
@@ -122,8 +122,8 @@ class MockResourceRequestSender : public ResourceRequestSender {
 
   bool canceled() { return canceled_; }
 
-  void Freeze(WebLoaderFreezeMode mode) override { freeze_mode_ = mode; }
-  WebLoaderFreezeMode freeze_mode() const { return freeze_mode_; }
+  void Freeze(LoaderFreezeMode mode) override { freeze_mode_ = mode; }
+  LoaderFreezeMode freeze_mode() const { return freeze_mode_; }
 
   void set_sync_load_response(SyncLoadResponse&& sync_load_response) {
     sync_load_response_ = std::move(sync_load_response);
@@ -132,7 +132,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
  private:
   scoped_refptr<WebRequestPeer> peer_;
   bool canceled_ = false;
-  WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
+  LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   SyncLoadResponse sync_load_response_;
 };
 
@@ -474,10 +474,10 @@ TEST_F(URLLoaderTest, DeleteOnFail) {
 }
 
 TEST_F(URLLoaderTest, DefersLoadingBeforeStart) {
-  client()->loader()->Freeze(WebLoaderFreezeMode::kStrict);
-  EXPECT_EQ(sender()->freeze_mode(), WebLoaderFreezeMode::kNone);
+  client()->loader()->Freeze(LoaderFreezeMode::kStrict);
+  EXPECT_EQ(sender()->freeze_mode(), LoaderFreezeMode::kNone);
   DoStartAsyncRequest();
-  EXPECT_EQ(sender()->freeze_mode(), WebLoaderFreezeMode::kStrict);
+  EXPECT_EQ(sender()->freeze_mode(), LoaderFreezeMode::kStrict);
 }
 
 TEST_F(URLLoaderTest, ResponseIPEndpoint) {

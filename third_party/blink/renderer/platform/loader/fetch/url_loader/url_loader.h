@@ -43,10 +43,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -125,7 +125,7 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the
   // general concept of "freezing" in the loading module. See
   // blink/public/platform/web_loader_freezing_mode.h for `mode`.
-  virtual void Freeze(WebLoaderFreezeMode mode);
+  virtual void Freeze(LoaderFreezeMode mode);
 
   // Notifies the loader that the priority of a WebURLRequest has changed from
   // its previous value. For example, a preload request starts with low

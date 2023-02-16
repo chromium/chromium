@@ -173,7 +173,7 @@ bool SyncLoadContext::OnReceivedRedirect(
   response_->head = std::move(head);
   response_->redirect_info = redirect_info;
   *context_for_redirect_ = this;
-  resource_request_sender_->Freeze(WebLoaderFreezeMode::kStrict);
+  resource_request_sender_->Freeze(LoaderFreezeMode::kStrict);
   signals_->SignalRedirectOrResponseComplete();
   return true;
 }
@@ -187,7 +187,7 @@ void SyncLoadContext::FollowRedirect() {
   response_->redirect_info = net::RedirectInfo();
   *context_for_redirect_ = nullptr;
 
-  resource_request_sender_->Freeze(WebLoaderFreezeMode::kNone);
+  resource_request_sender_->Freeze(LoaderFreezeMode::kNone);
 }
 
 void SyncLoadContext::CancelRedirect() {

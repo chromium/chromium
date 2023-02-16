@@ -68,7 +68,7 @@ class URLLoaderMock : public URLLoader {
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       URLLoaderClient* client) override;
-  void Freeze(WebLoaderFreezeMode mode) override;
+  void Freeze(LoaderFreezeMode mode) override;
   void DidChangePriority(WebURLRequest::Priority new_priority,
                          int intra_priority_value) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()

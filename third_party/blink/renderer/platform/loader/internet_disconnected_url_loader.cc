@@ -73,7 +73,7 @@ void InternetDisconnectedURLLoader::LoadAsynchronously(
           WebURLError(net::ERR_INTERNET_DISCONNECTED, KURL(request->url))));
 }
 
-void InternetDisconnectedURLLoader::Freeze(WebLoaderFreezeMode) {}
+void InternetDisconnectedURLLoader::Freeze(LoaderFreezeMode) {}
 
 void InternetDisconnectedURLLoader::DidChangePriority(WebURLRequest::Priority,
                                                       int) {}

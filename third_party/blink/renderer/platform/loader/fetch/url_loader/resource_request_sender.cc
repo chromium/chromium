@@ -285,17 +285,17 @@ void ResourceRequestSender::Cancel(
   DeletePendingRequest(std::move(task_runner));
 }
 
-void ResourceRequestSender::Freeze(WebLoaderFreezeMode mode) {
+void ResourceRequestSender::Freeze(LoaderFreezeMode mode) {
   if (!request_info_) {
     DLOG(ERROR) << "unknown request";
     return;
   }
-  if (mode != WebLoaderFreezeMode::kNone) {
+  if (mode != LoaderFreezeMode::kNone) {
     request_info_->freeze_mode = mode;
     request_info_->url_loader_client->Freeze(mode);
-  } else if (request_info_->freeze_mode != WebLoaderFreezeMode::kNone) {
-    request_info_->freeze_mode = WebLoaderFreezeMode::kNone;
-    request_info_->url_loader_client->Freeze(WebLoaderFreezeMode::kNone);
+  } else if (request_info_->freeze_mode != LoaderFreezeMode::kNone) {
+    request_info_->freeze_mode = LoaderFreezeMode::kNone;
+    request_info_->url_loader_client->Freeze(LoaderFreezeMode::kNone);
 
     FollowPendingRedirect(request_info_.get());
   }
@@ -506,7 +506,7 @@ void ResourceRequestSender::OnReceivedRedirect(
         ->NotifyResourceRedirectReceived(redirect_info,
                                          std::move(response_head));
 
-    if (request_info_->freeze_mode == WebLoaderFreezeMode::kNone) {
+    if (request_info_->freeze_mode == LoaderFreezeMode::kNone) {
       FollowPendingRedirect(request_info_.get());
     }
   } else {

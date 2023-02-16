@@ -29,9 +29,9 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace base {
@@ -118,7 +118,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the
   // general concept of "freezing" in the loading module. See
   // blink/public/platform/web_loader_freezing_mode.h for `mode`.
-  virtual void Freeze(WebLoaderFreezeMode mode);
+  virtual void Freeze(LoaderFreezeMode mode);
 
   // Indicates the priority of the specified request changed.
   void DidChangePriority(net::RequestPriority new_priority,
@@ -171,7 +171,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
 
     scoped_refptr<WebRequestPeer> peer;
     network::mojom::RequestDestination request_destination;
-    WebLoaderFreezeMode freeze_mode = WebLoaderFreezeMode::kNone;
+    LoaderFreezeMode freeze_mode = LoaderFreezeMode::kNone;
     // Original requested url.
     KURL url;
     // The url, method and referrer of the latest response even in case of

@@ -184,7 +184,7 @@ class MojoURLLoaderClient::BodyBuffer final
     SCOPED_CRASH_KEY_STRING256("OnDataAvailable", "last_loaded_url",
                                owner_->last_loaded_url().GetString().Utf8());
 
-    if (owner_->freeze_mode() == WebLoaderFreezeMode::kBufferIncoming) {
+    if (owner_->freeze_mode() == LoaderFreezeMode::kBufferIncoming) {
       owner_->DidBufferLoadWhileInBackForwardCache(num_bytes);
       if (!owner_->CanContinueBufferingWhileInBackForwardCache()) {
         owner_->EvictFromBackForwardCache(
@@ -289,18 +289,18 @@ MojoURLLoaderClient::MojoURLLoaderClient(
 
 MojoURLLoaderClient::~MojoURLLoaderClient() = default;
 
-void MojoURLLoaderClient::Freeze(WebLoaderFreezeMode mode) {
+void MojoURLLoaderClient::Freeze(LoaderFreezeMode mode) {
   freeze_mode_ = mode;
-  if (mode != WebLoaderFreezeMode::kBufferIncoming) {
+  if (mode != LoaderFreezeMode::kBufferIncoming) {
     // Back/forward cache eviction should only be triggered when `freeze_mode_`
     // is kBufferIncoming.
     StopBackForwardCacheEvictionTimer();
   }
-  if (mode == WebLoaderFreezeMode::kNone) {
+  if (mode == LoaderFreezeMode::kNone) {
     task_runner_->PostTask(
         FROM_HERE, WTF::BindOnce(&MojoURLLoaderClient::FlushDeferredMessages,
                                  weak_factory_.GetWeakPtr()));
-  } else if (mode == WebLoaderFreezeMode::kBufferIncoming &&
+  } else if (mode == LoaderFreezeMode::kBufferIncoming &&
              !has_received_complete_ &&
              !back_forward_cache_eviction_timer_.IsRunning()) {
     // We should evict the page associated with this load if the connection
@@ -367,7 +367,7 @@ void MojoURLLoaderClient::OnReceiveResponse(
     return;
   }
 
-  if (freeze_mode_ != WebLoaderFreezeMode::kBufferIncoming) {
+  if (freeze_mode_ != LoaderFreezeMode::kBufferIncoming) {
     // Defer the message, storing the original body pipe.
     StoreAndDispatch(
         std::make_unique<DeferredOnStartLoadingResponseBody>(std::move(body)));
@@ -397,7 +397,7 @@ void MojoURLLoaderClient::OnReceiveResponse(
 
 void MojoURLLoaderClient::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
-  DCHECK_EQ(freeze_mode_, WebLoaderFreezeMode::kBufferIncoming);
+  DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kBufferIncoming);
   StopBackForwardCacheEvictionTimer();
   if (!back_forward_cache_loader_helper_) {
     return;
@@ -432,7 +432,7 @@ void MojoURLLoaderClient::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK(!has_received_response_head_);
-  if (freeze_mode_ == WebLoaderFreezeMode::kBufferIncoming) {
+  if (freeze_mode_ == LoaderFreezeMode::kBufferIncoming) {
     // Evicting a page from the bfcache and aborting the request is not good for
     // a request with keepalive set, which is why we block bfcache when we find
     // such a request.
@@ -502,7 +502,7 @@ void MojoURLLoaderClient::OnComplete(
 }
 
 bool MojoURLLoaderClient::NeedsStoringMessage() const {
-  return freeze_mode_ != WebLoaderFreezeMode::kNone ||
+  return freeze_mode_ != LoaderFreezeMode::kNone ||
          deferred_messages_.size() > 0 ||
          accumulated_transfer_size_diff_during_deferred_ > 0;
 }
@@ -510,7 +510,7 @@ bool MojoURLLoaderClient::NeedsStoringMessage() const {
 void MojoURLLoaderClient::StoreAndDispatch(
     std::unique_ptr<DeferredMessage> message) {
   DCHECK(NeedsStoringMessage());
-  if (freeze_mode_ != WebLoaderFreezeMode::kNone) {
+  if (freeze_mode_ != LoaderFreezeMode::kNone) {
     deferred_messages_.emplace_back(std::move(message));
   } else if (deferred_messages_.size() > 0 ||
              accumulated_transfer_size_diff_during_deferred_ > 0) {
@@ -530,8 +530,9 @@ void MojoURLLoaderClient::OnConnectionClosed() {
 }
 
 void MojoURLLoaderClient::FlushDeferredMessages() {
-  if (freeze_mode_ != WebLoaderFreezeMode::kNone)
+  if (freeze_mode_ != LoaderFreezeMode::kNone) {
     return;
+  }
   WebVector<std::unique_ptr<DeferredMessage>> messages;
   messages.Swap(deferred_messages_);
   bool has_completion_message = false;
@@ -552,7 +553,7 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
     messages[index]->HandleMessage(resource_request_sender_);
     if (!weak_this)
       return;
-    if (freeze_mode_ != WebLoaderFreezeMode::kNone) {
+    if (freeze_mode_ != LoaderFreezeMode::kNone) {
       deferred_messages_.reserve(messages.size() - index - 1);
       for (size_t i = index + 1; i < messages.size(); ++i)
         deferred_messages_.emplace_back(std::move(messages[i]));
@@ -567,7 +568,7 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
     resource_request_sender_->OnTransferSizeUpdated(transfer_size_diff);
     if (!weak_this)
       return;
-    if (freeze_mode_ != WebLoaderFreezeMode::kNone) {
+    if (freeze_mode_ != LoaderFreezeMode::kNone) {
       if (has_completion_message) {
         DCHECK_GT(messages.size(), 0u);
         DCHECK(messages.back()->IsCompletionMessage());

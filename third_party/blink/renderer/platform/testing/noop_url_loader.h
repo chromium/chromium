@@ -39,7 +39,7 @@ class NoopURLLoader final : public URLLoader {
           resource_load_info_notifier_wrapper,
       URLLoaderClient*) override;
 
-  void Freeze(WebLoaderFreezeMode) override {}
+  void Freeze(LoaderFreezeMode) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {
     NOTREACHED();
   }

@@ -57,7 +57,7 @@ class TestCodeCacheLoader : public WebCodeCacheLoader {
 // A mock URLLoader to know the status of defers flag.
 class TestURLLoader final : public URLLoader {
  public:
-  explicit TestURLLoader(WebLoaderFreezeMode* const freeze_mode_ptr)
+  explicit TestURLLoader(LoaderFreezeMode* const freeze_mode_ptr)
       : freeze_mode_ptr_(freeze_mode_ptr) {}
   ~TestURLLoader() override = default;
 
@@ -86,7 +86,7 @@ class TestURLLoader final : public URLLoader {
           resource_load_info_notifier_wrapper,
       URLLoaderClient*) override {}
 
-  void Freeze(WebLoaderFreezeMode mode) override { *freeze_mode_ptr_ = mode; }
+  void Freeze(LoaderFreezeMode mode) override { *freeze_mode_ptr_ = mode; }
   void DidChangePriority(WebURLRequest::Priority, int) override {
     NOTREACHED();
   }
@@ -97,13 +97,13 @@ class TestURLLoader final : public URLLoader {
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::freeze_mode_|.
-  WebLoaderFreezeMode* const freeze_mode_ptr_;
+  LoaderFreezeMode* const freeze_mode_ptr_;
 };
 
 class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
  public:
   DeferTestLoaderFactory(
-      WebLoaderFreezeMode* const freeze_mode_ptr,
+      LoaderFreezeMode* const freeze_mode_ptr,
       ProcessCodeCacheRequestCallback process_code_cache_request_callback)
       : freeze_mode_ptr_(freeze_mode_ptr),
         process_code_cache_request_callback_(
@@ -126,7 +126,7 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::freeze_mode_|.
-  WebLoaderFreezeMode* const freeze_mode_ptr_;
+  LoaderFreezeMode* const freeze_mode_ptr_;
 
   ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
 };
@@ -167,7 +167,7 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
   WebCodeCacheLoader::FetchCodeCacheCallback code_cache_response_callback_;
   // Passed to TestURLLoader (via |platform_|) and updated when its Freeze
   // method is called.
-  WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
+  LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   const KURL test_url_ = KURL("http://example.com/");
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>

@@ -18,10 +18,10 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace base {
@@ -56,7 +56,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the
   // general concept of "freezing" in the loading module. See
   // blink/public/platform/web_loader_freezing_mode.h for `mode`.
-  void Freeze(WebLoaderFreezeMode mode);
+  void Freeze(LoaderFreezeMode mode);
 
   // network::mojom::URLLoaderClient implementation
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -76,7 +76,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason);
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
   bool CanContinueBufferingWhileInBackForwardCache();
-  WebLoaderFreezeMode freeze_mode() const { return freeze_mode_; }
+  LoaderFreezeMode freeze_mode() const { return freeze_mode_; }
 
  private:
   class BodyBuffer;
@@ -106,7 +106,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   bool has_received_response_head_ = false;
   bool has_received_response_body_ = false;
   bool has_received_complete_ = false;
-  WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
+  LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   int32_t accumulated_transfer_size_diff_during_deferred_ = 0;
   ResourceRequestSender* const resource_request_sender_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
