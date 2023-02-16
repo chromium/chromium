@@ -96,13 +96,20 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   DCHECK(browser_context);
   DCHECK(restore_context);
 
-  // The initial values of the NavigationEntry are only temporary - they
-  // will get cloberred by one of the SetPageState calls below.
+  // The initial values of the NavigationEntry are usually temporary - they will
+  // normally get clobbered by one of the SetPageState calls below.
   //
   // This means that things like |navigation->referrer_url| are ignored
   // in favor of using the data stored in |navigation->encoded_page_state|.
-  GURL temporary_url;
-  content::Referrer temporary_referrer;
+  //
+  // We still use the URL and referrer from |navigation| here for the temporary
+  // values, though, in case the PageState fails to decode and clobber them.
+  // This allows us to load the original URL and referrer even if other state is
+  // lost.
+  GURL temporary_url = navigation->virtual_url_;
+  content::Referrer temporary_referrer(
+      navigation->referrer_url(),
+      content::Referrer::ConvertToPolicy(navigation->referrer_policy()));
   absl::optional<url::Origin> temporary_initiator_origin;
   absl::optional<GURL> temporary_initiator_base_url;
 
@@ -139,14 +146,12 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
     // PageState set above + drop the SetReferrer call below.  This will
     // slightly change the legacy behavior, but will make PageState and
     // Referrer consistent.
-    content::Referrer referrer(
-        navigation->referrer_url(),
-        content::Referrer::ConvertToPolicy(navigation->referrer_policy()));
-    entry->SetReferrer(referrer);
+    entry->SetReferrer(temporary_referrer);
   } else {
     // Note that PageState covers some of the values inside |navigation| (e.g.
     // URL, Referrer).  Calling SetPageState will clobber these values in
-    // content::NavigationEntry (and FrameNavigationEntry(s) below).
+    // content::NavigationEntry (and FrameNavigationEntry(s) below), as long as
+    // the PageState successfully decodes.
     entry->SetPageState(blink::PageState::CreateFromEncodedData(
                             navigation->encoded_page_state_),
                         restore_context);

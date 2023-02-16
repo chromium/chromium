@@ -970,6 +970,58 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignSession) {
   ASSERT_FALSE(entry->GetIsOverridingUserAgent());
 }
 
+// Test that a session can be restored even if the PageState were corrupted.
+// This test covers a GetPageState call that used to fail a DCHECK when the
+// PageState failed to decode during the command building step of session
+// restore, per https://crbug.com/1412401. See also https://crbug.com/1196330,
+// where release builds would crash in the renderer process during restore.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreInvalidPageState) {
+  Profile* profile = browser()->profile();
+
+  // Set up restore data with one tab and one navigation.
+  std::vector<const sessions::SessionWindow*> session;
+  sessions::SessionWindow window;
+  {
+    auto tab1 = std::make_unique<sessions::SessionTab>();
+    tab1->tab_visual_index = 0;
+    tab1->current_navigation_index = 0;
+    tab1->pinned = true;
+    tab1->navigations.push_back(
+        ContentTestHelper::CreateNavigation(GetUrl1().spec(), "one"));
+
+    // Corrupt the PageState for the SerializedNavigationEntry.
+    tab1->navigations.at(0).set_encoded_page_state("garbage");
+
+    window.tabs.push_back(std::move(tab1));
+  }
+
+  // Restore the session in a new window.
+  session.push_back(static_cast<const sessions::SessionWindow*>(&window));
+  std::vector<Browser*> browsers = SessionRestore::RestoreForeignSessionWindows(
+      profile, session.begin(), session.end());
+  ASSERT_EQ(1u, browsers.size());
+  Browser* new_browser = browsers[0];
+  ASSERT_TRUE(new_browser);
+  WaitForTabsToLoad(new_browser);
+  EXPECT_NE(new_browser, browser());
+  EXPECT_EQ(new_browser->profile(), browser()->profile());
+  ASSERT_EQ(2u, active_browser_list_->size());
+  ASSERT_EQ(1, new_browser->tab_strip_model()->count());
+
+  // The URL should still successfully commit, even though the rest of the
+  // previous PageState was lost.
+  content::WebContents* web_contents_1 =
+      new_browser->tab_strip_model()->GetWebContentsAt(0);
+  EXPECT_EQ(GetUrl1(), web_contents_1->GetLastCommittedURL());
+  EXPECT_EQ(GetUrl1(),
+            web_contents_1->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  content::NavigationEntry* entry =
+      web_contents_1->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(GetUrl1(), entry->GetURL());
+}
+
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, Basic) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl2()));

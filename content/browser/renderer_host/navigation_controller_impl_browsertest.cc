@@ -11677,6 +11677,88 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(root3_fne, controller3.GetEntryAtIndex(1)->GetFrameEntry(root3));
 }
 
+// Test that restoring a corrupt PageState can still successfully load the
+// original URL without crashing, even if the rest of the PageState is lost.
+// See https://crbug.com/1412401 and https://crbug.com/1196330, as well as
+// SessionRestoreTest.RestoreInvalidPageState.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       RestoreSessionWithInvalidPageState) {
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // 1. Navigate to a page with an iframe.
+  GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/navigation_controller/page_with_iframe_simple.html"));
+  GURL original_frame_url(embedded_test_server()->GetURL(
+      "a.com", "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  NavigationEntryImpl* entry1 = controller.GetLastCommittedEntry();
+  FrameTreeNode* child = root->child_at(0);
+  ASSERT_EQ(original_frame_url, entry1->GetFrameEntry(child)->url());
+
+  // 2. Navigate the subframe.
+  GURL frame_url(embedded_test_server()->GetURL(
+      "b.com", "/navigation_controller/simple_page_2.html"));
+  {
+    FrameNavigateParamsCapturer capturer(child);
+    ASSERT_TRUE(NavigateFrameToURL(child, frame_url));
+    capturer.Wait();
+  }
+  NavigationEntryImpl* entry2 = controller.GetLastCommittedEntry();
+
+  // Simulate a session restore using a corrupted PageState.  The other values
+  // from the entry are preserved (simulated by cloning the entry).
+  blink::PageState garbage = blink::PageState::CreateFromEncodedData("garbage");
+  blink::ExplodedPageState exploded_state;
+  ASSERT_FALSE(
+      blink::DecodePageState(garbage.ToEncodedData(), &exploded_state));
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context1 =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  std::unique_ptr<NavigationEntryImpl> restored_entry1 = entry1->Clone();
+  restored_entry1->SetPageState(garbage, context1.get());
+  std::unique_ptr<NavigationEntryImpl> restored_entry2 = entry2->Clone();
+  restored_entry2->SetPageState(garbage, context1.get());
+
+  // 3. Actually restore the entries in a new tab.
+  std::vector<std::unique_ptr<NavigationEntry>> restored_entries;
+  restored_entries.push_back(std::move(restored_entry1));
+  restored_entries.push_back(std::move(restored_entry2));
+  Shell* shell2 = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  WebContentsImpl* web_contents2 =
+      static_cast<WebContentsImpl*>(shell2->web_contents());
+  FrameTreeNode* root2 = static_cast<WebContentsImpl*>(shell2->web_contents())
+                             ->GetPrimaryFrameTree()
+                             .root();
+  NavigationControllerImpl& controller2 =
+      static_cast<NavigationControllerImpl&>(web_contents2->GetController());
+  controller2.Restore(restored_entries.size() - 1, RestoreType::kRestored,
+                      &restored_entries);
+  {
+    TestNavigationObserver restore_observer(shell2->web_contents());
+    controller2.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+  NavigationEntryImpl* new_entry1 = controller2.GetEntryAtIndex(0);
+  NavigationEntryImpl* new_entry2 = controller2.GetEntryAtIndex(1);
+  EXPECT_EQ(new_entry2, controller2.GetLastCommittedEntry());
+
+  // Verify that the subframe loads its original URL, because frame_url was
+  // lost in the corrupted PageState.
+  FrameTreeNode* child2 = root2->child_at(0);
+  FrameNavigationEntry* child2_fne = new_entry2->GetFrameEntry(child2);
+  EXPECT_EQ(original_frame_url, child2_fne->url());
+
+  // Ensure that the main frame entries do not share a FrameNavigationEntry,
+  // despite ending up with identical item sequence numbers (i.e., 0) in the
+  // corrupted PageState. This works because ISNs of 0 are exempt from the
+  // de-deduplication logic.
+  EXPECT_NE(new_entry1->GetFrameEntry(root2), new_entry2->GetFrameEntry(root2));
+}
+
 // Tests the value of history.state after same-document replacement, in all
 // affected entries.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,

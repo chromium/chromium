@@ -523,11 +523,17 @@ void NavigationEntryImpl::SetPageState(const blink::PageState& state,
   if (!frame_tree_->children.empty())
     frame_tree_->children.clear();
 
-  // If the PageState can't be parsed, just store it on the main frame's
-  // FrameNavigationEntry without recursively creating subframe entries.
+  // If the PageState can't be parsed, store a clean PageState for the URL
+  // without recursively creating subframe entries. This ensures that the
+  // renderer and future sessions will be able to handle the history item, even
+  // if not all data can be preserved. See https://crbug.com/1196330.
   blink::ExplodedPageState exploded_state;
   if (!blink::DecodePageState(state.ToEncodedData(), &exploded_state)) {
-    frame_tree_->frame_entry->SetPageState(state);
+    // Replace frame_entry with a clone to avoid sharing with any other
+    // NavigationEntries, because the item sequence number will be gone.
+    frame_tree_->frame_entry = frame_tree_->frame_entry->Clone();
+    frame_tree_->frame_entry->SetPageState(
+        blink::PageState::CreateFromURL(GetURL()));
     return;
   }
 
