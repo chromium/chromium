@@ -7,7 +7,9 @@
 #import <BackgroundTasks/BackgroundTasks.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import "components/metrics/metrics_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
@@ -173,6 +175,10 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   } else {
     [FeedMetricsRecorder
         recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundColdStart];
+    // TODO(crbug.com/1396459): Remove this workaround and enable background
+    // cold starts.
+    GetApplicationContext()->GetMetricsService()->OnAppEnterBackground();
+    exit(0);
   }
   if (IsRecurringBackgroundRefreshScheduleEnabled()) {
     [self scheduleBackgroundRefresh];
