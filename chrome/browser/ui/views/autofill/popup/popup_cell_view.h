@@ -50,13 +50,22 @@ class PopupCellView : public views::View {
   absl::optional<int> GetSetIndexForAccessibility() const { return set_index_; }
   void SetSetIndexForAccessibility(absl::optional<int> set_index);
 
-  // Sets the callback that is run when the cell is entered (via mouse or
-  // gesture event).
+  // Gets and sets the callback that is run when the cell is entered (via mouse
+  // or gesture event).
+  const base::RepeatingClosure& GetOnEnteredCallback() const {
+    return on_entered_callback_;
+  }
   void SetOnEnteredCallback(base::RepeatingClosure callback);
-  // Sets the callback that is run when the cell is exited.
+  // Gets and sets the callback that is run when the cell is exited.
+  const base::RepeatingClosure& GetOnExitedCallback() const {
+    return on_exited_callback_;
+  }
   void SetOnExitedCallback(base::RepeatingClosure callback);
-  // Sets the callback that is run when the cell is accepted (left mouse click,
-  // tap, enter key).
+  // Gets and sets the callback that is run when the cell is accepted (left
+  // mouse click, tap, enter key).
+  const base::RepeatingClosure& GetOnAcceptedCallback() const {
+    return on_accepted_callback_;
+  }
   void SetOnAcceptedCallback(base::RepeatingClosure callback);
 
   // Adds `label` to a list of labels whose style is refreshed whenever the
@@ -120,6 +129,9 @@ BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)
 VIEW_BUILDER_PROPERTY(std::u16string, VoiceOverString)
 VIEW_BUILDER_PROPERTY(absl::optional<int>, SetSizeForAccessibility)
 VIEW_BUILDER_PROPERTY(absl::optional<int>, SetIndexForAccessibility)
+VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnEnteredCallback)
+VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnExitedCallback)
+VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnAcceptedCallback)
 END_VIEW_BUILDER
 
 }  // namespace autofill

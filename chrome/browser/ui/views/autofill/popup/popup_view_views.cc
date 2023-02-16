@@ -58,8 +58,8 @@ namespace autofill {
 namespace {
 
 // By spec, dropdowns should always have a width which is a multiple of 12.
-// TODO(crbug.com/1411172): Deduplicate this between here and `PopupRowView`.
 constexpr int kAutofillPopupWidthMultiple = 12;
+
 constexpr int kAutofillPopupMinWidth = 0;
 // TODO(crbug.com/831603): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
@@ -76,28 +76,12 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
     return false;
   }
 
-  switch (suggestions[line_number].frontend_id) {
-    case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
-    case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
-    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
-    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
-    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
-    case PopupItemId::
-        POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
-    case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
-    case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
-    case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
-    case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
-    case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
-    case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
-      return true;
-    // If the next item is a footer item, the separator also belongs to the
-    // footer.
-    case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
-      return IsFooterItem(suggestions, line_number + 1);
-    default:
-      return false;
-  }
+  // Separators are a special case: They belong into the footer iff the next
+  // item exists and is a footer item.
+  int frontend_id = suggestions[line_number].frontend_id;
+  return frontend_id == PopupItemId::POPUP_ITEM_ID_SEPARATOR
+             ? IsFooterItem(suggestions, line_number + 1)
+             : IsFooterFrontendId(frontend_id);
 }
 
 }  // namespace
@@ -244,22 +228,11 @@ void PopupViewViews::CreateChildViews() {
                   kSuggestions[current_line_number])));
           break;
 
-        case PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
-        case PopupItemId::POPUP_ITEM_ID_PASSWORD_ENTRY:
-        case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
-        case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
-          rows_.push_back(
-              body_container->AddChildView(PopupPasswordSuggestionView::Create(
-                  *this, current_line_number, frontend_id)));
-          break;
-
-        // The default section contains most of the suggestions including
-        // addresses and credit cards.
+        // The default section contains most all selectable rows and includes
+        // autocomplete, address, credit cards and passwords.
         default:
-          rows_.push_back(
-              body_container->AddChildView(PopupSuggestionView::Create(
-                  *this, current_line_number, frontend_id,
-                  controller_->GetPopupType())));
+          rows_.push_back(body_container->AddChildView(
+              PopupRowView::Create(*this, current_line_number)));
       }
     }
 
@@ -299,9 +272,8 @@ void PopupViewViews::CreateChildViews() {
       rows_.push_back(footer_container->AddChildView(
           std::make_unique<PopupSeparatorView>()));
     } else {
-      rows_.push_back(footer_container->AddChildView(PopupFooterView::Create(
-          *this, current_line_number,
-          kSuggestions[current_line_number].frontend_id)));
+      rows_.push_back(footer_container->AddChildView(
+          PopupRowView::Create(*this, current_line_number)));
     }
   }
 

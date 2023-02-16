@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
@@ -530,6 +531,27 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
                       0);
 
   return arrow;
+}
+
+bool IsFooterFrontendId(int frontend_id) {
+  switch (frontend_id) {
+    case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
+    case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
+    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
+    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
+    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
+    case PopupItemId::
+        POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
+    case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
+    case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
+    case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
+    case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
+    case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
+    case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
+      return true;
+    default:
+      return false;
+  }
 }
 
 }  // namespace autofill

@@ -94,6 +94,8 @@ class MockAutofillPopupController
     suggestions_ = std::move(suggestions);
   }
 
+  void InvalidateWeakPtrs() { weak_ptr_factory_.InvalidateWeakPtrs(); }
+
  private:
   std::vector<autofill::Suggestion> suggestions_;
   gfx::ScopedDefaultFontDescription default_font_desc_setter_;

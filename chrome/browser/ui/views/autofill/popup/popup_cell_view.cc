@@ -194,6 +194,9 @@ ADD_PROPERTY_METADATA(bool, Selected)
 ADD_PROPERTY_METADATA(std::u16string, VoiceOverString)
 ADD_PROPERTY_METADATA(absl::optional<int>, SetSizeForAccessibility)
 ADD_PROPERTY_METADATA(absl::optional<int>, SetIndexForAccessibility)
+ADD_PROPERTY_METADATA(base::RepeatingClosure, OnEnteredCallback)
+ADD_PROPERTY_METADATA(base::RepeatingClosure, OnExitedCallback)
+ADD_PROPERTY_METADATA(base::RepeatingClosure, OnAcceptedCallback)
 END_METADATA
 
 }  // namespace autofill

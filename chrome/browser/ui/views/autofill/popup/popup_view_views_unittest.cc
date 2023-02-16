@@ -227,7 +227,7 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 0.
   ui::AXNodeData node_data_0;
-  GetPopupRowViewAt(0).content_view().GetAccessibleNodeData(&node_data_0);
+  GetPopupRowViewAt(0).GetContentView().GetAccessibleNodeData(&node_data_0);
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_0.role);
   EXPECT_EQ(1, node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
@@ -245,7 +245,7 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 2.
   ui::AXNodeData node_data_2;
-  GetPopupRowViewAt(2).content_view().GetAccessibleNodeData(&node_data_2);
+  GetPopupRowViewAt(2).GetContentView().GetAccessibleNodeData(&node_data_2);
   EXPECT_EQ(2, node_data_2.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_2.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_2.role);
@@ -254,7 +254,7 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 3 (footer).
   ui::AXNodeData node_data_3;
-  GetPopupRowViewAt(3).content_view().GetAccessibleNodeData(&node_data_3);
+  GetPopupRowViewAt(3).GetContentView().GetAccessibleNodeData(&node_data_3);
   EXPECT_EQ(3, node_data_3.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_3.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_3.role);
@@ -271,7 +271,7 @@ TEST_F(PopupViewViewsTest, Gestures) {
       /*x=*/0, /*y=*/0, /*flags=*/0, ui::EventTimeForNow(),
       ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
   EXPECT_CALL(controller(), SetSelectedLine(testing::Eq(0)));
-  GetPopupRowViewAt(0).content_view().OnGestureEvent(&tap_down_event);
+  GetPopupRowViewAt(0).GetContentView().OnGestureEvent(&tap_down_event);
 
   // Tapping will accept the selection.
   ui::GestureEvent tap_event(/*x=*/0, /*y=*/0, /*flags=*/0,
@@ -279,14 +279,14 @@ TEST_F(PopupViewViewsTest, Gestures) {
                              ui::GestureEventDetails(ui::ET_GESTURE_TAP));
   EXPECT_CALL(controller(),
               AcceptSuggestion(0, /*show_threshold=*/base::Milliseconds(500)));
-  GetPopupRowViewAt(0).content_view().OnGestureEvent(&tap_event);
+  GetPopupRowViewAt(0).GetContentView().OnGestureEvent(&tap_event);
 
   // Canceling gesture clears any selection.
   ui::GestureEvent tap_cancel(
       /*x=*/0, /*y=*/0, /*flags=*/0, ui::EventTimeForNow(),
       ui::GestureEventDetails(ui::ET_GESTURE_TAP_CANCEL));
   EXPECT_CALL(controller(), SelectionCleared());
-  GetPopupRowViewAt(2).content_view().OnGestureEvent(&tap_cancel);
+  GetPopupRowViewAt(2).GetContentView().OnGestureEvent(&tap_cancel);
 }
 
 TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
@@ -322,7 +322,7 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
 
   // Verify that the accessibility layer gets the right string to read out.
   ui::AXNodeData node_data;
-  GetPopupRowViewAt(0).content_view().GetAccessibleNodeData(&node_data);
+  GetPopupRowViewAt(0).GetContentView().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(voice_over_value,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }

@@ -6,38 +6,38 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_VIEW_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
-#include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/color/color_id.h"
-#include "ui/gfx/font.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
-
-namespace views {
-class BoxLayout;
-}  // namespace views
 
 namespace autofill {
 
+class PopupRowStrategy;
 class PopupViewViews;
 
-// `PopupRowView` represents a single selectable item. Subclasses distinguish
-// between footer and suggestion rows, which are structurally similar, but have
-// distinct styling.
+// `PopupRowView` represents a single selectable popup row. Different styles
+// of the row can be achieved by injecting the respective `PopupRowStrategy`
+// objects in the constructor.
+// TODO(crbug.com/1411172): Add support for (selectable) control areas in the
+// row.
 class PopupRowView : public views::View {
  public:
   METADATA_HEADER(PopupRowView);
+  PopupRowView(PopupViewViews& popup_view,
+               std::unique_ptr<PopupRowStrategy> strategy);
   PopupRowView(const PopupRowView&) = delete;
   PopupRowView& operator=(const PopupRowView&) = delete;
   ~PopupRowView() override;
 
+  // Acts as a factory method for creating a row view.
+  static std::unique_ptr<PopupRowView> Create(PopupViewViews& popup_view,
+                                              int line_number);
+
+  // Gets and sets the selection status of the row.
+  bool GetSelected() const { return selected_; }
   void SetSelected(bool selected);
 
   // Show the in-product-help promo anchored to this bubble if applicable. The
@@ -46,55 +46,15 @@ class PopupRowView : public views::View {
   // a limit for how many times it can be shown at most in a period of time.
   void MaybeShowIphPromo();
 
-  // `CreateContent` handles initialization tasks which require virtual methods.
-  // Subclasses should have private/protected constructors and implement a
-  // factory function that calls `CreateContent` after creating the object.
-  virtual void CreateContent();
-
   // Returns the view representing the content area of the row.
-  PopupCellView& content_view() { return *content_view_; }
-
- protected:
-  PopupRowView(PopupViewViews& popup_view, int line_number, int frontend_id);
-
-  PopupViewViews& popup_view() { return popup_view_.get(); }
-  int GetLineNumber() const { return line_number_; }
-  int GetFrontendId() const { return frontend_id_; }
-  bool GetSelected() const { return selected_; }
-  ui::ColorId GetBackgroundColorId() const;
-
-  virtual int GetPrimaryTextStyle() = 0;
-  // Returns a main text label view. The label part is optional but allow caller
-  // to keep track of all the labels for background color update.
-  virtual std::unique_ptr<views::Label> CreateMainTextView();
-  // Returns a minor text label view. The label is shown side by side with the
-  // main text view, but in a secondary style. Can be nullptr.
-  virtual std::unique_ptr<views::Label> CreateMinorTextView();
-  // The description view can be nullptr.
-  virtual std::unique_ptr<views::View> CreateDescriptionView();
-
-  // Returns the font weight to be applied to primary info.
-  virtual gfx::Font::Weight GetPrimaryTextWeight() const = 0;
-
-  void AddSpacerWithSize(int spacer_width,
-                         bool resize,
-                         views::BoxLayout* layout);
-
-  // Returns the string to be set as the name of the ui::AXNodeData.
-  std::u16string GetVoiceOverString();
+  PopupCellView& GetContentView() { return *content_view_; }
 
  private:
-  // Returns a vector of optional labels to be displayed beneath value.
-  virtual std::vector<std::unique_ptr<views::View>> CreateSubtextViews();
-
-  // Returns the minimum cross axis size depending on the length of
-  // GetSubtexts();
-  void UpdateLayoutSize(views::BoxLayout* layout_manager, int64_t num_subtexts);
+  PopupViewViews& GetPopupView() { return popup_view_.get(); }
 
   // The parent view containing this row.
   const raw_ref<PopupViewViews> popup_view_;
-  const int line_number_;
-  const int frontend_id_;
+  const std::unique_ptr<PopupRowStrategy> strategy_;
 
   // Whether this row is currently selected.
   bool selected_ = false;
@@ -102,84 +62,6 @@ class PopupRowView : public views::View {
   // The cell wrapping the content area of the row.
   raw_ptr<PopupCellView> content_view_ = nullptr;
   // TODO(crbug.com/1411172): Add a control view.
-};
-
-// This represents a suggestion, i.e., a row containing data that will be filled
-// into the page if selected.
-class PopupSuggestionView : public PopupRowView {
- public:
-  METADATA_HEADER(PopupSuggestionView);
-  PopupSuggestionView(const PopupSuggestionView&) = delete;
-  PopupSuggestionView& operator=(const PopupSuggestionView&) = delete;
-  ~PopupSuggestionView() override = default;
-
-  static std::unique_ptr<PopupSuggestionView> Create(PopupViewViews& popup_view,
-                                                     int line_number,
-                                                     int frontend_id,
-                                                     PopupType popup_type);
-
- protected:
-  // PopupItemView:
-  int GetPrimaryTextStyle() override;
-  gfx::Font::Weight GetPrimaryTextWeight() const override;
-  std::unique_ptr<views::Label> CreateMainTextView() override;
-  std::vector<std::unique_ptr<views::View>> CreateSubtextViews() override;
-  PopupSuggestionView(PopupViewViews& popup_view,
-                      int line_number,
-                      int frontend_id,
-                      PopupType popup_type);
-
- private:
-  // The popup type to which this suggestion belongs.
-  PopupType popup_type_;
-};
-
-// This represents a password suggestion row, i.e., a username and password.
-class PopupPasswordSuggestionView : public PopupSuggestionView {
- public:
-  METADATA_HEADER(PopupPasswordSuggestionView);
-  PopupPasswordSuggestionView(const PopupPasswordSuggestionView&) = delete;
-  PopupPasswordSuggestionView& operator=(const PopupPasswordSuggestionView&) =
-      delete;
-  ~PopupPasswordSuggestionView() override = default;
-
-  static std::unique_ptr<PopupPasswordSuggestionView>
-  Create(PopupViewViews& popup_view, int line_number, int frontend_id);
-
- protected:
-  // PopupItemView:
-  std::unique_ptr<views::Label> CreateMainTextView() override;
-  std::vector<std::unique_ptr<views::View>> CreateSubtextViews() override;
-  std::unique_ptr<views::View> CreateDescriptionView() override;
-  gfx::Font::Weight GetPrimaryTextWeight() const override;
-
- private:
-  PopupPasswordSuggestionView(PopupViewViews& popup_view,
-                              int line_number,
-                              int frontend_id);
-  std::u16string origin_;
-  std::u16string masked_password_;
-};
-
-// This represents an option which appears in the footer of the dropdown, such
-// as a row which will open the Autofill settings page when selected.
-class PopupFooterView : public PopupRowView {
- public:
-  METADATA_HEADER(PopupFooterView);
-  ~PopupFooterView() override = default;
-
-  static std::unique_ptr<PopupFooterView> Create(PopupViewViews& popup_view,
-                                                 int line_number,
-                                                 int frontend_id);
-
- protected:
-  // PopupItemView:
-  void CreateContent() override;
-  int GetPrimaryTextStyle() override;
-  gfx::Font::Weight GetPrimaryTextWeight() const override;
-
- private:
-  PopupFooterView(PopupViewViews& popup_view, int line_number, int frontend_id);
 };
 
 }  // namespace autofill

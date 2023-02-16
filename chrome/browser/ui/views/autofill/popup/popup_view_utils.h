@@ -149,6 +149,11 @@ bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds);
 // extension popup) and stays within the bounds of the browser window.
 bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 
+// Returns whether the suggestion with this `frontend_id` belongs into the
+// footer section of the popup. Returns `false` for separators, which may belong
+// either to the main or the footer section.
+bool IsFooterFrontendId(int frontend_id);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
