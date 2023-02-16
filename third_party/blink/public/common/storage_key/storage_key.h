@@ -140,6 +140,7 @@ class BLINK_COMMON_EXPORT StorageKey {
         storage_key.top_level_site_if_third_party_enabled_;
     storage_key.ancestor_chain_bit_ =
         storage_key.ancestor_chain_bit_if_third_party_enabled_;
+    DCHECK(storage_key.IsValid());
     return storage_key;
   }
 
@@ -287,6 +288,12 @@ class BLINK_COMMON_EXPORT StorageKey {
   friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
   BLINK_COMMON_EXPORT
   friend std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk);
+
+  // (7C) Check validity of current storage key members.
+  // This should be used when constructing, side-loading, and deserializing
+  // a key to ensure correctness. This does not imply that the key is
+  // serializable as keys with opaque origins will still return true.
+  bool IsValid() const;
 
   // [Block 8 - Private Members] - Keep in sync with BlinkStorageKey.
 
