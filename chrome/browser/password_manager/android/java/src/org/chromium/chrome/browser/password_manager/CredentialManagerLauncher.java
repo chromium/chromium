@@ -70,9 +70,9 @@ public interface CredentialManagerLauncher {
     // TODO(crbug.com/1385430): Remove once the replacement method is implemented and this is no
     // longer called.
     @Deprecated
-    void getCredentialManagerIntentForAccount(@ManagePasswordsReferrer int referrer,
+    default void getCredentialManagerIntentForAccount(@ManagePasswordsReferrer int referrer,
             String accountName, Callback<PendingIntent> successCallback,
-            Callback<Integer> failureCallback);
+            Callback<Integer> failureCallback) {}
 
     /**
      * Retrieves a pending intent that can be used to launch the credential manager. The intent
@@ -86,8 +86,8 @@ public interface CredentialManagerLauncher {
     // TODO(crbug.com/1385430): Remove once the replacement method is implemented and this is no
     // longer called.
     @Deprecated
-    void getCredentialManagerIntentForLocal(@ManagePasswordsReferrer int referrer,
-            Callback<PendingIntent> successCallback, Callback<Integer> failureCallback);
+    default void getCredentialManagerIntentForLocal(@ManagePasswordsReferrer int referrer,
+            Callback<PendingIntent> successCallback, Callback<Integer> failureCallback) {}
 
     /**
      * Retrieves a pending intent that can be used to launch the credential manager. The intent
@@ -98,9 +98,9 @@ public interface CredentialManagerLauncher {
      * @param successCallback callback called with the intent if the retrieving was successful.
      * @param failureCallback callback called if the retrieving failed with the encountered error.
      */
-    default void getAccountCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
+    void getAccountCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
             String accountName, Callback<PendingIntent> successCallback,
-            Callback<Exception> failureCallback) {}
+            Callback<Exception> failureCallback);
 
     /**
      * Retrieves a pending intent that can be used to launch the credential manager. The intent
@@ -110,6 +110,6 @@ public interface CredentialManagerLauncher {
      * @param successCallback callback called with the intent if the retrieving was successful.
      * @param failureCallback callback called if the retrieving failed with the encountered error.
      */
-    default void getLocalCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
-            Callback<PendingIntent> successCallback, Callback<Exception> failureCallback) {}
+    void getLocalCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
+            Callback<PendingIntent> successCallback, Callback<Exception> failureCallback);
 }
