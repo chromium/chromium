@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -17,7 +17,6 @@ try_.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     compilator_cores = 32,
-    compilator_goma_jobs = goma.jobs.J300,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 4,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
@@ -88,7 +87,6 @@ try_.builder(
         "ci/Android x64 Builder (dbg)",
         "ci/android-12l-x64-dbg-tests",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -152,7 +150,6 @@ try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     check_for_flakiness = True,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 
@@ -312,7 +309,6 @@ try_.builder(
     name = "android-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    goma_backend = goma.backend.RBE_PROD,
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
 )
@@ -321,7 +317,6 @@ try_.builder(
     name = "android-deterministic-rel",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    goma_backend = goma.backend.RBE_PROD,
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
 )
@@ -329,13 +324,11 @@ try_.builder(
 try_.builder(
     name = "android-fieldtrial-rel",
     mirrors = ["ci/android-fieldtrial-rel"],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.orchestrator_builder(
@@ -389,7 +382,6 @@ try_.compilator_builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     cores = 64 if settings.is_main else 32,
     check_for_flakiness = True,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 
@@ -408,7 +400,6 @@ try_.builder(
     mirrors = [
         "ci/android-perfetto-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -456,13 +447,11 @@ try_.builder(
 try_.builder(
     name = "android-pie-arm64-wpt-rel-non-cq",
     mirrors = ["ci/android-pie-arm64-wpt-rel-non-cq"],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
     name = "android-chrome-pie-x86-wpt-fyi-rel",
     mirrors = ["ci/android-chrome-pie-x86-wpt-fyi-rel"],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -521,7 +510,6 @@ try_.builder(
     mirrors = [
         "ci/android-archive-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -573,7 +561,6 @@ try_.builder(
         "ci/Cast Android (dbg)",
     ],
     builderless = not settings.is_main,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -673,7 +660,6 @@ try_.builder(
         "ci/Android arm64 Builder (dbg)",
         "ci/Android WebView N (dbg)",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -708,7 +694,6 @@ try_.gpu.optional_tests_builder(
         retry_failed_shards = False,
     ),
     check_for_flakiness = True,
-    goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

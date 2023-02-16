@@ -992,15 +992,15 @@
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome_reclient',
       'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
       'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
-      'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
+      'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
       'android-13-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
       'android-arm64-all-targets-dbg': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
       'android-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
-      'android-arm64-rel-inverse-fyi': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage',
+      'android-arm64-rel-inverse-fyi': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
       'android-asan': 'android_clang_asan_release_trybot_reclient',
       'android-bfcache-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-binary-size': 'android_binary_size_reclient',
-      'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
+      'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage_reclient',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage_reclient',
       # TODO(crbug/597596): Switch this back to debug_trybot when cronet's
@@ -1018,19 +1018,19 @@
       'android-cronet-x86-dbg-pie-tests': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-cronet-x86-rel-kitkat-tests': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
-      'android-deterministic-dbg': 'android_debug_bot',
-      'android-deterministic-rel': 'android_without_codecs_release_trybot',
-      'android-fieldtrial-rel': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials',
+      'android-deterministic-dbg': 'android_debug_bot_reclient',
+      'android-deterministic-rel': 'android_without_codecs_release_trybot_reclient',
+      'android-fieldtrial-rel': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google_reclient',
+      'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials_reclient',
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
-      'android-nougat-x86-rel-inverse-fyi': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage',
+      'android-nougat-x86-rel-inverse-fyi': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64_reclient',
-      'android-perfetto-rel': 'perfetto_release_trybot_android',
+      'android-perfetto-rel': 'perfetto_release_trybot_reclient_android',
       'android-pie-arm64-dbg': 'android_debug_trybot_arm64_reclient',
       # TODO(crbug.com/1367393): Remove after android-arm64-rel is fully enabled.
-      'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome',
+      'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome_reclient',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
-      'android-weblayer-marshmallow-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
+      'android-weblayer-marshmallow-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google_reclient',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-webview-10-x86-rel-tests': 'android_release_trybot_x86_fastbuild_webview_trichrome_reclient',
       'android-webview-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
@@ -1039,8 +1039,8 @@
       'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome_reclient',
       'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome_reclient',
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-x64-cast': 'android_cast_debug_static_bot_compile_only',
-      'android_archive_rel_ng': 'android_release_trybot',
+      'android-x64-cast': 'android_cast_debug_static_bot_compile_only_reclient',
+      'android_archive_rel_ng': 'android_release_trybot_reclient',
       'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
       'android_blink_rel': 'android_release_trybot_x64_reclient',
       'android_compile_dbg': 'android_debug_trybot_compile_only_arm64_reclient',
@@ -1050,7 +1050,7 @@
       'android_cronet': 'android_cronet_release_trybot_arm_no_neon_reclient',
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64_reclient',
       'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot_reclient',
-      'android_unswarmed_pixel_aosp': 'android_debug_trybot_arm64',
+      'android_unswarmed_pixel_aosp': 'android_debug_trybot_arm64_reclient',
       'gpu-fyi-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64_reclient',
       'gpu-fyi-try-android-nvidia-shield-tv': 'gpu_tests_android_release_trybot_reclient',
       'gpu-fyi-try-android-p-pixel-2-32': 'gpu_tests_android_release_trybot_reclient',
@@ -1441,8 +1441,8 @@
       'official_optimize', 'stable_channel', 'v8_release_branch',
     ],
 
-    'android_cast_debug_static_bot_compile_only': [
-      'android', 'cast_android', 'cast_receiver', 'clang', 'debug_static_bot', 'compile_only',
+    'android_cast_debug_static_bot_compile_only_reclient': [
+      'android', 'cast_android', 'cast_receiver', 'clang', 'debug_static_bot_reclient', 'compile_only',
     ],
 
     'android_cast_debug_static_bot_reclient': [
@@ -1579,10 +1579,6 @@
       'android', 'debug_static_bot_reclient', 'x86', 'webview_shell',
     ],
 
-    'android_debug_trybot_arm64': [
-      'android', 'debug_bot', 'arm64',
-    ],
-
     'android_debug_trybot_arm64_reclient': [
       'android', 'debug_bot_reclient', 'arm64',
     ],
@@ -1605,10 +1601,6 @@
 
     'android_debug_trybot_java_coverage': [
       'android', 'debug_bot', 'use_java_coverage', 'strip_debug_info',
-    ],
-
-    'android_debug_trybot_x64_webview_trichrome_webview_shell': [
-      'android', 'debug_bot', 'x64', 'webview_trichrome', 'webview_shell',
     ],
 
     'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient': [
@@ -1687,24 +1679,9 @@
       'webview_shell',
     ],
 
-    'android_release_trybot': [
-      'android', 'release_trybot', 'strip_debug_info',
-    ],
-
     'android_release_trybot_arm64_fastbuild_webview_trichrome_reclient': [
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_trichrome',
-    ],
-
-    'android_release_trybot_arm64_webview_monochrome': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'webview_monochrome',
-    ],
-
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient': [
@@ -1730,8 +1707,8 @@
       'webview_monochrome',
     ],
 
-    'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google': [
-      'android', 'release_trybot', 'minimal_symbols',
+    'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google_reclient': [
+      'android', 'release_trybot_reclient', 'minimal_symbols',
       'android_fastbuild', 'x86', 'strip_debug_info', 'disable_proguard',
       'chrome_google'
     ],
@@ -1754,20 +1731,14 @@
       'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
     ],
 
-    'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials': [
-      'android', 'release_trybot', 'strip_debug_info', 'x86',
+    'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
       'android_fastbuild', 'webview_google', 'invert_fieldtrials'
     ],
 
     'android_release_trybot_x86_fastbuild_webview_monochrome': [
       'android', 'release_trybot', 'strip_debug_info', 'x86',
       'android_fastbuild', 'webview_monochrome', 'webview_shell',
-    ],
-
-    'android_release_trybot_x86_fastbuild_webview_monochrome_coverage': [
-      'android', 'release_trybot', 'strip_debug_info', 'x86',
-      'android_fastbuild', 'use_java_coverage', 'partial_code_coverage_instrumentation',
-      'webview_monochrome', 'webview_shell',
     ],
 
     'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient': [
@@ -1814,8 +1785,8 @@
       'android_without_codecs', 'release_bot_reclient', 'minimal_symbols', 'strip_debug_info', 'arm64'
     ],
 
-    'android_without_codecs_release_trybot': [
-      'android_without_codecs', 'release_trybot', 'strip_debug_info',
+    'android_without_codecs_release_trybot_reclient': [
+      'android_without_codecs', 'release_trybot_reclient', 'strip_debug_info',
     ],
 
     'angle_deqp_release_bot_dcheck_always_on_fuchsia_reclient': [
@@ -3439,12 +3410,12 @@
       'perfetto', 'release_trybot',
     ],
 
-    'perfetto_release_trybot_android': [
-      'perfetto', 'release_trybot', 'android', 'x64'
-    ],
-
     'perfetto_release_trybot_reclient': [
       'perfetto', 'release_trybot_reclient',
+    ],
+
+    'perfetto_release_trybot_reclient_android': [
+      'perfetto', 'release_trybot_reclient', 'android', 'x64'
     ],
 
     'presubmit': [
