@@ -12,6 +12,7 @@
 #import "base/i18n/rtl.h"
 #import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/numerics/safe_conversions.h"
@@ -83,6 +84,12 @@
 using base::UserMetricsAction;
 
 namespace {
+
+// Keys of the UMA IOS.TabStrip histograms.
+const char kUMATabStripDragInteractionHistogram[] =
+    "IOS.TabStrip.DragInteraction";
+const char kUMATabStripTapInteractionHistogram[] =
+    "IOS.TabStrip.TapInteraction";
 
 // Animation duration for tab animations.
 const NSTimeInterval kTabAnimationDuration = 0.25;
@@ -1049,6 +1056,8 @@ const CGFloat kSymbolSize = 18;
   int toIndex = _placeholderGapWebStateListIndex;
   DCHECK_NE(WebStateList::kInvalidIndex, toIndex);
   DCHECK_LT(toIndex, _webStateList->count());
+  base::UmaHistogramBoolean(kUMATabStripDragInteractionHistogram,
+                            fromIndex != toIndex);
 
   // Reset drag state variables before notifying the model that the tab moved.
   [self resetDragState];
@@ -1932,6 +1941,9 @@ const CGFloat kSymbolSize = 18;
   DCHECK_NE(WebStateList::kInvalidIndex, index);
   if (index == WebStateList::kInvalidIndex)
     return;
+
+  base::UmaHistogramBoolean(kUMATabStripTapInteractionHistogram,
+                            index != _webStateList->active_index());
 
   if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
       (_webStateList->active_index() != static_cast<int>(index))) {
