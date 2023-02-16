@@ -44,6 +44,7 @@ MojoDataPipeReader::~MojoDataPipeReader() {
 void MojoDataPipeReader::CompleteCurrentRead() {
   DVLOG(4) << __func__;
   DCHECK(done_cb_);
+  current_buffer_ = nullptr;
   current_buffer_size_ = 0;
   std::move(done_cb_).Run(true);
 }
