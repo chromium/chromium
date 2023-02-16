@@ -22,6 +22,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/buildflags.h"
 #include "components/viz/test/paths.h"
@@ -178,7 +179,7 @@ class OopPixelTest : public testing::Test,
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     gpu::Mailbox mailbox = sii->CreateSharedImage(
-        viz::ResourceFormat::RGBA_8888, gfx::Size(width, height),
+        viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
         options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
     EXPECT_TRUE(mailbox.Verify());
@@ -252,7 +253,7 @@ class OopPixelTest : public testing::Test,
       gpu::raster::RasterInterface* ri,
       gpu::SharedImageInterface* sii,
       const RasterOptions& options,
-      viz::ResourceFormat image_format,
+      viz::SharedImageFormat image_format,
       absl::optional<gfx::ColorSpace> color_space = absl::nullopt) {
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
@@ -855,7 +856,7 @@ TEST_F(OopPixelTest, DrawMailboxBackedImage) {
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
   gpu::Mailbox src_mailbox = CreateMailboxSharedImage(
-      ri, sii, options, viz::ResourceFormat::RGBA_8888);
+      ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
   ri->OrderingBarrierCHROMIUM();
 
   UploadPixels(ri, src_mailbox, expected_bitmap.info(), expected_bitmap);
@@ -2146,7 +2147,7 @@ TEST_F(OopPixelTest, WritePixels) {
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
   gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
-      ri, sii, options, viz::ResourceFormat::RGBA_8888);
+      ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
   std::vector<SkPMColor> expected_pixels(dest_size.width() * dest_size.height(),
                                          SkPreMultiplyARGB(255, 0, 0, 255));
   SkBitmap expected;
@@ -2187,8 +2188,8 @@ TEST_F(OopPixelTest, CopySharedImage) {
   {
     RasterOptions options(size);
     options.target_color_params.color_space = source_color_space;
-    source_mailbox = CreateMailboxSharedImage(ri, sii, options,
-                                              viz::ResourceFormat::RGBA_8888);
+    source_mailbox = CreateMailboxSharedImage(
+        ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
     ri->WritePixels(source_mailbox, 0, 0, GL_TEXTURE_2D,
@@ -2202,7 +2203,7 @@ TEST_F(OopPixelTest, CopySharedImage) {
     RasterOptions options(size);
     options.target_color_params.color_space = dest_color_space;
     dest_mailbox = CreateMailboxSharedImage(ri, sii, options,
-                                            viz::ResourceFormat::RGBA_8888);
+                                            viz::SinglePlaneFormat::kRGBA_8888);
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
     ri->CopySharedImage(source_mailbox, dest_mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
@@ -2261,9 +2262,9 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   auto* sii = raster_context_provider_->SharedImageInterface();
 
   gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
-      ri, sii, options, viz::ResourceFormat::RGBA_8888, dest_color_space);
+      ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888, dest_color_space);
 
-  constexpr viz::ResourceFormat format = viz::ResourceFormat::RED_8;
+  constexpr viz::SharedImageFormat format = viz::SinglePlaneFormat::kR_8;
   gpu::Mailbox yuv_mailboxes[3]{
       CreateMailboxSharedImage(ri, sii, options, format),
       CreateMailboxSharedImage(ri, sii, uv_options, format),
@@ -2345,10 +2346,11 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   auto* sii = raster_context_provider_->SharedImageInterface();
 
   gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
-      ri, sii, options, viz::ResourceFormat::RGBA_8888);
+      ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
   gpu::Mailbox y_uv_mailboxes[2]{
-      CreateMailboxSharedImage(ri, sii, options, viz::ResourceFormat::RED_8),
-      CreateMailboxSharedImage(ri, sii, uv_options, viz::ResourceFormat::RG_88),
+      CreateMailboxSharedImage(ri, sii, options, viz::SinglePlaneFormat::kR_8),
+      CreateMailboxSharedImage(ri, sii, uv_options,
+                               viz::SinglePlaneFormat::kRG_88),
   };
 
   SkImageInfo y_info = SkImageInfo::Make(

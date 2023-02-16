@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/sync_token.h"
 
 namespace gpu {
@@ -126,7 +127,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
     // These fields are for use on the worker thread.
     const gfx::Size resource_size_;
-    const viz::ResourceFormat resource_format_;
+    const viz::SharedImageFormat shared_image_format_;
     const gfx::ColorSpace color_space_;
     const bool resource_has_previous_content_;
     const bool depends_on_at_raster_decodes_;

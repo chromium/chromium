@@ -88,7 +88,8 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     : client_(client),
       backing_(backing),
       resource_size_(in_use_resource.size()),
-      resource_format_(in_use_resource.format()),
+      shared_image_format_(
+          viz::SharedImageFormat::SinglePlane(in_use_resource.format())),
       color_space_(in_use_resource.color_space()),
       resource_has_previous_content_(resource_has_previous_content),
       depends_on_at_raster_decodes_(depends_on_at_raster_decodes),
@@ -363,10 +364,10 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
-    backing_->mailbox =
-        sii->CreateSharedImage(resource_format_, resource_size_, color_space_,
-                               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                               flags, gpu::kNullSurfaceHandle);
+    backing_->mailbox = sii->CreateSharedImage(
+        shared_image_format_, resource_size_, color_space_,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
+        gpu::kNullSurfaceHandle);
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
   } else {

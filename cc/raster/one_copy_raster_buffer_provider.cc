@@ -26,6 +26,7 @@
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -405,8 +406,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     if (mailbox_texture_is_overlay_candidate)
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     *mailbox = sii->CreateSharedImage(
-        resource_format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
+        viz::SharedImageFormat::SinglePlane(resource_format), resource_size,
+        color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+        gpu::kNullSurfaceHandle);
     // Clear the resource if we're not going to initialize it fully from the
     // copy due to non-exact resource reuse.  See https://crbug.com/1313091
     needs_clear = rect_to_copy.size() != resource_size;
