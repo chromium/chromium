@@ -15,7 +15,14 @@
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "url/gurl.h"
 
+namespace net::test_server {
+struct HttpRequest;
+class HttpResponse;
+}  // namespace net::test_server
+
 namespace network {
+
+class AttributionRequestHelper;
 
 class FakeCryptographer : public AttributionAttestationMediator::Cryptographer {
  public:
@@ -79,7 +86,25 @@ class FakeCryptographer : public AttributionAttestationMediator::Cryptographer {
   bool should_fail_confirm_issuance_ = false;
 };
 
+static constexpr char kTestBlindToken[] = "blind-token";
+static constexpr char kAttestationHandlerPathPrefix[] = "/test-attestation";
+static constexpr char kRedirectAttestationRequestPath[] =
+    "/test-attestation/server-redirect";
+
+// Returns `nullptr` when the request relative url does not start with
+// `kAttestationHandlerPathPrefix`. When it does, it expects that the request
+// has a `Sec-Attribution-Reporting-Private-State-Token` header and a
+// 'Sec-Trust-Token-Version header set. It then returns a response containing an
+// attestation header with a value set to `kTestBlindToken`. If the request
+// relative url equals `kRedirectAttestationRequestPath`, it returns an
+// `HTTP_FOUND` otherwise, it returns an `HTTP_OK`.
+std::unique_ptr<net::test_server::HttpResponse> HandleAttestationRequest(
+    const net::test_server::HttpRequest& request);
+
 AttributionAttestationMediator CreateTestAttestationMediator(
+    TrustTokenKeyCommitments*);
+
+std::unique_ptr<AttributionRequestHelper> CreateTestAttributionRequestHelper(
     TrustTokenKeyCommitments*);
 
 std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(

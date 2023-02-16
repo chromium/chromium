@@ -11,6 +11,7 @@
 #include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
@@ -20,6 +21,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/attribution/attribution_attestation_mediator.h"
 #include "services/network/attribution/attribution_test_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
@@ -355,13 +357,12 @@ TEST_F(AttributionRequestHelperTest, Finalize_NotBegun) {
                   /*expect_trigger_attestation=*/false);
 }
 
-struct CreateIfNeededTestCase {
-  std::string header_name;
-  std::string header_value;
-  bool expect_instance_to_be_created;
-};
 TEST_F(AttributionRequestHelperTest, CreateIfNeeded) {
-  CreateIfNeededTestCase test_cases[] = {
+  const struct {
+    std::string header_name;
+    std::string header_value;
+    bool expect_instance_to_be_created;
+  } test_cases[] = {
       {"Some-Random-Header", "dont-care", false},
       {"Attribution-Reporting-Eligible", "source", false},
       {"Attribution-Reporting-Eligible", "source,trigger", true},
@@ -372,15 +373,26 @@ TEST_F(AttributionRequestHelperTest, CreateIfNeeded) {
       "dont-care", mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb,
       example_valid_request_url_);
 
-  for (CreateIfNeededTestCase test_case : test_cases) {
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::JoinString(
+        {test_case.header_name, test_case.header_value}, ": "));
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        network::features::kAttributionReportingTriggerAttestation);
     net::HttpRequestHeaders request_headers;
     request_headers.SetHeader(test_case.header_name, test_case.header_value);
 
-    auto instance = AttributionRequestHelper::CreateForTesting(
-        request_headers, /*create_mediator=*/base::BindRepeating(
-            &CreateTestAttestationMediator, key_commitment.get()));
+    auto instance = AttributionRequestHelper::CreateIfNeeded(
+        request_headers, key_commitment.get());
     bool instance_created = !!instance;
     EXPECT_EQ(instance_created, test_case.expect_instance_to_be_created);
+
+    feature_list.Reset();
+    feature_list.InitAndDisableFeature(
+        network::features::kAttributionReportingTriggerAttestation);
+    EXPECT_EQ(AttributionRequestHelper::CreateIfNeeded(request_headers,
+                                                       key_commitment.get()),
+              nullptr);
   }
 }
 

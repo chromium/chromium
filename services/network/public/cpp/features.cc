@@ -136,6 +136,14 @@ BASE_FEATURE(kOpaqueResponseBlockingV02,
              "OpaqueResponseBlockingV02",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables preprocessing the Attribution API's trigger registration ping
+// requests, potentially adding attestation headers, and handling their
+// responses. (See
+// https://github.com/WICG/attribution-reporting-api/blob/main/trigger_attestation.md)
+BASE_FEATURE(kAttributionReportingTriggerAttestation,
+             "AttributionReportingTriggerAttestation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables preprocessing requests with the Private State Tokens API Fetch flags
 // set, and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)

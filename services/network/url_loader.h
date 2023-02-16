@@ -30,6 +30,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
+#include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
 #include "services/network/network_service_memory_cache.h"
@@ -49,6 +50,7 @@
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/resource_scheduler/resource_scheduler.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/trust_tokens/pending_trust_token_store.h"
@@ -166,7 +168,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           accept_ch_frame_observer,
       bool third_party_cookies_enabled,
       net::CookieSettingOverrides cookie_setting_overrides,
-      const CacheTransparencySettings* cache_transparency_settings);
+      const CacheTransparencySettings* cache_transparency_settings,
+      std::unique_ptr<AttributionRequestHelper> attribution_request_helper);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -317,6 +320,49 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
                    int error_code,
                    const std::vector<base::File> opened_files);
 
+  // A request where `attribution_request_helper_` is defined will (assuming
+  // preconditions pass and operations are successful) have one
+  // `AttributionRequestHelper::Begin` executed against the request, one
+  // `AttributionRequestHelper::OnReceiveRedirect` per redirection received and
+  // one `AttributionRequestHelper::Finalize` executed against its response.
+  //
+  // Outbound control flow:
+  //
+  // Start in `BeginAttributionIfNecessaryAndThenScheduleStart`
+  // - If `attribution_request_helper_` is not defined, immediately
+  //   calls`ScheduleStart`.
+  // - Otherwise:
+  //   - Execute `AttributionRequestHelper::Begin`
+  //   - On Begin's callback, calls `ScheduleStart`
+  //
+  // Redirection control flow:
+  //
+  // Start in `RedirectAttributionIfNecessaryAndThenContinueOnReceiveRedirect`
+  //  - If `attribution_request_helper_` is not defined, immediately
+  //    calls`ContinueOnReceiveRedirect`.
+  // - Otherwise:
+  //   - Execute `AttributionRequestHelper::OnReceiveRedirect`
+  //   - On OnReceiveRedirect's callback, calls `ContinueOnReceiveRedirect`
+  //
+  // Inbound control flow:
+  //
+  // Start in `FinalizeAttributionIfNecessaryAndThenContinueOnResponseStarted`
+  //  - If `attribution_request_helper_` is not defined, immediately
+  //    calls`ContinueOnResponseStarted`.
+  // - Otherwise:
+  //   - Execute `AttributionRequestHelper::Finalize`
+  //   - On Finalize's callback, calls `ContinueOnResponseStarted`
+  void BeginAttributionIfNecessaryAndThenScheduleStart();
+  void RedirectAttributionIfNecessaryAndThenContinueOnReceiveRedirect(
+      const ::net::RedirectInfo& redirect_info,
+      mojom::URLResponseHeadPtr response);
+  void FinalizeAttributionIfNecessaryAndThenContinueOnResponseStarted();
+
+  // Continuation of `OnReceivedRedirect` after possibly asynchronously
+  // concluding the request's Attribution operation.
+  void ContinueOnReceiveRedirect(const ::net::RedirectInfo& redirect_info,
+                                 mojom::URLResponseHeadPtr response);
+
   // A request with Trust Tokens parameters will (assuming preconditions pass
   // and operations are successful) have one TrustTokenRequestHelper::Begin
   // executed against the request and one TrustTokenRequestHelper::Finalize
@@ -354,7 +400,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void OnDoneFinalizingTrustTokenOperation(
       mojom::TrustTokenOperationStatus status);
   // Continuation of |OnResponseStarted| after possibly asynchronously
-  // concluding the request's Trust Tokens operation.
+  // concluding the request's Trust Tokens & Attribution operations.
   void ContinueOnResponseStarted();
   void MaybeSendTrustTokenOperationResultToDevTools();
 
@@ -586,6 +632,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // codes, like kFailedPrecondition (outbound) and kBadResponse (inbound) are
   // specific to one direction.
   absl::optional<mojom::TrustTokenOperationStatus> trust_token_status_;
+
+  // Request helper responsible for orchestrating Attribution operations
+  // (https://github.com/WICG/attribution-reporting-api). Only set if the
+  // request is related to attribution.
+  std::unique_ptr<AttributionRequestHelper> attribution_request_helper_;
 
   // Outlives `this`.
   const raw_ref<const cors::OriginAccessList> origin_access_list_;

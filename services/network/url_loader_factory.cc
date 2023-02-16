@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/cors/cors_url_loader_factory.h"
@@ -337,6 +338,13 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
            ->cookie_settings()
            .are_third_party_cookies_blocked();
 
+  std::unique_ptr<AttributionRequestHelper> attribution_request_helper;
+  if (context_->network_service()) {
+    attribution_request_helper = AttributionRequestHelper::CreateIfNeeded(
+        resource_request.headers,
+        context_->network_service()->trust_token_key_commitments());
+  }
+
   auto loader = std::make_unique<URLLoader>(
       *this,
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
@@ -350,7 +358,8 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(url_loader_network_observer), std::move(devtools_observer),
       std::move(accept_ch_frame_observer), third_party_cookies_enabled,
       params_->cookie_setting_overrides,
-      context_->cache_transparency_settings());
+      context_->cache_transparency_settings(),
+      std::move(attribution_request_helper));
 
   if (context_->GetMemoryCache())
     loader->SetMemoryCache(context_->GetMemoryCache()->GetWeakPtr());

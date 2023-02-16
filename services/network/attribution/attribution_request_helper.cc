@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/guid.h"
@@ -19,6 +20,7 @@
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/attribution_attestation_mediator.h"
 #include "services/network/attribution/boringssl_attestation_cryptographer.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
@@ -76,12 +78,18 @@ std::unique_ptr<AttributionRequestHelper>
 AttributionRequestHelper::CreateIfNeeded(
     const net::HttpRequestHeaders& request_headers,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter) {
-  if (!IsNeededForRequest(request_headers)) {
+  DCHECK(key_commitment_getter);
+
+  if (!base::FeatureList::IsEnabled(
+          network::features::kAttributionReportingTriggerAttestation) ||
+      !IsNeededForRequest(request_headers)) {
     return nullptr;
   }
 
   auto create_mediator = base::BindRepeating(
       [](const TrustTokenKeyCommitmentGetter* t) {
+        // The key_commitment_getter instance  (`t`) is a singleton owned by
+        // NetworkService, it will always outlive this.
         return AttributionAttestationMediator(
             t, std::make_unique<BoringsslAttestationCryptographer>());
       },

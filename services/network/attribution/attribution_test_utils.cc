@@ -7,11 +7,18 @@
 #include <memory>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_request_helper.h"
+#include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -71,6 +78,50 @@ bool FakeCryptographer::IsToken(const std::string& potential_token,
   return potential_token == base::StrCat({kUnblindKey, blind_token});
 }
 
+std::unique_ptr<net::test_server::HttpResponse> HandleAttestationRequest(
+    const net::test_server::HttpRequest& request) {
+  if (!base::StartsWith(request.relative_url, kAttestationHandlerPathPrefix)) {
+    return nullptr;
+  }
+
+  auto attestation_header = base::ranges::find_if(request.headers, [](auto& s) {
+    return s.first == AttributionAttestationMediator::kTriggerAttestationHeader;
+  });
+  bool attestation_header_set = attestation_header != std::end(request.headers);
+  EXPECT_TRUE(attestation_header_set);
+  if (!attestation_header_set) {
+    return nullptr;
+  }
+
+  auto trust_token_version =
+      base::ranges::find_if(request.headers, [](auto& s) {
+        return s.first == kTrustTokensSecTrustTokenVersionHeader;
+      });
+  bool trust_token_version_set =
+      trust_token_version != std::end(request.headers);
+  EXPECT_TRUE(trust_token_version_set);
+  if (!trust_token_version_set) {
+    return nullptr;
+  }
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->AddCustomHeader(
+      AttributionAttestationMediator::kTriggerAttestationHeader,
+      kTestBlindToken);
+
+  if (request.relative_url == kRedirectAttestationRequestPath) {
+    http_response->set_code(net::HTTP_FOUND);
+    http_response->AddCustomHeader(
+        "Location",
+        base::JoinString({kAttestationHandlerPathPrefix, "some-different-path"},
+                         "/"));
+  } else {
+    http_response->set_code(net::HTTP_OK);
+  }
+
+  return http_response;
+}
+
 std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
     std::string key,
     mojom::TrustTokenProtocolVersion protocol_version,
@@ -90,6 +141,16 @@ std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
   key_commitment_getter->Set(std::move(map));
 
   return key_commitment_getter;
+}
+
+std::unique_ptr<AttributionRequestHelper> CreateTestAttributionRequestHelper(
+    TrustTokenKeyCommitments* trust_token_key_commitments) {
+  DCHECK(trust_token_key_commitments);
+  net::HttpRequestHeaders request_headers;
+  request_headers.SetHeader("Attribution-Reporting-Eligible", "trigger");
+  return AttributionRequestHelper::CreateForTesting(
+      request_headers, /*create_mediator=*/base::BindRepeating(
+          &CreateTestAttestationMediator, trust_token_key_commitments));
 }
 
 AttributionAttestationMediator CreateTestAttestationMediator(

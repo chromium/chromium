@@ -125,7 +125,8 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*devtools_observer=*/mojo::NullRemote(),
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
         /*third_party_cookies_enabled=*/true, net::CookieSettingOverrides(),
-        /*cache_transparency_settings=*/nullptr);
+        /*cache_transparency_settings=*/nullptr,
+        /*attribution_request_helper=*/nullptr);
   }
 
   bool MaybeCreateLoaderForResponse(
