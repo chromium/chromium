@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 
+#import <utility>
 #import <vector>
 
 #import "base/mac/foundation_util.h"
@@ -205,27 +206,6 @@
   [self.alertCoordinator start];
 }
 
-// TODO(crbug.com/1359392): Remove this when flag is cleaned up. This method is
-// called by the bottom delete button in the Password Details that is not used
-// when the password grouping is enabled.
-- (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin
-                       compromisedPassword:(BOOL)compromisedPassword {
-  NSString* message;
-  if (origin.length > 0) {
-    int stringID = compromisedPassword
-                       ? IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION
-                       : IDS_IOS_DELETE_PASSWORD_DESCRIPTION;
-    message =
-        l10n_util::GetNSStringF(stringID, base::SysNSStringToUTF16(origin));
-  }
-  [self showPasswordDeleteDialogWithTitle:nil
-                                  message:message
-                      compromisedPassword:compromisedPassword
-                                 forIndex:0
-                               anchorView:nil  // use bottom bar delete button
-                               anchorRect:CGRect()];
-}
-
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin {
   NSString* message = l10n_util::GetNSStringF(IDS_IOS_EDIT_PASSWORD_DESCRIPTION,
                                               base::SysNSStringToUTF16(origin));
@@ -254,33 +234,63 @@
   [self.actionSheetCoordinator start];
 }
 
+// TODO(crbug.com/1359392): By convention, passing nil for `anchorView` means
+// to use the delete button in the bottom bar as the anchor. This is a temporary
+// hack and will be removed when `kPasswordsGrouping` is enabled by default.
 - (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
-                                         anchorView:(UIView*)anchorView
-                                         anchorRect:(CGRect)anchorRect {
-  // `self.mediator.credentials` returns a different copy on each call, so cache
-  // in a single local variable for use below.
-  std::vector<password_manager::CredentialUIEntry> credentials =
-      self.mediator.credentials;
-  auto it = base::ranges::find_if(
-      credentials,
-      [password](const password_manager::CredentialUIEntry& credential) {
-        return credential.GetFirstSignonRealm() ==
-                   base::SysNSStringToUTF8(password.signonRealm) &&
-               credential.username ==
-                   base::SysNSStringToUTF16(password.username) &&
-               credential.password ==
-                   base::SysNSStringToUTF16(password.password);
-      });
-  if (it != credentials.end()) {
-    int index = std::distance(credentials.begin(), it);
-    DCHECK((unsigned long)index < credentials.size());
-
-    [self showPasswordDeleteDialogWithOrigins:password.origins
-                          compromisedPassword:password.isCompromised
-                                     forIndex:index
-                                   anchorView:anchorView
-                                   anchorRect:anchorRect];
+                                         anchorView:(UIView*)anchorView {
+  NSString* title;
+  NSString* message;
+  // Blocked websites have empty `password` and no title or message.
+  if ([password.password length]) {
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordsGrouping)) {
+      std::tie(title, message) =
+          GetPasswordAlertTitleAndMessageForOrigins(password.origins);
+    } else {
+      message = l10n_util::GetNSStringF(
+          password.isCompromised
+              ? IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION
+              : IDS_IOS_DELETE_PASSWORD_DESCRIPTION,
+          base::SysNSStringToUTF16(password.origins[0]));
+    }
   }
+  NSString* buttonText =
+      l10n_util::GetNSString(base::FeatureList::IsEnabled(
+                                 password_manager::features::kPasswordsGrouping)
+                                 ? IDS_IOS_DELETE_ACTION_TITLE
+                                 : IDS_IOS_CONFIRM_PASSWORD_DELETION);
+
+  self.actionSheetCoordinator =
+      anchorView
+          ? [[ActionSheetCoordinator alloc]
+                initWithBaseViewController:self.viewController
+                                   browser:self.browser
+                                     title:title
+                                   message:message
+                                      rect:anchorView.frame
+                                      view:anchorView]
+          : [[ActionSheetCoordinator alloc]
+                initWithBaseViewController:self.viewController
+                                   browser:self.browser
+                                     title:title
+                                   message:message
+                             barButtonItem:self.viewController.deleteButton];
+  __weak __typeof(self) weakSelf = self;
+  [self.actionSheetCoordinator
+      addItemWithTitle:buttonText
+                action:^{
+                  [weakSelf
+                      passwordDeletionConfirmedForCompromised:password
+                                                                  .isCompromised
+                                                     password:password];
+                }
+                 style:UIAlertActionStyleDestructive];
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_DELETION)
+                action:nil
+                 style:UIAlertActionStyleCancel];
+  [self.actionSheetCoordinator start];
 }
 
 - (void)showPasswordDetailsInEditModeWithoutAuthentication {
@@ -307,90 +317,32 @@
 
 #pragma mark - Private
 
-// TODO(crbug.com/1359392): By convention, passing nil for `anchorView` means
-// to use the delete button in the bottom bar as the anchor. This is a temporary
-// hack and will be removed when `kPasswordsGrouping` is enabled by default.
-- (void)showPasswordDeleteDialogWithTitle:(NSString*)title
-                                  message:(NSString*)message
-                      compromisedPassword:(BOOL)compromisedPassword
-                                 forIndex:(int)index
-                               anchorView:(UIView*)anchorView
-                               anchorRect:(CGRect)anchorRect {
-  if (anchorView) {
-    self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser
-                             title:title
-                           message:message
-                              rect:anchorRect
-                              view:anchorView];
-  } else {
-    self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser
-                             title:title
-                           message:message
-                     barButtonItem:self.viewController.deleteButton];
-  }
-
-  password_manager::CredentialUIEntry credential =
-      self.mediator.credentials[index];
-
-  __weak __typeof(self) weakSelf = self;
-
-  NSString* deleteButtonString =
-      l10n_util::GetNSString(base::FeatureList::IsEnabled(
-                                 password_manager::features::kPasswordsGrouping)
-                                 ? IDS_IOS_DELETE_ACTION_TITLE
-                                 : IDS_IOS_CONFIRM_PASSWORD_DELETION);
-
-  [self.actionSheetCoordinator
-      addItemWithTitle:deleteButtonString
-                action:^{
-                  [weakSelf passwordDeletionConfirmedForCompromised:
-                                compromisedPassword
-                                                         credential:credential];
-                }
-                 style:UIAlertActionStyleDestructive];
-
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_DELETION)
-                action:nil
-                 style:UIAlertActionStyleCancel];
-
-  [self.actionSheetCoordinator start];
-}
-
-// Show delete dialog with an array of origins.
-- (void)showPasswordDeleteDialogWithOrigins:(NSArray<NSString*>*)origins
-                        compromisedPassword:(BOOL)compromisedPassword
-                                   forIndex:(int)index
-                                 anchorView:(UIView*)anchorView
-                                 anchorRect:(CGRect)anchorRect {
-  DCHECK(origins.count >= 1);
-
-  std::pair<NSString*, NSString*> titleAndMessage =
-      GetPasswordAlertTitleAndMessageForOrigins(origins);
-  NSString* title = titleAndMessage.first;
-  NSString* message = titleAndMessage.second;
-
-  [self showPasswordDeleteDialogWithTitle:title
-                                  message:message
-                      compromisedPassword:compromisedPassword
-                                 forIndex:index
-                               anchorView:anchorView
-                               anchorRect:anchorRect];
-}
-
 // Notifies delegate about password deletion and records metric if needed.
 - (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised
-                                     credential:
-                                         (const password_manager::
-                                              CredentialUIEntry&)credential {
-  [self.delegate
-      passwordDetailsCoordinator:self
-                deleteCredential:credential
-               shouldDismissView:(self.mediator.credentials.size() - 1 == 0)];
+                                       password:(PasswordDetails*)password {
+  // Map from PasswordDetails to CredentialUIEntry. Should support blocklists.
+  // `self.mediator.credentials` returns a different copy on each call, so cache
+  // in a single local variable for use below.
+  std::vector<password_manager::CredentialUIEntry> credentials =
+      self.mediator.credentials;
+  auto it = base::ranges::find_if(
+      credentials,
+      [password](const password_manager::CredentialUIEntry& credential) {
+        return credential.GetFirstSignonRealm() ==
+                   base::SysNSStringToUTF8(password.signonRealm) &&
+               credential.username ==
+                   base::SysNSStringToUTF16(password.username) &&
+               credential.password ==
+                   base::SysNSStringToUTF16(password.password);
+      });
+  if (it == credentials.end()) {
+    // TODO(crbug.com/1359392): Convert into DCHECK.
+    return;
+  }
+
+  [self.delegate passwordDetailsCoordinator:self
+                           deleteCredential:*it
+                          shouldDismissView:(credentials.size() - 1 == 0)];
   if (compromised) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BulkCheck.UserAction",
