@@ -2642,11 +2642,52 @@ void StoragePartitionImpl::ClearDataForOrigin(
                 base::Time::Max(), std::move(callback));
 }
 
+void StoragePartitionImpl::ClearDataForAllBuckets(
+    const blink::StorageKey& storage_key,
+    base::OnceClosure callback) {
+  DCHECK(initialized_);
+  DCHECK(callback);
+
+  // Retrieve all the buckets info and clear the data.
+  // TODO(crbug.com/1415860): This can be slow for a great number of buckets.
+  GetQuotaManagerProxy()->GetBucketsForStorageKey(
+      storage_key,
+      blink::mojom::StorageType::kTemporary,  // Storage buckets only uses
+                                              // temporary storage.
+      /*delete_expired=*/true,  // The expired buckets should be deleted since
+                                // this method clears data for all buckets.
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&StoragePartitionImpl::RetrieveBucketsForClearingDone,
+                     base::Unretained(this), storage_key, std::move(callback)));
+}
+
+void StoragePartitionImpl::RetrieveBucketsForClearingDone(
+    const blink::StorageKey& storage_key,
+    base::OnceClosure callback,
+    storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
+  DCHECK(initialized_);
+  DCHECK(callback);
+
+  if (!buckets.ok() || buckets->empty()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  std::set<std::string> buckets_to_remove = {};
+
+  for (auto& bucket : buckets.value()) {
+    buckets_to_remove.insert(bucket.name);
+  }
+
+  ClearDataForBuckets(storage_key, buckets_to_remove, std::move(callback));
+}
+
 void StoragePartitionImpl::ClearDataForBuckets(
     const blink::StorageKey& storage_key,
     const std::set<std::string>& storage_buckets,
     base::OnceClosure callback) {
   DCHECK(initialized_);
+  DCHECK(callback);
 
   const auto remove_buckets_done =
       base::BarrierCallback<blink::mojom::QuotaStatusCode>(

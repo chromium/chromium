@@ -186,6 +186,10 @@ void TestStoragePartition::ClearDataForOrigin(
     const GURL& storage_origin,
     base::OnceClosure callback) {}
 
+void TestStoragePartition::ClearDataForAllBuckets(
+    const blink::StorageKey& storage_key,
+    base::OnceClosure callback) {}
+
 void TestStoragePartition::ClearDataForBuckets(
     const blink::StorageKey& storage_key,
     const std::set<std::string>& buckets,

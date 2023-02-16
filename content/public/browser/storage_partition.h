@@ -229,6 +229,11 @@ class CONTENT_EXPORT StoragePartition {
                                   const GURL& storage_origin,
                                   base::OnceClosure callback) = 0;
 
+  // Retrieves all the buckets for a specific storage key and then clears their
+  // data.
+  virtual void ClearDataForAllBuckets(const blink::StorageKey& storage_key,
+                                      base::OnceClosure callback) = 0;
+
   // Starts a task that will clear the data of each bucket name for the
   // specified storage key.
   virtual void ClearDataForBuckets(const blink::StorageKey& storage_key,

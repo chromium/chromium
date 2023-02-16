@@ -209,6 +209,8 @@ class CONTENT_EXPORT StoragePartitionImpl
                           uint32_t quota_storage_remove_mask,
                           const GURL& storage_origin,
                           base::OnceClosure callback) override;
+  void ClearDataForAllBuckets(const blink::StorageKey& storage_key,
+                              base::OnceClosure callback) override;
   void ClearDataForBuckets(const blink::StorageKey& storage_key,
                            const std::set<std::string>& storage_buckets,
                            base::OnceClosure callback) override;
@@ -573,6 +575,11 @@ class CONTENT_EXPORT StoragePartitionImpl
       const base::Time begin,
       const base::Time end,
       base::OnceClosure callback);
+
+  void RetrieveBucketsForClearingDone(
+      const blink::StorageKey& storage_key,
+      base::OnceClosure callback,
+      storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets);
 
   void ClearDataForBucketsDone(
       const blink::StorageKey& storage_key,
