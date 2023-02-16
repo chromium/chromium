@@ -1389,7 +1389,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/jacoco',
-              'version': 'l98qLtenArHWtjxXVN4ZtZ0M_Jnr6s2-7KW3bXDTBrYC',
+              'version': 'O8mNUqIbFxvOcBsSNfbvpdUFvY4nfrPY0QA2kHoO2pQC',
           },
       ],
       'condition': 'checkout_android',
