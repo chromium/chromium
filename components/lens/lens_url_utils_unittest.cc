@@ -40,7 +40,7 @@ TEST(LensUrlUtilsTest, GetImageTranslateNewTabQueryParameterTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens_image_translate_ep, /* is_side_panel_request= */ false,
       /* is_full_screen_region_search_request= */ false);
-  EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=df&s=4&st=\\d+"));
+  EXPECT_THAT(query_param, MatchesRegex("ep=ctrcm&re=df&s=4&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, GetRegionSearchSidePanelQueryParameterTest) {
@@ -67,7 +67,7 @@ TEST(LensUrlUtilsTest, GetImageTranslateSidePanelQueryParameterTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens_image_translate_ep, /* is_side_panel_request= */ true,
       /* is_full_screen_region_search_request= */ false);
-  EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=dcsp&s=4&st=\\d+"));
+  EXPECT_THAT(query_param, MatchesRegex("ep=ctrcm&re=dcsp&s=4&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, GetOpenNewTabSidePanelParameterTest) {
@@ -135,7 +135,7 @@ TEST(LensUrlUtilsTest, AppendImageTranslateNewTabQueryParameterTest) {
   GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
       original_url, lens_image_translate_ep, re,
       /* is_side_panel_request= */ false);
-  EXPECT_THAT(url.query(), MatchesRegex("ep=ccm&re=df&s=4&st=\\d+"));
+  EXPECT_THAT(url.query(), MatchesRegex("ep=ctrcm&re=df&s=4&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, AppendRegionSearchSidePanelQueryParameterTest) {
@@ -171,7 +171,7 @@ TEST(LensUrlUtilsTest, AppendImageTranslateSidePanelQueryParameterTest) {
   GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
       original_url, lens_image_translate_ep, re,
       /* is_side_panel_request= */ true);
-  EXPECT_THAT(url.query(), MatchesRegex("ep=ccm&re=dcsp&s=4&st=\\d+"));
+  EXPECT_THAT(url.query(), MatchesRegex("ep=ctrcm&re=dcsp&s=4&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, AppendOpenNewTabSidePanelParameterTest) {

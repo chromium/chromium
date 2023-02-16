@@ -23,6 +23,7 @@ namespace {
 constexpr char kEntryPointQueryParameter[] = "ep";
 constexpr char kChromeRegionSearchMenuItem[] = "crs";
 constexpr char kChromeSearchWithGoogleLensContextMenuItem[] = "ccm";
+constexpr char kChromeTranslateImageWithGoogleLensContextMenuItem[] = "ctrcm";
 constexpr char kChromeOpenNewTabSidePanel[] = "cnts";
 constexpr char kChromeFullscreenSearchMenuItem[] = "cfs";
 
@@ -62,10 +63,13 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
           {kEntryPointQueryParameter, kChromeRegionSearchMenuItem});
       break;
     case lens::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
-    // TODO(b/267200624): Add separate parameter for image translate.
-    case lens::CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
       query_parameters.insert({kEntryPointQueryParameter,
                                kChromeSearchWithGoogleLensContextMenuItem});
+      break;
+    case lens::CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
+      query_parameters.insert(
+          {kEntryPointQueryParameter,
+           kChromeTranslateImageWithGoogleLensContextMenuItem});
       break;
     case lens::CHROME_FULLSCREEN_SEARCH_MENU_ITEM:
       query_parameters.insert(
