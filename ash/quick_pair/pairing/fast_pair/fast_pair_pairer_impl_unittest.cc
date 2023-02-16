@@ -2646,7 +2646,15 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), PairFailure::kCreateBondTimeout);
 }
 
-TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
+// TODO(crbug.com/1416808): Flaky on MSAN bots.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_WriteAccountKeyFailure_Retroactive \
+  DISABLED_WriteAccountKeyFailure_Retroactive
+#else
+#define MAYBE_WriteAccountKeyFailure_Retroactive \
+  WriteAccountKeyFailure_Retroactive
+#endif
+TEST_F(FastPairPairerImplTest, MAYBE_WriteAccountKeyFailure_Retroactive) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   fast_pair_repository_.SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
