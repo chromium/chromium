@@ -31,9 +31,8 @@ namespace blink {
 
 using Corner = ScrollAnchor::Corner;
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1313270): Fix this test on Fuchsia and re-enable.
-// TODO(crbug.com/1413820): Fix this test on iOS and re-enable.
 #define MAYBE_ScrollAnchorTest DISABLED_ScrollAnchorTest
 #else
 #define MAYBE_ScrollAnchorTest ScrollAnchorTest
