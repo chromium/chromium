@@ -256,9 +256,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
-    expires_after="2023-02-26">
-  <owner>sczs@chromium.org</owner>
-  <owner>thegreenfrog@google.com</owner>
+    expires_after="2024-02-26">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     Records the time an Infobar (Messages) Banner is visible on screen. Used to
     know how long it takes a user to act on the banner before it gets
