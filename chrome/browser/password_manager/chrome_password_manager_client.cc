@@ -1674,7 +1674,7 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
 
   driver->SetSuggestionAvailability(
       ui_data.generation_element_id,
-      popup_controller_->IsVisible()
+      popup_controller_ && popup_controller_->IsVisible()
           ? autofill::mojom::AutofillState::kAutofillAvailable
           : autofill::mojom::AutofillState::kNoSuggestions);
 }
