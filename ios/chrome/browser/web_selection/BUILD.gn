@@ -10,6 +10,8 @@ source_set("web_selection") {
     "web_selection_java_script_feature.mm",
     "web_selection_response.h",
     "web_selection_response.mm",
+    "web_selection_tab_helper.h",
+    "web_selection_tab_helper.mm",
   ]
   deps = [
     ":web_selection_js",
