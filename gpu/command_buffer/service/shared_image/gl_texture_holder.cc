@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 
+#include "base/bits.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -34,6 +35,19 @@ bool SupportsPackSubimage() {
 #else
   return gl::g_current_gl_version->is_es3_capable;
 #endif
+}
+
+// Shared memory GMBs tend to use a stride that is 4 bytes aligned. If
+// bytes_per_pixel is 1 or 2 and `stride` is already 4 byte aligned then
+// use a 4 byte alignment. Otherwise use `bytes_per_pixel` as alignment. This
+// can avoid a copy if GL_[UN]PACK_ROW_LENGTH isn't supported, eg. `stride` is
+// 12 and `bytes_per_pixel` is 1 but there are only 10 bytes of data per row.
+constexpr int ComputeBestAlignment(size_t bytes_per_pixel, size_t stride) {
+  if (bytes_per_pixel < 4 && (stride & 0b11) == 0) {
+    return 4;
+  }
+
+  return bytes_per_pixel;
 }
 
 }  // anonymous namespace
@@ -168,31 +182,56 @@ void GLTextureHolder::Initialize(
 }
 
 bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {
+  DCHECK_EQ(pixmap.width(), size_.width());
+  DCHECK_EQ(pixmap.height(), size_.height());
+
   const GLuint texture_id = GetServiceId();
   const GLenum gl_format = format_desc_.data_format;
   const GLenum gl_type = format_desc_.data_type;
   const GLenum gl_target = format_desc_.target;
 
-  // Actual stride of the given pixmap, not necessarily with the expected
-  // alignment, or equal to expected stride.
-  const size_t pixmap_stride = pixmap.rowBytes();
-  const size_t expected_stride = pixmap.info().minRowBytes64();
-  const GLuint gl_unpack_alignment = pixmap.info().bytesPerPixel();
-  DCHECK_GE(pixmap_stride, expected_stride);
-  DCHECK_EQ(expected_stride % gl_unpack_alignment, 0u);
+  size_t src_stride = pixmap.rowBytes();
+  size_t src_total_bytes = pixmap.computeByteSize();
+  size_t src_bytes_per_pixel = pixmap.info().bytesPerPixel();
 
-  GLuint gl_unpack_row_length = 0;
+  const int gl_unpack_alignment =
+      ComputeBestAlignment(src_bytes_per_pixel, src_stride);
+  DCHECK_EQ(src_stride % gl_unpack_alignment, 0u);
+
   std::vector<uint8_t> repacked_data;
   if (format_ == viz::BGRX_8888 || format_ == viz::RGBX_8888) {
     DCHECK_EQ(gl_format, static_cast<GLenum>(GL_RGB));
+    DCHECK_EQ(gl_unpack_alignment, 4);
+
     // BGRX and RGBX data is uploaded as GL_RGB. Repack from 4 to 3 bytes per
     // pixel.
     repacked_data =
         RepackPixelDataAsRgb(size_, pixmap, format_ == viz::BGRX_8888);
-  } else if (pixmap_stride != expected_stride) {
+    src_stride =
+        base::bits::AlignUp<size_t>(size_.width() * 3, gl_unpack_alignment);
+    src_total_bytes = repacked_data.size();
+    src_bytes_per_pixel = 3;
+  }
+
+  // Compute expected stride and total bytes glTexSubImage2D() will access and
+  // verify that works with source pixel data.
+  uint32_t expected_total_bytes = 0;
+  uint32_t expected_stride = 0;
+  bool result = gles2::GLES2Util::ComputeImageDataSizes(
+      size_.width(), size_.height(), /*depth=*/1, gl_format, gl_type,
+      gl_unpack_alignment, &expected_total_bytes, nullptr, &expected_stride);
+  DCHECK(result);
+  DCHECK_GE(src_total_bytes, expected_total_bytes);
+  DCHECK_GE(src_stride, expected_stride);
+
+  GLuint gl_unpack_row_length = 0;
+  if (src_stride != expected_stride) {
+    // RGBX/BGRX has been repacked so it should always have expected stride.
+    DCHECK(repacked_data.empty());
+
     if (SupportsUnpackSubimage()) {
       // Use GL_UNPACK_ROW_LENGTH to skip data past end of each row on upload.
-      gl_unpack_row_length = pixmap_stride / gl_unpack_alignment;
+      gl_unpack_row_length = src_stride / src_bytes_per_pixel;
     } else {
       // If GL_UNPACK_ROW_LENGTH isn't supported then repack pixels with the
       // expected stride.
@@ -218,6 +257,9 @@ bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {
 }
 
 bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
+  DCHECK_EQ(pixmap.width(), size_.width());
+  DCHECK_EQ(pixmap.height(), size_.height());
+
   const GLuint texture_id = GetServiceId();
   GLenum gl_format = format_desc_.data_format;
   GLenum gl_type = format_desc_.data_type;
@@ -271,18 +313,30 @@ bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
     }
   }
 
-  const size_t pixmap_stride = pixmap.rowBytes();
-  const size_t expected_stride = pixmap.info().minRowBytes64();
-  const GLuint gl_pack_alignment = pixmap.info().bytesPerPixel();
-  DCHECK_GE(pixmap_stride, expected_stride);
-  DCHECK_EQ(expected_stride % gl_pack_alignment, 0u);
+  const size_t dst_stride = pixmap.rowBytes();
+  const size_t dst_bytes_per_pixel = pixmap.info().bytesPerPixel();
+
+  const int gl_pack_alignment =
+      ComputeBestAlignment(dst_bytes_per_pixel, dst_stride);
+  DCHECK_EQ(dst_stride % gl_pack_alignment, 0u);
+
+  // Compute expected stride and total bytes glReadPixels() will access and
+  // verify that works with destination pixel data.
+  uint32_t expected_total_bytes = 0;
+  uint32_t expected_stride = 0;
+  bool result = gles2::GLES2Util::ComputeImageDataSizes(
+      size_.width(), size_.height(), /*depth=*/1, gl_format, gl_type,
+      gl_pack_alignment, &expected_total_bytes, nullptr, &expected_stride);
+  DCHECK(result);
+  DCHECK_GE(pixmap.computeByteSize(), expected_total_bytes);
+  DCHECK_GE(dst_stride, expected_stride);
 
   std::vector<uint8_t> unpack_buffer;
   GLuint gl_pack_row_length = 0;
-  if (pixmap_stride != expected_stride) {
+  if (dst_stride != expected_stride) {
     if (SupportsPackSubimage()) {
       // Use GL_PACK_ROW_LENGTH to avoid temporary buffer.
-      gl_pack_row_length = pixmap_stride / gl_pack_alignment;
+      gl_pack_row_length = dst_stride / dst_bytes_per_pixel;
     } else {
       // If GL_PACK_ROW_LENGTH isn't supported then readback to a temporary
       // buffer with expected stride.
@@ -304,7 +358,7 @@ bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
   api->glDeleteFramebuffersEXTFn(1, &framebuffer);
 
   if (!unpack_buffer.empty()) {
-    DCHECK_GT(pixmap_stride, expected_stride);
+    DCHECK_GT(dst_stride, expected_stride);
     UnpackPixelDataWithStride(size_, unpack_buffer, expected_stride, pixmap);
   }
 
