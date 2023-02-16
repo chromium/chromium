@@ -210,14 +210,15 @@ bool ParseServerResponse(const GURL& server_url,
     RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }
-
-  base::Value* error_object = response_value.FindDictKey(kErrorString);
-  base::Value* location_object = response_value.FindDictKey(kLocationString);
+  base::Value::Dict& response_value_dict = response_value.GetDict();
+  base::Value::Dict* error_object = response_value_dict.FindDict(kErrorString);
+  base::Value::Dict* location_object =
+      response_value_dict.FindDict(kLocationString);
 
   position->timestamp = base::Time::Now();
 
   if (error_object) {
-    std::string* error_message = error_object->FindStringKey(kMessageString);
+    std::string* error_message = error_object->FindString(kMessageString);
     if (!error_message) {
       position->error_message = "Server returned error without message.";
     } else {
@@ -226,14 +227,13 @@ bool ParseServerResponse(const GURL& server_url,
 
     // Ignore result (code defaults to zero).
     position->error_code =
-        error_object->FindIntKey(kCodeString).value_or(position->error_code);
+        error_object->FindInt(kCodeString).value_or(position->error_code);
   } else {
     position->error_message.erase();
   }
 
   if (location_object) {
-    absl::optional<double> latitude =
-        location_object->FindDoubleKey(kLatString);
+    absl::optional<double> latitude = location_object->FindDouble(kLatString);
     if (!latitude) {
       PrintGeolocationError(server_url, "Missing 'lat' attribute.", position);
       RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
@@ -241,8 +241,7 @@ bool ParseServerResponse(const GURL& server_url,
     }
     position->latitude = latitude.value();
 
-    absl::optional<double> longitude =
-        location_object->FindDoubleKey(kLngString);
+    absl::optional<double> longitude = location_object->FindDouble(kLngString);
     if (!longitude) {
       PrintGeolocationError(server_url, "Missing 'lon' attribute.", position);
       RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
@@ -251,7 +250,7 @@ bool ParseServerResponse(const GURL& server_url,
     position->longitude = longitude.value();
 
     absl::optional<double> accuracy =
-        response_value.FindDoubleKey(kAccuracyString);
+        response_value_dict.FindDouble(kAccuracyString);
     if (!accuracy) {
       PrintGeolocationError(server_url, "Missing 'accuracy' attribute.",
                             position);

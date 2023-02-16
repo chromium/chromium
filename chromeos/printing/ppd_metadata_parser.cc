@@ -60,10 +60,10 @@ absl::optional<base::Value> ParseJsonAndUnnestKey(
 }
 
 // Returns a Restrictions struct from a dictionary |value|.
-Restrictions ParseRestrictionsFromValue(const base::Value& value) {
+Restrictions ParseRestrictionsFromValue(const base::Value::Dict& value) {
   Restrictions restrictions;
-  auto min_as_double = value.FindDoubleKey("minMilestone");
-  auto max_as_double = value.FindDoubleKey("maxMilestone");
+  auto min_as_double = value.FindDouble("minMilestone");
+  auto max_as_double = value.FindDouble("maxMilestone");
 
   if (min_as_double.has_value()) {
     base::Version min_milestone = base::Version(
@@ -84,8 +84,12 @@ Restrictions ParseRestrictionsFromValue(const base::Value& value) {
 
 // Returns a ParsedPrinter from a leaf |value| from Printers metadata.
 absl::optional<ParsedPrinter> ParsePrinterFromValue(const base::Value& value) {
+  if (!value.is_dict()) {
+    return absl::nullopt;
+  }
+
   const std::string* const effective_make_and_model =
-      value.FindStringKey("emm");
+      value.GetDict().FindString("emm");
   const std::string* const name = value.FindStringKey("name");
   if (!effective_make_and_model || effective_make_and_model->empty() || !name ||
       name->empty()) {
@@ -95,8 +99,8 @@ absl::optional<ParsedPrinter> ParsePrinterFromValue(const base::Value& value) {
   printer.effective_make_and_model = *effective_make_and_model;
   printer.user_visible_printer_name = *name;
 
-  const base::Value* const restrictions_value =
-      value.FindDictKey("restriction");
+  const base::Value::Dict* const restrictions_value =
+      value.GetDict().FindDict("restriction");
   if (restrictions_value) {
     printer.restrictions = ParseRestrictionsFromValue(*restrictions_value);
   }
@@ -111,19 +115,19 @@ absl::optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
 
   ParsedIndexLeaf leaf;
 
-  const std::string* const ppd_basename = value.FindStringKey("name");
+  const std::string* const ppd_basename = value.GetDict().FindString("name");
   if (!ppd_basename) {
     return absl::nullopt;
   }
   leaf.ppd_basename = *ppd_basename;
 
-  const base::Value* const restrictions_value =
-      value.FindDictKey("restriction");
+  const base::Value::Dict* const restrictions_value =
+      value.GetDict().FindDict("restriction");
   if (restrictions_value) {
     leaf.restrictions = ParseRestrictionsFromValue(*restrictions_value);
   }
 
-  const std::string* const ppd_license = value.FindStringKey("license");
+  const std::string* const ppd_license = value.GetDict().FindString("license");
   if (ppd_license && !ppd_license->empty()) {
     leaf.license = *ppd_license;
   }
@@ -137,13 +141,14 @@ absl::optional<ParsedIndexValues> UnnestPpdMetadata(const base::Value& value) {
   if (!value.is_dict()) {
     return absl::nullopt;
   }
-  const base::Value* const ppd_metadata_list = value.FindListKey("ppdMetadata");
-  if (!ppd_metadata_list || ppd_metadata_list->GetList().empty()) {
+  const base::Value::List* const ppd_metadata_list =
+      value.GetDict().FindList("ppdMetadata");
+  if (!ppd_metadata_list || ppd_metadata_list->empty()) {
     return absl::nullopt;
   }
 
   ParsedIndexValues parsed_index_values;
-  for (const base::Value& v : ppd_metadata_list->GetList()) {
+  for (const base::Value& v : *ppd_metadata_list) {
     absl::optional<ParsedIndexLeaf> parsed_index_leaf = ParsedIndexLeafFrom(v);
     if (parsed_index_leaf.has_value()) {
       parsed_index_values.values.push_back(parsed_index_leaf.value());
@@ -286,9 +291,9 @@ absl::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
     }
 
     absl::optional<int> vendor_id =
-        usb_vendor_description.FindIntKey("vendorId");
+        usb_vendor_description.GetDict().FindInt("vendorId");
     const std::string* const vendor_name =
-        usb_vendor_description.FindStringKey("vendorName");
+        usb_vendor_description.GetDict().FindString("vendorName");
     if (!vendor_id.has_value() || !vendor_name || vendor_name->empty()) {
       continue;
     }
@@ -340,8 +345,9 @@ absl::optional<ParsedReverseIndex> ParseReverseIndex(
       continue;
     }
 
-    const std::string* manufacturer = kv.second.FindStringKey("manufacturer");
-    const std::string* model = kv.second.FindStringKey("model");
+    const std::string* manufacturer =
+        kv.second.GetDict().FindString("manufacturer");
+    const std::string* model = kv.second.GetDict().FindString("model");
     if (manufacturer && model && !manufacturer->empty() && !model->empty()) {
       parsed.insert_or_assign(kv.first,
                               ReverseIndexLeaf{*manufacturer, *model});
