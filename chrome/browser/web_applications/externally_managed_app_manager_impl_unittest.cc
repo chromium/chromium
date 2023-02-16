@@ -60,8 +60,7 @@ ExternalInstallOptions GetInstallOptions(
     const GURL& url,
     absl::optional<bool> override_previous_user_uninstall =
         absl::optional<bool>()) {
-  ExternalInstallOptions options(std::move(url),
-                                 mojom::UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(url, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
 
   if (override_previous_user_uninstall.has_value())

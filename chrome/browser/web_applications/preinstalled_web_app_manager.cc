@@ -777,7 +777,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
           ++disabled_count;
           if (debug_info_) {
             debug_info_->disabled_configs.emplace_back(
-                std::move(options), std::move(*disable_reason));
+                options, std::move(*disable_reason));
           }
           return true;
         }

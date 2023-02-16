@@ -164,7 +164,7 @@ void WebAppTranslationManager::WriteTranslations(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
       base::BindOnce(WriteTranslationsBlocking, utils_, web_apps_directory_,
-                     std::move(app_id), std::move(translations)),
+                     app_id, translations),
       std::move(callback));
 }
 
@@ -180,7 +180,7 @@ void WebAppTranslationManager::DeleteTranslations(const AppId& app_id,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
       base::BindOnce(DeleteTranslationsBlocking, utils_, web_apps_directory_,
-                     std::move(app_id)),
+                     app_id),
       std::move(callback));
 }
 

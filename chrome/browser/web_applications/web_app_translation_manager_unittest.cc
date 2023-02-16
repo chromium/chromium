@@ -62,7 +62,7 @@ class WebAppTranslationManagerTest : public WebAppTest {
     std::map<AppId, blink::Manifest::TranslationItem> result;
     translation_manager().ReadTranslations(base::BindLambdaForTesting(
         [&](const std::map<AppId, blink::Manifest::TranslationItem>& cache) {
-          result = std::move(cache);
+          result = cache;
           run_loop.Quit();
         }));
     run_loop.Run();
