@@ -1004,6 +1004,144 @@ TEST_F(DriveFsPinManagerTest, OnFileModified) {
   }
 }
 
+// Tests PinManager::OnMetadataForModifiedFile().
+TEST_F(DriveFsPinManagerTest, OnMetadataForModifiedFile) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  manager.progress_.stage = Stage::kListingFiles;
+
+  const Id id = Id(101);
+  const Path path("/root/Path 1");
+  DriveItem item{.stable_id = static_cast<int64_t>(id), .size = 2487};
+
+  // Cannot get metadata for an untracked file.
+  manager.OnMetadataForModifiedFile(id, path, drive::FILE_ERROR_ACCESS_DENIED,
+                                    nullptr);
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  // Add a tracked and unpinned file.
+  ASSERT_TRUE(manager.Add(*MakeMetadata(item), path));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  // Cannot get metadata for a tracked file.
+  manager.OnMetadataForModifiedFile(
+      id, path, FileError::FILE_ERROR_ACCESS_DENIED, nullptr);
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 1);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  // Get metadata for an untracked file.
+  manager.progress_.failed_files = 0;
+  manager.OnMetadataForModifiedFile(id, path, kFileOk, MakeMetadata(item));
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  // Add a tracked file.
+  ASSERT_TRUE(manager.Add(*MakeMetadata(item), path));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2487);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  {
+    const auto it = manager.files_to_track_.find(id);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, file] = *it;
+    EXPECT_EQ(got_id, id);
+    EXPECT_EQ(file.path, path);
+  }
+
+  // Metadata indicates that the file is still not pinned.
+  manager.OnMetadataForModifiedFile(id, path, kFileOk, MakeMetadata(item));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2487);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  {
+    const auto it = manager.files_to_track_.find(id);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, file] = *it;
+    EXPECT_EQ(got_id, id);
+    EXPECT_EQ(file.path, path);
+    EXPECT_FALSE(file.pinned);
+  }
+
+  // Metadata indicates that the file is pinned but not available offline.
+  item.pinned = true;
+  manager.OnMetadataForModifiedFile(id, path, kFileOk, MakeMetadata(item));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2487);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  // Metadata indicates that the file is pinned and available offline.
+  item.available_offline = true;
+  item.size = 87489;
+  manager.OnMetadataForModifiedFile(id, path, kFileOk, MakeMetadata(item));
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 1);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 87489);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 87489);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  // Reset counters.
+  manager.progress_.pinned_files = 0;
+  manager.progress_.pinned_bytes = 0;
+  manager.progress_.bytes_to_pin = 0;
+
+  // Add a tracked and pinned file.
+  item.pinned = true;
+  item.available_offline = false;
+  ASSERT_TRUE(manager.Add(*MakeMetadata(item), path));
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  // Metadata indicates that the file has been unexpectedly unpinned.
+  item.pinned = false;
+  manager.OnMetadataForModifiedFile(id, path, kFileOk, MakeMetadata(item));
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 1);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 0);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  manager.progress_.stage = Stage::kStopped;
+}
+
 // Tests PinManager::OnSyncingEvent().
 TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
