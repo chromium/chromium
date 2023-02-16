@@ -298,6 +298,9 @@ export interface CrostiniBrowserProxy {
 
   /** Show Bruschetta installer. */
   requestBruschettaInstallerView(): void;
+
+  /** Show Bruschetta uninstaller. */
+  requestBruschettaUninstallerView(): void;
 }
 
 let instance: CrostiniBrowserProxy|null = null;
@@ -469,7 +472,11 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
     return sendWithPromise('setVmDeviceShared', id, device, shared);
   }
 
-  requestBruschettaInstallerView() {
+  requestBruschettaInstallerView(): void {
     chrome.send('requestBruschettaInstallerView');
+  }
+
+  requestBruschettaUninstallerView(): void {
+    chrome.send('requestBruschettaUninstallerView');
   }
 }

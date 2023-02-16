@@ -4137,6 +4137,7 @@ if (!is_android) {
         "../browser/ui/views/borealis/borealis_installer_view_browsertest.cc",
         "../browser/ui/views/borealis/borealis_splash_screen_view_browsertest.cc",
         "../browser/ui/views/bruschetta/bruschetta_installer_view_browsertest.cc",
+        "../browser/ui/views/bruschetta/bruschetta_uninstaller_view_browsertest.cc",
         "../browser/ui/views/crostini/crostini_ansible_software_config_view_browsertest.cc",
         "../browser/ui/views/crostini/crostini_dialogue_browser_test_util.cc",
         "../browser/ui/views/crostini/crostini_dialogue_browser_test_util.h",

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -14,7 +15,9 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -256,6 +259,47 @@ TEST_F(BruschettaServiceTest, VirtualMachinesAllowed) {
   ASSERT_EQ(FakeConciergeClient()->stop_vm_call_count(), 1);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(service_->GetRunningVmsForTesting().contains(kTestVmName));
+}
+
+TEST_F(BruschettaServiceTest, RemoveVmSuccess) {
+  base::RunLoop run_loop;
+  bool result = false;
+  service_->RemoveVm(MakeBruschettaId(kTestVmName),
+                     base::BindLambdaForTesting([&](bool success) {
+                       result = success;
+                       run_loop.Quit();
+                     }));
+  run_loop.Run();
+  ASSERT_TRUE(result);
+}
+
+TEST_F(BruschettaServiceTest, RemoveVmFailedToRemoveDisk) {
+  vm_tools::concierge::DestroyDiskImageResponse response;
+  response.set_status(
+      ::vm_tools::concierge::DiskImageStatus::DISK_STATUS_FAILED);
+  FakeConciergeClient()->set_destroy_disk_image_response(response);
+  base::RunLoop run_loop;
+  bool result = false;
+  service_->RemoveVm(MakeBruschettaId(kTestVmName),
+                     base::BindLambdaForTesting([&](bool success) {
+                       result = success;
+                       run_loop.Quit();
+                     }));
+  run_loop.Run();
+  ASSERT_FALSE(result);
+}
+
+TEST_F(BruschettaServiceTest, RemoveVmFailedToRemoveDlc) {
+  FakeDlcserviceClient()->set_uninstall_error("Error");
+  base::RunLoop run_loop;
+  bool result = false;
+  service_->RemoveVm(MakeBruschettaId(kTestVmName),
+                     base::BindLambdaForTesting([&](bool success) {
+                       result = success;
+                       run_loop.Quit();
+                     }));
+  run_loop.Run();
+  ASSERT_FALSE(result);
 }
 
 }  // namespace bruschetta

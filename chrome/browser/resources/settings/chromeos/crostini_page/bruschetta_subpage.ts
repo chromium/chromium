@@ -13,13 +13,16 @@ import '../../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './bruschetta_subpage.html.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 
-const BruschettaSubpageElementBase = RouteOriginMixin(PolymerElement);
+const BruschettaSubpageElementBase =
+    RouteOriginMixin(PrefsMixin(PolymerElement));
 
 class BruschettaSubpageElement extends BruschettaSubpageElementBase {
   static get is() {
@@ -30,13 +33,25 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
     return getTemplate();
   }
 
+  static get observers() {
+    return [
+      'onInstalledChanged_(prefs.bruschetta.installed.value)',
+    ];
+  }
+
   private route_: Route;
+  private browserProxy_: CrostiniBrowserProxy;
 
   constructor() {
     super();
 
     /** RouteOriginMixin override */
     this.route_ = routes.BRUSCHETTA_DETAILS;
+
+    // For now we reuse the Crostini browser proxy, we're both part of
+    // crostini_page. At some point we may want to split them apart (or make
+    // something for all guest OSs).
+    this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
   override ready() {
@@ -47,12 +62,23 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
         routes.BRUSCHETTA_SHARED_PATHS, '#bruschetta-shared-paths');
   }
 
-  private onSharedUsbDevicesClick_() {
+  private onSharedUsbDevicesClick_(): void {
     Router.getInstance().navigateTo(routes.BRUSCHETTA_SHARED_USB_DEVICES);
   }
 
-  private onSharedPathsClick_() {
+  private onSharedPathsClick_(): void {
     Router.getInstance().navigateTo(routes.BRUSCHETTA_SHARED_PATHS);
+  }
+
+  private onRemoveClick_(): void {
+    this.browserProxy_.requestBruschettaUninstallerView();
+  }
+
+  private onInstalledChanged_(installed: boolean): void {
+    if (!installed &&
+        Router.getInstance().currentRoute === routes.BRUSCHETTA_DETAILS) {
+      Router.getInstance().navigateToPreviousRoute();
+    }
   }
 }
 

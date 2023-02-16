@@ -20,14 +20,16 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace bruschetta {
 
@@ -234,10 +236,12 @@ void BruschettaService::RegisterInPrefs(const guest_os::GuestId& guest_id,
 
 void BruschettaService::RegisterWithTerminal(
     const guest_os::GuestId& guest_id) {
-  guest_os::GuestOsService::GetForProfile(profile_)
-      ->TerminalProviderRegistry()
-      ->Register(
-          std::make_unique<BruschettaTerminalProvider>(profile_, guest_id));
+  DCHECK(!terminal_providers_.contains(guest_id.vm_name));
+  terminal_providers_[guest_id.vm_name] =
+      guest_os::GuestOsService::GetForProfile(profile_)
+          ->TerminalProviderRegistry()
+          ->Register(
+              std::make_unique<BruschettaTerminalProvider>(profile_, guest_id));
   guest_os::GuestOsSharePath::GetForProfile(profile_)->RegisterGuest(guest_id);
 }
 
@@ -274,4 +278,61 @@ void BruschettaService::OnVmStopped(
   running_vms_.erase(signal.name());
 }
 
+void BruschettaService::RemoveVm(const guest_os::GuestId& guest_id,
+                                 base::OnceCallback<void(bool)> callback) {
+  // Owns itself and will delete itself once done.
+  auto remover = base::MakeRefCounted<guest_os::GuestOsRemover>(
+      profile_, guest_os::VmType::BRUSCHETTA, guest_id.vm_name,
+      base::BindOnce(&BruschettaService::OnRemoveVm,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     guest_id));
+
+  remover->RemoveVm();
+}
+
+void BruschettaService::OnRemoveVm(base::OnceCallback<void(bool)> callback,
+                                   guest_os::GuestId guest_id,
+                                   guest_os::GuestOsRemover::Result result) {
+  if (result != guest_os::GuestOsRemover::Result::kSuccess) {
+    LOG(ERROR) << "Error removing Bruschetta. Error code: "
+               << static_cast<int>(result);
+    std::move(callback).Run(false);
+    return;
+  }
+  ash::DlcserviceClient::Get()->Uninstall(
+      kToolsDlc, base::BindOnce(&BruschettaService::OnUninstallDlc,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(callback), std::move(guest_id)));
+}
+
+void BruschettaService::OnUninstallDlc(base::OnceCallback<void(bool)> callback,
+                                       guest_os::GuestId guest_id,
+                                       const std::string& result) {
+  if (result != dlcservice::kErrorNone &&
+      result != dlcservice::kErrorInvalidDlc) {
+    LOG(ERROR) << "Error removing DLC. Error: " << result;
+    std::move(callback).Run(false);
+    return;
+  }
+  profile_->GetPrefs()->SetBoolean(bruschetta::prefs::kBruschettaInstalled,
+                                   false);
+
+  guest_os::RemoveContainerFromPrefs(profile_, guest_id);
+  auto terminal_iter = terminal_providers_.find(guest_id.vm_name);
+  if (terminal_iter != terminal_providers_.end()) {
+    guest_os::GuestOsService::GetForProfile(profile_)
+        ->TerminalProviderRegistry()
+        ->Unregister(terminal_iter->second);
+    terminal_providers_.erase(terminal_iter);
+  }
+  auto vm = runnable_vms_.find(guest_id.vm_name);
+  if (vm != runnable_vms_.end()) {
+    guest_os::GuestOsService::GetForProfile(profile_)
+        ->MountProviderRegistry()
+        ->Unregister(vm->second.mount_id);
+    runnable_vms_.erase(vm);
+  }
+
+  std::move(callback).Run(true);
+}
 }  // namespace bruschetta

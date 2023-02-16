@@ -11,7 +11,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -61,6 +63,12 @@ class BruschettaService : public KeyedService,
 
   const base::flat_map<std::string, RunningVmPolicy>& GetRunningVmsForTesting();
 
+  // Uninstalls the Bruschetta vm identified by `guest_id`. No-op if already
+  // completely uninstalled, can run after a failed uninstall to finish cleaning
+  // up.
+  void RemoveVm(const guest_os::GuestId& guest_id,
+                base::OnceCallback<void(bool)> callback);
+
  private:
   struct VmRegistration {
     std::unique_ptr<BruschettaLauncher> launcher;
@@ -68,8 +76,8 @@ class BruschettaService : public KeyedService,
     // We don't track the terminal registration because that should remain in
     // place even if the VM is blocked from launching.
 
-    VmRegistration(std::unique_ptr<BruschettaLauncher>,
-                   guest_os::GuestOsMountProviderRegistry::Id);
+    VmRegistration(std::unique_ptr<BruschettaLauncher> launcher,
+                   guest_os::GuestOsMountProviderRegistry::Id mount_id);
     VmRegistration(VmRegistration&&);
     VmRegistration& operator=(VmRegistration&&);
     VmRegistration(const VmRegistration&) = delete;
@@ -86,9 +94,21 @@ class BruschettaService : public KeyedService,
                                 std::string config_id,
                                 const base::Value::Dict* config);
 
-  base::flat_map<std::string, VmRegistration> runnable_vms_;
+  void OnRemoveVm(base::OnceCallback<void(bool)> callback,
+                  guest_os::GuestId guest_id,
+                  guest_os::GuestOsRemover::Result result);
+  void OnUninstallDlc(base::OnceCallback<void(bool)> callback,
+                      guest_os::GuestId guest_id,
+                      const std::string& result);
 
+  base::flat_map<std::string, VmRegistration> runnable_vms_;
   base::flat_map<std::string, RunningVmPolicy> running_vms_;
+
+  // Terminal providers are special, since even non-runnable VMs should still
+  // show up in the terminal, so we track them separately instead of as part of
+  // runnable_vms_.
+  base::flat_map<std::string, guest_os::GuestOsTerminalProviderRegistry::Id>
+      terminal_providers_;
 
   PrefChangeRegistrar pref_observer_;
   base::CallbackListSubscription cros_settings_observer_;
@@ -97,6 +117,9 @@ class BruschettaService : public KeyedService,
       vm_observer_{this};
 
   Profile* const profile_;
+
+  // Must be last
+  base::WeakPtrFactory<BruschettaService> weak_ptr_factory_{this};
 };
 
 }  // namespace bruschetta

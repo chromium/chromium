@@ -27,6 +27,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bruschetta/bruschetta_installer_view.h"
+#include "chrome/browser/ui/views/bruschetta/bruschetta_uninstaller_view.h"
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/pref_names.h"
@@ -201,6 +202,11 @@ void CrostiniHandler::RegisterMessages() {
         "requestBruschettaInstallerView",
         base::BindRepeating(
             &CrostiniHandler::HandleRequestBruschettaInstallerView,
+            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "requestBruschettaUninstallerView",
+        base::BindRepeating(
+            &CrostiniHandler::HandleRequestBruschettaUninstallerView,
             handler_weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -958,6 +964,13 @@ void CrostiniHandler::HandleRequestBruschettaInstallerView(
   AllowJavascript();
   BruschettaInstallerView::Show(Profile::FromWebUI(web_ui()),
                                 bruschetta::GetBruschettaAlphaId());
+}
+
+void CrostiniHandler::HandleRequestBruschettaUninstallerView(
+    const base::Value::List& args) {
+  AllowJavascript();
+  BruschettaUninstallerView::Show(Profile::FromWebUI(web_ui()),
+                                  bruschetta::GetBruschettaAlphaId());
 }
 
 }  // namespace ash::settings

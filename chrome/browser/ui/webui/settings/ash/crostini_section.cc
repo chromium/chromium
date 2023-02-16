@@ -260,6 +260,8 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bruschettaSharedPathsRemoveFailureDialogMessage",
        IDS_SETTINGS_BRUSCHETTA_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE},
       {"bruschettaSubtext", IDS_SETTINGS_BRUSCHETTA_SUBTEXT},
+      {"bruschettaRemove", IDS_SETTINGS_BRUSCHETTA_REMOVE},
+      {"bruschettaRemoveButton", IDS_SETTINGS_BRUSCHETTA_REMOVE_BUTTON},
       {"crostiniPageTitle", IDS_SETTINGS_CROSTINI_TITLE},
       {"crostiniPageLabel", IDS_SETTINGS_CROSTINI_LABEL},
       {"crostiniEnable", IDS_SETTINGS_TURN_ON},

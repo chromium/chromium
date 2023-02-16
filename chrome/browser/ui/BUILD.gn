@@ -2557,6 +2557,8 @@ static_library("ui") {
       "views/borealis/borealis_splash_screen_view.h",
       "views/bruschetta/bruschetta_installer_view.cc",
       "views/bruschetta/bruschetta_installer_view.h",
+      "views/bruschetta/bruschetta_uninstaller_view.cc",
+      "views/bruschetta/bruschetta_uninstaller_view.h",
       "views/chrome_views_delegate_chromeos.cc",
       "views/crostini/crostini_ansible_software_config_view.cc",
       "views/crostini/crostini_ansible_software_config_view.h",

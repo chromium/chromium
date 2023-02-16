@@ -14,3 +14,14 @@
     on-click="onSharedPathsClick_"
     role-description="$i18n{subpageArrowRoleDescription}">
 </cr-link-row>
+
+<div id="remove" class="settings-box">
+  <div id="removeBruschettaLabel" class="start" aria-hidden="true">
+    $i18n{bruschettaRemove}
+  </div>
+  <cr-button on-click="onRemoveClick_"
+      aria-label="$i18n{bruschettaRemoveButton}"
+      aria-describedby="removeBruschettaLabel">
+    $i18n{bruschettaRemoveButton}
+  </cr-button>
+</div>
