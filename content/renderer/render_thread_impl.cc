@@ -138,6 +138,7 @@
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/privacy_budget/active_sampling.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/switches.h"
@@ -305,6 +306,13 @@ void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
       // to introduce new CrashKeyId's without triggering a build break.
       break;
   }
+}
+
+// Updates the crash key for whether this renderer is foregrounded.
+void UpdateForegroundCrashKey(bool foreground) {
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
+      "renderer_foreground", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(crash_key, foreground ? "true" : "false");
 }
 
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
@@ -731,6 +739,8 @@ void RenderThreadImpl::Init() {
             },
             std::move(recorder)));
   }
+  UpdateForegroundCrashKey(
+      /*foreground=*/!blink::kLaunchingProcessIsBackgrounded);
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
@@ -1763,12 +1773,14 @@ bool RenderThreadImpl::RendererIsBackgrounded() const {
 }
 
 void RenderThreadImpl::OnRendererBackgrounded() {
+  UpdateForegroundCrashKey(/*foreground=*/false);
   main_thread_scheduler_->SetRendererBackgrounded(true);
   discardable_memory_allocator_->OnBackgrounded();
   base::allocator::PartitionAllocSupport::Get()->OnBackgrounded();
 }
 
 void RenderThreadImpl::OnRendererForegrounded() {
+  UpdateForegroundCrashKey(/*foreground=*/true);
   main_thread_scheduler_->SetRendererBackgrounded(false);
   discardable_memory_allocator_->OnForegrounded();
   base::allocator::PartitionAllocSupport::Get()->OnForegrounded(
