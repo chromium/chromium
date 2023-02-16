@@ -2226,7 +2226,11 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testProtectedContentDefaultOption() throws Exception {
+    @DisableIf.
+    Build(message = "https://crbug.com/1414569", sdk_is_greater_than = Build.VERSION_CODES.N_MR1,
+            sdk_is_less_than = Build.VERSION_CODES.P)
+    public void
+    testProtectedContentDefaultOption() throws Exception {
         initializeUpdateWaiter(true /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html", "requestEME()", 0, true, true);
@@ -2235,7 +2239,11 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testProtectedContentAskAllow() throws Exception {
+    @DisableIf.
+    Build(message = "https://crbug.com/1414569", sdk_is_greater_than = Build.VERSION_CODES.N_MR1,
+            sdk_is_less_than = Build.VERSION_CODES.P)
+    public void
+    testProtectedContentAskAllow() throws Exception {
         setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ASK);
 
@@ -2247,7 +2255,11 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testProtectedContentAskBlocked() throws Exception {
+    @DisableIf.
+    Build(message = "https://crbug.com/1414569", sdk_is_greater_than = Build.VERSION_CODES.N_MR1,
+            sdk_is_less_than = Build.VERSION_CODES.P)
+    public void
+    testProtectedContentAskBlocked() throws Exception {
         setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ASK);
 
@@ -2259,7 +2271,11 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testProtectedContentBlocked() throws Exception {
+    @DisableIf.
+    Build(message = "https://crbug.com/1414569", sdk_is_greater_than = Build.VERSION_CODES.N_MR1,
+            sdk_is_less_than = Build.VERSION_CODES.P)
+    public void
+    testProtectedContentBlocked() throws Exception {
         setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.BLOCK);
 
@@ -2271,10 +2287,11 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableIf.
-    Build(message = "https://crbug.com/1269556", sdk_is_greater_than = Build.VERSION_CODES.P)
+    @DisableIf.Build(message = "https://crbug.com/1269556,https://crbug.com/1414569",
+            sdk_is_greater_than = Build.VERSION_CODES.N_MR1)
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1234530
-    public void testProtectedContentAllowThenBlock() throws Exception {
+    public void
+    testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(true /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html", "requestEME()", 0, true, true);
