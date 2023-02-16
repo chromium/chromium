@@ -1,9 +1,12 @@
-ellyjones@chromium.org
-jeffreycohen@chromium.org
-sebsg@chromium.org
-skare@chromium.org
-sophey@chromium.org
-wiss@chromium.org
-wry@chromium.org
+# The current Follow team is the former Sharing team, so a lot of us have
+# context, especially for desktop:
+file://chrome/browser/follow/OWNERS
+
+# For Android:
+wenyufu@chromium.org
+
+# For iOS:
+# kalettuce@chromium.org - pending committership
+sczs@chromium.org
 
 per-file *.gni=file://components/paint_preview/OWNERS
