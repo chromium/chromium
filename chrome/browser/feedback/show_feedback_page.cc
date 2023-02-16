@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -24,6 +23,7 @@
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"

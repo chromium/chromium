@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/app_list/app_list_util.h"
 
-#include "ash/public/cpp/app_list/app_list_types.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/app_list/app_list_types.h"
+#endif
 
 bool IsAppLauncherEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

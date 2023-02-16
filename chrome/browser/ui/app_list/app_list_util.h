@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_APP_LIST_UTIL_H_
 #define CHROME_BROWSER_UI_APP_LIST_APP_LIST_UTIL_H_
 
-#include "ash/public/cpp/app_list/app_list_types.h"
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 
 namespace ash {

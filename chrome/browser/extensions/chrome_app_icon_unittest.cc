@@ -6,7 +6,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
@@ -28,6 +27,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
