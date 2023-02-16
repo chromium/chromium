@@ -8,3 +8,6 @@ kTypeIdProcessDataRecord = "\xDA\xDE\x5E\x61"
 kTypeIdActivityTrackerFree = "\x4C\x7E\x8C\xA2"
 kTypeIdUserDataRecordFree = "\x25\x22\xA1\x9E"
 kTypeIdProcessDataRecordFree  = "\x25\x21\xA1\x9E"
+
+kGlobalCookie = "\xDC\x05\x83\x40"
+kBlockCookieAllocated = "\x69\x92\x79\xC8"
