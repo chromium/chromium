@@ -143,7 +143,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         assert ThreadUtils.runningOnUiThread();
         Class<?> creatorActivityClass = CreatorActivity.class;
         Intent intent = new Intent(mActivityContext, creatorActivityClass);
-        intent.putExtra("CREATOR_WEB_FEED_ID", webFeedName);
+        intent.putExtra("CREATOR_WEB_FEED_ID", webFeedName.getBytes());
         mActivityContext.startActivity(intent);
     }
 
