@@ -121,6 +121,10 @@ template("ts_library") {
       args += [ "--composite" ]
     }
 
+    if (defined(invoker.enable_source_maps) && invoker.enable_source_maps) {
+      args += [ "--enable_source_maps" ]
+    }
+
     if (defined(extra_deps)) {
       # ts_library() targets are conventionally named with "build_ts" or
       # "library". These should always be listed in deps and not extra_deps

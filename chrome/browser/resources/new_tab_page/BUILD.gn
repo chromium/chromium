@@ -131,11 +131,8 @@ ts_library_sourcemaps("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  if (enable_webui_inline_sourcemaps) {
-    tsconfig_base = "tsconfig_base_sourcemaps.json"
-  } else {
-    tsconfig_base = "tsconfig_base.json"
-  }
+  tsconfig_base = "tsconfig_base.json"
+  enable_source_maps = enable_webui_inline_sourcemaps
   in_files = ts_files + html_wrapper_files + mojo_ts_files
 
   deps = [

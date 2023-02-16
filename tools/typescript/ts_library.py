@@ -30,19 +30,6 @@ def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
 
-def _is_sourcemap_enabled(tsconfig):
-  if 'compilerOptions' in tsconfig:
-    if 'sourceMap' in tsconfig['compilerOptions'] and \
-        tsconfig['compilerOptions']['sourceMap']:
-      return True
-
-    if 'inlineSourceMap' in tsconfig['compilerOptions'] and \
-        tsconfig['compilerOptions']['inlineSourceMap']:
-      return True
-
-  return False
-
-
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument('--raw_deps', nargs='*')
@@ -59,6 +46,7 @@ def main(argv):
   parser.add_argument('--manifest_excludes', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   parser.add_argument('--composite', action='store_true')
+  parser.add_argument('--enable_source_maps', action='store_true')
   parser.add_argument('--output_suffix', required=True)
   args = parser.parse_args(argv)
 
@@ -109,12 +97,6 @@ def main(argv):
         augmented_types.append('trusted-types')
         tsconfig['compilerOptions']['types'] = augmented_types
 
-    # If "sourceMap" or "inlineSourceMap" option have been provided in the
-    # tsconfig file, include the "sourceRoot" key.
-    if _is_sourcemap_enabled(tsconfig_base):
-      tsconfig['compilerOptions']['sourceRoot'] = os.path.realpath(
-          os.path.join(_CWD, args.gen_dir, root_dir))
-
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
 
@@ -123,6 +105,12 @@ def main(argv):
     tsconfig['compilerOptions']['composite'] = True
     tsconfig['compilerOptions']['declaration'] = True
     tsconfig['compilerOptions']['tsBuildInfoFile'] = tsbuildinfo_name
+
+  if args.enable_source_maps:
+    tsconfig['compilerOptions']['inlineSourceMap'] = True
+    tsconfig['compilerOptions']['inlineSources'] = True
+    tsconfig['compilerOptions']['sourceRoot'] = os.path.realpath(
+        os.path.join(_CWD, args.gen_dir, root_dir))
 
   tsconfig['files'] = []
   if args.in_files is not None:

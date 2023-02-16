@@ -6,10 +6,12 @@
 _tsconfig_compiler_options_mappings = {
     'composite': 'composite=true',
     'declaration': 'composite=true',
-    'tsBuildInfoFile': 'composite=true',
-    'rootDir': 'root_dir',
+    'inlineSourceMap': 'enable_source_maps=true',
+    'inlineSources': 'enable_source_maps=true',
     'outDir': 'out_dir',
     'paths': 'path_mappings',
+    'rootDir': 'root_dir',
+    'tsBuildInfoFile': 'composite=true',
 }
 
 # Allowed options within tsconfig_base.json
@@ -28,9 +30,6 @@ _allowed_compiler_options = [
     'strictPropertyInitialization',
     'noPropertyAccessFromIndexSignature',
     'allowUmdGlobalAccess',
-    'sourceMap',
-    'inlineSourceMap',
-    'inlineSources',
     'skipLibCheck',
 ]
 

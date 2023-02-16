@@ -23,7 +23,7 @@ class TsLibraryTest(unittest.TestCase):
     if self._out_folder:
       shutil.rmtree(self._out_folder)
 
-  def _build_project1(self, tsconfig_base=None):
+  def _build_project1(self, enable_source_maps=False):
     gen_dir = os.path.join(self._out_folder, 'project1')
 
     # Generate definition .d.ts file for legacy JS file.
@@ -57,8 +57,8 @@ class TsLibraryTest(unittest.TestCase):
         '--composite',
     ]
 
-    if tsconfig_base:
-      args += ['--tsconfig_base', tsconfig_base]
+    if enable_source_maps:
+      args += ['--enable_source_maps']
 
     ts_library.main(args)
     return gen_dir
@@ -392,25 +392,24 @@ class TsLibraryTest(unittest.TestCase):
     else:
       self.fail('Failed to detect error')
 
-
-  def testSourceRootIncludedWhenSourceMapFlagUsed(self):
+  # Test case where |enable_source_maps| is specified.
+  def testEnableSourceMaps(self):
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
-    root_dir = os.path.join(_HERE_DIR, 'tests', 'project1')
-    gen_dir = os.path.join(self._out_folder, 'project1')
 
-    # Build project1 which contains a tsconfig_base_sourcemap.json that enables
-    # sourcemaps generated as separate files, i.e. a file called foo.js.map will
-    # be created.
-    self._build_project1(tsconfig_base=os.path.relpath(
-        os.path.join(root_dir, 'tsconfig_base_sourcemap.json'), gen_dir))
+    expectations_dir = os.path.join(_HERE_DIR, 'tests', 'expected', 'project1')
 
-    # Ensure the sourcemap file was generated and the sourceRoot key exists and
-    # refers to the correct directory.
-    sourcemap_file = os.path.join(gen_dir, 'foo.js.map')
-    self.assertTrue(os.path.exists(sourcemap_file))
-    with open(sourcemap_file, encoding='utf-8') as f:
-      json_sourcemap = json.load(f)
-      self.assertTrue(os.path.samefile(json_sourcemap['sourceRoot'], root_dir))
+    # Build project1 which source maps enabled.
+    gen_dir = self._build_project1(enable_source_maps=True)
+
+    # Assert output is as expected.
+    def _read_file(parent_dir, file_name):
+      file_path = os.path.join(gen_dir, file_name)
+      with open(file_path, 'r', newline='') as f:
+        return f.read()
+
+    actual_js = _read_file(gen_dir, 'foo.js')
+    expected_js = _read_file(expectations_dir, 'foo.js')
+    self.assertMultiLineEqual(expected_js, actual_js)
 
 
 if __name__ == '__main__':

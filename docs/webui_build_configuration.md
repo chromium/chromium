@@ -206,6 +206,9 @@ path_mappings: Additional non-default path mappings for absolute imports. The
                flaky build errors.
 manifest_excludes: List of input files to exclude from the output
                    the manifest file.
+enable_source_maps: Defaults to "false". Setting it to "true" turns on TS
+                    compiler's 'inlineSourceMap' and 'inlineSources' flags.
+                    Non-inlined source maps are currently not supported.
 ```
 
 #### **Example**
