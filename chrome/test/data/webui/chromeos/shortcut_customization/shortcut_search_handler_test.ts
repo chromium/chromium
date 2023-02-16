@@ -4,15 +4,21 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {getShortcutSearchHandler, setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutSearchHandlerInterface} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('shortcutSearchHandlerTest', function() {
-  test('SettingGettingTestHandler', () => {
-    // TODO(longbowei): Replace with fake when built.
-    const fake_handler: ShortcutSearchHandlerInterface = new Object();
+  test('SettingGettingTestSearchHandler', () => {
+    const fake_handler: ShortcutSearchHandlerInterface =
+        new FakeShortcutSearchHandler();
     setShortcutSearchHandlerForTesting(fake_handler);
     assertEquals(fake_handler, getShortcutSearchHandler());
+  });
+
+  test('GetDefaultSearchHandler', () => {
+    const handler = getShortcutSearchHandler();
+    assertTrue(!!handler);
   });
 });

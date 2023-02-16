@@ -6,7 +6,7 @@ import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.moj
 
 import {keyToIconNameMap} from './input_key.js';
 import {stringToMojoString16} from './mojo_utils.js';
-import {AcceleratorCategory, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, TextAcceleratorPartType} from './shortcut_types.js';
+import {AcceleratorCategory, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, MojoSearchResult, TextAcceleratorPartType} from './shortcut_types.js';
 
 const fakeTimestamp: TimeTicks = {
   internalValue: BigInt(0),
@@ -234,6 +234,93 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAmbient,
     action: 2,
+  },
+];
+
+export const fakeSearchResults: MojoSearchResult[] = [
+  {
+    acceleratorLayoutInfo: {
+      category: AcceleratorCategory.kWindowsAndDesks,
+      subCategory: AcceleratorSubcategory.kWindows,
+      description: stringToMojoString16('Snap Window Left'),
+      style: LayoutStyle.kDefault,
+      source: AcceleratorSource.kAsh,
+      action: 0,
+    },
+    acceleratorInfos: [{
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+      locked: true,
+      layoutProperties: {
+        standardAccelerator: {
+          keyDisplay: stringToMojoString16('['),
+          accelerator: {
+            modifiers: Modifier.ALT,
+            keyCode: 219,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+      },
+    }],
+    relevanceScore: 0.8,
+  },
+  {
+    acceleratorLayoutInfo: {
+      category: AcceleratorCategory.kWindowsAndDesks,
+      subCategory: AcceleratorSubcategory.kWindows,
+      description: stringToMojoString16('Snap Window Right'),
+      style: LayoutStyle.kDefault,
+      source: AcceleratorSource.kAsh,
+      action: 1,
+    },
+    acceleratorInfos: [{
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+      locked: false,
+      layoutProperties: {
+        standardAccelerator: {
+          keyDisplay: stringToMojoString16(']'),
+          accelerator: {
+            modifiers: Modifier.ALT,
+            keyCode: 221,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+      },
+    }],
+    relevanceScore: 0.6,
+  },
+  {
+    acceleratorLayoutInfo: {
+      category: AcceleratorCategory.kWindowsAndDesks,
+      subCategory: AcceleratorSubcategory.kDesks,
+      description: stringToMojoString16('Create Desk'),
+      style: LayoutStyle.kDefault,
+      source: AcceleratorSource.kAsh,
+      action: 2,
+    },
+    acceleratorInfos: [{
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+      locked: false,
+      layoutProperties: {
+        standardAccelerator: {
+          keyDisplay: stringToMojoString16('+'),
+          accelerator: {
+            modifiers: Modifier.COMMAND | Modifier.SHIFT,
+            keyCode: 187,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+      },
+    }],
+    relevanceScore: 0.4,
   },
 ];
 

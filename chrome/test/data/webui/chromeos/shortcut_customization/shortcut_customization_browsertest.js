@@ -39,6 +39,7 @@ const tests = [
   ['AcceleratorEditDialogTest', 'accelerator_edit_dialog_test.js'],
   ['AcceleratorSubsectionTest', 'accelerator_subsection_test.js'],
   ['FakeShortcutProviderTest', 'fake_shortcut_provider_test.js'],
+  ['FakeShortcutSearchHandlerTest', 'fake_shortcut_search_handler_test.js'],
   ['InputKeyTest', 'input_key_test.js'],
   ['SearchBoxTest', 'search_box_test.js'],
   ['ShortcutCustomizationApp', 'shortcut_customization_test.js'],
