@@ -144,13 +144,12 @@ foo_module_desc = {
 ```
 
 Then, add the module descriptor to the appropriate descriptor list in
-//chrome/android/modules/chrome_feature_modules.gni, e.g. the Chrome Modern
-list:
+//chrome/android/modules/chrome_feature_modules.gni, e.g. the Monochrome list:
 
 ```gn
 import("//chrome/android/modules/foo/foo_module.gni")
 ...
-chrome_modern_module_descs += [ foo_module_desc ]
+monochrome_module_descs += [ foo_module_desc ]
 ```
 
 The next step is to add Foo to the list of feature modules for UMA recording.

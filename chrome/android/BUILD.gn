@@ -3742,7 +3742,6 @@ template("libchrome_impl") {
       deps += [ "//chrome/browser/android/vr:module_factory" ]
     }
 
-    module_descs = chrome_modern_module_descs
     forward_variables_from(invoker, "*", [ "deps" ])
   }
 }

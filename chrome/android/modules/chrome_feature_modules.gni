@@ -39,20 +39,17 @@ if (enable_arcore) {
 #   paks: (Optional) PAKs going into module.
 # Each new module needs to add a desc to one of the lists below.
 
-# Modules shipped in Chrome Modern (Android L+).
-chrome_modern_module_descs = [
+# Modules shipped in Monochrome (Android N+).
+monochrome_module_descs = [
   test_dummy_module_desc,
   stack_unwinder_module_desc,
 ]
 if (enable_vr) {
-  chrome_modern_module_descs += [ vr_module_desc ]
+  monochrome_module_descs += [ vr_module_desc ]
 }
 if (dfmify_dev_ui) {
-  chrome_modern_module_descs += [ dev_ui_module_desc ]
+  monochrome_module_descs += [ dev_ui_module_desc ]
 }
-
-# Modules shipped in Monochrome (Android N+).
-monochrome_module_descs = chrome_modern_module_descs
 if (false) {  # AR DFM is currently disabled
   monochrome_module_descs += [ ar_module_desc ]
 }
