@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
     return cryptohome_code_;
   }
 
+  std::string ToDebugString() const;
+
  private:
   Origin origin_;
   // Cryptohome-specific fields:

@@ -123,9 +123,8 @@ void CryptohomeRecoveryScreen::OnAuthenticateWithRecovery(
     std::unique_ptr<UserContext> user_context,
     absl::optional<AuthenticationError> error) {
   if (error.has_value()) {
-    LOG(ERROR) << "Failed to authenticate with recovery, code "
-               << static_cast<int>(
-                      error->get_cryptohome_recovery_server_error());
+    LOG(ERROR) << "Failed to authenticate with recovery, "
+               << error->ToDebugString();
     context()->user_context = std::move(user_context);
     view_->OnRecoveryFailed();
     return;
