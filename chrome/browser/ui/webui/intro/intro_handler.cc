@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -178,10 +179,10 @@ void IntroHandler::RegisterMessages() {
 }
 
 void IntroHandler::OnJavascriptAllowed() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (!is_device_managed_) {
     return;
   }
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   policy_store_observer_ = std::make_unique<PolicyStoreObserver>(base::BindOnce(
       &IntroHandler::FireManagedDisclaimerUpdate, base::Unretained(this)));
 #endif
