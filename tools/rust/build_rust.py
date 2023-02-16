@@ -72,6 +72,10 @@ EXCLUDED_TESTS = [
     # TODO(crbug.com/1347563): Re-enable when fixed.
     'tests/codegen/sanitizer-cfi-emit-type-checks.rs',
     'tests/codegen/sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs',
+    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/45222
+    # which appears to have regressed as of a recent LLVM update. This test is
+    # purely performance related, not correctness.
+    'tests/codegen/issue-45222.rs'
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
@@ -375,11 +379,11 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
 def GetTestArgs():
     args = TEST_SUITES
     for excluded in EXCLUDED_TESTS:
-        args.append('--skip')
+        args.append('--exclude')
         args.append(excluded)
     if sys.platform == 'win32':
         for excluded in EXCLUDED_TESTS_WINDOWS:
-            args.append('--skip')
+            args.append('--exclude')
             args.append(excluded)
     return args
 
