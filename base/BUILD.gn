@@ -4645,6 +4645,7 @@ fuzzer_test("base_activity_analyzer_fuzzer") {
   sources = [ "debug/activity_analyzer_fuzzer.cc" ]
   deps = [ "//base" ]
   dict = "debug/activity_analyzer_fuzzer.dict"
+  seed_corpus = "test/data/activity_analyzer_fuzzer"
 }
 
 if (is_mac) {
