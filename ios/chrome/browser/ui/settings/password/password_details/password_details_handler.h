@@ -17,21 +17,11 @@
 // password.
 - (void)showPasscodeDialog;
 
-// Called when the user wants to delete password. `origin` is a short website
-// version. It is displayed inside dialog. If `origin` is nil dialog is
-// displayed without message. `compromisedPassword` indicates whether password
-// is compromised.
-// TODO(crbug.com/1359392): Remove this when flag is cleaned up.
-- (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin
-                       compromisedPassword:(BOOL)compromisedPassword;
-
-// Called when the user wants to delete a password. `anchorView` and
-// `anchorRect` should be the button that triggered this deletion flow and the
-// coordinates of that button, to position the confirmation dialog correctly on
-// tablets.
+// Called when the user wants to delete a password. `anchorView` should be
+// the button that triggered this deletion flow, to position the confirmation
+// dialog correctly on tablets.
 - (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
-                                         anchorView:(UIView*)anchorView
-                                         anchorRect:(CGRect)anchorRect;
+                                         anchorView:(UIView*)anchorView;
 
 // Called when the user wants to save edited password.
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin;

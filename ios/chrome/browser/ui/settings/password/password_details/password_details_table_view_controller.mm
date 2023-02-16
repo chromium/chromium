@@ -596,16 +596,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   // Remove this verification when it is implemented for password grouping.
   if (!IsPasswordGroupingEnabled()) {
     DCHECK(self.handler);
-    // Pass origin only if password is present as confirmation message makes
-    // sense only in this case.
-    if ([self.passwords[0].password length]) {
-      [self.handler
-          showPasswordDeleteDialogWithOrigin:self.passwords[0].origins[0]
-                         compromisedPassword:self.passwords[0].isCompromised];
-    } else {
-      [self.handler showPasswordDeleteDialogWithOrigin:nil
-                                   compromisedPassword:NO];
-    }
+    [self.handler showPasswordDeleteDialogWithPasswordDetails:self.passwords[0]
+                                                   anchorView:nil];
   }
 }
 
@@ -1113,15 +1105,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   int position = buttonView.tag;
   DCHECK(position >= 0);
   DCHECK(self.handler);
-  if (self.isBlockedSite) {
-    [self.handler showPasswordDeleteDialogWithOrigin:nil
-                                 compromisedPassword:NO];
-  } else {
-    [self.handler
-        showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]
-                                         anchorView:buttonView
-                                         anchorRect:buttonView.frame];
-  }
+  [self.handler
+      showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]
+                                       anchorView:buttonView];
 }
 
 #pragma mark - UIResponder
