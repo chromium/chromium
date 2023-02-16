@@ -124,8 +124,8 @@ class DualReadingListModelTest : public testing::Test {
       local_or_syncable_model_storage_ptr_;
   base::WeakPtr<FakeReadingListModelStorage> account_model_storage_ptr_;
   // Owned by `dual_model_` and guaranteed to exist while `dual_model_` exists.
-  base::raw_ptr<const ReadingListModelImpl> local_or_syncable_model_ptr_;
-  base::raw_ptr<const ReadingListModelImpl> account_model_ptr_;
+  base::raw_ptr<ReadingListModelImpl> local_or_syncable_model_ptr_;
+  base::raw_ptr<ReadingListModelImpl> account_model_ptr_;
   std::unique_ptr<reading_list::DualReadingListModel> dual_model_;
 };
 
@@ -323,6 +323,75 @@ TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrl) {
   dual_model_->RemoveEntryByURL(kCommonUrl);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kCommonUrl), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrlFromSync) {
+  const GURL kLocalUrl = GURL("http://local_url.com/");
+  ResetStorageAndTriggerLoadCompletion({kLocalUrl},
+                                       /*initial_account_urls=*/{});
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = local_or_syncable_model_ptr_->BeginBatchUpdates();
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kLocalUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillRemoveEntry(dual_model_.get(), kLocalUrl));
+  EXPECT_CALL(observer_,
+              ReadingListDidRemoveEntry(dual_model_.get(), kLocalUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  local_or_syncable_model_ptr_->SyncRemoveEntry(kLocalUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kLocalUrl), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, RemoveAccountEntryByUrlFromSync) {
+  const GURL kAccountUrl = GURL("http://account_url.com/");
+  ResetStorageAndTriggerLoadCompletion(/*initial_local_urls=*/{},
+                                       {kAccountUrl});
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = account_model_ptr_->BeginBatchUpdates();
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kAccountUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillRemoveEntry(dual_model_.get(), kAccountUrl));
+  EXPECT_CALL(observer_,
+              ReadingListDidRemoveEntry(dual_model_.get(), kAccountUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  account_model_ptr_->SyncRemoveEntry(kAccountUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kAccountUrl), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrlFromSync) {
+  const GURL kCommonUrl = GURL("http://Common_url.com/");
+  ResetStorageAndTriggerLoadCompletion({kCommonUrl}, {kCommonUrl});
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = account_model_ptr_->BeginBatchUpdates();
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kCommonUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillRemoveEntry(dual_model_.get(), kCommonUrl));
+  EXPECT_CALL(observer_,
+              ReadingListDidRemoveEntry(dual_model_.get(), kCommonUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  account_model_ptr_->SyncRemoveEntry(kCommonUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kCommonUrl), NotNull());
+  EXPECT_THAT(account_model_ptr_->GetEntryByURL(kCommonUrl), IsNull());
 }
 
 }  // namespace

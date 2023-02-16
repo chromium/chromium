@@ -87,6 +87,11 @@ class DualReadingListModel : public ReadingListModel,
 
   // ReadingListModelObserver overrides.
   void ReadingListModelLoaded(const ReadingListModel* model) override;
+  void ReadingListWillRemoveEntry(const ReadingListModel* model,
+                                  const GURL& url) override;
+  void ReadingListDidRemoveEntry(const ReadingListModel* model,
+                                 const GURL& url) override;
+  void ReadingListDidApplyChanges(ReadingListModel* model) override;
 
   class ScopedReadingListBatchUpdateImpl : public ScopedReadingListBatchUpdate {
    public:
@@ -105,8 +110,16 @@ class DualReadingListModel : public ReadingListModel,
   StorageStateForTesting GetStorageStateForURLForTesting(const GURL& url);
 
  private:
+  void NotifyObserversWithWillRemoveEntry(const GURL& url);
+  void NotifyObserversWithDidRemoveEntry(const GURL& url);
+  void NotifyObserversWithDidApplyChanges();
+
   const std::unique_ptr<ReadingListModel> local_or_syncable_model_;
   const std::unique_ptr<ReadingListModel> account_model_;
+
+  // Indicates whether a ReadingListModelImpl::RemoveEntryByURL is currently
+  // performing on `local_or_syncable_model_` and `account_model_`.
+  bool ongoing_remove_entry_by_url_ = false;
 
   base::ObserverList<ReadingListModelObserver>::Unchecked observers_;
 

@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/dual_reading_list_model.h"
 
+#include "base/auto_reset.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -179,17 +180,17 @@ void DualReadingListModel::RemoveEntryByURL(const GURL& url) {
     return;
   }
 
-  for (auto& observer : observers_) {
-    observer.ReadingListWillRemoveEntry(this, url);
+  NotifyObserversWithWillRemoveEntry(url);
+
+  {
+    base::AutoReset<bool> auto_reset_ongoing_remove_entry_by_url(
+        &ongoing_remove_entry_by_url_, true);
+    local_or_syncable_model_->RemoveEntryByURL(url);
+    account_model_->RemoveEntryByURL(url);
   }
 
-  local_or_syncable_model_->RemoveEntryByURL(url);
-  account_model_->RemoveEntryByURL(url);
-
-  for (auto& observer : observers_) {
-    observer.ReadingListDidRemoveEntry(this, url);
-    observer.ReadingListDidApplyChanges(this);
-  }
+  NotifyObserversWithDidRemoveEntry(url);
+  NotifyObserversWithDidApplyChanges();
 }
 
 void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
@@ -255,6 +256,28 @@ void DualReadingListModel::ReadingListModelLoaded(
   }
 }
 
+void DualReadingListModel::ReadingListWillRemoveEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  if (!ongoing_remove_entry_by_url_) {
+    NotifyObserversWithWillRemoveEntry(url);
+  }
+}
+
+void DualReadingListModel::ReadingListDidRemoveEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  if (!ongoing_remove_entry_by_url_) {
+    NotifyObserversWithDidRemoveEntry(url);
+  }
+}
+
+void DualReadingListModel::ReadingListDidApplyChanges(ReadingListModel* model) {
+  if (!ongoing_remove_entry_by_url_) {
+    NotifyObserversWithDidApplyChanges();
+  }
+}
+
 DualReadingListModel::StorageStateForTesting
 DualReadingListModel::GetStorageStateForURLForTesting(const GURL& url) {
   const bool exists_in_local_or_syncable_model =
@@ -271,6 +294,24 @@ DualReadingListModel::GetStorageStateForURLForTesting(const GURL& url) {
     return StorageStateForTesting::kExistsInAccountModelOnly;
   }
   return StorageStateForTesting::kNotFound;
+}
+
+void DualReadingListModel::NotifyObserversWithWillRemoveEntry(const GURL& url) {
+  for (auto& observer : observers_) {
+    observer.ReadingListWillRemoveEntry(this, url);
+  }
+}
+
+void DualReadingListModel::NotifyObserversWithDidRemoveEntry(const GURL& url) {
+  for (auto& observer : observers_) {
+    observer.ReadingListDidRemoveEntry(this, url);
+  }
+}
+
+void DualReadingListModel::NotifyObserversWithDidApplyChanges() {
+  for (auto& observer : observers_) {
+    observer.ReadingListDidApplyChanges(this);
+  }
 }
 
 }  // namespace reading_list
