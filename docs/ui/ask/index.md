@@ -32,5 +32,5 @@ without a Google account.
 * [Desktop UI Channel](https://chat.google.com/room/AAAA0vhHCUE)
 * [Desktop UI Discussion](https://groups.google.com/a/google.com/forum/#!forum/chrome-desktop-ui)
 * [chrome-desktop-ui@google.com](mailto:chrome-desktop-ui@google.com)
-* [Desktop UI Process](go/cr-ui-process) (internal) has guidance for planning
-  medium-to-large-scale projects.
+* [Desktop UI Process](http://go/cr-ui-process) (internal) has guidance for
+  planning medium-to-large-scale projects.

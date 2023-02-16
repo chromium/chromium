@@ -2,6 +2,9 @@
 Developing in Chromium UI? Trying to figure out how to create your UI? Need to
 contact the Views team? You've reached the right place.
 
+If you're new to UI development, read the [starter guide](starter_guide.md).
+Otherwise, look below for more specific documentation.
+
 ## Quick Links
 |||---|||
 
