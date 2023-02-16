@@ -5135,6 +5135,26 @@
             ]
         }
     ],
+    "ForYouFre": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "close_should_proceed": "false"
+                    },
+                    "enable_features": [
+                        "ForYouFre"
+                    ]
+                }
+            ]
+        }
+    ],
     "ForceGpuMainThreadToNormalPriorityDrDc": [
         {
             "platforms": [

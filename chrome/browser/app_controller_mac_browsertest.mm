@@ -45,6 +45,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -635,8 +636,20 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
 
 class AppControllerOpenShortcutBrowserTest : public InProcessBrowserTest {
  protected:
-  AppControllerOpenShortcutBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({welcome::kForceEnabled}, {});
+  AppControllerOpenShortcutBrowserTest()
+      : AppControllerOpenShortcutBrowserTest(/*enable_fre=*/false) {}
+
+  AppControllerOpenShortcutBrowserTest(bool enable_fre) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        welcome::kForceEnabled};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    if (enable_fre) {
+      enabled_features.push_back(kForYouFre);
+    } else {
+      disabled_features.push_back(kForYouFre);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -685,6 +698,24 @@ IN_PROC_BROWSER_TEST_F(AppControllerOpenShortcutBrowserTest,
                        OpenShortcutOnStartup) {
   // The two tabs expected are the Welcome page and the desired URL.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(g_open_shortcut_url, browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetLastCommittedURL());
+}
+
+class AppControllerOpenShortcutWithFreBrowserTest
+    : public AppControllerOpenShortcutBrowserTest {
+ protected:
+  AppControllerOpenShortcutWithFreBrowserTest()
+      : AppControllerOpenShortcutBrowserTest(/*enable_fre=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(AppControllerOpenShortcutWithFreBrowserTest,
+                       OpenShortcutOnStartup) {
+  // The Welcome page is not expected.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
   EXPECT_EQ(g_open_shortcut_url,
       browser()->tab_strip_model()->GetActiveWebContents()
           ->GetLastCommittedURL());
