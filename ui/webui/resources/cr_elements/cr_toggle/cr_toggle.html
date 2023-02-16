@@ -89,6 +89,20 @@
         pointer-events: none;
       }
 
+      :host-context([chrome-refresh-2023]):host([disabled]) {
+        --cr-toggle-checked-bar-color:
+            var(--color-toggle-button-track-on-disabled,
+                rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+        --cr-toggle-checked-button-color:
+            var(--color-toggle-button-thumb-on-disabled, var(--cr-fallback-color-surface));
+        --cr-toggle-unchecked-bar-color: transparent;
+        --cr-toggle-unchecked-button-color:
+            var(--color-toggle-button-thumb-off-disabled,
+                rgba(var(--cr-fallback-color-on-surface-rgb),
+                    var(--cr-disabled-opacity)));
+        opacity: 1;
+      }
+
       #bar {
         background-color: var(--cr-toggle-unchecked-bar-color);
         border-radius: 8px;
@@ -119,6 +133,14 @@
 
       :host-context([chrome-refresh-2023]):host([checked]) #bar {
         border-color: var(--cr-toggle-checked-bar-color);
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled]) #bar {
+        border-color: var(--cr-toggle-unchecked-button-color);
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled][checked]) #bar {
+        border: none;
       }
 
       :host-context([chrome-refresh-2023]):host(:focus-visible) #bar {
