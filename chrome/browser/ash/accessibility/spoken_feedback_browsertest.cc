@@ -294,6 +294,12 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, NavigateNotificationCenter) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
+  EnableChromeVox();
+  sm_.ExpectSpeech("ChromeVox spoken feedback is ready");
+  sm_.Replay();
+}
+
 // Test Learn Mode by pressing a few keys in Learn Mode. Only available while
 // logged in.
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
@@ -1622,6 +1628,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
 // Search+A then P.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TogglePunctuationEcho) {
   EnableChromeVox();
+  StablizeChromeVoxState();
   sm_.Call([this]() {
     SendKeyPressWithSearch(ui::VKEY_A);
     SendKeyPress(ui::VKEY_P);
