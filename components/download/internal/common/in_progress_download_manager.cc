@@ -167,7 +167,7 @@ void OnPathReserved(
     const base::FilePath& target_path) {
   base::FilePath intermediate_path;
   if (!target_path.empty() &&
-      (result == PathValidationResult::SUCCESS ||
+      (download::IsPathValidationSuccessful(result) ||
        result == download::PathValidationResult::SAME_AS_SOURCE)) {
     if (!forced_file_path.empty()) {
       DCHECK_EQ(target_path, forced_file_path);

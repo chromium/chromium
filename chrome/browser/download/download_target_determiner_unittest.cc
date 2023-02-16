@@ -1140,6 +1140,8 @@ TEST_F(DownloadTargetDeterminerTest, ReservationFailed_Confirmation) {
     DownloadConfirmationReason expected_confirmation_reason;
   } kTestCases[] = {{download::PathValidationResult::SUCCESS,
                      DownloadConfirmationReason::NONE},
+                    {download::PathValidationResult::SUCCESS_RESOLVED_CONFLICT,
+                     DownloadConfirmationReason::NONE},
                     {download::PathValidationResult::CONFLICT,
                      DownloadConfirmationReason::TARGET_CONFLICT},
                     {download::PathValidationResult::PATH_NOT_WRITABLE,

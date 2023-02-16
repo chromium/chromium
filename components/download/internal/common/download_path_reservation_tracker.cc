@@ -240,7 +240,7 @@ PathValidationResult ResolveReservationConflicts(
     case DownloadPathReservationTracker::UNIQUIFY:
       return CreateUniqueFilename(max_path_component_length, info.start_time,
                                   target_path)
-                 ? PathValidationResult::SUCCESS
+                 ? PathValidationResult::SUCCESS_RESOLVED_CONFLICT
                  : PathValidationResult::CONFLICT;
 
     case DownloadPathReservationTracker::OVERWRITE:

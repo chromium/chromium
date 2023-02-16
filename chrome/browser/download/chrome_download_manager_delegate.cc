@@ -1195,7 +1195,7 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
   // After a new, unique filename has been generated, display the error dialog
   // with the filename automatically set to be the unique filename.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result == PathValidationResult::SUCCESS) {
+  if (download::IsPathValidationSuccessful(result)) {
     if (download_prefs_->PromptForDownload()) {
       ShowDownloadDialog(
           native_window, 0 /* total_bytes */,

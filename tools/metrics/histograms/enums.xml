@@ -29642,6 +29642,7 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Name too long"/>
   <int value="3" label="Conflict"/>
   <int value="4" label="Same as source"/>
+  <int value="5" label="Success after resolving conflict"/>
 </enum>
 
 <enum name="DownloadPromptStatus">

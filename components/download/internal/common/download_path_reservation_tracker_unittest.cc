@@ -298,7 +298,7 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingFiles) {
   ASSERT_TRUE(IsPathInUse(path));
 
   CreateReservation(item.get(), path, DownloadPathReservationTracker::UNIQUIFY,
-                    PathValidationResult::SUCCESS, path1);
+                    PathValidationResult::SUCCESS_RESOLVED_CONFLICT, path1);
 
   SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
   item.reset();
@@ -379,9 +379,9 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingReservations) {
     // Requesting a reservation for the same path with uniquification results in
     // a uniquified path.
     std::unique_ptr<MockDownloadItem> item2 = CreateDownloadItem(2);
-    CreateReservation(item2.get(), path,
-                      DownloadPathReservationTracker::UNIQUIFY,
-                      PathValidationResult::SUCCESS, uniquified_path);
+    CreateReservation(
+        item2.get(), path, DownloadPathReservationTracker::UNIQUIFY,
+        PathValidationResult::SUCCESS_RESOLVED_CONFLICT, uniquified_path);
     SetDownloadItemState(item2.get(), DownloadItem::COMPLETE);
   }
   RunUntilIdle();
@@ -392,9 +392,9 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingReservations) {
     // Since the previous download item was removed, requesting a reservation
     // for the same path should result in the same uniquified path.
     std::unique_ptr<MockDownloadItem> item2 = CreateDownloadItem(2);
-    CreateReservation(item2.get(), path,
-                      DownloadPathReservationTracker::UNIQUIFY,
-                      PathValidationResult::SUCCESS, uniquified_path);
+    CreateReservation(
+        item2.get(), path, DownloadPathReservationTracker::UNIQUIFY,
+        PathValidationResult::SUCCESS_RESOLVED_CONFLICT, uniquified_path);
     SetDownloadItemState(item2.get(), DownloadItem::COMPLETE);
   }
   RunUntilIdle();
@@ -451,7 +451,7 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingCaseReservations) {
 
   CreateReservation(
       item2.get(), path_Foo, DownloadPathReservationTracker::UNIQUIFY,
-      PathValidationResult::SUCCESS,
+      PathValidationResult::SUCCESS_RESOLVED_CONFLICT,
       GetPathInDownloadsDirectory(FILE_PATH_LITERAL("Foo (1).txt")));
 
   SetDownloadItemState(item1.get(), DownloadItem::COMPLETE);
@@ -477,8 +477,11 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
        i++) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
     base::FilePath expected_path;
+    PathValidationResult expected_result =
+        PathValidationResult::SUCCESS_RESOLVED_CONFLICT;
     if (i == 0) {
       expected_path = path;
+      expected_result = PathValidationResult::SUCCESS;
     } else if (i > 0 && i <= DownloadPathReservationTracker::kMaxUniqueFiles) {
       expected_path =
           path.InsertBeforeExtensionASCII(base::StringPrintf(" (%d)", i));
@@ -490,8 +493,8 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
     EXPECT_FALSE(IsPathInUse(expected_path));
 
     CreateReservation(items[i].get(), path,
-                      DownloadPathReservationTracker::UNIQUIFY,
-                      PathValidationResult::SUCCESS, expected_path);
+                      DownloadPathReservationTracker::UNIQUIFY, expected_result,
+                      expected_path);
   }
   // The next reservation for |path| will fail to be unique.
   std::unique_ptr<MockDownloadItem> download_item =
@@ -692,7 +695,7 @@ TEST_F(DownloadPathReservationTrackerTest, TruncationConflict) {
   CallGetReservedPath(item.get(), path, create_directory, conflict_action,
                       &reserved_path, &result);
   EXPECT_TRUE(IsPathInUse(reserved_path));
-  EXPECT_EQ(PathValidationResult::SUCCESS, result);
+  EXPECT_EQ(PathValidationResult::SUCCESS_RESOLVED_CONFLICT, result);
   EXPECT_EQ(path2, reserved_path);
   SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
 }

@@ -25,8 +25,17 @@ enum class PathValidationResult {
   NAME_TOO_LONG,
   CONFLICT,
   SAME_AS_SOURCE,
+  // There was a conflict, but it was successfully resolved via uniquification.
+  // This should typically be treated like a success, except when the user
+  // must decide to keep the uniquified file or cancel the download.
+  SUCCESS_RESOLVED_CONFLICT,
   COUNT,
 };
+
+inline bool IsPathValidationSuccessful(PathValidationResult result) {
+  return result == PathValidationResult::SUCCESS ||
+         result == PathValidationResult::SUCCESS_RESOLVED_CONFLICT;
+}
 
 // Chrome attempts to uniquify filenames that are assigned to downloads in order
 // to avoid overwriting files that already exist on the file system. Downloads
@@ -37,7 +46,8 @@ enum class PathValidationResult {
 class COMPONENTS_DOWNLOAD_EXPORT DownloadPathReservationTracker {
  public:
   // Callback used with |GetReservedPath|. |target_path| specifies the target
-  // path for the download. If |result| is SUCCESS then:
+  // path for the download. If |result| is SUCCESS or SUCCESS_RESOLVED_CONFLICT
+  // then:
   // - |requested_target_path| (passed into GetReservedPath()) was writeable.
   // - |target_path| was verified as being unique if uniqueness was
   //   required.

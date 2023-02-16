@@ -32,7 +32,7 @@ void DownloadDialogUtils::CreateNewFileDone(
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
     download::PathValidationResult result,
     const base::FilePath& target_path) {
-  if (result == download::PathValidationResult::SUCCESS) {
+  if (download::IsPathValidationSuccessful(result)) {
     std::move(callback).Run(DownloadConfirmationResult::CONFIRMED, target_path);
 
   } else {
