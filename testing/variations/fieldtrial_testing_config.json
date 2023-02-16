@@ -8974,6 +8974,21 @@
             ]
         }
     ],
+    "PolicyLogsPageAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PolicyLogsPageAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "PowerBookmarkBackend": [
         {
             "platforms": [
