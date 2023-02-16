@@ -486,7 +486,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ffmpeg
   # and whatever else without interference from each other.
-  'ffmpeg_revision': 'ee0c52d52036ecadfd38affec86c04937480bedb',
+  'ffmpeg_revision': '346d30b3f6631f2d47fa310f7dfeb78215706fc3',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
