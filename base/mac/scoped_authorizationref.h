@@ -59,6 +59,8 @@ class BASE_EXPORT ScopedAuthorizationRef {
     return authorization_;
   }
 
+  explicit operator bool() const { return authorization_ != nullptr; }
+
   // This is to be used only to take ownership of objects that are created
   // by pass-by-pointer create functions. To enforce this, require that the
   // object be reset to NULL before this may be used.

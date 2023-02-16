@@ -38,7 +38,7 @@ bool EnsureAuthorizationRightExists() {
   // The authorization right does not exist so create it.
   base::mac::ScopedAuthorizationRef authorization =
       base::mac::CreateAuthorization();
-  if (authorization.get() == nullptr) {
+  if (!authorization) {
     return false;
   }
 
@@ -94,7 +94,7 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
       base::mac::GetAuthorizationRightsWithPrompt(
           &rights, base::mac::NSToCFCast(prompt),
           kAuthorizationFlagDestroyRights);
-  return authorization.get() != nullptr;
+  return static_cast<bool>(authorization);
 }
 
 std::u16string GetMessageForBiometricLoginPrompt(

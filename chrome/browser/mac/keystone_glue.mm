@@ -904,7 +904,7 @@ NSString* const kVersionKey = @"KSVersion";
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
   base::mac::ScopedAuthorizationRef authorization =
       base::mac::AuthorizationCreateToRunAsRoot(base::mac::NSToCFCast(prompt));
-  if (!authorization.get()) {
+  if (!authorization) {
     return;
   }
 

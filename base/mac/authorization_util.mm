@@ -40,7 +40,7 @@ ScopedAuthorizationRef GetAuthorizationRightsWithPrompt(
     CFStringRef prompt,
     AuthorizationFlags extra_flags) {
   ScopedAuthorizationRef authorization = CreateAuthorization();
-  if (authorization.get() == nullptr) {
+  if (!authorization) {
     return authorization;
   }
 
