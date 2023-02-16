@@ -474,7 +474,14 @@ public class AutofillUiUtils {
                                                 resources.getDimensionPixelSize(widthId),
                                                 resources.getDimensionPixelSize(heightId)));
                 if (customIconBitmap != null) {
-                    return new BitmapDrawable(resources, customIconBitmap);
+                    // TODO(crbug.com/1313616): We have one gstatic card art image that is available
+                    // in a single size. All other card art images can be fetched in the desired
+                    // size. Scale the bitmap to match the desired size. This might not be required
+                    // when this gstatic card art image is deprecated.
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(customIconBitmap,
+                            resources.getDimensionPixelSize(widthId),
+                            resources.getDimensionPixelSize(heightId), true);
+                    return new BitmapDrawable(resources, scaledBitmap);
                 }
             }
         }
