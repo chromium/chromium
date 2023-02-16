@@ -48,6 +48,10 @@
   // No-op for unittests. This is only called when a user taps to close a cell,
   // not generically when items are removed from the data source.
 }
+- (void)gridViewController:(GridViewController*)gridViewController
+       didRemoveItemWIthID:(NSString*)itemID {
+  // No-op for unittests. This is only called when an item has been removed.
+}
 - (void)didTapPlusSignInGridViewController:
     (GridViewController*)gridViewController {
   // No-op for unittests. This is only called when a user taps on a

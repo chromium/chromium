@@ -1926,6 +1926,42 @@ chromium-metrics-reviews@google.com.
   <summary>Records the origin of dropped items in the tab switcher.</summary>
 </histogram>
 
+<histogram name="IOS.TabSwitcher.Idle.IncognitoTabGridPage" enum="Boolean"
+    expires_after="2024-02-08">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Tracks whether the user closed the incognito tab grid page without doing any
+    meaningful action. Meaningful actions are creating, moving, deleting or
+    switching tab. Recorded when the user closed the incognito tab grid page.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TabSwitcher.Idle.RecentTabs" enum="Boolean"
+    expires_after="2024-02-08">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Tracks whether the user closed the recent tabs page without doing any
+    meaningful action. Meaningful action is opening a tab. Recorded when the
+    user closed the recent tabs page or switched to a tab grid page.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TabSwitcher.Idle.RegularTabGridPage" enum="Boolean"
+    expires_after="2024-02-08">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Tracks whether the user closed the regular tab grid page without doing any
+    meaningful action. Meaningful actions are creating, moving, deleting or
+    switching tab. Recorded when the user closed the regular tab grid page.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
     enum="IOSTabSwitcherPageChangeInteraction" expires_after="2023-07-16">
   <owner>marq@chromium.org</owner>

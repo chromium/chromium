@@ -31,6 +31,15 @@
             (PinnedTabsViewController*)pinnedTabsViewController
               didChangeItemCount:(NSUInteger)count;
 
+// Tells the delegate that the item with `itemID` was moved.
+- (void)pinnedTabsViewController:
+            (PinnedTabsViewController*)pinnedTabsViewController
+               didMoveItemWithID:(NSString*)itemID;
+
+// Tells the delegate that the item with `itemID` was removed.
+- (void)pinnedTabsViewController:(PinnedTabsViewController*)gridViewController
+             didRemoveItemWIthID:(NSString*)itemID;
+
 // Tells the delegate that the `pinnedTabsViewController` visibility has
 // changed.
 - (void)pinnedTabsViewControllerVisibilityDidChange:

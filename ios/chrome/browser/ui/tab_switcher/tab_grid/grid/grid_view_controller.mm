@@ -1212,16 +1212,22 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [self animateEmptyStateIn];
     }
   };
+
+  __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
-    if (self.items.count > 0) {
-      [self.collectionView
-          selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+    if (weakSelf.items.count > 0) {
+      [weakSelf.collectionView
+          selectItemAtIndexPath:CreateIndexPath(weakSelf.selectedIndex)
                        animated:NO
                  scrollPosition:UICollectionViewScrollPositionNone];
     }
-    [self.delegate gridViewController:self didChangeItemCount:self.items.count];
-    [self updateFractionVisibleOfLastItem];
+    [weakSelf.delegate gridViewController:weakSelf
+                       didChangeItemCount:weakSelf.items.count];
+    [weakSelf.delegate gridViewController:weakSelf
+                      didRemoveItemWIthID:removedItemID];
+    [weakSelf updateFractionVisibleOfLastItem];
   };
+
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
                    useSpringAnimation:NO
@@ -1285,27 +1291,37 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.collectionView moveItemAtIndexPath:CreateIndexPath(fromIndex)
                                  toIndexPath:CreateIndexPath(toIndex)];
   };
+
+  __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
+    if (!weakSelf) {
+      return;
+    }
+
+    [weakSelf.delegate gridViewController:weakSelf
+                        didMoveItemWithID:itemID
+                                  toIndex:toIndex];
+
     // Bring back selected halo only for the moved cell, which lost it during
     // the move (drag & drop).
-    if (self.selectedIndex != toIndex) {
+    if (weakSelf.selectedIndex != toIndex) {
       return;
     }
     // Force reload of the selected cell now to avoid extra delay for the
     // blue halo to appear. Bring the halo in 100ms.
-    [UIView
-        animateWithDuration:0.1
-                 animations:^{
-                   [self.collectionView reloadItemsAtIndexPaths:@[
-                     CreateIndexPath(self.selectedIndex)
-                   ]];
-                   [self.collectionView
-                       selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                                    animated:NO
-                              scrollPosition:
-                                  UICollectionViewScrollPositionNone];
-                 }
-                 completion:nil];
+    [UIView animateWithDuration:0.1
+                     animations:^{
+                       [weakSelf.collectionView reloadItemsAtIndexPaths:@[
+                         CreateIndexPath(weakSelf.selectedIndex)
+                       ]];
+                       [weakSelf.collectionView
+                           selectItemAtIndexPath:CreateIndexPath(
+                                                     weakSelf.selectedIndex)
+                                        animated:NO
+                                  scrollPosition:
+                                      UICollectionViewScrollPositionNone];
+                     }
+                     completion:nil];
   };
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates

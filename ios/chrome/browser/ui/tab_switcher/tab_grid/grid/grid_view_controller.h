@@ -41,7 +41,7 @@
 // i.e., there was an intention to create a new item.
 - (void)didTapPlusSignInGridViewController:
     (GridViewController*)gridViewController;
-// Tells the delegate that the item at `sourceIndex` was moved to
+// Tells the delegate that the item with `itemID` was moved to
 // `destinationIndex`.
 - (void)gridViewController:(GridViewController*)gridViewController
          didMoveItemWithID:(NSString*)itemID
@@ -50,6 +50,9 @@
 // changed to `count`.
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count;
+// Tells the delegate that the item with `itemID` was removed.
+- (void)gridViewController:(GridViewController*)gridViewController
+       didRemoveItemWIthID:(NSString*)itemID;
 
 // Tells the delegate that the visibility of the last item of the grid changed.
 - (void)didChangeLastItemVisibilityInGridViewController:

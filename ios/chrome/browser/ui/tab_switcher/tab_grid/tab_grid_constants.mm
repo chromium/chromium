@@ -8,6 +8,14 @@
 #error "This file requires ARC support."
 #endif
 
+// Keys of UMA IOS.TabSwitcher.Idle histograms.
+const char kUMATabSwitcherIdleIncognitoTabGridPageHistogram[] =
+    "IOS.TabSwitcher.Idle.IncognitoTabGridPage";
+const char kUMATabSwitcherIdleRecentTabsHistogram[] =
+    "IOS.TabSwitcher.Idle.RecentTabs";
+const char kUMATabSwitcherIdleRegularTabGridPageHistogram[] =
+    "IOS.TabSwitcher.Idle.RegularTabGridPage";
+
 // Accessibility identifiers for automated testing.
 NSString* const kTabGridIncognitoTabsPageButtonIdentifier =
     @"TabGridIncognitoTabsPageButtonIdentifier";

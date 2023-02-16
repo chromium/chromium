@@ -306,6 +306,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       }
       completion:^(BOOL completed) {
         [weakSelf handleItemRemovalCompletion];
+        [weakSelf.delegate pinnedTabsViewController:weakSelf
+                                didRemoveItemWIthID:removedItemID];
       }];
 }
 
@@ -353,6 +355,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock collectionViewUpdatesCompletion = ^{
     [weakSelf updateCollectionViewAfterMovingItemToIndex:toIndex];
+    [weakSelf.delegate pinnedTabsViewController:weakSelf
+                              didMoveItemWithID:itemID];
   };
 
   [self.collectionView
