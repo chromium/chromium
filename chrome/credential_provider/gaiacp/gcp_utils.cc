@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <winternl.h>
+#include <string>
+#include "base/values.h"
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <malloc.h>
@@ -128,7 +130,6 @@ constexpr base::win::i18n::LanguageSelector::LangToOffset
 #define HANDLE_LANGUAGE(l_, o_) {L## #l_, o_},
         DO_LANGUAGES
 #undef HANDLE_LANGUAGE
-
 };
 
 base::FilePath GetStartupSentinelLocation(const std::wstring& version) {
@@ -982,7 +983,7 @@ void SecurelyClearBuffer(void* buffer, size_t length) {
 std::string SearchForKeyInStringDictUTF8(
     const std::string& json_string,
     const std::initializer_list<base::StringPiece>& path) {
-  DCHECK(path.size() > 0);
+  DCHECK_GT(path.size(), 0UL);
 
   absl::optional<base::Value> json_obj =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
@@ -998,9 +999,8 @@ std::string SearchForKeyInStringDictUTF8(
 std::wstring GetDictString(const base::Value& dict, const char* name) {
   DCHECK(name);
   DCHECK(dict.is_dict());
-  auto* value = dict.FindKey(name);
-  return value && value->is_string() ? base::UTF8ToWide(value->GetString())
-                                     : std::wstring();
+  const std::string* value = dict.GetDict().FindString(name);
+  return value ? base::UTF8ToWide(*value) : std::wstring();
 }
 
 std::wstring GetDictString(const std::unique_ptr<base::Value>& dict,
@@ -1011,8 +1011,8 @@ std::wstring GetDictString(const std::unique_ptr<base::Value>& dict,
 std::string GetDictStringUTF8(const base::Value& dict, const char* name) {
   DCHECK(name);
   DCHECK(dict.is_dict());
-  auto* value = dict.FindKey(name);
-  return value && value->is_string() ? value->GetString() : std::string();
+  const std::string* value = dict.GetDict().FindString(name);
+  return value ? *value : std::string();
 }
 
 HRESULT SearchForListInStringDictUTF8(
@@ -1020,7 +1020,7 @@ HRESULT SearchForListInStringDictUTF8(
     const std::string& json_string,
     const std::initializer_list<base::StringPiece>& path,
     std::vector<std::string>* output) {
-  DCHECK(path.size() > 0);
+  DCHECK_GT(path.size(), 0UL);
 
   absl::optional<base::Value> json_obj =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
@@ -1031,9 +1031,11 @@ HRESULT SearchForListInStringDictUTF8(
 
   auto* value = json_obj->FindListPath(base::JoinString(path, "."));
   if (value && value->is_list()) {
-    for (const base::Value& entry : value->GetList()) {
-      if (entry.FindKey(list_key) && entry.FindKey(list_key)->is_string()) {
-        output->push_back(entry.FindKey(list_key)->GetString());
+    for (const base::Value& entry_val : value->GetList()) {
+      const base::Value::Dict& entry = entry_val.GetDict();
+      const std::string* list_key_str = entry.FindString(list_key);
+      if (list_key_str) {
+        output->push_back(*list_key_str);
       } else {
         return E_FAIL;
       }
