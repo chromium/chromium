@@ -9,7 +9,7 @@ actions {
   code_cache_host_remote_action {
     id: 1
     m_did_generate_cacheable_metadata {
-      m_cache_type: CodeCacheType_kJavascript
+      m_cache_type: MojoLPM_CodeCacheType_kJavascript
       m_url {
         new {
           id: 1

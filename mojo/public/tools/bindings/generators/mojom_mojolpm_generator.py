@@ -440,24 +440,30 @@ class Generator(CppGenerator):
     return True
 
   def _EnumHasDuplicateValues(self, kind):
-    values = set()
+    values = dict()
     i = 0
     for field in kind.fields:
-      if field.name == 'MAX':
-        continue
+      value = None
       if field.value:
         if isinstance(field.value, str):
-          if field.value in values:
-            return True
-          values.add(field.value)
-          i = int(field.value, 0) + 1
+          # field.value is an integer value stored as a string
+          value = int(field.value, 0)
         else:
+          # field.value is a direct reference to another enum value, so it has
+          # to be a duplicate
+          assert isinstance(field.value, mojom.EnumValue)
           return True
       else:
-        if str(i) in values:
-          return True
-        values.add(str(i))
-        i += 1
+        # If there is no provided value, then the value is simply the next one
+        value = i
+
+      assert (value != None)
+      # If the value appears in the enum already, then it's a duplicate.
+      if value in values.values():
+        return True
+      values[field.name] = value
+      i = value + 1
+
     return False
 
   def _EnumFieldName(self, name, kind):

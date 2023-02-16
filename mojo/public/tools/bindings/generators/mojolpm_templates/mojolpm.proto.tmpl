@@ -48,9 +48,7 @@ enum {{enum_name}} {
 {%- endif %}
 {%-   set i = 0 %}
 {%-   for field in enum.fields %}
-{%-     if field.name != "MAX" %}
-  {{enum.name}}_{{field.name|enum_field_name(enum)}} = {{field.numeric_value}};
-{%-     endif %}
+  MojoLPM_{{enum.name}}_{{field.name|enum_field_name(enum)}} = {{field.numeric_value}};
 {%-   endfor %}
 }
 {%-   endif %}
