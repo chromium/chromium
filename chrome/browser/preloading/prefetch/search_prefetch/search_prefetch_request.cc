@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -464,6 +465,7 @@ void SearchPrefetchRequest::RecordClickTime() {
 
 std::unique_ptr<SearchPrefetchURLLoader>
 SearchPrefetchRequest::TakeSearchPrefetchURLLoader() {
+  DCHECK(streaming_url_loader_);
   streaming_url_loader_->ClearOwnerPointer();
 
   return std::move(streaming_url_loader_);

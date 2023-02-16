@@ -457,6 +457,10 @@ SearchPrefetchService::TakePrerenderFromMemoryCache(
   auto iter =
       RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
   if (iter == prefetches_.end()) {
+    // TODO(https://crbug.com/1414058): Recorder's state should not be
+    // kPrerendered, but it happened unexpectedly due to
+    // restarting/serviceworker interception within prerender navigation stack
+    // on ChromeOS.
     return nullptr;
   }
 
@@ -1108,6 +1112,7 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
           SearchPrefetchServingReason::kRequestFailed));
       break;
     case SearchPrefetchStatus::kPrerendered:
+    case SearchPrefetchStatus::kPrerenderedAndClicked:
       recorder.reason_ = SearchPrefetchServingReason::kPrerendered;
       break;
     default:
