@@ -320,14 +320,30 @@ ReadAnythingColorsModel::~ReadAnythingColorsModel() = default;
 
 ReadAnythingLineSpacingModel::ReadAnythingLineSpacingModel() {
   // Define the line spacing options available to the user.
-  lines_choices_.emplace_back(LineSpacing::kStandard);
-  lines_choices_.emplace_back(LineSpacing::kLoose);
-  lines_choices_.emplace_back(LineSpacing::kVeryLoose);
+  LineSpacingInfo kStandard = {
+      LineSpacing::kStandard,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD),
+      kReadAnythingLineSpacingStandardIcon};
+  LineSpacingInfo kLoose = {
+      LineSpacing::kLoose,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE),
+      kReadAnythingLineSpacingLooseIcon};
+  LineSpacingInfo kVeryLoose = {
+      LineSpacing::kVeryLoose,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE),
+      kReadAnythingLineSpacingVeryLooseIcon};
+
+  lines_choices_.emplace_back(kStandard);
+  lines_choices_.emplace_back(kLoose);
+  lines_choices_.emplace_back(kVeryLoose);
   lines_choices_.shrink_to_fit();
 
-  for (auto& line_spacing : lines_choices_) {
-    AddCheckItem(GetIndexForLineSpacing(line_spacing),
-                 GetLineSpacingName(line_spacing));
+  for (std::vector<LetterSpacing>::size_type i = 0; i < lines_choices_.size();
+       i++) {
+    AddCheckItem(i, lines_choices_[i].name);
+    SetIcon(i,
+            ui::ImageModel::FromVectorIcon(lines_choices_[i].icon_asset,
+                                           ui::kColorIcon, kSpacingIconSize));
   }
 }
 
@@ -350,25 +366,7 @@ size_t ReadAnythingLineSpacingModel::GetIndexForLineSpacing(
 }
 
 LineSpacing ReadAnythingLineSpacingModel::GetLineSpacingAt(size_t index) {
-  return lines_choices_[index];
-}
-
-std::u16string ReadAnythingLineSpacingModel::GetLineSpacingName(
-    LineSpacing line_spacing) const {
-  int label;
-  switch (line_spacing) {
-    // If we read the deprecated value, choose the closest option.
-    case LineSpacing::kTightDeprecated:
-    case LineSpacing::kStandard:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD;
-      break;
-    case LineSpacing::kLoose:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE;
-      break;
-    case LineSpacing::kVeryLoose:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE;
-  }
-  return l10n_util::GetStringUTF16(label);
+  return lines_choices_[index].enum_value;
 }
 
 ReadAnythingLineSpacingModel::~ReadAnythingLineSpacingModel() = default;
@@ -377,19 +375,35 @@ ReadAnythingLineSpacingModel::~ReadAnythingLineSpacingModel() = default;
 // ReadAnythingLetterSpacingModel
 ///////////////////////////////////////////////////////////////////////////////
 ReadAnythingLetterSpacingModel::ReadAnythingLetterSpacingModel() {
-  choices_.emplace_back(LetterSpacing::kStandard);
-  choices_.emplace_back(LetterSpacing::kWide);
-  choices_.emplace_back(LetterSpacing::kVeryWide);
-  choices_.shrink_to_fit();
+  LetterSpacingInfo kStandard = {
+      LetterSpacing::kStandard,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD),
+      kReadAnythingLetterSpacingStandardIcon};
+  LetterSpacingInfo kWide = {
+      LetterSpacing::kWide,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_WIDE),
+      kReadAnythingLetterSpacingWideIcon};
+  LetterSpacingInfo kVeryWide = {
+      LetterSpacing::kVeryWide,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_WIDE),
+      kReadAnythingLetterSpacingVeryWideIcon};
 
-  for (auto& letter_spacing : choices_) {
-    AddCheckItem(GetIndexForLetterSpacing(letter_spacing),
-                 GetLetterSpacingName(letter_spacing));
+  letters_choices_.emplace_back(kStandard);
+  letters_choices_.emplace_back(kWide);
+  letters_choices_.emplace_back(kVeryWide);
+  letters_choices_.shrink_to_fit();
+
+  for (std::vector<LetterSpacing>::size_type i = 0; i < letters_choices_.size();
+       i++) {
+    AddCheckItem(i, letters_choices_[i].name);
+    SetIcon(i,
+            ui::ImageModel::FromVectorIcon(letters_choices_[i].icon_asset,
+                                           ui::kColorIcon, kSpacingIconSize));
   }
 }
 
 bool ReadAnythingLetterSpacingModel::IsValidIndex(size_t index) {
-  return index < choices_.size();
+  return index < letters_choices_.size();
 }
 
 size_t ReadAnythingLetterSpacingModel::GetIndexForLetterSpacing(
@@ -407,24 +421,7 @@ size_t ReadAnythingLetterSpacingModel::GetIndexForLetterSpacing(
 }
 
 LetterSpacing ReadAnythingLetterSpacingModel::GetLetterSpacingAt(size_t index) {
-  return choices_[index];
-}
-
-std::u16string ReadAnythingLetterSpacingModel::GetLetterSpacingName(
-    LetterSpacing letter_spacing) const {
-  int label;
-  switch (letter_spacing) {
-    case LetterSpacing::kStandard:
-    default:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD;
-      break;
-    case LetterSpacing::kWide:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_WIDE;
-      break;
-    case LetterSpacing::kVeryWide:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_WIDE;
-  }
-  return l10n_util::GetStringUTF16(label);
+  return letters_choices_[index].enum_value;
 }
 
 ReadAnythingLetterSpacingModel::~ReadAnythingLetterSpacingModel() = default;

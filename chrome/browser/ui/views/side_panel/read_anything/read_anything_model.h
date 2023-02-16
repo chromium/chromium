@@ -116,17 +116,25 @@ class ReadAnythingLineSpacingModel : public ReadAnythingMenuModel {
       delete;
   ~ReadAnythingLineSpacingModel() override;
 
+  // Simple struct to hold the various spacings to keep code cleaner.
+  struct LineSpacingInfo {
+    // The enum value of the line spacing.
+    read_anything::mojom::LineSpacing enum_value;
+
+    // The name of the line spacing, e.g. Standard, Loose, Very Loose.
+    std::u16string name;
+
+    // The resources value/identifier for the icon image asset.
+    const gfx::VectorIcon& icon_asset;
+  };
+
   bool IsValidIndex(size_t index) override;
   size_t GetIndexForLineSpacing(read_anything::mojom::LineSpacing line_spacing);
   read_anything::mojom::LineSpacing GetLineSpacingAt(size_t index);
 
  private:
   // Names for the drop down options in front-end.
-  std::vector<read_anything::mojom::LineSpacing> lines_choices_;
-
-  // Display names for line spacing choices
-  std::u16string GetLineSpacingName(
-      read_anything::mojom::LineSpacing line_spacing) const;
+  std::vector<LineSpacingInfo> lines_choices_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,6 +154,18 @@ class ReadAnythingLetterSpacingModel : public ReadAnythingMenuModel {
       const ReadAnythingLetterSpacingModel&) = delete;
   ~ReadAnythingLetterSpacingModel() override;
 
+  // Simple struct to hold the various spacings to keep code cleaner.
+  struct LetterSpacingInfo {
+    // The enum value of the letter spacing.
+    read_anything::mojom::LetterSpacing enum_value;
+
+    // The name of the letter spacing, e.g. Standard, Wide, Very Wide.
+    std::u16string name;
+
+    // The resources value/identifier for the icon image asset.
+    const gfx::VectorIcon& icon_asset;
+  };
+
   bool IsValidIndex(size_t index) override;
   size_t GetIndexForLetterSpacing(
       read_anything::mojom::LetterSpacing letter_spacing);
@@ -153,11 +173,7 @@ class ReadAnythingLetterSpacingModel : public ReadAnythingMenuModel {
 
  private:
   // Letter spacing choices for the drop down options in front-end.
-  std::vector<read_anything::mojom::LetterSpacing> choices_;
-
-  // Display names for each letter spacing choice
-  std::u16string GetLetterSpacingName(
-      read_anything::mojom::LetterSpacing letter_spacing) const;
+  std::vector<LetterSpacingInfo> letters_choices_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -238,9 +254,9 @@ class ReadAnythingModel {
   // A scale multiplier for font size (internal use only, not shown to user).
   float font_scale_ = kReadAnythingDefaultFontScale;
 
-  read_anything::mojom::LineSpacing line_spacing_ = LineSpacing::kStandard;
+  read_anything::mojom::LineSpacing line_spacing_ = LineSpacing::kDefaultValue;
   read_anything::mojom::LetterSpacing letter_spacing_ =
-      LetterSpacing::kStandard;
+      LetterSpacing::kDefaultValue;
 
   // Currently selected index for colors combobox
   int colors_combobox_index_ = 0;

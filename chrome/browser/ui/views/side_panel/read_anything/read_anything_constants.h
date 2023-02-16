@@ -24,6 +24,7 @@ const int kMinimumComboboxWidth = 110;
 const int kButtonPadding = 2;
 const int kIconSize = 16;
 const int kColorsIconSize = 24;
+const int kSpacingIconSize = 20;
 
 const char kReadAnythingDefaultFontName[] = "Standard font";
 const char kReadAnythingDefaultFontSyle[] = ", Sans-serif, 15px";
