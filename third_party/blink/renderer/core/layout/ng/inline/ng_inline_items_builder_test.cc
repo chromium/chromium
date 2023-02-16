@@ -204,7 +204,6 @@ TEST_F(NGInlineItemsBuilderTest, CollapseSpaces) {
   String collapsed("text text text text");
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kNormal);
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kNowrap);
-  TestWhitespaceValue(collapsed, input, EWhiteSpace::kWebkitNowrap);
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kPreLine);
   TestWhitespaceValue(input, input, EWhiteSpace::kPre);
   TestWhitespaceValue(input, input, EWhiteSpace::kPreWrap);
@@ -215,7 +214,6 @@ TEST_F(NGInlineItemsBuilderTest, CollapseTabs) {
   String collapsed("text text text text");
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kNormal);
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kNowrap);
-  TestWhitespaceValue(collapsed, input, EWhiteSpace::kWebkitNowrap);
   TestWhitespaceValue(collapsed, input, EWhiteSpace::kPreLine);
   TestWhitespaceValue(input, input, EWhiteSpace::kPre);
   TestWhitespaceValue(input, input, EWhiteSpace::kPreWrap);

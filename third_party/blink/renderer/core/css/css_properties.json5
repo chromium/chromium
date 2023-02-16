@@ -5883,7 +5883,7 @@
       inherited: true,
       field_template: "bitset_keyword",
       keywords: [
-        "normal", "pre", "pre-wrap", "pre-line", "nowrap", "-webkit-nowrap", "break-spaces"
+        "normal", "pre", "pre-wrap", "pre-line", "nowrap", "break-spaces"
       ],
       typedom_types: ["Keyword"],
       default_value: "normal",
