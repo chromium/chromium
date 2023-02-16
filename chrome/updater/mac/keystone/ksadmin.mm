@@ -627,6 +627,18 @@ void KSAdminApp::FirstTaskRun() {
       return;
     }
   }
+
+  // Fallbacks to Register: if none of the above exist, these switches signal
+  // an intent to register.
+  for (const std::string& command :
+       {kCommandTag, kCommandTagKey, kCommandTagPath, kCommandBrandKey,
+        kCommandBrandPath, kCommandVersion, kCommandVersionKey,
+        kCommandVersionPath, kCommandXCPath}) {
+    if (HasSwitch(command)) {
+      Register();
+      return;
+    }
+  }
   PrintUsage("");
 }
 
@@ -642,7 +654,11 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+
+  // base::CommandLine may reorder arguments and switches, this is not the exact
+  // command line.
   VLOG(0) << base::CommandLine::ForCurrentProcess()->GetCommandLineString();
+
   return base::MakeRefCounted<KSAdminApp>(command_line)->Run();
 }
 
