@@ -266,6 +266,9 @@ absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
   // all ColorModel values are determinantly handled.
 }
 
+bool PrintSettings::RequestedMedia::operator==(
+    const PrintSettings::RequestedMedia& other) const = default;
+
 // Global SequenceNumber used for generating unique cookie values.
 static base::AtomicSequenceNumber cookie_seq;
 
@@ -321,6 +324,8 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
 }
 
 PrintSettings::~PrintSettings() = default;
+
+bool PrintSettings::operator==(const PrintSettings& other) const = default;
 
 void PrintSettings::Clear() {
   ranges_.clear();

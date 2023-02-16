@@ -61,8 +61,9 @@ bool StructTraits<printing::mojom::PageSetupDataView, printing::PageSetup>::
     return false;
   if (page_setup.content_area() != content_area)
     return false;
-  if (!effective_margins.Equals(page_setup.effective_margins()))
+  if (page_setup.effective_margins() != effective_margins) {
     return false;
+  }
 
   *out = page_setup;
   return true;

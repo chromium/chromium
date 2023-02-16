@@ -164,8 +164,8 @@ TEST(PrintSettingsConversionTest, WithValidImageableArea) {
   EXPECT_EQ(settings->page_setup_device_units().physical_size(), kExpectedSize);
   EXPECT_EQ(settings->page_setup_device_units().printable_area(),
             kExpectedPrintableArea);
-  EXPECT_TRUE(settings->page_setup_device_units().effective_margins().Equals(
-      kExpectedPageMargins));
+  EXPECT_EQ(settings->page_setup_device_units().effective_margins(),
+            kExpectedPageMargins);
 }
 
 TEST(PrintSettingsConversionTest, WithValidFlippedImageableArea) {
@@ -187,8 +187,8 @@ TEST(PrintSettingsConversionTest, WithValidFlippedImageableArea) {
   EXPECT_EQ(settings->page_setup_device_units().physical_size(), kExpectedSize);
   EXPECT_EQ(settings->page_setup_device_units().printable_area(),
             kExpectedPrintableArea);
-  EXPECT_TRUE(settings->page_setup_device_units().effective_margins().Equals(
-      kExpectedPageMargins));
+  EXPECT_EQ(settings->page_setup_device_units().effective_margins(),
+            kExpectedPageMargins);
 }
 
 TEST(PrintSettingsConversionTest, WithOutOfBoundsImageableArea) {
@@ -201,8 +201,8 @@ TEST(PrintSettingsConversionTest, WithOutOfBoundsImageableArea) {
   ASSERT_TRUE(settings);
   EXPECT_TRUE(settings->page_setup_device_units().physical_size().IsEmpty());
   EXPECT_TRUE(settings->page_setup_device_units().printable_area().IsEmpty());
-  EXPECT_TRUE(settings->page_setup_device_units().effective_margins().Equals(
-      PageMargins(0, 0, 0, 0, 0, 0)));
+  EXPECT_EQ(settings->page_setup_device_units().effective_margins(),
+            PageMargins(0, 0, 0, 0, 0, 0));
 }
 
 TEST(PrintSettingsConversionTest, WithMissingImageableAreaValue) {
@@ -215,8 +215,8 @@ TEST(PrintSettingsConversionTest, WithMissingImageableAreaValue) {
   ASSERT_TRUE(settings);
   EXPECT_TRUE(settings->page_setup_device_units().physical_size().IsEmpty());
   EXPECT_TRUE(settings->page_setup_device_units().printable_area().IsEmpty());
-  EXPECT_TRUE(settings->page_setup_device_units().effective_margins().Equals(
-      PageMargins(0, 0, 0, 0, 0, 0)));
+  EXPECT_EQ(settings->page_setup_device_units().effective_margins(),
+            PageMargins(0, 0, 0, 0, 0, 0));
 }
 
 TEST(PrintSettingsConversionTest, WithCustomMarginsAndImageableArea) {
@@ -240,7 +240,7 @@ TEST(PrintSettingsConversionTest, WithCustomMarginsAndImageableArea) {
   const PageSetup& page_setup = settings->page_setup_device_units();
   EXPECT_EQ(page_setup.physical_size(), kExpectedSize);
   EXPECT_EQ(page_setup.printable_area(), kExpectedPrintableArea);
-  EXPECT_TRUE(page_setup.effective_margins().Equals(kExpectedPageMargins));
+  EXPECT_EQ(page_setup.effective_margins(), kExpectedPageMargins);
 }
 
 TEST(PrintSettingsConversionTest, MissingDeviceName) {

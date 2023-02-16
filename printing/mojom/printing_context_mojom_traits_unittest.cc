@@ -366,10 +366,10 @@ TEST(PrintingContextMojomTraitsTest, TestSerializeAndDeserializePageSetup) {
             output.overlay_area());
   EXPECT_EQ(kPageSetupAsymmetricalMargins.content_area(),
             output.content_area());
-  EXPECT_TRUE(kPageSetupAsymmetricalMargins.effective_margins().Equals(
-      output.effective_margins()));
-  EXPECT_TRUE(kPageSetupAsymmetricalMargins.requested_margins().Equals(
-      output.requested_margins()));
+  EXPECT_EQ(kPageSetupAsymmetricalMargins.effective_margins(),
+            output.effective_margins());
+  EXPECT_EQ(kPageSetupAsymmetricalMargins.requested_margins(),
+            output.requested_margins());
   EXPECT_EQ(kPageSetupAsymmetricalMargins.forced_margins(),
             output.forced_margins());
   EXPECT_EQ(kPageSetupAsymmetricalMargins.text_height(), output.text_height());
@@ -387,10 +387,10 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_EQ(kPageSetupForcedMargins.printable_area(), output.printable_area());
   EXPECT_EQ(kPageSetupForcedMargins.overlay_area(), output.overlay_area());
   EXPECT_EQ(kPageSetupForcedMargins.content_area(), output.content_area());
-  EXPECT_TRUE(kPageSetupForcedMargins.effective_margins().Equals(
-      output.effective_margins()));
-  EXPECT_TRUE(kPageSetupForcedMargins.requested_margins().Equals(
-      output.requested_margins()));
+  EXPECT_EQ(kPageSetupForcedMargins.effective_margins(),
+            output.effective_margins());
+  EXPECT_EQ(kPageSetupForcedMargins.requested_margins(),
+            output.requested_margins());
   EXPECT_EQ(kPageSetupForcedMargins.forced_margins(), output.forced_margins());
   EXPECT_EQ(kPageSetupForcedMargins.text_height(), output.text_height());
 }
@@ -487,8 +487,7 @@ TEST(PrintingContextMojomTraitsTest,
                                    kPrintSettingsRequestedMedia));
   // `page_setup_device_units` is set programmatically by PrintSettings based
   // upon all other parameters, so rely upon the value from the constant input.
-  EXPECT_TRUE(output.page_setup_device_units().Equals(
-      kInput.page_setup_device_units()));
+  EXPECT_EQ(output.page_setup_device_units(), kInput.page_setup_device_units());
   EXPECT_EQ(output.dpi_size(), kPrintSettingsDpi1);
   EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor1);
   EXPECT_EQ(output.rasterize_pdf(), kPrintSettingsRasterizePdf1);
@@ -544,8 +543,7 @@ TEST(PrintingContextMojomTraitsTest,
                                    kPrintSettingsRequestedMedia));
   // `page_setup_device_units` is set programmatically by PrintSettings based
   // upon all other parameters, so rely upon the value from the constant input.
-  EXPECT_TRUE(output.page_setup_device_units().Equals(
-      kInput.page_setup_device_units()));
+  EXPECT_EQ(output.page_setup_device_units(), kInput.page_setup_device_units());
   EXPECT_EQ(output.dpi_size(), kPrintSettingsDpi2);
   EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor2);
   EXPECT_EQ(output.rasterize_pdf(), kPrintSettingsRasterizePdf2);
@@ -597,8 +595,7 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(
       kInput, output));
 
-  EXPECT_TRUE(output.page_setup_device_units().Equals(
-      kInput.page_setup_device_units()));
+  EXPECT_EQ(output.page_setup_device_units(), kInput.page_setup_device_units());
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -59,14 +59,15 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   // Media properties requested by the user. Default instance represents
   // default media selection.
   struct RequestedMedia {
+    bool operator==(const RequestedMedia& other) const;
+    bool IsDefault() const {
+      return size_microns.IsEmpty() && vendor_id.empty();
+    }
+
     // Size of the media, in microns.
     gfx::Size size_microns;
     // Platform specific id to map it back to the particular media.
     std::string vendor_id;
-
-    bool IsDefault() const {
-      return size_microns.IsEmpty() && vendor_id.empty();
-    }
   };
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -77,6 +78,8 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   PrintSettings(const PrintSettings&);
   PrintSettings& operator=(const PrintSettings&);
   ~PrintSettings();
+
+  bool operator==(const PrintSettings& other) const;
 
   // Reinitialize the settings to the default values.
   void Clear();

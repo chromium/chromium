@@ -16,10 +16,9 @@ class COMPONENT_EXPORT(PRINTING) PageMargins {
   PageMargins();
   PageMargins(int header, int footer, int left, int right, int top, int bottom);
 
-  void Clear();
+  bool operator==(const PageMargins& other) const;
 
-  // Equality operator.
-  bool Equals(const PageMargins& rhs) const;
+  void Clear();
 
   // Vertical space for the overlay from the top of the sheet.
   int header;
@@ -45,14 +44,13 @@ class COMPONENT_EXPORT(PRINTING) PageSetup {
   PageSetup(const PageSetup& other);
   ~PageSetup();
 
+  bool operator==(const PageSetup& other) const;
+
   // Gets a symmetrical printable area.
   static gfx::Rect GetSymmetricalPrintableArea(const gfx::Size& page_size,
                                                const gfx::Rect& printable_area);
 
   void Clear();
-
-  // Equality operator.
-  bool Equals(const PageSetup& rhs) const;
 
   void Init(const gfx::Size& physical_size,
             const gfx::Rect& printable_area,

@@ -49,6 +49,8 @@ PageMargins::PageMargins(int header,
       top(top),
       bottom(bottom) {}
 
+bool PageMargins::operator==(const PageMargins& other) const = default;
+
 void PageMargins::Clear() {
   header = 0;
   footer = 0;
@@ -56,11 +58,6 @@ void PageMargins::Clear() {
   right = 0;
   top = 0;
   bottom = 0;
-}
-
-bool PageMargins::Equals(const PageMargins& rhs) const {
-  return header == rhs.header && footer == rhs.footer && left == rhs.left &&
-         top == rhs.top && right == rhs.right && bottom == rhs.bottom;
 }
 
 PageSetup::PageSetup() {
@@ -79,6 +76,8 @@ PageSetup::PageSetup(const gfx::Size& physical_size,
 PageSetup::PageSetup(const PageSetup& other) = default;
 
 PageSetup::~PageSetup() = default;
+
+bool PageSetup::operator==(const PageSetup& other) const = default;
 
 // static
 gfx::Rect PageSetup::GetSymmetricalPrintableArea(
@@ -108,16 +107,6 @@ void PageSetup::Clear() {
   effective_margins_.Clear();
   text_height_ = 0;
   forced_margins_ = false;
-}
-
-bool PageSetup::Equals(const PageSetup& rhs) const {
-  return physical_size_ == rhs.physical_size_ &&
-         printable_area_ == rhs.printable_area_ &&
-         overlay_area_ == rhs.overlay_area_ &&
-         content_area_ == rhs.content_area_ &&
-         effective_margins_.Equals(rhs.effective_margins_) &&
-         requested_margins_.Equals(rhs.requested_margins_) &&
-         text_height_ == rhs.text_height_;
 }
 
 void PageSetup::Init(const gfx::Size& physical_size,
