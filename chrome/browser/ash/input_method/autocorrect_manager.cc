@@ -341,15 +341,16 @@ void RecordPhysicalKeyboardAutocorrectPref(const std::string& engine_id,
       "InputMethod.Assistive.AutocorrectV2.PkUserPreference.All", pref);
 }
 
-bool CouldTriggerAutocorrectWithSurroundingText(const std::u16string& text,
-                                                size_t cursor_pos,
-                                                size_t anchor_pos) {
+bool CouldTriggerAutocorrectWithSurroundingText(
+    const std::u16string& text,
+    const gfx::Range selection_range) {
   // TODO(b/161490813): Do not count cases that autocorrect is disabled.
   //    Currently, there are different logics in different places that disable
   //    autocorrect based on settings, domain and text field attributes.
   //    Ideally, all the cases that autocorrect is disabled on a text field
   //    must not be counted here.
-  return cursor_pos == anchor_pos && cursor_pos == text.size() &&
+  const uint32_t cursor_pos = selection_range.end();
+  return selection_range.is_empty() && cursor_pos == text.size() &&
          text.size() >= 2 && base::IsAsciiWhitespace(text.back()) &&
          !base::IsAsciiWhitespace(text[text.size() - 2]);
 }
@@ -749,15 +750,14 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
   return false;
 }
 
-void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
-                                                  const int cursor_pos,
-                                                  const int anchor_pos) {
+void AutocorrectManager::OnSurroundingTextChanged(
+    const std::u16string& text,
+    const gfx::Range selection_range) {
   if (error_on_hiding_undo_window_) {
     HideUndoWindow();
   }
 
-  if (CouldTriggerAutocorrectWithSurroundingText(text, cursor_pos,
-                                                 anchor_pos)) {
+  if (CouldTriggerAutocorrectWithSurroundingText(text, selection_range)) {
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kCouldTriggerAutocorrect);
   }
@@ -804,9 +804,6 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
           ? text.length() - pending_autocorrect_->text_length
           : 0;
 
-  const uint32_t cursor_pos_unsigned
-      = base::checked_cast<uint32_t>(cursor_pos);
-
   // If range is empty, it means user has mutated suggestion. So, clear range
   // and consider autocorrect suggestion as implicitly rejected.
   if (range.is_empty()) {
@@ -838,10 +835,12 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
     return;
   }
 
+  const uint32_t cursor_pos = selection_range.end();
+
   // If cursor is inside autocorrect range (inclusive), show undo window and
   // record relevant metrics.
-  if (cursor_pos_unsigned >= range.start() &&
-      cursor_pos_unsigned <= range.end() && cursor_pos == anchor_pos) {
+  if (cursor_pos >= range.start() && cursor_pos <= range.end() &&
+      selection_range.is_empty()) {
     ShowUndoWindow(range, text);
   } else {
     // Ensure undo window is hidden when cursor is not inside the autocorrect
@@ -852,8 +851,8 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   // Only update at the end so that the metrics can use the cursor selection
   // just before the edit
   pending_autocorrect_->last_autocorrect_range = range;
-  pending_autocorrect_->last_selection_range = gfx::Range(
-      std::min(cursor_pos, anchor_pos), std::max(cursor_pos, anchor_pos));
+  pending_autocorrect_->last_selection_range =
+      gfx::Range(selection_range.GetMin(), selection_range.GetMax());
 }
 
 void AutocorrectManager::OnFocus(int context_id) {

@@ -40,8 +40,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
   void CandidateClicked(uint32_t index) override;
   void AssistiveWindowChanged(const ash::ime::AssistiveWindow& window) override;
   void SetSurroundingText(const std::u16string& text,
-                          uint32_t cursor_pos,
-                          uint32_t anchor_pos,
+                          gfx::Range selection_range,
                           uint32_t offset_pos) override;
   bool IsReadyForTesting() override;
 
@@ -69,12 +68,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
     return last_set_surrounding_text_;
   }
 
-  uint32_t last_set_surrounding_cursor_pos() const {
-    return last_set_surrounding_cursor_pos_;
-  }
-
-  uint32_t last_set_surrounding_anchor_pos() const {
-    return last_set_surrounding_anchor_pos_;
+  const gfx::Range& last_set_selection_range() const {
+    return last_set_selection_range_;
   }
 
   const ui::KeyEvent* last_processed_key_event() const {
@@ -94,8 +89,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
   InputContext last_text_input_context_;
   std::string last_activated_property_;
   std::u16string last_set_surrounding_text_;
-  uint32_t last_set_surrounding_cursor_pos_;
-  uint32_t last_set_surrounding_anchor_pos_;
+  gfx::Range last_set_selection_range_;
   std::unique_ptr<ui::KeyEvent> last_processed_key_event_;
   KeyEventDoneCallback last_passed_callback_;
   std::string active_component_id_;

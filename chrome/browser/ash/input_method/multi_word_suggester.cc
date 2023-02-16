@@ -139,9 +139,8 @@ bool ShouldShowTabGuide(Profile* profile) {
 }
 
 bool CouldSuggestWithSurroundingText(const base::StringPiece16& text,
-                                     size_t cursor_pos,
-                                     size_t anchor_pos) {
-  return cursor_pos == anchor_pos && cursor_pos == text.size() &&
+                                     const gfx::Range selection_range) {
+  return selection_range.is_empty() && selection_range.end() == text.size() &&
          text.size() >= kMinimumNumberOfCharsToProduceSuggestion;
 }
 
@@ -183,10 +182,10 @@ void MultiWordSuggester::OnBlur() {
   state_.ResetSuggestion();
 }
 
-void MultiWordSuggester::OnSurroundingTextChanged(const std::u16string& text,
-                                                  size_t cursor_pos,
-                                                  size_t anchor_pos) {
-  if (CouldSuggestWithSurroundingText(text, cursor_pos, anchor_pos) &&
+void MultiWordSuggester::OnSurroundingTextChanged(
+    const std::u16string& text,
+    const gfx::Range selection_range) {
+  if (CouldSuggestWithSurroundingText(text, selection_range) &&
       !state_.IsSuggestionShowing()) {
     RecordCouldPossiblyShowSuggestion(
         WouldBeInCompletionMode(text)
@@ -194,11 +193,12 @@ void MultiWordSuggester::OnSurroundingTextChanged(const std::u16string& text,
             : ime::AssistiveSuggestionMode::kPrediction);
   }
 
+  const uint32_t cursor_pos = selection_range.start();
   auto surrounding_text = SuggestionState::SurroundingText{
       .text = text,
       .cursor_pos = cursor_pos,
       .cursor_at_end_of_text =
-          (cursor_pos == anchor_pos && cursor_pos == text.length())};
+          (selection_range.is_empty() && cursor_pos == text.length())};
   state_.UpdateSurroundingText(surrounding_text);
   DisplaySuggestionIfAvailable();
 }
@@ -261,8 +261,7 @@ SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
 
 bool MultiWordSuggester::TrySuggestWithSurroundingText(
     const std::u16string& text,
-    int cursor_pos,
-    int anchor_pos) {
+    const gfx::Range selection_range) {
   // MultiWordSuggester does not trigger a suggest based on surrounding text
   // events. It only triggers suggestions OnExternalSuggestionsUpdated.
   //

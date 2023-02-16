@@ -35,8 +35,7 @@ class Suggester : public SuggestionsSource {
   // Attempts to display a suggestion on surrounding text change. Returns if
   // suggestion was displayed according to the surrounding text information.
   virtual bool TrySuggestWithSurroundingText(const std::u16string& text,
-                                             int cursor_pos,
-                                             int anchor_pos) = 0;
+                                             gfx::Range selection_range) = 0;
 
   // Accepts the suggestion at a given index, index can be made default if
   // unnecessary. Returns true if suggestion is accepted successfully.

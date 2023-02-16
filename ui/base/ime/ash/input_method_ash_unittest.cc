@@ -213,8 +213,8 @@ class NiceMockIMEEngine : public MockIMEEngineHandler {
  public:
   MOCK_METHOD1(Focus, void(const InputContext&));
   MOCK_METHOD0(Blur, void());
-  MOCK_METHOD4(SetSurroundingText,
-               void(const std::u16string&, uint32_t, uint32_t, uint32_t));
+  MOCK_METHOD3(SetSurroundingText,
+               void(const std::u16string&, gfx::Range, uint32_t));
 };
 
 class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
@@ -816,8 +816,8 @@ TEST_F(InputMethodAshTest, SurroundingText_NoSelectionTest) {
   EXPECT_EQ(1, mock_ime_engine_handler_->set_surrounding_text_call_count());
   EXPECT_EQ(surrounding_text_,
             mock_ime_engine_handler_->last_set_surrounding_text());
-  EXPECT_EQ(3U, mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
-  EXPECT_EQ(3U, mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
+  EXPECT_EQ(gfx::Range(3),
+            mock_ime_engine_handler_->last_set_selection_range());
 }
 
 TEST_F(InputMethodAshTest, SurroundingText_SelectionTest) {
@@ -839,8 +839,8 @@ TEST_F(InputMethodAshTest, SurroundingText_SelectionTest) {
   EXPECT_EQ(1, mock_ime_engine_handler_->set_surrounding_text_call_count());
   EXPECT_EQ(surrounding_text_,
             mock_ime_engine_handler_->last_set_surrounding_text());
-  EXPECT_EQ(2U, mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
-  EXPECT_EQ(5U, mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
+  EXPECT_EQ(gfx::Range(2, 5),
+            mock_ime_engine_handler_->last_set_selection_range());
 }
 
 TEST_F(InputMethodAshTest, SurroundingText_PartialText) {
@@ -860,8 +860,8 @@ TEST_F(InputMethodAshTest, SurroundingText_PartialText) {
   // Set the verifier for SetSurroundingText mock call.
   // Here (2, 4) is selection range in expected surrounding text coordinates.
   EXPECT_EQ(u"fghij", mock_ime_engine_handler_->last_set_surrounding_text());
-  EXPECT_EQ(2U, mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
-  EXPECT_EQ(4U, mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
+  EXPECT_EQ(gfx::Range(2, 4),
+            mock_ime_engine_handler_->last_set_selection_range());
 }
 
 TEST_F(InputMethodAshTest, SurroundingText_BecomeEmptyText) {

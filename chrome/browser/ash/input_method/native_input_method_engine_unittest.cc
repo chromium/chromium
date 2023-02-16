@@ -859,9 +859,7 @@ TEST_F(NativeInputMethodEngineTest,
   engine.FlushForTesting();  // ensure input_method is connected.
   engine.Focus(TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   // Each character in "你好" is one UTF-16 code unit.
-  engine.SetSurroundingText(u"你好",
-                            /*cursor_pos=*/2,
-                            /*anchor_pos=*/2,
+  engine.SetSurroundingText(u"你好", gfx::Range(2),
                             /*offset=*/0);
   engine.FlushForTesting();
 
@@ -1141,11 +1139,11 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   ASSERT_EQ(0u, test_recorder.entries_count());
 
   // Should not record when random text is entered.
-  engine.SetSurroundingText(u"random text ", 12, 12, 0);
+  engine.SetSurroundingText(u"random text ", gfx::Range(12), 0);
   EXPECT_EQ(0u, test_recorder.entries_count());
 
   // Should record when match is triggered.
-  engine.SetSurroundingText(u"my email is ", 12, 12, 0);
+  engine.SetSurroundingText(u"my email is ", gfx::Range(12), 0);
   EXPECT_EQ(0u, test_recorder.sources_count());
   EXPECT_EQ(1u, test_recorder.entries_count());
   const auto entries =

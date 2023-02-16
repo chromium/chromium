@@ -34,8 +34,7 @@ void MockInputMethodEngine::ProcessKeyEvent(const ui::KeyEvent& key_event,
                                             KeyEventDoneCallback callback) {}
 
 void MockInputMethodEngine::SetSurroundingText(const std::u16string& text,
-                                               uint32_t cursor_pos,
-                                               uint32_t anchor_pos,
+                                               const gfx::Range selection_range,
                                                uint32_t offset_pos) {}
 
 void MockInputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds) {}

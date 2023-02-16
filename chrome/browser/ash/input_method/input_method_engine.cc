@@ -614,12 +614,11 @@ void InputMethodEngine::ProcessKeyEvent(const ui::KeyEvent& key_event,
 }
 
 void InputMethodEngine::SetSurroundingText(const std::u16string& text,
-                                           uint32_t cursor_pos,
-                                           uint32_t anchor_pos,
+                                           const gfx::Range selection_range,
                                            uint32_t offset_pos) {
-  observer_->OnSurroundingTextChanged(
-      active_component_id_, text, static_cast<int>(cursor_pos),
-      static_cast<int>(anchor_pos), static_cast<int>(offset_pos));
+  observer_->OnSurroundingTextChanged(active_component_id_, text,
+                                      selection_range,
+                                      static_cast<int>(offset_pos));
 }
 
 void InputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds) {

@@ -58,8 +58,7 @@ class GrammarManager {
   // Sends grammar check request to ml service or display existing grammar
   // suggestion based on the surrounding text changes and cursor changes.
   void OnSurroundingTextChanged(const std::u16string& text,
-                                int cursor_pos,
-                                int anchor_pos);
+                                gfx::Range selection_range);
 
   // Dismisses the suggestion window and replaces the incorrect grammar fragment
   // with the suggestion.
@@ -72,8 +71,7 @@ class GrammarManager {
   // suggestion based on the surrounding text changes and cursor changes.
   // Returns true is grammar suggestion window should show.
   bool HandleSurroundingTextChange(const std::u16string& text,
-                                   int cursor_pos,
-                                   int anchor_pos);
+                                   gfx::Range selection_range);
 
   void Check(const Sentence& sentence);
 

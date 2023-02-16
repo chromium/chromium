@@ -239,9 +239,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   ExtensionTestMessageListener surrounding_text_listener(
       "onSurroundingTextChanged");
   engine_handler->SetSurroundingText(u"text",  // Surrounding text.
-                                     0,        // focused position.
-                                     1,        // anchor position.
-                                     0);       // offset position.
+                                     gfx::Range(0, 1),
+                                     0);  // offset position.
   ASSERT_TRUE(surrounding_text_listener.WaitUntilSatisfied());
   ASSERT_TRUE(surrounding_text_listener.was_satisfied());
 

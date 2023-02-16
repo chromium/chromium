@@ -526,11 +526,11 @@ void AssistiveSuggester::RecordAssistiveMatchMetricsForAssistiveType(
 
 void AssistiveSuggester::RecordAssistiveMatchMetrics(
     const std::u16string& text,
-    int cursor_pos,
-    int anchor_pos,
+    const gfx::Range selection_range,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   int len = static_cast<int>(text.length());
-  if (cursor_pos > 0 && cursor_pos <= len && cursor_pos == anchor_pos &&
+  const int cursor_pos = selection_range.end();
+  if (cursor_pos > 0 && cursor_pos <= len && selection_range.is_empty() &&
       (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos]))) {
     int start_pos = std::max(0, cursor_pos - kMaxTextBeforeCursorLength);
     std::u16string text_before_cursor =
@@ -553,7 +553,7 @@ void AssistiveSuggester::RecordAssistiveMatchMetrics(
   }
 }
 
-bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
+bool AssistiveSuggester::WithinGrammarFragment() {
   TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
@@ -564,23 +564,21 @@ bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
   return grammar_fragment_opt != absl::nullopt;
 }
 
-void AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
-                                                  int cursor_pos,
-                                                  int anchor_pos) {
+void AssistiveSuggester::OnSurroundingTextChanged(
+    const std::u16string& text,
+    const gfx::Range selection_range) {
   last_surrounding_text_ = text;
-  last_cursor_pos_ = cursor_pos;
-  suggester_switch_->FetchEnabledSuggestionsThen(base::BindOnce(
-      &AssistiveSuggester::ProcessOnSurroundingTextChanged,
-      weak_ptr_factory_.GetWeakPtr(), text, cursor_pos, anchor_pos));
+  last_cursor_pos_ = selection_range.end();
+  suggester_switch_->FetchEnabledSuggestionsThen(
+      base::BindOnce(&AssistiveSuggester::ProcessOnSurroundingTextChanged,
+                     weak_ptr_factory_.GetWeakPtr(), text, selection_range));
 }
 
 void AssistiveSuggester::ProcessOnSurroundingTextChanged(
     const std::u16string& text,
-    int cursor_pos,
-    int anchor_pos,
+    const gfx::Range selection_range,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  RecordAssistiveMatchMetrics(text, cursor_pos, anchor_pos,
-                              enabled_suggestions);
+  RecordAssistiveMatchMetrics(text, selection_range, enabled_suggestions);
   if (!IsAssistiveFeatureEnabled() || !focused_context_id_.has_value())
     return;
 
@@ -588,12 +586,11 @@ void AssistiveSuggester::ProcessOnSurroundingTextChanged(
       enabled_suggestions.multi_word_suggestions) {
     // Only multi word cares about tracking the current state of the text
     // field
-    multi_word_suggester_.OnSurroundingTextChanged(text, cursor_pos,
-                                                   anchor_pos);
+    multi_word_suggester_.OnSurroundingTextChanged(text, selection_range);
   }
 
-  if (WithinGrammarFragment(cursor_pos, anchor_pos) ||
-      !TrySuggestWithSurroundingText(text, cursor_pos, anchor_pos,
+  if (WithinGrammarFragment() ||
+      !TrySuggestWithSurroundingText(text, selection_range,
                                      enabled_suggestions)) {
     DismissSuggestion();
   }
@@ -601,17 +598,16 @@ void AssistiveSuggester::ProcessOnSurroundingTextChanged(
 
 bool AssistiveSuggester::TrySuggestWithSurroundingText(
     const std::u16string& text,
-    int cursor_pos,
-    int anchor_pos,
+    const gfx::Range selection_range,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   if (IsSuggestionShown()) {
-    return current_suggester_->TrySuggestWithSurroundingText(text, cursor_pos,
-                                                             anchor_pos);
+    return current_suggester_->TrySuggestWithSurroundingText(text,
+                                                             selection_range);
   }
   if (IsAssistPersonalInfoEnabled() &&
       enabled_suggestions.personal_info_suggestions &&
-      personal_info_suggester_.TrySuggestWithSurroundingText(text, cursor_pos,
-                                                             anchor_pos)) {
+      personal_info_suggester_.TrySuggestWithSurroundingText(text,
+                                                             selection_range)) {
     current_suggester_ = &personal_info_suggester_;
     if (personal_info_suggester_.IsFirstShown()) {
       RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
@@ -620,8 +616,7 @@ bool AssistiveSuggester::TrySuggestWithSurroundingText(
   }
   if (IsEmojiSuggestAdditionEnabled() && !IsEnhancedEmojiSuggestEnabled() &&
       enabled_suggestions.emoji_suggestions &&
-      emoji_suggester_.TrySuggestWithSurroundingText(text, cursor_pos,
-                                                     anchor_pos)) {
+      emoji_suggester_.TrySuggestWithSurroundingText(text, selection_range)) {
     current_suggester_ = &emoji_suggester_;
     RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
     return true;

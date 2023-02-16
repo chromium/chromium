@@ -76,8 +76,7 @@ class InputMethodEngineObserver {
   // Called when a surrounding text is changed.
   virtual void OnSurroundingTextChanged(const std::string& engine_id,
                                         const std::u16string& text,
-                                        int cursor_pos,
-                                        int anchor_pos,
+                                        gfx::Range selection_range,
                                         int offset_pos) = 0;
 
   // Called when the user clicks on an item in the candidate list.

@@ -109,8 +109,7 @@ TEST_P(LongpressDiacriticsSuggesterTest,
 
   EXPECT_FALSE(suggester.TrySuggestWithSurroundingText(
       GetParam().invalid_surrounding_text,
-      GetParam().invalid_surrounding_text.size(),
-      GetParam().invalid_surrounding_text.size()));
+      gfx::Range(GetParam().invalid_surrounding_text.size())));
 }
 
 TEST_P(LongpressDiacriticsSuggesterTest, DoesNotSuggestForInvalidEngineId) {

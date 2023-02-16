@@ -34,8 +34,7 @@ class FakeTextInputMethod : public ash::TextInputMethod {
   void ProcessKeyEvent(const ui::KeyEvent& key_event,
                        KeyEventDoneCallback callback) override;
   void SetSurroundingText(const std::u16string& text,
-                          uint32_t cursor_pos,
-                          uint32_t anchor_pos,
+                          const gfx::Range selection_range,
                           uint32_t offset_pos) override {}
   void SetCaretBounds(const gfx::Rect& caret_bounds) override {}
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;

@@ -151,13 +151,16 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
   return false;
 }
 
-bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
-                                                 int cursor_pos,
-                                                 int anchor_pos) {
+bool GrammarManager::HandleSurroundingTextChange(
+    const std::u16string& text,
+    const gfx::Range selection_range) {
   if (spellcheck_mode_ == SpellcheckMode::kDisabled) {
     return false;
   }
 
+  // TODO(b/269385926): Investigate if `selection_range.start()` needs to be
+  // inspected as well.
+  const int cursor_pos = selection_range.end();
   bool text_updated = text != current_text_;
   current_text_ = text;
   current_sentence_ = FindCurrentSentence(text, cursor_pos);
@@ -192,8 +195,9 @@ bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
 
   // Do not show the suggestion when the user is selecting a range of text, so
   // that we will not show conflict with the system copy/paste popup.
-  if (cursor_pos != anchor_pos)
+  if (!selection_range.is_empty()) {
     return false;
+  }
 
   TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
@@ -236,10 +240,10 @@ bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
   return true;
 }
 
-void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
-                                              int cursor_pos,
-                                              int anchor_pos) {
-  if (!HandleSurroundingTextChange(text, cursor_pos, anchor_pos)) {
+void GrammarManager::OnSurroundingTextChanged(
+    const std::u16string& text,
+    const gfx::Range selection_range) {
+  if (!HandleSurroundingTextChange(text, selection_range)) {
     DismissSuggestion();
   }
 }

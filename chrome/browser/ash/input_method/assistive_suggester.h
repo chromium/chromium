@@ -72,8 +72,7 @@ class AssistiveSuggester : public SuggestionsSource {
   // Returns true if it changes the surrounding text, e.g. a suggestion is
   // generated or dismissed.
   void OnSurroundingTextChanged(const std::u16string& text,
-                                int cursor_pos,
-                                int anchor_pos);
+                                gfx::Range selection_range);
 
   // Called when the user pressed a key.
   // Returns true if it should stop further processing of event.
@@ -103,16 +102,14 @@ class AssistiveSuggester : public SuggestionsSource {
   // Callback that is run after enabled_suggestions is received.
   void ProcessOnSurroundingTextChanged(
       const std::u16string& text,
-      int cursor_pos,
-      int anchor_pos,
+      gfx::Range selection_range,
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   // Returns if any suggestion text should be displayed according to the
   // surrounding text information.
   bool TrySuggestWithSurroundingText(
       const std::u16string& text,
-      int cursor_pos,
-      int anchor_pos,
+      gfx::Range selection_range,
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   void DismissSuggestion();
@@ -133,8 +130,7 @@ class AssistiveSuggester : public SuggestionsSource {
   // matched.
   void RecordAssistiveMatchMetrics(
       const std::u16string& text,
-      int cursor_pos,
-      int anchor_pos,
+      gfx::Range selection_range,
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   void RecordAssistiveMatchMetricsForAssistiveType(
@@ -161,7 +157,7 @@ class AssistiveSuggester : public SuggestionsSource {
       AssistiveType type,
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
-  bool WithinGrammarFragment(int cursor_pos, int anchor_pos);
+  bool WithinGrammarFragment();
 
   void ProcessExternalSuggestions(
       const std::vector<ime::AssistiveSuggestion>& suggestions,

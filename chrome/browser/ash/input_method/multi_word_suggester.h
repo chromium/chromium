@@ -33,8 +33,7 @@ class MultiWordSuggester : public Suggester {
       const std::vector<ime::AssistiveSuggestion>& suggestions) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool TrySuggestWithSurroundingText(const std::u16string& text,
-                                     int cursor_pos,
-                                     int anchor_pos) override;
+                                     gfx::Range selection_range) override;
   bool AcceptSuggestion(size_t index = 0) override;
   void DismissSuggestion() override;
   AssistiveType GetProposeActionType() override;
@@ -43,8 +42,7 @@ class MultiWordSuggester : public Suggester {
 
   // Used to capture any changes to the current input text.
   void OnSurroundingTextChanged(const std::u16string& text,
-                                size_t cursor_pos,
-                                size_t anchor_pos);
+                                gfx::Range selection_range);
 
  private:
   // Used to capture any internal state around the previously or currently

@@ -984,29 +984,24 @@ void NativeInputMethodEngineObserver::OnCaretBoundsChanged(
 void NativeInputMethodEngineObserver::OnSurroundingTextChanged(
     const std::string& engine_id,
     const std::u16string& text,
-    int cursor_pos,
-    int anchor_pos,
+    const gfx::Range selection_range,
     int offset_pos) {
-  DCHECK_GE(cursor_pos, 0);
-  DCHECK_GE(anchor_pos, 0);
-
   last_surrounding_text_ = SurroundingText{.text = text,
-                                           .cursor_pos = cursor_pos,
-                                           .anchor_pos = anchor_pos,
+                                           .selection_range = selection_range,
                                            .offset_pos = offset_pos};
 
-  assistive_suggester_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
-  autocorrect_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
+  assistive_suggester_->OnSurroundingTextChanged(text, selection_range);
+  autocorrect_manager_->OnSurroundingTextChanged(text, selection_range);
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
-    grammar_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
+    grammar_manager_->OnSurroundingTextChanged(text, selection_range);
   }
   if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (IsInputMethodBound()) {
       SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);
     }
   } else {
-    ime_base_observer_->OnSurroundingTextChanged(engine_id, text, cursor_pos,
-                                                 anchor_pos, offset_pos);
+    ime_base_observer_->OnSurroundingTextChanged(engine_id, text,
+                                                 selection_range, offset_pos);
   }
 }
 
@@ -1317,14 +1312,18 @@ bool NativeInputMethodEngineObserver::IsTextClientActive() {
 void NativeInputMethodEngineObserver::SendSurroundingTextToNativeMojoEngine(
     const SurroundingText& surrounding_text) {
   std::vector<size_t> selection_indices = {
-      static_cast<size_t>(surrounding_text.anchor_pos),
-      static_cast<size_t>(surrounding_text.cursor_pos)};
+      static_cast<size_t>(surrounding_text.selection_range.start()),
+      static_cast<size_t>(surrounding_text.selection_range.end())};
   std::string utf8_text = base::UTF16ToUTF8AndAdjustOffsets(
       surrounding_text.text, &selection_indices);
 
+  // Due to a legacy mistake, the selection is reversed (i.e. 'focus' is the
+  // start and 'anchor' is the end), opposite to what the API documentation
+  // claims.
+  // TODO(b/245020074): Fix this without breaking existing 1p IMEs.
   auto selection = mojom::SelectionRange::New();
-  selection->anchor = selection_indices[0];
-  selection->focus = selection_indices[1];
+  selection->anchor = selection_indices[1];
+  selection->focus = selection_indices[0];
 
   input_method_->OnSurroundingTextChanged(
       std::move(utf8_text), surrounding_text.offset_pos, std::move(selection));

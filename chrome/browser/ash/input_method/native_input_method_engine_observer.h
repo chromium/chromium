@@ -70,8 +70,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override;
   void OnSurroundingTextChanged(const std::string& engine_id,
                                 const std::u16string& text,
-                                int cursor_pos,
-                                int anchor_pos,
+                                gfx::Range selection_range,
                                 int offset_pos) override;
   void OnCandidateClicked(const std::string& component_id,
                           int candidate_id,
@@ -133,8 +132,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
  private:
   struct SurroundingText {
     std::u16string text;
-    int cursor_pos = 0;
-    int anchor_pos = 0;
+    gfx::Range selection_range;
     int offset_pos = 0;
   };
 

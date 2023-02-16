@@ -37,8 +37,7 @@ class StubInputMethodEngineObserver : public InputMethodEngineObserver {
                            const std::string& menu_id) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
                                 const std::u16string& text,
-                                int cursor_pos,
-                                int anchor_pos,
+                                const gfx::Range selection_range,
                                 int offset) override {}
   void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}

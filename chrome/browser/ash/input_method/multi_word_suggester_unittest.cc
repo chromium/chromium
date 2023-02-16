@@ -75,7 +75,7 @@ TEST_F(MultiWordSuggesterTest, IgnoresIrrelevantExternalSuggestions) {
       .text = "my name is John Wayne"}};
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_FALSE(suggestion_handler_.GetShowingSuggestion());
@@ -85,7 +85,7 @@ TEST_F(MultiWordSuggesterTest, IgnoresIrrelevantExternalSuggestions) {
 
 TEST_F(MultiWordSuggesterTest, IgnoresEmpyExternalSuggestions) {
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated({});
 
   EXPECT_FALSE(suggestion_handler_.GetShowingSuggestion());
@@ -100,7 +100,7 @@ TEST_F(MultiWordSuggesterTest, DisplaysRelevantExternalSuggestions) {
                           .text = "hello there!"}};
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
@@ -116,7 +116,7 @@ TEST_F(MultiWordSuggesterTest,
                           .text = "hello there!"}};
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnBlur();
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
@@ -132,7 +132,7 @@ TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
@@ -150,7 +150,7 @@ TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionAfterBlur) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnBlur();
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
@@ -166,7 +166,7 @@ TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_UP);
 
@@ -183,7 +183,7 @@ TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnArrowDownKeypress) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_DOWN);
 
@@ -200,7 +200,7 @@ TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnEnterKeypress) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ENTER);
 
@@ -217,7 +217,7 @@ TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnDownPlusEnterPress) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_DOWN);
   SendKeyEvent(suggester_.get(), ui::DomCode::ENTER);
@@ -236,7 +236,7 @@ TEST_F(MultiWordSuggesterTest, DoesNotHighlightAfterBlur) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnBlur();
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_DOWN);
@@ -252,7 +252,7 @@ TEST_F(MultiWordSuggesterTest, HighlightsSuggestionOnDownArrow) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_DOWN);
 
@@ -267,7 +267,7 @@ TEST_F(MultiWordSuggesterTest, MaintainsHighlightOnMultipleDownArrow) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_DOWN);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_DOWN);
@@ -284,7 +284,7 @@ TEST_F(MultiWordSuggesterTest, RemovesHighlightOnDownThenUpArrow) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_DOWN);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_UP);
@@ -300,7 +300,7 @@ TEST_F(MultiWordSuggesterTest, HighlightIsNotShownWithUpArrow) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_UP);
 
@@ -315,7 +315,7 @@ TEST_F(MultiWordSuggesterTest, HighlightIsNotShownWithMultipleUpArrow) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_UP);
   SendKeyEvent(suggester_.get(), ui::DomCode::ARROW_UP);
@@ -331,7 +331,7 @@ TEST_F(MultiWordSuggesterTest, DisplaysTabGuideline) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   auto suggestion_details = suggestion_handler_.GetLastSuggestionDetails();
@@ -349,7 +349,7 @@ TEST_F(MultiWordSuggesterTest,
   SetFirstAcceptTimeTo(profile_.get(), /*days_ago=*/6);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   auto suggestion_details = suggestion_handler_.GetLastSuggestionDetails();
@@ -367,7 +367,7 @@ TEST_F(MultiWordSuggesterTest,
   SetFirstAcceptTimeTo(profile_.get(), /*days_ago=*/7);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   auto suggestion_details = suggestion_handler_.GetLastSuggestionDetails();
@@ -383,12 +383,12 @@ TEST_F(MultiWordSuggesterTest, SetsAcceptTimeOnFirstSuggestionAcceptedOnly) {
 
   auto pref_before_accept = GetFirstAcceptTime(profile_.get());
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
   auto pref_after_first_accept = GetFirstAcceptTime(profile_.get());
 
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
   auto pref_after_second_accept = GetFirstAcceptTime(profile_.get());
@@ -407,8 +407,7 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"ho", /*cursor_pos=*/2,
-                                       /*anchor_pos=*/2);
+  suggester_->OnSurroundingTextChanged(u"ho", gfx::Range(2));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
@@ -424,8 +423,7 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"hey there sam whe",
-                                       /*cursor_pos=*/17, /*anchor_pos=*/17);
+  suggester_->OnSurroundingTextChanged(u"hey there sam whe", gfx::Range(17));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
@@ -442,8 +440,7 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthGreedily) {
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"merry christmas hohoho",
-                                       /*cursor_pos=*/22,
-                                       /*anchor_pos=*/22);
+                                       gfx::Range(22));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
@@ -459,8 +456,7 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForPredictions) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"this ",
-                                       /*cursor_pos=*/5, /*anchor_pos=*/5);
+  suggester_->OnSurroundingTextChanged(u"this ", gfx::Range(5));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
@@ -476,8 +472,7 @@ TEST_F(MultiWordSuggesterTest, HandlesNewlinesWhenCalculatingConfirmedLength) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"\nh",
-                                       /*cursor_pos=*/2, /*anchor_pos=*/2);
+  suggester_->OnSurroundingTextChanged(u"\nh", gfx::Range(2));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
@@ -493,16 +488,12 @@ TEST_F(MultiWordSuggesterTest, HandlesMultipleRepeatingCharsWhenTracking) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"h", /*cursor_pos=*/1,
-                                       /*anchor_pos=*/1);
-  suggester_->TrySuggestWithSurroundingText(u"h", /*cursor_pos=*/1,
-                                            /*anchor_pos=*/1);
+  suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
+  suggester_->TrySuggestWithSurroundingText(u"h", gfx::Range(1));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"hh", /*cursor_pos=*/2,
-                                       /*anchor_pos=*/2);
+  suggester_->OnSurroundingTextChanged(u"hh", gfx::Range(2));
 
-  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(
-      u"hh", /*cursor_pos=*/2, /*anchor_pos=*/2));
+  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"hh", gfx::Range(2)));
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotDismissOnMultipleCursorMoveToEndOfText) {
@@ -513,21 +504,15 @@ TEST_F(MultiWordSuggesterTest, DoesNotDismissOnMultipleCursorMoveToEndOfText) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
-                                       /*anchor_pos=*/7);
-  suggester_->TrySuggestWithSurroundingText(u"hello h", /*cursor_pos=*/7,
-                                            /*anchor_pos=*/7);
+  suggester_->OnSurroundingTextChanged(u"hello h", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"hello h", gfx::Range(7));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
-                                       /*anchor_pos=*/7);
-  suggester_->TrySuggestWithSurroundingText(u"hello h", /*cursor_pos=*/7,
-                                            /*anchor_pos=*/7);
-  suggester_->OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
-                                       /*anchor_pos=*/7);
+  suggester_->OnSurroundingTextChanged(u"hello h", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"hello h", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"hello h", gfx::Range(7));
 
-  EXPECT_TRUE(suggester_->TrySuggestWithSurroundingText(u"hello h",
-                                                        /*cursor_pos=*/7,
-                                                        /*anchor_pos=*/7));
+  EXPECT_TRUE(
+      suggester_->TrySuggestWithSurroundingText(u"hello h", gfx::Range(7)));
 }
 
 TEST_F(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
@@ -538,20 +523,29 @@ TEST_F(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"hey there sam whe", 17, 17);
+  suggester_->OnSurroundingTextChanged(u"hey there sam whe", gfx::Range(17));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"hey there sam wher", 18, 18);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam wher", 18, 18);
-  suggester_->OnSurroundingTextChanged(u"hey there sam where", 19, 19);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where", 19, 19);
-  suggester_->OnSurroundingTextChanged(u"hey there sam where ", 20, 20);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where ", 20, 20);
-  suggester_->OnSurroundingTextChanged(u"hey there sam where a", 21, 21);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where a", 21, 21);
-  suggester_->OnSurroundingTextChanged(u"hey there sam where ar", 22, 22);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where ar", 22, 22);
-  suggester_->OnSurroundingTextChanged(u"hey there sam where are", 23, 23);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where are", 23, 23);
+  suggester_->OnSurroundingTextChanged(u"hey there sam wher", gfx::Range(18));
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam wher",
+                                            gfx::Range(18));
+  suggester_->OnSurroundingTextChanged(u"hey there sam where", gfx::Range(19));
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where",
+                                            gfx::Range(19));
+  suggester_->OnSurroundingTextChanged(u"hey there sam where ", gfx::Range(20));
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where ",
+                                            gfx::Range(20));
+  suggester_->OnSurroundingTextChanged(u"hey there sam where a",
+                                       gfx::Range(21));
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where a",
+                                            gfx::Range(21));
+  suggester_->OnSurroundingTextChanged(u"hey there sam where ar",
+                                       gfx::Range(22));
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where ar",
+                                            gfx::Range(22));
+  suggester_->OnSurroundingTextChanged(u"hey there sam where are",
+                                       gfx::Range(23));
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where are",
+                                            gfx::Range(23));
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"where are you going");
@@ -567,12 +561,12 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
-  suggester_->TrySuggestWithSurroundingText(u"ho", 2, 2);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
-  suggester_->TrySuggestWithSurroundingText(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"ho", gfx::Range(2));
+  suggester_->TrySuggestWithSurroundingText(u"ho", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
+  suggester_->TrySuggestWithSurroundingText(u"how", gfx::Range(3));
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you");
@@ -588,12 +582,12 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->TrySuggestWithSurroundingText(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are yo", 10, 10);
-  suggester_->TrySuggestWithSurroundingText(u"how are yo", 10, 10);
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->TrySuggestWithSurroundingText(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are yo", gfx::Range(10));
+  suggester_->TrySuggestWithSurroundingText(u"how are yo", gfx::Range(10));
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you");
@@ -608,14 +602,14 @@ TEST_F(MultiWordSuggesterTest, MaintainsPredictionSuggestionModeWhenTracking) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
-  suggester_->TrySuggestWithSurroundingText(u"ho", 2, 2);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
-  suggester_->TrySuggestWithSurroundingText(u"how", 3, 3);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
-  suggester_->TrySuggestWithSurroundingText(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"ho", gfx::Range(2));
+  suggester_->TrySuggestWithSurroundingText(u"ho", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
+  suggester_->TrySuggestWithSurroundingText(u"how", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->TrySuggestWithSurroundingText(u"how ", gfx::Range(4));
 
   EXPECT_EQ(suggester_->GetSuggestions()[0].mode,
             AssistiveSuggestionMode::kPrediction);
@@ -629,14 +623,14 @@ TEST_F(MultiWordSuggesterTest, MaintainsCompletionSuggestionModeWhenTracking) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
-  suggester_->TrySuggestWithSurroundingText(u"ho", 2, 2);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
-  suggester_->TrySuggestWithSurroundingText(u"how", 3, 3);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
-  suggester_->TrySuggestWithSurroundingText(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"ho", gfx::Range(2));
+  suggester_->TrySuggestWithSurroundingText(u"ho", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
+  suggester_->TrySuggestWithSurroundingText(u"how", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->TrySuggestWithSurroundingText(u"how ", gfx::Range(4));
 
   EXPECT_EQ(suggester_->GetSuggestions()[0].mode,
             AssistiveSuggestionMode::kCompletion);
@@ -651,14 +645,15 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->TrySuggestWithSurroundingText(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how yo", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->TrySuggestWithSurroundingText(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how yo", gfx::Range(6));
 
   // The consumer will handle dismissing the suggestion
-  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"how yo", 6, 6));
+  EXPECT_FALSE(
+      suggester_->TrySuggestWithSurroundingText(u"how yo", gfx::Range(6)));
 }
 
 TEST_F(MultiWordSuggesterTest,
@@ -670,22 +665,27 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"this is some text", 17, 17);
+  suggester_->OnSurroundingTextChanged(u"this is some text", gfx::Range(17));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"this is some text ", 18, 18);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text ", 18, 18);
-  suggester_->OnSurroundingTextChanged(u"this is some text f", 19, 19);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19, 19);
-  suggester_->OnSurroundingTextChanged(u"this is some text fo", 20, 20);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text fo", 20, 20);
-  suggester_->OnSurroundingTextChanged(u"this is some text f", 19, 19);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19, 19);
-  suggester_->OnSurroundingTextChanged(u"this is some text ", 18, 18);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text ", 18, 18);
-  suggester_->OnSurroundingTextChanged(u"this is some text", 17, 17);
+  suggester_->OnSurroundingTextChanged(u"this is some text ", gfx::Range(18));
+  suggester_->TrySuggestWithSurroundingText(u"this is some text ",
+                                            gfx::Range(18));
+  suggester_->OnSurroundingTextChanged(u"this is some text f", gfx::Range(19));
+  suggester_->TrySuggestWithSurroundingText(u"this is some text f",
+                                            gfx::Range(19));
+  suggester_->OnSurroundingTextChanged(u"this is some text fo", gfx::Range(20));
+  suggester_->TrySuggestWithSurroundingText(u"this is some text fo",
+                                            gfx::Range(20));
+  suggester_->OnSurroundingTextChanged(u"this is some text f", gfx::Range(19));
+  suggester_->TrySuggestWithSurroundingText(u"this is some text f",
+                                            gfx::Range(19));
+  suggester_->OnSurroundingTextChanged(u"this is some text ", gfx::Range(18));
+  suggester_->TrySuggestWithSurroundingText(u"this is some text ",
+                                            gfx::Range(18));
+  suggester_->OnSurroundingTextChanged(u"this is some text", gfx::Range(17));
 
-  EXPECT_FALSE(
-      suggester_->TrySuggestWithSurroundingText(u"this is some text", 17, 17));
+  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"this is some text",
+                                                         gfx::Range(17)));
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotTrackSuggestionPastSuggestionPoint) {
@@ -696,16 +696,18 @@ TEST_F(MultiWordSuggesterTest, DoesNotTrackSuggestionPastSuggestionPoint) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"this is some text fo", 20, 20);
+  suggester_->OnSurroundingTextChanged(u"this is some text fo", gfx::Range(20));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"this is some text for", 21, 21);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text for", 21, 21);
-  suggester_->OnSurroundingTextChanged(u"this is some text fo", 20, 20);
+  suggester_->OnSurroundingTextChanged(u"this is some text for",
+                                       gfx::Range(21));
+  suggester_->TrySuggestWithSurroundingText(u"this is some text for",
+                                            gfx::Range(21));
+  suggester_->OnSurroundingTextChanged(u"this is some text fo", gfx::Range(20));
   bool at_suggestion_point = suggester_->TrySuggestWithSurroundingText(
-      u"this is some text fo", 20, 20);
-  suggester_->OnSurroundingTextChanged(u"this is some text f", 19, 19);
-  bool before_suggestion_point =
-      suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19, 19);
+      u"this is some text fo", gfx::Range(20));
+  suggester_->OnSurroundingTextChanged(u"this is some text f", gfx::Range(19));
+  bool before_suggestion_point = suggester_->TrySuggestWithSurroundingText(
+      u"this is some text f", gfx::Range(19));
 
   EXPECT_TRUE(at_suggestion_point);
   EXPECT_FALSE(before_suggestion_point);
@@ -720,14 +722,17 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"this is some text fo", 20, 20);
+  suggester_->OnSurroundingTextChanged(u"this is some text fo", gfx::Range(20));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"this is some text for", 21, 21);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text for", 21, 21);
-  suggester_->OnSurroundingTextChanged(u"this is some text for", 15, 15);
+  suggester_->OnSurroundingTextChanged(u"this is some text for",
+                                       gfx::Range(21));
+  suggester_->TrySuggestWithSurroundingText(u"this is some text for",
+                                            gfx::Range(21));
+  suggester_->OnSurroundingTextChanged(u"this is some text for",
+                                       gfx::Range(15));
 
   EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(
-      u"this is some text for", 15, 15));
+      u"this is some text for", gfx::Range(15)));
 }
 
 TEST_F(MultiWordSuggesterTest, DismissesSuggestionOnUserTypingFullSuggestion) {
@@ -738,22 +743,23 @@ TEST_F(MultiWordSuggesterTest, DismissesSuggestionOnUserTypingFullSuggestion) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
-  suggester_->TrySuggestWithSurroundingText(u"how ", 4, 4);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->TrySuggestWithSurroundingText(u"how a", 5, 5);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->TrySuggestWithSurroundingText(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->TrySuggestWithSurroundingText(u"how ", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->TrySuggestWithSurroundingText(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->TrySuggestWithSurroundingText(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
 
-  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"how are", 7, 7));
+  EXPECT_FALSE(
+      suggester_->TrySuggestWithSurroundingText(u"how are", gfx::Range(7)));
 }
 
 TEST_F(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"hey there sam whe", 17, 17);
+  suggester_->OnSurroundingTextChanged(u"hey there sam whe", gfx::Range(17));
 
   EXPECT_EQ(suggester_->GetProposeActionType(), AssistiveType::kGenericAction);
 }
@@ -767,7 +773,7 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_EQ(suggester_->GetProposeActionType(),
@@ -783,7 +789,7 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_EQ(suggester_->GetProposeActionType(),
@@ -799,8 +805,8 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
-  suggester_->TrySuggestWithSurroundingText(u"why", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
+  suggester_->TrySuggestWithSurroundingText(u"why", gfx::Range(6));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
@@ -817,8 +823,8 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why", 3, 3);
-  suggester_->TrySuggestWithSurroundingText(u"why", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"why", gfx::Range(3));
+  suggester_->TrySuggestWithSurroundingText(u"why", gfx::Range(3));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
@@ -838,7 +844,7 @@ TEST_F(MultiWordSuggesterTest, RecordsTimeToAcceptMetric) {
       "InputMethod.Assistive.TimeToAccept.MultiWord", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
@@ -859,7 +865,7 @@ TEST_F(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
       "InputMethod.Assistive.TimeToDismiss.MultiWord", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->DismissSuggestion();
 
@@ -879,7 +885,7 @@ TEST_F(MultiWordSuggesterTest, RecordsSuggestionLengthMetric) {
       "InputMethod.Assistive.MultiWord.SuggestionLength", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   histogram_tester.ExpectTotalCount(
@@ -902,7 +908,7 @@ TEST_F(MultiWordSuggesterTest, DoesntRecordIfSuggestionLengthIsBig) {
       "InputMethod.Assistive.MultiWord.SuggestionLength", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   histogram_tester.ExpectTotalCount(
@@ -917,7 +923,7 @@ TEST_F(MultiWordSuggesterTest, RecordsCouldPossiblyShowCompletionSuggestion) {
   // For a completion suggestion to show, we need to have the cursor at the end
   // of the text.
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 1);
@@ -935,7 +941,7 @@ TEST_F(MultiWordSuggesterTest, RecordsCouldPossiblyShowPredictionSuggestion) {
   // For a prediction suggestion to show, we need to have a whitespace char at
   // the end of the text, and the cursor must be at the end of the text.
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 1);
@@ -952,11 +958,11 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how are you today", 4, 4);
-  suggester_->OnSurroundingTextChanged(u"how are you today", 3, 3);
-  suggester_->OnSurroundingTextChanged(u"how are you today", 0, 0);
-  suggester_->OnSurroundingTextChanged(u"how are you today", 16, 16);
-  suggester_->OnSurroundingTextChanged(u"how are you today", 10, 10);
+  suggester_->OnSurroundingTextChanged(u"how are you today", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"how are you today", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"how are you today", gfx::Range(0));
+  suggester_->OnSurroundingTextChanged(u"how are you today", gfx::Range(16));
+  suggester_->OnSurroundingTextChanged(u"how are you today", gfx::Range(10));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
@@ -969,9 +975,9 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how are you today", 4, 17);
-  suggester_->OnSurroundingTextChanged(u"how are you today", 0, 17);
-  suggester_->OnSurroundingTextChanged(u"how are you today", 16, 17);
+  suggester_->OnSurroundingTextChanged(u"how are you today", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"how are you today", gfx::Range(0));
+  suggester_->OnSurroundingTextChanged(u"how are you today", gfx::Range(16));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
@@ -984,9 +990,9 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", 0, 0);
-  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
-  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
+  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
+  suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
+  suggester_->OnSurroundingTextChanged(u"ho", gfx::Range(2));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
@@ -999,11 +1005,11 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
-  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 5);
@@ -1030,12 +1036,12 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
-  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
 
   // Only one metric should be recorded, when we receive a surrounding text
   // event prior to the suggestions being generated and shown to the user. Each
@@ -1061,12 +1067,12 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
-  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
@@ -1085,14 +1091,14 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
-  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
   // Dismisses suggestion as text no longer matches
-  suggester_->OnSurroundingTextChanged(u"how are t", 9, 9);
+  suggester_->OnSurroundingTextChanged(u"how are t", gfx::Range(9));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
@@ -1111,9 +1117,9 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
   histogram_tester.ExpectTotalCount(
@@ -1133,15 +1139,15 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
-  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
-  suggester_->OnSurroundingTextChanged(u"how are y", 9, 9);
-  suggester_->OnSurroundingTextChanged(u"how are yo", 10, 10);
-  suggester_->OnSurroundingTextChanged(u"how are you", 11, 11);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
+  suggester_->OnSurroundingTextChanged(u"how are y", gfx::Range(9));
+  suggester_->OnSurroundingTextChanged(u"how are yo", gfx::Range(10));
+  suggester_->OnSurroundingTextChanged(u"how are you", gfx::Range(11));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 1);
@@ -1164,17 +1170,17 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
+  suggester_->OnSurroundingTextChanged(u"ho", gfx::Range(2));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
-  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
-  suggester_->OnSurroundingTextChanged(u"how are y", 9, 9);
-  suggester_->OnSurroundingTextChanged(u"how are yo", 10, 10);
-  suggester_->OnSurroundingTextChanged(u"how are you", 11, 11);
+  suggester_->OnSurroundingTextChanged(u"how", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
+  suggester_->OnSurroundingTextChanged(u"how are y", gfx::Range(9));
+  suggester_->OnSurroundingTextChanged(u"how are yo", gfx::Range(10));
+  suggester_->OnSurroundingTextChanged(u"how are you", gfx::Range(11));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 1);
@@ -1197,22 +1203,22 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
-  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
-  suggester_->OnSurroundingTextChanged(u"how are y", 9, 9);
-  suggester_->OnSurroundingTextChanged(u"how are yo", 10, 10);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
+  suggester_->OnSurroundingTextChanged(u"how are y", gfx::Range(9));
+  suggester_->OnSurroundingTextChanged(u"how are yo", gfx::Range(10));
   // Metric should be recorded after the following surrounding text
-  suggester_->OnSurroundingTextChanged(u"how are you", 11, 11);
-  suggester_->OnSurroundingTextChanged(u"how are you ", 12, 12);
-  suggester_->OnSurroundingTextChanged(u"how are you g", 13, 13);
-  suggester_->OnSurroundingTextChanged(u"how are you go", 14, 14);
-  suggester_->OnSurroundingTextChanged(u"how are you goi", 15, 15);
-  suggester_->OnSurroundingTextChanged(u"how are you goin", 16, 16);
-  suggester_->OnSurroundingTextChanged(u"how are you going", 17, 17);
+  suggester_->OnSurroundingTextChanged(u"how are you", gfx::Range(11));
+  suggester_->OnSurroundingTextChanged(u"how are you ", gfx::Range(12));
+  suggester_->OnSurroundingTextChanged(u"how are you g", gfx::Range(13));
+  suggester_->OnSurroundingTextChanged(u"how are you go", gfx::Range(14));
+  suggester_->OnSurroundingTextChanged(u"how are you goi", gfx::Range(15));
+  suggester_->OnSurroundingTextChanged(u"how are you goin", gfx::Range(16));
+  suggester_->OnSurroundingTextChanged(u"how are you going", gfx::Range(17));
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 1);
@@ -1225,14 +1231,14 @@ TEST_F(MultiWordSuggesterTest,
 TEST_F(MultiWordSuggesterTest,
        SurroundingTextChangesDoNotTriggerAnnouncements) {
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
-  suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
-  suggester_->TrySuggestWithSurroundingText(u"why aren", 8, 8);
-  suggester_->OnSurroundingTextChanged(u"why aren'", 9, 9);
-  suggester_->TrySuggestWithSurroundingText(u"why aren'", 9, 9);
-  suggester_->OnSurroundingTextChanged(u"why aren't", 10, 10);
-  suggester_->TrySuggestWithSurroundingText(u"why aren't", 10, 10);
+  suggester_->OnSurroundingTextChanged(u"why are", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"why are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"why aren", gfx::Range(8));
+  suggester_->TrySuggestWithSurroundingText(u"why aren", gfx::Range(8));
+  suggester_->OnSurroundingTextChanged(u"why aren'", gfx::Range(9));
+  suggester_->TrySuggestWithSurroundingText(u"why aren'", gfx::Range(9));
+  suggester_->OnSurroundingTextChanged(u"why aren't", gfx::Range(10));
+  suggester_->TrySuggestWithSurroundingText(u"why aren't", gfx::Range(10));
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 0u);
 }
@@ -1245,8 +1251,8 @@ TEST_F(MultiWordSuggesterTest, ShowingSuggestionsTriggersAnnouncement) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"why are", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"why are", gfx::Range(7));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1u);
@@ -1264,15 +1270,15 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"why are", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"why are", gfx::Range(7));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
-  suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
-  suggester_->TrySuggestWithSurroundingText(u"why aren", 8, 8);
-  suggester_->OnSurroundingTextChanged(u"why aren'", 9, 9);
-  suggester_->TrySuggestWithSurroundingText(u"why aren'", 9, 9);
-  suggester_->OnSurroundingTextChanged(u"why aren't", 10, 10);
-  suggester_->TrySuggestWithSurroundingText(u"why aren't", 10, 10);
+  suggester_->OnSurroundingTextChanged(u"why aren", gfx::Range(8));
+  suggester_->TrySuggestWithSurroundingText(u"why aren", gfx::Range(8));
+  suggester_->OnSurroundingTextChanged(u"why aren'", gfx::Range(9));
+  suggester_->TrySuggestWithSurroundingText(u"why aren'", gfx::Range(9));
+  suggester_->OnSurroundingTextChanged(u"why aren't", gfx::Range(10));
+  suggester_->TrySuggestWithSurroundingText(u"why aren't", gfx::Range(10));
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1u);
   EXPECT_EQ(suggestion_handler_.GetAnnouncements().back(),
@@ -1288,8 +1294,8 @@ TEST_F(MultiWordSuggesterTest, AcceptingSuggestionTriggersAnnouncement) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"why are", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"why are", gfx::Range(7));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
@@ -1307,12 +1313,12 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"why are", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"why are", gfx::Range(7));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
-  suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
-  suggester_->TrySuggestWithSurroundingText(u"why aren", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"why aren", gfx::Range(8));
+  suggester_->TrySuggestWithSurroundingText(u"why aren", gfx::Range(8));
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2u);
 }
@@ -1325,8 +1331,8 @@ TEST_F(MultiWordSuggesterTest, DismissingSuggestionTriggersAnnouncement) {
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"why are", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"why are", gfx::Range(7));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->DismissSuggestion();
 
@@ -1344,12 +1350,12 @@ TEST_F(MultiWordSuggesterTest,
   };
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"why are", gfx::Range(7));
+  suggester_->TrySuggestWithSurroundingText(u"why are", gfx::Range(7));
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->DismissSuggestion();
-  suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
-  suggester_->TrySuggestWithSurroundingText(u"why aren", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"why aren", gfx::Range(8));
+  suggester_->TrySuggestWithSurroundingText(u"why aren", gfx::Range(8));
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2u);
 }

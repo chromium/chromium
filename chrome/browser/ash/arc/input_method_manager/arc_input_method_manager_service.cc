@@ -261,8 +261,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
   void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
                                 const std::u16string& text,
-                                int cursor_pos,
-                                int anchor_pos,
+                                const gfx::Range selection_range,
                                 int offset_pos) override {
     owner_->UpdateTextInputState();
   }
