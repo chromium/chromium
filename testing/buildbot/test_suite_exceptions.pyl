@@ -1985,6 +1985,7 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter',
         ],
+        'ci_only': True,
         'swarming': {
           'inverse_quickrun_shards': 6,
         },
