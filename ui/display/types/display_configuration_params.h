@@ -16,7 +16,7 @@ namespace display {
 
 struct DISPLAY_TYPES_EXPORT DisplayConfigurationParams {
   DisplayConfigurationParams();
-  DisplayConfigurationParams(DisplayConfigurationParams& other);
+  DisplayConfigurationParams(const DisplayConfigurationParams& other);
   DisplayConfigurationParams(DisplayConfigurationParams&& other);
   DisplayConfigurationParams(int64_t id,
                              const gfx::Point& origin,

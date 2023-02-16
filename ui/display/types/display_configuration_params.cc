@@ -8,7 +8,7 @@ namespace display {
 
 DisplayConfigurationParams::DisplayConfigurationParams() = default;
 DisplayConfigurationParams::DisplayConfigurationParams(
-    DisplayConfigurationParams& other)
+    const DisplayConfigurationParams& other)
     : id(other.id), origin(other.origin), enable_vrr(other.enable_vrr) {
   if (other.mode)
     mode = other.mode->get()->Clone();
@@ -16,10 +16,10 @@ DisplayConfigurationParams::DisplayConfigurationParams(
 
 DisplayConfigurationParams::DisplayConfigurationParams(
     DisplayConfigurationParams&& other)
-    : id(other.id), origin(other.origin), enable_vrr(other.enable_vrr) {
-  if (other.mode)
-    mode = other.mode->get()->Clone();
-}
+    : id(std::move(other.id)),
+      origin(std::move(other.origin)),
+      mode(std::move(other.mode)),
+      enable_vrr(other.enable_vrr) {}
 
 DisplayConfigurationParams::DisplayConfigurationParams(
     int64_t id,
