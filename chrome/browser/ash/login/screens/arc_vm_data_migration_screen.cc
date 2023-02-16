@@ -6,6 +6,7 @@
 
 #include <deque>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_vm_client_adapter.h"
@@ -13,6 +14,7 @@
 #include "ash/public/cpp/session/scoped_screen_lock_blocker.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -253,6 +255,82 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
   chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
 }
 
+void ArcVmDataMigrationScreen::SetUpDestinationAndTriggerMigration() {
+  if (base::FeatureList::IsEnabled(arc::kLvmApplicationContainers)) {
+    // TODO(b/258278176): Handle LVM backend cases.
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  vm_tools::concierge::CreateDiskImageRequest request;
+  request.set_cryptohome_id(user_id_hash_);
+  request.set_vm_name(arc::kArcVmName);
+  request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+  request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+  request.set_filesystem_type(vm_tools::concierge::FilesystemType::EXT4);
+  // Keep the options in sync with the guest side ones set by arc-mkfs-blk-data.
+  constexpr std::array<const char*, 4> kMkfsOpts{
+      "-b4096",                                  // block-size
+      "-i65536",                                 // bytes-per-inode
+      "-Ocasefold,project,quota,verity",         // feature
+      "-Equotatype=usrquota:grpquota:prjquota",  // extended-options
+  };
+  for (const char* mkfs_opt : kMkfsOpts) {
+    request.add_mkfs_opts(mkfs_opt);
+  }
+  constexpr std::array<const char*, 2> kTune2fsOpts{
+      "-g1065",   // Set the group which can use the reserved filesystem blocks.
+      "-r32000",  // Set the number of reserved filesystem blocks.
+  };
+  for (const char* tune2fs_opt : kTune2fsOpts) {
+    request.add_tune2fs_opts(tune2fs_opt);
+  }
+  // TODO(b/258278176): Show a different UI while setting up the disk image, and
+  // prevent (or gracefully handle) cases where the update button is pressed
+  // multiple times.
+  ConciergeClient::Get()->CreateDiskImage(
+      std::move(request),
+      base::BindOnce(&ArcVmDataMigrationScreen::OnCreateDiskImageResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
+    absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
+  if (!response.has_value()) {
+    LOG(ERROR) << "Failed to create a disk image for /data: No D-Bus response";
+    HandleFatalError();
+    return;
+  }
+
+  switch (response->status()) {
+    case vm_tools::concierge::DISK_STATUS_CREATED:
+      VLOG(1) << "Created a disk image for /data at " << response->disk_path();
+      break;
+    case vm_tools::concierge::DISK_STATUS_EXISTS:
+      // This is actually unexpected. We should probably destroy the disk image
+      // and then recreate it at least in non-resume cases.
+      // TODO(b/258278176): Properly handle DISK_STATUS_EXISTS cases.
+      LOG(WARNING) << "Disk image for /data already exists at "
+                   << response->disk_path();
+      break;
+    default:
+      LOG(ERROR) << "Failed to create a disk image for /data. Status: "
+                 << response->status()
+                 << ", reason: " << response->failure_reason();
+      HandleFatalError();
+      return;
+  }
+
+  TriggerMigration();
+}
+
+void ArcVmDataMigrationScreen::TriggerMigration() {
+  arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
+                                   arc::ArcVmDataMigrationStatus::kStarted);
+  // TODO(b/258278176): Trigger the migration.
+  NOTIMPLEMENTED();
+}
+
 void ArcVmDataMigrationScreen::OnVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {}
 
@@ -277,14 +355,12 @@ void ArcVmDataMigrationScreen::UpdateUIState(
 }
 
 void ArcVmDataMigrationScreen::HandleSkip() {
+  // TODO(b/258278176): Properly handle the skip action.
   chrome::AttemptRelaunch();
 }
 
 void ArcVmDataMigrationScreen::HandleUpdate() {
-  arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
-                                   arc::ArcVmDataMigrationStatus::kStarted);
-  // TODO(b/258278176): Trigger the migration.
-  NOTIMPLEMENTED();
+  SetUpDestinationAndTriggerMigration();
 }
 
 void ArcVmDataMigrationScreen::HandleFatalError() {

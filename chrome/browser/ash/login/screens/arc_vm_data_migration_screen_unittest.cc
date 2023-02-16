@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -34,6 +35,8 @@ namespace {
 
 constexpr char kProfileName[] = "user@gmail.com";
 constexpr char kGaiaId[] = "1234567890";
+
+constexpr char kUserActionUpdate[] = "update";
 
 constexpr int64_t kFreeDiskSpaceLessThanThreshold = 1LL << 29;
 constexpr int64_t kFreeDiskSpaceMoreThanThreshold = 1LL << 31;
@@ -208,6 +211,12 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     }
 
     chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
+  }
+
+  void PressUpdateButton() {
+    base::Value::List args;
+    args.Append(kUserActionUpdate);
+    screen_->HandleUserAction(args);
   }
 
   // FakeConciergeClient::VmObserver overrides:
@@ -389,6 +398,31 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcUpstartJobs) {
   EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
   EXPECT_TRUE(jobs_to_be_stopped.empty());
   EXPECT_FALSE(screen_->encountered_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest, CreateDiskImageSuccess) {
+  // CreateDiskImageResponse is set to DISK_STATUS_CREATED by default.
+  screen_->Show(wizard_context_.get());
+  task_environment()->RunUntilIdle();
+
+  PressUpdateButton();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
+  EXPECT_EQ(FakeConciergeClient::Get()->create_disk_image_call_count(), 1);
+  EXPECT_FALSE(screen_->encountered_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest, CreateDiskImageFailureIsFatal) {
+  vm_tools::concierge::CreateDiskImageResponse response;
+  response.set_status(vm_tools::concierge::DiskImageStatus::DISK_STATUS_FAILED);
+  FakeConciergeClient::Get()->set_create_disk_image_response(response);
+
+  screen_->Show(wizard_context_.get());
+  task_environment()->RunUntilIdle();
+
+  PressUpdateButton();
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(screen_->encountered_fatal_error());
 }
 
 }  // namespace

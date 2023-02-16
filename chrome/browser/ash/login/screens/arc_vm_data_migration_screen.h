@@ -56,6 +56,14 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   void OnGetFreeDiskSpace(absl::optional<int64_t> reply);
 
+  // Sets up the destination of the migration, and then triggers the migration.
+  void SetUpDestinationAndTriggerMigration();
+  void OnCreateDiskImageResponse(
+      absl::optional<vm_tools::concierge::CreateDiskImageResponse> res);
+
+  // Triggers the actual data migration.
+  void TriggerMigration();
+
   // ConciergeClient::VmObserver overrides:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
