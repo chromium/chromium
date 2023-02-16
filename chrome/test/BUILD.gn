@@ -1322,6 +1322,7 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator:mojo_bindings",
       "//chrome/browser/resource_coordinator:tab_manager_features",
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
+      "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
       "//chrome/browser/segmentation_platform:test_utils",
       "//chrome/browser/sharing/proto",

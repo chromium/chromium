@@ -10,6 +10,8 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
 #include "chrome/browser/ssl/https_only_mode_upgrade_interceptor.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -997,4 +999,20 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModePrefsBrowserTest, PrefStatesRecorded) {
   CreateIncognitoBrowser();
   histograms()->ExpectTotalCount(
       "Security.HttpsFirstMode.SettingEnabledAtStartup", 1);
+}
+
+// Tests that HFM is enabled if the user is under Advanced Protection.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModePrefsBrowserTest,
+                       AdvancedProtectionEnabled) {
+  safe_browsing::AdvancedProtectionStatusManager* ap_manager =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          browser()->profile());
+
+  EXPECT_FALSE(ap_manager->IsUnderAdvancedProtection());
+  EXPECT_FALSE(GetPref());
+
+  ap_manager->SetAdvancedProtectionStatusForTesting(true);
+  EXPECT_TRUE(GetPref());
+
+  // TODO(crbug.com/1414633): Check that the HFM UI setting is locked.
 }

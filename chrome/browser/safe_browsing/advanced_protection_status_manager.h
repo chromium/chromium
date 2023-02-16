@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -55,6 +56,14 @@ class AdvancedProtectionStatusManager
     kMaxValue = kEnabledAfterDisabled,
   };
 
+  // Observer to track changes in the enabled/disabled status of Advanced
+  // Protection. Observers must use IsUnderAdvancedProtection() to check the
+  // status.
+  class StatusChangedObserver : public base::CheckedObserver {
+   public:
+    virtual void OnAdvancedProtectionStatusChanged(bool enabled) {}
+  };
+
   AdvancedProtectionStatusManager(PrefService* pref_service,
                                   signin::IdentityManager* identity_manager);
 
@@ -75,6 +84,10 @@ class AdvancedProtectionStatusManager
   bool IsRefreshScheduled();
 
   void SetAdvancedProtectionStatusForTesting(bool enrolled);
+
+  // Adds and removes observers to observe enabled/disabled status changes.
+  void AddObserver(StatusChangedObserver* observer);
+  void RemoveObserver(StatusChangedObserver* observer);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AdvancedProtectionStatusManagerTest,
@@ -154,6 +167,8 @@ class AdvancedProtectionStatusManager
   // Returns an empty string if user is not signed in.
   CoreAccountId GetUnconsentedPrimaryAccountId() const;
 
+  void NotifyStatusChanged();
+
   // Only called in tests to set a customized minimum delay.
   AdvancedProtectionStatusManager(PrefService* pref_service,
                                   signin::IdentityManager* identity_manager,
@@ -172,6 +187,7 @@ class AdvancedProtectionStatusManager
   base::OneShotTimer timer_;
   base::Time last_refreshed_;
   base::TimeDelta minimum_delay_;
+  base::ObserverList<StatusChangedObserver> observers_;
 };
 
 }  // namespace safe_browsing
