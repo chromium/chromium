@@ -350,12 +350,6 @@ BASE_FEATURE(kDocumentProvider,
              "OmniboxDocumentProvider",
              enabled_by_default_desktop_only);
 
-// Feature to determine a value in the drive request indicating whether the
-// request should be served by the  ASO backend.
-BASE_FEATURE(kDocumentProviderAso,
-             "OmniboxDocumentProviderAso",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature to determine if the HQP should double as a domain provider by
 // suggesting up to the provider limit for each of the user's highly visited
 // domains.

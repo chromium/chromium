@@ -5123,11 +5123,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "omnibox-document-provider-aso",
-    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "omnibox-domain-suggestions",
     "owners": ["manukh", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120

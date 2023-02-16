@@ -82,7 +82,6 @@ BASE_DECLARE_FEATURE(kHistoryQuickProviderSpecificityScoreCountUniqueHosts);
 
 // Document provider and domain suggestions
 BASE_DECLARE_FEATURE(kDocumentProvider);
-BASE_DECLARE_FEATURE(kDocumentProviderAso);
 BASE_DECLARE_FEATURE(kDomainSuggestions);
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.

@@ -1135,9 +1135,6 @@ extern const char kOmniboxDefaultBrowserPedalDescription[];
 extern const char kOmniboxDisableCGIParamMatchingName[];
 extern const char kOmniboxDisableCGIParamMatchingDescription[];
 
-extern const char kOmniboxDocumentProviderAsoName[];
-extern const char kOmniboxDocumentProviderAsoDescription[];
-
 extern const char kOmniboxDomainSuggestionsName[];
 extern const char kOmniboxDomainSuggestionsDescription[];
 

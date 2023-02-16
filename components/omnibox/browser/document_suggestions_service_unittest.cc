@@ -94,49 +94,4 @@ TEST_F(DocumentSuggestionsServiceTest, VariationHeaders) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(DocumentSuggestionsServiceTest, AsoParamInRequest) {
-  auto expect_aso_param = [&](const std::string& expected_value,
-                              const network::ResourceRequest& request) {
-    base::StringPiece request_string(request.request_body->elements()
-                                         ->at(0)
-                                         .As<network::DataElementBytes>()
-                                         .AsStringPiece());
-    absl::optional<base::Value> request_value =
-        base::JSONReader::Read(request_string);
-    ASSERT_TRUE(request_value) << expected_value;
-    std::string* param =
-        request_value->FindStringPath("requestOptions.debugOptions.optsParams");
-    ASSERT_NE(param, nullptr) << expected_value;
-    EXPECT_EQ(*param, expected_value) << expected_value;
-  };
-
-  {
-    // ASO disabled.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(omnibox::kDocumentProviderAso);
-    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
-        [&](const network::ResourceRequest& request) {
-          expect_aso_param("enable_aso_search:true", request);
-        }));
-    document_suggestions_service_->CreateDocumentSuggestionsRequest(
-        u"", false, base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
-        base::BindOnce(OnURLLoadComplete));
-    base::RunLoop().RunUntilIdle();
-  }
-
-  {
-    // ASO enabled.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(omnibox::kDocumentProviderAso);
-    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
-        [&](const network::ResourceRequest& request) {
-          expect_aso_param("enable_aso_search:false", request);
-        }));
-    document_suggestions_service_->CreateDocumentSuggestionsRequest(
-        u"", false, base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
-        base::BindOnce(OnURLLoadComplete));
-    base::RunLoop().RunUntilIdle();
-  }
-}
-
 }  // namespace

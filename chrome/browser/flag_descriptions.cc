@@ -2031,11 +2031,6 @@ const char kOmniboxDisableCGIParamMatchingName[] =
 const char kOmniboxDisableCGIParamMatchingDescription[] =
     "Disables using matches in CGI parameter names while scoring suggestions.";
 
-const char kOmniboxDocumentProviderAsoName[] = "Omnibox Document Provider ASO";
-const char kOmniboxDocumentProviderAsoDescription[] =
-    "If document suggestions are enabled, swaps the backend from cloudsearch "
-    "to ASO (Apps Search Overlay) search.";
-
 const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
 const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "
