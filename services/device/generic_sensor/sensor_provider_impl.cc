@@ -43,7 +43,7 @@ SensorProviderImpl::SensorProviderImpl(
   DCHECK(provider_);
 }
 
-SensorProviderImpl::~SensorProviderImpl() {}
+SensorProviderImpl::~SensorProviderImpl() = default;
 
 void SensorProviderImpl::Bind(
     mojo::PendingReceiver<mojom::SensorProvider> receiver) {
@@ -69,17 +69,16 @@ void SensorProviderImpl::GetSensor(mojom::SensorType type,
   if (!sensor) {
     provider_->CreateSensor(
         type, base::BindOnce(&SensorProviderImpl::SensorCreated,
-                             weak_ptr_factory_.GetWeakPtr(), type,
+                             weak_ptr_factory_.GetWeakPtr(),
                              std::move(cloned_region), std::move(callback)));
     return;
   }
 
-  SensorCreated(type, std::move(cloned_region), std::move(callback),
+  SensorCreated(std::move(cloned_region), std::move(callback),
                 std::move(sensor));
 }
 
 void SensorProviderImpl::SensorCreated(
-    mojom::SensorType type,
     base::ReadOnlySharedMemoryRegion cloned_region,
     GetSensorCallback callback,
     scoped_refptr<PlatformSensor> sensor) {
@@ -100,7 +99,8 @@ void SensorProviderImpl::SensorCreated(
   init_params->sensor = std::move(pending_sensor);
 
   init_params->memory = std::move(cloned_region);
-  init_params->buffer_offset = SensorReadingSharedBuffer::GetOffset(type);
+  init_params->buffer_offset =
+      SensorReadingSharedBuffer::GetOffset(sensor->GetType());
   init_params->mode = sensor->GetReportingMode();
 
   double maximum_frequency = sensor->GetMaximumSupportedFrequency();
@@ -109,7 +109,8 @@ void SensorProviderImpl::SensorCreated(
   double minimum_frequency = sensor->GetMinimumSupportedFrequency();
   DCHECK_GT(minimum_frequency, 0.0);
 
-  const double maximum_allowed_frequency = GetSensorMaxAllowedFrequency(type);
+  const double maximum_allowed_frequency =
+      GetSensorMaxAllowedFrequency(sensor->GetType());
   if (maximum_frequency > maximum_allowed_frequency)
     maximum_frequency = maximum_allowed_frequency;
   // These checks are to make sure the following assertion is still true:

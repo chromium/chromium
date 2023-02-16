@@ -38,8 +38,7 @@ class SensorProviderImpl final : public mojom::SensorProvider {
                  GetSensorCallback callback) override;
 
   // Helper callback method to return created sensors.
-  void SensorCreated(mojom::SensorType type,
-                     base::ReadOnlySharedMemoryRegion cloned_region,
+  void SensorCreated(base::ReadOnlySharedMemoryRegion cloned_region,
                      GetSensorCallback callback,
                      scoped_refptr<PlatformSensor> sensor);
 
