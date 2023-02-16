@@ -266,7 +266,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     base::Value properties(base::Value::Type::DICT);
     network->GetStateProperties(&properties);
     absl::optional<int> priority =
-        properties.FindIntKey(shill::kPriorityProperty);
+        properties.GetDict().FindInt(shill::kPriorityProperty);
     if (!priority)
       return -1;
     return priority.value();

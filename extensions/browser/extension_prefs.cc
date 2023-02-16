@@ -2595,7 +2595,7 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
       continue;
     }
 
-    absl::optional<int> state_value = item.second.FindIntKey(kPrefState);
+    absl::optional<int> state_value = item.second.GetDict().FindInt(kPrefState);
     if (!state_value ||
         *state_value != Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED) {
       continue;
