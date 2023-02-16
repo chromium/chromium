@@ -2778,15 +2778,10 @@ void Document::UpdateUseShadowTreesIfNeeded() {
 
   // Breadth-first search since nested use elements add to the queue.
   while (!use_elements_needing_update_.empty()) {
-    HeapHashSet<Member<SVGUseElement>> elements;
+    HeapHashSet<Member<SVGUseElement>, WTF::MemberHashRecordReplayId<SVGUseElement>> elements;
     use_elements_needing_update_.swap(elements);
-    HeapVector<Member<SVGUseElement>> elements_vector;
-    for (SVGUseElement* element : elements) {
-      elements_vector.push_back(element);
-    }
-    std::sort(elements_vector.begin(), elements_vector.end(),
-              recordreplay::CompareMemberByRecordReplayId<Member<SVGUseElement>>());
-    for (SVGUseElement* element : elements_vector)
+
+    for (SVGUseElement* element : elements)
       element->BuildPendingResource();
   }
 }

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -33,7 +34,7 @@ class CORE_EXPORT SlotAssignmentEngine final
   void Trace(Visitor*) const;
 
  private:
-  HeapHashSet<WeakMember<ShadowRoot>> shadow_roots_needing_recalc_;
+  HeapHashSet<WeakMember<ShadowRoot>, WTF::MemberHashRecordReplayId<ShadowRoot>> shadow_roots_needing_recalc_;
 };
 
 }  // namespace blink

@@ -103,7 +103,7 @@ class SMILTimeContainer::TimingUpdate {
     return time_container_->should_dispatch_events_;
   }
 
-  using UpdatedElementsMap = HeapHashMap<Member<SVGSMILElement>, SMILInterval>;
+  using UpdatedElementsMap = HeapHashMap<Member<SVGSMILElement>, SMILInterval, WTF::MemberHashRecordReplayId<SVGSMILElement>>;
   UpdatedElementsMap& UpdatedElements() { return updated_elements_; }
 
   TimingUpdate(const TimingUpdate&) = delete;
@@ -120,16 +120,9 @@ SMILTimeContainer::TimingUpdate::~TimingUpdate() {
   if (!ShouldDispatchEvents())
     return;
   DCHECK(IsSeek() || updated_elements_.empty());
-  HeapVector<Member<SVGSMILElement>> updated_elements_vector;
   for (const auto& entry : updated_elements_) {
-    updated_elements_vector.push_back(entry.key);
-  }
-  std::sort(updated_elements_vector.begin(), updated_elements_vector.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGSMILElement>>());
-  for (const Member<SVGSMILElement>& element : updated_elements_vector) {
-    auto iter = updated_elements_.find(element);
-    CHECK(iter != updated_elements_.end());
-    if (auto events_to_dispatch = element->ComputeSeekEvents(iter->value))
+    SVGSMILElement* element = entry.key;
+    if (auto events_to_dispatch = element->ComputeSeekEvents(entry.value))
       element->DispatchEvents(events_to_dispatch);
   }
 }
@@ -598,16 +591,9 @@ void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
   if (document_order_indexes_dirty_)
     UpdateDocumentOrderIndexes();
 
-  HeapVector<Member<SVGElement>> animated_targets_vector;
-  for (auto& entry : animated_targets_) {
-    animated_targets_vector.push_back(entry.key);
-  }
-  std::sort(animated_targets_vector.begin(), animated_targets_vector.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGElement>>());
-
   bool did_apply_effects = false;
-  for (auto& entry : animated_targets_vector) {
-    ElementSMILAnimations* animations = entry->GetSMILAnimations();
+  for (auto& entry : animated_targets_) {
+    ElementSMILAnimations* animations = entry.key->GetSMILAnimations();
     if (animations && animations->Apply(elapsed))
       did_apply_effects = true;
   }

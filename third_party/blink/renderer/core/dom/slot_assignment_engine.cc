@@ -45,15 +45,9 @@ void SlotAssignmentEngine::RecalcSlotAssignments() {
     return;
   TRACE_EVENT0("blink", "SlotAssignmentEngine::RecalcSlotAssignments");
 
-  HeapVector<Member<ShadowRoot>> shadow_roots_vector;
   for (auto& shadow_root :
-       HeapHashSet<WeakMember<ShadowRoot>>(shadow_roots_needing_recalc_)) {
-    shadow_roots_vector.push_back(shadow_root);
-  }
-  std::sort(shadow_roots_vector.begin(), shadow_roots_vector.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<ShadowRoot>>());
-
-  for (auto& shadow_root : shadow_roots_vector) {
+       HeapHashSet<WeakMember<ShadowRoot>, WTF::MemberHashRecordReplayId<ShadowRoot>>(shadow_roots_needing_recalc_))
+  {
     DCHECK(shadow_root->isConnected());
     DCHECK(shadow_root->NeedsSlotAssignmentRecalc());
     // SlotAssignment::RecalcAssignment() will remove its shadow root from

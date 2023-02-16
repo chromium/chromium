@@ -209,13 +209,7 @@ double DocumentTimeline::PlaybackRate() const {
 }
 
 void DocumentTimeline::InvalidateKeyframeEffects(const TreeScope& tree_scope) {
-  HeapVector<Member<Animation>> animations_vector;
   for (const auto& animation : animations_)
-    animations_vector.push_back(animation);
-  std::sort(animations_vector.begin(), animations_vector.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<Animation>>());
-
-  for (const auto& animation : animations_vector)
     animation->InvalidateKeyframeEffect(tree_scope);
 }
 
