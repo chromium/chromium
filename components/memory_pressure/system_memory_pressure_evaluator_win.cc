@@ -188,14 +188,6 @@ SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
   StopObserving();
 }
 
-void SystemMemoryPressureEvaluator::CheckMemoryPressureSoon() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindOnce(&SystemMemoryPressureEvaluator::CheckMemoryPressure,
-                          weak_ptr_factory_.GetWeakPtr()));
-}
-
 void SystemMemoryPressureEvaluator::CreateOSSignalPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter) {
   os_signals_evaluator_ =
@@ -301,6 +293,8 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
 
   // How much system memory is actively available for use right now, in MBs.
   int phys_free = static_cast<int>(mem_status.ullAvailPhys / kMBBytes);
+
+  base::UmaHistogramMemoryLargeMB("Memory.System.AvailableMB", phys_free);
 
   // TODO(chrisha): This should eventually care about address space pressure,
   // but the browser process (where this is running) effectively never runs out

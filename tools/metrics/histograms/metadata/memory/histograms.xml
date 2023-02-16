@@ -2513,6 +2513,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.System.AvailableMB" units="MB"
+    expires_after="2023-06-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The amount of available physical memory on the system. Recorded every 5
+    seconds on Windows only.
+
+    From
+    https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex,
+    this is memory that can be reused without having to write its content to
+    disk first. It includes the standby, free and zero lists.
+  </summary>
+</histogram>
+
 <histogram name="Memory.System.MemAvailableMB" units="MB"
     expires_after="2023-07-16">
   <owner>andreaorru@chromium.org</owner>
