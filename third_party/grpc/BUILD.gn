@@ -49,13 +49,6 @@ config("grpc_config") {
     defines += [ "GRPC_NO_BINDER" ]
   }
 
-  cflags = [
-    "-Wno-implicit-fallthrough",
-    "-Wno-shadow",
-    "-Wno-unreachable-code-return",
-    "-Wno-unreachable-code-break",
-  ]
-
   if (is_android) {
     libs = [ "log" ]  # For __android_log_write
   }
@@ -86,14 +79,18 @@ config("grpc_config") {
 config("grpc_config_private") {
   cflags = [
     "-Wno-c++98-compat-extra-semi",
+    "-Wno-deprecated-copy",
     "-Wno-extra-semi",
+    "-Wno-implicit-fallthrough",
+    "-Wno-shadow",
     "-Wno-sign-compare",
     "-Wno-sometimes-uninitialized",
     "-Wno-string-concatenation",
     "-Wno-unreachable-code",
-    "-Wno-unused-variable",
+    "-Wno-unreachable-code-break",
+    "-Wno-unreachable-code-return",
     "-Wno-unused-result",
-    "-Wno-deprecated-copy",
+    "-Wno-unused-variable",
   ]
 
   # TODO(b/260740023): Remove when gRPC has CFI checks enabled.
@@ -2171,7 +2168,10 @@ if (current_toolchain == host_toolchain) {
       ":grpc_plugin_support",
       "//third_party/protobuf:protoc_lib",
     ]
-    configs += [ "//third_party/protobuf:protobuf_config" ]
+    configs += [
+      "//third_party/protobuf:protobuf_config",
+      ":grpc_config_private",
+    ]
     public_configs = [ ":grpc_config" ]
   }
 }
