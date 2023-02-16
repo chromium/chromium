@@ -196,6 +196,35 @@
   [_alertCoordinator start];
 }
 
+- (void)presentStopPriceTrackingErrorAlertForItem:
+    (PriceNotificationsTableViewItem*)item {
+  __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
+  NSString* alertTitle = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE);
+  NSString* alertMessage = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_UNSUBSCRIBE_ERROR_ALERT_DESCRIPTION);
+  NSString* cancelTitle = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
+  NSString* tryAgainTitle = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT);
+
+  [_alertCoordinator stop];
+  _alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.tableViewController
+                         browser:self.browser
+                           title:alertTitle
+                         message:alertMessage];
+  [_alertCoordinator addItemWithTitle:cancelTitle
+                               action:nil
+                                style:UIAlertActionStyleCancel];
+  [_alertCoordinator addItemWithTitle:tryAgainTitle
+                               action:^{
+                                 [weakMediator stopTrackingItem:item];
+                               }
+                                style:UIAlertActionStyleDefault];
+  [_alertCoordinator start];
+}
+
 #pragma mark - Private
 
 - (void)dismissButtonTapped {

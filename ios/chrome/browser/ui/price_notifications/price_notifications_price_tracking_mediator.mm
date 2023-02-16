@@ -129,6 +129,7 @@ using PriceNotificationItems =
       self.shoppingService, self.bookmarkModel, bookmark, false,
       base::BindOnce(^(bool success) {
         if (!success) {
+          [weakSelf.presenter presentStopPriceTrackingErrorAlertForItem:item];
           return;
         }
         [weakSelf didStopTrackingItem:item];

@@ -19,6 +19,11 @@
 - (void)presentStartPriceTrackingErrorAlertForItem:
     (PriceNotificationsTableViewItem*)item;
 
+// Displays the UIAlert that indicates to the user that an error has occurred
+// during the price tracking subscription cancellation process.
+- (void)presentStopPriceTrackingErrorAlertForItem:
+    (PriceNotificationsTableViewItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_ALERT_PRESENTER_H_
