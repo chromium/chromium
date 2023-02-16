@@ -115,10 +115,14 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
           continue;
         }
         extensions_found = true;
-        extensions->insert(
-            base::SysNSStringToUTF8(type.preferredFilenameExtension));
+        NSArray<NSString*>* extensions_list =
+            type.tags[UTTagClassFilenameExtension];
+        for (NSString* extension in extensions_list) {
+          extensions->insert(base::SysNSStringToUTF8(extension));
+        }
       }
     }
+
     if (extensions_found) {
       return;
     }
