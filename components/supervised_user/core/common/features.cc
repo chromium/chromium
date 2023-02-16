@@ -68,6 +68,11 @@ BASE_FEATURE(kEnableKidsManagementService,
              "EnableKidsManagementService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables synchronous sign-in checking in the First Run Experience.
+BASE_FEATURE(kSynchronousSignInChecking,
+             "SynchronousSignInChecking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsWebFilterInterstitialRefreshEnabled() {
   DCHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||
          !base::FeatureList::IsEnabled(kLocalWebApprovals));
@@ -111,4 +116,8 @@ bool IsKidsManagementServiceEnabled() {
 BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnThirdParty,
              "FilterWebsitesForSupervisedUsersOnThirdParty",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSynchronousSignInCheckingEnabled() {
+  return base::FeatureList::IsEnabled(kSynchronousSignInChecking);
+}
 }  // namespace supervised_user

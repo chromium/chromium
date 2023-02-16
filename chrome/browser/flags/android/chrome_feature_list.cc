@@ -382,6 +382,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &share::kScreenshotsForAndroidV2,
     &share::kUpcomingSharingFeatures,
     &supervised_user::kLocalWebApprovals,
+    &supervised_user::kSynchronousSignInChecking,
     &supervised_user::kWebFilterInterstitialRefresh,
     &switches::kForceStartupSigninPromo,
     &switches::kIdentityStatusConsistency,

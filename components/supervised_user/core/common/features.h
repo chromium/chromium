@@ -16,6 +16,7 @@ extern const char kLocalWebApprovalsPreferredButtonLocal[];
 extern const char kLocalWebApprovalsPreferredButtonRemote[];
 
 BASE_DECLARE_FEATURE(kAllowHistoryDeletionForChildAccounts);
+BASE_DECLARE_FEATURE(kSynchronousSignInChecking);
 
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnThirdParty);
 
@@ -36,6 +37,10 @@ bool IsLocalWebApprovalThePreferredButton();
 
 // Returns whether to use the new Api for fetching.
 bool IsKidsManagementServiceEnabled();
+
+// Returns whether the First Run Experience will rely on checking the sign-in
+// status synchronously - http://b/264382308.
+bool IsSynchronousSignInCheckingEnabled();
 
 }  // namespace supervised_user
 
