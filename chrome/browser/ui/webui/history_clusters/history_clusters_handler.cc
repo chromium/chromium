@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/webui/history_clusters/history_cluster_type_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -132,109 +133,6 @@ class HistoryClustersSidePanelContextMenu
   GURL url_;
 };
 
-// Creates a `mojom::VisitPtr` from a `history_clusters::Visit`.
-mojom::URLVisitPtr VisitToMojom(Profile* profile,
-                                const history::ClusterVisit& visit) {
-  auto visit_mojom = mojom::URLVisit::New();
-  visit_mojom->visit_id = visit.annotated_visit.visit_row.visit_id;
-  visit_mojom->normalized_url = visit.normalized_url;
-  visit_mojom->url_for_display = base::UTF16ToUTF8(visit.url_for_display);
-  if (!visit.image_url.is_empty()) {
-    visit_mojom->image_url = visit.image_url;
-  }
-  visit_mojom->is_known_to_sync =
-      visit.annotated_visit.visit_row.is_known_to_sync;
-
-  // Add the raw URLs and visit times so the UI can perform deletion.
-  auto& annotated_visit = visit.annotated_visit;
-  visit_mojom->raw_visit_data = mojom::RawVisitData::New(
-      annotated_visit.url_row.url(), annotated_visit.visit_row.visit_time);
-  for (const auto& duplicate : visit.duplicate_visits) {
-    visit_mojom->duplicates.push_back(
-        mojom::RawVisitData::New(duplicate.url, duplicate.visit_time));
-  }
-
-  visit_mojom->page_title = base::UTF16ToUTF8(annotated_visit.url_row.title());
-
-  for (const auto& match : visit.title_match_positions) {
-    auto match_mojom = mojom::MatchPosition::New();
-    match_mojom->begin = match.first;
-    match_mojom->end = match.second;
-    visit_mojom->title_match_positions.push_back(std::move(match_mojom));
-  }
-  for (const auto& match : visit.url_for_display_match_positions) {
-    auto match_mojom = mojom::MatchPosition::New();
-    match_mojom->begin = match.first;
-    match_mojom->end = match.second;
-    visit_mojom->url_for_display_match_positions.push_back(
-        std::move(match_mojom));
-  }
-
-  visit_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
-      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-      base::Time::Now() - annotated_visit.visit_row.visit_time));
-  if (annotated_visit.context_annotations.is_existing_part_of_tab_group ||
-      annotated_visit.context_annotations.is_placed_in_tab_group) {
-    visit_mojom->annotations.push_back(mojom::Annotation::kTabGrouped);
-  }
-  if (annotated_visit.context_annotations.is_existing_bookmark ||
-      annotated_visit.context_annotations.is_new_bookmark) {
-    visit_mojom->annotations.push_back(mojom::Annotation::kBookmarked);
-  }
-
-  const TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-  const TemplateURL* default_search_provider =
-      template_url_service ? template_url_service->GetDefaultSearchProvider()
-                           : nullptr;
-  if (default_search_provider &&
-      default_search_provider->IsSearchURL(
-          visit.normalized_url, template_url_service->search_terms_data())) {
-    visit_mojom->annotations.push_back(mojom::Annotation::kSearchResultsPage);
-  }
-
-  if (GetConfig().user_visible_debug) {
-    visit_mojom->debug_info["visit_id"] =
-        base::NumberToString(annotated_visit.visit_row.visit_id);
-    visit_mojom->debug_info["score"] = base::NumberToString(visit.score);
-    visit_mojom->debug_info["visit_time"] =
-        base::TimeToISO8601(visit.annotated_visit.visit_row.visit_time);
-    visit_mojom->debug_info["foreground_duration"] =
-        base::NumberToString(annotated_visit.context_annotations
-                                 .total_foreground_duration.InSecondsF());
-    visit_mojom->debug_info["visit_source"] =
-        base::NumberToString(annotated_visit.source);
-  }
-
-  return visit_mojom;
-}
-
-// Creates a `mojom::SearchQueryPtr` from the given search query, if possible.
-absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
-    Profile* profile,
-    const std::string& search_query) {
-  const TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-  const TemplateURL* default_search_provider =
-      template_url_service ? template_url_service->GetDefaultSearchProvider()
-                           : nullptr;
-  if (!default_search_provider) {
-    return absl::nullopt;
-  }
-
-  const std::string url = default_search_provider->url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(base::UTF8ToUTF16(search_query)),
-      template_url_service->search_terms_data());
-  if (url.empty()) {
-    return absl::nullopt;
-  }
-
-  auto search_query_mojom = mojom::SearchQuery::New();
-  search_query_mojom->query = search_query;
-  search_query_mojom->url = GURL(url);
-  return search_query_mojom;
-}
-
 }  // namespace
 
 // Creates a `mojom::QueryResultPtr` using the original `query`, if the query
@@ -247,37 +145,7 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
     bool is_continuation) {
   std::vector<mojom::ClusterPtr> cluster_mojoms;
   for (const auto& cluster : clusters_batch) {
-    auto cluster_mojom = mojom::Cluster::New();
-    cluster_mojom->id = cluster.cluster_id;
-    if (cluster.label) {
-      cluster_mojom->label = base::UTF16ToUTF8(*cluster.label);
-      for (const auto& match : cluster.label_match_positions) {
-        auto match_mojom = mojom::MatchPosition::New();
-        match_mojom->begin = match.first;
-        match_mojom->end = match.second;
-        cluster_mojom->label_match_positions.push_back(std::move(match_mojom));
-      }
-    }
-
-    cluster_mojom->from_persistence = cluster.from_persistence;
-
-    if (GetConfig().user_visible_debug && cluster.from_persistence) {
-      cluster_mojom->debug_info =
-          "persisted, id = " + base::NumberToString(cluster.cluster_id);
-    }
-
-    for (const auto& visit : cluster.visits) {
-      cluster_mojom->visits.push_back(VisitToMojom(profile, visit));
-    }
-
-    for (const auto& related_search : cluster.related_searches) {
-      auto search_query_mojom = SearchQueryToMojom(profile, related_search);
-      if (search_query_mojom) {
-        cluster_mojom->related_searches.emplace_back(
-            std::move(*search_query_mojom));
-      }
-    }
-
+    auto cluster_mojom = ClusterToMojom(profile, cluster);
     cluster_mojoms.emplace_back(std::move(cluster_mojom));
   }
 
