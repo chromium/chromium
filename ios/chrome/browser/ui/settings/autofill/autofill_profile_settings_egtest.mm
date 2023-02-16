@@ -138,7 +138,8 @@ id<GREYMatcher> SearchBarScrim() {
       [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)] ||
       [self isRunningTest:@selector(testCountrySelection)] ||
       [self isRunningTest:@selector(testRequiredFields)] ||
-      [self isRunningTest:@selector(testAutoScrollInCountrySelector)]) {
+      [self isRunningTest:@selector(testAutoScrollInCountrySelector)] ||
+      [self isRunningTest:@selector(testDoneButtonByRequirementsOfCountries)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAccountProfilesUnionView);
   }
@@ -553,6 +554,77 @@ id<GREYMatcher> SearchBarScrim() {
 
   [[EarlGrey selectElementWithMatcher:CountryEntry(@"United States")]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that when the state data is removed, the "Done" button is enabled for
+// "Germany" but not for "India". Similarly, the "Done" is disabled for "US".
+- (void)testDoneButtonByRequirementsOfCountries {
+  [AutofillAppInterface saveExampleAccountProfile];
+  [self openEditProfile:kProfileLabel];
+
+  // Switch on edit mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  // Change text of state to empty.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_STATE)]
+      performAction:grey_replaceText(@"")];
+
+  // The "Done" button should not be enabled now since "State" is a required
+  // field for "United States".
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_AUTOFILL_COUNTRY))]
+      performAction:grey_tap()];
+
+  // Focus the search bar.
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
+      performAction:grey_replaceText(kCountryForSelection)];
+
+  // Verify the `kCountryForSelection` country is visible.
+  [[EarlGrey selectElementWithMatcher:CountryEntry(kCountryForSelection)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap on `kCountryForSelection`.
+  [[EarlGrey selectElementWithMatcher:CountryEntry(kCountryForSelection)]
+      performAction:grey_tap()];
+
+  // The "Done" button should be enabled since "State" is not a required field
+  // for "Germany".
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Tap on Country and select "India" now.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_AUTOFILL_COUNTRY))]
+      performAction:grey_tap()];
+
+  // Focus the search bar.
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
+      performAction:grey_replaceText(@"India")];
+
+  // Verify the "India" is visible.
+  [[EarlGrey selectElementWithMatcher:CountryEntry(@"India")]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap on "India".
+  [[EarlGrey selectElementWithMatcher:CountryEntry(@"India")]
+      performAction:grey_tap()];
+
+  // The "Done" button should not be enabled now since "State" is a required
+  // field for "India".
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
 }
 
 @end

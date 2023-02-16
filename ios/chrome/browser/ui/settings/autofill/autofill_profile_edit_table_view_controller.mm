@@ -298,10 +298,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAccountProfilesUnionView) &&
       _autofillProfile->source() ==
-          autofill::AutofillProfile::Source::kAccount &&
-      [self hasTableViewErrorStateChanged:tableViewItem]) {
-    self.navigationItem.rightBarButtonItem.enabled =
-        !([self.requiredFieldsWithEmptyValue count]);
+          autofill::AutofillProfile::Source::kAccount) {
+    [self computeErrorIfRequiredTextField:tableViewItem];
+    [self updateDoneButtonStatus];
   }
   [self reconfigureCellsForItems:@[ tableViewItem ]];
 }
@@ -334,13 +333,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)didSelectCountry:(NSString*)country {
   self.countryValue = country;
 
-  // TODO(crbug.com/1407666): Should not reload the model, the user changed
-  // fields may be overwritten.
-  [self loadModel];
-  // Update the cells.
-  [self reconfigureCellsForItems:
-            [self.tableViewModel
-                itemsInSectionWithIdentifier:SectionIdentifierFields]];
+  [self.requiredFieldsWithEmptyValue removeAllObjects];
+  for (TableViewItem* item in [self.tableViewModel
+           itemsInSectionWithIdentifier:SectionIdentifierFields]) {
+    if (item.type == ItemTypeCountry) {
+      TableViewMultiDetailTextItem* multiDetailTextItem =
+          base::mac::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
+      multiDetailTextItem.trailingDetailText = self.countryValue;
+    } else {
+      TableViewTextEditItem* tableViewTextEditItem =
+          base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
+      [self computeErrorIfRequiredTextField:tableViewTextEditItem];
+    }
+    [self reconfigureCellsForItems:@[ item ]];
+  }
+
+  [self updateDoneButtonStatus];
 }
 
 #pragma mark - Private
@@ -353,36 +361,34 @@ typedef NS_ENUM(NSInteger, ItemType) {
          (itemType == ItemTypeZip && self.zipRequired);
 }
 
-// Returns YES if the error state has changed.
-- (BOOL)hasTableViewErrorStateChanged:(TableViewTextEditItem*)tableViewItem {
+// Computes whether the `tableViewItem` is a required field and empty.
+- (void)computeErrorIfRequiredTextField:(TableViewTextEditItem*)tableViewItem {
   ItemType itemType = static_cast<ItemType>(tableViewItem.type);
   if (![self isItemTypeRequiredField:itemType]) {
     // Early return if the text field is not a required field.
     tableViewItem.hasValidText = YES;
-    return NO;
+    return;
   }
 
   NSString* requiredTextFieldLabel =
       [self labelCorrespondingToRequiredItemType:itemType];
   BOOL isValueEmpty = (tableViewItem.textFieldValue.length == 0);
 
-  // If the required text field contains a value now, remove the error section.
+  // If the required text field contains a value now, remove it from
+  // `self.requiredFieldsWithEmptyValue`.
   if ([self.requiredFieldsWithEmptyValue
           containsObject:requiredTextFieldLabel] &&
       !isValueEmpty) {
     [self.requiredFieldsWithEmptyValue removeObject:requiredTextFieldLabel];
     tableViewItem.hasValidText = YES;
-    return [self removeErrorSection];
   }
 
-  // If the required field is empty, show the error section.
+  // If the required field is empty, add it to
+  // `self.requiredFieldsWithEmptyValue`.
   if (isValueEmpty) {
     [self.requiredFieldsWithEmptyValue addObject:requiredTextFieldLabel];
     tableViewItem.hasValidText = NO;
-    return [self showErrorSection];
   }
-
-  return NO;
 }
 
 // Returns the label corresponding to the item type for a required field.
@@ -524,6 +530,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
                         completion:nil];
   self.errorSectionPresented = NO;
   return YES;
+}
+
+// Updates the Done button status based on `self.requiredFieldsWithEmptyValue`.
+- (void)updateDoneButtonStatus {
+  if ([self.requiredFieldsWithEmptyValue count] > 0) {
+    self.navigationItem.rightBarButtonItem.enabled = NO;
+    [self showErrorSection];
+  } else {
+    self.navigationItem.rightBarButtonItem.enabled = YES;
+    [self removeErrorSection];
+  }
 }
 
 @end

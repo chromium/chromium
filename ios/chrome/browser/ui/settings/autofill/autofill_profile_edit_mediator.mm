@@ -55,9 +55,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     DCHECK(dataManager);
     _personalDataManager = dataManager;
     _delegate = delegate;
+    _selectedCountryCode = countryCode;
 
     [self loadCountries];
-    [self updateRequirementsForCountryCode:countryCode];
   }
 
   return self;
@@ -68,6 +68,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
   _consumer = consumer;
+  [self updateRequirementsForCountryCode:self.selectedCountryCode];
 }
 
 #pragma mark - Public
