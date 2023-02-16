@@ -1313,7 +1313,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Time it takes for the omnibox to become responsive to user input after the
-    user has typed N characters. This measures the time it takes to start all
+    user has typed N characters (for 'Omnibox.QueryTime2.N') or any length input
+    (for 'Omnibox.QueryTime2'). This measures the time it takes to start all
     autocomplete providers (but not wait for the asynchronous ones to finish).
   </summary>
 </histogram>

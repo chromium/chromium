@@ -632,15 +632,19 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
         provider_end_time - provider_start_time, base::Milliseconds(1),
         base::Seconds(5), 20);
   }
-  if (!input.omit_asynchronous_matches() && (input.text().length() < 6)) {
-    // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms - 1s
-    // buckets.
-    // TODO(crbug.com/1340291|manukh): This isn't handled by `metrics_` yet. Do
-    //   so after we decide whether to make all providers async.
-    base::TimeTicks end_time = base::TimeTicks::Now();
-    base::UmaHistogramCustomTimes(
-        "Omnibox.QueryTime2." + base::NumberToString(input.text().length()),
-        end_time - start_time, base::Milliseconds(1), base::Seconds(1), 50);
+  if (!input.omit_asynchronous_matches()) {
+    auto elapsed_time = base::TimeTicks::Now() - start_time;
+    // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms -
+    // 1s buckets.
+    // TODO(crbug.com/1340291|manukh): This isn't handled by `metrics_` yet.
+    //   Do so after we decide whether to make all providers async.
+    base::UmaHistogramCustomTimes("Omnibox.QueryTime2", elapsed_time,
+                                  base::Milliseconds(1), base::Seconds(1), 50);
+    if (input.text().length() < 6) {
+      base::UmaHistogramCustomTimes(
+          "Omnibox.QueryTime2." + base::NumberToString(input.text().length()),
+          elapsed_time, base::Milliseconds(1), base::Seconds(1), 50);
+    }
   }
   base::UmaHistogramBoolean("Omnibox.Start.WantAsyncMatches",
                             !input.omit_asynchronous_matches());
