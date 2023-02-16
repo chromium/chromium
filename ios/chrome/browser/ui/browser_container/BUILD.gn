@@ -48,6 +48,8 @@ source_set("ui") {
     "browser_container_consumer.h",
     "browser_container_view_controller.h",
     "browser_container_view_controller.mm",
+    "browser_edit_menu_handler.h",
+    "browser_edit_menu_handler.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

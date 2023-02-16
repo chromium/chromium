@@ -445,6 +445,10 @@ const char kIOS3PIntentsInIncognitoDescription[] =
     "When enabled, an additional setting lets the user open links from other "
     "apps in Incognito.";
 
+const char kIOSCustomBrowserEditMenuName[] = "Custom browser edit menu";
+const char kIOSCustomBrowserEditMenuDescription[] =
+    "Use the new API for the WKWebView Edit menu.";
+
 const char kIOSEditMenuPartialTranslateName[] =
     "Enable partial translate in edit menu";
 const char kIOSEditMenuPartialTranslateDescription[] =

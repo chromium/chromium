@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
+#import "ios/chrome/browser/ui/browser_container/browser_edit_menu_handler.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
@@ -46,6 +47,8 @@
 @property(nonatomic, strong) BrowserContainerMediator* mediator;
 // The mediator used for the Link to Text feature.
 @property(nonatomic, strong) LinkToTextMediator* linkToTextMediator;
+// The handler for the edit menu.
+@property(nonatomic, strong) BrowserEditMenuHandler* browserEditMenuHandler;
 // The overlay container coordinator for OverlayModality::kWebContentArea.
 @property(nonatomic, strong)
     OverlayContainerCoordinator* webContentAreaOverlayContainerCoordinator;
@@ -73,6 +76,15 @@
           initWithBaseViewController:self.viewController
                              browser:self.browser
                             modality:OverlayModality::kWebContentArea];
+
+  self.linkToTextMediator = [[LinkToTextMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()
+                  consumer:self];
+
+  self.browserEditMenuHandler = [[BrowserEditMenuHandler alloc] init];
+  self.viewController.browserEditMenuHandler = self.browserEditMenuHandler;
+  self.browserEditMenuHandler.linkToTextDelegate = self.linkToTextMediator;
+
   [self.webContentAreaOverlayContainerCoordinator start];
   self.viewController.webContentsOverlayContainerViewController =
       self.webContentAreaOverlayContainerCoordinator.viewController;
@@ -84,10 +96,6 @@
   self.activityServiceHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ActivityServiceCommands);
 
-  self.linkToTextMediator = [[LinkToTextMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()
-                  consumer:self];
-  self.viewController.linkToTextDelegate = self.linkToTextMediator;
   self.mediator.consumer = self.viewController;
 
   [self setUpScreenTimeIfEnabled];

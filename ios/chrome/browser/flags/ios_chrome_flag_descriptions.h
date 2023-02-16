@@ -384,6 +384,10 @@ extern const char kInProductHelpDemoModeDescription[];
 extern const char kIOS3PIntentsInIncognitoName[];
 extern const char kIOS3PIntentsInIncognitoDescription[];
 
+// Title and description for the flag to enable new API for browser edit menu.
+extern const char kIOSCustomBrowserEditMenuName[];
+extern const char kIOSCustomBrowserEditMenuDescription[];
+
 // Title and description for the flag to enable partial translate.
 extern const char kIOSEditMenuPartialTranslateName[];
 extern const char kIOSEditMenuPartialTranslateDescription[];

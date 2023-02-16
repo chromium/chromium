@@ -51,6 +51,10 @@ BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
              "DefaultBrowserIntentsShowSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSCustomBrowserEditMenu,
+             "IOSCustomBrowserEditMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSEditMenuPartialTranslate,
              "IOSEditMenuPartialTranslate",
              base::FEATURE_DISABLED_BY_DEFAULT);

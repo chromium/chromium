@@ -1359,6 +1359,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSEditMenuPartialTranslateName,
      flag_descriptions::kIOSEditMenuPartialTranslateDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSEditMenuPartialTranslate)},
+    {"ios-custom-browser-edit-menu",
+     flag_descriptions::kIOSCustomBrowserEditMenuName,
+     flag_descriptions::kIOSCustomBrowserEditMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSCustomBrowserEditMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

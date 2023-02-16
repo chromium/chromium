@@ -5,9 +5,8 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/ui/browser_container/browser_edit_menu_handler.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -36,8 +35,7 @@
   [super viewDidLoad];
   self.view.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-  [self addLinkToTextInEditMenu];
+  [self.browserEditMenuHandler addEditMenuEntries];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -69,6 +67,13 @@
     return;
   }
   [super dismissViewControllerAnimated:animated completion:completion];
+}
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  [super buildMenuWithBuilder:builder];
+
+  DCHECK(self.browserEditMenuHandler);
+  [self.browserEditMenuHandler buildMenuWithBuilder:builder];
 }
 
 #pragma mark - Public
@@ -137,30 +142,26 @@
   }
 }
 
-#pragma mark - Link to Text methods
-
-- (void)addLinkToTextInEditMenu {
-  if (!base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
-    return;
-  }
-
-  NSString* title = l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT);
-  UIMenuItem* menuItem =
-      [[UIMenuItem alloc] initWithTitle:title action:@selector(linkToText:)];
-  RegisterEditMenuItem(menuItem);
-}
+#pragma mark - UIResponder methods
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if (action == @selector(linkToText:) && self.linkToTextDelegate) {
-    return [self.linkToTextDelegate shouldOfferLinkToText];
+  if ([self.browserEditMenuHandler canPerformChromeAction:action
+                                               withSender:sender]) {
+    // This should never happen on normal edit menu usage.
+    // If this returned YES, targetForAction should have redirected the
+    // action to self.browserEditMenuHandler.
+    NOTREACHED();
+    return NO;
   }
   return [super canPerformAction:action withSender:sender];
 }
 
-- (void)linkToText:(UIMenuItem*)item {
-  DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  DCHECK(self.linkToTextDelegate);
-  [self.linkToTextDelegate handleLinkToTextSelection];
+- (id)targetForAction:(SEL)action withSender:(id)sender {
+  if ([self.browserEditMenuHandler canPerformChromeAction:action
+                                               withSender:sender]) {
+    return self.browserEditMenuHandler;
+  }
+  return [super targetForAction:action withSender:sender];
 }
 
 #pragma mark - Private

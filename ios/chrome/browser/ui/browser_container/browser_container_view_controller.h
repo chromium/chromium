@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
 
 @protocol LinkToTextDelegate;
+@class BrowserEditMenuHandler;
 
 // UIViewController which allows displaying and removing a content view.
 @interface BrowserContainerViewController
@@ -23,8 +24,8 @@
 // content area.
 @property(nonatomic, strong) UIViewController* screenTimeViewController;
 
-// The delegate to handle link to text button selection.
-@property(nonatomic, weak) id<LinkToTextDelegate> linkToTextDelegate;
+// The handler for the edit menu.
+@property(nonatomic, weak) BrowserEditMenuHandler* browserEditMenuHandler;
 
 // Adds the given `contentView` as a subview and removes the previously added
 // `contentView` or `contentViewController`, if any. If `contentView` is nil
