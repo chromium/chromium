@@ -4,8 +4,8 @@ PASS Property font-feature-settings value '"dlig"'
 PASS Property font-feature-settings value '"smcp"'
 PASS Property font-feature-settings value '"c2sc"'
 PASS Property font-feature-settings value '"liga" 0'
-PASS Property font-feature-settings value '"tnum", "hist"'
+FAIL Property font-feature-settings value '"tnum", "hist"' assert_equals: expected "\"hist\", \"tnum\"" but got "\"tnum\", \"hist\""
 PASS Property font-feature-settings value '"PKRN"'
-FAIL Property font-feature-settings value '"dlig", "smcp", "dlig" 0' assert_in_array: value "\"dlig\", \"smcp\", \"dlig\" 0" not in array ["\"smcp\", \"dlig\" 0", "\"dlig\" 0, \"smcp\""]
+FAIL Property font-feature-settings value '"dlig", "smcp", "dlig" 0' assert_equals: expected "\"dlig\" 0, \"smcp\"" but got "\"dlig\", \"smcp\", \"dlig\" 0"
 Harness: the test ran to completion.
 

@@ -81,6 +81,7 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass ]
 crbug.com/626703 external/wpt/preload/prefetch-types.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
 crbug.com/626703 external/wpt/url/a-element-origin-xhtml.xhtml [ Crash Failure ]
