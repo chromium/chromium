@@ -61,12 +61,20 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 const CGFloat kEndButtonFakeboxTrailingSpace = 12.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
+// The constants for the constraints affecting the magnifying glass.
+const CGFloat kMagnifyingGlassFakeboxLeadingSpace = 12.0;
+const CGFloat kMagnifyingGlassOmniboxLeadingSpace = 7.0;
+
 // The constants for the constraints affecting the vertical separator that
 // appears between the Lens and Voice Search buttons.
 const CGFloat kLensButtonSeparatorWidth = 1;
 const CGFloat kLensButtonSeparatorHeight = 12;
-const CGFloat kLensButtonSeparatorLeftMargin = 8;
-const CGFloat kLensButtonSeparatorRightMargin = 13;
+const CGFloat kLensButtonSeparatorLeadingMargin = 8;
+const CGFloat kLensButtonSeparatorTrailingMargin = 10;
+
+// The constants for positioning the magnifying glass.
+const CGFloat kMagnifyingGlassTrailingMargin = 8;
+const CGFloat kMagnifyingGlassViewSize = 24;
 
 // Returns the height of the toolbar based on the preferred content size of the
 // application.
@@ -87,6 +95,9 @@ CGFloat ToolbarHeight() {
 // Lens is not available.
 @property(nonatomic, strong) UIView* lensButtonSeparator;
 
+// Image view that shows the magnifying glass.
+@property(nonatomic, strong) UIImageView* magnifyingGlassView;
+
 @property(nonatomic, strong, readwrite)
     ExtendedTouchTargetButton* voiceSearchButton;
 
@@ -106,6 +117,15 @@ CGFloat ToolbarHeight() {
 // Constraint for positioning the end button away from the fake box rounded
 // rectangle.
 @property(nonatomic, strong) NSLayoutConstraint* endButtonTrailingConstraint;
+// The magnifying glass should always be at least inside the fake omnibox.
+// When the fake omnibox is shrunk, the position from the leading side of
+// the search field should yield.
+@property(nonatomic, strong)
+    NSLayoutConstraint* magnifyingGlassLeadingMarginConstraint;
+// Constraint for positioning the magnifying glass away from the fake box
+// rounded rectangle.
+@property(nonatomic, strong)
+    NSLayoutConstraint* magnifyingGlassLeadingConstraint;
 // Layout constraint for the invisible button that is where the omnibox should
 // be and that focuses the omnibox when tapped.
 @property(nonatomic, strong) NSLayoutConstraint* invisibleOmniboxConstraint;
@@ -212,17 +232,39 @@ CGFloat ToolbarHeight() {
         constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor],
   ]];
 
+  // Configure the magnifying glass icon.
+  UIImageView* magnifyingGlass =
+      content_suggestions::CreateMagnifyingGlassView();
+  [searchField addSubview:magnifyingGlass];
+  self.magnifyingGlassView = magnifyingGlass;
+
+  self.magnifyingGlassLeadingMarginConstraint = [magnifyingGlass.leadingAnchor
+      constraintEqualToAnchor:[searchField leadingAnchor]];
+  self.magnifyingGlassLeadingMarginConstraint.priority =
+      UILayoutPriorityDefaultHigh + 1;
+  self.magnifyingGlassLeadingConstraint = [magnifyingGlass.leadingAnchor
+      constraintGreaterThanOrEqualToAnchor:self.fakeLocationBar.leadingAnchor
+                                  constant:kMagnifyingGlassFakeboxLeadingSpace];
+  [NSLayoutConstraint activateConstraints:@[
+    self.magnifyingGlassLeadingMarginConstraint,
+    self.magnifyingGlassLeadingConstraint,
+    [magnifyingGlass.centerYAnchor
+        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+    [magnifyingGlass.widthAnchor
+        constraintEqualToConstant:kMagnifyingGlassViewSize],
+    [magnifyingGlass.heightAnchor
+        constraintEqualToConstant:kMagnifyingGlassViewSize],
+  ]];
+
   // Hint label.
   self.searchHintLabel = [[UILabel alloc] init];
   content_suggestions::ConfigureSearchHintLabel(self.searchHintLabel,
                                                 searchField);
   self.searchHintLabel.font = [self hintLabelFont];
   self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
-      constraintGreaterThanOrEqualToAnchor:[searchField leadingAnchor]
-                                  constant:ntp_header::kHintLabelSidePadding];
+      constraintEqualToAnchor:magnifyingGlass.trailingAnchor
+                     constant:kMagnifyingGlassTrailingMargin];
   [NSLayoutConstraint activateConstraints:@[
-    [self.searchHintLabel.centerXAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.centerXAnchor],
     self.hintLabelLeadingConstraint,
     [self.searchHintLabel.heightAnchor
         constraintEqualToAnchor:self.fakeLocationBar.heightAnchor
@@ -295,10 +337,10 @@ CGFloat ToolbarHeight() {
       // Separator constraints.
       [self.lensButtonSeparator.leadingAnchor
           constraintEqualToAnchor:self.voiceSearchButton.trailingAnchor
-                         constant:kLensButtonSeparatorLeftMargin],
+                         constant:kLensButtonSeparatorLeadingMargin],
       [self.lensButtonSeparator.trailingAnchor
           constraintEqualToAnchor:self.lensButton.leadingAnchor
-                         constant:-kLensButtonSeparatorRightMargin],
+                         constant:-kLensButtonSeparatorTrailingMargin],
       [self.lensButtonSeparator.centerYAnchor
           constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
       [self.lensButtonSeparator.widthAnchor
@@ -422,15 +464,14 @@ CGFloat ToolbarHeight() {
         toolbarExpandedHeight - kFakeLocationBarHeightMargin;
     self.fakeLocationBar.layer.cornerRadius =
         self.fakeLocationBarHeightConstraint.constant / 2;
-    [self scaleHintLabelForPercent:percent];
+    [self scaleAndUpdateConstraintsForHintLabelWithPercent:percent];
     self.fakeToolbarTopConstraint.constant = 0;
 
     self.fakeLocationBarLeadingConstraint.constant = 0;
     self.fakeLocationBarTrailingConstraint.constant = 0;
     self.fakeLocationBarTopConstraint.constant = 0;
 
-    self.hintLabelLeadingConstraint.constant =
-        ntp_header::kHintLabelSidePadding;
+    self.magnifyingGlassLeadingMarginConstraint.constant = 0;
     self.endButtonTrailingMarginConstraint.constant = 0;
 
     self.separator.alpha = 0;
@@ -477,8 +518,8 @@ CGFloat ToolbarHeight() {
   self.fakeLocationBar.layer.cornerRadius =
       self.fakeLocationBarHeightConstraint.constant / 2;
 
-  // Scale the hintLabel, and make sure the frame stays left aligned.
-  [self scaleHintLabelForPercent:percent];
+  // Scale the hintLabel and update the horizontal constraint constant.
+  [self scaleAndUpdateConstraintsForHintLabelWithPercent:percent];
 
   // Adjust the position of the search field's subviews by adjusting their
   // constraint constant value.
@@ -491,8 +532,14 @@ CGFloat ToolbarHeight() {
       -kEndButtonFakeboxTrailingSpace +
       (kEndButtonFakeboxTrailingSpace - kEndButtonOmniboxTrailingSpace) *
           percent;
-  self.hintLabelLeadingConstraint.constant =
-      subviewsDiff + ntp_header::kHintLabelSidePadding;
+  // A similar scaling is applied to the magnifying glass icon on the other
+  // side of the fakebox.
+  self.magnifyingGlassLeadingMarginConstraint.constant = subviewsDiff;
+  self.magnifyingGlassLeadingConstraint.constant =
+      kMagnifyingGlassFakeboxLeadingSpace -
+      (kMagnifyingGlassFakeboxLeadingSpace -
+       kMagnifyingGlassOmniboxLeadingSpace) *
+          percent;
 }
 
 - (void)setFakeboxHighlighted:(BOOL)highlighted {
@@ -563,12 +610,24 @@ CGFloat ToolbarHeight() {
       self.traitCollection.preferredContentSizeCategory);
 }
 
-// Scale the the hint label down to at most content_suggestions::kHintTextScale.
-- (void)scaleHintLabelForPercent:(CGFloat)percent {
+// Scale the the hint label down to at most content_suggestions::kHintTextScale
+// and updates the horizontal constraint constant accordingly.
+- (void)scaleAndUpdateConstraintsForHintLabelWithPercent:(CGFloat)percent {
+  if (!self.searchHintLabel) {
+    return;
+  }
   CGFloat scaleValue =
       1 + (content_suggestions::kHintTextScale * (1 - percent));
   self.searchHintLabel.transform =
       CGAffineTransformMakeScale(scaleValue, scaleValue);
+
+  // Update the hint label constraint based with half of the change in width
+  // from the original scale, since constraints are calculated before
+  // transformations are applied.
+  self.hintLabelLeadingConstraint.constant =
+      kMagnifyingGlassTrailingMargin +
+      (1 - percent) * content_suggestions::kHintTextScale *
+          self.searchHintLabel.bounds.size.width * 0.5;
 }
 
 @end

@@ -39,6 +39,8 @@ CGFloat HeightForLogoHeader(BOOL logo_is_showing,
 // Returns the bottom padding for the header. This represents the spacing
 // between the fake omnibox and the content suggestions tiles.
 CGFloat HeaderBottomPadding();
+// Creates a magnifying glass to be added to the fake omnibox.
+UIImageView* CreateMagnifyingGlassView();
 // Configure the `search_hint_label` for the fake omnibox.  `hintLabelContainer`
 // is added to the `search_tab_target` with autolayout and `search_hint_label`
 // is added to `hintLabelContainer` with autoresizing.  This is done due to the

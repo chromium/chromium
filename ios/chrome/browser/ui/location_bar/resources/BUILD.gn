@@ -59,3 +59,11 @@ imageset("location_bar_connection_info") {
     "location_bar_connection_info.imageset/location_bar_connection_info@3x.png",
   ]
 }
+
+imageset("location_bar_magnifyingglass") {
+  sources = [
+    "location_bar_magnifyingglass.imageset/Contents.json",
+    "location_bar_magnifyingglass.imageset/location_bar_magnifyingglass@2x.png",
+    "location_bar_magnifyingglass.imageset/location_bar_magnifyingglass@3x.png",
+  ]
+}

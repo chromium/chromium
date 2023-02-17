@@ -28,6 +28,7 @@ source_set("location_bar") {
     "resources:location_bar_connection_info",
     "resources:location_bar_connection_offline",
     "resources:location_bar_connection_secure",
+    "resources:location_bar_magnifyingglass",
     "resources:location_bar_share",
     "resources:location_bar_voice",
     "//base",

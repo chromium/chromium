@@ -157,6 +157,28 @@ CGFloat HeaderBottomPadding() {
              : kNTPSearchFieldBottomPadding;
 }
 
+UIImageView* CreateMagnifyingGlassView() {
+  UIImageView* image_view = [[UIImageView alloc] init];
+  image_view.translatesAutoresizingMaskIntoConstraints = NO;
+  image_view.contentMode = UIViewContentModeScaleAspectFit;
+  image_view.userInteractionEnabled = NO;
+
+  UIImage* magnifying_glass_image;
+  if (UseSymbols()) {
+    magnifying_glass_image = DefaultSymbolWithPointSize(
+        kMagnifyingglassSymbol, kSymbolContentSuggestionsPointSize);
+    image_view.tintColor = [UIColor colorNamed:kGrey500Color];
+  } else {
+    magnifying_glass_image =
+        [[UIImage imageNamed:@"location_bar_magnifyingglass"]
+            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    image_view.tintColor = [UIColor colorNamed:kGrey500Color];
+  }
+
+  [image_view setImage:magnifying_glass_image];
+  return image_view;
+}
+
 void ConfigureSearchHintLabel(UILabel* search_hint_label,
                               UIView* search_tab_target) {
   [search_hint_label setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -218,7 +240,7 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
       [camera_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
   [lens_button setImage:camera_image forState:UIControlStateNormal];
-  lens_button.tintColor = [UIColor colorNamed:kGrey500Color];
+  lens_button.tintColor = [UIColor colorNamed:kGrey600Color];
   lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
   lens_button.accessibilityIdentifier = @"Lens";
 

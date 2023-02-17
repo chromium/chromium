@@ -95,6 +95,7 @@ extern NSString* const kPrinterSymbol;
 extern NSString* const kCreditCardSymbol;
 extern NSString* const kMicrophoneFillSymbol;
 extern NSString* const kMicrophoneSymbol;
+extern NSString* const kMagnifyingglassSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
 extern NSString* const kPinSlashSymbol;
 extern NSString* const kSettingsSymbol;
