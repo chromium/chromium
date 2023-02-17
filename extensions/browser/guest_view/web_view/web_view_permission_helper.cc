@@ -361,6 +361,7 @@ WebViewPermissionHelper::PermissionResponseInfo&
 WebViewPermissionHelper::PermissionResponseInfo::operator=(
     WebViewPermissionHelper::PermissionResponseInfo&& other) = default;
 
-WebViewPermissionHelper::PermissionResponseInfo::~PermissionResponseInfo() {}
+WebViewPermissionHelper::PermissionResponseInfo::~PermissionResponseInfo() =
+    default;
 
 }  // namespace extensions

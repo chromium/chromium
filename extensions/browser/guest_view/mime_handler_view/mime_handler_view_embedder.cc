@@ -70,7 +70,7 @@ MimeHandlerViewEmbedder::MimeHandlerViewEmbedder(int32_t frame_tree_node_id,
       stream_id_(stream_id),
       internal_id_(internal_id) {}
 
-MimeHandlerViewEmbedder::~MimeHandlerViewEmbedder() {}
+MimeHandlerViewEmbedder::~MimeHandlerViewEmbedder() = default;
 
 void MimeHandlerViewEmbedder::DestroySelf() {
   GetMimeHandlerViewEmbeddersMap()->erase(frame_tree_node_id_);
