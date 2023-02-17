@@ -59,6 +59,8 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
     }
 
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
+    private final Profile mProfile;
+    private final SyncService mSyncService;
 
     // There can only be one promo header at a time. This takes on one of the values:
     // ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.SYNC_PROMO, or ViewType.INVALID.
@@ -69,7 +71,6 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
     private ViewFactory mViewFactory;
     private String mSearchText;
     private BookmarkId mCurrentFolder;
-    private SyncService mSyncService;
 
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
@@ -128,8 +129,9 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         }
     };
 
-    BookmarkItemsAdapter(Context context) {
+    BookmarkItemsAdapter(Context context, Profile profile) {
         super(context);
+        mProfile = profile;
         mSyncService = SyncService.get();
         mSyncService.addSyncStateChangedListener(this);
     }
@@ -330,8 +332,8 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
             mDelegate.getSelectableListLayout().setEmptyViewText(
                     R.string.tracked_products_empty_list_title);
         } else if (folder.getType() == BookmarkType.READING_LIST) {
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                    .notifyEvent(EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
+            TrackerFactory.getTrackerForProfile(mProfile).notifyEvent(
+                    EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
             mDelegate.getSelectableListLayout().setEmptyViewText(
                     R.string.reading_list_empty_list_title);
         } else {

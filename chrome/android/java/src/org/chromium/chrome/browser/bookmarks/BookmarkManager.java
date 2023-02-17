@@ -240,7 +240,7 @@ public class BookmarkManager implements BookmarkDelegate, SearchDelegate,
         mSelectableListLayout.getHandleBackPressChangedSupplier().addObserver(
                 (x) -> onBackPressStateChanged());
 
-        mAdapter = new BookmarkItemsAdapter(mContext);
+        mAdapter = new BookmarkItemsAdapter(mContext, profile);
         mBookmarkManagerCoordinator = new BookmarkManagerCoordinator(profile, snackbarManager);
 
         mAdapterDataObserver = new AdapterDataObserver() {
