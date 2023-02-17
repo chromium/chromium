@@ -45,65 +45,87 @@
 namespace blink {
 
 CSSImageSetValue::CSSImageSetValue()
-    : CSSValueList(kImageSetClass, kCommaSeparator), cached_scale_factor_(1) {}
+    : CSSValueList(kImageSetClass, kCommaSeparator) {}
 
 CSSImageSetValue::~CSSImageSetValue() = default;
 
-void CSSImageSetValue::FillImageSet() {
-  for (wtf_size_t i = 0, length = this->length(); i < length; ++i) {
-    auto image_index = i;
+const CSSImageSetValue::ImageSetOption& CSSImageSetValue::GetBestOption(
+    const float device_scale_factor) {
+  // This method is implementing the selection logic described in the
+  // "CSS Images Module Level 4" spec:
+  // https://w3c.github.io/csswg-drafts/css-images-4/#image-set-notation
+  //
+  // Spec definition of image-set-option selection algorithm:
+  //
+  // "An image-set() function contains a list of one or more
+  // <image-set-option>s, and must select only one of them
+  // to determine what image it will represent:
+  //
+  //   1. First, remove any <image-set-option>s from the list that specify an
+  //      unknown or unsupported MIME type in their type() value.
+  //   2. Second, remove any <image-set-option>s from the list that have the
+  //      same <resolution> as a previous option in the list.
+  //   3. Finally, among the remaining <image-set-option>s, make a UA-specific
+  //      choice of which to load, based on whatever criteria deemed relevant
+  //      (such as the resolution of the display, connection speed, etc).
+  //   4. The image-set() function then represents the <image> of the chosen
+  //      <image-set-option>."
 
-    ++i;
-    SECURITY_DCHECK(i < length);
-    float scale_factor = To<CSSPrimitiveValue>(Item(i)).ComputeDotsPerPixel();
+  if (options_.empty()) {
+    for (wtf_size_t i = 0, length = this->length(); i < length; ++i) {
+      auto image_index = i;
 
-    images_in_set_.push_back(ImageWithScale{image_index, scale_factor});
+      ++i;
+      SECURITY_DCHECK(i < length);
+      float resolution = To<CSSPrimitiveValue>(Item(i)).ComputeDotsPerPixel();
+
+      options_.push_back(ImageSetOption{image_index, resolution});
+    }
+
+    std::stable_sort(
+        options_.begin(), options_.end(),
+        [](const ImageSetOption& left, const ImageSetOption& right) {
+          return left.resolution < right.resolution;
+        });
   }
 
-  // Sort the images so that they are stored in order from lowest resolution to
-  // highest.
-  std::sort(images_in_set_.begin(), images_in_set_.end(),
-            CSSImageSetValue::CompareByScaleFactor);
-}
-
-CSSImageSetValue::ImageWithScale CSSImageSetValue::BestImageForScaleFactor(
-    float scale_factor) {
-  ImageWithScale image;
-  wtf_size_t number_of_images = images_in_set_.size();
-  for (wtf_size_t i = 0; i < number_of_images; ++i) {
-    image = images_in_set_.at(i);
-    if (image.scale_factor >= scale_factor) {
+  for (const auto& image : options_) {
+    if (image.resolution >= device_scale_factor) {
       return image;
     }
   }
-  return image;
+
+  DCHECK(!options_.empty());
+
+  return options_.back();
 }
 
-bool CSSImageSetValue::IsCachePending(float device_scale_factor) const {
-  return !cached_image_ || device_scale_factor != cached_scale_factor_;
+bool CSSImageSetValue::IsCachePending(const float device_scale_factor) const {
+  return !cached_image_ ||
+         std::abs(device_scale_factor - cached_device_scale_factor_) >
+             std::numeric_limits<float>::epsilon();
 }
 
-StyleImage* CSSImageSetValue::CachedImage(float device_scale_factor) const {
+StyleImage* CSSImageSetValue::CachedImage(
+    const float device_scale_factor) const {
   DCHECK(!IsCachePending(device_scale_factor));
   return cached_image_.Get();
 }
 
 StyleImage* CSSImageSetValue::CacheImage(
     const Document& document,
-    float device_scale_factor,
+    const float device_scale_factor,
     FetchParameters::ImageRequestBehavior,
     CrossOriginAttributeValue cross_origin) {
-  if (!images_in_set_.size()) {
-    FillImageSet();
-  }
-
   if (IsCachePending(device_scale_factor)) {
     // FIXME: In the future, we want to take much more than deviceScaleFactor
     // into account here. All forms of scale should be included:
     // Page::PageScaleFactor(), LocalFrame::PageZoomFactor(), and any CSS
     // transforms. https://bugs.webkit.org/show_bug.cgi?id=81698
-    ImageWithScale image = BestImageForScaleFactor(device_scale_factor);
-    const auto& image_value = To<CSSImageValue>(Item(image.index));
+
+    const ImageSetOption& best_option = GetBestOption(device_scale_factor);
+
+    const auto& image_value = To<CSSImageValue>(Item(best_option.index));
 
     // TODO(fs): Forward the image request behavior when other code is prepared
     // to handle it.
@@ -111,8 +133,8 @@ StyleImage* CSSImageSetValue::CacheImage(
         document, FetchParameters::ImageRequestBehavior::kNone, cross_origin);
     cached_image_ = MakeGarbageCollected<StyleFetchedImageSet>(
         ImageResourceContent::Fetch(params, document.Fetcher()),
-        image.scale_factor, this, params.Url());
-    cached_scale_factor_ = device_scale_factor;
+        best_option.resolution, this, params.Url());
+    cached_device_scale_factor_ = device_scale_factor;
   }
   return cached_image_.Get();
 }
@@ -137,8 +159,8 @@ String CSSImageSetValue::CustomCSSText() const {
 
     ++i;
     SECURITY_DCHECK(i < length);
-    const CSSValue& scale_factor_value = Item(i);
-    result.Append(scale_factor_value.CssText());
+    const CSSValue& resolution_value = Item(i);
+    result.Append(resolution_value.CssText());
   }
 
   result.Append(')');

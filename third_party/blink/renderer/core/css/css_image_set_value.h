@@ -42,11 +42,11 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
   explicit CSSImageSetValue();
   ~CSSImageSetValue();
 
-  bool IsCachePending(float device_scale_factor) const;
-  StyleImage* CachedImage(float device_scale_factor) const;
+  bool IsCachePending(const float device_scale_factor) const;
+  StyleImage* CachedImage(const float device_scale_factor) const;
   StyleImage* CacheImage(
       const Document&,
-      float device_scale_factor,
+      const float device_scale_factor,
       FetchParameters::ImageRequestBehavior,
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
 
@@ -58,26 +58,18 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
- protected:
-  struct ImageWithScale {
-    DISALLOW_NEW();
-    wtf_size_t index;
-    float scale_factor;
+ private:
+  struct ImageSetOption {
+    wtf_size_t index{};
+    float resolution{};
   };
 
-  ImageWithScale BestImageForScaleFactor(float scale_factor);
-
- private:
-  void FillImageSet();
-  static inline bool CompareByScaleFactor(ImageWithScale first,
-                                          ImageWithScale second) {
-    return first.scale_factor < second.scale_factor;
-  }
+  const ImageSetOption& GetBestOption(const float device_scale_factor);
 
   Member<StyleImage> cached_image_;
-  float cached_scale_factor_;
+  float cached_device_scale_factor_{1.0f};
 
-  Vector<ImageWithScale> images_in_set_;
+  Vector<ImageSetOption> options_;
 };
 
 template <>
