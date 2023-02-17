@@ -3,6 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import(
+    "//tools/code_coverage/js_source_maps/create_js_source_maps/create_js_source_maps.gni")
+import(
+    "//tools/code_coverage/js_source_maps/merge_js_source_maps/merge_js_source_maps.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
@@ -28,6 +32,12 @@ template("build_webui") {
   optimize = false
   if (defined(invoker.optimize)) {
     optimize = invoker.optimize
+  }
+
+  enable_source_maps = false
+  if (defined(invoker.enable_source_maps)) {
+    assert(!invoker.enable_source_maps || !optimize)
+    enable_source_maps = invoker.enable_source_maps
   }
 
   ### Compute the lists of files that are used across multiple targets.
@@ -100,11 +110,15 @@ template("build_webui") {
   # Specifically the order in which these targets are executed is:
   #
   #  1) preprocess_if_expr()
-  #  2) html_to_wrapper(), css_to_wrapper()
-  #  3) ts_library()
-  #  4) optimize_webui() (only if |invoker.optimize| is true)
-  #  5) generate_grd()
-  #  6) grit()
+  #  2) create_js_source_maps() (only if |invoker.enable_source_maps| flag is
+  #     true)
+  #  3) html_to_wrapper(), css_to_wrapper()
+  #  4) ts_library()
+  #  5) merge_js_source_maps() (only if the |invoker.enable_source_maps| flag is
+  #     true)
+  #  6) optimize_webui() (only if |invoker.optimize| is true)
+  #  7) generate_grd()
+  #  8) grit()
 
   if (defined(invoker.static_files)) {
     preprocess_if_expr("preprocess_static_files") {
@@ -126,6 +140,9 @@ template("build_webui") {
       ":build_ts",
       ":html_wrapper_files",
     ]
+    if (enable_source_maps) {
+      visibility += [ ":create_source_maps" ]
+    }
 
     if (use_blink) {
       defines = chrome_grit_defines
@@ -133,7 +150,31 @@ template("build_webui") {
 
     in_folder = "."
     out_folder = preprocess_dir
+    if (enable_source_maps) {
+      out_folder = "${preprocess_dir}/_tmp"
+      enable_removal_comments = enable_source_maps
+    }
     in_files = ts_files
+  }
+
+  if (enable_source_maps) {
+    create_js_source_maps("create_source_maps") {
+      # TODO(dpapad): Make this only visible to ":build_ts" and
+      # ":html_wrapper_files".
+      inline_sourcemaps = true
+
+      sources =
+          filter_include(get_target_outputs(":preprocess_ts_files"), [ "*.ts" ])
+      originals = []
+      outputs = []
+
+      foreach(in_file, sources) {
+        rebased_path = rebase_path(in_file, "${preprocess_dir}/_tmp")
+        originals += [ rebased_path ]
+        outputs += [ "${preprocess_dir}/" + rebased_path ]
+      }
+      deps = [ ":preprocess_ts_files" ]
+    }
   }
 
   if (defined(html_files) || defined(invoker.css_files)) {
@@ -173,7 +214,11 @@ template("build_webui") {
       if (defined(invoker.html_to_wrapper_template)) {
         template = invoker.html_to_wrapper_template
         if (invoker.html_to_wrapper_template == "detect") {
-          deps += [ ":preprocess_ts_files" ]
+          if (enable_source_maps) {
+            deps += [ ":create_source_maps" ]
+          } else {
+            deps += [ ":preprocess_ts_files" ]
+          }
         }
       }
     }
@@ -213,6 +258,10 @@ template("build_webui") {
         ":build_bundle",
         ":build_grd",
       ]
+
+      if (enable_source_maps) {
+        visibility += [ ":merge_source_maps" ]
+      }
     }
 
     if (!defined(invoker.ts_use_local_config) || invoker.ts_use_local_config) {
@@ -221,7 +270,14 @@ template("build_webui") {
 
     in_files = ts_files
 
-    extra_deps = [ ":preprocess_ts_files" ]
+    extra_deps = []
+    if (enable_source_maps) {
+      # ts_library()'s |enable_source_maps| param inherited from the outer
+      # scope's enable_source_maps
+      extra_deps += [ ":create_source_maps" ]
+    } else {
+      extra_deps += [ ":preprocess_ts_files" ]
+    }
 
     if (defined(html_files)) {
       in_files += html_wrapper_files
@@ -259,6 +315,24 @@ template("build_webui") {
 
     if (defined(invoker.ts_extra_deps)) {
       extra_deps += invoker.ts_extra_deps
+    }
+  }
+
+  if (enable_source_maps) {
+    merge_js_source_maps("merge_source_maps") {
+      deps = [ ":build_ts" ]
+      manifest_files =
+          filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      js_files = filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
+
+      sources = []
+      outputs = []
+
+      out_dir = "$target_gen_dir/merge_source_maps"
+      foreach(_js_file, js_files) {
+        sources += [ _js_file ]
+        outputs += [ string_replace(_js_file, tsc_dir, out_dir) ]
+      }
     }
   }
 
@@ -306,9 +380,16 @@ template("build_webui") {
         resource_path_rewrites += [ "${output_file}|${f}" ]
       }
     } else {
-      deps += [ ":build_ts" ]
-      manifest_files +=
-          filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      if (enable_source_maps) {
+        deps += [ ":merge_source_maps" ]
+        manifest_files +=
+            filter_include(get_target_outputs(":merge_source_maps"),
+                           [ "*.manifest" ])
+      } else {
+        deps += [ ":build_ts" ]
+        manifest_files +=
+            filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      }
     }
 
     if (defined(invoker.extra_grdp_deps)) {

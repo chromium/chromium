@@ -421,10 +421,12 @@ Under the cover, build_webui() defines the following targets
 
 preprocess_if_expr("preprocess_ts_files")
 preprocess_if_expr("preprocess_html_css_files")
+create_js_source_maps("create_source_maps")
 html_to_wrapper("html_wrapper_files")
 css_to_wrapper("css_wrapper_files")
 copy("copy_mojo")
 ts_library("build_ts")
+merge_js_source_maps("merge_source_maps")
 optimize_webui("build_bundle")
 generate_grd("build_grd")
 grit("resources")
@@ -501,6 +503,10 @@ extra_grdp_files: Output .grdp files of external generate_grd() targets. Must be
                   defined if |extra_grdp_deps| is defined.
 grit_output_dir: See |output_dir| in grit(). Optional parameter, defaults to
                  "$root_gen_dir/chrome"
+enable_source_maps: Defaults to "false". Incompatible with |optimize=true|.
+                    Setting it to "true" turns on source map generation for a
+                    few underlying targets. See ts_library()'s
+                    |enable_source_maps| for more details.
 ```
 
 #### **Example**
