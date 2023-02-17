@@ -612,7 +612,6 @@
         'mixins': [
           'has_native_resultdb_integration',
         ],
-        'experiment_percentage': 100,
       },
     },
 
