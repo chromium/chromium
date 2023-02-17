@@ -3253,6 +3253,32 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   // function.
   std::unique_ptr<PendingEntryRef> pending_entry_ref = ReferencePendingEntry();
 
+  // If there is a main-frame same-document history navigation, we may defer
+  // the subframe history navigations in order to give JS in the main frame the
+  // opportunity to cancel the entire traverse via the navigate event. In that
+  // case, we need to stash the main frame request's navigation token on the
+  // subframes, so they can look up the main frame request and defer themselves
+  // until it completes.
+  if (!same_document_loads.empty() &&
+      same_document_loads.at(0)->frame_tree_node()->IsMainFrame()) {
+    NavigationRequest* main_frame_request = same_document_loads.at(0).get();
+    // The token will only be returned in cases where deferring the navigation
+    // is necessary.
+    if (auto main_frame_same_document_token =
+            main_frame_request->GetNavigationTokenForDeferringSubframes()) {
+      for (auto& item : same_document_loads) {
+        if (item.get() != main_frame_request) {
+          item->set_main_frame_same_document_history_token(
+              main_frame_same_document_token);
+        }
+      }
+      for (auto& item : different_document_loads) {
+        item->set_main_frame_same_document_history_token(
+            main_frame_same_document_token);
+      }
+    }
+  }
+
   // Send all the same document frame loads before the different document loads.
   for (auto& item : same_document_loads) {
     FrameTreeNode* frame = item->frame_tree_node();

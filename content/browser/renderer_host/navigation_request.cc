@@ -1971,6 +1971,15 @@ NavigationRequest::~NavigationRequest() {
               *pending_navigation_api_key_,
               blink::mojom::TraverseCancelledReason::kAbortedBeforeCommit);
     }
+
+    // If subframe history navigations were deferred waiting for this request,
+    // the cancelation of this request should cancel them, too.
+    for (auto& throttle : subframe_history_navigation_throttles_) {
+      if (throttle) {
+        throttle->Cancel();
+      }
+    }
+    subframe_history_navigation_throttles_.clear();
   }
 
   // If this NavigationRequest is the last one referencing the pending
@@ -6567,6 +6576,8 @@ void NavigationRequest::DidCommitNavigation(
     frame_tree_node()->SetCollapsed(false);
   }
 
+  UnblockPendingSubframeNavigationRequestsIfNeeded();
+
   if (service_worker_handle_) {
     // Notify the service worker navigation handle that the navigation finished
     // committing.
@@ -8434,6 +8445,47 @@ void NavigationRequest::RenderFallbackContentForObjectTag() {
         ->GetAssociatedLocalFrame()
         ->RenderFallbackContent();
   }
+}
+
+absl::optional<base::UnguessableToken>
+NavigationRequest::GetNavigationTokenForDeferringSubframes() {
+  DCHECK(IsInMainFrame());
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kNavigateEventCancelableTraversals)) {
+    return absl::nullopt;
+  }
+  if (!IsSameDocument() ||
+      !NavigationTypeUtils::IsHistory(common_params_->navigation_type)) {
+    return absl::nullopt;
+  }
+  RenderFrameHostImpl* current_frame_host =
+      frame_tree_node_->current_frame_host();
+  if (!current_frame_host->has_navigate_event_handler()) {
+    return absl::nullopt;
+  }
+  if (commit_params_->is_browser_initiated &&
+      !current_frame_host->IsHistoryUserActivationActive()) {
+    return absl::nullopt;
+  }
+  return commit_params_->navigation_token;
+}
+
+void NavigationRequest::AddDeferredSubframeNavigationThrottle(
+    base::WeakPtr<SubframeHistoryNavigationThrottle> throttle) {
+  DCHECK(IsInMainFrame());
+  subframe_history_navigation_throttles_.push_back(throttle);
+}
+
+void NavigationRequest::UnblockPendingSubframeNavigationRequestsIfNeeded() {
+  // After a main frame same-document history navigation completes successfully,
+  // we can resume any corresponding subframe history navigations that were
+  // blocked on it.
+  for (auto& throttle : subframe_history_navigation_throttles_) {
+    if (throttle) {
+      throttle->Resume();
+    }
+  }
+  subframe_history_navigation_throttles_.clear();
 }
 
 bool NavigationRequest::IsServedFromBackForwardCache() const {

@@ -23,6 +23,8 @@
 
 namespace blink {
 
+class DOMException;
+class HistoryItem;
 class NavigationApiNavigation;
 class NavigationUpdateCurrentEntryOptions;
 class NavigationHistoryEntry;
@@ -32,8 +34,7 @@ class NavigationReloadOptions;
 class NavigationResult;
 class NavigationOptions;
 class NavigationTransition;
-class DOMException;
-class HistoryItem;
+class RegisteredEventListener;
 class SerializedScriptValue;
 
 class CORE_EXPORT NavigationApi final

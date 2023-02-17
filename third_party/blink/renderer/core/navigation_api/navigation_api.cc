@@ -756,8 +756,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     return DispatchResult::kContinue;
   }
 
-  auto* script_state = ToScriptStateForMainWorld(window_->GetFrame());
-  DCHECK(script_state);
+  LocalFrame* frame = window_->GetFrame();
+  auto* script_state = ToScriptStateForMainWorld(frame);
   ScriptState::Scope scope(script_state);
 
   if (params->frame_load_type == WebFrameLoadType::kBackForward &&
@@ -796,8 +796,15 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   }
   init->setDestination(destination);
 
+  bool should_allow_traversal_cancellation =
+      RuntimeEnabledFeatures::NavigateEventCancelableTraversalsEnabled() &&
+      params->frame_load_type == WebFrameLoadType::kBackForward &&
+      params->event_type != NavigateEventType::kCrossDocument &&
+      frame->IsMainFrame() &&
+      (!params->is_browser_initiated || frame->IsHistoryUserActivationActive());
   init->setCancelable(params->frame_load_type !=
-                      WebFrameLoadType::kBackForward);
+                          WebFrameLoadType::kBackForward ||
+                      should_allow_traversal_cancellation);
   init->setCanIntercept(
       CanChangeToUrlForHistoryApi(params->url, window_->GetSecurityOrigin(),
                                   current_url) &&
@@ -840,8 +847,13 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   DispatchEvent(*navigate_event);
 
   if (navigate_event->defaultPrevented()) {
-    if (!navigate_event->signal()->aborted())
+    if (!navigate_event->signal()->aborted()) {
+      if (params->frame_load_type == WebFrameLoadType::kBackForward &&
+          window_->GetFrame()) {
+        window_->GetFrame()->ConsumeHistoryUserActivation();
+      }
       FinalizeWithAbortedNavigationError(script_state, ongoing_navigation_);
+    }
     return DispatchResult::kAbort;
   }
 

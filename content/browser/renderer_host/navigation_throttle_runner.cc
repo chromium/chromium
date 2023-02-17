@@ -197,6 +197,14 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // to the end to not delay running other throttles.
   AddThrottle(RendererCancellationThrottle::MaybeCreateThrottleFor(request));
 
+  // Defer any cross-document subframe history navigations if there is an
+  // associated main-frame same-document history navigation in progress, until
+  // the main frame has had an opportunity to fire a navigate event in the
+  // renderer. If the navigate event cancels the history navigation, the
+  // subframe navigations should not proceed.
+  AddThrottle(
+      SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
+
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),
                     std::make_move_iterator(testing_throttles.begin()),
@@ -219,10 +227,15 @@ void NavigationThrottleRunner::
   // Unit tests that do not use NavigationRequest should never call
   // RegisterNavigationThrottlesForCommitWithoutUrlLoader as this function
   // expects |delegate_| to be a NavigationRequest.
-  //
-  // TODO(japhet): Uncomment this once there are throttles for commits without
-  // a URL loader.
-  // NavigationRequest* request = static_cast<NavigationRequest*>(delegate_);
+  NavigationRequest* request = static_cast<NavigationRequest*>(delegate_);
+
+  // Defer any same-document subframe history navigations if there is an
+  // associated main-frame same-document history navigation in progress, until
+  // the main frame has had an opportunity to fire a navigate event in the
+  // renderer. If the navigate event cancels the history navigation, the
+  // subframe navigations should not proceed.
+  AddThrottle(
+      SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),

@@ -36,6 +36,7 @@
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
+#include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom-forward.h"
@@ -1095,6 +1096,43 @@ class CONTENT_EXPORT NavigationRequest
     pending_navigation_api_key_ = key;
   }
 
+  // Returns the navigation token for this request if this NavigationRequest
+  // is for a history navigation, and it might be cancelled via the navigate
+  // event. In that case, any associated subframe history navigations will be
+  // deferred until this navigation commits.
+  // This may only be called if this is a main-frame same-document navigation.
+  // Will return a valid token if canceling traversals via the navigate event is
+  // enabled, this is a history navigation, a navigate event is registered in
+  // the renderer, and the frame has met the user activation requirements to be
+  // allowed to cancel the navigation.
+  // This token will then be provided to the subframe NavigationRequests via
+  // set_main_frame_same_document_history_token().
+  absl::optional<base::UnguessableToken>
+  GetNavigationTokenForDeferringSubframes();
+
+  // For subframe NavigationRequests, these set and return the main frame's
+  // NavigationRequest token, in the case that the main frame returns it from
+  // GetNavigationTokenForDeferringSubframes().
+  void set_main_frame_same_document_history_token(
+      absl::optional<base::UnguessableToken> token) {
+    main_frame_same_document_navigation_token_ = token;
+  }
+  absl::optional<base::UnguessableToken>
+  main_frame_same_document_history_token() {
+    return main_frame_same_document_navigation_token_;
+  }
+
+  // When a SubframeHistoryNavigationThrottle is created, it registers itself
+  // with the NavigationRequest for the main frame. If the main frame
+  // NavigationRequest commits, then these throttles will be resumed in
+  // UnblockPendingSubframeNavigationRequestsIfNeeded().
+  // If it is canceled instead, these throttles will all be canceled.
+  // Takes a WeakPtr because `throttle` is owned by another NavigationRequest,
+  // and that request may be canceled outside of our control, in which case
+  // `throttle` will be destroyed.
+  void AddDeferredSubframeNavigationThrottle(
+      base::WeakPtr<SubframeHistoryNavigationThrottle> throttle);
+
  private:
   friend class NavigationRequestTest;
 
@@ -1732,6 +1770,12 @@ class CONTENT_EXPORT NavigationRequest
   // See https://crbug.com/1412365
   void CheckSoftNavigationHeuristicsInvariants();
 
+  // Used to resume any SubframeHistoryNavigationThrottles in this FrameTree
+  // when this NavigationRequest commits.
+  // `subframe_history_navigation_throttles_` will only be populated if this
+  // IsInMainFrame().
+  void UnblockPendingSubframeNavigationRequestsIfNeeded();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
@@ -2352,6 +2396,25 @@ class CONTENT_EXPORT NavigationRequest
 
   // See `set_pending_navigation_api_key()` for context.
   absl::optional<std::string> pending_navigation_api_key_;
+
+  // If this NavigationRequest is for a main-frame same-document back/forward
+  // navigation, any subframe NavigationRequests are deferred until the renderer
+  // has a chance to fire a navigate event. If the navigate
+  // event allows the navigation to proceed,
+  // UnblockPendingSubframeNavigationRequestsIfNeeded() will resume these
+  // requests
+  std::vector<base::WeakPtr<SubframeHistoryNavigationThrottle>>
+      subframe_history_navigation_throttles_;
+
+  // If this NavigationRequest is in a subframe and part of a history traversal,
+  // and the main frame is performing a same-document navigation, this token
+  // may be set if there is a possibility that JS in the main frame will cancel
+  // the history traversal via the navigate event. In that case, this token is
+  // used to look up the main frame's NavigationRequest so that it can be passed
+  // SubframeHistoryNavigationThrottle can defer this request until the main
+  // frame commits.
+  absl::optional<base::UnguessableToken>
+      main_frame_same_document_navigation_token_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

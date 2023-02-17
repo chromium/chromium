@@ -2109,6 +2109,12 @@
       public: true,
     },
     {
+      name: "NavigateEventCancelableTraversals",
+      status: "experimental",
+      base_feature: "NavigateEventCancelableTraversals",
+      base_feature_status: "enabled",
+    },
+    {
       name: "NavigationId",
       status: "experimental",
       origin_trial_feature_name: "SoftNavigationHeuristics",
