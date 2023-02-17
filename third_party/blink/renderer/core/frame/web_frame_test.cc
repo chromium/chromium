@@ -558,8 +558,8 @@ class ScriptExecutionCallbackHelper final {
   bool DidComplete() const { return did_complete_; }
 
   WebScriptExecutionCallback Callback() {
-    return base::BindOnce(&ScriptExecutionCallbackHelper::Completed,
-                          base::Unretained(this));
+    return WTF::BindOnce(&ScriptExecutionCallbackHelper::Completed,
+                         WTF::Unretained(this));
   }
 
   // Returns true if any results (even if they were empty) were passed to the
@@ -7256,9 +7256,9 @@ class TestAccessInitialDocumentLocalFrameHost
   void Init(blink::AssociatedInterfaceProvider* provider) {
     provider->OverrideBinderForTesting(
         mojom::blink::LocalMainFrameHost::Name_,
-        base::BindRepeating(
+        WTF::BindRepeating(
             &TestAccessInitialDocumentLocalFrameHost::BindFrameHostReceiver,
-            base::Unretained(this)));
+            WTF::Unretained(this)));
   }
 
   // LocalMainFrameHost:

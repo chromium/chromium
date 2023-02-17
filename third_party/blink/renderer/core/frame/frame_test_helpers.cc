@@ -386,11 +386,11 @@ WebViewHelper::WebViewHelper(
       std::move(create_web_frame_callback);
   if (!create_callback) {
     create_callback =
-        base::BindRepeating(&WebViewHelper::CreateTestWebFrameWidget<>);
+        WTF::BindRepeating(&WebViewHelper::CreateTestWebFrameWidget<>);
   }
   // Due to return type differences we need to bind the RepeatingCallback
   // in a wrapper.
-  create_widget_callback_wrapper_ = base::BindRepeating(
+  create_widget_callback_wrapper_ = WTF::BindRepeating(
       [](const CreateTestWebFrameWidgetCallback& create_test_web_widget,
          base::PassKey<WebLocalFrame> pass_key,
          CrossVariantMojoAssociatedRemote<
@@ -813,8 +813,8 @@ void TestWebFrameClient::BeginNavigation(
     return;
 
   navigation_callback_.Reset(
-      base::BindOnce(&TestWebFrameClient::CommitNavigation,
-                     weak_factory_.GetWeakPtr(), std::move(info)));
+      WTF::BindOnce(&TestWebFrameClient::CommitNavigation,
+                    weak_factory_.GetWeakPtr(), std::move(info)));
   frame_->GetTaskRunner(blink::TaskType::kInternalLoading)
       ->PostTask(FROM_HERE, navigation_callback_.callback());
 }

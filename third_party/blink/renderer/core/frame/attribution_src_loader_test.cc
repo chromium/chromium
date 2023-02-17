@@ -80,7 +80,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host) {
     receiver_.Bind(std::move(data_host));
     receiver_.set_disconnect_handler(
-        base::BindOnce(&MockDataHost::OnDisconnect, base::Unretained(this)));
+        WTF::BindOnce(&MockDataHost::OnDisconnect, WTF::Unretained(this)));
   }
 
   ~MockDataHost() override = default;
@@ -136,8 +136,8 @@ class MockAttributionHost : public mojom::blink::ConversionHost {
   explicit MockAttributionHost(blink::AssociatedInterfaceProvider* provider) {
     provider->OverrideBinderForTesting(
         mojom::blink::ConversionHost::Name_,
-        base::BindRepeating(&MockAttributionHost::BindReceiver,
-                            base::Unretained(this)));
+        WTF::BindRepeating(&MockAttributionHost::BindReceiver,
+                           WTF::Unretained(this)));
   }
 
   ~MockAttributionHost() override = default;
@@ -203,7 +203,7 @@ class AttributionSrcLoaderTest : public PageTestBase {
         .GetRemoteNavigationAssociatedInterfaces()
         ->OverrideBinderForTesting(
             mojom::blink::ConversionHost::Name_,
-            base::BindRepeating([](mojo::ScopedInterfaceEndpointHandle) {}));
+            WTF::BindRepeating([](mojo::ScopedInterfaceEndpointHandle) {}));
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
     PageTestBase::TearDown();
   }

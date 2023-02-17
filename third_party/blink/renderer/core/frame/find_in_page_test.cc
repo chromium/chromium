@@ -100,10 +100,10 @@ TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
   FindInPageCallbackReceiver callback_receiver;
   GetFindInPage().FindMatchRects(
       rects_version - 1,
-      base::BindOnce(&FindInPageCallbackReceiver::AssertFindMatchRects,
-                     base::Unretained(&callback_receiver), rects_version,
-                     GetTextFinder().FindMatchRects(),
-                     GetTextFinder().ActiveFindMatchRect()));
+      WTF::BindOnce(&FindInPageCallbackReceiver::AssertFindMatchRects,
+                    WTF::Unretained(&callback_receiver), rects_version,
+                    GetTextFinder().FindMatchRects(),
+                    GetTextFinder().ActiveFindMatchRect()));
   EXPECT_TRUE(callback_receiver.IsCalled());
 }
 #endif

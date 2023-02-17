@@ -52,8 +52,8 @@ class TestTextInputHostWaiter : public mojom::blink::TextInputHost {
     callback_ = std::move(callback);
     provider.SetBinderForTesting(
         mojom::blink::TextInputHost::Name_,
-        base::BindRepeating(&TestTextInputHostWaiter::BindTextInputHostReceiver,
-                            base::Unretained(this)));
+        WTF::BindRepeating(&TestTextInputHostWaiter::BindTextInputHostReceiver,
+                           WTF::Unretained(this)));
   }
 
   void GotCharacterIndexAtPoint(uint32_t index) override {
@@ -93,7 +93,7 @@ TEST_F(LocalFrameTest, IsLazyLoadingImageAllowedWithFeatureDisabled) {
   ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(false);
   auto page_holder = std::make_unique<DummyPageHolder>(
       gfx::Size(800, 600), nullptr, nullptr,
-      base::BindOnce(&EnableLazyLoadInSettings));
+      WTF::BindOnce(&EnableLazyLoadInSettings));
   EXPECT_EQ(LocalFrame::LazyLoadImageSetting::kDisabled,
             page_holder->GetFrame().GetLazyLoadImageSetting());
 }
@@ -102,7 +102,7 @@ TEST_F(LocalFrameTest, IsLazyLoadingImageAllowedWithSettingDisabled) {
   ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(false);
   auto page_holder = std::make_unique<DummyPageHolder>(
       gfx::Size(800, 600), nullptr, nullptr,
-      base::BindOnce(&DisableLazyLoadInSettings));
+      WTF::BindOnce(&DisableLazyLoadInSettings));
   EXPECT_EQ(LocalFrame::LazyLoadImageSetting::kDisabled,
             page_holder->GetFrame().GetLazyLoadImageSetting());
 }
@@ -111,7 +111,7 @@ TEST_F(LocalFrameTest, IsLazyLoadingImageAllowedWithAutomaticDisabled) {
   ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
   auto page_holder = std::make_unique<DummyPageHolder>(
       gfx::Size(800, 600), nullptr, nullptr,
-      base::BindOnce(&EnableLazyLoadInSettings));
+      WTF::BindOnce(&EnableLazyLoadInSettings));
   EXPECT_EQ(LocalFrame::LazyLoadImageSetting::kEnabledExplicit,
             page_holder->GetFrame().GetLazyLoadImageSetting());
 }

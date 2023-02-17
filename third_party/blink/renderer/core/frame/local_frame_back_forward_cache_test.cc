@@ -32,7 +32,7 @@ class TestLocalFrameBackForwardCacheClient
       blink::AssociatedInterfaceProvider* provider) {
     provider->OverrideBinderForTesting(
         mojom::blink::BackForwardCacheControllerHost::Name_,
-        base::BindRepeating(
+        WTF::BindRepeating(
             [](TestLocalFrameBackForwardCacheClient* parent,
                mojo::ScopedInterfaceEndpointHandle handle) {
               parent->receiver_.Bind(
