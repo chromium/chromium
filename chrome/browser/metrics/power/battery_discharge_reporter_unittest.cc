@@ -21,9 +21,7 @@ namespace {
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode5";
 constexpr const char* kBatteryDischargeRateMilliwattsHistogramName =
-    "Power.BatteryDischargeRateMilliwatts5";
-constexpr const char* kAltBatteryDischargeRateMilliwattsHistogramName =
-    "Power.AltBatteryDischargeRateMilliwatts5";
+    "Power.BatteryDischargeRateMilliwatts6";
 constexpr const char* kBatteryDischargeRateRelativeHistogramName =
     "Power.BatteryDischargeRateRelative5";
 
@@ -172,9 +170,6 @@ TEST_F(BatteryDischargeReporterTest, Simple) {
       &histogram_tester_, suffixes,
       {{kBatteryDischargeRateMilliwattsHistogramName, kExpectedDischargeRate}});
   ExpectHistogramSamples(&histogram_tester_, suffixes,
-                         {{kAltBatteryDischargeRateMilliwattsHistogramName,
-                           kExpectedDischargeRate}});
-  ExpectHistogramSamples(&histogram_tester_, suffixes,
                          {{kBatteryDischargeRateRelativeHistogramName,
                            kExpectedDischargeRateRelative}});
 }
@@ -320,9 +315,9 @@ TEST_F(BatteryDischargeReporterTest, FullChargedCapacityIncreased) {
 
   const std::vector<const char*> suffixes(
       {"", ".Initial", ".ZeroWindow", ".ZeroWindow.Initial"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes,
-                         {{kAltBatteryDischargeRateMilliwattsHistogramName,
-                           kExpectedDischargeRate}});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{kBatteryDischargeRateMilliwattsHistogramName, kExpectedDischargeRate}});
 }
 
 TEST_F(BatteryDischargeReporterTest, RetrievalError) {

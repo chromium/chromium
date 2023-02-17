@@ -17,9 +17,7 @@
 namespace {
 
 constexpr const char* kBatteryDischargeRateMilliwattsHistogramName =
-    "Power.BatteryDischargeRateMilliwatts5";
-constexpr const char* kAltBatteryDischargeRateMilliwattsHistogramName =
-    "Power.AltBatteryDischargeRateMilliwatts5";
+    "Power.BatteryDischargeRateMilliwatts6";
 #if BUILDFLAG(IS_WIN)
 constexpr const char* kHasPreciseBatteryDischargeGranularity =
     "Power.HasPreciseBatteryDischargeGranularity";
@@ -59,21 +57,6 @@ constexpr int kMaxCPUProportion = 2;
 constexpr int kMaxGPUProportion = 1;
 #endif  // BUILDFLAG(IS_MAC)
 
-// Returns the current capacity of |battery_state| in milliwatt-hours.
-uint64_t GetBatteryCapacityinMWh(
-    const base::BatteryLevelProvider::BatteryState& battery_state) {
-  if (battery_state.charge_unit ==
-      base::BatteryLevelProvider::BatteryLevelUnit::kMWh) {
-    return battery_state.current_capacity.value();
-  }
-
-  DCHECK_EQ(battery_state.charge_unit.value(),
-            base::BatteryLevelProvider::BatteryLevelUnit::kMAh);
-  DCHECK(battery_state.voltage_mv.has_value());
-  return battery_state.current_capacity.value() *
-         battery_state.voltage_mv.value() / 1000;
-}
-
 }  // namespace
 
 void ReportAggregatedProcessMetricsHistograms(
@@ -87,25 +70,6 @@ void ReportAggregatedProcessMetricsHistograms(
 }
 
 int64_t CalculateDischargeRateMilliwatts(
-    const base::BatteryLevelProvider::BatteryState& previous_battery_state,
-    const base::BatteryLevelProvider::BatteryState& new_battery_state,
-    base::TimeDelta interval_duration) {
-  DCHECK_EQ(previous_battery_state.charge_unit.value(),
-            new_battery_state.charge_unit.value());
-
-  const uint64_t previous_capacity =
-      GetBatteryCapacityinMWh(previous_battery_state);
-  const uint64_t new_capacity = GetBatteryCapacityinMWh(new_battery_state);
-
-  // The capacity is in mWh. Divide by hours to get mW. Note that there is no
-  // InHoursF() method.
-  const double interval_duration_in_hours =
-      interval_duration.InSecondsF() / base::Time::kSecondsPerHour;
-
-  return (previous_capacity - new_capacity) / interval_duration_in_hours;
-}
-
-int64_t CalculateAltDischargeRateMilliwatts(
     const base::BatteryLevelProvider::BatteryState& previous_battery_state,
     const base::BatteryLevelProvider::BatteryState& new_battery_state,
     base::TimeDelta interval_duration) {
@@ -220,8 +184,6 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
 
   const auto discharge_rate_mw = CalculateDischargeRateMilliwatts(
       *previous_battery_state, *new_battery_state, interval_duration);
-  const auto alt_discharge_rate_mw = CalculateAltDischargeRateMilliwatts(
-      *previous_battery_state, *new_battery_state, interval_duration);
 
 #if BUILDFLAG(IS_WIN)
   // The maximum granularity allowed for the following battery discharge value.
@@ -236,7 +198,7 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
       new_battery_state->battery_discharge_granularity.has_value() &&
       new_battery_state->battery_discharge_granularity.value() <=
           kMaximumGranularityInMilliwattHours) {
-    discharge_rate_with_precise_granularity = alt_discharge_rate_mw;
+    discharge_rate_with_precise_granularity = discharge_rate_mw;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -249,7 +211,6 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
   return {
     .mode = BatteryDischargeMode::kDischarging,
     .rate_milliwatts = discharge_rate_mw,
-    .alt_rate_milliwatts = alt_discharge_rate_mw,
 #if BUILDFLAG(IS_WIN)
     .rate_milliwatts_with_precise_granularity =
         discharge_rate_with_precise_granularity,
@@ -283,11 +244,6 @@ void ReportBatteryHistograms(
             base::StrCat({kBatteryDischargeRateMilliwattsHistogramName,
                           scenario_suffix, interval_type_suffix}),
             *battery_discharge.rate_milliwatts);
-        DCHECK(battery_discharge.alt_rate_milliwatts.has_value());
-        base::UmaHistogramCounts100000(
-            base::StrCat({kAltBatteryDischargeRateMilliwattsHistogramName,
-                          scenario_suffix, interval_type_suffix}),
-            *battery_discharge.alt_rate_milliwatts);
 #if BUILDFLAG(IS_WIN)
         if (battery_discharge.rate_milliwatts_with_precise_granularity) {
           base::UmaHistogramCounts100000(

@@ -210,54 +210,6 @@ TEST(PowerMetricsTest, CalculateDischargeRateMilliwatts_mAh) {
           .is_external_power_connected = false,
           .current_capacity = 100,
           .full_charged_capacity = 10000,
-          .voltage_mv = 12000,
-          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMAh,
-      },
-      base::BatteryLevelProvider::BatteryState{
-          .battery_count = 1,
-          .is_external_power_connected = false,
-          .current_capacity = 90,
-          .full_charged_capacity = 10000,
-          .voltage_mv = 12000,
-          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMAh,
-      },
-      base::Minutes(1));
-
-  // 10 mAh discharge in 1 minute translates to 600 mWh in 1 hour. That value is
-  // then multiplied by the voltage (12v) to get 7200 milliwatts.
-  EXPECT_EQ(discharge_rate, 7200);
-}
-
-TEST(PowerMetricsTest, CalculateAltDischargeRateMilliwatts_mWh) {
-  int64_t discharge_rate = CalculateAltDischargeRateMilliwatts(
-      base::BatteryLevelProvider::BatteryState{
-          .battery_count = 1,
-          .is_external_power_connected = false,
-          .current_capacity = 100,
-          .full_charged_capacity = 10000,
-          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
-      },
-      base::BatteryLevelProvider::BatteryState{
-          .battery_count = 1,
-          .is_external_power_connected = false,
-          .current_capacity = 90,
-          .full_charged_capacity = 10000,
-          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
-      },
-      base::Minutes(1));
-
-  // 10 mWh discharge in 1 minute translates to 600 mWh in 1 hour.
-  EXPECT_EQ(discharge_rate, 600);
-}
-
-
-TEST(PowerMetricsTest, CalculateAltDischargeRateMilliwatts_mAh) {
-  int64_t discharge_rate = CalculateAltDischargeRateMilliwatts(
-      base::BatteryLevelProvider::BatteryState{
-          .battery_count = 1,
-          .is_external_power_connected = false,
-          .current_capacity = 100,
-          .full_charged_capacity = 10000,
           .voltage_mv = 12100,
           .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMAh,
       },

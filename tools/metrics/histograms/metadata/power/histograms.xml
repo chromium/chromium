@@ -736,35 +736,6 @@ chromium-metrics-reviews@google.com.
   <token key="AdaptiveChargingType" variants="AdaptiveChargingType"/>
 </histogram>
 
-<histogram
-    name="Power.AltBatteryDischargeRateMilliwatts5{UsageScenario}{IntervalType}"
-    units="milliwatts" expires_after="2023-03-31">
-  <owner>etiennep@chromium.org</owner>
-  <owner>olivierli@chromium.org</owner>
-  <owner>lgrey@chromium.org</owner>
-  <summary>
-    Battery discharge in milliwatts, example: - Battery charge at the beginning
-    of the interval: 4000 mWh; - Battery charge at the end of the interval: 3990
-    mWh; - Discharge: (4000-3990) = 10 mWh per minute - Reported value: 600 mW.
-
-    This is reported at the end of every valid 1 minute interval. An invalid
-    interval is one that deviate too much from 1 minute, which can be caused by
-    the computer going to sleep, or the OS sending multiple notifications in a
-    row.
-
-    The difference with Power.BatteryDischargeRateMilliwatts5 is that values for
-    this histogram are calculated using the used battery capacity instead of the
-    current capacity. This difference matters only when the full charged
-    capacity changes between intervals.
-
-    This is recorded for {UsageScenario}.
-
-    This contains {IntervalType}.
-  </summary>
-  <token key="UsageScenario" variants="UsageScenario"/>
-  <token key="IntervalType" variants="IntervalType"/>
-</histogram>
-
 <histogram name="Power.AmbientLightOnResume" units="lux"
     expires_after="2023-06-25">
   <owner>bkersten@chromium.org</owner>
@@ -971,15 +942,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Power.BatteryDischargeRateMilliwatts5{UsageScenario}{IntervalType}"
+    name="Power.BatteryDischargeRateMilliwatts6{UsageScenario}{IntervalType}"
     units="milliwatts" expires_after="2023-03-31">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
-    Battery discharge in milliwatts, example: - Battery charge at the beginning
-    of the interval: 4000 mWh; - Battery charge at the end of the interval: 3990
-    mWh; - Discharge: (4000-3990) = 10 mWh per minute - Reported value: 600 mW.
+    Battery discharge in milliwatts, example: - Used capacity at the beginning
+    of the interval: 1000 mWh; - Used capacity at the end of the interval: 1010
+    mWh; - Discharge: (1010-1000) = 10 mWh per minute - Reported value: 600 mW.
 
     This is reported at the end of every valid 1 minute interval. An invalid
     interval is one that deviate too much from 1 minute, which can be caused by
@@ -1000,9 +971,9 @@ chromium-metrics-reviews@google.com.
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Battery discharge in milliwatts, example: - Battery charge at the beginning
-    of the interval: 4000 mWh; - Battery charge at the end of the interval: 3990
-    mWh; - Discharge: (4000-3990) = 10 mWh per minute - Reported value: 600 mW.
+    Battery discharge in milliwatts, example: - Used capacity at the beginning
+    of the interval: 1000 mWh; - Used capacity at the end of the interval: 1010
+    mWh; - Discharge: (1010-1000) = 10 mWh per minute - Reported value: 600 mW.
 
     This is reported at the end of every valid 1 minute interval. An invalid
     interval is one that deviate too much from 1 minute, which can be caused by
