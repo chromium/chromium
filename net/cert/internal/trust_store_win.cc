@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/features.h"
+#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_util.h"
@@ -329,9 +330,14 @@ class TrustStoreWin::Impl {
             // anchors or trusted leafs (if self-signed).
             return CertificateTrust::ForTrustAnchorOrLeaf()
                 .WithEnforceAnchorExpiry()
+                .WithEnforceAnchorConstraints(
+                    IsLocalAnchorConstraintsEnforcementEnabled())
                 .WithRequireLeafSelfSigned();
           } else {
-            return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
+            return CertificateTrust::ForTrustAnchor()
+                .WithEnforceAnchorExpiry()
+                .WithEnforceAnchorConstraints(
+                    IsLocalAnchorConstraintsEnforcementEnabled());
           }
         }
       }

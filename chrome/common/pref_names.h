@@ -1163,6 +1163,11 @@ extern const char kCACertificateManagementAllowed[];
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 extern const char kChromeRootStoreEnabled[];
 #endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/1406103): delete this after a few milestones.
+extern const char kEnforceLocalAnchorConstraintsEnabled[];
+#endif
 
 extern const char kSharingVapidKey[];
 extern const char kSharingFCMRegistration[];

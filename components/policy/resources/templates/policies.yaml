@@ -1077,6 +1077,7 @@ policies:
   1076: DeviceActivityHeartbeatCollectionRateMs
   1077: WallpaperGooglePhotosIntegrationEnabled
   1078: WebRtcTextLogCollectionAllowed
+  1079: EnforceLocalAnchorConstraintsEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

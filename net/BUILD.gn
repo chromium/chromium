@@ -315,6 +315,8 @@ component("net") {
     "cert/internal/revocation_checker.h",
     "cert/internal/system_trust_store.cc",
     "cert/internal/system_trust_store.h",
+    "cert/internal/trust_store_features.cc",
+    "cert/internal/trust_store_features.h",
     "cert/known_roots.cc",
     "cert/known_roots.h",
     "cert/merkle_audit_proof.cc",

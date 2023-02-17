@@ -22,10 +22,12 @@
 #include "crypto/mac_security_services_lock.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
+#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/test_helpers.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/test_keychain_search_list_mac.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -121,10 +123,12 @@ const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
 
 class TrustStoreMacImplTest
     : public testing::TestWithParam<
-          std::tuple<TrustStoreMac::TrustImplType, bool>> {
+          std::tuple<TrustStoreMac::TrustImplType, bool, bool>> {
  public:
-  TrustStoreMacImplTest() {
-    if (std::get<1>(GetParam())) {
+  TrustStoreMacImplTest()
+      : scoped_enforce_local_anchor_constraints_(
+            ExpectedEnforceLocalAnchorConstraintsEnabled()) {
+    if (ExpectedTrustedLeafSupportEnabled()) {
       feature_list_.InitAndEnableFeature(
           features::kTrustStoreTrustedLeafSupport);
     } else {
@@ -137,16 +141,36 @@ class TrustStoreMacImplTest
     return std::get<0>(GetParam());
   }
 
+  bool ExpectedTrustedLeafSupportEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+  bool ExpectedEnforceLocalAnchorConstraintsEnabled() const {
+    return std::get<2>(GetParam());
+  }
+
   CertificateTrust ExpectedTrustForAnchor() const {
-    if (std::get<1>(GetParam())) {
-      return CertificateTrust::ForTrustAnchorOrLeaf().WithEnforceAnchorExpiry();
+    CertificateTrust trust;
+
+    if (ExpectedTrustedLeafSupportEnabled()) {
+      trust =
+          CertificateTrust::ForTrustAnchorOrLeaf().WithEnforceAnchorExpiry();
     } else {
-      return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
+      trust = CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
     }
+
+    if (ExpectedEnforceLocalAnchorConstraintsEnabled()) {
+      trust = trust.WithEnforceAnchorConstraints()
+                  .WithRequireAnchorBasicConstraints();
+    }
+
+    return trust;
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  ScopedLocalAnchorConstraintsEnforcementForTesting
+      scoped_enforce_local_anchor_constraints_;
 };
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
@@ -451,11 +475,14 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(TrustStoreMac::TrustImplType::kSimple,
                         TrustStoreMac::TrustImplType::kDomainCacheFullCerts,
                         TrustStoreMac::TrustImplType::kKeychainCacheFullCerts),
-        testing::Values(true, false)),
+        testing::Bool(),
+        testing::Bool()),
     [](const testing::TestParamInfo<TrustStoreMacImplTest::ParamType>& info) {
-      return base::StrCat({TrustImplTypeToString(std::get<0>(info.param)),
-                           std::get<1>(info.param) ? "TrustedLeafSupported"
-                                                   : "TrustAnchorOnly"});
+      return base::StrCat(
+          {TrustImplTypeToString(std::get<0>(info.param)),
+           std::get<1>(info.param) ? "TrustedLeafSupported" : "TrustAnchorOnly",
+           std::get<2>(info.param) ? "EnforceLocalAnchorConstraints"
+                                   : "NoLocalAnchorConstraints"});
     });
 
 }  // namespace net

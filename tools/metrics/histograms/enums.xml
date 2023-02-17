@@ -32777,6 +32777,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1076" label="DeviceActivityHeartbeatCollectionRateMs"/>
   <int value="1077" label="WallpaperGooglePhotosIntegrationEnabled"/>
   <int value="1078" label="WebRtcTextLogCollectionAllowed"/>
+  <int value="1079" label="EnforceLocalAnchorConstraintsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

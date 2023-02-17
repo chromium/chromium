@@ -15,6 +15,7 @@
 #include "crypto/scoped_capi_types.h"
 #include "net/base/features.h"
 #include "net/cert/cert_net_fetcher.h"
+#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/test_helpers.h"
@@ -52,10 +53,13 @@ namespace {
   return ::testing::AssertionSuccess();
 }
 
-class TrustStoreWinTest : public testing::TestWithParam<bool> {
+class TrustStoreWinTest
+    : public testing::TestWithParam<std::tuple<bool, bool>> {
  public:
-  TrustStoreWinTest() {
-    if (IsTrustedLeafSupportEnabled()) {
+  TrustStoreWinTest()
+      : scoped_enforce_local_anchor_constraints_(
+            ExpectedEnforceLocalAnchorConstraintsEnabled()) {
+    if (ExpectedTrustedLeafSupportEnabled()) {
       feature_list_.InitAndEnableFeature(
           features::kTrustStoreTrustedLeafSupport);
     } else {
@@ -75,20 +79,31 @@ class TrustStoreWinTest : public testing::TestWithParam<bool> {
     ASSERT_TRUE(ParseCertFromFile("multi-root-F-by-E.pem", &f_by_e_));
   }
 
-  bool IsTrustedLeafSupportEnabled() const { return GetParam(); }
+  bool ExpectedTrustedLeafSupportEnabled() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool ExpectedEnforceLocalAnchorConstraintsEnabled() const {
+    return std::get<1>(GetParam());
+  }
 
   CertificateTrust ExpectedTrustForAnchor() const {
-    if (IsTrustedLeafSupportEnabled()) {
+    if (ExpectedTrustedLeafSupportEnabled()) {
       return CertificateTrust::ForTrustAnchorOrLeaf()
           .WithEnforceAnchorExpiry()
+          .WithEnforceAnchorConstraints(
+              ExpectedEnforceLocalAnchorConstraintsEnabled())
           .WithRequireLeafSelfSigned();
     } else {
-      return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
+      return CertificateTrust::ForTrustAnchor()
+          .WithEnforceAnchorExpiry()
+          .WithEnforceAnchorConstraints(
+              ExpectedEnforceLocalAnchorConstraintsEnabled());
     }
   }
 
   CertificateTrust ExpectedTrustForPeer() const {
-    if (IsTrustedLeafSupportEnabled()) {
+    if (ExpectedTrustedLeafSupportEnabled()) {
       return CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned();
     } else {
       return CertificateTrust::ForUnspecified();
@@ -143,6 +158,8 @@ class TrustStoreWinTest : public testing::TestWithParam<bool> {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  ScopedLocalAnchorConstraintsEnforcementForTesting
+      scoped_enforce_local_anchor_constraints_;
 };
 
 TEST_P(TrustStoreWinTest, GetTrustInitializationError) {
@@ -387,9 +404,12 @@ TEST_P(TrustStoreWinTest, GetIssuers) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     TrustStoreWinTest,
-    testing::Values(true, false),
+    testing::Combine(testing::Bool(), testing::Bool()),
     [](const testing::TestParamInfo<TrustStoreWinTest::ParamType>& info) {
-      return info.param ? "TrustedLeafSupported" : "TrustAnchorOnly";
+      return std::string(std::get<0>(info.param) ? "TrustedLeafSupported"
+                                                 : "TrustAnchorOnly") +
+             (std::get<1>(info.param) ? "EnforceLocalAnchorConstraints"
+                                      : "NoLocalAnchorConstraints");
     });
 
 }  // namespace

@@ -1,0 +1,56 @@
+caption: Determines whether the built-in certificate verifier
+  will enforce constraints encoded into trust anchors loaded from the platform
+  trust store.
+default: true
+desc: |-
+  X.509 certificates may encode constraints, such as Name Constraints,
+  in extensions in the certificate. RFC 5280 specifies that enforcing such
+  constraints on trust anchor certificates is optional. Starting in
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 112, such constraints
+  in certificates loaded from the platform certificate store will now be
+  enforced.
+
+  This policy exists as a temporary opt-out in case an enterprise encounters
+  issues with the constraints encoded in their private roots. In that case this
+  policy may be used to temporarily disable enforcement of the constraints
+  while correcting the certificate issues.
+
+  When this policy is not set, or is set to enabled,
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will enforce
+  constraints encoded into trust anchors loaded from the platform trust store.
+
+  When this policy is set to disabled,
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not enforce
+  constraints encoded into trust anchors loaded from the platform trust store.
+
+  This policy has no effect if the
+  <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME">ChromeRootStoreEnabled</ph>
+  policy is disabled.
+
+  This policy is planned to be removed in
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 115.
+
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Enforce constraints in locally added trust anchors
+  value: true
+- caption: Do not enforce constraints in locally added trust anchors
+  value: false
+owners:
+- mattm@chromium.org
+- file://net/cert/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.win:112-
+- chrome.mac:112-
+- chrome.linux:112-
+- chrome_os:112-
+future_on:
+- android
+tags: []
+type: main
+

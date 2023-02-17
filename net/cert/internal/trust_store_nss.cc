@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "crypto/nss_util.h"
 #include "net/base/features.h"
+#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/known_roots_nss.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
@@ -108,6 +109,8 @@ CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
 
   bool is_trusted_ca = false;
   bool is_trusted_leaf = false;
+  bool enforce_anchor_constraints =
+      IsLocalAnchorConstraintsEnforcementEnabled();
 
   // Determine if the certificate is a trust anchor.
   //
@@ -123,8 +126,20 @@ CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
     // objects from the builtin token (system trust settings). Properly
     // handling this may require iterating all the slots and manually computing
     // the trust settings directly, rather than CERT_GetCertTrust.
-    if (!ignore_system_trust_settings_ || !IsKnownRoot(nss_cert.get())) {
+    if (ignore_system_trust_settings_) {
+      // Only trust the user roots, and apply the value of
+      // enforce_anchor_constraints.
+      if (!IsKnownRoot(nss_cert.get())) {
+        is_trusted_ca = true;
+      }
+    } else {
       is_trusted_ca = true;
+      if (enforce_anchor_constraints && IsKnownRoot(nss_cert.get())) {
+        // Don't enforce anchor constraints on the builtin roots. Needing to
+        // check IsKnownRoot for this condition isn't ideal, but this should be
+        // good enough for now.
+        enforce_anchor_constraints = false;
+      }
     }
   }
 
@@ -137,9 +152,13 @@ CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
   }
 
   if (is_trusted_ca && is_trusted_leaf) {
-    return CertificateTrust::ForTrustAnchorOrLeaf();
+    return CertificateTrust::ForTrustAnchorOrLeaf()
+        .WithEnforceAnchorConstraints(enforce_anchor_constraints)
+        .WithEnforceAnchorExpiry(enforce_anchor_constraints);
   } else if (is_trusted_ca) {
-    return CertificateTrust::ForTrustAnchor();
+    return CertificateTrust::ForTrustAnchor()
+        .WithEnforceAnchorConstraints(enforce_anchor_constraints)
+        .WithEnforceAnchorExpiry(enforce_anchor_constraints);
   } else if (is_trusted_leaf) {
     return CertificateTrust::ForTrustedLeaf();
   }

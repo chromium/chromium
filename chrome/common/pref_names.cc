@@ -3371,6 +3371,11 @@ const char kCACertificateManagementAllowed[] =
 // If not set, Chrome will choose the root store based on experiments.
 const char kChromeRootStoreEnabled[] = "chrome_root_store_enabled";
 #endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+const char kEnforceLocalAnchorConstraintsEnabled[] =
+    "enforce_local_anchor_constraints_enabled";
+#endif
 
 const char kSharingVapidKey[] = "sharing.vapid_key";
 const char kSharingFCMRegistration[] = "sharing.fcm_registration";

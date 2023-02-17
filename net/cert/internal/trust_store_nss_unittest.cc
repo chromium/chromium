@@ -15,10 +15,12 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/features.h"
+#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/known_roots_nss.h"
 #include "net/cert/pki/cert_issuer_source_sync_unittest.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/test_helpers.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
@@ -29,10 +31,6 @@
 namespace net {
 
 namespace {
-
-constexpr CertificateTrust ExpectedTrustForAnchor() {
-  return CertificateTrust::ForTrustAnchor();
-}
 
 // Returns true if the provided slot looks like a built-in root.
 bool IsBuiltInRootSlot(PK11SlotInfo* slot) {
@@ -105,8 +103,12 @@ std::shared_ptr<const ParsedCertificate> GetASSLTrustedBuiltinRoot() {
 
 class TrustStoreNSSTestBase : public ::testing::Test {
  public:
-  explicit TrustStoreNSSTestBase(bool trusted_leaf_support)
-      : trusted_leaf_support_(trusted_leaf_support) {
+  explicit TrustStoreNSSTestBase(bool trusted_leaf_support,
+                                 bool enforce_local_anchor_constraints)
+      : trusted_leaf_support_(trusted_leaf_support),
+        enforce_local_anchor_constraints_(enforce_local_anchor_constraints),
+        scoped_enforce_local_anchor_constraints_(
+            enforce_local_anchor_constraints) {
     if (trusted_leaf_support) {
       feature_list_.InitAndEnableFeature(
           features::kTrustStoreTrustedLeafSupport);
@@ -116,20 +118,43 @@ class TrustStoreNSSTestBase : public ::testing::Test {
     }
   }
 
-  TrustStoreNSSTestBase() : TrustStoreNSSTestBase(true) {}
+  TrustStoreNSSTestBase() : TrustStoreNSSTestBase(true, true) {}
 
-  bool IsTrustedLeafSupportEnabled() const { return trusted_leaf_support_; }
+  bool ExpectedTrustedLeafSupportEnabled() const {
+    return trusted_leaf_support_;
+  }
+
+  bool ExpectedEnforceLocalAnchorConstraintsEnabled() const {
+    return enforce_local_anchor_constraints_;
+  }
+
+  CertificateTrust ExpectedTrustForBuiltinAnchor() const {
+    return CertificateTrust::ForTrustAnchor();
+  }
+
+  CertificateTrust ExpectedTrustForAnchor() const {
+    CertificateTrust trust = CertificateTrust::ForTrustAnchor();
+    if (ExpectedEnforceLocalAnchorConstraintsEnabled()) {
+      trust = trust.WithEnforceAnchorConstraints().WithEnforceAnchorExpiry();
+    }
+    return trust;
+  }
 
   CertificateTrust ExpectedTrustForAnchorOrLeaf() const {
-    if (IsTrustedLeafSupportEnabled()) {
-      return CertificateTrust::ForTrustAnchorOrLeaf();
+    CertificateTrust trust;
+    if (ExpectedTrustedLeafSupportEnabled()) {
+      trust = CertificateTrust::ForTrustAnchorOrLeaf();
     } else {
-      return CertificateTrust::ForTrustAnchor();
+      trust = CertificateTrust::ForTrustAnchor();
     }
+    if (ExpectedEnforceLocalAnchorConstraintsEnabled()) {
+      trust = trust.WithEnforceAnchorConstraints().WithEnforceAnchorExpiry();
+    }
+    return trust;
   }
 
   CertificateTrust ExpectedTrustForLeaf() const {
-    if (IsTrustedLeafSupportEnabled()) {
+    if (ExpectedTrustedLeafSupportEnabled()) {
       return CertificateTrust::ForTrustedLeaf();
     } else {
       return CertificateTrust::ForUnspecified();
@@ -313,6 +338,9 @@ class TrustStoreNSSTestBase : public ::testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
   const bool trusted_leaf_support_;
+  const bool enforce_local_anchor_constraints_;
+  ScopedLocalAnchorConstraintsEnforcementForTesting
+      scoped_enforce_local_anchor_constraints_;
 
   std::shared_ptr<const ParsedCertificate> oldroot_;
   std::shared_ptr<const ParsedCertificate> newroot_;
@@ -386,7 +414,7 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType, TempCertPresent) {
 TEST_P(TrustStoreNSSTestWithSlotFilterType, TrustAllowedForBuiltinRootCerts) {
   auto builtin_root_cert = GetASSLTrustedBuiltinRoot();
   ASSERT_TRUE(builtin_root_cert);
-  EXPECT_TRUE(HasTrust({builtin_root_cert}, ExpectedTrustForAnchor()));
+  EXPECT_TRUE(HasTrust({builtin_root_cert}, ExpectedTrustForBuiltinAnchor()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -399,9 +427,11 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests a TrustStoreNSS that ignores system root certs.
 class TrustStoreNSSTestIgnoreSystemCerts
     : public TrustStoreNSSTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  TrustStoreNSSTestIgnoreSystemCerts() : TrustStoreNSSTestBase(GetParam()) {}
+  TrustStoreNSSTestIgnoreSystemCerts()
+      : TrustStoreNSSTestBase(std::get<0>(GetParam()),
+                              std::get<1>(GetParam())) {}
   ~TrustStoreNSSTestIgnoreSystemCerts() override = default;
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
@@ -445,18 +475,23 @@ TEST_P(TrustStoreNSSTestIgnoreSystemCerts, UserTrustedCaAndServer) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     TrustStoreNSSTestIgnoreSystemCerts,
-    testing::Values(true, false),
+    testing::Combine(testing::Bool(), testing::Bool()),
     [](const testing::TestParamInfo<
         TrustStoreNSSTestIgnoreSystemCerts::ParamType>& info) {
-      return info.param ? "TrustedLeafSupported" : "TrustAnchorOnly";
+      return std::string(std::get<0>(info.param) ? "TrustedLeafSupported"
+                                                 : "TrustAnchorOnly") +
+             (std::get<1>(info.param) ? "EnforceLocalAnchorConstraints"
+                                      : "NoLocalAnchorConstraints");
     });
 
 // Tests a TrustStoreNSS that does not filter which certificates
 class TrustStoreNSSTestWithoutSlotFilter
     : public TrustStoreNSSTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  TrustStoreNSSTestWithoutSlotFilter() : TrustStoreNSSTestBase(GetParam()) {}
+  TrustStoreNSSTestWithoutSlotFilter()
+      : TrustStoreNSSTestBase(std::get<0>(GetParam()),
+                              std::get<1>(GetParam())) {}
 
   ~TrustStoreNSSTestWithoutSlotFilter() override = default;
 
@@ -577,10 +612,13 @@ TEST_P(TrustStoreNSSTestWithoutSlotFilter, DifferingTrustCAWithSameSubject) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     TrustStoreNSSTestWithoutSlotFilter,
-    testing::Values(true, false),
+    testing::Combine(testing::Bool(), testing::Bool()),
     [](const testing::TestParamInfo<
         TrustStoreNSSTestWithoutSlotFilter::ParamType>& info) {
-      return info.param ? "TrustedLeafSupported" : "TrustAnchorOnly";
+      return std::string(std::get<0>(info.param) ? "TrustedLeafSupported"
+                                                 : "TrustAnchorOnly") +
+             (std::get<1>(info.param) ? "EnforceLocalAnchorConstraints"
+                                      : "NoLocalAnchorConstraints");
     });
 
 // Tests for a TrustStoreNSS which does not allow certificates on user slots
