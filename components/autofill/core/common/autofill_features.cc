@@ -527,6 +527,12 @@ BASE_FEATURE(kAutofillSharedAutofill,
 const base::FeatureParam<bool> kAutofillSharedAutofillRelaxedParam{
     &kAutofillSharedAutofill, "relax_shared_autofill", false};
 
+// Controls whether to offer a delete button for Autocomplete entries in the
+// Autofill popup.
+BASE_FEATURE(kAutofillShowAutocompleteDeleteButton,
+             "AutofillShowAutocompleteDeleteButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether Manual fallbacks would be shown in the context menu for
 // filling. Used only in Desktop.
 // TODO(crbug.com/1326895): Clean up when launched.
