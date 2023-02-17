@@ -228,6 +228,9 @@ void TranslateUIDelegate::UpdateSourceLanguageIndex(size_t language_index) {
 
 void TranslateUIDelegate::UpdateSourceLanguage(
     const std::string& language_code) {
+  if (GetSourceLanguageCode() == language_code) {
+    return;
+  }
   for (size_t i = 0; i < languages_.size(); ++i) {
     if (languages_[i].first.compare(language_code) == 0) {
       UpdateSourceLanguageIndex(i);
@@ -257,6 +260,9 @@ void TranslateUIDelegate::UpdateTargetLanguageIndex(size_t language_index) {
 
 void TranslateUIDelegate::UpdateTargetLanguage(
     const std::string& language_code) {
+  if (GetTargetLanguageCode() == language_code) {
+    return;
+  }
   for (size_t i = 0; i < languages_.size(); ++i) {
     if (languages_[i].first.compare(language_code) == 0) {
       UpdateTargetLanguageIndex(i);

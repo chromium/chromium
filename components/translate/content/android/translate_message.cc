@@ -182,10 +182,8 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
     RecordCompactInfobarEvent(InfobarEvent::INFOBAR_IMPRESSION);
   }
 
-  if (ui_delegate_->GetSourceLanguageCode() != source_language)
-    ui_delegate_->UpdateSourceLanguage(source_language);
-  if (ui_delegate_->GetTargetLanguageCode() != target_language)
-    ui_delegate_->UpdateTargetLanguage(target_language);
+  ui_delegate_->UpdateSourceLanguage(source_language);
+  ui_delegate_->UpdateTargetLanguage(target_language);
 
   if (step == TRANSLATE_STEP_TRANSLATE_ERROR) {
     // Prevent auto-always-translate from triggering if an error occurs.

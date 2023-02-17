@@ -69,9 +69,12 @@ class TranslateUIDelegate {
   // Returns the source language code.
   std::string GetSourceLanguageCode() const;
 
-  // Updates the source language index.
+  // Updates the source language index if |language_index| is different from the
+  // current index.
   void UpdateSourceLanguageIndex(size_t language_index);
 
+  // Updates the source language and saves the change for logging if the provided 
+  // |language_code| is valid.
   void UpdateSourceLanguage(const std::string& language_code);
 
   // Returns the target language index.
@@ -80,9 +83,12 @@ class TranslateUIDelegate {
   // Returns the target language code.
   std::string GetTargetLanguageCode() const;
 
-  // Updates the target language index.
+  // Updates the target language index if |language_index| is different from the
+  // current index.
   void UpdateTargetLanguageIndex(size_t language_index);
 
+  // Updates the target language and saves the change for logging if the provided 
+  // |language_code| is valid.
   void UpdateTargetLanguage(const std::string& language_code);
 
   // Returns the ISO code for the language at |index|.

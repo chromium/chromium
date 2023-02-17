@@ -263,6 +263,40 @@ TEST_F(TranslateUIDelegateTest, LanguageCodes) {
   EXPECT_EQ("fr", delegate_->GetTargetLanguageCode());
 }
 
+TEST_F(TranslateUIDelegateTest, UpdateSourceLanguageTranslateEvent) {
+  // Test source language and corresponding TranslateEvent field.
+  EXPECT_EQ("ar", delegate_->GetSourceLanguageCode());
+  EXPECT_FALSE(
+      manager_->mutable_translate_event()->has_modified_source_language());
+
+  // Test that updating with current language does not update TranslateEvent.
+  delegate_->UpdateSourceLanguage("ar");
+  EXPECT_FALSE(
+      manager_->mutable_translate_event()->has_modified_source_language());
+
+  // Test that updating with different language does update TranslateEvent.
+  delegate_->UpdateSourceLanguage("es");
+  EXPECT_TRUE(
+      manager_->mutable_translate_event()->has_modified_source_language());
+}
+
+TEST_F(TranslateUIDelegateTest, UpdateTargetLanguageTranslateEvent) {
+  // Test target language and corresponding TranslateEvent field.
+  EXPECT_EQ("fr", delegate_->GetTargetLanguageCode());
+  EXPECT_FALSE(
+      manager_->mutable_translate_event()->has_modified_target_language());
+
+  // Test that updating with current language does not update TranslateEvent.
+  delegate_->UpdateTargetLanguage("fr");
+  EXPECT_FALSE(
+      manager_->mutable_translate_event()->has_modified_target_language());
+
+  // Test that updating with different language does update TranslateEvent.
+  delegate_->UpdateTargetLanguage("es");
+  EXPECT_TRUE(
+      manager_->mutable_translate_event()->has_modified_target_language());
+}
+
 TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenPrefChangeObserverEnabled) {
   testContentLanguages(/*disableObservers=*/false);
 }
