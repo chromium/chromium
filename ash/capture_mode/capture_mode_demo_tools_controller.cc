@@ -38,7 +38,10 @@ namespace ash {
 namespace {
 
 constexpr float kHighlightLayerFinalOpacity = 0.f;
-constexpr float kHighlightLayerInitialScale = 0.1f;
+
+// Make the initial value as small as possible so that the dot is not visible in
+// the center of the ripple.
+constexpr float kHighlightLayerInitialScale = 0.0001f;
 constexpr float kHighlightLayerFinalScale = 1.0f;
 constexpr float kTouchHighlightLayerTouchDownScale = 56.f / 72;
 constexpr base::TimeDelta kMouseScaleUpDuration = base::Milliseconds(1500);
