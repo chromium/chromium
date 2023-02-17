@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/backoff_entry.h"
@@ -460,7 +461,8 @@ void GaiaOAuthClient::Core::SendRequestImpl() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url_;
   resource_request->method = post_body_.empty() ? "GET" : "POST";
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
   if (!authorization_header_.empty())
     resource_request->headers.SetHeader("Authorization", authorization_header_);
   if (!http_method_override_header_.empty()) {

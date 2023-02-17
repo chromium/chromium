@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/credentials_mode.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -65,7 +66,8 @@ std::unique_ptr<network::ResourceRequest> GetResourceRequest() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GetChromebookServiceEndpoint();
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
   resource_request->method = "POST";
   return resource_request;
 }

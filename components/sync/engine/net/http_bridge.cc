@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/credentials_mode.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -242,7 +243,8 @@ void HttpBridge::MakeAsynchronousPost() {
   resource_request->method = "POST";
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
 
   if (!extra_headers_.empty())
     resource_request->headers.AddHeadersFromString(extra_headers_);

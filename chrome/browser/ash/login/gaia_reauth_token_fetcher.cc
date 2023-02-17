@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
+#include "google_apis/credentials_mode.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -59,7 +60,8 @@ void GaiaReauthTokenFetcher::Fetch() {
   resource_request->url = GetFetchReauthTokenUrl();
   resource_request->load_flags =
       net::LOAD_DISABLE_CACHE | net::LOAD_DO_NOT_SAVE_COOKIES;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
   resource_request->method = "GET";
 
   // TODO(b/197615068): Update the "policy" field in the traffic

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "google_apis/credentials_mode.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -110,7 +111,8 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
   resource_request->url = sync_event_url_;
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
   resource_request->method = "POST";
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
