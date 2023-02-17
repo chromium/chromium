@@ -9,6 +9,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_observer.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_refresher.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
 #include "ios/chrome/browser/discover_feed/feed_constants.h"
 #include "ios/chrome/browser/discover_feed/feed_model_configuration.h"
@@ -17,7 +18,7 @@
 
 // A browser-context keyed service that is used to keep the Discover Feed data
 // up to date.
-class DiscoverFeedService : public KeyedService {
+class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
  public:
   DiscoverFeedService();
   ~DiscoverFeedService() override;
@@ -60,14 +61,6 @@ class DiscoverFeedService : public KeyedService {
 
   // Updates the feed's theme to match the user's theme (light/dark).
   virtual void UpdateTheme() = 0;
-
-  // Refreshes the Discover Feed if needed. The provider decides if a refresh is
-  // needed or not.
-  virtual void RefreshFeedIfNeeded() = 0;
-
-  // Refreshes the Discover Feed. Once the Feed model is refreshed it will
-  // update all ViewControllers returned by NewFeedViewController.
-  virtual void RefreshFeed() = 0;
 
   // Performs a background refresh for the feed. `completion` is called
   // after success, failure, or timeout. The BOOL argument indicates whether the

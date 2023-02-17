@@ -82,8 +82,13 @@ extern const char kFollowingFeedDefaultSortTypeSortByLatest[];
 // Publisher.
 extern const char kFollowingFeedDefaultSortTypeGroupedByPublisher[];
 
-// A parameter value for the feed's refresh threshold.
+// A parameter value for the feed's refresh threshold when the feed has already
+// been seen by the user.
 extern const char kFeedSettingRefreshThresholdInSeconds[];
+
+// A parameter value for the feed's refresh threshold when the feed has not been
+// seen by the user.
+extern const char kFeedSettingUnseenRefreshThresholdInSeconds[];
 
 // A parameter value for the feed's maximum data cache age.
 extern const char kFeedSettingMaximumDataCacheAgeInSeconds[];

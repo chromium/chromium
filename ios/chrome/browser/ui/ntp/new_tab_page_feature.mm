@@ -92,6 +92,8 @@ const char kOverrideFeedHeaderHeight[] = "OverrideFeedHeaderHeight";
 // Feature parameters for `kOverrideFeedSettings`.
 const char kFeedSettingRefreshThresholdInSeconds[] =
     "RefreshThresholdInSeconds";
+const char kFeedSettingUnseenRefreshThresholdInSeconds[] =
+    "UnseenRefreshThresholdInSeconds";
 const char kFeedSettingMaximumDataCacheAgeInSeconds[] =
     "MaximumDataCacheAgeInSeconds";
 const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[] =

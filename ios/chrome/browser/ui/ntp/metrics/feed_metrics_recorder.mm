@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "components/feed/core/v2/public/common_enums.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_refresher.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
@@ -70,6 +71,9 @@ using feed::FeedUserActionType;
 @property(nonatomic, assign) NSTimeInterval discoverPreviousTimeInFeedGV;
 @property(nonatomic, assign) NSTimeInterval followingPreviousTimeInFeedGV;
 
+// Timer to signal end of session. Set for `kMinutesBetweenSessions`.
+@property(nonatomic, strong) NSTimer* sessionEndTimer;
+
 @end
 
 @implementation FeedMetricsRecorder
@@ -85,13 +89,16 @@ using feed::FeedUserActionType;
 
 #pragma mark - Public
 
+- (void)dealloc {
+  [self.sessionEndTimer invalidate];
+  self.sessionEndTimer = nil;
+}
+
 + (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger {
   base::UmaHistogramEnumeration(kDiscoverFeedRefreshTrigger, trigger);
 }
 
 - (void)recordFeedScrolled:(int)scrollDistance {
-  [self recordEngagement:scrollDistance interacted:NO];
-
   if (IsGoodVisitsMetricEnabled()) {
     self.goodVisitScroll = YES;
     [self checkEngagementGoodVisitWithInteraction:NO];
@@ -118,6 +125,8 @@ using feed::FeedUserActionType;
                               FeedEngagementType::kFeedScrolled);
     self.scrolledReportedFollowing = YES;
   }
+
+  [self recordEngagement:scrollDistance interacted:NO];
 }
 
 - (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation {
@@ -137,6 +146,12 @@ using feed::FeedUserActionType;
 }
 
 - (void)recordNTPDidChangeVisibility:(BOOL)visible {
+  // Invalidate the timer when the user returns to the feed since the feed
+  // should not be refreshed when the user is viewing it.
+  if (visible) {
+    [self.sessionEndTimer invalidate];
+  }
+
   if (!IsGoodVisitsMetricEnabled()) {
     return;
   }
@@ -846,6 +861,13 @@ using feed::FeedUserActionType;
   }
 
   [self.sessionRecorder recordUserInteractionOrScrolling];
+
+  // This must be called after memoizing if the current session has met
+  // engagement criteria. For example, setting `engagedSimpleReportedDiscover`
+  // must happen before this call.
+  if (IsFeedRefreshPostFeedSessionEnabled()) {
+    [self setOrExtendSessionEndTimer];
+  }
 }
 
 // Checks if a Good Visit should be recorded. `interacted` is YES if it was
@@ -1166,6 +1188,30 @@ using feed::FeedUserActionType;
       break;
     case FeedTypeFollowing:
       UMA_HISTOGRAM_EXACT_LINEAR(kFollowingFeedURLOpened, 0, 1);
+  }
+}
+
+// Sets or extends the session end timer by `kMinutesBetweenSessions`.
+- (void)setOrExtendSessionEndTimer {
+  [self.sessionEndTimer invalidate];
+  __weak FeedMetricsRecorder* weakSelf = self;
+  self.sessionEndTimer =
+      [NSTimer scheduledTimerWithTimeInterval:kMinutesBetweenSessions *
+                                              60 /*seconds per minute*/
+                                       target:weakSelf
+                                     selector:@selector
+                                     (refreshFeedIfSessionConditionsAreMet)
+                                     userInfo:nil
+                                      repeats:NO];
+}
+
+// Refresh the feed if session conditions are met. See implementation for which
+// specific conditions are used.
+- (void)refreshFeedIfSessionConditionsAreMet {
+  [self.sessionEndTimer invalidate];
+  self.sessionEndTimer = nil;
+  if (self.engagedSimpleReportedDiscover) {
+    self.feedRefresher->RefreshFeed(/*feed_visible=*/false);
   }
 }
 

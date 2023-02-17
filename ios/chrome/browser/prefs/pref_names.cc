@@ -96,9 +96,15 @@ const char kIosBookmarkSigninPromoDisplayedCount[] =
 const char kIosCredentialProviderPromoStopPromo[] =
     "ios.credential_provider_promo.stop_promo";
 
-// The time when the DiscoverFeed was last refreshed.
+// The time when the DiscoverFeed was last refreshed while the feed was visible
+// to the user.
 const char kIosDiscoverFeedLastRefreshTime[] =
     "ios.discover_feed.last_refresh_time";
+
+// The time when the DiscoverFeed was last refreshed while the feed was not
+// visible to the user.
+const char kIosDiscoverFeedLastUnseenRefreshTime[] =
+    "ios.discover_feed.last_unseen_refresh_time";
 
 // The user's account info from before a device restore.
 const char kIosPreRestoreAccountInfo[] = "ios.pre_restore_account_info";

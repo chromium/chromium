@@ -23,6 +23,7 @@ source_set("metrics") {
     "//components/ntp_tiles",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/discover_feed:constants",
+    "//ios/chrome/browser/discover_feed:discover_feed_refresher",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/favicon",
