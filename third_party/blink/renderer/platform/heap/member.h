@@ -157,6 +157,7 @@ struct MemberHashRecordReplayId
         if (id > 0) {
           return Base::GetHash(id);
         } else {
+          cppgc::internal::MemberBase::RawStorage st(key);
           return Base::GetHash(st.GetAsInteger());
         }
       } else {
