@@ -170,6 +170,8 @@ static_library("protobuf_full") {
     "//gpu:gl_lpm_fuzzer_proto",
     "//gpu:gl_lpm_fuzzer_proto_gen",
     "//gpu:gl_lpm_shader_to_string_unittest",
+    "//testing/libfuzzer/fuzzers:command_buffer_fuzzer_proto",
+    "//testing/libfuzzer/fuzzers:command_buffer_fuzzer_proto_gen",
     "//third_party/sqlite:sqlite3_lpm_corpus_gen",
 
     # The protobuf-based Mojo LPM fuzzer needs protobuf_full and is not included

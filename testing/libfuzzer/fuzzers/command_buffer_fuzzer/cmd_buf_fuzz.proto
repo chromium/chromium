@@ -1,0 +1,239 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file
+
+syntax = "proto2";
+package gpu.cmdbuf.fuzzing;
+
+message TransferBuffer {
+  required int32 shm_id = 1;
+  required uint32 size = 2;
+}
+
+message InProcessCommandBuffer_GetLastState {}
+
+message InProcessCommandBuffer_Flush {
+  required int32 put_offset = 1;
+}
+
+message InProcessCommandBuffer_OrderingBarrier {
+  required int32 put_offset = 1;
+}
+
+message InProcessCommandBuffer_WaitForTokenInRange {
+  required int32 start = 1;
+  required int32 end = 2;
+}
+
+message InProcessCommandBuffer_WaitForGetOffsetInRange {
+  required int32 set_get_buffer_count = 1;
+  required int32 start = 2;
+  required int32 end = 3;
+}
+
+message InProcessCommandBuffer_SetGetBuffer {
+  required int32 shm_id = 1;
+}
+
+enum TransferBufferAllocationOption {
+  kLoseContextOnOOM = 0;
+  kReturnNullOnOOM = 1;
+}
+
+message InProcessCommandBuffer_CreateTransferBuffer {
+  required uint32 size = 1;
+  required int32 id = 2;
+  optional TransferBufferAllocationOption option = 3;
+}
+
+message InProcessCommandBuffer_DestroyTransferBuffer {
+  required int32 id = 1;
+}
+
+message InProcessCommandBuffer_ForceLostContext {
+  required int32 reason = 1;
+}
+
+message InProcessCommandBuffer_SetGpuControlClient {
+  // TODO: GpuControlClient *
+}
+
+message InProcessCommandBuffer_GetCapabilities {}
+
+message InProcessCommandBuffer_SignalQuery {
+  required uint32 query_id = 1;
+  // signal_query_callback
+}
+
+message InProcessCommandBuffer_CreateGpuFence {
+  required uint32 gpu_fence_id = 1;
+  // TODO: ClientGpuFence source = 2;
+}
+
+message InProcessCommandBuffer_GetGpuFence {
+  required uint32 gpu_fence_id = 1;
+  // TODO: get_gpu_fence_callback
+}
+
+message InProcessCommandBuffer_SetLock {
+  required bool lock = 1;
+}
+
+message InProcessCommandBuffer_EnsureWorkVisible {}
+
+message InProcessCommandBuffer_GetNamespaceID {}
+
+message InProcessCommandBuffer_GetCommandBufferID {}
+
+message InProcessCommandBuffer_FlushPendingWork {}
+
+message InProcessCommandBuffer_GenerateFenceSyncRelease {}
+
+message InProcessCommandBuffer_IsFenceSyncReleased {
+  required uint64 release = 1;
+}
+
+enum CommandBufferNamespaceIds {
+  BIG_NEGATIVE = -128;
+  INVALID = -1;
+  GPU_IO = 0;
+  IN_PROCESS = 1;
+  VIZ_SKIA_OUTPUT_SURFACE = 2;
+  VIZ_SKIA_OUTPUT_SURFACE_NON_DDL = 3;
+  MAX_VALID = 4;
+  BIG = 127;
+}
+
+message SyncToken {
+  required CommandBufferNamespaceIds namespace_id = 1;
+  required uint64 command_buffer_id = 2;
+  required uint64 release_count = 3;
+}
+
+message InProcessCommandBuffer_SignalSyncToken {
+  required SyncToken sync_token = 1;
+  // sync_token_callback
+}
+
+message InProcessCommandBuffer_WaitSyncToken {
+  required SyncToken sync_token = 1;
+}
+
+message InProcessCommandBuffer_CanWaitUnverifiedSyncToken {
+  required SyncToken sync_token = 1;
+}
+
+message InProcessCommandBuffer_OnCommandBatchProcessed {}
+
+message InProcessCommandBuffer_OnParseError {}
+
+message InProcessCommandBuffer_OnConsoleMessage {
+  required int32 id = 1;
+  required string message = 2;
+}
+
+enum GpuDiskCacheType {
+  kGlShaders = 0;
+  kDawnWebGPU = 1;
+}
+
+message InProcessCommandBuffer_CacheBlob {
+  required GpuDiskCacheType type = 1;
+  required string key = 2;
+  required string shader = 3;
+}
+
+message InProcessCommandBuffer_OnFenceSyncRelease {
+  required uint64 release = 1;
+}
+
+message InProcessCommandBuffer_OnDescheduleUntilFinished {}
+
+message InProcessCommandBuffer_OnRescheduleAfterFinished {}
+
+message InProcessCommandBuffer_OnSwapBuffers {
+  required uint64 swap_id = 1;
+  required uint32 flags = 2;
+}
+
+message InProcessCommandBuffer_ScheduleGrContextCleanup {}
+
+message InProcessCommandBuffer_HandleReturnData {
+  repeated uint32 data = 1 [packed = true];
+}
+
+message InProcessCommandBuffer_GetFeatureInfo {}
+
+message InProcessCommandBuffer_GetGpuFeatureInfo {}
+
+message InProcessCommandBuffer_GetTransferCacheForTest {}
+
+message InProcessCommandBuffer_GetRasterDecoderIdForTest {}
+
+message InProcessCommandBuffer_GetWebGPUDecoderForTest {}
+
+message InProcessCommandBuffer_service_for_testing {}
+
+message InProcessCommandBuffer_GetSharedImageInterface {}
+
+message InProcessCommandBufferOp {
+  oneof cmd_buf_ops {
+    InProcessCommandBuffer_GetLastState GetLastState = 1;
+    InProcessCommandBuffer_Flush Flush = 2;
+    InProcessCommandBuffer_OrderingBarrier OrderingBarrier = 3;
+    InProcessCommandBuffer_WaitForTokenInRange WaitForTokenInRange = 4;
+    InProcessCommandBuffer_WaitForGetOffsetInRange WaitForGetOffsetInRange = 5;
+    InProcessCommandBuffer_SetGetBuffer SetGetBuffer = 6;
+    InProcessCommandBuffer_CreateTransferBuffer CreateTransferBuffer = 7;
+    InProcessCommandBuffer_DestroyTransferBuffer DestroyTransferBuffer = 8;
+    InProcessCommandBuffer_ForceLostContext ForceLostContet = 9;
+    InProcessCommandBuffer_SetGpuControlClient SetGpuControlClient = 10;
+    InProcessCommandBuffer_GetCapabilities GetCapabilities = 11;
+    InProcessCommandBuffer_SignalQuery SignalQuery = 12;
+    InProcessCommandBuffer_CreateGpuFence CreateGpuFence = 13;
+    InProcessCommandBuffer_GetGpuFence GetGpuFence = 14;
+    InProcessCommandBuffer_SetLock SetLock = 15;
+    InProcessCommandBuffer_EnsureWorkVisible EnsureWorkVisible = 16;
+    InProcessCommandBuffer_GetNamespaceID GetNamespaceID = 17;
+    InProcessCommandBuffer_GetCommandBufferID GetCommandBufferID = 18;
+    InProcessCommandBuffer_FlushPendingWork FlushPendingWork = 19;
+    InProcessCommandBuffer_GenerateFenceSyncRelease GenerateFenceSyncRelease =
+        20;
+    InProcessCommandBuffer_IsFenceSyncReleased IsFenceSyncReleased = 21;
+    InProcessCommandBuffer_SignalSyncToken SignalSyncToken = 22;
+    InProcessCommandBuffer_WaitSyncToken WaitSyncToken = 23;
+    InProcessCommandBuffer_CanWaitUnverifiedSyncToken
+        CanWaitUnverifiedSyncToken = 24;
+    InProcessCommandBuffer_OnCommandBatchProcessed OnCommandBatchProcessed = 25;
+    InProcessCommandBuffer_OnParseError OnParseError = 26;
+    InProcessCommandBuffer_OnConsoleMessage OnConsoleMessage = 27;
+    InProcessCommandBuffer_CacheBlob CacheBlob = 28;
+    InProcessCommandBuffer_OnFenceSyncRelease OnFenceSyncRelease = 29;
+    InProcessCommandBuffer_OnDescheduleUntilFinished OnDescheduleUntilFinished =
+        30;
+    InProcessCommandBuffer_OnRescheduleAfterFinished OnRescheduleAfterFinished =
+        31;
+    InProcessCommandBuffer_OnSwapBuffers OnSwapBuffers = 32;
+    InProcessCommandBuffer_ScheduleGrContextCleanup ScheduleGrContextCleanup =
+        33;
+    InProcessCommandBuffer_HandleReturnData HandleReturnData = 34;
+    InProcessCommandBuffer_GetFeatureInfo GetFeatureInfo = 35;
+    InProcessCommandBuffer_GetGpuFeatureInfo GetGpuFeatureInfo = 36;
+    InProcessCommandBuffer_GetTransferCacheForTest GetTransferCacheForTest = 37;
+    InProcessCommandBuffer_GetRasterDecoderIdForTest GetRasterDecoderIdForTest =
+        38;
+    InProcessCommandBuffer_GetWebGPUDecoderForTest GetWebGPUDecoderForTest = 39;
+    InProcessCommandBuffer_service_for_testing service_for_testing = 40;
+    InProcessCommandBuffer_GetSharedImageInterface GetSharedImageInterface = 41;
+  }
+}
+
+message Action {
+  oneof action {
+    InProcessCommandBufferOp CmdBufOp = 1;
+  }
+}
+
+message CmdBufSession {
+  repeated Action actions = 1;
+}

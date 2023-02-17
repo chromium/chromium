@@ -7,6 +7,7 @@
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//ui/gl/features.gni")
 import("//v8/gni/v8.gni")
 
 # root BUILD depends on this target. Needed for package discovery
@@ -464,4 +465,90 @@ fuzzer_test("libyuv_scale_fuzzer") {
   sources = [ "libyuv_scale_fuzzer.cc" ]
 
   deps = [ "//third_party/libyuv" ]
+}
+
+proto_library("command_buffer_fuzzer_proto") {
+  sources = [ "command_buffer_fuzzer/cmd_buf_fuzz.proto" ]
+
+  use_protobuf_full = true
+  deps = [ "//third_party/protobuf:protobuf_full" ]
+}
+
+fuzzer_test("command_buffer_fuzzer") {
+  # Tell ClusterFuzz to ignore this fuzzer for now.
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+
+  sources = [
+    "command_buffer_fuzzer/cmd_buf_fuzz.cc",
+    "command_buffer_fuzzer/cmd_buf_fuzz.h",
+    "command_buffer_fuzzer/webgpu_support.cc",
+    "command_buffer_fuzzer/webgpu_support.h",
+  ]
+
+  # This is a hack. For reasons I have not investigated, in non-debug builds the
+  # build fails at link time due to duplicate symbols from these source files.
+  # However, if these files are excluded entirely from the build then the same
+  # symbols are undefined in debug_true=true builds.
+  #
+  # It's not obviously worth the time to investigate right now.
+  if (is_debug) {
+    sources += [
+      "//gpu/command_buffer/client/dawn_client_memory_transfer_service.cc",
+      "//gpu/command_buffer/client/dawn_client_memory_transfer_service.h",
+      "//gpu/command_buffer/client/dawn_client_serializer.cc",
+      "//gpu/command_buffer/client/dawn_client_serializer.h",
+      "//gpu/command_buffer/client/webgpu_implementation.cc",
+      "//gpu/command_buffer/client/webgpu_implementation.h",
+    ]
+  }
+
+  deps = [
+    ":command_buffer_fuzzer_proto",
+    "//base",
+    "//base/test:test_support",
+    "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
+    "//components/viz/common:resource_format",
+    "//components/viz/test:test_support",  # TODO: huge; is there something more
+                                           # targeted?
+    "//gpu:gles2",
+    "//gpu:gpu",
+    "//gpu:test_support",
+    "//gpu:webgpu",
+    "//gpu/command_buffer/client",
+    "//gpu/command_buffer/client:gles2_c_lib",
+    "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/client:webgpu",
+    "//gpu/command_buffer/common",
+    "//gpu/command_buffer/common:gles2_utils",
+    "//gpu/command_buffer/service",
+    "//gpu/config",
+    "//gpu/ipc:gl_in_process_context",
+    "//gpu/ipc/client",
+    "//gpu/ipc/common",
+    "//gpu/ipc/host",
+    "//gpu/ipc/service:service",
+    "//gpu/webgpu:common",
+    "//mojo/core/embedder",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest:gtest",
+    "//third_party/libprotobuf-mutator",
+    "//ui/gfx:gfx",
+    "//ui/gl:gl",
+    "//ui/gl:test_support",
+    "//ui/gl/init:init",
+    "//url",
+  ]
+
+  if (use_dawn) {
+    deps += [
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+    ]
+  }
+
+  libfuzzer_options = [ "max_len=16384" ]
 }
