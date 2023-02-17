@@ -178,33 +178,6 @@ IsolationInfo IsolationInfo::Create(
                        site_for_cookies, nonce, std::move(party_context));
 }
 
-IsolationInfo IsolationInfo::CreatePartial(
-    RequestType request_type,
-    const net::NetworkIsolationKey& network_isolation_key) {
-  if (!network_isolation_key.IsFullyPopulated())
-    return IsolationInfo();
-
-  // TODO(https://crbug.com/1148927): Use null origins in this case.
-  url::Origin top_frame_origin =
-      network_isolation_key.GetTopFrameSite()->site_as_origin_;
-  absl::optional<url::Origin> frame_origin;
-  if (IsFrameSiteEnabled() &&
-      network_isolation_key.GetFrameSite().has_value()) {
-    frame_origin = network_isolation_key.GetFrameSite()->site_as_origin_;
-  } else {
-    frame_origin = absl::nullopt;
-  }
-
-  const base::UnguessableToken* nonce =
-      network_isolation_key.GetNonce()
-          ? &network_isolation_key.GetNonce().value()
-          : nullptr;
-
-  return IsolationInfo(request_type, top_frame_origin, frame_origin,
-                       SiteForCookies(), nonce,
-                       absl::nullopt /* party_context */);
-}
-
 IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   if (!network_anonymization_key.IsFullyPopulated()) {

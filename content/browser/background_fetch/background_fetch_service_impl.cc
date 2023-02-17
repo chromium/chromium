@@ -39,6 +39,8 @@ void BackgroundFetchServiceImpl::CreateForWorker(
     const net::NetworkIsolationKey& network_isolation_key,
     const ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver) {
+  // TODO(rayankans): Remove `network_isolation_key` parameter since it's no
+  // longer used.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderProcessHost* render_process_host =
       RenderProcessHost::FromID(info.process_id);
@@ -68,8 +70,14 @@ void BackgroundFetchServiceImpl::CreateForWorker(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<BackgroundFetchServiceImpl>(
           std::move(context), info.storage_key,
-          net::IsolationInfo::CreatePartial(
-              net::IsolationInfo::RequestType::kOther, network_isolation_key),
+          net::IsolationInfo::Create(
+              net::IsolationInfo::RequestType::kOther,
+              url::Origin::Create(info.storage_key.top_level_site().GetURL()),
+              info.storage_key.origin(), info.storage_key.ToNetSiteForCookies(),
+              /*party_context=*/absl::nullopt,
+              info.storage_key.nonce().has_value()
+                  ? &info.storage_key.nonce().value()
+                  : nullptr),
           render_process_host, /*rfh=*/nullptr),
       std::move(receiver));
 }

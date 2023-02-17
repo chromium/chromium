@@ -639,10 +639,14 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
   ASSERT_NE(kSite1, kSite2);
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
-  const IsolationInfo kIsolationInfo1 = IsolationInfo::CreatePartial(
-      IsolationInfo::RequestType::kOther, kNetworkIsolationKey1);
-  const IsolationInfo kIsolationInfo2 = IsolationInfo::CreatePartial(
-      IsolationInfo::RequestType::kOther, kNetworkIsolationKey2);
+  const url::Origin kSiteOrigin1 = url::Origin::Create(kSite1.GetURL());
+  const url::Origin kSiteOrigin2 = url::Origin::Create(kSite2.GetURL());
+  const IsolationInfo kIsolationInfo1 =
+      IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                            kSiteOrigin1, kSiteOrigin1, net::SiteForCookies());
+  const IsolationInfo kIsolationInfo2 =
+      IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                            kSiteOrigin2, kSiteOrigin2, net::SiteForCookies());
 
   MockClientSocketFactory socket_factory;
   auto context_builder = CreateTestURLRequestContextBuilder();

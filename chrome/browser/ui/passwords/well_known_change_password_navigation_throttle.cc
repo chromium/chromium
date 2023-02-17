@@ -125,9 +125,16 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
   // TODO(crbug.com/1127520): Confirm that this works correctly within
   // redirects.
   network::ResourceRequest::TrustedParams trusted_params;
-  trusted_params.isolation_info = net::IsolationInfo::CreatePartial(
+
+  // Create a new IsolationInfo with RequestType::kOther since this is sort of
+  // a subresource request (so it shouldn't change sites on redirects).
+  DCHECK(!navigation_handle()->GetIsolationInfo().IsEmpty());
+  trusted_params.isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
-      navigation_handle()->GetIsolationInfo().network_isolation_key());
+      *navigation_handle()->GetIsolationInfo().top_frame_origin(),
+      url::Origin::Create(navigation_handle()->GetURL()),
+      net::SiteForCookies());
+
   well_known_change_password_state_.FetchNonExistingResource(
       url_loader_factory.get(), request_url_,
       navigation_handle()->GetInitiatorOrigin(), std::move(trusted_params));

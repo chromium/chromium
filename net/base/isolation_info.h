@@ -131,18 +131,6 @@ class NET_EXPORT IsolationInfo {
       absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt,
       const base::UnguessableToken* nonce = nullptr);
 
-  // Create an IsolationInfos that may not be fully correct - in particular,
-  // the SiteForCookies will always set to null, and if the NetworkIsolationKey
-  // only has a top frame origin, the frame origin will either be set to the top
-  // frame origin, in the kMainFrame case, or be replaced by an opaque
-  // origin in all other cases. If the NetworkIsolationKey is not fully
-  // populated, will create an empty IsolationInfo. This is intended for use
-  // while transitioning from NIKs being set on only some requests to
-  // IsolationInfos being set on all requests.
-  static IsolationInfo CreatePartial(
-      RequestType request_type,
-      const net::NetworkIsolationKey& network_isolation_key);
-
   // TODO(crbug/1372769): Remove this and create a safer way to ensure NIKs
   // created from NAKs aren't used by accident.
   static IsolationInfo DoNotUseCreatePartialFromNak(
