@@ -39,29 +39,31 @@
 </style>
 <iron-pages selected="[[themeType_]]" attr-for-selected="theme-type">
   <div class="theme-snapshot"
-      theme-type="customTheme"
-      aria-labelledby="customThemeTitle">
-    <img class="image" is="cr-auto-img"
-        auto-src="[[theme_.backgroundImage.snapshotUrl.url]]" draggable="false">
+      theme-type="customTheme">
+    <img class="image" id="customThemeImage" is="cr-auto-img"
+        auto-src="[[theme_.backgroundImage.snapshotUrl.url]]" draggable="false"
+        aria-labelledby="customThemeTitle">
     </img>
     <div id="customThemeTitle" class="theme-title">
         [[theme_.backgroundImage.title]]
     </div>
   </div>
   <div class="theme-snapshot"
-      theme-type="classicChrome"
-      aria-labelledby="classicChromeThemeTitle">
+      theme-type="classicChrome">
     <div class="image" id="classicChrome">
-      <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"></img>
+      <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"
+          aria-labelledby="classicChromeThemeTitle">
+      </img>
     </div>
     <div id="classicChromeThemeTitle" class="theme-title">
         $i18n{classicChrome}
     </div>
   </div>
   <div class="theme-snapshot"
-      theme-type="uploadedImage"
-      aria-labelledby="uploadedThemeTitle">
-    <img class="image" src="icons/uploaded_image.svg"></img>
+      theme-type="uploadedImage">
+    <img class="image" id="uploadedThemeImage"
+          src="icons/uploaded_image.svg"
+          aria-labelledby="uploadedThemeTitle"></img>
     <div id="uploadedThemeTitle" class="theme-title">
         $i18n{uploadedImage}
     </div>
