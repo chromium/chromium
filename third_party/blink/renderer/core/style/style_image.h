@@ -191,5 +191,9 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   static bool HasIntrinsicDimensionsForSVGImage(const SVGImage&);
 };
 
+constexpr bool EqualResolutions(const float res1, const float res2) {
+  return std::abs(res1 - res2) < std::numeric_limits<float>::epsilon();
+}
+
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_IMAGE_H_

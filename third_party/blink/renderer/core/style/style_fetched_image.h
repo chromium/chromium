@@ -44,14 +44,17 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
  public:
   StyleFetchedImage(ImageResourceContent* image,
-                    const Document&,
+                    const Document& document,
                     bool is_lazyload_possibly_deferred,
                     bool origin_clean,
                     bool is_ad_related,
-                    const KURL&);
+                    const KURL& url,
+                    const float override_image_resolution = 0.0f);
   ~StyleFetchedImage() override;
 
   WrappedImagePtr Data() const override;
+
+  float ImageScaleFactor() const override;
 
   CSSValue* CssValue() const override;
   CSSValue* ComputedCSSValue(const ComputedStyle&,
@@ -97,7 +100,13 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   Member<ImageResourceContent> image_;
   Member<const Document> document_;
+
   const KURL url_;
+
+  // This overrides an images natural resolution.
+  // A value of zero indicates no override.
+  const float override_image_resolution_;
+
   const bool origin_clean_;
 
   // Whether this was created by an ad-related CSSParserContext.

@@ -125,7 +125,8 @@ FetchParameters CSSImageValue::PrepareFetch(
 StyleImage* CSSImageValue::CacheImage(
     const Document& document,
     FetchParameters::ImageRequestBehavior image_request_behavior,
-    CrossOriginAttributeValue cross_origin) {
+    CrossOriginAttributeValue cross_origin,
+    const float override_image_resolution) {
   if (!cached_image_) {
     if (absolute_url_.empty()) {
       ReResolveURL(document);
@@ -134,7 +135,7 @@ StyleImage* CSSImageValue::CacheImage(
     FetchParameters params =
         PrepareFetch(document, image_request_behavior, cross_origin);
     cached_image_ = document.GetStyleEngine().CacheStyleImage(
-        params, origin_clean_, is_ad_related_);
+        params, origin_clean_, is_ad_related_, override_image_resolution);
   }
   return cached_image_.Get();
 }

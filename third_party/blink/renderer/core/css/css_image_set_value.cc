@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 
 #include <algorithm>
+
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -33,7 +34,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/style/style_fetched_image_set.h"
+#include "third_party/blink/renderer/core/style/style_image_set.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -102,8 +103,7 @@ const CSSImageSetValue::ImageSetOption& CSSImageSetValue::GetBestOption(
 
 bool CSSImageSetValue::IsCachePending(const float device_scale_factor) const {
   return !cached_image_ ||
-         std::abs(device_scale_factor - cached_device_scale_factor_) >
-             std::numeric_limits<float>::epsilon();
+         !EqualResolutions(device_scale_factor, cached_device_scale_factor_);
 }
 
 StyleImage* CSSImageSetValue::CachedImage(
@@ -115,25 +115,19 @@ StyleImage* CSSImageSetValue::CachedImage(
 StyleImage* CSSImageSetValue::CacheImage(
     const Document& document,
     const float device_scale_factor,
-    FetchParameters::ImageRequestBehavior,
+    FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) {
   if (IsCachePending(device_scale_factor)) {
-    // FIXME: In the future, we want to take much more than deviceScaleFactor
-    // into account here. All forms of scale should be included:
-    // Page::PageScaleFactor(), LocalFrame::PageZoomFactor(), and any CSS
-    // transforms. https://bugs.webkit.org/show_bug.cgi?id=81698
-
     const ImageSetOption& best_option = GetBestOption(device_scale_factor);
 
     const auto& image_value = To<CSSImageValue>(Item(best_option.index));
 
-    // TODO(fs): Forward the image request behavior when other code is prepared
-    // to handle it.
-    FetchParameters params = image_value.PrepareFetch(
-        document, FetchParameters::ImageRequestBehavior::kNone, cross_origin);
-    cached_image_ = MakeGarbageCollected<StyleFetchedImageSet>(
-        ImageResourceContent::Fetch(params, document.Fetcher()),
-        best_option.resolution, this, params.Url());
+    cached_image_ = MakeGarbageCollected<StyleImageSet>(
+        const_cast<CSSImageValue*>(&image_value)
+            ->CacheImage(document, image_request_behavior, cross_origin,
+                         best_option.resolution),
+        this);
+
     cached_device_scale_factor_ = device_scale_factor;
   }
   return cached_image_.Get();

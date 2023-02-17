@@ -45,9 +45,9 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
   bool IsCachePending(const float device_scale_factor) const;
   StyleImage* CachedImage(const float device_scale_factor) const;
   StyleImage* CacheImage(
-      const Document&,
+      const Document& document,
       const float device_scale_factor,
-      FetchParameters::ImageRequestBehavior,
+      FetchParameters::ImageRequestBehavior image_request_behavior,
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
 
   String CustomCSSText() const;

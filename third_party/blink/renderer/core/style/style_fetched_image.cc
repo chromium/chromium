@@ -46,9 +46,11 @@ StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
                                      bool is_lazyload_possibly_deferred,
                                      bool origin_clean,
                                      bool is_ad_related,
-                                     const KURL& url)
+                                     const KURL& url,
+                                     const float override_image_resolution)
     : document_(document),
       url_(url),
+      override_image_resolution_(override_image_resolution),
       origin_clean_(origin_clean),
       is_ad_related_(is_ad_related) {
   is_image_resource_ = true;
@@ -76,15 +78,28 @@ bool StyleFetchedImage::IsEqual(const StyleImage& other) const {
   if (!other.IsImageResource()) {
     return false;
   }
+
   const auto& other_image = To<StyleFetchedImage>(other);
-  if (image_ != other_image.image_) {
-    return false;
-  }
-  return url_ == other_image.url_;
+
+  return image_ == other_image.image_ && url_ == other_image.url_ &&
+         EqualResolutions(override_image_resolution_,
+                          other_image.override_image_resolution_);
 }
 
 WrappedImagePtr StyleFetchedImage::Data() const {
   return image_.Get();
+}
+
+float StyleFetchedImage::ImageScaleFactor() const {
+  if (override_image_resolution_ > 0.0f) {
+    return override_image_resolution_;
+  }
+
+  if (image_->HasDevicePixelRatioHeaderValue()) {
+    return image_->DevicePixelRatioHeaderValue();
+  }
+
+  return 1.0f;
 }
 
 ImageResourceContent* StyleFetchedImage::CachedImage() const {
@@ -129,14 +144,20 @@ gfx::SizeF StyleFetchedImage::ImageSize(
     const gfx::SizeF& default_object_size,
     RespectImageOrientationEnum respect_orientation) const {
   Image* image = image_->GetImage();
-  if (image_->HasDevicePixelRatioHeaderValue()) {
+
+  if (image->IsBitmapImage() && override_image_resolution_ > 0.0f) {
+    multiplier /= override_image_resolution_;
+  } else if (image_->HasDevicePixelRatioHeaderValue()) {
     multiplier /= image_->DevicePixelRatioHeaderValue();
   }
+
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     return ImageSizeForSVGImage(*svg_image, multiplier, default_object_size);
   }
+
   respect_orientation = ForceOrientationIfNecessary(respect_orientation);
   gfx::SizeF size(image->Size(respect_orientation));
+
   return ApplyZoom(size, multiplier);
 }
 

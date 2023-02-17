@@ -20,7 +20,8 @@ class StyleImageCacheTest : public PageTestBase {
     PageTestBase::SetUp();
     GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   }
-  const HeapHashMap<String, WeakMember<StyleFetchedImage>>& FetchedImageMap() {
+  const HeapHashMap<std::pair<String, float>, WeakMember<StyleFetchedImage>>&
+  FetchedImageMap() {
     return GetDocument().GetStyleEngine().style_image_cache_.fetched_image_map_;
   }
 };
@@ -120,8 +121,10 @@ TEST_F(StyleImageCacheTest, WeakReferenceGC) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_TRUE(FetchedImageMap().Contains("http://test.com/url.png"));
-  EXPECT_TRUE(FetchedImageMap().Contains("http://test.com/url2.png"));
+  EXPECT_TRUE(FetchedImageMap().Contains(
+      std::pair<String, float>{"http://test.com/url.png", 0.0f}));
+  EXPECT_TRUE(FetchedImageMap().Contains(
+      std::pair<String, float>{"http://test.com/url2.png", 0.0f}));
   EXPECT_EQ(FetchedImageMap().size(), 2u);
 
   Element* sheet = GetDocument().getElementById("sheet");
@@ -133,8 +136,10 @@ TEST_F(StyleImageCacheTest, WeakReferenceGC) {
   // After the sheet has been removed, the lifecycle update and garbage
   // collection have been run, the weak references in the cache should have been
   // collected.
-  EXPECT_FALSE(FetchedImageMap().Contains("http://test.com/url.png"));
-  EXPECT_FALSE(FetchedImageMap().Contains("http://test.com/url2.png"));
+  EXPECT_FALSE(FetchedImageMap().Contains(
+      std::pair<String, float>{"http://test.com/url.png", 0.0f}));
+  EXPECT_FALSE(FetchedImageMap().Contains(
+      std::pair<String, float>{"http://test.com/url2.png", 0.0f}));
   EXPECT_EQ(FetchedImageMap().size(), 0u);
 }
 

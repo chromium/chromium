@@ -23,65 +23,56 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_FETCHED_IMAGE_SET_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_FETCHED_IMAGE_SET_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_IMAGE_SET_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_IMAGE_SET_H_
 
-#include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
+#include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CSSImageSetValue;
-class ImageResourceObserver;
 
 // This class represents an <image> that loads one image resource out of a set
-// of alternatives (the -webkit-image-set(...) function.)
+// of alternatives (the image-set(...) function.)
 //
 // This class keeps one cached image from the set, and has access to a set of
 // alternatives via the referenced CSSImageSetValue.
-class StyleFetchedImageSet final : public StyleImage,
-                                   public ImageResourceObserver {
-  USING_PRE_FINALIZER(StyleFetchedImageSet, Prefinalize);
-
+class StyleImageSet final : public StyleImage {
  public:
-  StyleFetchedImageSet(ImageResourceContent*,
-                       float image_scale_factor,
-                       CSSImageSetValue*,
-                       const KURL&);
-  ~StyleFetchedImageSet() override;
+  StyleImageSet(StyleImage* best_fit_image, CSSImageSetValue* image_set_val);
+  ~StyleImageSet() override;
 
   CSSValue* CssValue() const override;
   CSSValue* ComputedCSSValue(const ComputedStyle&,
                              bool allow_visited_style) const override;
 
-  // FIXME: This is used by StyleImage for equals comparison, but this
-  // implementation only looks at the image from the set that we have loaded.
-  // I'm not sure if that is meaningful enough or not.
   WrappedImagePtr Data() const override;
 
   bool CanRender() const override;
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
-  bool IsAccessAllowed(String&) const override;
+  bool IsAccessAllowed(String& failing_url) const override;
 
   gfx::SizeF ImageSize(float multiplier,
                        const gfx::SizeF& default_object_size,
                        RespectImageOrientationEnum) const override;
   bool HasIntrinsicSize() const override;
+
   void AddClient(ImageResourceObserver*) override;
   void RemoveClient(ImageResourceObserver*) override;
+
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
-  float ImageScaleFactor() const override { return image_scale_factor_; }
+
+  float ImageScaleFactor() const override;
+
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
+
   ImageResourceContent* CachedImage() const override;
 
   RespectImageOrientationEnum ForceOrientationIfNecessary(
@@ -91,20 +82,14 @@ class StyleFetchedImageSet final : public StyleImage,
 
  private:
   bool IsEqual(const StyleImage& other) const override;
-  void Prefinalize();
 
-  // ImageResourceObserver overrides
-  String DebugName() const override { return "StyleFetchedImageSet"; }
-
-  Member<ImageResourceContent> best_fit_image_;
-  float image_scale_factor_;
+  Member<StyleImage> best_fit_image_;
 
   Member<CSSImageSetValue> image_set_value_;  // Not retained; it owns us.
-  const KURL url_;
 };
 
 template <>
-struct DowncastTraits<StyleFetchedImageSet> {
+struct DowncastTraits<StyleImageSet> {
   static bool AllowFrom(const StyleImage& styleImage) {
     return styleImage.IsImageResourceSet();
   }
