@@ -31,6 +31,7 @@ template("ts_library_sourcemaps") {
       manifest_files = []
       sources = []
       outputs = []
+      out_dir = _out_dir
       foreach(_output, get_target_outputs(":$_ts_library_target_name")) {
         if (get_path_info(_output, "extension") == "manifest") {
           manifest_files += [ _output ]

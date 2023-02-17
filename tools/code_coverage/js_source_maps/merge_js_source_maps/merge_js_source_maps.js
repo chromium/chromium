@@ -134,6 +134,8 @@ async function main() {
   const parser =
       new ArgumentParser({description: 'Merge multiple inlined sourcemaps'});
 
+  parser.add_argument(
+      '--out-dir', {help: 'Dir where all output files reside', required: true});
   parser.add_argument('--sources', {help: 'Input files', nargs: '*'});
   parser.add_argument('--outputs', {help: 'Output files', nargs: '*'});
   parser.add_argument(
@@ -143,15 +145,12 @@ async function main() {
   await processFiles(argv.sources, argv.outputs);
 
   if (argv.manifest_files) {
-    // TODO(crbug/1337530): Currently we just remove the final directory of the
-    // `base_dir` key. This is definitely brittle and also subject to changes
-    // made to the output directory. Consider updating this to be more robust.
     for (const manifestFile of argv.manifest_files) {
       try {
         const manifestFileContents =
             fs.readFileSync(manifestFile).toString('utf-8');
         const manifest = JSON.parse(manifestFileContents);
-        manifest.base_dir = path.parse(manifest.base_dir).dir;
+        manifest.base_dir = argv.out_dir;
         const parsedPath = path.parse(manifestFile);
         fs.writeFileSync(
             path.join(

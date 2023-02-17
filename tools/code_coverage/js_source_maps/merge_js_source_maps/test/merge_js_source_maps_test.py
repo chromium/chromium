@@ -74,6 +74,8 @@ class MergeSourceMapsTest(unittest.TestCase):
         str(input_file_name),
         '--outputs',
         str(output_file_name),
+        '--out-dir',
+        'tsc',
     ])
 
     source_map = None
@@ -173,6 +175,8 @@ class MergeSourceMapsTest(unittest.TestCase):
         str(output_file_name),
         '--manifest-files',
         str(manifest_file),
+        '--out-dir',
+        'tsc',
     ])
 
     manifest_file_contents = '{"base_dir":"tsc"}'

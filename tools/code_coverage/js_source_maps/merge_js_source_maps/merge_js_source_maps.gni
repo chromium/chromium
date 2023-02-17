@@ -18,7 +18,11 @@ template("merge_js_source_maps") {
     args = [ "--manifest-files" ] +
            rebase_path(invoker.manifest_files, root_out_dir) + [ "--sources" ] +
            rebase_path(invoker.sources, root_out_dir) + [ "--outputs" ] +
-           rebase_path(invoker.outputs, root_out_dir)
+           rebase_path(invoker.outputs, root_out_dir) +
+           [
+             "--out-dir",
+             rebase_path(invoker.out_dir, root_build_dir),
+           ]
     inputs = [ "//tools/code_coverage/js_source_maps/merge_js_source_maps/merge_js_source_maps.js" ]
     foreach(manifest, invoker.manifest_files) {
       outputs += [ get_path_info(manifest, "dir") + "/" +
