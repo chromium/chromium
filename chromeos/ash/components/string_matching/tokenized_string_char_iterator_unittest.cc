@@ -91,7 +91,7 @@ TEST(TokenizedStringCharIteratorTest, NoTerms) {
   TestNextToken(text, "");
   TestFirstTwoCharInEveryToken(text, "");
 
-  text = "!#$%^&*()<<<**>>>";
+  text = "!@#$%^&*()<<<**>>>";
   TestEveryChar(text, "");
   TestNextToken(text, "");
   TestFirstTwoCharInEveryToken(text, "");
