@@ -9,27 +9,20 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/browser/installable/installable_manager.h"
-#include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -119,6 +112,10 @@ void OnGetIsolatedWebAppUrlInfo(
 base::expected<absl::optional<IsolatedWebAppLocation>, std::string>
 GetIsolatedWebAppLocationFromCommandLine(const base::CommandLine& command_line,
                                          const PrefService* prefs) {
+  if (!prefs || !IsIwaDevModeEnabled(*prefs)) {
+    return base::unexpected<std::string>(kIwaDevModeNotEnabledMessage);
+  }
+
   base::expected<absl::optional<IsolatedWebAppLocation>, std::string>
       proxy_url = GetProxyUrlFromCommandLine(command_line);
   base::expected<absl::optional<IsolatedWebAppLocation>, std::string>
@@ -131,23 +128,11 @@ GetIsolatedWebAppLocationFromCommandLine(const base::CommandLine& command_line,
     return absl::nullopt;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
-    return base::unexpected("Isolated Web Apps are not enabled");
-  }
-
   if (is_proxy_url_set && is_bundle_path_set) {
     return base::unexpected(
         base::StrCat({"--", switches::kInstallIsolatedWebAppFromUrl, " and --",
                       switches::kInstallIsolatedWebAppFromFile,
                       " cannot both be provided."}));
-  }
-
-  bool is_dev_mode_policy_enabled =
-      prefs && prefs->GetBoolean(
-                   policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed);
-  if (!base::FeatureList::IsEnabled(features::kIsolatedWebAppDevMode) ||
-      !is_dev_mode_policy_enabled) {
-    return base::unexpected("Isolated Web App Developer Mode is not enabled");
   }
 
   return is_proxy_url_set ? proxy_url : bundle_path;

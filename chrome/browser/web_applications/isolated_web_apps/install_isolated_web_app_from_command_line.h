@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
