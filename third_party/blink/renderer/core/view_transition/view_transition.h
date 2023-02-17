@@ -190,7 +190,7 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
 
   // Notifies before the compositor associated with this frame will initiate a
   // lifecycle update.
-  void WillBeginMainFrame();
+  void NotifyRenderingHasBegun();
 
   // Returns true if lifecycle updates should be throttled for the Document
   // associated with this transition.

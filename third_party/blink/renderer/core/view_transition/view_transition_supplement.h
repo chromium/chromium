@@ -49,6 +49,9 @@ class CORE_EXPORT ViewTransitionSupplement
       Document&,
       ViewTransitionState transition_state);
 
+  // Abort any ongoing transitions in the document.
+  static void AbortTransition(Document&);
+
   ViewTransition* GetActiveTransition();
 
   explicit ViewTransitionSupplement(Document&);

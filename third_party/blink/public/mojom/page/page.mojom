@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
+import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
@@ -53,6 +54,13 @@ struct PageRestoreParams {
 
   // Total size of the session history list.
   int32 current_history_list_length;
+
+  // Holds texture references (stored in the GPU process) and geometry state for
+  // the previous Document displayed by this frame. This is used to support
+  // transitions when navigating between same-origin Documents.
+  // See https://drafts.csswg.org/css-view-transitions-1/ for details.
+  // This is analogous to CommitNavigationParams field but for the BF cache.
+  blink.mojom.ViewTransitionState? view_transition_state;
 };
 
 // Parameters to send with ActivatePrerenderedPage calls when we're activating a

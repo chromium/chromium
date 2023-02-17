@@ -1364,7 +1364,7 @@ void WebFrameWidgetImpl::WillBeginMainFrame() {
 
         if (auto* transition =
                 ViewTransitionUtils::GetActiveTransition(*document)) {
-          transition->WillBeginMainFrame();
+          transition->NotifyRenderingHasBegun();
         }
       });
 }

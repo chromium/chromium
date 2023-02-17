@@ -656,6 +656,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::PageLifecycleStatePtr new_state,
       mojom::blink::PageRestoreParamsPtr page_restore_params);
 
+  // Updates the main frame's view transition state.
+  void UpdateViewTransitionState(
+      bool restoring_from_bfcache,
+      bool storing_in_bfcache,
+      const mojom::blink::PageRestoreParamsPtr& page_restore_params);
+
   float MaximumLegiblePageScale() const;
   void RefreshPageScaleFactor();
   gfx::Size ContentsSize() const;

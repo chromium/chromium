@@ -5396,6 +5396,13 @@ void NavigationRequest::CommitPageActivation() {
         commit_params_->pending_history_list_offset;
     page_restore_params->current_history_list_length =
         commit_params_->current_history_list_length;
+    page_restore_params->view_transition_state =
+        std::move(commit_params_->view_transition_state);
+    // Since we moved the view transition state to page restore params, we
+    // should reset the commit params one (move doesn't clear the optional).
+    // This ensures that we don't erroneously think that view_transition_state
+    // is unhandled and attempt to clean it up.
+    commit_params_->view_transition_state.reset();
     activated_entry = controller->GetBackForwardCache().RestoreEntry(
         nav_entry_id_, std::move(page_restore_params));
     // The only time activated_entry can be nullptr here, is if the

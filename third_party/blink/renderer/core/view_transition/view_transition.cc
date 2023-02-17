@@ -995,11 +995,11 @@ void ViewTransition::AtMicrotask(ScriptBoundState::Response response,
                     WrapPersistent(property)));
 }
 
-void ViewTransition::WillBeginMainFrame() {
+void ViewTransition::NotifyRenderingHasBegun() {
   if (state_ != State::kWaitForRenderBlock)
     return;
 
-  // WillBeginMainFrame() implies that rendering has started. If we were waiting
+  // This function implies that rendering has started. If we were waiting
   // for render-blocking resources to be loaded, they must have been fetched (or
   // timed out) before rendering is started.
   DCHECK(document_->RenderingHasBegun());
