@@ -8,6 +8,6 @@
 ../core/animation/test_data/*
 ../core/paint/test_data/*
 ../core/testing/data/**
-../../web_tests/impages/resources/**
+../../web_tests/images/resources/**
 ../../../../media/test/data/**
 
