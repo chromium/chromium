@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
-#include <memory>
 
+#include <memory>
+#include <string>
+
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
@@ -184,6 +187,19 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
       absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
+  // Ensure GetPhoneInstanceId() returns an empty string when no command line
+  // switch is set.
+  ASSERT_TRUE(bootstrap_controller_->GetPhoneInstanceId().empty());
+
+  std::string kExpectedPhoneInstanceID = "someArbitraryInstanceID";
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--quick-start-phone-instance-id=" + kExpectedPhoneInstanceID});
+
+  EXPECT_EQ(bootstrap_controller_->GetPhoneInstanceId(),
+            kExpectedPhoneInstanceID);
 }
 
 }  // namespace ash::quick_start

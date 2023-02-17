@@ -10,9 +10,11 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -77,6 +79,23 @@ void QuickStartScreen::OnStatusChanged(
         qr_code_list.Append(base::Value(static_cast<bool>(it & 1)));
       }
       view_->SetQRCode(std::move(qr_code_list));
+      return;
+    }
+    case Step::GAIA_CREDENTIALS: {
+      std::string phone_instance_id =
+          bootstrap_controller_->GetPhoneInstanceId();
+
+      if (phone_instance_id.empty()) {
+        return;
+      }
+
+      quick_start::QS_LOG(INFO)
+          << "Adding Phone Instance ID to Wizard Object for Unified "
+             "Setup UI enhancements. quick_start_phone_instance_id: "
+          << phone_instance_id;
+      LoginDisplayHost::default_host()
+          ->GetWizardContext()
+          ->quick_start_phone_instance_id = phone_instance_id;
       return;
     }
     case Step::NONE:

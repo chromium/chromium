@@ -3375,6 +3375,7 @@ source_set("ash") {
     "//chrome/browser/ash/fusebox:fusebox_staging_proto",
     "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom",
     "//chrome/browser/ash/login/oobe_quick_start",
+    "//chrome/browser/ash/login/oobe_quick_start/logging",
     "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ash/video_conference",
