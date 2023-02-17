@@ -67,7 +67,7 @@ cr-checkbox::part(label-container) {
 
 <cr-action-menu id="menu" on-mousedown="onMenuMousedown_">
   <div id="openInWindow" tabindex="0" class="dropdown-item"
-      on-click="onOpenInWindowItemClick_"
+      on-click="onOpenInWindowItemClick_" role="button"
       hidden="[[!isLocallyInstalled_(appInfo)]]">
     <div class="dropdown-item-label">
       $i18n{appWindowOpenLabel}
@@ -78,7 +78,7 @@ cr-checkbox::part(label-container) {
     </cr-checkbox>
   </div>
   <div id="launchOnStartup" tabindex="0" class="dropdown-item"
-      on-click="onLaunchOnStartupItemClick_"
+      on-click="onLaunchOnStartupItemClick_" role="button"
       hidden="[[isLaunchOnStartupHidden_(appInfo)]]">
     <div class="dropdown-item-label">
       $i18n{appLaunchAtStartupLabel}
