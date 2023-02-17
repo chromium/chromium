@@ -2380,12 +2380,6 @@
         ],
         'test': 'components_browsertests',
       },
-      'content_browsertests_no_field_trial': {
-        'args': [
-          '--disable-field-trial-config',
-        ],
-        'test': 'content_browsertests',
-      },
       'interactive_ui_tests_no_field_trial': {
         'args': [
           '--disable-field-trial-config',
@@ -2397,12 +2391,6 @@
           '--disable-field-trial-config',
         ],
         'test': 'sync_integration_tests',
-      },
-      'xr_browser_tests_no_field_trial': {
-        'args': [
-          '--disable-field-trial-config',
-        ],
-        'test': 'xr_browser_tests',
       },
     },
 
