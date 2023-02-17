@@ -5721,6 +5721,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/app_list/search/ranking:proto",
     "//chrome/browser/ash/app_list/search/util:proto",
+    "//chrome/browser/ash/app_list/vector_icons",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",

@@ -14,10 +14,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
+#include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/common/channel_info.h"
@@ -31,6 +33,8 @@
 #include "components/version_info/version_string.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace app_list {
 namespace {
@@ -47,8 +51,8 @@ using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 
 constexpr double kRelevanceThreshold = 0.64;
 
-// TODO(b/263994165): Replace with actual icon before feature is released. This
-// is currently blocked by b/267948410, to manually load the settings and
+// TODO(b/263994165): Replace with actual icon before feature is released.
+// This is currently blocked by b/267948410, to manually load the settings and
 // diagnostics icons in search.
 gfx::ImageSkia GetTestIcon() {
   SkBitmap bitmap;
@@ -75,6 +79,11 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
                      weak_factory_.GetWeakPtr()));
   StartObservingCalculators();
   chromeos::PowerManagerClient::Get()->AddObserver(this);
+
+  os_settings_icon_ = gfx::CreateVectorIcon(
+      app_list::kOsSettingsIcon, kAppIconDimension, SK_ColorTRANSPARENT);
+  diagnostics_icon_ = gfx::CreateVectorIcon(
+      app_list::kDiagnosticsIcon, kAppIconDimension, SK_ColorTRANSPARENT);
 }
 
 SystemInfoCardProvider::~SystemInfoCardProvider() {
@@ -134,7 +143,8 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
   for (const std::u16string& keyword : storage_keywords) {
     double relevance = CalculateRelevance(query, keyword);
     if (relevance > kRelevanceThreshold) {
-      // Do not calculate the storage size again if already calculated recently.
+      // Do not calculate the storage size again if already calculated
+      // recently.
       // TODO(b/263994165): Add in a refresh period here.
       relevance_ = relevance;
       if (!calculation_state_.all()) {
@@ -409,8 +419,8 @@ void SystemInfoCardProvider::OnStorageInfoUpdated() {
   int64_t in_use_bytes = total_bytes - available_bytes;
 
   if (total_bytes <= 0 || available_bytes < 0) {
-    // We can't get useful information from the storage page if total_bytes <= 0
-    // or available_bytes is less than 0. This is not expected to happen.
+    // We can't get useful information from the storage page if total_bytes <=
+    // 0 or available_bytes is less than 0. This is not expected to happen.
     NOTREACHED() << "Unable to retrieve total or available disk space";
     return;
   }

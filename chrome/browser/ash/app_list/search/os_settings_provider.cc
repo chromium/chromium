@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
@@ -21,6 +22,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace app_list {
 namespace {
@@ -214,6 +216,9 @@ OsSettingsProvider::OsSettingsProvider(
 
   search_handler_->Observe(
       search_results_observer_receiver_.BindNewPipeAndPassRemote());
+
+  icon_ = gfx::CreateVectorIcon(app_list::kOsSettingsIcon, kAppIconDimension,
+                                SK_ColorTRANSPARENT);
 
   if (app_service_proxy_) {
     Observe(&app_service_proxy_->AppRegistryCache());

@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace app_list {
 
@@ -110,6 +111,9 @@ class SystemInfoCardProvider : public SearchProvider,
   ash::cros_healthd::mojom::MemoryInfo* memory_info_{nullptr};
   std::unique_ptr<CpuData> cpu_usage_{nullptr};
   std::unique_ptr<BatteryHealth> battery_health_{nullptr};
+  gfx::ImageSkia os_settings_icon_;
+  gfx::ImageSkia diagnostics_icon_;
+
   base::WeakPtrFactory<SystemInfoCardProvider> weak_factory_{this};
 };
 }  // namespace app_list
