@@ -4153,10 +4153,6 @@ const char kAdaptiveButtonInTopToolbarCustomizationName[] =
     "Adaptive button in top toolbar customization";
 const char kAdaptiveButtonInTopToolbarCustomizationDescription[] =
     "Enables UI for customizing the adaptive action button in the top toolbar";
-const char kVoiceButtonInTopToolbarName[] = "Voice button in top toolbar";
-const char kVoiceButtonInTopToolbarDescription[] =
-    "Enables showing the voice search button in the top toolbar. Enabling "
-    "Adaptive Button overrides this.";
 
 const char kUseToastManagerName[] = "Use Toast manager";
 const char kUseToastManagerDescription[] =

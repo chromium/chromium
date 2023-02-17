@@ -357,14 +357,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "assistant-consent-modal",
-    "owners": [
-      "jds@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "assistant-consent-simplified-text",
     "owners": [
       "jds@google.com",
@@ -7123,15 +7115,6 @@
     "name": "vm-per-boot-shader-cache",
     "owners": [ "endlesspring@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "voice-button-in-top-toolbar",
-    "owners": [
-      "jds@google.com",
-      "basiaz@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 103
   },
   {
     "name": "wait-threshold-seconds-for-capabilities-api",
