@@ -8,7 +8,9 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -159,13 +161,26 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   if (scrub_) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->GetActiveUser();
-    client->GetFeedbackLogsV2(
+    const auto account_identifier =
         cryptohome::CreateAccountIdentifierFromAccountId(
-            user ? user->GetAccountId() : EmptyAccountId()),
-        // Send `requested_logs` as empty to request all logs.
-        /*requested_logs=*/{},
-        base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                       weak_ptr_factory_.GetWeakPtr(), start_time));
+            user ? user->GetAccountId() : EmptyAccountId());
+    // Empty type to request all logs.
+    constexpr std::vector<debugd::FeedbackLogType> all_logs;
+
+    if (base::FeatureList::IsEnabled(
+            ash::features::kEnableGetDebugdLogsInParallel)) {
+      // GetFeedbackLogsV3 collects logs in parallel.
+      client->GetFeedbackLogsV3(
+          account_identifier, all_logs,
+          base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
+                         weak_ptr_factory_.GetWeakPtr(), start_time));
+    } else {
+      // GetFeedbackLogsV2 collects logs in sequence.
+      client->GetFeedbackLogsV2(
+          account_identifier, all_logs,
+          base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
+                         weak_ptr_factory_.GetWeakPtr(), start_time));
+    }
   } else {
     client->GetAllLogs(base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
                                       weak_ptr_factory_.GetWeakPtr(),

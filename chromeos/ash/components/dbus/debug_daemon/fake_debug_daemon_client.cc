@@ -164,6 +164,17 @@ void FakeDebugDaemonClient::GetFeedbackLogsV2(
       base::BindOnce(std::move(callback), /*succeeded=*/true, sample));
 }
 
+void FakeDebugDaemonClient::GetFeedbackLogsV3(
+    const cryptohome::AccountIdentifier& id,
+    const std::vector<debugd::FeedbackLogType>& requested_logs,
+    GetLogsCallback callback) {
+  std::map<std::string, std::string> sample;
+  sample["Sample Log"] = "Your email address is abc@abc.com";
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), /*succeeded=*/true, sample));
+}
+
 void FakeDebugDaemonClient::BackupArcBugReport(
     const cryptohome::AccountIdentifier& id,
     chromeos::VoidDBusMethodCallback callback) {
