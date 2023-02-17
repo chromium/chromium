@@ -7,6 +7,7 @@
 share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/BaseScreenshotCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/ChromeProvidedSharingOptionsProviderBase.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/SaveBitmapDelegate.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/crow/CrowBridge.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/crow/CrowIphController.java",

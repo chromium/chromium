@@ -52,7 +52,7 @@ public class ShareSheetPropertyModelBuilder {
             ContentType.HIGHLIGHTED_TEXT, ContentType.LINK_AND_TEXT, ContentType.IMAGE,
             ContentType.OTHER_FILE_TYPE, ContentType.IMAGE_AND_LINK})
     @Retention(RetentionPolicy.SOURCE)
-    @interface ContentType {
+    public @interface ContentType {
         int LINK_PAGE_VISIBLE = 0;
         int LINK_PAGE_NOT_VISIBLE = 1;
         int TEXT = 2;
