@@ -23,6 +23,8 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   mixer[kColorAshSystemUIMenuItemBackgroundSelected] = {
       kColorMenuItemBackgroundSelected};
   mixer[kColorAshSystemUIMenuSeparator] = {kColorMenuSeparator};
+  mixer[kColorMultitaskMenuNudgePulse] = {kColorEndpointForeground};
+
   bool dark_mode = key.color_mode == ColorProviderManager::ColorMode::kDark;
 
   // Add color initializations for highlight border.

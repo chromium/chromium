@@ -34,8 +34,7 @@ constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
 constexpr base::TimeDelta kFadeDuration = base::Milliseconds(50);
 
-constexpr gfx::Insets kLabelInsets(10);
-constexpr int kLabelRoundingDp = 16;
+constexpr gfx::Insets kLabelInsets = gfx::Insets::VH(8, 16);
 constexpr int kLabelMaxWidth = 512;
 
 constexpr int kNudgeDistanceFromAnchor = 8;
@@ -74,11 +73,6 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   auto contents_view =
       views::Builder<views::BoxLayoutView>()
           .SetInsideBorderInsets(kLabelInsets)
-          .SetBackground(views::CreateThemedRoundedRectBackground(
-              ui::kColorSysSurface3, kLabelRoundingDp))
-          .SetBorder(std::make_unique<views::HighlightBorder>(
-              kLabelRoundingDp, views::HighlightBorder::Type::kHighlightBorder1,
-              /*use_light_colors=*/false))
           .AddChildren(
               views::Builder<views::Label>()
                   .SetHorizontalAlignment(gfx::ALIGN_CENTER)
@@ -92,6 +86,13 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
                       gfx::Font::Weight::NORMAL))
                   .SetText(l10n_util::GetStringUTF16(message_id)))
           .Build();
+  const float corner_radius = contents_view->GetPreferredSize().height() / 2.0f;
+  contents_view->SetBackground(views::CreateThemedRoundedRectBackground(
+      ui::kColorSysSurface3, corner_radius));
+  contents_view->SetBorder(std::make_unique<views::HighlightBorder>(
+      corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
+
   widget->SetContentsView(std::move(contents_view));
   return widget;
 }
@@ -295,8 +296,8 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   if (!tablet_mode) {
     // Create the layer which pulses on the maximize/restore button.
     pulse_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
-    // TODO(b/267646118): Update the color to match the theme.
-    pulse_layer_->SetColor(SK_ColorGRAY);
+    pulse_layer_->SetColor(nudge_widget_->GetColorProvider()->GetColor(
+        ui::kColorMultitaskMenuNudgePulse));
     window_->parent()->layer()->Add(pulse_layer_.get());
   }
 
