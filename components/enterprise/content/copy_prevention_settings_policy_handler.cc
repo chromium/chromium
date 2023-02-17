@@ -80,10 +80,10 @@ void CopyPreventionSettingsPolicyHandler::ApplyPolicySettings(
 
   // The min data size field is optional. Default to 100 bytes if it's not
   // present.
-  absl::optional<int> min_data_size = value->FindIntKey(
+  absl::optional<int> min_data_size = value->GetDict().FindInt(
       enterprise::content::kCopyPreventionSettingsMinDataSizeFieldName);
   if (!min_data_size) {
-    processed_value.SetIntKey(
+    processed_value.GetDict().Set(
         enterprise::content::kCopyPreventionSettingsMinDataSizeFieldName,
         kMinDataSizeDefault);
   }

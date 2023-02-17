@@ -177,7 +177,7 @@ TEST_F(CopyPreventionSettingsPolicyHandlerTest,
   ASSERT_TRUE(prefs.GetValue(enterprise::content::kCopyPreventionSettings,
                              &value_in_pref));
 
-  absl::optional<int> min_data_size = value_in_pref->FindIntKey(
+  absl::optional<int> min_data_size = value_in_pref->GetDict().FindInt(
       enterprise::content::kCopyPreventionSettingsMinDataSizeFieldName);
   ASSERT_TRUE(min_data_size);
   ASSERT_EQ(100, *min_data_size);
