@@ -63,7 +63,6 @@
 #include "net/disk_cache/blockfile/disk_format_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
@@ -74,7 +73,6 @@
 
 namespace extensions {
 
-using display::test::ScopedScreenOverride;
 using mojom::ManifestLocation;
 using ContextMenuSource = ExtensionContextMenuModel::ContextMenuSource;
 using MenuEntries = ExtensionContextMenuModel::MenuEntries;
@@ -300,7 +298,6 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
   std::unique_ptr<TestBrowserWindow> test_window_;
   std::unique_ptr<Browser> browser_;
   display::test::TestScreen test_screen_;
-  std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 };
 
 ExtensionContextMenuModelTest::ExtensionContextMenuModelTest() {}
@@ -445,8 +442,7 @@ bool ExtensionContextMenuModelTest::HasCantAccessPageEntry(
 
 void ExtensionContextMenuModelTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
-  scoped_screen_override_ =
-      std::make_unique<ScopedScreenOverride>(&test_screen_);
+  display::Screen::SetScreenInstance(&test_screen_);
 }
 
 void ExtensionContextMenuModelTest::TearDown() {
@@ -456,6 +452,7 @@ void ExtensionContextMenuModelTest::TearDown() {
       browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
   }
 
+  display::Screen::SetScreenInstance(nullptr);
   ExtensionServiceTestBase::TearDown();
 }
 

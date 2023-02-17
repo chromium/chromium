@@ -24,7 +24,6 @@
 #include "ui/base/layout.h"
 #include "ui/display/display_list.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -45,8 +44,7 @@ class ScopedSetDeviceScaleFactor {
         switches::kForceDeviceScaleFactor, base::StringPrintf("%3.2f", scale));
     // This has to be inited after fiddling with the command line.
     test_screen_ = std::make_unique<display::test::TestScreen>();
-    screen_override_ = std::make_unique<display::test::ScopedScreenOverride>(
-        test_screen_.get());
+    display::Screen::SetScreenInstance(test_screen_.get());
   }
 
   ScopedSetDeviceScaleFactor(const ScopedSetDeviceScaleFactor&) = delete;
@@ -54,12 +52,12 @@ class ScopedSetDeviceScaleFactor {
       delete;
 
   ~ScopedSetDeviceScaleFactor() {
+    display::Screen::SetScreenInstance(nullptr);
     display::Display::ResetForceDeviceScaleFactorForTesting();
   }
 
  private:
   std::unique_ptr<display::test::TestScreen> test_screen_;
-  std::unique_ptr<display::test::ScopedScreenOverride> screen_override_;
   base::test::ScopedCommandLine command_line_;
 };
 

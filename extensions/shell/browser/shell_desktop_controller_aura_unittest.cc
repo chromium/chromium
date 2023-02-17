@@ -63,8 +63,8 @@ class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
     screen_->display_list().AddDisplay(
         display::Display(200, gfx::Rect(1920, 1080, 800, 600)),
         display::DisplayList::Type::NOT_PRIMARY);
-    screen_override_ =
-        std::make_unique<display::test::ScopedScreenOverride>(screen_.get());
+    display::Screen::SetScreenInstance(screen_.get());
+
     ShellTestBaseAura::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -81,7 +81,7 @@ class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
     chromeos::PowerManagerClient::Shutdown();
 #endif
     ShellTestBaseAura::TearDown();
-    screen_override_.reset();
+    display::Screen::SetScreenInstance(nullptr);
     screen_.reset();
   }
 
