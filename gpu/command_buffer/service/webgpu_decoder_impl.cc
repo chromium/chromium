@@ -1111,6 +1111,13 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   tiered_adapter_limits_ =
       !base::Contains(force_disabled_toggles_, "tiered_adapter_limits");
 
+  // Enable the blocklist unless --enable-unsafe-webgpu or
+  // --disable-dawn-features=adapter_blocklist
+  bool disable_adapter_blocklist =
+      base::Contains(force_disabled_toggles_, "adapter_blocklist");
+  dawn_instance_->EnableAdapterBlocklist(
+      !(enable_unsafe_webgpu_ || disable_adapter_blocklist));
+
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =
       [](const WGPUInstanceDescriptor*) -> WGPUInstance {
