@@ -83,7 +83,7 @@ class MockDrmDevice : public DrmDevice {
 
     uint32_t id;
 
-    std::vector<DrmDevice::Property> properties;
+    std::vector<DrmWrapper::Property> properties;
   };
 
   struct ConnectorProperties {
@@ -93,7 +93,7 @@ class MockDrmDevice : public DrmDevice {
 
     uint32_t id;
 
-    std::vector<DrmDevice::Property> properties;
+    std::vector<DrmWrapper::Property> properties;
   };
 
   struct PlaneProperties {
@@ -103,13 +103,13 @@ class MockDrmDevice : public DrmDevice {
 
     uint32_t type() const;
 
-    absl::optional<const DrmDevice::Property*> GetProp(uint32_t prop_id) const;
+    absl::optional<const DrmWrapper::Property*> GetProp(uint32_t prop_id) const;
     void SetProp(uint32_t prop_id, uint32_t value);
 
     uint32_t id;
     uint32_t crtc_mask;
 
-    std::vector<DrmDevice::Property> properties;
+    std::vector<DrmWrapper::Property> properties;
   };
 
   struct MockDrmState {
@@ -316,7 +316,7 @@ class MockDrmDevice : public DrmDevice {
 
   bool UpdateProperty(uint32_t id,
                       uint64_t value,
-                      std::vector<DrmDevice::Property>* properties);
+                      std::vector<DrmWrapper::Property>* properties);
 
   bool UpdateProperty(uint32_t object_id, uint32_t property_id, uint64_t value);
 

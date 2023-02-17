@@ -12,14 +12,13 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
-#include "ui/ozone/platform/drm/common/drm_wrapper.h"
 
 namespace ui {
 
 bool GetDrmPropertyForName(DrmWrapper* drm,
                            drmModeObjectProperties* properties,
                            const std::string& name,
-                           DrmDevice::Property* property) {
+                           DrmWrapper::Property* property) {
   for (uint32_t i = 0; i < properties->count_props; ++i) {
     ScopedDrmPropertyPtr drm_property(drm->GetProperty(properties->props[i]));
     if (name != drm_property->name)
@@ -36,7 +35,7 @@ bool GetDrmPropertyForName(DrmWrapper* drm,
 
 bool AddPropertyIfValid(drmModeAtomicReq* property_set,
                         uint32_t object_id,
-                        const DrmDevice::Property& property) {
+                        const DrmWrapper::Property& property) {
   if (!property.id)
     return true;
 

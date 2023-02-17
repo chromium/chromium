@@ -62,6 +62,15 @@ class DrmWrapper {
   DrmWrapper& operator=(const DrmWrapper&) = delete;
   virtual ~DrmWrapper();
 
+  struct Property {
+    // Unique identifier for the property. 0 denotes an invalid ID.
+    uint32_t id = 0;
+
+    // Depending on the property, this may be an actual value describing the
+    // property or an ID of another property.
+    uint64_t value = 0;
+  };
+
   // Open device.
   virtual bool Initialize();
 

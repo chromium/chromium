@@ -7,23 +7,21 @@
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
-#include "ui/ozone/platform/drm/gpu/drm_device.h"
 
 namespace ui {
-
-class DrmWrapper;
 
 // Helper function that finds the property with the specified name.
 bool GetDrmPropertyForName(DrmWrapper* drm,
                            drmModeObjectProperties* properties,
                            const std::string& name,
-                           DrmDevice::Property* property);
+                           DrmWrapper::Property* property);
 
 // If the |property| has a valid ID add it to the |property_set| request.
 bool AddPropertyIfValid(drmModeAtomicReq* property_set,
                         uint32_t object_id,
-                        const DrmDevice::Property& property);
+                        const DrmWrapper::Property& property);
 
 // Transforms the gamma ramp entries into the drm_color_lut format.
 ScopedDrmColorLutPtr CreateLutBlob(

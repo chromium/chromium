@@ -15,10 +15,11 @@
 
 #include "base/containers/flat_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
-#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
-#include "ui/ozone/platform/drm/gpu/drm_device.h"
+#include "ui/ozone/platform/drm/common/drm_wrapper.h"
 
 namespace ui {
+
+class DrmDevice;
 
 class HardwareDisplayPlane {
  public:
@@ -61,25 +62,25 @@ class HardwareDisplayPlane {
     ~Properties();
     // These properties are mandatory on DRM atomic. On legacy they may or may
     // not be present.
-    DrmDevice::Property crtc_id;
-    DrmDevice::Property crtc_x;
-    DrmDevice::Property crtc_y;
-    DrmDevice::Property crtc_w;
-    DrmDevice::Property crtc_h;
-    DrmDevice::Property fb_id;
-    DrmDevice::Property src_x;
-    DrmDevice::Property src_y;
-    DrmDevice::Property src_w;
-    DrmDevice::Property src_h;
-    DrmDevice::Property type;
+    DrmWrapper::Property crtc_id;
+    DrmWrapper::Property crtc_x;
+    DrmWrapper::Property crtc_y;
+    DrmWrapper::Property crtc_w;
+    DrmWrapper::Property crtc_h;
+    DrmWrapper::Property fb_id;
+    DrmWrapper::Property src_x;
+    DrmWrapper::Property src_y;
+    DrmWrapper::Property src_w;
+    DrmWrapper::Property src_h;
+    DrmWrapper::Property type;
 
     // Optional properties.
-    DrmDevice::Property rotation;
-    DrmDevice::Property in_formats;
-    DrmDevice::Property in_fence_fd;
-    DrmDevice::Property plane_ctm;
-    DrmDevice::Property plane_color_encoding;
-    DrmDevice::Property plane_color_range;
+    DrmWrapper::Property rotation;
+    DrmWrapper::Property in_formats;
+    DrmWrapper::Property in_fence_fd;
+    DrmWrapper::Property plane_ctm;
+    DrmWrapper::Property plane_color_encoding;
+    DrmWrapper::Property plane_color_range;
   };
 
   const uint32_t id_;
