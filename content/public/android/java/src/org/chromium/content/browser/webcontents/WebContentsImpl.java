@@ -608,7 +608,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         checkNotDestroyed();
         WebContentsAccessibilityImpl wcax = WebContentsAccessibilityImpl.fromWebContents(this);
         if (wcax != null) {
-            wcax.refreshState();
             if (ContentFeatureList.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY)) {
                 wcax.updateAXModeFromNativeAccessibilityState();
             }

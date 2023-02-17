@@ -73,14 +73,6 @@ public interface WebContentsAccessibility {
     void setObscuredByAnotherView(boolean isObscured);
 
     /**
-     * Turns browser accessibility on or off.
-     * If |state| is |false|, this turns off both native and injected accessibility.
-     * Otherwise, if accessibility script injection is enabled, this will enable the injected
-     * accessibility scripts. Native accessibility is enabled on demand.
-     */
-    void setState(boolean state);
-
-    /**
      * Sets whether or not we should set accessibility focus on page load.
      * This only applies if an accessibility service like TalkBack is running.
      * This is desirable behavior for a browser window, but not for an embedded

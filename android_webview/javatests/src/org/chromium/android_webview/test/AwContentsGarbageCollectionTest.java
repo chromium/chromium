@@ -157,7 +157,6 @@ public class AwContentsGarbageCollectionTest {
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 WebContentsAccessibility webContentsA11y =
                         WebContentsAccessibility.fromWebContents(containerView.getWebContents());
-                webContentsA11y.setState(true);
                 // Enable a11y for testing.
                 webContentsA11y.setAccessibilityEnabledForTesting();
                 // Initialize native object.

@@ -71,7 +71,6 @@ import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
-import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.autofill.AutofillManager;
@@ -123,9 +122,8 @@ import java.util.Set;
  */
 @JNINamespace("content")
 public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompat
-        implements AccessibilityStateChangeListener, WebContentsAccessibility, WindowEventObserver,
-                   UserData, AccessibilityState.Listener,
-                   ViewAndroidDelegate.ContainerViewObserver {
+        implements WebContentsAccessibility, WindowEventObserver, UserData,
+                   AccessibilityState.Listener, ViewAndroidDelegate.ContainerViewObserver {
     private static final String TAG = "A11yImpl";
 
     // Constant for paragraph predicate key from web_contents_accessibility_android.cc
@@ -172,9 +170,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // and one selection event per granularity move, this ensures no double events while still
     // sending events when the user is using other assistive technology (e.g. external keyboard)
     private boolean mSuppressNextSelectionEvent;
-
-    // Whether native accessibility is allowed.
-    private boolean mNativeAccessibilityAllowed;
 
     // Whether accessibility focus should be set to the page when it finishes loading.
     // This only applies if an accessibility service like TalkBack is running.
@@ -250,8 +245,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mCaptioningController = new CaptioningController(webContents);
             WindowEventObserverManager.from(webContents).addObserver(this);
             webContents.getViewAndroidDelegate().addObserver(this);
-        } else {
-            refreshState();
         }
         mDelegate.setOnScrollPositionChangedCallback(() -> {
             handleScrollPositionChanged(mAccessibilityFocusId);
@@ -373,7 +366,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     // it has received the first accessibility events. To solve the chicken-and-egg
                     // problem, always initialize the native parts when the user has an Autofill
                     // service enabled.
-                    refreshState();
                     getAccessibilityNodeProvider();
                 }
             } catch (Exception e) {
@@ -445,6 +437,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @Override
     public void setAccessibilityEnabledForTesting() {
         mAccessibilityEnabledOverride = true;
+        mIsObscuredByAnotherView = false;
     }
 
     @VisibleForTesting
@@ -515,7 +508,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @Override
     public void onDetachedFromWindow() {
-        mAccessibilityManager.removeAccessibilityStateChangeListener(this);
         mCaptioningController.stopListening();
         if (!isNativeInitialized()) return;
         ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
@@ -525,8 +517,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @Override
     public void onAttachedToWindow() {
         TraceEvent.begin("WebContentsAccessibilityImpl.onAttachedToWindow");
-        mAccessibilityManager.addAccessibilityStateChangeListener(this);
-        refreshState();
         refreshNativeState();
         mCaptioningController.startListening();
         registerLocaleChangeReceiver();
@@ -605,13 +595,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
     }
 
-    /**
-     * Refresh a11y state with that of {@link AccessibilityManager}.
-     */
-    public void refreshState() {
-        setState(mAccessibilityManager.isEnabled());
-    }
-
     private void refreshNativeState() {
         try (TraceEvent te = TraceEvent.scoped("WebContentsAccessibilityImpl.refreshNativeState")) {
             if (!isNativeInitialized()) return;
@@ -656,7 +639,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (mIsObscuredByAnotherView) return null;
 
         if (!isNativeInitialized()) {
-            if (!mNativeAccessibilityAllowed) return null;
             if (mDelegate.getWebContents() != null) {
                 mNativeObj = WebContentsAccessibilityImplJni.get().init(
                         WebContentsAccessibilityImpl.this, mDelegate.getWebContents(),
@@ -801,15 +783,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return false;
     }
 
-    // AccessibilityStateChangeListener
-    // TODO(dmazzoni): have BrowserAccessibilityState monitor this and merge
-    // into BrowserAccessibilityStateListener.
-
-    @Override
-    public void onAccessibilityStateChanged(boolean enabled) {
-        setState(enabled);
-    }
-
     // BrowserAccessibilityStateListener
 
     @Override
@@ -848,15 +821,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (isObscured != mIsObscuredByAnotherView) {
             mIsObscuredByAnotherView = isObscured;
             sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-        }
-    }
-
-    @Override
-    public void setState(boolean state) {
-        if (!state) {
-            mNativeAccessibilityAllowed = false;
-        } else {
-            mNativeAccessibilityAllowed = true;
         }
     }
 

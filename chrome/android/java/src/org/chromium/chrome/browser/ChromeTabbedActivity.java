@@ -213,7 +213,6 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -2616,7 +2615,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             final int layoutTypeToShowFinal = layoutTypeToShow;
             getCompositorViewHolderSupplier().get().hideKeyboard(
                     () -> mLayoutManager.showLayout(layoutTypeToShowFinal, true));
-            updateAccessibilityState(false);
             TasksUma.recordTabLaunchType(getCurrentTabModel());
         }
     }
@@ -2626,7 +2624,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (getCurrentTabModel().getCount() != 0) {
             // Don't hide overview if current tab stack is empty()
             mLayoutManager.showLayout(LayoutType.BROWSING, false);
-            updateAccessibilityState(true);
         }
     }
 
@@ -2647,14 +2644,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             showOverview(StartSurfaceState.SHOWING_HOMEPAGE, launchOrigin);
         }
         return true;
-    }
-
-    private void updateAccessibilityState(boolean enabled) {
-        Tab currentTab = getActivityTab();
-        WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
-        if (webContents != null) {
-            WebContentsAccessibility.fromWebContents(webContents).setState(enabled);
-        }
     }
 
     @Override
