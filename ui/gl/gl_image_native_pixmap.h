@@ -13,6 +13,7 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
+#include "ui/gl/scoped_egl_image.h"
 
 namespace gl {
 
@@ -57,7 +58,7 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
   bool InitializeFromNativePixmap(scoped_refptr<gfx::NativePixmap> pixmap,
                                   const gfx::ColorSpace& color_space);
 
-  raw_ptr<void, DanglingUntriaged> egl_image_ /* EGLImageKHR */;
+  ScopedEGLImage egl_image_;
   const gfx::Size size_;
   THREAD_CHECKER(thread_checker_);
   gfx::BufferFormat format_;

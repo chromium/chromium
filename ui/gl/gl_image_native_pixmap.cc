@@ -8,9 +8,7 @@
 
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/buffer_format_utils.h"
-#include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 
 #define FOURCC(a, b, c, d)                                        \
@@ -116,22 +114,10 @@ scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::CreateForPlane(
 GLImageNativePixmap::GLImageNativePixmap(const gfx::Size& size,
                                          gfx::BufferFormat format,
                                          gfx::BufferPlane plane)
-    : egl_image_(EGL_NO_IMAGE_KHR),
-      size_(size),
-      format_(format),
-      plane_(plane) {}
+    : size_(size), format_(format), plane_(plane) {}
 
 GLImageNativePixmap::~GLImageNativePixmap() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (egl_image_ == EGL_NO_IMAGE_KHR) {
-    return;
-  }
-
-  const EGLBoolean result = eglDestroyImageKHR(
-      GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_);
-  if (result == EGL_FALSE) {
-    DLOG(ERROR) << "Error destroying EGLImage: " << ui::GetLastEGLErrorString();
-  }
 }
 
 bool GLImageNativePixmap::InitializeFromNativePixmap(
@@ -237,11 +223,10 @@ bool GLImageNativePixmap::InitializeFromNativePixmap(
     attrs.push_back(EGL_NONE);
   }
 
-  egl_image_ = eglCreateImageKHR(
-      GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), EGL_NO_CONTEXT,
-      EGL_LINUX_DMA_BUF_EXT, static_cast<EGLClientBuffer>(nullptr), &attrs[0]);
-  if (egl_image_ == EGL_NO_IMAGE_KHR) {
-    LOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();
+  egl_image_ =
+      MakeScopedEGLImage(EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
+                         static_cast<EGLClientBuffer>(nullptr), &attrs[0]);
+  if (!egl_image_.get()) {
     return false;
   }
 
@@ -256,7 +241,7 @@ gfx::Size GLImageNativePixmap::GetSize() {
 void GLImageNativePixmap::BindTexImage(unsigned target) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  glEGLImageTargetTexture2DOES(target, egl_image_);
+  glEGLImageTargetTexture2DOES(target, egl_image_.get());
 }
 
 unsigned GLImageNativePixmap::GetInternalFormat() {
