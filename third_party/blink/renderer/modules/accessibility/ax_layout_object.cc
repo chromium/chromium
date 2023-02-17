@@ -713,7 +713,10 @@ AXObject* AXLayoutObject::NextOnLine() const {
     // A list marker should be followed by a list item on the same line.
     // Note that pseudo content is always included in the tree, so
     // NextSiblingIncludingIgnored() will succeed.
-    return GetDeepestAXChildInLayoutTree(NextSiblingIncludingIgnored(), true);
+    if (AccessibilityIsIncludedInTree()) {
+      return GetDeepestAXChildInLayoutTree(NextSiblingIncludingIgnored(), true);
+    }
+    return nullptr;
   }
 
   if (!ShouldUseLayoutNG(*layout_object)) {
