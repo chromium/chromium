@@ -90,10 +90,7 @@ class RecordReader {
   bool Initialize();
 
   // True if the last call to Initialize succeeded.
-  bool IsInitialized() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return value_headers_.size() == static_cast<size_t>(column_count_);
-  }
+  bool IsInitialized() const;
 
   // The type of a value in the record. |column_index| is 0-based.
   ValueType GetValueType(int column_index) const;

@@ -51,6 +51,9 @@ class LeafPayloadReader {
   // class can be called.
   bool Initialize(int64_t payload_size, int payload_offset);
 
+  // True if the last call to Initialize succeeded.
+  bool IsInitialized() const;
+
   // The number of payload bytes that are stored on the B-tree page.
   //
   // The return value is guaranteed to be non-negative and at most
@@ -109,29 +112,29 @@ class LeafPayloadReader {
   const raw_ptr<DatabasePageReader> db_reader_;
 
   // Total size of the current payload.
-  int64_t payload_size_;
+  int64_t payload_size_ = 0;
 
   // The ID of the B-tree page containing the current payload's inline bytes.
   //
   // Set to kInvalidPageId if the reader wasn't successfully initialized.
-  int page_id_;
+  int page_id_ = DatabasePageReader::kInvalidPageId;
 
   // The start of the current payload's inline bytes on the B-tree page.
   //
   // Large payloads extend past the B-tree page containing the payload, via
   // overflow pages.
-  int inline_payload_offset_;
+  int inline_payload_offset_ = 0;
 
   // Number of bytes in the current payload stored in its B-tree page.
   //
   // The rest of the payload is stored on overflow pages.
-  int inline_payload_size_;
+  int inline_payload_size_ = 0;
 
   // Number of overflow pages used by the payload.
-  int overflow_page_count_;
+  int overflow_page_count_ = 0;
 
   // Number of bytes in each overflow page that stores the payload.
-  int max_overflow_payload_size_;
+  int max_overflow_payload_size_ = 0;
 
   // Page IDs for all the payload's overflow pages, in order.
   //

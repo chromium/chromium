@@ -154,6 +154,12 @@ bool RecordReader::Initialize() {
   return true;
 }
 
+bool RecordReader::IsInitialized() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return value_headers_.size() == static_cast<size_t>(column_count_) &&
+         payload_reader_->IsInitialized();
+}
+
 ValueType RecordReader::GetValueType(int column_index) const {
   DCHECK(IsInitialized());
   DCHECK_GE(column_index, 0);
