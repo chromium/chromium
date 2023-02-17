@@ -426,6 +426,14 @@ bool AwContentsIoThreadClient::ShouldBlockFileUrls() const {
   return Java_AwContentsIoThreadClient_shouldBlockFileUrls(env, java_object_);
 }
 
+bool AwContentsIoThreadClient::ShouldBlockSpecialFileUrls() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  JNIEnv* env = AttachCurrentThread();
+  return Java_AwContentsIoThreadClient_shouldBlockSpecialFileUrls(env,
+                                                                  java_object_);
+}
+
 bool AwContentsIoThreadClient::ShouldAcceptThirdPartyCookies() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 

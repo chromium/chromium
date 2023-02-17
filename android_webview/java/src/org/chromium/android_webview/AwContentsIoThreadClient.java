@@ -25,6 +25,9 @@ public abstract class AwContentsIoThreadClient {
     public abstract boolean shouldBlockFileUrls();
 
     @CalledByNative
+    public abstract boolean shouldBlockSpecialFileUrls();
+
+    @CalledByNative
     public abstract boolean shouldBlockNetworkLoads();
 
     @CalledByNative

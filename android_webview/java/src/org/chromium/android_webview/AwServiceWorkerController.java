@@ -86,6 +86,11 @@ public class AwServiceWorkerController {
         }
 
         @Override
+        public boolean shouldBlockSpecialFileUrls() {
+            return mServiceWorkerSettings.getBlockSpecialFileUrls();
+        }
+
+        @Override
         public boolean shouldBlockNetworkLoads() {
             return mServiceWorkerSettings.getBlockNetworkLoads();
         }

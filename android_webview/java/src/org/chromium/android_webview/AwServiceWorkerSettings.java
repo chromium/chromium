@@ -10,6 +10,7 @@ import android.os.Process;
 import android.webkit.WebSettings;
 
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -34,6 +35,7 @@ public class AwServiceWorkerSettings {
     private boolean mAllowFileUrlAccess = true;
     private boolean mBlockNetworkLoads;  // Default depends on permission of the embedding APK
     private boolean mAcceptThirdPartyCookies;
+    private boolean mBlockSpecialFileUrls;
 
     private Set<String> mRequestedWithHeaderAllowedOriginRules;
 
@@ -52,6 +54,14 @@ public class AwServiceWorkerSettings {
         synchronized (mAwServiceWorkerSettingsLock) {
             mHasInternetPermission = hasInternetPermission;
             mBlockNetworkLoads = !hasInternetPermission;
+
+            // The application context we receive in the sdk runtime is a separate
+            // context from the context that actual SDKs receive (and contains asset
+            // file links). This means file urls will not work in this environment.
+            // Explicitly block this to cause confusion in the case of accidentally
+            // hitting assets in the application context.
+            mBlockSpecialFileUrls = ContextUtils.isSdkSandboxProcess();
+
             if (AwFeatureList.isEnabled(
                         AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
                 mRequestedWithHeaderAllowedOriginRules =
@@ -122,6 +132,19 @@ public class AwServiceWorkerSettings {
     public boolean getAllowFileAccess() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mAllowFileUrlAccess;
+        }
+    }
+
+    public void setBlockSpecialFileUrls(boolean block) {
+        if (TRACE) Log.d(TAG, "setBlockSpecialFileUrls=" + block);
+        synchronized (mAwServiceWorkerSettingsLock) {
+            mBlockSpecialFileUrls = block;
+        }
+    }
+
+    public boolean getBlockSpecialFileUrls() {
+        synchronized (mAwServiceWorkerSettingsLock) {
+            return mBlockSpecialFileUrls;
         }
     }
 

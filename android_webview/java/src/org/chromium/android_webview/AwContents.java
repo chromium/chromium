@@ -626,6 +626,11 @@ public class AwContents implements SmartClipProvider {
         }
 
         @Override
+        public boolean shouldBlockSpecialFileUrls() {
+            return mSettings.getBlockSpecialFileUrls();
+        }
+
+        @Override
         public boolean shouldBlockNetworkLoads() {
             return mSettings.getBlockNetworkLoads();
         }

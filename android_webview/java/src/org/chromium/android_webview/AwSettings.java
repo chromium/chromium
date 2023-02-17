@@ -155,6 +155,7 @@ public class AwSettings {
     private final boolean mPasswordEchoEnabled;
 
     // Not accessed by the native side.
+    private boolean mBlockSpecialFileUrls;
     private boolean mBlockNetworkLoads;  // Default depends on permission of embedding APK.
     private boolean mAllowContentUrlAccess = true;
     private boolean mAllowFileUrlAccess;
@@ -299,6 +300,13 @@ public class AwSettings {
             mAllowGeolocationOnInsecureOrigins = allowGeolocationOnInsecureOrigins;
             mDoNotUpdateSelectionOnMutatingSelectionRange =
                     doNotUpdateSelectionOnMutatingSelectionRange;
+
+            // The application context we receive in the sdk runtime is a separate
+            // context from the context that actual SDKs receive (and contains asset
+            // file links). This means file urls will not work in this environment.
+            // Explicitly block this to cause confusion in the case of accidentally
+            // hitting assets in the application context.
+            mBlockSpecialFileUrls = ContextUtils.isSdkSandboxProcess();
 
             mAllowFileUrlAccess =
                     ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
@@ -1316,6 +1324,19 @@ public class AwSettings {
     public boolean supportMultipleWindows() {
         synchronized (mAwSettingsLock) {
             return mSupportMultipleWindows;
+        }
+    }
+
+    public void setBlockSpecialFileUrls(boolean block) {
+        if (TRACE) Log.i(TAG, "setBlockSpecialFileUrls=" + block);
+        synchronized (mAwSettingsLock) {
+            mBlockSpecialFileUrls = block;
+        }
+    }
+
+    public boolean getBlockSpecialFileUrls() {
+        synchronized (mAwSettingsLock) {
+            return mBlockSpecialFileUrls;
         }
     }
 

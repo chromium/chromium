@@ -6,9 +6,11 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.util.Base64;
 import android.util.Pair;
+import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
@@ -21,10 +23,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwContents.DependencyFactory;
+import org.chromium.android_webview.AwContents.InternalAccessDelegate;
+import org.chromium.android_webview.AwContents.NativeDrawFunctorFactory;
+import org.chromium.android_webview.AwContentsClient;
+import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
+import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -46,7 +57,10 @@ import java.util.concurrent.TimeoutException;
  * Test suite for loadUrl().
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class LoadUrlTest {
+    private static final String ASSET_FILE_URL = "file:///android_asset/asset_file.html";
+
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
@@ -61,6 +75,44 @@ public class LoadUrlTest {
     @After
     public void tearDown() {
         mTestServer.stopAndDestroyServer();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAssetFileUrl() throws Throwable {
+        final String expectedTitle = "Asset File";
+
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
+        final AwContents awContents = testContainerView.getAwContents();
+        mActivityTestRule.loadUrlSync(
+                awContents, contentsClient.getOnPageFinishedHelper(), ASSET_FILE_URL);
+        Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(awContents));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAssetFileUrlWithinSdkSandbox() throws Throwable {
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        contentsClient, false, new TestAwContentsClientTestDependencyFactory());
+        final TestAwContentsClient.OnReceivedErrorHelper onReceivedErrorHelper =
+                contentsClient.getOnReceivedErrorHelper();
+        final TestAwContents awContents = (TestAwContents) testContainerView.getAwContents();
+
+        // Ensure that special file urls are blocked in the AwSettings.
+        awContents.setShouldBlockSpecialFileUrls(true);
+
+        mActivityTestRule.loadUrlSyncAndExpectError(awContents,
+                contentsClient.getOnPageFinishedHelper(), onReceivedErrorHelper, ASSET_FILE_URL);
+
+        AwWebResourceError error = onReceivedErrorHelper.getError();
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
+        Assert.assertEquals("net::ERR_ACCESS_DENIED", error.description);
     }
 
     @Test
@@ -740,6 +792,18 @@ public class LoadUrlTest {
             Assert.assertEquals(iframeLoadedMessage, addMessageToConsoleHelper.getMessage());
         } finally {
             webServer.shutdown();
+        }
+    }
+
+    class TestAwContentsClientTestDependencyFactory
+            extends AwActivityTestRule.TestDependencyFactory {
+        @Override
+        public AwContents createAwContents(AwBrowserContext browserContext, ViewGroup containerView,
+                Context context, InternalAccessDelegate internalAccessAdapter,
+                NativeDrawFunctorFactory nativeDrawFunctorFactory, AwContentsClient contentsClient,
+                AwSettings settings, DependencyFactory dependencyFactory) {
+            return new TestAwContents(browserContext, containerView, context, internalAccessAdapter,
+                    nativeDrawFunctorFactory, contentsClient, settings, dependencyFactory);
         }
     }
 }

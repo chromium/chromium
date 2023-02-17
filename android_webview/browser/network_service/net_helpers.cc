@@ -74,10 +74,18 @@ bool ShouldBlockURL(const GURL& url, AwContentsIoThreadClient* client) {
   if (url.SchemeIs(url::kContentScheme) && client->ShouldBlockContentUrls())
     return true;
 
-  // Part of implementation of WebSettings.allowFileAccess.
-  if (url.SchemeIsFile() && client->ShouldBlockFileUrls()) {
-    // Application's assets and resources are always available.
-    return !IsAndroidSpecialFileUrl(url);
+  if (url.SchemeIsFile()) {
+    bool is_special_file_url = IsAndroidSpecialFileUrl(url);
+
+    if (is_special_file_url && client->ShouldBlockSpecialFileUrls()) {
+      return true;
+    }
+
+    // Part of implementation of WebSettings.allowFileAccess.
+    if (client->ShouldBlockFileUrls()) {
+      // Application's assets and resources are always available.
+      return !is_special_file_url;
+    }
   }
 
   return client->ShouldBlockNetworkLoads() && url.SchemeIs(url::kFtpScheme);

@@ -120,6 +120,10 @@ class AwContentsIoThreadClient {
   // This method is called on the IO thread only.
   bool ShouldBlockFileUrls() const;
 
+  // Retrieves if special android file urls (android_{asset/res}) should be
+  // allowed.
+  bool ShouldBlockSpecialFileUrls() const;
+
   // Retrieve the BlockNetworkLoads setting value of this AwContents.
   // This method is called on the IO thread only.
   bool ShouldBlockNetworkLoads() const;

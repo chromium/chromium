@@ -70,4 +70,8 @@ public class TestAwContents extends AwContents {
             observer.onAwContentsDestroyed();
         }
     }
+
+    public void setShouldBlockSpecialFileUrls(boolean shouldBlock) {
+        getSettings().setBlockSpecialFileUrls(shouldBlock);
+    }
 }
