@@ -375,21 +375,7 @@ public abstract class SyncConsentFragmentBase
         }
 
         updateConsentText();
-        final CoreAccountInfo primaryAccount =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        mIsSignedInWithoutSync = (FREMobileIdentityConsistencyFieldTrial.isEnabled()
-                && mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null);
-        if (mIsSignedInWithoutSync) {
-            mSelectedAccountName = primaryAccount.getEmail();
-        }
 
-        // When a fragment that was in the FragmentManager backstack becomes visible again, the view
-        // will be recreated by onCreateView. Update the state of this recreated UI.
-        if (mSelectedAccountName != null) {
-            updateProfileData(mSelectedAccountName);
-        }
         return mSyncConsentView != null ? mSyncConsentView : mSigninView;
     }
 
@@ -811,6 +797,22 @@ public abstract class SyncConsentFragmentBase
     public void onResume() {
         super.onResume();
         mAccountManagerFacade.addObserver(this);
+
+        final CoreAccountInfo primaryAccount =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        mIsSignedInWithoutSync = (FREMobileIdentityConsistencyFieldTrial.isEnabled()
+                && mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null);
+        if (mIsSignedInWithoutSync) {
+            mSelectedAccountName = primaryAccount.getEmail();
+        }
+        // When a fragment that was in the FragmentManager backstack becomes visible again, the view
+        // will be recreated by onCreateView. Update the state of this recreated UI.
+        if (mSelectedAccountName != null) {
+            updateProfileData(mSelectedAccountName);
+        }
+
         updateAccounts(
                 AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
 

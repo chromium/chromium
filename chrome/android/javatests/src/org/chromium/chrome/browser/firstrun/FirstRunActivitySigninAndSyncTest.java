@@ -56,6 +56,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -66,6 +67,8 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -89,7 +92,7 @@ public class FirstRunActivitySigninAndSyncTest {
     private static final String TEST_URL = "https://foo.com";
 
     @Rule
-    public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
+    public final TestRule mCommandLineFlagRule = CommandLineFlags.getTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -310,6 +313,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void acceptingSyncEndsFreAndEnablesSync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
@@ -326,7 +330,42 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void acceptingSyncEndsFreAndEnablesSync_tangibleSyncEnabled() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        clickButton(R.id.positive_button);
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+        SyncTestUtil.waitForSyncFeatureEnabled();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void refusingSyncEndsFreAndDoesNotEnableSync() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        clickButton(R.id.negative_button);
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+
+        assertFalse(SyncTestUtil.canSyncFeatureStart());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void refusingSyncEndsFreAndDoesNotEnableSync_tangibleSyncEnabled() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
