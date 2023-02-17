@@ -1908,11 +1908,13 @@ bool PaintLayerScrollableArea::ShouldOverflowControlsPaintAsOverlay() const {
   if (HasOverlayOverflowControls())
     return true;
 
-  // The global root scrollbars and corner also paint as overlay so that they
-  // appear on top of all content within the viewport. This is important since
-  // these scrollbar's transform state is
+  // Frame and global root scroller (which can be a non-frame) scrollbars and
+  // corner also paint as overlay so that they appear on top of all content
+  // within their viewport. This is important for global root scrollers since
+  // these scrollbars' transform state is
   // VisualViewport::TransformNodeForViewportScrollbars().
-  return GetLayoutBox() && GetLayoutBox()->IsGlobalRootScroller();
+  return layer_->IsRootLayer() ||
+         (GetLayoutBox() && GetLayoutBox()->IsGlobalRootScroller());
 }
 
 void PaintLayerScrollableArea::PositionOverflowControls() {

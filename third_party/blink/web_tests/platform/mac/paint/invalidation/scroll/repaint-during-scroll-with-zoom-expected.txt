@@ -7,6 +7,13 @@
       "backgroundColor": "#C0C0C0"
     },
     {
+      "name": "Scrolling background of LayoutNGView #document",
+      "bounds": [2008, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 2
+    },
+    {
       "name": "HorizontalScrollbar",
       "position": [0, 235],
       "bounds": [235, 15],
@@ -26,13 +33,6 @@
       "bounds": [15, 15],
       "contentsOpaqueForText": true,
       "transform": 1
-    },
-    {
-      "name": "Scrolling background of LayoutNGView #document",
-      "bounds": [2008, 2016],
-      "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "transform": 2
     }
   ],
   "transforms": [

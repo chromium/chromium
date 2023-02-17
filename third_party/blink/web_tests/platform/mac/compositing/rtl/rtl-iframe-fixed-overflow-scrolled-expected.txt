@@ -1,30 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "HorizontalScrollbar",
-      "position": [15, 385],
-      "bounds": [385, 15],
-      "contentsOpaque": true
-    },
-    {
-      "name": "VerticalScrollbar",
-      "bounds": [15, 385],
-      "contentsOpaque": true
-    },
-    {
-      "name": "Scroll corner of LayoutView #document",
-      "position": [0, 385],
-      "bounds": [15, 15],
-      "contentsOpaqueForText": true
-    },
-    {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "position": [15, 0],
       "bounds": [1000, 1000],
       "contentsOpaque": true,
@@ -44,6 +27,23 @@
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 3
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [15, 385],
+      "bounds": [385, 15],
+      "contentsOpaque": true
+    },
+    {
+      "name": "VerticalScrollbar",
+      "bounds": [15, 385],
+      "contentsOpaque": true
+    },
+    {
+      "name": "Scroll corner of LayoutNGView #document",
+      "position": [0, 385],
+      "bounds": [15, 15],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

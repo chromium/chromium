@@ -1,10 +1,24 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling background of LayoutNGView #document",
+      "bounds": [508, 608],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 3
     },
     {
       "name": "HorizontalScrollbar",
@@ -21,25 +35,11 @@
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutView #document",
+      "name": "Scroll corner of LayoutNGView #document",
       "position": [285, 135],
       "bounds": [15, 15],
       "contentsOpaque": true,
       "transform": 1
-    },
-    {
-      "name": "Scrolling background of LayoutView #document",
-      "bounds": [508, 608],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 2
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
-      "bounds": [200, 200],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
-      "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='overlay'",
