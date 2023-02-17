@@ -846,6 +846,9 @@ class BrowserAutofillManager : public AutofillManager,
   // submission can trigger the upload of blur votes.
   scoped_refptr<base::SequencedTaskRunner> vote_upload_task_runner_;
 
+  // When the form was submitted.
+  base::TimeTicks form_submitted_timestamp_;
+
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };
 

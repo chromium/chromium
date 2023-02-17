@@ -216,10 +216,10 @@ void FormEventLoggerBase::
   has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ = true;
 }
 
-void FormEventLoggerBase::Log(FormEvent event,
-                              const FormStructure& form) const {
+void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
   DCHECK_LT(event, NUM_FORM_EVENTS);
   std::string name("Autofill.FormEvents." + form_type_name_);
+  form_events_set_[form.global_id()].insert(event);
   base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
 
   // Log UKM metrics for only autofillable form events.
@@ -529,6 +529,11 @@ void FormEventLoggerBase::LogFillingCorrectnessByFillingMethod(
   base::UmaHistogramBoolean(
       "Autofill.FillingCorrectnessByMethod." + form_type + "." + method_name,
       !has_logged_edited_autofilled_field_);
+}
+
+AutofillMetrics::FormEventSet FormEventLoggerBase::GetFormEvents(
+    FormGlobalId form_global_id) {
+  return form_events_set_[form_global_id];
 }
 
 }  // namespace autofill

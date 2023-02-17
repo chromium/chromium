@@ -132,6 +132,7 @@ using UkmEditedAutofilledFieldAtSubmission =
     ukm::builders::Autofill_EditedAutofilledFieldAtSubmission;
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using UkmFieldInfoType = ukm::builders::Autofill2_FieldInfo;
+using UkmFormSummaryType = ukm::builders::Autofill2_FormSummary;
 using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
 
@@ -9379,6 +9380,10 @@ class AutofillMetricsFromLogEventsTest : public AutofillMetricsTest {
 // Test if we record FieldInfo UKM metrics correctly after we fill and submit an
 // address form.
 TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
   // Create a profile.
   RecreateProfile(/*is_server=*/false);
   FormData form = CreateForm({CreateField("State", "state", "", "text"),
@@ -9391,20 +9396,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
   autofill_manager().AddSeenForm(form, field_types);
 
   {
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
-    SubmitForm(form);
-  }
-
-  // Reset the autofill manager state.
-  autofill_manager().Reset();
-  auto entries =
-      test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
-  ASSERT_EQ(0u, entries.size());
-
-  PurgeUKM();
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
     // Simulating submission with filled local data. The third field cannot be
     // autofilled because its type cannot be predicted.
     autofill_manager().OnAskForValuesToFillTest(
@@ -9412,23 +9403,28 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
         FormElementWasClicked(true));
     FillTestProfile(form);
 
+    base::TimeTicks parse_time = autofill_manager()
+                                     .form_structures()
+                                     .begin()
+                                     ->second->form_parsed_timestamp();
     // Simulate text input in the first fields.
-    SimulateUserChangedTextField(form, form.fields[0]);
-
+    SimulateUserChangedTextField(form, form.fields[0],
+                                 parse_time + base::Milliseconds(3));
+    test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
 
     // Record Autofill2.FieldInfo UKM event at autofill manager reset.
     autofill_manager().Reset();
 
-    entries =
+    // Verify FieldInfo UKM event for every field.
+    auto field_entries =
         test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
-    ASSERT_EQ(3u, entries.size());
-
-    for (size_t i = 0; i < entries.size(); ++i) {
+    ASSERT_EQ(3u, field_entries.size());
+    for (size_t i = 0; i < field_entries.size(); ++i) {
       SCOPED_TRACE(testing::Message() << i);
       using UFIT = UkmFieldInfoType;
-      const auto* const entry = entries[i];
+      const auto* const entry = field_entries[i];
 
       SkipStatus status =
           i == 2 ? SkipStatus::kNoFillableGroup : SkipStatus::kNotSkipped;
@@ -9465,6 +9461,35 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
       }
     }
 
+    // Verify FormSummary UKM event for the form.
+    auto form_entries =
+        test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
+    ASSERT_EQ(1u, form_entries.size());
+    using UFST = UkmFormSummaryType;
+    const auto* const entry = form_entries[0];
+    AutofillMetrics::FormEventSet form_events = {
+        FORM_EVENT_INTERACTED_ONCE, FORM_EVENT_LOCAL_SUGGESTION_FILLED,
+        FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
+        FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE,
+        FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE};
+    std::map<std::string, int64_t> expected = {
+        {UFST::kFormSessionIdentifierName,
+         AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+        {UFST::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()},
+        {UFST::kAutofillFormEventsName, form_events.to_uint64()},
+        {UFST::kIsInMainframeName, true},
+        {UFST::kSampleRateName, 1},
+        {UFST::kWasSubmittedName, true},
+        {UFST::kMillisecondsFromFirstInteratctionUntilSubmissionName, 6},
+        {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+    };
+    EXPECT_EQ(expected.size(), entry->metrics.size());
+    for (const auto& [metric, value] : expected) {
+      test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
+    }
+
+    // Verify LogEvent count UMA events of each type.
     histogram_tester.ExpectBucketCount(
         "Autofill.LogEvent.AskForValuesToFillEvent", 1, 1);
     histogram_tester.ExpectBucketCount("Autofill.LogEvent.TriggerFillEvent", 1,
@@ -9486,6 +9511,10 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 // Test if we have recorded UKM metrics correctly about field types after
 // parsing the form by the local heuristic prediction.
 TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
   FormData form = CreateForm(
       {// Heuristic value will match with Autocomplete attribute.
        CreateField("Last Name", "lastname", "", "text", "family-name"),
@@ -9526,6 +9555,11 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   autofill_manager().OnLoadedServerPredictionsForTest(
       response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
+  base::TimeTicks parse_time = autofill_manager()
+                                   .form_structures()
+                                   .begin()
+                                   ->second->form_parsed_timestamp();
+  test_clock.SetNowTicks(parse_time + base::Milliseconds(17));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
@@ -9545,6 +9579,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   std::vector<ServerFieldType> overall_types{NAME_LAST, NAME_MIDDLE,
                                              NAME_MIDDLE, ADDRESS_HOME_ZIP};
 
+  // Verify FieldInfo UKM event for every field.
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     using UFIT = UkmFieldInfoType;
@@ -9601,6 +9636,30 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
     }
   }
 
+  // Verify FormSummary UKM event for the form.
+  auto form_entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
+  ASSERT_EQ(1u, form_entries.size());
+  using UFST = UkmFormSummaryType;
+  const auto* const entry = form_entries[0];
+  AutofillMetrics::FormEventSet form_events = {};
+  std::map<std::string, int64_t> expected = {
+      {UFST::kFormSessionIdentifierName,
+       AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+      {UFST::kFormSignatureName,
+       Collapse(CalculateFormSignature(form)).value()},
+      {UFST::kAutofillFormEventsName, form_events.to_uint64()},
+      {UFST::kIsInMainframeName, true},
+      {UFST::kSampleRateName, 1},
+      {UFST::kWasSubmittedName, true},
+      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 10},
+  };
+  EXPECT_EQ(expected.size(), entry->metrics.size());
+  for (const auto& [metric, value] : expected) {
+    test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
+  }
+
+  // Verify LogEvent count UMA events of each type.
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.AskForValuesToFillEvent", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.TriggerFillEvent", 0,
@@ -9628,6 +9687,10 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
 // fields without autofilling first.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsEditedFieldWithoutFill) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
   test::FormDescription form_description = {
       .description_for_logging = "NumberOfAutofilledFields",
       .fields = {{.role = NAME_FULL,
@@ -9643,25 +9706,30 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 
   FormData form = GetAndAddSeenForm(form_description);
 
+  base::TimeTicks parse_time = autofill_manager()
+                                   .form_structures()
+                                   .begin()
+                                   ->second->form_parsed_timestamp();
   // Simulate text input in the first and second fields.
-  SimulateUserChangedTextField(form, form.fields[0]);
-  SimulateUserChangedTextField(form, form.fields[1]);
-
+  SimulateUserChangedTextField(form, form.fields[0],
+                               parse_time + base::Milliseconds(3));
+  SimulateUserChangedTextField(form, form.fields[1],
+                               parse_time + base::Milliseconds(3));
+  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
   autofill_manager().Reset();
 
+  // Verify FieldInfo UKM event for every field.
   auto entries =
       test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
   ASSERT_EQ(2u, entries.size());
-
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     using UFIT = UkmFieldInfoType;
     const auto* const entry = entries[i];
-
     std::map<std::string, int64_t> expected = {
         {UFIT::kFormSessionIdentifierName,
          AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -9681,6 +9749,31 @@ TEST_F(AutofillMetricsFromLogEventsTest,
     }
   }
 
+  // Verify FormSummary UKM event for the form.
+  auto form_entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
+  ASSERT_EQ(1u, form_entries.size());
+  using UFST = UkmFormSummaryType;
+  const auto* const entry = form_entries[0];
+  AutofillMetrics::FormEventSet form_events = {};
+  std::map<std::string, int64_t> expected = {
+      {UFST::kFormSessionIdentifierName,
+       AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+      {UFST::kFormSignatureName,
+       Collapse(CalculateFormSignature(form)).value()},
+      {UFST::kAutofillFormEventsName, form_events.to_uint64()},
+      {UFST::kIsInMainframeName, true},
+      {UFST::kSampleRateName, 1},
+      {UFST::kWasSubmittedName, true},
+      {UFST::kMillisecondsFromFirstInteratctionUntilSubmissionName, 6},
+      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+  };
+  EXPECT_EQ(expected.size(), entry->metrics.size());
+  for (const auto& [metric, value] : expected) {
+    test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
+  }
+
+  // Verify LogEvent count UMA events of each type.
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.AskForValuesToFillEvent", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.TriggerFillEvent", 0,

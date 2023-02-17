@@ -2734,7 +2734,7 @@ be describing additional metrics about the same event.
       counting distinct forms. Two different users would have different values.
       A single user loading the same form in two different tabs would have two
       different values. This is used to link the fields to a form in
-      Autofill.FormSummary.
+      Autofill2.FormSummary.
     </summary>
   </metric>
   <metric name="HadTypedOrFilledValueAtSubmission" enum="Boolean">
@@ -2907,6 +2907,79 @@ be describing additional metrics about the same event.
   <metric name="WasRefill" enum="Boolean">
     <summary>
       Whether the form was refilled by autofill.
+    </summary>
+  </metric>
+</event>
+
+<event name="Autofill2.FormSummary">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Information recorded for a HTML form element on the HTML page, recorded at
+    form submission or form destruction time (whatever comes first).
+  </summary>
+  <metric name="AutofillFormEvents">
+    <summary>
+      A bit vector of some autofill form events that records a funnel of this
+      autofill form. The autofill form events are from an enum list specifying
+      the possible status of the autofill forms, such as if a dropdown with
+      suggestions was shown, if the user interacted with a field in the form.
+      Some of the events are triggered separately for address and credit card
+      forms, e.g. if all the fillable fields in the credit card forms were
+      filled. New form events can be added over time and a form can have
+      multiple form events.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields in this form in
+      Autofill2.FieldInfo.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form, which is a 10-bit hash of the form's domain,
+      name and all the supported form fields (including empty names).
+    </summary>
+  </metric>
+  <metric name="IsInMainframe" enum="Boolean">
+    <summary>
+      This indicates whether the form is located in the main frame or in an
+      iframe. A cross-origin autofill is prevented only because shared-autofill
+      is disabled in the field's frame. Shared-autofill is a policy-controlled
+      feature by which a frame can allow a child-frame to be autofilled across
+      origin. We record the url of the main frame not the iframe even if the
+      form is in the iframe.
+    </summary>
+  </metric>
+  <metric name="MillisecondsFromFirstInteratctionUntilSubmission">
+    <summary>
+      The time interval from first interaction on the form to form submission in
+      ms in exponential buckets from |GetSemanticBucketMinForDurationTiming()|.
+    </summary>
+  </metric>
+  <metric name="MillisecondsFromFormParsedUntilSubmission">
+    <summary>
+      The time interval from form parse to form submission in ms in exponential
+      buckets from |GetSemanticBucketMinForDurationTiming()|.
+    </summary>
+  </metric>
+  <metric name="SampleRate">
+    <summary>
+      A sampling rate is a precomputed positive integer and is applied to each
+      form and adaptive to the popularity of forms. The most popular forms are
+      classified into a `very popular` category and maybe apply a 1:100 sampling
+      while the less popular forms have a sampling of 1:1. If the sampling is
+      1:X, this sample rate value stores the `X`.
+    </summary>
+  </metric>
+  <metric name="WasSubmitted" enum="Boolean">
+    <summary>
+      Whether the form was submitted.
     </summary>
   </metric>
 </event>

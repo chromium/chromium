@@ -2623,6 +2623,47 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::
+    LogAutofillFormSummaryAtFormRemove(
+        const FormStructure& form_structure,
+        FormEventSet form_events,
+        bool is_in_any_main_frame,
+        const base::TimeTicks& initial_interaction_timestamp,
+        const base::TimeTicks& form_submitted_timestamp) {
+  if (!CanLog()) {
+    return;
+  }
+
+  ukm::builders::Autofill2_FormSummary builder(source_id_);
+  builder
+      .SetFormSessionIdentifier(
+          AutofillMetrics::FormGlobalIdToHash64Bit(form_structure.global_id()))
+      .SetFormSignature(HashFormSignature(form_structure.form_signature()))
+      .SetAutofillFormEvents(form_events.to_uint64())
+      .SetIsInMainframe(is_in_any_main_frame)
+      .SetWasSubmitted(!form_submitted_timestamp.is_null())
+      .SetSampleRate(1);
+
+  if (!form_submitted_timestamp.is_null() &&
+      !form_structure.form_parsed_timestamp().is_null() &&
+      form_submitted_timestamp > form_structure.form_parsed_timestamp()) {
+    builder.SetMillisecondsFromFormParsedUntilSubmission(
+        ukm::GetSemanticBucketMinForDurationTiming(
+            (form_submitted_timestamp - form_structure.form_parsed_timestamp())
+                .InMilliseconds()));
+  }
+
+  if (!form_submitted_timestamp.is_null() &&
+      !initial_interaction_timestamp.is_null() &&
+      form_submitted_timestamp > initial_interaction_timestamp) {
+    builder.SetMillisecondsFromFirstInteratctionUntilSubmission(
+        ukm::GetSemanticBucketMinForDurationTiming(
+            (form_submitted_timestamp - initial_interaction_timestamp)
+                .InMilliseconds()));
+  }
+  builder.Record(ukm_recorder_);
+}
+
+void AutofillMetrics::FormInteractionsUkmLogger::
     LogHiddenRepresentationalFieldSkipDecision(const FormStructure& form,
                                                const AutofillField& field,
                                                bool is_skipped) {
