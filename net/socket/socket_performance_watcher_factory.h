@@ -11,7 +11,7 @@
 
 namespace net {
 
-class AddressList;
+class IPAddress;
 class SocketPerformanceWatcher;
 
 // SocketPerformanceWatcherFactory creates socket performance watcher for
@@ -31,13 +31,12 @@ class NET_EXPORT_PRIVATE SocketPerformanceWatcherFactory {
 
   // Creates a socket performance watcher that will record statistics for a
   // single socket that uses |protocol| as the transport layer protocol.
-  // |address_list| is the list of addresses that the socket is going to connect
-  // to. Implementations must return a valid, unique SocketRecorder for every
-  // call; recorders must not be shared across calls or objects, nor is nullptr
-  // valid.
+  // |ip_address| is the IP address that the socket is going to connect to.
+  // Implementations must return a valid, unique SocketRecorder for every call;
+  // recorders must not be shared across calls or objects, nor is nullptr valid.
   virtual std::unique_ptr<SocketPerformanceWatcher>
   CreateSocketPerformanceWatcher(const Protocol protocol,
-                                 const AddressList& address_list) = 0;
+                                 const IPAddress& ip_address) = 0;
 
  protected:
   SocketPerformanceWatcherFactory() = default;

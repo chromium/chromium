@@ -2091,7 +2091,7 @@ void QuicStreamFactory::FinishCreateSession(
   if (socket_performance_watcher_factory_) {
     socket_performance_watcher =
         socket_performance_watcher_factory_->CreateSocketPerformanceWatcher(
-            SocketPerformanceWatcherFactory::PROTOCOL_QUIC, address_list);
+            SocketPerformanceWatcherFactory::PROTOCOL_QUIC, addr.address());
   }
 
   // Wait for handshake confirmation before allowing streams to be created if

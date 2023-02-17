@@ -67,7 +67,7 @@ class SocketWatcherFactory : public SocketPerformanceWatcherFactory {
   // SocketPerformanceWatcherFactory implementation:
   std::unique_ptr<SocketPerformanceWatcher> CreateSocketPerformanceWatcher(
       const Protocol protocol,
-      const AddressList& address_list) override;
+      const IPAddress& address) override;
 
   void SetUseLocalHostRequestsForTesting(bool use_localhost_requests) {
     allow_rtt_private_address_ = use_localhost_requests;

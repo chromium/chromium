@@ -256,7 +256,7 @@ class TestSocketPerformanceWatcherFactory
   // SocketPerformanceWatcherFactory implementation:
   std::unique_ptr<SocketPerformanceWatcher> CreateSocketPerformanceWatcher(
       const Protocol protocol,
-      const AddressList& /* address_list */) override {
+      const IPAddress& /* address */) override {
     if (protocol != PROTOCOL_QUIC) {
       return nullptr;
     }

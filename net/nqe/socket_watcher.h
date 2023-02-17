@@ -25,7 +25,7 @@ class TimeDelta;
 
 namespace net {
 
-class AddressList;
+class IPAddress;
 
 namespace {
 
@@ -47,9 +47,9 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   // Creates a SocketWatcher which can be used to watch a socket that uses
   // |protocol| as the transport layer protocol. The socket watcher will call
   // |updated_rtt_observation_callback| on |task_runner| every time a new RTT
-  // observation is available. |address_list| is the list of addresses that
-  // the socket may connect to. |min_notification_interval| is the minimum
-  // interval betweeen consecutive notifications to this socket watcher.
+  // observation is available. |address| is the IPAddress that the socket may
+  // connect to. |min_notification_interval| is the minimum interval between
+  // consecutive notifications to this socket watcher.
   // |allow_rtt_private_address| is true if |updated_rtt_observation_callback|
   // should be called when RTT observation from a socket connected to private
   // address is received. |tick_clock| is guaranteed to be non-null.
@@ -57,7 +57,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   // |task_runner| by the created socket watchers to check if RTT observation
   // should be taken and notified.
   SocketWatcher(SocketPerformanceWatcherFactory::Protocol protocol,
-                const AddressList& address_list,
+                const IPAddress& address,
                 base::TimeDelta min_notification_interval,
                 bool allow_rtt_private_address,
                 scoped_refptr<base::SingleThreadTaskRunner> task_runner,

@@ -212,7 +212,8 @@ int TransportConnectSubJob::DoEndpointLockComplete() {
   if (auto* factory = parent_job_->socket_performance_watcher_factory();
       factory != nullptr) {
     socket_performance_watcher = factory->CreateSocketPerformanceWatcher(
-        SocketPerformanceWatcherFactory::PROTOCOL_TCP, one_address);
+        SocketPerformanceWatcherFactory::PROTOCOL_TCP,
+        CurrentAddress().address());
   }
 
   const NetLogWithSource& net_log = parent_job_->net_log();
