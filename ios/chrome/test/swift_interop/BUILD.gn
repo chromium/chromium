@@ -31,6 +31,7 @@ source_set("swift_interop_tests_support_files") {
     "pointer/pointer_returner.h",
     "pointer/unique_ptr.cc",
     "pointer/unique_ptr.h",
+    "struct/struct.h",
   ]
 }
 
@@ -47,6 +48,7 @@ swift_source_set("swift_interop_tests") {
     "pointer/object_passing_xctest.swift",
     "pointer/pointer_xctest.swift",
     "pointer/unique_ptr_xctest.swift",
+    "struct/struct_xctest.swift",
   ]
   frameworks = [ "UIKit.framework" ]
   deps = [
