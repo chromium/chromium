@@ -44,5 +44,5 @@ interface PageHandlerFactory {
 // used by the page handler.
 interface Page {
   // Updates the page with the new results.
-  UpdateResults(string query, array<Result> results);
+  UpdateResults(string query, array<string> keywords, array<Result> results);
 };

@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
@@ -341,8 +342,13 @@ void SearchController::Publish() {
     for (auto* result : all_results) {
       observer_results.push_back(const_cast<const ChromeSearchResult*>(result));
     }
+
+    std::vector<KeywordInfo> extracted_keyword_info =
+        ExtractKeywords(last_query_);
+
     for (Observer& observer : observer_list_) {
-      observer.OnResultsAdded(last_query_, observer_results);
+      observer.OnResultsAdded(last_query_, extracted_keyword_info,
+                              observer_results);
     }
   }
 

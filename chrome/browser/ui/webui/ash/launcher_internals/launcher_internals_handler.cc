@@ -22,9 +22,16 @@ LauncherInternalsHandler::~LauncherInternalsHandler() = default;
 
 void LauncherInternalsHandler::OnResultsAdded(
     const std::u16string& query,
+    const std::vector<app_list::KeywordInfo>& extracted_keyword_info,
     const std::vector<const ChromeSearchResult*>& results) {
   std::vector<launcher_internals::mojom::ResultPtr> internals_results;
-  for (auto* result : results) {
+  std::vector<std::string> keywords;
+
+  for (const auto& keyword : extracted_keyword_info) {
+    keywords.emplace_back(base::UTF16ToUTF8(keyword.query_token));
+  }
+
+  for (const auto* result : results) {
     auto ranker_scores = result->ranker_scores();
     ranker_scores["Relevance"] = result->relevance();
 
@@ -36,7 +43,9 @@ void LauncherInternalsHandler::OnResultsAdded(
         app_list::DisplayTypeToString(result->display_type()),
         result->display_score(), ranker_scores));
   }
-  page_->UpdateResults(base::UTF16ToUTF8(query), std::move(internals_results));
+
+  page_->UpdateResults(base::UTF16ToUTF8(query), keywords,
+                       std::move(internals_results));
 }
 
 }  // namespace ash

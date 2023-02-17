@@ -29,18 +29,18 @@ class LauncherInternalsElement extends PolymerElement {
   }
 
   static get properties() {
-    return {
-      query: String,
-    };
+    return {query: String, keywords: [String]};
   }
 
   private query: string;
+  private keywords: string[];
   private listenerIds: number[];
   private router: PageCallbackRouter;
 
   constructor() {
     super();
     this.query = '';
+    this.keywords = [];
     this.listenerIds = [];
     this.router = BrowserProxy.getInstance().callbackRouter;
   }
@@ -56,7 +56,7 @@ class LauncherInternalsElement extends PolymerElement {
     this.listenerIds.forEach(id => this.router.removeListener(id));
   }
 
-  private updateResults(query: string, results: Result[]) {
+  private updateResults(query: string, keywords: string[], results: Result[]) {
     // Split the results array into its three display surfaces.
     const recentFiles: Result[] = [];
     const recentApps: Result[] = [];
@@ -92,6 +92,11 @@ class LauncherInternalsElement extends PolymerElement {
         this.$.searchResults.clearResults();
         this.query = query;
       }
+
+      if (this.keywords != keywords) {
+        this.keywords = keywords;
+      }
+
       this.$.searchResults.addResults(searchResults);
     }
   }

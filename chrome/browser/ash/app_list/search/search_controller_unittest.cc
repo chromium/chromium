@@ -50,6 +50,7 @@ class FakeObserver : public SearchController::Observer {
 
   void OnResultsAdded(
       const std::u16string& query,
+      const std::vector<KeywordInfo>& extracted_keyword_info,
       const std::vector<const ChromeSearchResult*>& results) override {
     results_added_ = true;
   }

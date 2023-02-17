@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/burn_in_controller.h"
+#include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 #include "chrome/browser/ash/app_list/search/federated_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
@@ -76,6 +77,7 @@ class SearchController {
     // to another sequence because they may be invalidated.
     virtual void OnResultsAdded(
         const std::u16string& query,
+        const std::vector<KeywordInfo>& extracted_keyword_info,
         const std::vector<const ChromeSearchResult*>& results) {}
   };
 

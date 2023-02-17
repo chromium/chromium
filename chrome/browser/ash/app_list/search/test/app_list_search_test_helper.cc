@@ -18,6 +18,7 @@ ResultsWaiter::~ResultsWaiter() = default;
 
 void ResultsWaiter::OnResultsAdded(
     const std::u16string& query,
+    const std::vector<KeywordInfo>& extracted_keyword_info,
     const std::vector<const ChromeSearchResult*>& results) {
   if (query != query_)
     return;
