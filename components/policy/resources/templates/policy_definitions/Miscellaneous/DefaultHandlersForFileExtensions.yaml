@@ -35,7 +35,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 supported_on:
-- chrome_os:110-
+- chrome_os:111-
 owners:
 - greengrape@google.com
 - file://ui/file_manager/OWNERS
