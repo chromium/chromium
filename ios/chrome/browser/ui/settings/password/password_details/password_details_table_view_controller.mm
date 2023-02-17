@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_line_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -103,7 +104,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 @end
 
 @interface PasswordDetailsTableViewController () <
-    TableViewTextEditItemDelegate> {
+    TableViewTextEditItemDelegate,
+    TableViewMultiLineTextEditItemDelegate> {
   // Index of the password the user wants to reveal.
   NSInteger _passwordIndexToReveal;
 
@@ -330,6 +332,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   item.label = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_NOTE);
   item.text = passwordDetails.note;
   item.editingEnabled = self.tableView.editing;
+  item.delegate = self;
   return item;
 }
 
@@ -606,6 +609,14 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     [self checkIfValidPasswords];
   }
   [self reconfigureCellsForItems:@[ tableViewItem ]];
+}
+
+#pragma mark - TableViewMultiLineTextEditItemDelegate
+
+- (void)textViewItemDidChange:(TableViewMultiLineTextEditItem*)tableViewItem {
+  // Refresh the cells' height.
+  [self.tableView beginUpdates];
+  [self.tableView endUpdates];
 }
 
 #pragma mark - SettingsRootTableViewController

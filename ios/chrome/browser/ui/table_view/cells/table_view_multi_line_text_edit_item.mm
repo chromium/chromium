@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
 
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_line_text_edit_item_delegate.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -39,12 +40,11 @@
 
 - (void)textViewDidChange:(UITextView*)textView {
   self.text = textView.text;
+  [self.delegate textViewItemDidChange:self];
 }
 
 @end
 
-// TODO(crbug.com/1414897): Add updating of cell's height on edits of the text
-// field.
 @implementation TableViewMultiLineTextEditCell
 
 @synthesize textLabel = _textLabel;

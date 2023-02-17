@@ -7,8 +7,13 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
+@protocol TableViewMultiLineTextEditItemDelegate;
+
 // Contains label and field data displayed in TableViewMultiLineTextEditCell.
 @interface TableViewMultiLineTextEditItem : TableViewItem
+
+// The delegate for this table view multi-line text edit item.
+@property(nonatomic, weak) id<TableViewMultiLineTextEditItemDelegate> delegate;
 
 // Name of the text field. Displayed in a label next to the field.
 @property(nonatomic, copy) NSString* label;

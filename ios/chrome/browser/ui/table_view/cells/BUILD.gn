@@ -35,6 +35,7 @@ source_set("cells") {
     "table_view_multi_detail_text_item.mm",
     "table_view_multi_line_text_edit_item.h",
     "table_view_multi_line_text_edit_item.mm",
+    "table_view_multi_line_text_edit_item_delegate.h",
     "table_view_switch_cell.h",
     "table_view_switch_cell.mm",
     "table_view_switch_item.h",
