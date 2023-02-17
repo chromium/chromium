@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
@@ -35,6 +38,7 @@
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
@@ -55,6 +59,9 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -251,6 +258,39 @@ enum class IOSOverflowMenuActionType {
   [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
+}
+
+- (void)showSnackbarForPinnedState:(BOOL)pinnedState
+                          webState:(web::WebState*)webState {
+  DCHECK(IsPinnedTabsOverflowEnabled());
+
+  int messageId = pinnedState ? IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB
+                              : IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB;
+
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
+
+  void (^undoAction)() = ^{
+    Browser* browser = weakBrowser.get();
+    if (!browser) {
+      return;
+    }
+    [OverflowMenuMediator setTabPinned:!pinnedState
+                              webState:weakWebState.get()
+                          webStateList:browser->GetWebStateList()];
+  };
+
+  MDCSnackbarMessage* message =
+      [MDCSnackbarMessage messageWithText:l10n_util::GetNSString(messageId)];
+
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  action.handler = undoAction;
+  action.title = l10n_util::GetNSString(IDS_IOS_SNACKBAR_ACTION_UNDO);
+  message.action = action;
+
+  id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  [snackbarCommandsHandler showSnackbarMessage:message];
 }
 
 #pragma mark - PopupMenuLongPressDelegate

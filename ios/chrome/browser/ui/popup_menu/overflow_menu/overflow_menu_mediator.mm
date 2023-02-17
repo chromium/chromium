@@ -257,6 +257,17 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 @synthesize overflowMenuModel = _overflowMenuModel;
 
++ (void)setTabPinned:(BOOL)pinned
+            webState:(web::WebState*)webState
+        webStateList:(WebStateList*)webStateList {
+  if (!webState || !webStateList) {
+    return;
+  }
+
+  int webStateIndex = webStateList->GetIndexOfWebState(webState);
+  webStateList->SetWebStatePinnedAt(webStateIndex, pinned);
+}
+
 - (instancetype)init {
   self = [super init];
   if (self) {
@@ -1476,24 +1487,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   return action;
 }
 
+// Returns 'YES' if the current tab is pinned.
 - (BOOL)isTabPinned {
   DCHECK(self.webState);
   DCHECK(self.webStateList);
 
   int webStateIndex = self.webStateList->GetIndexOfWebState(self.webState);
   return self.webStateList->IsWebStatePinnedAt(webStateIndex);
-}
-
-- (void)setTabPinned:(BOOL)pinned {
-  web::WebState* webState = self.webState;
-  WebStateList* webStateList = self.webStateList;
-
-  if (!webState || !webStateList) {
-    return;
-  }
-
-  int webStateIndex = webStateList->GetIndexOfWebState(webState);
-  webStateList->SetWebStatePinnedAt(webStateIndex, pinned);
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1708,13 +1708,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // Dismisses the menu and pins the tab.
 - (void)pinTab {
-  [self setTabPinned:YES];
+  [[self class] setTabPinned:YES
+                    webState:self.webState
+                webStateList:self.webStateList];
+  [self.popupMenuCommandsHandler showSnackbarForPinnedState:YES
+                                                   webState:self.webState];
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }
 
 // Dismisses the menu and unpins the tab.
 - (void)unpinTab {
-  [self setTabPinned:NO];
+  [[self class] setTabPinned:NO
+                    webState:self.webState
+                webStateList:self.webStateList];
+  [self.popupMenuCommandsHandler showSnackbarForPinnedState:NO
+                                                   webState:self.webState];
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }
 

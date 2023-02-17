@@ -17,6 +17,10 @@ class BookmarkModel;
 namespace feature_engagement {
 class Tracker;
 }
+namespace web {
+class WebState;
+}
+
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
 @protocol BookmarksCommands;
@@ -96,6 +100,12 @@ class FollowBrowserAgent;
 // The number of destinations immediately visible to the user when opening the
 // new overflow menu (i.e. the number of "above-the-fold" destinations).
 @property(nonatomic, assign) int visibleDestinationsCount;
+
+// Updates the pin state of the tab corresponding to the given `webState` in
+// `webStateList`.
++ (void)setTabPinned:(BOOL)pinned
+            webState:(web::WebState*)webState
+        webStateList:(WebStateList*)webStateList;
 
 // Disconnect the mediator.
 - (void)disconnect;

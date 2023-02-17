@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace web {
+class WebState;
+}
+
 // Type of a popup menu command.
 typedef NS_ENUM(NSInteger, PopupMenuCommandType) {
   PopupMenuCommandTypeToolsMenu,
@@ -28,6 +32,9 @@ typedef NS_ENUM(NSInteger, PopupMenuCommandType) {
 - (void)showNewTabButtonPopup;
 // Dismisses the currently presented popup.
 - (void)dismissPopupMenuAnimated:(BOOL)animated;
+// Shows a snackbar that allows the user to UNDO its pin/unpin action.
+- (void)showSnackbarForPinnedState:(BOOL)pinnedState
+                          webState:(web::WebState*)webState;
 
 @end
 

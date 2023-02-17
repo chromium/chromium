@@ -2271,11 +2271,17 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SNACKBAR_MESSAGE_OFFLINE" desc="The iOS snackbar message when failed to follow/unfollow a web content because of offline. [iOS only]">
         You're offline. Check your internet connection and try again.
       </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB" desc="The iOS snackbar message when a tab has been pinned. [iOS only]">
+        Tab Pinned
+      </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_FAILED" desc="The iOS snackbar message when failed to unfollow a web content. [iOS only]">
         Can't unfollow. Something went wrong.
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_SUCCEED" desc="The iOS snackbar message when succeed to unfollow a web content. [iOS only]">
         Unfollowed <ph name="CHANNEL_NAME">$1<ex>CNN</ex></ph>
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB" desc="The iOS snackbar message when a tab has been unpinned. [iOS only]">
+        Tab Unpinned
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED" desc="The material toast message when incogonito mode is disabled by policy [iOS only].">
         Your organization turned off Incognito mode
