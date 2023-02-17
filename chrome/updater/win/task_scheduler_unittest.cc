@@ -59,6 +59,8 @@ class TaskSchedulerTests : public ::testing::Test {
  public:
   void SetUp() override {
     task_scheduler_ = TaskScheduler::CreateInstance(GetTestScope());
+    ASSERT_TRUE(task_scheduler_);
+
     EXPECT_TRUE(IsServiceRunning(SERVICE_SCHEDULE));
     ASSERT_TRUE(test::KillProcesses(kTestProcessExecutableName, 0))
         << test::PrintProcesses(kTestProcessExecutableName);

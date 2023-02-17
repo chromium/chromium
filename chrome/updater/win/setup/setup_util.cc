@@ -40,8 +40,10 @@ namespace updater {
 namespace {
 
 std::wstring GetTaskName(UpdaterScope scope) {
-  return TaskScheduler::CreateInstance(scope)->FindFirstTaskName(
-      GetTaskNamePrefix(scope));
+  std::unique_ptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope);
+  DCHECK(task_scheduler);
+  return task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
 }
 
 std::wstring CreateRandomTaskName(UpdaterScope scope) {
@@ -158,6 +160,7 @@ void AddInstallServerWorkItems(HKEY root,
 bool RegisterWakeTask(const base::CommandLine& run_command,
                       UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance(scope);
+  DCHECK(task_scheduler);
 
   std::wstring task_name = GetTaskName(scope);
   if (!task_name.empty()) {
@@ -194,6 +197,7 @@ bool RegisterWakeTask(const base::CommandLine& run_command,
 
 void UnregisterWakeTask(UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance(scope);
+  DCHECK(task_scheduler);
 
   const std::wstring task_name = GetTaskName(scope);
   if (task_name.empty()) {
