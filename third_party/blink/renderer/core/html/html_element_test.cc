@@ -349,9 +349,9 @@ TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
 
   // HidePopoverInternal causes :closed to match immediately, but schedules
   // the removal from the top layer.
-  target->HidePopoverInternal(HidePopoverFocusBehavior::kFocusPreviousElement,
-                              HidePopoverForcingLevel::kHideAfterAnimations,
-                              nullptr);
+  target->HidePopoverInternal(
+      HidePopoverFocusBehavior::kFocusPreviousElement,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions, nullptr);
   EXPECT_FALSE(target->popoverOpen());
   EXPECT_TRUE(target->IsInTopLayer());
   UpdateAllLifecyclePhasesForTest();

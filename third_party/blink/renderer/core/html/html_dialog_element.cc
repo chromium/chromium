@@ -61,7 +61,7 @@ void HTMLDialogElement::SetFocusForDialogLegacy(HTMLDialogElement* dialog) {
           document.GetExecutionContext())) {
     HTMLElement::HideAllPopoversUntil(
         nullptr, document, HidePopoverFocusBehavior::kNone,
-        HidePopoverForcingLevel::kHideAfterAnimations);
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
   }
 
   dialog->previously_focused_element_ = document.FocusedElement();
@@ -357,7 +357,7 @@ void HTMLDialogElement::SetFocusForDialog() {
           GetDocument().GetExecutionContext())) {
     HTMLElement::HideAllPopoversUntil(
         nullptr, GetDocument(), HidePopoverFocusBehavior::kNone,
-        HidePopoverForcingLevel::kHideAfterAnimations);
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
   }
 
   Element* control = GetFocusDelegate(/*autofocus_only=*/false);

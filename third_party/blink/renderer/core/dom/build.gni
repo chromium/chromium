@@ -227,8 +227,6 @@ blink_core_sources_dom = [
   "nth_index_cache.h",
   "parent_node.h",
   "parser_content_policy.h",
-  "popover_animation_finished_event_listener.cc",
-  "popover_animation_finished_event_listener.h",
   "popover_data.h",
   "presentation_attribute_style.cc",
   "presentation_attribute_style.h",

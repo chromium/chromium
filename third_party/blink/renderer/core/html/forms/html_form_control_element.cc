@@ -416,7 +416,7 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
         if (can_hide) {
           popover.popover->HidePopoverInternal(
               HidePopoverFocusBehavior::kFocusPreviousElement,
-              HidePopoverForcingLevel::kHideAfterAnimations,
+              HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
               /*exception_state=*/nullptr);
         } else if (can_show) {
           popover.popover->InvokePopover(this);

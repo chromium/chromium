@@ -210,7 +210,7 @@ void GoFullscreen(Element& element,
           document.GetExecutionContext())) {
     HTMLElement::HideAllPopoversUntil(
         nullptr, document, HidePopoverFocusBehavior::kNone,
-        HidePopoverForcingLevel::kHideAfterAnimations);
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
   }
 
   // To fullscreen an |element| within a |document|, set the |element|'s

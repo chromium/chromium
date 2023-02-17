@@ -1213,9 +1213,10 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
     String original_type = FastGetAttribute(html_names::kPopoverAttr);
     // If the popover type is changing, hide it.
     if (popoverOpen()) {
-      HidePopoverInternal(HidePopoverFocusBehavior::kFocusPreviousElement,
-                          HidePopoverForcingLevel::kHideAfterAnimations,
-                          /*exception_state=*/nullptr);
+      HidePopoverInternal(
+          HidePopoverFocusBehavior::kFocusPreviousElement,
+          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+          /*exception_state=*/nullptr);
       // Event handlers could have changed the popover, including by removing
       // the popover attribute, or changing its value. If that happened, defer
       // to the change that already happened, and don't reset it again here.
@@ -1401,9 +1402,9 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
     // If the new popover is a popover=auto, hide any popover above this in the
     // stack, if any.
     const auto* auto_ancestor = FindTopmostPopoverAncestor(*this);
-    HideAllPopoversUntil(auto_ancestor, document,
-                         HidePopoverFocusBehavior::kNone,
-                         HidePopoverForcingLevel::kHideAfterAnimations);
+    HideAllPopoversUntil(
+        auto_ancestor, document, HidePopoverFocusBehavior::kNone,
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
 
     // The 'beforetoggle' event handlers could have changed this popover, e.g.
     // by changing its type, removing it from the document, or calling
@@ -1431,22 +1432,19 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
     stack.push_back(this);
   }
 
-  GetPopoverData()->setAnimationFinishedListener(nullptr);
   GetPopoverData()->setPreviouslyFocusedElement(nullptr);
   Element* originally_focused_element = document.FocusedElement();
   document.AddToTopLayer(this);
-  // Stop matching `:closed`, and remove display:none styling:
-  GetPopoverData()->setVisibilityState(PopoverVisibilityState::kTransitioning);
+  // Make the popover match `:open`, stop matching `:closed`, and remove
+  // `display:none` styling:
+  GetPopoverData()->setVisibilityState(PopoverVisibilityState::kShowing);
   PseudoStateChanged(CSSSelector::kPseudoClosed);
+  PseudoStateChanged(CSSSelector::kPseudoOpen);
 
   // Force a style update. This ensures that base property values are set prior
   // to `:open` matching, so that transitions can start on the change to
   // top layer.
   document.UpdateStyleAndLayoutTreeForNode(this);
-
-  // Make the popover match `:open`:
-  GetPopoverData()->setVisibilityState(PopoverVisibilityState::kShowing);
-  PseudoStateChanged(CSSSelector::kPseudoOpen);
 
   SetPopoverFocusOnShow();
 
@@ -1488,29 +1486,21 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
 
 // static
 // All popovers up to, but not including, |endpoint|, will be hidden.
-void HTMLElement::HideAllPopoversUntil(const HTMLElement* endpoint,
-                                       Document& document,
-                                       HidePopoverFocusBehavior focus_behavior,
-                                       HidePopoverForcingLevel forcing_level) {
+void HTMLElement::HideAllPopoversUntil(
+    const HTMLElement* endpoint,
+    Document& document,
+    HidePopoverFocusBehavior focus_behavior,
+    HidePopoverTransitionBehavior transition_behavior) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       document.GetExecutionContext()));
   DCHECK(!endpoint || endpoint->HasPopoverAttribute());
 
-  // If we're forcing a popover to hide immediately, first hide any other
-  // popovers that have already started the hide process.
-  if (forcing_level == HidePopoverForcingLevel::kHideImmediately) {
-    auto popovers_to_hide = document.PopoversWaitingToHide();
-    for (auto popover : popovers_to_hide)
-      popover->PopoverHideFinishIfNeeded(/*immediate*/ true);
-    DCHECK(document.PopoversWaitingToHide().empty());
-  }
-
   auto close_all_open_popovers = [&document, &focus_behavior,
-                                  &forcing_level]() {
+                                  &transition_behavior]() {
     while (auto* popover = document.TopmostPopover()) {
       // We never throw exceptions from HideAllPopoversUntil, since it is always
       // used to close other popovers that are already showing.
-      popover->HidePopoverInternal(focus_behavior, forcing_level,
+      popover->HidePopoverInternal(focus_behavior, transition_behavior,
                                    /*exception_state=*/nullptr);
     }
   };
@@ -1538,7 +1528,7 @@ void HTMLElement::HideAllPopoversUntil(const HTMLElement* endpoint,
     // We never throw exceptions from HideAllPopoversUntil, since it is always
     // used to close other popovers that are already showing.
     document.PopoverStack().back()->HidePopoverInternal(
-        focus_behavior, forcing_level,
+        focus_behavior, transition_behavior,
         /*exception_state=*/nullptr);
   }
 }
@@ -1546,9 +1536,10 @@ void HTMLElement::HideAllPopoversUntil(const HTMLElement* endpoint,
 void HTMLElement::hidePopover(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  HidePopoverInternal(HidePopoverFocusBehavior::kFocusPreviousElement,
-                      HidePopoverForcingLevel::kHideAfterAnimations,
-                      &exception_state);
+  HidePopoverInternal(
+      HidePopoverFocusBehavior::kFocusPreviousElement,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+      &exception_state);
 }
 
 // Hiding a popover happens in phases, to facilitate animations and
@@ -1565,9 +1556,10 @@ void HTMLElement::hidePopover(ExceptionState& exception_state) {
 //      until all of them finish or are cancelled.
 // 5. Remove the popover from the top layer, and add the UA display:none style.
 // 6. Update style.
-void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
-                                      HidePopoverForcingLevel forcing_level,
-                                      ExceptionState* exception_state) {
+void HTMLElement::HidePopoverInternal(
+    HidePopoverFocusBehavior focus_behavior,
+    HidePopoverTransitionBehavior transition_behavior,
+    ExceptionState* exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
 
@@ -1578,7 +1570,7 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   auto& document = GetDocument();
   if (PopoverType() == PopoverValueType::kAuto) {
     // Hide any popovers above us in the stack.
-    HideAllPopoversUntil(this, document, focus_behavior, forcing_level);
+    HideAllPopoversUntil(this, document, focus_behavior, transition_behavior);
 
     // The 'beforetoggle' event handlers could have changed this popover, e.g.
     // by changing its type, removing it from the document, or calling
@@ -1599,101 +1591,71 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
     DCHECK_EQ(stack.back(), this);
     stack.pop_back();
   }
-  document.PopoversWaitingToHide().insert(this);
-
-  bool force_hide = forcing_level == HidePopoverForcingLevel::kHideImmediately;
-  HeapVector<Member<Animation>> previous_animations;
-  if (!force_hide) {
-    previous_animations = GetAnimationsInternal(
-        GetAnimationsOptionsResolved{.use_subtree = true});
-  }
 
   GetPopoverData()->setInvoker(nullptr);
+  // Events are only fired in the case that the popover is not being removed
+  // from the document.
+  if (transition_behavior ==
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions) {
+    // Fire the "closing" beforetoggle event.
+    auto* event = ToggleEvent::Create(
+        event_type_names::kBeforetoggle, Event::Cancelable::kNo,
+        /*old_state*/ "open", /*new_state*/ "closed");
+    DCHECK(!event->bubbles());
+    DCHECK(!event->cancelable());
+    DCHECK_EQ(event->oldState(), "open");
+    DCHECK_EQ(event->newState(), "closed");
+    event->SetTarget(this);
+    auto result = DispatchEvent(*event);
+    DCHECK_EQ(result, DispatchEventResult::kNotCanceled);
 
-  if (force_hide) {
-    // Stop matching `:open` now:
-    GetPopoverData()->setVisibilityState(
-        PopoverVisibilityState::kTransitioning);
-    PseudoStateChanged(CSSSelector::kPseudoOpen);
+    // The 'beforetoggle' event handler could have changed this popover, e.g. by
+    // changing its type, removing it from the document, or calling
+    // showPopover().
+    if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
+                        /*include_event_handler_text=*/true)) {
+      return;
+    }
 
-    // Note that a `beforetoggle` event is not fired in the case that the
-    // popover is being hidden because it has been removed from the document.
+    // Queue the "closing" toggle event.
+    String old_state = "open";
+    ToggleEvent* after_event;
+    if (GetPopoverData()->hasPendingToggleEventTask()) {
+      // There's already a queued 'toggle' event. Cancel it and fire a new one
+      // keeping the original value for old_state.
+      old_state = GetPopoverData()->pendingToggleEventStartedClosed() ? "closed"
+                                                                      : "open";
+      GetPopoverData()->cancelPendingToggleEventTask();
+    } else {
+      GetPopoverData()->setPendingToggleEventStartedClosed(false);
+    }
+    after_event = ToggleEvent::Create(event_type_names::kToggle,
+                                      Event::Cancelable::kNo, old_state,
+                                      /*new_state*/ "closed");
+    DCHECK_EQ(after_event->newState(), "closed");
+    DCHECK_EQ(after_event->oldState(), old_state);
+    DCHECK(!after_event->bubbles());
+    DCHECK(!after_event->cancelable());
+    after_event->SetTarget(this);
+    GetPopoverData()->setPendingToggleEventTask(PostCancellableTask(
+        *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
+        WTF::BindOnce(
+            [](HTMLElement* element, ToggleEvent* event) {
+              DCHECK(element);
+              DCHECK(event);
+              element->DispatchEvent(*event);
+            },
+            WrapPersistent(this), WrapPersistent(after_event))));
 
-    // Immediately finish the hide process.
-    return PopoverHideFinishIfNeeded(/*immediate*/ true);
+    GetDocument().ScheduleForTopLayerRemoval(this);
+  } else {
+    GetDocument().RemoveFromTopLayerImmediately(this);
   }
 
-  // Fire the "closing" beforetoggle event.
-  auto* event = ToggleEvent::Create(
-      event_type_names::kBeforetoggle, Event::Cancelable::kNo,
-      /*old_state*/ "open", /*new_state*/ "closed");
-  DCHECK(!event->bubbles());
-  DCHECK(!event->cancelable());
-  DCHECK_EQ(event->oldState(), "open");
-  DCHECK_EQ(event->newState(), "closed");
-  event->SetTarget(this);
-  auto result = DispatchEvent(*event);
-  DCHECK_EQ(result, DispatchEventResult::kNotCanceled);
-
-  // The 'beforetoggle' event handler could have changed this popover, e.g. by
-  // changing its type, removing it from the document, or calling showPopover().
-  if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
-                      /*include_event_handler_text=*/true)) {
-    return;
-  }
-
-  // Stop matching `:open`:
-  GetPopoverData()->setVisibilityState(PopoverVisibilityState::kTransitioning);
+  // Re-apply display:none, and start matching `:closed`.
+  GetPopoverData()->setVisibilityState(PopoverVisibilityState::kHidden);
   PseudoStateChanged(CSSSelector::kPseudoOpen);
-
-  // Grab all animations, so that we can "finish" the hide operation once
-  // they complete. This will *also* force a style update, ensuring property
-  // values are set after `:open` stops matching, so that transitions
-  // can start.
-  HeapHashSet<Member<EventTarget>> animations;
-  for (const auto& animation : GetAnimationsInternal(
-           GetAnimationsOptionsResolved{.use_subtree = true})) {
-    animations.insert(animation);
-  }
-  animations.RemoveAll(previous_animations);
-  if (animations.empty()) {
-    // No animations to wait for, so hide when possible.
-    PopoverHideFinishIfNeeded(/*immediate*/ false);
-  } else {
-    GetPopoverData()->setAnimationFinishedListener(
-        MakeGarbageCollected<PopoverAnimationFinishedEventListener>(
-            this, std::move(animations)));
-  }
-
-  // Queue the "closing" toggle event.
-  String old_state = "open";
-  ToggleEvent* after_event;
-  if (GetPopoverData()->hasPendingToggleEventTask()) {
-    // There's already a queued 'toggle' event. Cancel it and fire a new one
-    // keeping the original value for old_state.
-    old_state =
-        GetPopoverData()->pendingToggleEventStartedClosed() ? "closed" : "open";
-    GetPopoverData()->cancelPendingToggleEventTask();
-  } else {
-    GetPopoverData()->setPendingToggleEventStartedClosed(false);
-  }
-  after_event = ToggleEvent::Create(event_type_names::kToggle,
-                                    Event::Cancelable::kNo, old_state,
-                                    /*new_state*/ "closed");
-  DCHECK_EQ(after_event->newState(), "closed");
-  DCHECK_EQ(after_event->oldState(), old_state);
-  DCHECK(!after_event->bubbles());
-  DCHECK(!after_event->cancelable());
-  after_event->SetTarget(this);
-  GetPopoverData()->setPendingToggleEventTask(PostCancellableTask(
-      *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      WTF::BindOnce(
-          [](HTMLElement* element, ToggleEvent* event) {
-            DCHECK(element);
-            DCHECK(event);
-            element->DispatchEvent(*event);
-          },
-          WrapPersistent(this), WrapPersistent(after_event))));
+  PseudoStateChanged(CSSSelector::kPseudoClosed);
 
   Element* previously_focused_element =
       GetPopoverData()->previouslyFocusedElement();
@@ -1707,23 +1669,6 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
           /*capabilities=*/nullptr, focus_options,
           /*gate_on_user_activation=*/true));
     }
-  }
-}
-
-void HTMLElement::PopoverHideFinishIfNeeded(bool immediate) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-  GetDocument().PopoversWaitingToHide().erase(this);
-  if (immediate) {
-    GetDocument().RemoveFromTopLayerImmediately(this);
-  } else {
-    GetDocument().ScheduleForTopLayerRemoval(this);
-  }
-  // Re-apply display:none, and start matching `:closed`.
-  if (GetPopoverData()) {
-    GetPopoverData()->setVisibilityState(PopoverVisibilityState::kHidden);
-    GetPopoverData()->setAnimationFinishedListener(nullptr);
-    PseudoStateChanged(CSSSelector::kPseudoClosed);
   }
 }
 
@@ -1938,9 +1883,9 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
           ancestor_popover == document.PopoverPointerdownTarget();
       document.SetPopoverPointerdownTarget(nullptr);
       if (same_target) {
-        HideAllPopoversUntil(ancestor_popover, document,
-                             HidePopoverFocusBehavior::kNone,
-                             HidePopoverForcingLevel::kHideAfterAnimations);
+        HideAllPopoversUntil(
+            ancestor_popover, document, HidePopoverFocusBehavior::kNone,
+            HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
       }
     }
   } else if (event_type == event_type_names::kKeydown) {
@@ -1951,7 +1896,7 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
       // Escape key just pops the topmost popover off the stack.
       document.TopmostPopover()->HidePopoverInternal(
           HidePopoverFocusBehavior::kFocusPreviousElement,
-          HidePopoverForcingLevel::kHideAfterAnimations,
+          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
           /*exception_state=*/nullptr);
     }
   }
@@ -2033,13 +1978,13 @@ void HTMLElement::CheckAndPossiblyClosePopoverStack() {
           "modification to a button with a popover target attribute such as "
           "adding the disabled attribute, adding the form attribute, or "
           "disconnecting it from the document. All open popovers will be "
-          "closed.");
+          "closed, and no events will be fired.");
       console_message->SetNodes(GetDocument().GetFrame(),
                                 {DOMNodeIds::IdForNode(this)});
       GetDocument().AddConsoleMessage(console_message);
       HTMLElement::HideAllPopoversUntil(
           nullptr, GetDocument(), HidePopoverFocusBehavior::kNone,
-          HidePopoverForcingLevel::kHideImmediately);
+          HidePopoverTransitionBehavior::kNoEventsNoWaiting);
       return;
     }
   }
@@ -2487,7 +2432,7 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
     if (was_in_document) {
       // We can't run focus event handlers while removing elements.
       HidePopoverInternal(HidePopoverFocusBehavior::kNone,
-                          HidePopoverForcingLevel::kHideImmediately,
+                          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
                           /*exception_state=*/nullptr);
     }
   }
