@@ -46,12 +46,15 @@ mac_app_bundle("updater_bundle") {
     ":keystone_agent_bundle_resource_plist",
     ":updater_bundle_helpers",
     ":updater_bundle_keystone_executable",
-    ":updater_bundle_keystone_helpers",
+    ":updater_bundle_keystone_helpers_ksinstall",
     ":updater_bundle_keystone_plist",
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
   ]
-  public_deps = [ ":updater_bundle_keystone_helpers_links" ]
+  public_deps = [
+    ":ksadmin_copy",
+    ":ksadmin_link",
+  ]
 }
 
 mac_app_bundle("updater_bundle_test") {
@@ -66,12 +69,15 @@ mac_app_bundle("updater_bundle_test") {
     ":keystone_agent_bundle_resource_plist",
     ":updater_bundle_helpers_test",
     ":updater_bundle_keystone_executable",
-    ":updater_bundle_keystone_helpers",
+    ":updater_bundle_keystone_helpers_ksinstall",
     ":updater_bundle_keystone_plist",
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
   ]
-  public_deps = [ ":updater_bundle_keystone_helpers_links_test" ]
+  public_deps = [
+    ":ksadmin_test_copy",
+    ":ksadmin_test_link",
+  ]
 }
 
 source_set("privileged_helper_sources") {
@@ -319,6 +325,7 @@ source_set("ksadmin_lib") {
 
   visibility = [
     ":ksadmin",
+    ":ksadmin_test",
     "//chrome/updater:updater_test_sources",
   ]
 }
@@ -327,16 +334,8 @@ executable("ksadmin") {
   output_name = "ksadmin"
   sources = [ "keystone/ksadmin_main.cc" ]
 
-  public_deps = [ ":ksadmin_lib" ]
-
-  # ksadmin_link must have a lower mtime than ksadmin for the build to be
-  # deterministic: depend on ksadmin_link so it is always built first.
-  # Otherwise, when GoogleSoftwareUpdate.bundle is constructed, ninja will stat
-  # (not lstat) the symlink and find the mtime of the copy of ksadmin, which
-  # will appear to be out of date since it is less than the mtime shown when
-  # ksadmin_link is statted.
   deps = [
-    ":ksadmin_link",
+    ":ksadmin_lib",
     "//base",
     "//chrome/updater:constants_prod",
   ]
@@ -347,6 +346,36 @@ executable("ksadmin") {
     # asan injects a dylib that we package in ../MacOS.
     ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
   }
+}
+
+copy("ksadmin_copy") {
+  sources = [ "$root_out_dir/ksadmin" ]
+  outputs = [ "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin" ]
+  deps = [ ":ksadmin" ]
+}
+
+executable("ksadmin_test") {
+  output_name = "ksadmin_test"
+  sources = [ "keystone/ksadmin_main.cc" ]
+
+  deps = [
+    ":ksadmin_lib",
+    "//base",
+    "//chrome/updater:constants_test",
+  ]
+
+  frameworks = [ "CoreFoundation.framework" ]
+
+  if (is_asan) {
+    # asan injects a dylib that we package in ../MacOS.
+    ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
+  }
+}
+
+copy("ksadmin_test_copy") {
+  sources = [ "$root_out_dir/ksadmin_test" ]
+  outputs = [ "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin" ]
+  deps = [ ":ksadmin_test" ]
 }
 
 executable("ksinstall") {
@@ -373,39 +402,16 @@ executable("ksinstall") {
   }
 }
 
-bundle_data("keystone_helpers") {
-  sources = [ "$root_out_dir/ksinstall" ]
-
-  outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
-  public_deps = [ ":ksinstall" ]
-}
-
-template("ksadmin_include") {
-  assert(defined(invoker.contents_dir))
-  copy_exe_name = target_name + "_copy_executable"
-  copy(copy_exe_name) {
-    sources = [ "$root_out_dir/ksadmin" ]
-    outputs = [ invoker.contents_dir + "/Helpers/ksadmin" ]
-    deps = [ ":ksadmin" ]
-  }
-  copy(target_name) {
-    sources = [ "$root_gen_dir/updater/links/ksadmin" ]
-    outputs = [ invoker.contents_dir + "/MacOS/ksadmin" ]
-    public_deps = [
-      ":$copy_exe_name",
-      ":ksadmin_link",
-    ]
-  }
-}
-
-ksadmin_include("keystone_helpers_links") {
-  contents_dir = "$root_out_dir/$keystone_app_name.bundle/Contents"
-}
-
 symlink("ksadmin_link") {
-  source = "$root_gen_dir/updater/Helpers/ksadmin"
-  output = "$root_gen_dir/updater/links/ksadmin"
-  touch = true
+  source = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin"
+  output = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin"
+  deps = [ ":ksadmin" ]
+}
+
+symlink("ksadmin_test_link") {
+  source = "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin"
+  output = "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin"
+  deps = [ ":ksadmin_test" ]
 }
 
 mac_app_bundle("keystone_agent_bundle") {
@@ -446,11 +452,6 @@ mac_app_bundle("keystone_bundle") {
     "MAC_BUNDLE_IDENTIFIER=$keystone_bundle_identifier",
     "PACKAGE_TYPE=BNDL",
   ]
-  public_deps = [
-    ":keystone_helpers",
-    ":keystone_helpers_links",
-  ]
-  deps = [ ":ksadmin_link" ]
 }
 
 bundle_data("updater_bundle_keystone_executable") {
@@ -473,20 +474,11 @@ bundle_data("updater_bundle_keystone_plist") {
   public_deps = [ ":keystone_bundle" ]
 }
 
-bundle_data("updater_bundle_keystone_helpers") {
-  sources =
-      [ "$root_out_dir/$keystone_app_name.bundle/Contents/Helpers/ksinstall" ]
+bundle_data("updater_bundle_keystone_helpers_ksinstall") {
+  sources = [ "$root_out_dir/ksinstall" ]
   outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Helpers/{{source_file_part}}" ]
 
-  public_deps = [ ":keystone_bundle" ]
-}
-
-ksadmin_include("updater_bundle_keystone_helpers_links") {
-  contents_dir = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents"
-}
-
-ksadmin_include("updater_bundle_keystone_helpers_links_test") {
-  contents_dir = "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents"
+  public_deps = [ ":ksinstall" ]
 }
 
 bundle_data("updater_bundle_helpers") {
