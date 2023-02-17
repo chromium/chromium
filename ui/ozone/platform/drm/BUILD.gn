@@ -102,8 +102,6 @@ source_set("gbm") {
     "host/drm_cursor.h",
     "host/drm_device_connector.cc",
     "host/drm_device_connector.h",
-    "host/drm_device_handle.cc",
-    "host/drm_device_handle.h",
     "host/drm_display_host.cc",
     "host/drm_display_host.h",
     "host/drm_display_host_manager.cc",

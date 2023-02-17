@@ -23,10 +23,10 @@
 namespace ui {
 
 class DeviceManager;
-class DrmDeviceHandle;
 class DrmDisplayHost;
 class DrmDisplayHostManager;
 class DrmNativeDisplayDelegate;
+class DrmWrapper;
 class GpuThreadAdapter;
 
 // The portion of the DrmDisplayHostManager implementation that is agnostic
@@ -99,7 +99,7 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   // are responsible for dequing the event and scheduling the next event.
   void OnAddGraphicsDevice(const base::FilePath& path,
                            const base::FilePath& sysfs_path,
-                           std::unique_ptr<DrmDeviceHandle> handle);
+                           std::unique_ptr<DrmWrapper> drm);
   void OnUpdateGraphicsDevice(const EventPropertyMap& udev_event_props);
   void OnRemoveGraphicsDevice(const base::FilePath& path);
 
@@ -146,7 +146,7 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
 
   // This is used to cache the primary DRM device until the channel is
   // established.
-  std::unique_ptr<DrmDeviceHandle> primary_drm_device_handle_;
+  std::unique_ptr<DrmWrapper> primary_drm_device_;
 
   base::WeakPtrFactory<DrmDisplayHostManager> weak_ptr_factory_{this};
 };

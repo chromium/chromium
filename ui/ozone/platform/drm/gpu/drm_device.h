@@ -62,7 +62,6 @@ class DrmDevice : public DrmWrapper,
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedDictionary dict) const override;
 
-  bool is_atomic() const { return is_atomic_; }
   HardwareDisplayPlaneManager* plane_manager() { return plane_manager_.get(); }
   GbmDevice* gbm_device() const { return gbm_.get(); }
 
@@ -85,7 +84,6 @@ class DrmDevice : public DrmWrapper,
   class IOWatcher;
   class PageFlipManager;
 
-  bool is_atomic_ = false;
   std::unique_ptr<PageFlipManager> page_flip_manager_;
 
   // Watcher for |fd_| listening for page flip events.

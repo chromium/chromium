@@ -93,6 +93,12 @@ bool DrmWrapper::Initialize() {
     return false;
   }
 
+  // Set atomic capabilities.
+  is_atomic_ = SetCapability(DRM_CLIENT_CAP_ATOMIC, 1);
+
+  // Expose all planes (overlay, primary, and cursor) to userspace.
+  SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
+
   uint64_t value;
   allow_addfb2_modifiers_ =
       GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &value) && value;
@@ -466,6 +472,10 @@ void DrmWrapper::WriteIntoTrace(perfetto::TracedDictionary dict) const {
 
 absl::optional<std::string> DrmWrapper::GetDriverName() const {
   return GetDrmDriverNameFromFd(drm_fd_.get());
+}
+
+base::ScopedFD DrmWrapper::ToScopedFD(std::unique_ptr<DrmWrapper> drm) {
+  return std::move(drm->drm_fd_);
 }
 
 }  // namespace ui

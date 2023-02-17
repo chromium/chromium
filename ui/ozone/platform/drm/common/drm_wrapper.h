@@ -255,10 +255,14 @@ class DrmWrapper {
 
   virtual absl::optional<std::string> GetDriverName() const;
 
+  // Extracts the FD from the given |drm|. The |drm| object will be invalidated.
+  static base::ScopedFD ToScopedFD(std::unique_ptr<DrmWrapper> drm);
+
   base::FilePath device_path() const { return device_path_; }
   int get_fd() const { return drm_fd_.get(); }
   bool allow_addfb2_modifiers() const { return allow_addfb2_modifiers_; }
   int modeset_sequence_id() const { return modeset_sequence_id_; }
+  bool is_atomic() const { return is_atomic_; }
   bool is_primary_device() const { return is_primary_device_; }
 
  protected:
@@ -267,6 +271,7 @@ class DrmWrapper {
   // DRM device FD.
   base::ScopedFD drm_fd_;
 
+  bool is_atomic_ = false;
   bool allow_addfb2_modifiers_ = false;
 
   // Sequence ID incremented at each modeset.
