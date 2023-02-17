@@ -51,7 +51,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "ui/display/screen_base.h"
-#include "ui/display/test/scoped_screen_override.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -1936,7 +1935,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 class MockScreen : public display::ScreenBase {
  public:
   MockScreen() = default;
-  ~MockScreen() override = default;
+  MockScreen(const MockScreen&) = delete;
+  const MockScreen& operator=(const MockScreen&) = delete;
+  ~MockScreen() override { display::Screen::SetScreenInstance(nullptr); }
+
+  void Init() { display::Screen::SetScreenInstance(this); }
 
   // display::ScreenBase:
   display::Display GetDisplayNearestWindow(
@@ -1970,7 +1973,7 @@ class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
     // Use the default. See `SetUpOnMainThread`.
     BrowserNavigatorTest::SetScreenInstance();
 #else
-    screen_override_.emplace(&mock_screen_);
+    mock_screen_.Init();
     mock_screen_.display_list().AddDisplay({1, gfx::Rect(0, 0, 800, 800)},
                                            display::DisplayList::Type::PRIMARY);
     mock_screen_.display_list().AddDisplay(
@@ -1996,7 +1999,6 @@ class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
 
  private:
   MockScreen mock_screen_;
-  absl::optional<display::test::ScopedScreenOverride> screen_override_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
