@@ -48,6 +48,9 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 // Associated password.
 @property(nonatomic, copy) NSString* password;
 
+// Associated note.
+@property(nonatomic, copy) NSString* note;
+
 // Whether password is compromised or not.
 @property(nonatomic, assign, getter=isCompromised) BOOL compromised;
 

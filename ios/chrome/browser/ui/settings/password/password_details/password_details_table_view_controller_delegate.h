@@ -15,7 +15,8 @@
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password
                       withOldUsername:(NSString*)oldUsername
-                       andOldPassword:(NSString*)oldPassword;
+                          oldPassword:(NSString*)oldPassword
+                              oldNote:(NSString*)oldNote;
 
 // Called when we finish treating all the passwords changes in the password
 // details view.

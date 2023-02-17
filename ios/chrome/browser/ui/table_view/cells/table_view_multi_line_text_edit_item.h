@@ -1,0 +1,36 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_MULTI_LINE_TEXT_EDIT_ITEM_H_
+#define IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_MULTI_LINE_TEXT_EDIT_ITEM_H_
+
+#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+
+// Contains label and field data displayed in TableViewMultiLineTextEditCell.
+@interface TableViewMultiLineTextEditItem : TableViewItem
+
+// Name of the text field. Displayed in a label next to the field.
+@property(nonatomic, copy) NSString* label;
+
+// The value of the multi-line text field.
+@property(nonatomic, copy) NSString* text;
+
+// Whether the text field is enabled for editing.
+@property(nonatomic, assign) BOOL editingEnabled;
+
+@end
+
+// Implements a TableViewCell that displays a label in the first line and a
+// multi-line text below it.
+@interface TableViewMultiLineTextEditCell : TableViewCell
+
+// Label at the leading edge of the cell.
+@property(nonatomic, readonly, strong) UILabel* textLabel;
+
+// Text field below the label.
+@property(nonatomic, readonly, strong) UITextView* textView;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_MULTI_LINE_TEXT_EDIT_ITEM_H_

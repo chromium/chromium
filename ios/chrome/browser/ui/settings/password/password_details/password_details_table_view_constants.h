@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, PasswordDetailsItemType) {
   PasswordDetailsItemTypeWebsite = kItemTypeEnumZero,
   PasswordDetailsItemTypeUsername,
   PasswordDetailsItemTypePassword,
+  PasswordDetailsItemTypeNote,
   PasswordDetailsItemTypeFederation,
   PasswordDetailsItemTypeChangePasswordButton,
   PasswordDetailsItemTypeChangePasswordRecommendation,

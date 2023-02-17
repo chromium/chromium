@@ -3053,6 +3053,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SHOW_PASSWORD_VIEW_FEDERATION" desc="Label indicating that the text displayed below is the hostname of the identity provider used for the displayed credential. [Length: to fit on one line] [iOS only]">
         Signed In With
       </message>
+      <message name="IDS_IOS_SHOW_PASSWORD_VIEW_NOTE" desc="Label indicating that the text displayed below is a note for a password added by the user. [Length: 20em] [iOS only]">
+        Note
+      </message>
       <message name="IDS_IOS_CANCEL_PASSWORD_DELETION" desc="Label of a confirmation dialogue button which allows the user to cancel deletion of a stored password. [Length: one line] [iOS only]">
         Cancel
       </message>

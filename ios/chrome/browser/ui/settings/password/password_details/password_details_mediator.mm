@@ -7,6 +7,7 @@
 #import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
@@ -15,6 +16,14 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+bool IsPasswordNotesWithBackupEnabled() {
+  return base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup);
+}
+
+}  // namespace
 
 using base::SysNSStringToUTF16;
 
@@ -122,14 +131,15 @@ using base::SysNSStringToUTF16;
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password
                       withOldUsername:(NSString*)oldUsername
-                       andOldPassword:(NSString*)oldPassword {
+                          oldPassword:(NSString*)oldPassword
+                              oldNote:(NSString*)oldNote {
   if ([password.password length] != 0) {
     password_manager::CredentialUIEntry original_credential;
 
-    auto it = std::find_if(
-        _credentials.begin(), _credentials.end(),
-        [password, oldUsername,
-         oldPassword](password_manager::CredentialUIEntry credential) {
+    auto it = base::ranges::find_if(
+        _credentials,
+        [password, oldUsername, oldPassword,
+         oldNote](const password_manager::CredentialUIEntry& credential) {
           return
               [password.signonRealm
                   isEqualToString:[NSString stringWithUTF8String:
@@ -138,7 +148,10 @@ using base::SysNSStringToUTF16;
               [oldUsername isEqualToString:base::SysUTF16ToNSString(
                                                credential.username)] &&
               [oldPassword isEqualToString:base::SysUTF16ToNSString(
-                                               credential.password)];
+                                               credential.password)] &&
+              (!IsPasswordNotesWithBackupEnabled() ||
+               [oldNote
+                   isEqualToString:base::SysUTF16ToNSString(credential.note)]);
         });
 
     // There should be no reason not to find the credential in the vector of
@@ -150,6 +163,9 @@ using base::SysNSStringToUTF16;
         original_credential;
     updated_credential.username = SysNSStringToUTF16(password.username);
     updated_credential.password = SysNSStringToUTF16(password.password);
+    if (IsPasswordNotesWithBackupEnabled()) {
+      updated_credential.note = SysNSStringToUTF16(password.note);
+    }
     if (_manager->GetSavedPasswordsPresenter()->EditSavedCredentials(
             original_credential, updated_credential) ==
         password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {
