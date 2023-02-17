@@ -446,6 +446,18 @@ CGFloat ModuleVerticalSpacing() {
     ]];
     [self.audience returnToRecentTabWasAdded];
   }
+  // Trigger a relayout so that the Return To Recent Tab view will be counted in
+  // the Content Suggestions height. Upon app startup when this is often added
+  // asynchronously as the NTP is constructing the entire surface, so accurate
+  // height info is very important to prevent pushing content below the Return
+  // To Recent Tab view down as opposed to pushing the content above the view up
+  // if it is not counted in the height.
+  // This only has to happen after `-viewDidLoad` has completed since it is
+  // adding views after the initial layout construction in `-viewDidLoad`.
+  if (self.viewLoaded) {
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+  }
 }
 
 - (void)updateReturnToRecentTabTileWithConfig:
@@ -509,6 +521,18 @@ CGFloat ModuleVerticalSpacing() {
   }
   [self populateMostVisitedModule];
   base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
+  // Trigger a relayout so that the MVTs will be counted in the Content
+  // Suggestions height. Upon app startup when this is often added
+  // asynchronously as the NTP is constructing the entire surface, so accurate
+  // height info is very important to simulate pushing content below the MVT
+  // down as opposed to pushing the content above the MVT up if the MVTs are not
+  // counted in the height.
+  // This only has to happen after `-viewDidLoad` has completed since it is
+  // adding views after the initial layout construction in `-viewDidLoad`.
+  if (self.viewLoaded) {
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+  }
 }
 
 - (void)setShortcutTilesWithConfigs:

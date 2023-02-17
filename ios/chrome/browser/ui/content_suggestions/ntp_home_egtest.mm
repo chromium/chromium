@@ -150,6 +150,10 @@ id<GREYMatcher> notPracticallyVisible() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
+  // Show doodle to make sure tests cover async callback logic updating logo.
+  config.additional_args.push_back(
+      std::string("-google-doodle-url=https://www.gstatic.com/chrome/ntp/"
+                  "doodle_test/ddljson_android0.json"));
   config.features_disabled.push_back(kEnableFeedAblation);
   // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);

@@ -487,7 +487,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
   DCHECK(self.NTPViewController);
-  if (!self.feedViewController || !self.NTPViewController.viewDidAppear) {
+  if (!self.feedViewController) {
     return;
   }
   // When the visible feed has been updated, recalculate the minimum NTP height.
@@ -760,7 +760,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 #pragma mark - ContentSuggestionsHeaderCommands
 
 - (void)updateForHeaderSizeChange {
-  [self updateFeedLayout];
+  [self.NTPViewController updateHeightAboveFeedAndScrollToTopIfNeeded];
 }
 
 - (void)identityDiscWasTapped {
@@ -977,7 +977,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 #pragma mark - FeedDelegate
 
 - (void)contentSuggestionsWasUpdated {
-  [self updateFeedLayout];
+  [self.NTPViewController updateHeightAboveFeedAndScrollToTopIfNeeded];
 }
 
 #pragma mark - FeedManagementNavigationDelegate

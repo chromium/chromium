@@ -134,6 +134,10 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // the Content Suggestions header as the animation progresses.
 @property(nonatomic, assign) CFTimeInterval shiftTileStartTime;
 
+// YES if `-viewDidLoad:` has finished executing. This is used to ensure that
+// constraints are not set before the views have been added to view hierarchy.
+@property(nonatomic, assign) BOOL viewDidFinishLoading;
+
 @end
 
 @implementation NewTabPageViewController
@@ -201,6 +205,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
   self.identityDiscButton = [self.headerController identityDiscButton];
   DCHECK(self.identityDiscButton);
+
+  self.viewDidFinishLoading = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -210,6 +216,12 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
   [self applyCollectionViewConstraints];
   [self updateNTPLayout];
+
+  // Scroll to the top before coming into view to minimize sudden visual jerking
+  // for startup instances showing the NTP.
+  if (!self.viewDidAppear) {
+    [self setContentOffsetToTop];
+  }
 
   if (self.focusAccessibilityOmniboxWhenViewAppears && !self.omniboxFocused) {
     [self.headerController focusAccessibilityOnOmnibox];
@@ -229,7 +241,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (!self.feedVisible) {
     if (self.hasSavedOffsetFromPreviousScrollState) {
       [self setContentOffset:self.savedScrollOffset];
-      self.hasSavedOffsetFromPreviousScrollState = NO;
     } else {
       [self setContentOffsetToTop];
     }
@@ -277,12 +288,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   [super viewSafeAreaInsetsDidChange];
 
   [self.headerController updateConstraints];
-  // Only update the insets if this NTP is being viewed for this first time. If
-  // we are reopening an existing NTP, the insets are already ok.
-  // TODO(crbug.com/1170995): Remove this once we use a custom feed header.
-  if (!self.viewDidAppear) {
-    [self updateFeedInsetsForContentAbove];
-  }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -469,6 +474,18 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   [self updateFakeOmniboxForScrollPosition];
 }
 
+- (void)updateHeightAboveFeedAndScrollToTopIfNeeded {
+  if (self.viewDidFinishLoading &&
+      !self.hasSavedOffsetFromPreviousScrollState) {
+    // Do not scroll to the top if there is a saved scroll state. Also,
+    // `-setContentOffsetToTop` potentially updates constaints, and if
+    // viewDidLoad has not finished, some views may not in the view hierarchy
+    // yet.
+    [self updateFeedInsetsForContentAbove];
+    [self setContentOffsetToTop];
+  }
+}
+
 - (void)resetViewHierarchy {
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.contentSuggestionsViewController];
@@ -522,9 +539,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // `-viewWillAppear:` handles when the feed is not enabled.
   if (self.hasSavedOffsetFromPreviousScrollState) {
     [self setContentOffset:self.savedScrollOffset];
-    self.hasSavedOffsetFromPreviousScrollState = NO;
-  } else {
-    [self setContentOffsetToTop];
   }
   [self updateStickyElements];
 }
@@ -558,10 +572,19 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     return;
   }
   [self setContentOffset:-[self heightAboveFeed]];
+  // TODO(crbug.com/1406940): Constraint updating should not be necessary since
+  // scrollViewDidScroll: calls this if needed.
   [self setInitialFakeOmniboxConstraints];
   if ([self.ntpContentDelegate isContentHeaderSticky]) {
     [self setInitialFeedHeaderConstraints];
   }
+  // Reset here since none of the view lifecycle callbacks are called reliably
+  // to be able to be used (it seems) (i.e. switching between NTPs where there
+  // is saved scroll state in the destination tab). If the content offset is
+  // being set to the top, it is safe to assume this can be set to NO. Being
+  // called before setSavedContentOffset: is no problem since then it will be
+  // subsequently overriden to YES.
+  self.hasSavedOffsetFromPreviousScrollState = NO;
 }
 
 - (CGFloat)heightAboveFeed {
