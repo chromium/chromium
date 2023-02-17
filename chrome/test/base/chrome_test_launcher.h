@@ -18,10 +18,6 @@
 #include "chrome/app/chrome_main_delegate.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/files/scoped_temp_dir.h"
-#endif
-
 class ChromeTestSuite;
 
 // Allows a test suite to override the TestSuite class used. By default it is an
@@ -90,10 +86,6 @@ class ChromeTestLauncherDelegate : public content::TestLauncherDelegate {
 #endif
 
   raw_ptr<ChromeTestSuiteRunner> runner_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::ScopedTempDir ash_processes_dir_;
-#endif
 };
 
 // Launches Chrome browser tests. |parallel_jobs| is number of test jobs to be

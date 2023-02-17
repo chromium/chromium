@@ -102,10 +102,6 @@ class BrowserTestBase : public ::testing::Test {
   // needed when triggering the crash via SimulateNetworkServiceCrash method.
   void IgnoreNetworkServiceCrashes();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void StartAshChrome();
-#endif
-
   // Returns the host resolver being used for the tests. Subclasses might want
   // to configure it inside tests.
   net::RuleBasedHostResolverProc* host_resolver() {

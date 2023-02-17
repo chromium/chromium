@@ -142,8 +142,6 @@ static_library("test_support") {
     "../public/test/browser_test.h",
     "../public/test/browser_test_base.cc",
     "../public/test/browser_test_base.h",
-    "../public/test/browser_test_switches.cc",
-    "../public/test/browser_test_switches.h",
     "../public/test/browser_test_utils.cc",
     "../public/test/browser_test_utils.h",
     "../public/test/browsing_data_remover_test_util.cc",
