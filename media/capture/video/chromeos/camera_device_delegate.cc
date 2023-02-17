@@ -451,6 +451,16 @@ void CameraDeviceDelegate::SetPhotoOptions(
     return;
   }
 
+  // Abort if background blur does not have already the desired value.
+  if (settings->has_background_blur_mode &&
+      (!ash::features::IsVideoConferenceEnabled() ||
+       current_effects_.is_null() ||
+       settings->background_blur_mode !=
+           (current_effects_->blur_enabled ? mojom::BackgroundBlurMode::BLUR
+                                           : mojom::BackgroundBlurMode::OFF))) {
+    return;
+  }
+
   // Set the vendor tag into with given |name| and |value|. Returns true if
   // the vendor tag is set and false otherwise.
   auto to_uint8_vector = [](int32_t value) {
@@ -1800,14 +1810,15 @@ void CameraDeviceDelegate::DoGetPhotoState(
   // configuration setting if the feature flag is enabled.
   //
   // https://w3c.github.io/mediacapture-extensions/#exposing-mediastreamtrack-source-background-blur-support
-  if (ash::features::IsVideoConferenceEnabled()) {
-    callback = base::BindOnce(
-        [](VideoCaptureDevice::GetPhotoStateCallback callback,
-           media::mojom::PhotoStatePtr photo_state) {
-          CameraHalDispatcherImpl::GetInstance()->GetCameraEffects(
-              std::move(callback), std::move(photo_state));
-        },
-        std::move(callback));
+  if (ash::features::IsVideoConferenceEnabled() &&
+      !current_effects_.is_null()) {
+    photo_state->supported_background_blur_modes = {
+        current_effects_->blur_enabled ? mojom::BackgroundBlurMode::BLUR
+                                       : mojom::BackgroundBlurMode::OFF};
+
+    photo_state->background_blur_mode = current_effects_->blur_enabled
+                                            ? mojom::BackgroundBlurMode::BLUR
+                                            : mojom::BackgroundBlurMode::OFF;
   }
 
   std::move(callback).Run(std::move(photo_state));
