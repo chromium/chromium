@@ -64,14 +64,7 @@ class WebUIBrowserExpectFailTest : public WebUIBrowserTest {
 
 WebUIBrowserTest* WebUIBrowserExpectFailTest::s_test_ = nullptr;
 
-// Test that bogus javascript fails fast - no timeout waiting for result.
-// TODO(crbug/974796): Flaky on Win7 debug builds.
-#if (BUILDFLAG(IS_WIN) && !(defined(NDEBUG)))
-#define MAYBE_TestFailsFast DISABLED_TestFailsFast
-#else
-#define MAYBE_TestFailsFast TestFailsFast
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsFast) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestFailsFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("sample_downloads.js")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIDownloadsURL)));
@@ -88,8 +81,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestRuntimeErrorFailsFast) {
 }
 
 // Test times out in debug builds: https://crbug.com/902310
-// Test also times out in Win7 Tests: https://crbug.com/1039406
-#if BUILDFLAG(IS_WIN) || !defined(NDEBUG)
+#if !defined(NDEBUG)
 #define MAYBE_TestFailsAsyncFast DISABLED_TestFailsAsyncFast
 #else
 #define MAYBE_TestFailsAsyncFast TestFailsAsyncFast

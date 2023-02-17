@@ -117,9 +117,6 @@ _OS_SPECIFIC_FILTER['win'] = [
     'ChromeDriverTest.testHeadlessWithUserDataDirStarts',
     'ChromeDriverTest.testHeadlessWithExistingUserDataDirStarts',
     'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
-    # Timed out on Win7 bots: crbug.com/1306504.
-    'ChromeLoggingCapabilityTest.testDevToolsEventsLogger',
-    'ChromeLoggingCapabilityTest.testPerformanceLogger',
     'JavaScriptTests.testAllJS',
     'LaunchDesktopTest.testExistingDevToolsPortFile',
     'RemoteBrowserTest.testConnectToRemoteBrowser',
