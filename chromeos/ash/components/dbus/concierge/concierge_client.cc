@@ -287,6 +287,12 @@ class ConciergeClientImpl : public ConciergeClient {
                std::move(callback));
   }
 
+  void SwapVm(const vm_tools::concierge::SwapVmRequest& request,
+              chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
+                  callback) override {
+    CallMethod(concierge::kSwapVmMethod, request, std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) override {
     concierge_proxy_ = bus->GetObjectProxy(
         concierge::kVmConciergeServiceName,

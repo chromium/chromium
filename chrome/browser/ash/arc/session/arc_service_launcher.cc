@@ -312,7 +312,8 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   if (arc::IsArcVmEnabled()) {
     // ARCVM-only services.
     ArcMemoryPressureBridge::GetForBrowserContext(profile);
-    ArcVmmManager::GetForBrowserContext(profile);
+    ArcVmmManager::GetForBrowserContext(profile)->set_user_id_hash(
+        user_id_hash);
 
     if (base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
       arc_vm_data_migration_notifier_ =

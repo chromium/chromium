@@ -407,6 +407,14 @@ void FakeConciergeClient::GetVmLaunchAllowed(
       base::BindOnce(std::move(callback), get_vm_launch_allowed_response_));
 }
 
+void FakeConciergeClient::SwapVm(
+    const vm_tools::concierge::SwapVmRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
+        callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), swap_vm_response_));
+}
+
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
   // Now GetVmInfo can return success.

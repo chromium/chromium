@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -42,10 +44,17 @@ class ArcVmmManager : public KeyedService {
   // enable or disable vmm swap.
   class AcceleratorTarget;
 
+  void SendSwapRequest(vm_tools::concierge::SwapOperation operation,
+                       base::OnceClosure success_callback);
+
+  void PostWithSwapDelay(base::OnceClosure callback);
+
   // Accelerator for experimental usage. Always behind the feature flag.
   std::unique_ptr<AcceleratorTarget> accelerator_;
 
   std::string user_id_hash_;
+
+  base::WeakPtrFactory<ArcVmmManager> weak_ptr_factory_{this};
 };
 
 }  // namespace arc
