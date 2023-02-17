@@ -77,6 +77,7 @@ std::string GetRlzBrandCode(
                      {"ASUO", {"RCMY", "NLPS", "JOKT"}},
                      {"ATFE", {"AUGU", "TURP", "LBYK"}},
                      {"AYMH", {"BBMB", "VBWP", "BVTP"}},
+                     {"AZKT", {"NJWW", "WUTV", "QNNG"}},
                      {"BAQN", {"YJJJ", "LDCA", "QSJF"}},
                      {"BAUA", {"UWIF", "EOEW", "RPDR"}},
                      {"BCOL", {"YJDV", "GSIC", "BAUL"}},
