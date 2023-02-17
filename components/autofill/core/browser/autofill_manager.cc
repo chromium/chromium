@@ -531,16 +531,17 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
   if (!IsValidFormData(form))
     return;
 
-  NotifyObservers(&Observer::OnBeforeAskForValuesToFill);
+  NotifyObservers(&Observer::OnBeforeJavaScriptChangedAutofilledValue);
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnJavaScriptChangedAutofilledValueImpl(form, field, old_value);
-    NotifyObservers(&Observer::OnAfterAskForValuesToFill);
+    NotifyObservers(&Observer::OnAfterJavaScriptChangedAutofilledValue);
     return;
   }
   ParseFormAsync(
       form,
       ParsingCallback(&AutofillManager::OnJavaScriptChangedAutofilledValueImpl,
-                      &Observer::OnAfterAskForValuesToFill, field, old_value));
+                      &Observer::OnAfterJavaScriptChangedAutofilledValue, field,
+                      old_value));
 }
 
 // Returns true if |live_form| does not match |cached_form|.
