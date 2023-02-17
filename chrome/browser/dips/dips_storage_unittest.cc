@@ -15,6 +15,7 @@
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -54,6 +55,55 @@ class ScopedDIPSFeatureEnabledWithParams {
 };
 
 }  // namespace
+
+TEST(GetSitesToClearTest, FiltersByTriggerParam) {
+  TestStorage storage;
+
+  GURL kBounceUrl("https://bounce.com");
+  GURL kStorageUrl("https://storage.com");
+  GURL kStatefulBounceUrl("https://stateful_bounce.com");
+
+  TimestampRange event(
+      {base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)});
+  storage.WriteForTesting(kBounceUrl, StateValue{.bounce_times = event});
+  storage.WriteForTesting(kStorageUrl, StateValue{.site_storage_times = event});
+  storage.WriteForTesting(kStatefulBounceUrl,
+                          StateValue{.site_storage_times = event,
+                                     .stateful_bounce_times = event,
+                                     .bounce_times = event});
+  // Call 'GetSitesToClear' when the trigger is unset.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(dips::kFeature);
+    EXPECT_THAT(storage.GetSitesToClear(), testing::IsEmpty());
+  }
+  // Call 'GetSitesToClear' when DIPS is triggered by bounces.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        dips::kFeature, {{"triggering_action", "bounce"}});
+    EXPECT_THAT(storage.GetSitesToClear(),
+                testing::ElementsAre(GetSiteForDIPS(kBounceUrl),
+                                     GetSiteForDIPS(kStatefulBounceUrl)));
+  }
+  // Call 'GetSitesToClear' when DIPS is triggered by storage.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        dips::kFeature, {{"triggering_action", "storage"}});
+    EXPECT_THAT(storage.GetSitesToClear(),
+                testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl),
+                                     GetSiteForDIPS(kStorageUrl)));
+  }
+  // Call 'GetSitesToClear' when DIPS is triggered by stateful bounces.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        dips::kFeature, {{"triggering_action", "stateful_bounce"}});
+    EXPECT_THAT(storage.GetSitesToClear(),
+                testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl)));
+  }
+}
 
 class DIPSStorageTest : public testing::Test {
  public:

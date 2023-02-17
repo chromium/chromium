@@ -487,6 +487,9 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
   // Returns a callback for the respective querying method we want to test.
   QueryMethod GetQueryMethodUnderTest() {
     switch (CurrentAction()) {
+      case DIPSTriggeringAction::kNone:
+        return base::BindLambdaForTesting(
+            [&]() { return std::vector<std::string>{}; });
       case DIPSTriggeringAction::kBounce:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatBounced(); });
@@ -503,6 +506,8 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
                              TimestampRange event_times,
                              TimestampRange interactions) {
     switch (CurrentAction()) {
+      case DIPSTriggeringAction::kNone:
+        break;
       case DIPSTriggeringAction::kBounce:
         db_->Write(site, /*storage_times=*/{}, interactions,
                    /*stateful_bounce_times=*/{},
