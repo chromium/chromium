@@ -815,4 +815,126 @@ TEST_F(BridgeIceControllerInvalidProposalTest, AcceptUnknownPruneProposal) {
   interaction_agent->RejectPruneProposal(proposal);
 }
 
+TEST_F(BridgeIceControllerTest, HandlesPingRequest) {
+  NiceMock<MockIceAgent> agent;
+  MockIceControllerObserver observer;
+  std::unique_ptr<MockIceController> will_move =
+      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  MockIceController* wrapped = will_move.get();
+
+  scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
+  EXPECT_CALL(observer, OnObserverAttached(_))
+      .WillOnce(
+          WithArgs<0>([&](auto ia) { interaction_agent = std::move(ia); }));
+  BridgeIceController controller(env.GetMainThreadTaskRunner(), &observer,
+                                 &agent, std::move(will_move));
+
+  const Connection* conn = GetConnection(kIp, kPort);
+  ASSERT_NE(conn, nullptr);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  ASSERT_NE(conn_two, nullptr);
+
+  // Exclude conn_two to be able to test for unknown connection in request.
+  const std::vector<const Connection*> connection_set{conn};
+  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+
+  EXPECT_CALL(agent, SendPingRequest(conn));
+  EXPECT_EQ(interaction_agent->PingIceConnection(IceConnection(conn)).type(),
+            webrtc::RTCErrorType::NONE);
+
+  EXPECT_CALL(agent, SendPingRequest).Times(0);
+  EXPECT_EQ(
+      interaction_agent->PingIceConnection(IceConnection(conn_two)).type(),
+      webrtc::RTCErrorType::INVALID_PARAMETER);
+}
+
+TEST_F(BridgeIceControllerTest, HandlesSwitchRequest) {
+  NiceMock<MockIceAgent> agent;
+  MockIceControllerObserver observer;
+  std::unique_ptr<MockIceController> will_move =
+      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  MockIceController* wrapped = will_move.get();
+
+  scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
+  EXPECT_CALL(observer, OnObserverAttached(_))
+      .WillOnce(
+          WithArgs<0>([&](auto ia) { interaction_agent = std::move(ia); }));
+  BridgeIceController controller(env.GetMainThreadTaskRunner(), &observer,
+                                 &agent, std::move(will_move));
+
+  const Connection* conn = GetConnection(kIp, kPort);
+  ASSERT_NE(conn, nullptr);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  ASSERT_NE(conn_two, nullptr);
+
+  // Exclude conn_two to be able to test for unknown connection in request.
+  const std::vector<const Connection*> connection_set{conn};
+  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+
+  EXPECT_CALL(agent, SwitchSelectedConnection(
+                         conn, IceSwitchReason::APPLICATION_REQUESTED));
+  EXPECT_EQ(
+      interaction_agent->SwitchToIceConnection(IceConnection(conn)).type(),
+      webrtc::RTCErrorType::NONE);
+
+  EXPECT_CALL(agent, SwitchSelectedConnection).Times(0);
+  EXPECT_EQ(
+      interaction_agent->SwitchToIceConnection(IceConnection(conn_two)).type(),
+      webrtc::RTCErrorType::INVALID_PARAMETER);
+}
+
+TEST_F(BridgeIceControllerTest, HandlesPruneRequest) {
+  NiceMock<MockIceAgent> agent;
+  MockIceControllerObserver observer;
+  std::unique_ptr<MockIceController> will_move =
+      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  MockIceController* wrapped = will_move.get();
+
+  scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
+  EXPECT_CALL(observer, OnObserverAttached(_))
+      .WillOnce(
+          WithArgs<0>([&](auto ia) { interaction_agent = std::move(ia); }));
+  BridgeIceController controller(env.GetMainThreadTaskRunner(), &observer,
+                                 &agent, std::move(will_move));
+
+  const Connection* conn = GetConnection(kIp, kPort);
+  ASSERT_NE(conn, nullptr);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  ASSERT_NE(conn_two, nullptr);
+  const Connection* conn_three = GetConnection(kIpThree, kPort);
+  ASSERT_NE(conn_three, nullptr);
+
+  // Exclude conn_three to be able to test for unknown connection in request.
+  const std::vector<const Connection*> connection_set{conn, conn_two};
+  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+
+  const std::vector<const Connection*> conns_to_prune{conn};
+  const std::vector<const IceConnection> valid_ice_conns_to_prune{
+      IceConnection(conn)};
+  const std::vector<const Connection*> partial_conns_to_prune{conn_two};
+  const std::vector<const IceConnection> mixed_ice_conns_to_prune{
+      IceConnection(conn_two), IceConnection(conn_three)};
+  const std::vector<const IceConnection> invalid_ice_conns_to_prune{
+      IceConnection(conn_three)};
+
+  EXPECT_CALL(agent, PruneConnections(ElementsAreArray(conns_to_prune)));
+  EXPECT_EQ(
+      interaction_agent->PruneIceConnections(valid_ice_conns_to_prune).type(),
+      webrtc::RTCErrorType::NONE);
+
+  // Invalid/unknown connections are ignored in a prune request, but the request
+  // itself doesn't fail.
+
+  EXPECT_CALL(agent,
+              PruneConnections(ElementsAreArray(partial_conns_to_prune)));
+  EXPECT_EQ(
+      interaction_agent->PruneIceConnections(mixed_ice_conns_to_prune).type(),
+      webrtc::RTCErrorType::NONE);
+
+  EXPECT_CALL(agent, PruneConnections).Times(0);
+  EXPECT_EQ(
+      interaction_agent->PruneIceConnections(invalid_ice_conns_to_prune).type(),
+      webrtc::RTCErrorType::NONE);
+}
+
 }  // unnamed namespace

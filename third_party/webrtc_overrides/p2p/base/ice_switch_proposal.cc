@@ -33,6 +33,8 @@ IceSwitchReason ConvertFromWebrtcIceSwitchReason(
       return IceSwitchReason::kSelectedConnectionDestroyed;
     case cricket::IceSwitchReason::ICE_CONTROLLER_RECHECK:
       return IceSwitchReason::kIceControllerRecheck;
+    case cricket::IceSwitchReason::APPLICATION_REQUESTED:
+      return IceSwitchReason::kApplicationRequested;
     default:
       NOTREACHED();
       return IceSwitchReason::kUnknown;
@@ -63,6 +65,8 @@ std::string IceSwitchReasonToString(IceSwitchReason reason) {
       return "SelectedConnectionDestroyed";
     case IceSwitchReason::kIceControllerRecheck:
       return "IceControllerRecheck";
+    case IceSwitchReason::kApplicationRequested:
+      return "ApplicationRequested";
     default:
       NOTREACHED();
   }
@@ -92,6 +96,8 @@ cricket::IceSwitchReason ConvertToWebrtcIceSwitchReason(
       return cricket::IceSwitchReason::SELECTED_CONNECTION_DESTROYED;
     case IceSwitchReason::kIceControllerRecheck:
       return cricket::IceSwitchReason::ICE_CONTROLLER_RECHECK;
+    case IceSwitchReason::kApplicationRequested:
+      return cricket::IceSwitchReason::APPLICATION_REQUESTED;
     case IceSwitchReason::kUnknown:
     default:
       NOTREACHED();

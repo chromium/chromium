@@ -31,6 +31,7 @@ enum class IceSwitchReason {
   kConnectStateChange,
   kSelectedConnectionDestroyed,
   kIceControllerRecheck,
+  kApplicationRequested,
 };
 
 std::string IceSwitchReasonToString(IceSwitchReason reason);

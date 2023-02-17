@@ -117,6 +117,11 @@ class RTC_EXPORT BridgeIceController
   void OnPruneProposalAccepted(const IcePruneProposal& proposal);
   void OnPruneProposalRejected(const IcePruneProposal& proposal);
 
+  webrtc::RTCError OnPingRequested(const IceConnection& connection);
+  webrtc::RTCError OnSwitchRequested(const IceConnection& connection);
+  webrtc::RTCError OnPruneRequested(
+      base::span<const IceConnection> connections_to_prune);
+
   // Receives ICE interaction requests and delegates them to the ICE controller
   // to act on as appropriate.
   class IceInteractionProxy : public IceInteractionInterface {

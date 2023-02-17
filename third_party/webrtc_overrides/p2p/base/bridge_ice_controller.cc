@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/time/time.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -528,6 +527,69 @@ const Connection* BridgeIceController::FindNextPingableConnection() {
   return native_controller_->FindNextPingableConnection();
 }
 
+webrtc::RTCError BridgeIceController::OnPingRequested(
+    const IceConnection& ice_connection) {
+  DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
+
+  // TODO(crbug.com/1369096) add rate-limiting checks.
+
+  const cricket::Connection* connection = FindConnection(ice_connection.id());
+  if (!connection) {
+    RTC_LOG(LS_WARNING)
+        << "Received ping request for unknown or destroyed connection id="
+        << ice_connection.id();
+    return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER);
+  }
+
+  DoPerformPing(connection, /*recheck_delay_ms=*/absl::nullopt);
+  return webrtc::RTCError::OK();
+}
+
+webrtc::RTCError BridgeIceController::OnSwitchRequested(
+    const IceConnection& ice_connection) {
+  DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
+
+  // TODO(crbug.com/1369096) should we check with the native controller about
+  // this switch, similar to an ImmediateSwitchRequest?
+
+  const cricket::Connection* connection = FindConnection(ice_connection.id());
+  if (!connection) {
+    RTC_LOG(LS_WARNING)
+        << "Received switch request for unknown or destroyed connection id="
+        << ice_connection.id();
+    return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER);
+  }
+
+  DoPerformSwitch(cricket::IceSwitchReason::APPLICATION_REQUESTED, connection,
+                  absl::nullopt,
+                  base::span<const cricket::Connection* const>());
+  return webrtc::RTCError::OK();
+}
+
+webrtc::RTCError BridgeIceController::OnPruneRequested(
+    base::span<const IceConnection> ice_connections_to_prune) {
+  DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
+
+  std::vector<const cricket::Connection*> connections_to_prune;
+  for (const IceConnection& ice_connection : ice_connections_to_prune) {
+    const cricket::Connection* connection = FindConnection(ice_connection.id());
+    if (connection) {
+      connections_to_prune.push_back(connection);
+    } else {
+      RTC_LOG(LS_WARNING)
+          << "Received prune request unknown or destroyed connection id="
+          << ice_connection.id();
+    }
+  }
+
+  if (!connections_to_prune.empty()) {
+    DoPerformPrune(connections_to_prune);
+    UpdateStateOnPrune();
+  }
+
+  return webrtc::RTCError::OK();
+}
+
 const cricket::Connection* BridgeIceController::FindConnection(
     uint32_t id) const {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
@@ -586,23 +648,20 @@ void BridgeIceController::IceInteractionProxy::RejectPruneProposal(
 webrtc::RTCError BridgeIceController::IceInteractionProxy::PingIceConnection(
     const IceConnection& connection) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+  return controller_->OnPingRequested(connection);
 }
 
 webrtc::RTCError
 BridgeIceController::IceInteractionProxy::SwitchToIceConnection(
     const IceConnection& connection) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+  return controller_->OnSwitchRequested(connection);
 }
 
 webrtc::RTCError BridgeIceController::IceInteractionProxy::PruneIceConnections(
     base::span<const IceConnection> connections_to_prune) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-  return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+  return controller_->OnPruneRequested(connections_to_prune);
 }
 
 }  // namespace blink
