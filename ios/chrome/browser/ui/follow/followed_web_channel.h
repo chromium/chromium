@@ -28,9 +28,6 @@
 // URL of the favicon.
 @property(nonatomic, strong) CrURL* faviconURL;
 
-// YES if the web channel is available.
-@property(nonatomic, assign) BOOL available;
-
 // State of the website.
 @property(nonatomic, assign) FollowedWebSiteState state;
 

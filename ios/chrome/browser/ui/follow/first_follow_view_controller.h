@@ -19,7 +19,7 @@ using FirstFollowFaviconSource = void (^)(void (^completion)(UIImage* favicon));
 
 // Convenience initializer.
 - (instancetype)initWithTitle:(NSString*)title
-                    available:(BOOL)available
+                       active:(BOOL)active
                 faviconSource:(FirstFollowFaviconSource)faviconSource
     NS_DESIGNATED_INITIALIZER;
 

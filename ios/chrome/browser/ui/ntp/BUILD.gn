@@ -76,6 +76,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/follow:browser_agent",
+    "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/follow:service",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ntp",

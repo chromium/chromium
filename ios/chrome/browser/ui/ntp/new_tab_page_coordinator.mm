@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/discover_feed/feed_model_configuration.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/followed_web_site.h"
+#import "ios/chrome/browser/follow/followed_web_site_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -1113,8 +1114,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 - (BOOL)doesFollowingFeedHaveContent {
   for (FollowedWebSite* web_site in self.followedWebSites) {
-    if (web_site.available)
+    if (web_site.state == FollowedWebSiteStateStateActive) {
       return YES;
+    }
   }
 
   return NO;

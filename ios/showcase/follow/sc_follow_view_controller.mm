@@ -4,6 +4,7 @@
 
 #import "ios/showcase/follow/sc_follow_view_controller.h"
 
+#import "ios/chrome/browser/follow/followed_web_site_state.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
@@ -127,7 +128,7 @@ NSInteger kFaviconSymbolPointSize = 17;
   FirstFollowViewController* firstFollowViewController =
       [[FirstFollowViewController alloc]
           initWithTitle:@"First Web Channel"
-              available:YES
+                 active:YES
           faviconSource:^(void (^completion)(UIImage* favicon)) {
             [weakSelf faviconForURL:nil
                          completion:^(FaviconAttributes* attributes) {
@@ -177,7 +178,7 @@ NSInteger kFaviconSymbolPointSize = 17;
 - (FollowedWebChannel*)createWebChannelWithTitle:(NSString*)title {
   FollowedWebChannel* channel = [[FollowedWebChannel alloc] init];
   channel.title = title;
-  channel.available = YES;
+  channel.state = FollowedWebSiteStateStateActive;
   channel.faviconURL =
       [[CrURL alloc] initWithNSURL:[NSURL URLWithString:kExampleFaviconURL]];
   return channel;

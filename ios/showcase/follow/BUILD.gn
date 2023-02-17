@@ -8,6 +8,7 @@ source_set("follow") {
     "sc_follow_view_controller.mm",
   ]
   deps = [
+    "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/follow:first_follow_ui",

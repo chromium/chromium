@@ -24,9 +24,6 @@
 // URL of the website rss link.
 @property(nonatomic, strong) NSURL* RSSURL;
 
-// YES if the website is available.
-@property(nonatomic, assign) BOOL available;
-
 // State of the website.
 @property(nonatomic, assign) FollowedWebSiteState state;
 

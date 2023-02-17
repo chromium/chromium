@@ -30,7 +30,6 @@ FollowedWebChannel* FollowedWebSiteToFollowedWebChannel(
   web_channel.webPageURL = [[CrURL alloc] initWithNSURL:web_site.webPageURL];
   web_channel.faviconURL = [[CrURL alloc] initWithNSURL:web_site.faviconURL];
   web_channel.rssURL = [[CrURL alloc] initWithNSURL:web_site.RSSURL];
-  web_channel.available = web_site.available;
   web_channel.state = web_site.state;
   return web_channel;
 }
