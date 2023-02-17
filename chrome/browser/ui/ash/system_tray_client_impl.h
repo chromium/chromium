@@ -103,6 +103,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
                          GURL& finalized_event_url) override;
   void ShowChannelInfoAdditionalDetails() override;
   void ShowChannelInfoGiveFeedback() override;
+  void ShowAudioSettings() override;
   bool IsUserFeedbackEnabled() override;
 
  protected:

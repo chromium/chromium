@@ -2721,6 +2721,9 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT" desc="The label used in audio detailed page for audio input section of ash tray pop up.">
         Input
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS" desc="The label used in audio detailed page for the button that launches the OS audio settings page.">
+        Audio settings
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY" desc="The label used for the button in the status tray to show the display detailed page.">
         Display
       </message>

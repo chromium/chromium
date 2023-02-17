@@ -170,6 +170,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // the "send feedback" button.
   virtual void ShowChannelInfoGiveFeedback() = 0;
 
+  // Shows settings related to audio devices (input/output).
+  virtual void ShowAudioSettings() = 0;
+
   // Returns 'true' if the user preference is set to allow users to submit
   // feedback, 'false' otherwise.
   virtual bool IsUserFeedbackEnabled() = 0;

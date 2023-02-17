@@ -142,6 +142,10 @@ void TestSystemTrayClient::ShowChannelInfoGiveFeedback() {
   ++show_channel_info_give_feedback_count_;
 }
 
+void TestSystemTrayClient::ShowAudioSettings() {
+  ++show_audio_settings_count_;
+}
+
 bool TestSystemTrayClient::IsUserFeedbackEnabled() {
   return user_feedback_enabled_;
 }

@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -18,6 +19,7 @@
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/audio/unified_volume_view.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -25,6 +27,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/unified/quick_settings_slider.h"
 #include "ash/system/unified/unified_slider_view.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -182,6 +185,10 @@ AudioDetailedView::~AudioDetailedView() {
   }
 }
 
+views::View* AudioDetailedView::GetAsView() {
+  return this;
+}
+
 void AudioDetailedView::SetMapNoiseCancellationToggleCallbackForTest(
     AudioDetailedView::NoiseCancellationCallback*
         noise_cancellation_toggle_callback) {
@@ -303,9 +310,24 @@ void AudioDetailedView::CreateItems() {
     CreateTitleRow(IDS_ASH_STATUS_TRAY_AUDIO);
   }
 
+  if (features::IsAudioSettingsPageEnabled()) {
+    CreateTitleSettingsButton();
+  }
+
   mic_gain_controller_ = std::make_unique<MicGainSliderController>();
   unified_volume_slider_controller_ =
       std::make_unique<UnifiedVolumeSliderController>();
+}
+
+void AudioDetailedView::CreateTitleSettingsButton() {
+  tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
+  std::unique_ptr<views::Button> settings =
+      base::WrapUnique(CreateSettingsButton(
+          base::BindRepeating(&AudioDetailedView::OnSettingsButtonClicked,
+                              weak_factory_.GetWeakPtr()),
+          IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS));
+  settings_button_ =
+      tri_view()->AddView(TriView::Container::END, std::move(settings));
 }
 
 void AudioDetailedView::CreateLiveCaptionView() {
@@ -497,6 +519,16 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
         cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
     noise_cancellation_button_->SetIsOn(new_state);
   }
+}
+
+void AudioDetailedView::OnSettingsButtonClicked() {
+  DCHECK(features::IsAudioSettingsPageEnabled());
+  if (!TrayPopupUtils::CanOpenWebUISettings()) {
+    return;
+  }
+
+  CloseBubble();  // Deletes |this|.
+  Shell::Get()->system_tray_model()->client()->ShowAudioSettings();
 }
 
 void AudioDetailedView::ToggleLiveCaptionState() {

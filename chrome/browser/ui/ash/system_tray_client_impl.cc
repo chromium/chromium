@@ -763,6 +763,12 @@ void SystemTrayClientImpl::ShowChannelInfoGiveFeedback() {
       ash::NewWindowDelegate::kFeedbackSourceChannelIndicator);
 }
 
+void SystemTrayClientImpl::ShowAudioSettings() {
+  DCHECK(ash::features::IsAudioSettingsPageEnabled());
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kAudioSubpagePath);
+}
+
 bool SystemTrayClientImpl::IsUserFeedbackEnabled() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kForceShowReleaseTrack)) {

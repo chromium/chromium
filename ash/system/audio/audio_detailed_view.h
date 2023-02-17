@@ -15,6 +15,7 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "components/soda/soda_installer.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
@@ -46,6 +47,8 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   static void SetMapNoiseCancellationToggleCallbackForTest(
       NoiseCancellationCallback* map_noise_cancellation_toggle_callback);
 
+  views::View* GetAsView();
+
   // Updates the `AudioDetailedView` and re-layout.
   void Update();
 
@@ -53,6 +56,7 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   void OnAccessibilityStatusChanged() override;
 
  private:
+  friend class AudioDetailedViewTest;
   friend class UnifiedAudioDetailedViewControllerSodaTest;
   friend class UnifiedAudioDetailedViewControllerTest;
 
@@ -70,6 +74,8 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
 
   // Creates the items other than the devices during initialization.
   void CreateItems();
+
+  void CreateTitleSettingsButton();
 
   // For QsRevamp: Creates the `live_caption_view_`.
   void CreateLiveCaptionView();
@@ -90,6 +96,9 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
 
   // Callback passed to the noise cancellation toggle button.
   void OnInputNoiseCancellationTogglePressed();
+
+  // Callback passed to the Settings button.
+  void OnSettingsButtonClicked();
 
   // Toggles live caption state to trigger `AccessibilityObserver` to update the
   // UI.
@@ -130,6 +139,7 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   HoverHighlightView* noise_cancellation_view_ = nullptr;
   views::ImageView* noise_cancellation_icon_ = nullptr;
   views::ToggleButton* noise_cancellation_button_ = nullptr;
+  views::Button* settings_button_ = nullptr;
 
   base::WeakPtrFactory<AudioDetailedView> weak_factory_{this};
 };
