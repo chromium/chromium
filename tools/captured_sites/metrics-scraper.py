@@ -9,8 +9,17 @@
 # The tool expects that the captured_sites_interactive_tests binary is built.
 import argparse, json, os, urllib.parse
 
+
+# Extracts the names of all non-disabled captured site tests.
+def get_all_sites():
+  with open("chrome/test/data/autofill/captured_sites/artifacts/testcases.json",
+            "r") as f:
+    return (site["site_name"] for site in json.loads(f.read())["tests"]
+            if not site.get("disabled", False))
+
 # Command line args.
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(epilog="List of tests: " +
+                                 ", ".join(get_all_sites()))
 parser.add_argument(
     "target",
     help=("Build target of captured_sites_interactive_tests binary. "
@@ -98,15 +107,6 @@ def run_tests_and_diff(site):
   print("Comparing metrics (no output means no diff)")
   os.system("diff %s %s" % (result_enabled, result_disabled))
   print("")
-
-
-# Extracts the names of all non-disabled captured site tests.
-def get_all_sites():
-  with open("chrome/test/data/autofill/captured_sites/testcases.json",
-            "r") as f:
-    return (site["site_name"] for site in json.loads(f.read())
-            if not site["disabled"])
-
 
 # If a test is specified, only run that specific test. Otherwise run all.
 if args.test is None:
