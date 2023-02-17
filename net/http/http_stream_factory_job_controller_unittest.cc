@@ -3883,7 +3883,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
     HostResolverEndpointResult endpoint_result1;
     endpoint_result1.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
     endpoint_result1.metadata.supported_protocol_alpns = {
-        quic::QuicVersionLabelToString(quic::CreateQuicVersionLabel(version_))};
+        quic::AlpnForVersion(version_)};
 
     HostResolverEndpointResult endpoint_result2;
     endpoint_result2.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};

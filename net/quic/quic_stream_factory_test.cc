@@ -14893,30 +14893,41 @@ TEST_P(QuicStreamFactoryTest, RequireDnsHttpsAlpnMatch) {
   std::vector<HostResolverEndpointResult> endpoints(2);
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {
-      quic::QuicVersionLabelToString(quic::CreateQuicVersionLabel(version_))};
+      quic::AlpnForVersion(version_)};
   // Add a final non-protocol endpoint at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/true);
 }
 
-TEST_P(QuicStreamFactoryTest, RequireDnsHttpsAlpnUnkownAlpn) {
+TEST_P(QuicStreamFactoryTest, RequireDnsHttpsAlpnUnknownAlpn) {
   std::vector<HostResolverEndpointResult> endpoints(2);
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
-  endpoints[0].metadata.supported_protocol_alpns = {"unkown"};
+  endpoints[0].metadata.supported_protocol_alpns = {"unknown"};
   // Add a final non-protocol endpoint at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/false);
 }
 
-TEST_P(QuicStreamFactoryTest, RequireDnsHttpsAlpnUnkownAndSupportedAlpn) {
+TEST_P(QuicStreamFactoryTest, RequireDnsHttpsAlpnUnknownAndSupportedAlpn) {
   std::vector<HostResolverEndpointResult> endpoints(2);
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {
-      "unkown",
-      quic::QuicVersionLabelToString(quic::CreateQuicVersionLabel(version_))};
+      "unknown", quic::AlpnForVersion(version_)};
   // Add a final non-protocol endpoint at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/true);
+}
+
+// QUIC has many string representations of versions. Only the ALPN name is
+// acceptable in HTTPS/SVCB records.
+TEST_P(QuicStreamFactoryTest, RequireDnsHttpsNotAlpnName) {
+  std::vector<HostResolverEndpointResult> endpoints(2);
+  endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoints[0].metadata.supported_protocol_alpns = {
+      quic::ParsedQuicVersionToString(version_)};
+  // Add a final non-protocol endpoint at the end.
+  endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/false);
 }
 
 void QuicStreamFactoryTestBase::TestRequireDnsHttpsAlpn(

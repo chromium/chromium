@@ -221,13 +221,9 @@ quic::ParsedQuicVersion SelectQuicVersion(
     const quic::ParsedQuicVersionVector& supported_versions) {
   for (const auto& result : endpoint_results) {
     for (const auto& alpn : result.metadata.supported_protocol_alpns) {
-      quic::ParsedQuicVersion version = quic::ParseQuicVersionString(alpn);
-      if (!version.IsKnown()) {
-        continue;
-      }
       for (const auto& supported_version : supported_versions) {
-        if (supported_version == version) {
-          return version;
+        if (alpn == AlpnForVersion(supported_version)) {
+          return supported_version;
         }
       }
     }
