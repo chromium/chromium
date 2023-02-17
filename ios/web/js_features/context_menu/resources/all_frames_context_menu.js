@@ -124,9 +124,17 @@ var getResponseForTextElement = function(
         result.innerText = textNode.nodeValue;
 
         if (extractSurroundingText) {
-          var textAndStartPos = getSurroundingText(range);
-          result.surroundingText = textAndStartPos['text'];
-          result.surroundingTextOffset = textAndStartPos['pos'];
+          // TODO(crbug.com/1416910): getSurroundingText throws an exception
+          // when a node is null, a fix is planned to remove the exception
+          // handling.
+          try {
+            var textAndStartPos = getSurroundingText(range);
+            result.surroundingText = textAndStartPos['text'];
+            result.surroundingTextOffset = textAndStartPos['pos'];
+          } catch (err) {
+            result.surroundingText = '';
+            result.surroundingTextOffset = 0;
+          }
         }
       }
     }
