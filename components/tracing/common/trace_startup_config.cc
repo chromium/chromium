@@ -212,6 +212,8 @@ bool TraceStartupConfig::EnableFromCommandLine() {
     memory_config.triggers.push_back(
         {10000, base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
          base::trace_event::MemoryDumpType::PERIODIC_INTERVAL});
+    memory_config.allowed_dump_modes.insert(
+        base::trace_event::MemoryDumpLevelOfDetail::DETAILED);
     trace_config_.ResetMemoryDumpConfig(memory_config);
   }
 
