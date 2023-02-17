@@ -400,6 +400,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     dest->do_not_prompt_for_login = true;
     dest->load_flags |= net::LOAD_DO_NOT_USE_EMBEDDED_IDENTITY;
   }
+
+  dest->has_storage_access = src.GetHasStorageAccess();
 }
 
 }  // namespace blink
