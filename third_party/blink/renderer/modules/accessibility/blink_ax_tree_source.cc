@@ -306,9 +306,10 @@ void BlinkAXTreeSource::GetChildren(
     }
 
     if (!child->AccessibilityIsIncludedInTree()) {
-      NOTREACHED() << "Should not receive unincluded child."
-                   << "\nChild: " << child->ToString(true).Utf8()
-                   << "\nParent: " << parent->ToString(true).Utf8();
+      // TODO(https://crbug.com/1407396) resolve and restore to NOTREACHED().
+      DCHECK(false) << "Should not receive unincluded child."
+                    << "\nChild: " << child->ToString(true).Utf8()
+                    << "\nParent: " << parent->ToString(true).Utf8();
       continue;
     }
 

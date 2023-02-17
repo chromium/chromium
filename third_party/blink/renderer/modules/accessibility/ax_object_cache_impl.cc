@@ -887,10 +887,12 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   if (result->IsMissingParent()) {
     AXObject* computed_parent =
         AXObject::ComputeNonARIAParent(*this, layout_object->GetNode());
-    NOTREACHED() << "Had AXObject but was missing parent: " << layout_object
-                 << " " << result->ToString(true, true) << "\nComputed parent: "
-                 << (computed_parent ? computed_parent->ToString(true, true)
-                                     : "null");
+    // TODO(https://crbug.com/1413932) resolve and restore to NOTREACHED().
+    DCHECK(false) << "Had AXObject but was missing parent: " << layout_object
+                  << " " << result->ToString(true, true)
+                  << "\nComputed parent: "
+                  << (computed_parent ? computed_parent->ToString(true, true)
+                                      : "null");
   }
 #endif
 
