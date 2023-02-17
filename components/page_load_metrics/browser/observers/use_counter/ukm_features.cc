@@ -22,6 +22,8 @@
 // estimate "percentage of page views using a feature". Note that the lack of
 // sub-sampling is the reason why this event must only be used for rare
 // features.
+//
+// Obsolete UseCounters (kOBSOLETE_*) should be removed from this list.
 
 using WebFeature = blink::mojom::WebFeature;
 
@@ -55,8 +57,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kCredentialManagerGetPublicKeyCredential,
           WebFeature::kCredentialManagerMakePublicKeyCredentialSuccess,
           WebFeature::kCredentialManagerGetPublicKeyCredentialSuccess,
-          WebFeature::kOBSOLETE_U2FCryptotokenRegister,
-          WebFeature::kOBSOLETE_U2FCryptotokenSign,
           WebFeature::kTextToSpeech_Speak,
           WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay,
           WebFeature::kCSSEnvironmentVariable_SafeAreaInsetTop,
@@ -191,10 +191,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kTextDetectorDetect,
           WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation,
           WebFeature::kV8HTMLVideoElement_GetVideoPlaybackQuality_Method,
-          WebFeature::kOBSOLETE_RTCPeerConnectionConstructedWithPlanB,
-          WebFeature::kOBSOLETE_RTCPeerConnectionConstructedWithUnifiedPlan,
-          WebFeature::kOBSOLETE_RTCPeerConnectionUsingComplexPlanB,
-          WebFeature::kOBSOLETE_RTCPeerConnectionUsingComplexUnifiedPlan,
           WebFeature::kWebPImage,
           WebFeature::kAVIFImage,
           WebFeature::kGetDisplayMedia,
