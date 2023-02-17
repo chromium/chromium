@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -78,6 +79,17 @@ mojom::blink::DirectTCPSocketOptionsPtr CreateTCPSocketOptions(
   }
   if (options->hasReceiveBufferSize()) {
     socket_options->receive_buffer_size = options->receiveBufferSize();
+  }
+
+  if (options->hasDnsQueryType()) {
+    switch (options->dnsQueryType().AsEnum()) {
+      case V8SocketDnsQueryType::Enum::kIpv4:
+        socket_options->dns_query_type = net::DnsQueryType::A;
+        break;
+      case V8SocketDnsQueryType::Enum::kIpv6:
+        socket_options->dns_query_type = net::DnsQueryType::AAAA;
+        break;
+    }
   }
 
   return socket_options;

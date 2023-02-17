@@ -4,6 +4,8 @@
 
 // https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#tcp
 
+enum SocketDnsQueryType { "ipv4", "ipv6" };
+
 dictionary SocketOptions {
   [EnforceRange] unsigned long sendBufferSize;
   [EnforceRange] unsigned long receiveBufferSize;
@@ -12,6 +14,8 @@ dictionary SocketOptions {
 dictionary TCPSocketOptions : SocketOptions {
   boolean noDelay = false;
   [EnforceRange] unsigned long keepAliveDelay;
+
+  SocketDnsQueryType dnsQueryType;
 };
 
 dictionary UDPSocketOptions : SocketOptions {
@@ -20,6 +24,8 @@ dictionary UDPSocketOptions : SocketOptions {
 
   DOMString localAddress;
   [EnforceRange] unsigned short localPort;
+
+  SocketDnsQueryType dnsQueryType;
 
   // TODO(crbug.com/1413161): Implement ipv6Only support.
   boolean ipv6Only;

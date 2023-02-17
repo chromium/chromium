@@ -154,6 +154,7 @@ void DirectSocketsServiceImpl::OpenTCPSocket(
 
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
+  parameters->dns_query_type = options->dns_query_type;
 #if BUILDFLAG(ENABLE_MDNS)
   if (ResemblesMulticastDNSName(remote_addr.host())) {
     parameters->source = net::HostResolverSource::MULTICAST_DNS;
@@ -203,6 +204,7 @@ void DirectSocketsServiceImpl::OpenUDPSocket(
 
     network::mojom::ResolveHostParametersPtr parameters =
         network::mojom::ResolveHostParameters::New();
+    parameters->dns_query_type = options->dns_query_type;
 #if BUILDFLAG(ENABLE_MDNS)
     if (ResemblesMulticastDNSName(remote_addr.host())) {
       parameters->source = net::HostResolverSource::MULTICAST_DNS;

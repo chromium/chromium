@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
@@ -481,6 +482,92 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
     EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
                 testing::HasSubstr("neither remoteAddress nor "
                                    "localAddress specified"));
+  }
+
+  {
+    const std::string script = R"(
+      openUdp({
+        localAddress: "127.0.0.1",
+        dnsQueryType: "ipv4",
+      })
+    )";
+    EXPECT_THAT(
+        EvalJs(shell(), script).ExtractString(),
+        testing::HasSubstr(
+            "dnsQueryType is only relevant when remoteAddress is specified"));
+  }
+}
+
+class MockOpenNetworkContextWithDnsQueryType : public MockOpenNetworkContext {
+ public:
+  MockOpenNetworkContextWithDnsQueryType(net::Error result,
+                                         base::StringPiece host_mapping_rules)
+      : MockOpenNetworkContext(result, host_mapping_rules) {}
+
+  // MockOpenNetworkContext:
+  void ResolveHost(
+      network::mojom::HostResolverHostPtr host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      network::mojom::ResolveHostParametersPtr optional_parameters,
+      mojo::PendingRemote<network::mojom::ResolveHostClient>
+          pending_response_client) override {
+    ASSERT_TRUE(expected_dns_query_type_);
+    ASSERT_TRUE(optional_parameters);
+    ASSERT_EQ(optional_parameters->dns_query_type, expected_dns_query_type_);
+    ResolveHostImpl(std::move(host), network_anonymization_key,
+                    std::move(optional_parameters),
+                    std::move(pending_response_client));
+  }
+
+  void set_expected_dns_query_type(
+      absl::optional<net::DnsQueryType> dns_query_type) {
+    expected_dns_query_type_ = std::move(dns_query_type);
+  }
+
+ private:
+  absl::optional<net::DnsQueryType> expected_dns_query_type_;
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, Open_DnsQueryType) {
+  constexpr base::StringPiece kHostname = "direct-sockets.com";
+
+  MockOpenNetworkContextWithDnsQueryType mock_network_context(
+      net::OK, base::StringPrintf("MAP %s 98.76.54.32", kHostname.data()));
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  constexpr auto kDnsQueryTypeMapping =
+      base::MakeFixedFlatMap<net::DnsQueryType, base::StringPiece>({
+          {net::DnsQueryType::A, "ipv4"},
+          {net::DnsQueryType::AAAA, "ipv6"},
+      });
+
+  for (const auto& [expected_dns_query_type, dns_query_type_str] :
+       kDnsQueryTypeMapping) {
+    mock_network_context.set_expected_dns_query_type(expected_dns_query_type);
+    {
+      const std::string script = R"(
+        openUdp({
+          remoteAddress: $1,
+          remotePort: 53,
+          dnsQueryType: $2,
+        })
+      )";
+      EXPECT_THAT(
+          EvalJs(shell(), JsReplace(script, kHostname, dns_query_type_str))
+              .ExtractString(),
+          testing::HasSubstr("openUdp succeeded"));
+    }
+    {
+      const std::string script = R"(
+        openTcp($1, 53, {
+          dnsQueryType: $2,
+        })
+      )";
+      EXPECT_THAT(
+          EvalJs(shell(), JsReplace(script, kHostname, dns_query_type_str))
+              .ExtractString(),
+          testing::HasSubstr("openTcp succeeded"));
+    }
   }
 }
 

@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -93,6 +94,22 @@ mojom::blink::DirectUDPSocketOptionsPtr CreateUDPSocketOptions(
   } else {
     socket_options->remote_addr = std::move(remote_addr);
     socket_options->local_addr = std::move(local_addr);
+  }
+
+  if (options->hasDnsQueryType()) {
+    if (!options->hasRemoteAddress()) {
+      exception_state.ThrowTypeError(
+          "dnsQueryType is only relevant when remoteAddress is specified.");
+      return {};
+    }
+    switch (options->dnsQueryType().AsEnum()) {
+      case V8SocketDnsQueryType::Enum::kIpv4:
+        socket_options->dns_query_type = net::DnsQueryType::A;
+        break;
+      case V8SocketDnsQueryType::Enum::kIpv6:
+        socket_options->dns_query_type = net::DnsQueryType::AAAA;
+        break;
+    }
   }
 
   if (!CheckSendReceiveBufferSize(options, exception_state)) {

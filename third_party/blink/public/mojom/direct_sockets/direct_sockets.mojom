@@ -8,10 +8,11 @@ module blink.mojom;
 // https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
-import "services/network/public/mojom/restricted_udp_socket.mojom";
+import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/restricted_udp_socket.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
 
@@ -43,6 +44,9 @@ struct DirectTCPSocketOptions {
   bool no_delay = false;
 
   network.mojom.TCPKeepAliveOptions? keep_alive_options;
+
+  network.mojom.DnsQueryType dns_query_type =
+      network.mojom.DnsQueryType.UNSPECIFIED;
 };
 
 struct DirectUDPSocketOptions {
@@ -53,6 +57,9 @@ struct DirectUDPSocketOptions {
 
   int32 send_buffer_size = 0;
   int32 receive_buffer_size = 0;
+
+  network.mojom.DnsQueryType dns_query_type =
+      network.mojom.DnsQueryType.UNSPECIFIED;
 };
 
 // This wraps network.mojom.NetworkContext and handles extra work such as
