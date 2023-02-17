@@ -10,6 +10,10 @@ import "url/mojom/url.mojom";
 // The feedback sources supported for invoking feedback report from Lacros.
 // Note: When you add a new value, please add a test case accordingly in:
 // chrome/browser/feedback/show_feedback_page_lacros_browertest.cc.
+//
+// Next MinVersion: 4
+// Next ID: 8
+//
 [Stable, Extensible]
 enum LacrosFeedbackSource {
   kLacrosBrowserCommand = 0,
@@ -19,6 +23,7 @@ enum LacrosFeedbackSource {
   [MinVersion=2] kLacrosSadTabPage = 4,
   [MinVersion=2] kLacrosChromeLabs = 5,
   [MinVersion=2] kLacrosQuickAnswers = 6,
+  [MinVersion=3] kLacrosWindowLayoutMenu = 7,
 };
 
 [Stable]

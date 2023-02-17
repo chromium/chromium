@@ -26,6 +26,8 @@ chrome::FeedbackSource FromMojo(mojom::LacrosFeedbackSource source) {
       return chrome::kFeedbackSourceChromeLabs;
     case mojom::LacrosFeedbackSource::kLacrosQuickAnswers:
       return chrome::kFeedbackSourceQuickAnswers;
+    case mojom::LacrosFeedbackSource::kLacrosWindowLayoutMenu:
+      return chrome::kFeedbackSourceWindowLayoutMenu;
     case mojom::LacrosFeedbackSource::kUnknown:
       return chrome::kFeedbackSourceUnknownLacrosSource;
   }
