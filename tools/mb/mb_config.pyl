@@ -1345,15 +1345,18 @@
       'win-swangle-try-x86': 'angle_deqp_release_trybot_x86_reclient',
     },
 
+    # crbug.com/1417003: `-Werror` is removed for these to work around the
+    # existence of C++20-only code in Chromium, while we're forcing -std=c++17.
+    # Tons of build failures slow down these builders significantly.
     'tryserver.chromium.tricium': {
-      'android-clang-tidy-rel': 'android_release_trybot_reclient_cxx17',
-      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient_cxx17',
-      'ios-clang-tidy-rel': 'ios_device_release_compile_only_cxx17',
-      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient_cxx17',
-      'linux-clang-tidy-rel': 'release_trybot_reclient_cxx17',
-      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient_cxx17',
-      'mac-clang-tidy-rel': 'release_trybot_cxx17',
-      'win10-clang-tidy-rel': 'release_trybot_reclient_cxx17',
+      'android-clang-tidy-rel': 'android_release_trybot_reclient_cxx17_no_werror',
+      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient_cxx17_no_werror',
+      'ios-clang-tidy-rel': 'ios_device_release_compile_only_cxx17_no_werror',
+      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient_cxx17_no_werror',
+      'linux-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
+      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient_cxx17_no_werror',
+      'mac-clang-tidy-rel': 'release_trybot_cxx17_no_werror',
+      'win10-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
     },
 
     'tryserver.chromium.updater': {
@@ -1715,8 +1718,8 @@
       'android', 'release_trybot_reclient', 'strip_debug_info',
     ],
 
-    'android_release_trybot_reclient_cxx17': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'force_cxx17',
+    'android_release_trybot_reclient_cxx17_no_werror': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'force_cxx17', 'no_werror',
     ],
 
     'android_release_trybot_x64_fastbuild_webview_trichrome_reclient': [
@@ -2280,8 +2283,8 @@
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'invert_fieldtrials',
     ],
 
-    'chromeos_with_codecs_release_trybot_reclient_cxx17': [
-      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'force_cxx17',
+    'chromeos_with_codecs_release_trybot_reclient_cxx17_no_werror': [
+      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'force_cxx17', 'no_werror',
     ],
 
     'chromeos_with_codecs_with_lacros_release_bot_reclient': [
@@ -2891,8 +2894,8 @@
       'ios_device_release_compile_only',
     ],
 
-    'ios_device_release_compile_only_cxx17': [
-      'ios_device_release_compile_only', 'force_cxx17',
+    'ios_device_release_compile_only_cxx17_no_werror': [
+      'ios_device_release_compile_only', 'force_cxx17', 'no_werror',
     ],
 
     'ios_device_release_compile_only_reclient': [
@@ -2972,8 +2975,8 @@
       'lacros_on_linux_release_trybot_reclient',
     ],
 
-    'lacros_on_linux_release_trybot_reclient_cxx17': [
-      'lacros_on_linux_release_trybot_reclient', 'force_cxx17',
+    'lacros_on_linux_release_trybot_reclient_cxx17_no_werror': [
+      'lacros_on_linux_release_trybot_reclient', 'force_cxx17', 'no_werror', 'no_werror',
     ],
 
     'lacros_on_linux_tot_debug': [
@@ -3583,8 +3586,8 @@
       'release_trybot_blink_reclient',
     ],
 
-    'release_trybot_cxx17': [
-      'release_trybot', 'force_cxx17'
+    'release_trybot_cxx17_no_werror': [
+      'release_trybot', 'force_cxx17', 'no_werror',
     ],
 
     'release_trybot_dcheck_off_reclient': [
@@ -3619,8 +3622,8 @@
       'release_trybot', 'fuchsia', 'fuchsia_chrome'
     ],
 
-    'release_trybot_fuchsia_reclient_cxx17': [
-      'release_trybot_reclient', 'fuchsia', 'force_cxx17',
+    'release_trybot_fuchsia_reclient_cxx17_no_werror': [
+      'release_trybot_reclient', 'fuchsia', 'force_cxx17', 'no_werror',
     ],
 
     'release_trybot_minimal_symbols_reclient': [
@@ -3639,8 +3642,8 @@
       'release_trybot_reclient',
     ],
 
-    'release_trybot_reclient_cxx17': [
-      'release_trybot_reclient', 'force_cxx17',
+    'release_trybot_reclient_cxx17_no_werror': [
+      'release_trybot_reclient', 'force_cxx17', 'no_werror',
     ],
 
     'release_trybot_tsan': [
@@ -4445,6 +4448,10 @@
 
     'no_symbols': {
       'gn_args': 'symbol_level=0',
+    },
+
+    'no_werror': {
+      'gn_args': 'treat_warnings_as_errors=false',
     },
 
     'no_widevine_cdm_host_verification': {
