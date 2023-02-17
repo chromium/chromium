@@ -16,7 +16,6 @@ extern const CGFloat kPinnedViewMaxWidthInPercent;
 // Pinned view constraints.
 extern const CGFloat kPinnedViewHorizontalPadding;
 extern const CGFloat kPinnedViewBottomPadding;
-extern const CGFloat kPinnedViewTopPadding;
 
 // Pinned view animations.
 extern const NSTimeInterval kPinnedViewFadeInTime;

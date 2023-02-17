@@ -2333,14 +2333,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.isHidden) {
     CGFloat pinnedViewHeight =
         self.pinnedTabsViewController.view.bounds.size.height;
-    switch (GetPinnedTabsPosition()) {
-      case PinnedTabsPosition::kBottomPosition:
-        inset.bottom += pinnedViewHeight + kPinnedViewBottomPadding;
-        break;
-      case PinnedTabsPosition::kTopPosition:
-        inset.top += pinnedViewHeight + kPinnedViewTopPadding;
-        break;
-    }
+    inset.bottom += pinnedViewHeight + kPinnedViewBottomPadding;
   }
 
   return inset;
@@ -3115,6 +3108,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [pinnedView.trailingAnchor
           constraintEqualToAnchor:self.view.trailingAnchor
                          constant:-kPinnedViewHorizontalPadding],
+      [pinnedView.bottomAnchor
+          constraintEqualToAnchor:self.bottomToolbar.topAnchor
+                         constant:-kPinnedViewBottomPadding],
     ]];
   } else {
     [pinnedTabsConstraints addObjectsFromArray:@[
@@ -3122,30 +3118,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           constraintEqualToAnchor:self.view.centerXAnchor],
       [pinnedView.widthAnchor
           constraintEqualToAnchor:self.view.widthAnchor
-                       multiplier:kPinnedViewMaxWidthInPercent]
+                       multiplier:kPinnedViewMaxWidthInPercent],
+      [pinnedView.topAnchor
+          constraintEqualToAnchor:self.bottomToolbar.topAnchor],
     ]];
-  }
-
-  switch (GetPinnedTabsPosition()) {
-    case PinnedTabsPosition::kBottomPosition: {
-      if (compactLayout) {
-        [pinnedTabsConstraints
-            addObject:[pinnedView.bottomAnchor
-                          constraintEqualToAnchor:self.bottomToolbar.topAnchor
-                                         constant:-kPinnedViewBottomPadding]];
-      } else {
-        [pinnedTabsConstraints
-            addObject:[pinnedView.topAnchor
-                          constraintEqualToAnchor:self.bottomToolbar
-                                                      .topAnchor]];
-      }
-    } break;
-    case PinnedTabsPosition::kTopPosition:
-      [pinnedTabsConstraints
-          addObject:[pinnedView.topAnchor
-                        constraintEqualToAnchor:self.topToolbar.bottomAnchor
-                                       constant:kPinnedViewTopPadding]];
-      break;
   }
 
   self.pinnedTabsConstraints = pinnedTabsConstraints;

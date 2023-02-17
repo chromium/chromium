@@ -10,18 +10,8 @@
 // Feature flag that enables Pinned Tabs.
 BASE_DECLARE_FEATURE(kEnablePinnedTabs);
 
-// Feature parameters for Pinned Tabs. If no parameter is set, the default
-// (bottom) position will be used.
-extern const char kEnablePinnedTabsParameterName[];
-extern const char kEnablePinnedTabsBottomParam[];
-extern const char kEnablePinnedTabsOverflowBottomParam[];
-extern const char kEnablePinnedTabsOverflowTopParam[];
-
-// Positions of the Pinned tabs.
-enum PinnedTabsPosition {
-  kBottomPosition = 0,
-  kTopPosition,
-};
+// Feature parameter for Pinned Tabs.
+extern const char kEnablePinnedTabsOverflowParam[];
 
 // Convenience method for determining if Pinned Tabs is enabled.
 bool IsPinnedTabsEnabled();
@@ -29,8 +19,5 @@ bool IsPinnedTabsEnabled();
 // Convenience method for determining if Pinned Tabs for the overflow menu is
 // enabled.
 bool IsPinnedTabsOverflowEnabled();
-
-// Convenience method for determining the position of Pinned Tabs.
-PinnedTabsPosition GetPinnedTabsPosition();
 
 #endif  // IOS_CHROME_BROWSER_TABS_FEATURES_H_

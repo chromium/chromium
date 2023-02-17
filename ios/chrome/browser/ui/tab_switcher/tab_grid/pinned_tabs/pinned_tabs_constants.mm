@@ -16,7 +16,6 @@ const CGFloat kPinnedViewCornerRadius = 25.0f;
 // Pinned view constraints.
 const CGFloat kPinnedViewHorizontalPadding = 6.0f;
 const CGFloat kPinnedViewBottomPadding = 8.0f;
-const CGFloat kPinnedViewTopPadding = 6.0f;
 const CGFloat kPinnedViewMaxWidthInPercent = 0.5f;
 
 // Pinned view animations.
