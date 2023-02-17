@@ -74,6 +74,9 @@ int AuctionConfig::NumPromises() const {
   if (non_shared_params.buyer_timeouts.is_promise()) {
     ++total;
   }
+  if (non_shared_params.buyer_cumulative_timeouts.is_promise()) {
+    ++total;
+  }
   if (direct_from_seller_signals.is_promise()) {
     ++total;
   }

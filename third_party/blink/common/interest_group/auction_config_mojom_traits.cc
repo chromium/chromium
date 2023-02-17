@@ -131,6 +131,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadSellerTimeout(&out->seller_timeout) ||
       !data.ReadPerBuyerSignals(&out->per_buyer_signals) ||
       !data.ReadBuyerTimeouts(&out->buyer_timeouts) ||
+      !data.ReadBuyerCumulativeTimeouts(&out->buyer_cumulative_timeouts) ||
       !data.ReadPerBuyerGroupLimits(&out->per_buyer_group_limits) ||
       !data.ReadPerBuyerPrioritySignals(&out->per_buyer_priority_signals) ||
       !data.ReadAllBuyersPrioritySignals(&out->all_buyers_priority_signals) ||

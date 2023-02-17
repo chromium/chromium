@@ -211,6 +211,12 @@ struct BLINK_COMMON_EXPORT
     return params.buyer_timeouts;
   }
 
+  static const blink::AuctionConfig::MaybePromiseBuyerTimeouts&
+  buyer_cumulative_timeouts(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.buyer_cumulative_timeouts;
+  }
+
   static const base::flat_map<url::Origin, std::uint16_t>&
   per_buyer_group_limits(const blink::AuctionConfig::NonSharedParams& params) {
     return params.per_buyer_group_limits;

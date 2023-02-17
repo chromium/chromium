@@ -25,21 +25,27 @@ dictionary AuctionAdConfig {
 
   unsigned long long sellerTimeout;
   unsigned short sellerExperimentGroupId;
+
   // Really (record<USVString, any> or Promise<record<USVString, any>>)
   any perBuyerSignals;
+
   // Really (record<USVString, unsigned long long> or
   //         Promise<record<USVString, unsigned long long>>)
   any perBuyerTimeouts;
+  any perBuyerCumulativeTimeouts;
+
   record<USVString, unsigned short> perBuyerGroupLimits;
   record<USVString, unsigned short> perBuyerExperimentGroupIds;
   record<USVString, record<USVString, double>> perBuyerPrioritySignals;
+
   // `auctionReportBuyerKeys` and `auctionReportBuyers` are described in:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
-
+  //
   // TODO(crbug.com/1402467): Use `bigint` instead of `any` when supported by
   // WebIDL parser.
   sequence<any> auctionReportBuyerKeys;
   record<USVString, AuctionReportBuyersConfig> auctionReportBuyers;
+
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
   boolean resolveToConfig;

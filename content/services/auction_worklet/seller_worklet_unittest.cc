@@ -2521,6 +2521,16 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
           std::move(buyer_timeouts));
 
+  blink::AuctionConfig::BuyerTimeouts buyer_cumulative_timeouts;
+  buyer_cumulative_timeouts.per_buyer_timeouts.emplace();
+  buyer_cumulative_timeouts.per_buyer_timeouts
+      .value()[url::Origin::Create(GURL("https://a.com"))] =
+      base::Milliseconds(101);
+  buyer_cumulative_timeouts.all_buyers_timeout = base::Milliseconds(151);
+  auction_ad_config_non_shared_params_.buyer_cumulative_timeouts =
+      blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
+          std::move(buyer_cumulative_timeouts));
+
   auction_ad_config_non_shared_params_.per_buyer_priority_signals = {
       {url::Origin::Create(GURL("https://a.com")), {{"signals_c", 0.5}}}};
   auction_ad_config_non_shared_params_.all_buyers_priority_signals = {
@@ -2538,6 +2548,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
           "perBuyerSignals":{"https://a.com":{"signals_a":"A"},
                              "https://b.com":{"signals_b":"B"}},
           "perBuyerTimeouts":{"https://a.com":100,"*":150},
+          "perBuyerCumulativeTimeouts":{"https://a.com":101,"*":151},
           "perBuyerPrioritySignals":{"https://a.com":{"signals_c":0.5},
                                      "*":            {"signals_d":0}}
         })";

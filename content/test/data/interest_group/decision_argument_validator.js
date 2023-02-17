@@ -27,7 +27,7 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (Object.keys(auctionConfig).length !== 10) {
+  if (Object.keys(auctionConfig).length !== 11) {
     throw 'Wrong number of auctionConfig fields ' +
         JSON.stringify(auctionConfig);
   }
@@ -85,6 +85,13 @@ function validateAuctionConfig(auctionConfig) {
       auctionConfig.perBuyerTimeouts['*'] !== 150) {
     throw 'Wrong perBuyerTimeouts ' +
         JSON.stringify(auctionConfig.perBuyerTimeouts);
+  }
+
+  if (auctionConfig.perBuyerCumulativeTimeouts[buyerAOrigin] !== 130 ||
+      auctionConfig.perBuyerCumulativeTimeouts[buyerBOrigin] !== 140 ||
+      auctionConfig.perBuyerCumulativeTimeouts['*'] !== 160) {
+    throw 'Wrong perBuyerCumulativeTimeouts ' +
+        JSON.stringify(auctionConfig.perBuyerCumulativeTimeouts);
   }
 
   const perBuyerPrioritySignals = auctionConfig.perBuyerPrioritySignals;

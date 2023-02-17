@@ -3619,7 +3619,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
-// perBuyerSignals.
+// perBuyerTimeouts.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionResolvePromiseInvalidPerBuyerTimeouts) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
@@ -3677,6 +3677,111 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       seller: 'https://test.com',
       decisionLogicUrl: 'https://test.com',
       perBuyerTimeouts: {'https://invalid^&': 100}
+  })"));
+  WaitForAccessObserved({});
+}
+
+// Test rejection path in the renderer for promise-delivered
+// perBuyerCumulativeTimeouts.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionRejectPromisePerBuyerCumulativeTimeouts) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerCumulativeTimeouts: new Promise((resolve, reject) => { setTimeout(
+          () => { reject('boo'); }, 10) }),
+      interestGroupBuyers: [$1]
+  })";
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  WaitForAccessObserved({});
+}
+
+// Exercise error-handling path in the renderer for promise-delivered
+// perBuyerCumulativeTimeouts.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionResolvePromiseInvalidPerBuyerCumulativeTimeouts) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerCumulativeTimeouts: new Promise((resolve, reject) => { setTimeout(
+          () => { resolve({'http://b.com': 52}); }, 10) }),
+      interestGroupBuyers: [$1]
+  })";
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': perBuyerCumulativeTimeouts buyer 'http://b.com' for "
+      "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
+      "or a valid https origin.");
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidPerBuyerCumulativeTimeoutsOrigin) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "perBuyerCumulativeTimeouts buyer 'https://invalid^&' for "
+      "AuctionAdConfig "
+      "with seller 'https://test.com' must be \"*\" (wildcard) or a valid "
+      "https "
+      "origin.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      perBuyerCumulativeTimeouts: {'https://invalid^&': 100}
   })"));
   WaitForAccessObserved({});
 }
@@ -7512,6 +7617,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     sellerTimeout: 200,
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
+    perBuyerCumulativeTimeouts: {$4: 130, $5: 140, '*': 160},
     perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}}
   });
 })())",
@@ -7633,6 +7739,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     sellerTimeout: 200,
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
+    perBuyerCumulativeTimeouts: {$4: 130, $5: 140, '*': 160},
     perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}}
   });
 })())",
@@ -7801,6 +7908,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     sellerTimeout: 300,
     perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
     perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
+    perBuyerCumulativeTimeouts: maybePromise({$8: 111, '*': 151}),
     perBuyerPrioritySignals: {'*': {foo: 3}},
     componentAuctions: [{
       seller: $5,
@@ -7813,6 +7921,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       sellerTimeout: 200,
       perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
       perBuyerTimeouts: maybePromise({$8: 200}),
+      perBuyerCumulativeTimeouts: maybePromise({$8: 201}),
       perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
     }],
   });
@@ -8409,8 +8518,10 @@ function validateDirectFromSellerSignals(directFromSellerSignals) {
   EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
 }
 
-// Test for perBuyerTimeouts being passed to runAdAuction as promises.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, PromiseBuyerTimeouts) {
+// Test for perBuyerTimeouts and perBuyerCumulativeTimeouts being passed to
+// runAdAuction as promises.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       PromiseBuyerTimeoutsAndCumulativeBuyerTimeouts) {
   // These scripts are generated by this test.
   constexpr char kBiddingLogicPath[] =
       "/interest_group/test_generated_bidding_argument_validator.js";
@@ -8438,22 +8549,21 @@ function generateBid(
 function scoreAd(
     adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
     unusedBrowserSignals) {
-  validateAuctionConfig(auctionConfig);
+  validatePerBuyerTimeouts(auctionConfig.perBuyerTimeouts);
+  validatePerBuyerCumulativeTimeouts(auctionConfig.perBuyerCumulativeTimeouts);
   return bid;
 }
 
-function validateAuctionConfig(auctionConfig) {
-  const perBuyerTimeoutsJSON = JSON.stringify(auctionConfig.perBuyerTimeouts);
+function validatePerBuyerTimeouts(perBuyerTimeouts) {
+  const perBuyerTimeoutsJSON = JSON.stringify(perBuyerTimeouts);
   let ok = 0;
-  for (key in auctionConfig.perBuyerTimeouts) {
-    if (key.startsWith("https://a.test") &&
-        auctionConfig.perBuyerTimeouts[key] === 50) {
+  for (key in perBuyerTimeouts) {
+    if (key.startsWith("https://a.test") && perBuyerTimeouts[key] === 50) {
       ++ok;
-    } else if (key.startsWith("https://b.test") &&
-        auctionConfig.perBuyerTimeouts[key] === 60) {
+    } else if (key === "https://b.test" && perBuyerTimeouts[key] === 60) {
       ++ok;
     } else if (key === '*' &&
-        auctionConfig.perBuyerTimeouts[key] === 56) {
+        perBuyerTimeouts[key] === 56) {
       ++ok;
     } else {
       throw 'Wrong key in perBuyerTimeouts ' + perBuyerTimeoutsJSON;
@@ -8461,6 +8571,30 @@ function validateAuctionConfig(auctionConfig) {
   }
   if (ok !== 3) {
     throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJSON;
+  }
+}
+
+function validatePerBuyerCumulativeTimeouts(perBuyerCumulativeTimeouts) {
+  const perBuyerCumulativeTimeoutsJSON =
+      JSON.stringify(perBuyerCumulativeTimeouts);
+  let ok = 0;
+  for (key in perBuyerCumulativeTimeouts) {
+    if (key.startsWith("https://a.test") &&
+        perBuyerCumulativeTimeouts[key] === 70) {
+      ++ok;
+    } else if (key === "https://c.test" &&
+        perBuyerCumulativeTimeouts[key] === 80) {
+      ++ok;
+    } else if (key === '*' &&
+        perBuyerCumulativeTimeouts[key] === 76) {
+      ++ok;
+    } else {
+      throw 'Wrong key in perCumulativeBuyerTimeouts ' +
+          perBuyerCumulativeTimeoutsJSON;
+    }
+  }
+  if (ok !== 3) {
+    throw 'Wrong perCumulativeBuyerTimeouts ' + perBuyerCumulativeTimeoutsJSON;
   }
 }
 )";
@@ -8505,6 +8639,10 @@ function validateAuctionConfig(auctionConfig) {
     perBuyerTimeouts: new Promise((resolve, reject) => {
       setTimeout(
           () => { resolve({$1: 50, 'https://b.test': 60, '*': 56}); }, 1)
+    }),
+    perBuyerCumulativeTimeouts: new Promise((resolve, reject) => {
+      setTimeout(
+          () => { resolve({$1: 70, 'https://c.test': 80, '*': 76}); }, 1)
     })
   });
 })())",

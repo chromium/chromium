@@ -307,7 +307,13 @@ struct AuctionAdConfigNonSharedParams {
 
   AuctionAdConfigMaybePromisePerBuyerSignals per_buyer_signals;
 
+  // Timeouts for individual interest group worklet Javascript execution.
   AuctionAdConfigMaybePromiseBuyerTimeouts buyer_timeouts;
+
+  // Cumulative timeouts for all interest groups with the same buyer. Includes
+  // launching worklet processes, loading scripts and signals, and running
+  // the buyer's generateBid() functions.
+  AuctionAdConfigMaybePromiseBuyerTimeouts buyer_cumulative_timeouts;
 
   // Keys of `per_buyer_group_limits` must be valid HTTPS origins. Values
   // restrict the number of bidding interest groups for a particular buyer

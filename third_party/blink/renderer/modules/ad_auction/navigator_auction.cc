@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-primitive.h"
@@ -109,10 +110,13 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     const String seller_name_;
   };
 
+  // This is used for perBuyerTimeouts and perBuyerCumulativeTimeouts, with
+  // `field` indicating which of the two fields an object is being used for.
   class BuyerTimeoutsResolved : public ScriptFunction::Callable {
    public:
     BuyerTimeoutsResolved(AuctionHandle* auction_handle,
                           mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+                          mojom::blink::AuctionAdConfigBuyerTimeoutField field,
                           const String& seller_name);
 
     ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
@@ -121,6 +125,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    private:
     Member<AuctionHandle> auction_handle_;
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const mojom::blink::AuctionAdConfigBuyerTimeoutField field_;
     const String seller_name_;
   };
 
@@ -185,9 +190,10 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
 
   void ResolvedBuyerTimeoutsPromise(
       mojom::blink::AuctionAdConfigAuctionIdPtr auction,
+      mojom::blink::AuctionAdConfigBuyerTimeoutField field,
       mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_timeouts) {
     abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
-        std::move(auction), std::move(buyer_timeouts));
+        std::move(auction), field, std::move(buyer_timeouts));
   }
 
   void ResolvedDirectFromSellerSignalsPromise(
@@ -1260,11 +1266,17 @@ bool CopyPerBuyerSignalsFromIdlToMojo(
 }
 
 // Returns nullptr + sets exception on failure, or returns a concrete value.
+//
+// This is shared logic for `perBuyerTimeouts` and `perBuyerCumulativeTimeouts`,
+// with `field` indicating which name to use in error messages. The logic is
+// identical in both cases.
 mojom::blink::AuctionAdConfigBuyerTimeoutsPtr
-ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(const ScriptState& script_state,
-                                              ExceptionState& exception_state,
-                                              const String& seller_name,
-                                              v8::Local<v8::Value> value) {
+ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(
+    const ScriptState& script_state,
+    ExceptionState& exception_state,
+    const String& seller_name,
+    v8::Local<v8::Value> value,
+    mojom::blink::AuctionAdConfigBuyerTimeoutField field) {
   Vector<std::pair<String, uint64_t>> decoded =
       NativeValueTraits<IDLRecord<IDLUSVString, IDLUnsignedLongLong>>::
           NativeValue(script_state.GetIsolate(), value, exception_state);
@@ -1284,8 +1296,18 @@ ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(const ScriptState& script_state,
     scoped_refptr<const SecurityOrigin> buyer =
         ParseOrigin(per_buyer_timeout.first);
     if (!buyer) {
+      String field_name;
+      switch (field) {
+        case mojom::blink::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts:
+          field_name = "perBuyerTimeouts buyer";
+          break;
+        case mojom::blink::AuctionAdConfigBuyerTimeoutField::
+            kPerBuyerCumulativeTimeouts:
+          field_name = "perBuyerCumulativeTimeouts buyer";
+          break;
+      }
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSeller(
-          seller_name, "perBuyerTimeouts buyer", per_buyer_timeout.first,
+          seller_name, field_name, per_buyer_timeout.first,
           "must be \"*\" (wildcard) or a valid https origin."));
       return nullptr;
     }
@@ -1318,7 +1340,10 @@ bool CopyPerBuyerTimeoutsFromIdlToMojo(
             &script_state,
             MakeGarbageCollected<
                 NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved>(
-                auction_handle, auction_id->Clone(), input.seller())),
+                auction_handle, auction_id->Clone(),
+                mojom::blink::AuctionAdConfigBuyerTimeoutField::
+                    kPerBuyerTimeouts,
+                input.seller())),
         MakeGarbageCollected<ScriptFunction>(
             &script_state,
             MakeGarbageCollected<NavigatorAuction::AuctionHandle::Rejected>(
@@ -1330,11 +1355,61 @@ bool CopyPerBuyerTimeoutsFromIdlToMojo(
 
   mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_timeouts =
       ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(
-          script_state, exception_state, input.seller(), value);
+          script_state, exception_state, input.seller(), value,
+          mojom::blink::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts);
   if (buyer_timeouts) {
     output.auction_ad_config_non_shared_params->buyer_timeouts =
         mojom::blink::AuctionAdConfigMaybePromiseBuyerTimeouts::NewValue(
             std::move(buyer_timeouts));
+    return true;
+  }
+  return false;
+}
+
+bool CopyPerBuyerCumulativeTimeoutsFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    const mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerCumulativeTimeouts()) {
+    output.auction_ad_config_non_shared_params->buyer_cumulative_timeouts =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerTimeouts::NewValue(
+            mojom::blink::AuctionAdConfigBuyerTimeouts::New());
+    return true;
+  }
+
+  v8::Local<v8::Value> value = input.perBuyerCumulativeTimeouts().V8Value();
+  if (auction_handle && value->IsPromise()) {
+    ScriptPromise promise(&script_state, value);
+    promise.Then(
+        MakeGarbageCollected<ScriptFunction>(
+            &script_state,
+            MakeGarbageCollected<
+                NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved>(
+                auction_handle, auction_id->Clone(),
+                mojom::blink::AuctionAdConfigBuyerTimeoutField::
+                    kPerBuyerCumulativeTimeouts,
+                input.seller())),
+        MakeGarbageCollected<ScriptFunction>(
+            &script_state,
+            MakeGarbageCollected<NavigatorAuction::AuctionHandle::Rejected>(
+                auction_handle)));
+    output.auction_ad_config_non_shared_params->buyer_cumulative_timeouts =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerTimeouts::NewPromise(0);
+    return true;
+  }
+
+  mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_cumulative_timeouts =
+      ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(
+          script_state, exception_state, input.seller(), value,
+          mojom::blink::AuctionAdConfigBuyerTimeoutField::
+              kPerBuyerCumulativeTimeouts);
+  if (buyer_cumulative_timeouts) {
+    output.auction_ad_config_non_shared_params->buyer_cumulative_timeouts =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerTimeouts::NewValue(
+            std::move(buyer_cumulative_timeouts));
     return true;
   }
   return false;
@@ -1575,6 +1650,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyPerBuyerTimeoutsFromIdlToMojo(auction_handle, auction_id.get(),
                                          script_state, exception_state, config,
                                          *mojo_config) ||
+      !CopyPerBuyerCumulativeTimeoutsFromIdlToMojo(
+          auction_handle, auction_id.get(), script_state, exception_state,
+          config, *mojo_config) ||
       !CopyPerBuyerExperimentIdsFromIdlToMojo(script_state, exception_state,
                                               config, *mojo_config) ||
       !CopyPerBuyerGroupLimitsFromIdlToMojo(script_state, exception_state,
@@ -1800,9 +1878,11 @@ void NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::Trace(
 NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::BuyerTimeoutsResolved(
     AuctionHandle* auction_handle,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+    mojom::blink::AuctionAdConfigBuyerTimeoutField field,
     const String& seller_name)
     : auction_handle_(auction_handle),
       auction_id_(std::move(auction_id)),
+      field_(field),
       seller_name_(seller_name) {}
 
 ScriptValue NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Call(
@@ -1816,7 +1896,7 @@ ScriptValue NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Call(
     v8::Local<v8::Value> v8_value = value.V8Value();
     if (!v8_value->IsUndefined() && !v8_value->IsNull()) {
       buyer_timeouts = ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(
-          *script_state, exception_state, seller_name_, v8_value);
+          *script_state, exception_state, seller_name_, v8_value, field_);
     }
   }
 
@@ -1825,7 +1905,7 @@ ScriptValue NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Call(
   }
 
   if (!exception_state.HadException()) {
-    auction_handle_->ResolvedBuyerTimeoutsPromise(auction_id_->Clone(),
+    auction_handle_->ResolvedBuyerTimeoutsPromise(auction_id_->Clone(), field_,
                                                   std::move(buyer_timeouts));
   } else {
     auction_handle_->Abort();

@@ -31,6 +31,14 @@ enum AuctionAdConfigField {
   kSellerSignals
 };
 
+// Represents which field that uses the AuctionAdConfigBuyerTimeouts struct is
+// getting a concrete value provided after the promise that was originally
+// passed in resolved.
+enum AuctionAdConfigBuyerTimeoutField {
+  kPerBuyerTimeouts,
+  kPerBuyerCumulativeTimeouts
+};
+
 // Used to provide a way of aborting a call to AdAuctionService.RunAdAuction
 interface AbortableAdAuction {
   // These methods should be called to provide a value for part of auction
@@ -48,9 +56,11 @@ interface AbortableAdAuction {
       map<url.mojom.Origin, string>? per_buyer_signals);
 
   // Used to provide result of resolving a promise specifying
-  // `per_buyer_timeouts` field of an AuctionConfig.
+  // `per_buyer_timeouts` or `per_buyer_cumulative_timeouts` field of an
+  // AuctionConfig.
   ResolvedBuyerTimeoutsPromise(
       AuctionAdConfigAuctionId auction,
+      AuctionAdConfigBuyerTimeoutField field,
       AuctionAdConfigBuyerTimeouts buyer_timeouts);
 
   // Used to provide result of resolving a promise specifying

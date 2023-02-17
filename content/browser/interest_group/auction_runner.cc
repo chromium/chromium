@@ -158,6 +158,7 @@ void AuctionRunner::ResolvedPerBuyerSignalsPromise(
 
 void AuctionRunner::ResolvedBuyerTimeoutsPromise(
     blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+    blink::mojom::AuctionAdConfigBuyerTimeoutField field,
     const blink::AuctionConfig::BuyerTimeouts& buyer_timeouts) {
   if (state_ == State::kFailed) {
     return;
@@ -171,14 +172,24 @@ void AuctionRunner::ResolvedBuyerTimeoutsPromise(
     return;
   }
 
-  if (!config->non_shared_params.buyer_timeouts.is_promise()) {
+  blink::AuctionConfig::MaybePromiseBuyerTimeouts* field_ptr = nullptr;
+  switch (field) {
+    case blink::mojom::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts:
+      field_ptr = &config->non_shared_params.buyer_timeouts;
+      break;
+    case blink::mojom::AuctionAdConfigBuyerTimeoutField::
+        kPerBuyerCumulativeTimeouts:
+      field_ptr = &config->non_shared_params.buyer_cumulative_timeouts;
+      break;
+  }
+
+  if (!field_ptr->is_promise()) {
     mojo::ReportBadMessage("ResolvedBuyerTimeoutsPromise updating non-promise");
     return;
   }
 
-  config->non_shared_params.buyer_timeouts =
-      blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
-          buyer_timeouts);
+  *field_ptr = blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
+      buyer_timeouts);
   NotifyPromiseResolved(auction_id.get(), config);
 }
 

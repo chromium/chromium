@@ -54,16 +54,16 @@ bool operator==(const AuctionConfig::NonSharedParams& a,
                 const AuctionConfig::NonSharedParams& b) {
   return std::tie(a.interest_group_buyers, a.auction_signals, a.seller_signals,
                   a.seller_timeout, a.per_buyer_signals, a.buyer_timeouts,
-                  a.per_buyer_group_limits, a.all_buyers_group_limit,
-                  a.per_buyer_priority_signals, a.all_buyers_priority_signals,
-                  a.auction_report_buyer_keys, a.auction_report_buyers,
-                  a.component_auctions) ==
+                  a.buyer_cumulative_timeouts, a.per_buyer_group_limits,
+                  a.all_buyers_group_limit, a.per_buyer_priority_signals,
+                  a.all_buyers_priority_signals, a.auction_report_buyer_keys,
+                  a.auction_report_buyers, a.component_auctions) ==
          std::tie(b.interest_group_buyers, b.auction_signals, b.seller_signals,
                   b.seller_timeout, b.per_buyer_signals, b.buyer_timeouts,
-                  b.per_buyer_group_limits, b.all_buyers_group_limit,
-                  b.per_buyer_priority_signals, b.all_buyers_priority_signals,
-                  b.auction_report_buyer_keys, b.auction_report_buyers,
-                  b.component_auctions);
+                  b.buyer_cumulative_timeouts, b.per_buyer_group_limits,
+                  b.all_buyers_group_limit, b.per_buyer_priority_signals,
+                  b.all_buyers_priority_signals, b.auction_report_buyer_keys,
+                  b.auction_report_buyers, b.component_auctions);
 }
 
 bool operator==(const AuctionConfig& a, const AuctionConfig& b) {
@@ -137,6 +137,14 @@ AuctionConfig CreateFullConfig() {
   non_shared_params.buyer_timeouts =
       AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
           std::move(buyer_timeouts));
+
+  AuctionConfig::BuyerTimeouts buyer_cumulative_timeouts;
+  buyer_cumulative_timeouts.per_buyer_timeouts.emplace();
+  (*buyer_cumulative_timeouts.per_buyer_timeouts)[buyer] = base::Seconds(432);
+  buyer_cumulative_timeouts.all_buyers_timeout = base::Seconds(234);
+  non_shared_params.buyer_cumulative_timeouts =
+      AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
+          std::move(buyer_cumulative_timeouts));
 
   non_shared_params.per_buyer_group_limits[buyer] = 10;
   non_shared_params.all_buyers_group_limit = 11;

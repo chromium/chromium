@@ -557,13 +557,16 @@ std::string MakeDecisionScript(
       if (signals1[auctionConfig.seller + 'Signals'] !== 'Ad PlatformSignals')
         throw new Error("Wrong perBuyerSignals in auctionConfig");
       if (typeof auctionConfig.perBuyerTimeouts['https://adplatform.com'] !==
-          "number") {
+              "number" ||
+          typeof auctionConfig.perBuyerTimeouts['*'] !== "number") {
         throw new Error("timeout in auctionConfig.perBuyerTimeouts is not a " +
                         "number. huh");
       }
-      if (typeof auctionConfig.perBuyerTimeouts['*'] !== "number") {
-        throw new Error("timeout in auctionConfig.perBuyerTimeouts is not a " +
-                        "number. huh");
+      if (auctionConfig.perBuyerCumulativeTimeouts['https://adplatform.com'] !==
+              12345 ||
+          auctionConfig.perBuyerCumulativeTimeouts['*'] !== 23456) {
+        throw new Error("timeout in auctionConfig.perBuyerCumulativeTimeouts " +
+                        "is the wrong value. huh");
       }
       if (auctionConfig.sellerSignals["url"] != decisionLogicUrl)
         throw new Error("Wrong sellerSignals");
@@ -1286,6 +1289,21 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     }
   }
 
+  blink::AuctionConfig::MaybePromiseBuyerTimeouts MakeBuyerCumulativeTimeouts(
+      bool use_promise) {
+    if (use_promise) {
+      return blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromPromise();
+    } else {
+      blink::AuctionConfig::BuyerTimeouts buyer_cumulative_timeouts;
+      buyer_cumulative_timeouts.per_buyer_timeouts.emplace();
+      buyer_cumulative_timeouts.per_buyer_timeouts.value()[kBidder1] =
+          base::Milliseconds(12345);
+      buyer_cumulative_timeouts.all_buyers_timeout = base::Milliseconds(23456);
+      return blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
+          std::move(buyer_cumulative_timeouts));
+    }
+  }
+
   // Helper to create an auction config with the specified values.
   blink::AuctionConfig CreateAuctionConfig(
       const GURL& seller_decision_logic_url,
@@ -1307,6 +1325,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         use_promise_for_per_buyer_signals_, auction_config.seller);
     auction_config.non_shared_params.buyer_timeouts =
         MakeBuyerTimeouts(use_promise_for_buyer_timeouts_);
+    auction_config.non_shared_params.buyer_cumulative_timeouts =
+        MakeBuyerCumulativeTimeouts(use_promise_for_buyer_cumulative_timeouts_);
     auction_config.non_shared_params.auction_signals = MakeAuctionSignals(
         use_promise_for_auction_signals_, auction_config.seller);
 
@@ -1886,6 +1906,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   bool use_promise_for_auction_signals_ = false;
   bool use_promise_for_per_buyer_signals_ = false;
   bool use_promise_for_buyer_timeouts_ = false;
+  bool use_promise_for_buyer_cumulative_timeouts_ = false;
 
   // Unlike others, this is only test with promises at this level.
   bool pass_promise_for_direct_from_seller_signals_ = false;
@@ -5065,10 +5086,12 @@ TEST_F(AuctionRunnerTest, PromiseSignals2) {
                          HasSubstr("Uncaught Error: wrong auctionSignals."))));
 }
 
-// An auction that passes perBuyerSignals and buyerTimeouts via promises.
+// An auction that passes perBuyerSignals, perBuyerTimeouts, and
+// perBuyerCumulativeTimeouts via promises.
 TEST_F(AuctionRunnerTest, PromiseSignals3) {
   use_promise_for_per_buyer_signals_ = true;
   use_promise_for_buyer_timeouts_ = true;
+  use_promise_for_buyer_cumulative_timeouts_ = true;
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -5107,11 +5130,20 @@ TEST_F(AuctionRunnerTest, PromiseSignals3) {
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
-  // Feed in buyerTimeouts.
+  // Feed in perBuyerTimeouts.
   abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts,
       MakeBuyerTimeouts(/*use_promise=*/false).value());
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
+  // Feed in perBuyerCumulativeTimeouts.
+  abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::
+          kPerBuyerCumulativeTimeouts,
+      MakeBuyerCumulativeTimeouts(/*use_promise=*/false).value());
   auction_run_loop_->Run();
 
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
@@ -5119,7 +5151,7 @@ TEST_F(AuctionRunnerTest, PromiseSignals3) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
-// An auction that passes perBuyerSignals and buyerTimeouts via promises.
+// An auction that passes perBuyerSignals and perBuyerTimeouts via promises.
 // Empty values are provided, which causes the validation scripts to complain.
 TEST_F(AuctionRunnerTest, PromiseSignals4) {
   use_promise_for_per_buyer_signals_ = true;
@@ -5159,9 +5191,10 @@ TEST_F(AuctionRunnerTest, PromiseSignals4) {
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
-  // Feed in buyerTimeouts.
+  // Feed in perBuyerTimeouts.
   abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts,
       blink::AuctionConfig::BuyerTimeouts());
 
   auction_run_loop_->Run();
@@ -5591,10 +5624,11 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId3) {
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
-  // Feed in sellerSignals with wrong component ID.
+  // Feed in perBuyerSignals with wrong component ID.
   blink::AuctionConfig::BuyerTimeouts buyer_timeouts;
   abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts,
       buyer_timeouts);
   auction_run_loop_->RunUntilIdle();
   EXPECT_EQ("Invalid auction ID in ResolvedBuyerTimeoutsPromise",
@@ -5602,6 +5636,49 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId3) {
 }
 
 TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId4) {
+  use_promise_for_buyer_cumulative_timeouts_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in perBuyerSignals with wrong component ID.
+  blink::AuctionConfig::BuyerTimeouts buyer_cumulative_timeouts;
+  abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::
+          kPerBuyerCumulativeTimeouts,
+      buyer_cumulative_timeouts);
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_EQ("Invalid auction ID in ResolvedBuyerTimeoutsPromise",
+            TakeBadMessage());
+}
+
+TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId5) {
   pass_promise_for_direct_from_seller_signals_ = true;
 
   auction_worklet::AddJavascriptResponse(
@@ -5938,16 +6015,70 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise6) {
   // Feed in buyer timeouts twice.
   blink::AuctionConfig::BuyerTimeouts timeouts;
   abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), timeouts);
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts,
+      timeouts);
   abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), timeouts);
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts,
+      timeouts);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ("ResolvedBuyerTimeoutsPromise updating non-promise",
+            TakeBadMessage());
+}
+
+// Trying to update buyer cumulative timeouts twice.
+TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise7) {
+  // Have two kind of promises so we don't just finish after first update.
+  use_promise_for_per_buyer_signals_ = true;
+  use_promise_for_buyer_cumulative_timeouts_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in buyer timeouts twice.
+  blink::AuctionConfig::BuyerTimeouts timeouts;
+  abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::kPerBuyerTimeouts,
+      timeouts);
+  abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::
+          kPerBuyerCumulativeTimeouts,
+      timeouts);
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedBuyerTimeoutsPromise updating non-promise",
             TakeBadMessage());
 }
 
 // Trying to update direct from seller signals twice.
-TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise7) {
+TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise8) {
   // Have two kind of promises so we don't just finish after first update.
   use_promise_for_per_buyer_signals_ = true;
   pass_promise_for_direct_from_seller_signals_ = true;

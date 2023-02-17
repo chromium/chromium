@@ -168,6 +168,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
           per_buyer_signals) override;
   void ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+      blink::mojom::AuctionAdConfigBuyerTimeoutField field,
       const blink::AuctionConfig::BuyerTimeouts& buyer_timeouts) override;
   void ResolvedDirectFromSellerSignalsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,

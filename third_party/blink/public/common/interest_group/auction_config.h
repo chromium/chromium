@@ -193,6 +193,11 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // Values restrict the runtime of generateBid() scripts.
     MaybePromiseBuyerTimeouts buyer_timeouts;
 
+    // Collective timeouts for all interest groups with the same buyer. Includes
+    // launching worklet processes, loading scripts and signals, and running
+    // the buyer's generateBid() functions.
+    MaybePromiseBuyerTimeouts buyer_cumulative_timeouts;
+
     // Values restrict the number of bidding interest groups for a particular
     // buyer that can participate in an auction. Values must be greater than 0.
     base::flat_map<url::Origin, std::uint16_t> per_buyer_group_limits;
