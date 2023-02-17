@@ -24,11 +24,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class AndroidXProcessGlobalConfig {
     private String mDataDirectorySuffix;
-
+    private String mDataDirectoryBasePath;
+    private String mCacheDirectoryBasePath;
     private static AndroidXProcessGlobalConfig sGlobalConfig;
 
     private AndroidXProcessGlobalConfig(@NonNull Map<String, Object> configMap) {
         for (Entry<String, Object> entry : configMap.entrySet()) {
+            Object configValue = entry.getValue();
             switch (entry.getKey()) {
                 case ProcessGlobalConfigConstants.DATA_DIRECTORY_SUFFIX:
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -37,12 +39,25 @@ public final class AndroidXProcessGlobalConfig {
                                 + "key: " + entry.getKey()
                                 + " in SDK version >= " + Build.VERSION_CODES.P);
                     }
-                    Object configValue = entry.getValue();
                     if (!(configValue instanceof String)) {
                         throw new RuntimeException("AndroidXProcessGlobalConfig map does not have "
                                 + "right type of value for key: " + entry.getKey());
                     }
                     mDataDirectorySuffix = (String) configValue;
+                    break;
+                case ProcessGlobalConfigConstants.DATA_DIRECTORY_BASE_PATH:
+                    if (!(configValue instanceof String)) {
+                        throw new RuntimeException("AndroidXProcessGlobalConfig map does not have "
+                                + "right type of value for key: " + entry.getKey());
+                    }
+                    mDataDirectoryBasePath = (String) configValue;
+                    break;
+                case ProcessGlobalConfigConstants.CACHE_DIRECTORY_BASE_PATH:
+                    if (!(configValue instanceof String)) {
+                        throw new RuntimeException("AndroidXProcessGlobalConfig map does not have "
+                                + "right type of value for key: " + entry.getKey());
+                    }
+                    mCacheDirectoryBasePath = (String) configValue;
                     break;
                 default:
                     throw new RuntimeException(
@@ -90,10 +105,15 @@ public final class AndroidXProcessGlobalConfig {
         return sGlobalConfig;
     }
 
-    /**
-     * TODO(crbug.com/1355297): Write docs after initial review iterations.
-     */
     public @Nullable String getDataDirectorySuffixOrNull() {
         return mDataDirectorySuffix;
+    }
+
+    public @Nullable String getDataDirectoryBasePathOrNull() {
+        return mDataDirectoryBasePath;
+    }
+
+    public @Nullable String getCacheDirectoryBasePathOrNull() {
+        return mCacheDirectoryBasePath;
     }
 }

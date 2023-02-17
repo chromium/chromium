@@ -98,12 +98,31 @@ public final class AwBrowserProcess {
      *                             process; null to use no suffix.
      */
     public static void loadLibrary(String processDataDirSuffix) {
+        loadLibrary(null, null, processDataDirSuffix);
+    }
+
+    /**
+     * Loads the native library, and performs basic static construction of objects needed
+     * to run webview in this process. Does not create threads; safe to call from zygote.
+     * Note: it is up to the caller to ensure this is only called once.
+     *
+     * @param processDataDirBasePath The base path to use when setting the data directory for this
+     *                             process; null to use default base path.
+     * @param processCacheDirBasePath The base path to use when setting the cache directory for this
+     *                             process; null to use default base path.
+     * @param processDataDirSuffix The suffix to use when setting the data directory for this
+     *                             process; null to use no suffix.
+     */
+    public static void loadLibrary(String processDataDirBasePath, String processCacheDirBasePath,
+            String processDataDirSuffix) {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW);
         if (processDataDirSuffix == null) {
-            PathUtils.setPrivateDataDirectorySuffix(WEBVIEW_DIR_BASENAME, "WebView");
+            PathUtils.setPrivateDirectoryPath(processDataDirBasePath, processCacheDirBasePath,
+                    WEBVIEW_DIR_BASENAME, "WebView");
         } else {
             String processDataDirName = WEBVIEW_DIR_BASENAME + "_" + processDataDirSuffix;
-            PathUtils.setPrivateDataDirectorySuffix(processDataDirName, processDataDirName);
+            PathUtils.setPrivateDirectoryPath(processDataDirBasePath, processCacheDirBasePath,
+                    processDataDirName, processDataDirName);
         }
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         try {

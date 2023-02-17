@@ -426,6 +426,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
                              "WebViewChromiumFactoryProvider.loadChromiumLibrary")) {
+                    String dataDirectoryBasePath = androidXConfig.getDataDirectoryBasePathOrNull();
+                    String cacheDirectoryBasePath =
+                            androidXConfig.getCacheDirectoryBasePathOrNull();
                     String dataDirectorySuffix;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         dataDirectorySuffix =
@@ -434,7 +437,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                         // Try the AndroidX library version
                         dataDirectorySuffix = androidXConfig.getDataDirectorySuffixOrNull();
                     }
-                    AwBrowserProcess.loadLibrary(dataDirectorySuffix);
+                    AwBrowserProcess.loadLibrary(
+                            dataDirectoryBasePath, cacheDirectoryBasePath, dataDirectorySuffix);
                 }
 
                 try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
