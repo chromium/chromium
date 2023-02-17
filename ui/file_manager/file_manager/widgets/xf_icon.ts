@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {util} from '../common/js/util.js';
+import {constants} from '../foreground/js/constants.js';
 
 import {classMap, css, customElement, html, property, PropertyValues, styleMap, svg, XfBase} from './xf_base.js';
 
@@ -16,7 +17,7 @@ export class XfIcon extends XfBase {
 
   /**
    * The icon type, different type will render different SVG file
-   * (from `XfIcon.types`).
+   * (from `constants.ICON_TYPES`).
    */
   @property({type: String, reflect: true}) type = '';
 
@@ -35,83 +36,19 @@ export class XfIcon extends XfBase {
     } as const;
   }
 
-  static get types() {
-    return {
-      ANDROID_FILES: 'android_files',
-      ARCHIVE: 'archive',
-      AUDIO: 'audio',
-      BRUSCHETTA: 'bruschetta',
-      CAMERA_FOLDER: 'camera-folder',
-      CLOUD_DONE: 'cloud_done',
-      CLOUD_ERROR: 'cloud_error',
-      CLOUD_OFFLINE: 'cloud_offline',
-      CLOUD_SYNC: 'cloud_sync',
-      CLOUD: 'cloud',
-      COMPUTER: 'computer',
-      COMPUTERS_GRAND_ROOT: 'computers_grand_root',
-      CROSTINI: 'crostini',
-      DOWNLOADS: 'downloads',
-      DRIVE_OFFLINE: 'drive_offline',
-      DRIVE_RECENT: 'drive_recent',
-      DRIVE_SHARED_WITH_ME: 'drive_shared_with_me',
-      DRIVE: 'drive',
-      EXCEL: 'excel',
-      EXTERNAL_MEDIA: 'external_media',
-      FOLDER: 'folder',
-      GENERIC: 'generic',
-      GOOGLE_DOC: 'gdoc',
-      GOOGLE_DRAW: 'gdraw',
-      GOOGLE_FORM: 'gform',
-      GOOGLE_LINK: 'glink',
-      GOOGLE_MAP: 'gmap',
-      GOOGLE_SHEET: 'gsheet',
-      GOOGLE_SITE: 'gsite',
-      GOOGLE_SLIDES: 'gslides',
-      GOOGLE_TABLE: 'gtable',
-      IMAGE: 'image',
-      MTP: 'mtp',
-      MY_FILES: 'my_files',
-      OFFLINE: 'offline',
-      OPTICAL: 'optical',
-      PDF: 'pdf',
-      PLUGIN_VM: 'plugin_vm',
-      POWERPOINT: 'ppt',
-      RAW: 'raw',
-      RECENT: 'recent',
-      REMOVABLE: 'removable',
-      SCRIPT: 'script',
-      SD_CARD: 'sd',
-      SERVICE_DRIVE: 'service_drive',
-      SHARED_DRIVE: 'shared_drive',
-      SHARED_DRIVES_GRAND_ROOT: 'shared_drives_grand_root',
-      SHARED_FOLDER: 'shared_folder',
-      SHORTCUT: 'shortcut',
-      SITES: 'sites',
-      SMB: 'smb',
-      TEAM_DRIVE: 'team_drive',
-      THUMBNAIL_GENERIC: 'thumbnail_generic',
-      TINI: 'tini',
-      TRASH: 'trash',
-      UNKNOWN_REMOVABLE: 'unknown_removable',
-      USB: 'usb',
-      VIDEO: 'video',
-      WORD: 'word',
-    };
-  }
-
   static get multiColor() {
     return {
-      [XfIcon.types.OFFLINE]:
+      [constants.ICON_TYPES.OFFLINE]:
           svg`<use xlink:href="foreground/images/files/ui/offline.svg#offline"></use>`,
-      [XfIcon.types.CLOUD_DONE]:
+      [constants.ICON_TYPES.CLOUD_DONE]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_done.svg#cloud_done"></use>`,
-      [XfIcon.types.CLOUD_ERROR]:
+      [constants.ICON_TYPES.CLOUD_ERROR]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_error.svg#cloud_error"></use>`,
-      [XfIcon.types.CLOUD_OFFLINE]:
+      [constants.ICON_TYPES.CLOUD_OFFLINE]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_offline.svg#cloud_offline"></use>`,
-      [XfIcon.types.CLOUD_SYNC]:
+      [constants.ICON_TYPES.CLOUD_SYNC]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_sync.svg#cloud_sync"></use>`,
-      [XfIcon.types.CLOUD]:
+      [constants.ICON_TYPES.CLOUD]:
           svg`<use xlink:href="foreground/images/files/ui/cloud.svg#cloud"></use>`,
     };
   }
@@ -139,9 +76,9 @@ export class XfIcon extends XfBase {
     }
 
     const shouldKeepColor = [
-      XfIcon.types.EXCEL,
-      XfIcon.types.POWERPOINT,
-      XfIcon.types.WORD,
+      constants.ICON_TYPES.EXCEL,
+      constants.ICON_TYPES.POWERPOINT,
+      constants.ICON_TYPES.WORD,
     ].includes(this.type);
     const spanClass = {'keep-color': shouldKeepColor};
 
@@ -165,10 +102,10 @@ export class XfIcon extends XfBase {
       console.warn('Empty type will result in an square being rendered.');
       return;
     }
-    const validTypes = Object.values(XfIcon.types);
+    const validTypes = Object.values(constants.ICON_TYPES);
     if (!validTypes.find((t) => t === type)) {
-      console.warn(
-          `Type ${type} is not a valid icon type, please check XfIcon.types.`);
+      console.warn(`Type ${
+          type} is not a valid icon type, please check constants.ICON_TYPES.`);
     }
   }
 }

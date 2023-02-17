@@ -54,8 +54,8 @@ export class XfTreeItem extends XfBase {
 
   /**
    * The icon of the tree item, will be displayed before the label text.
-   * The icon value should come from `XfIcon.types`, it will be passed as
-   * `type` to a <xf-icon> widget to render an icon element.
+   * The icon value should come from `constants.ICON_TYPES`, it will be passed
+   * as `type` to a <xf-icon> widget to render an icon element.
    */
   @property({type: String, reflect: true}) icon = '';
   /**
