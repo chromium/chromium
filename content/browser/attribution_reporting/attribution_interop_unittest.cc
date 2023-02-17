@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
@@ -63,18 +64,16 @@ std::vector<base::FilePath> GetInputs() {
   return input_paths;
 }
 
-bool UnorderedMatch(base::Value::List* a, base::Value::List* b) {
-  if (!a) {
-    return !b || b->empty();
+void ProcessReports(base::Value::Dict& dict, base::StringPiece key) {
+  base::Value::List* list = dict.FindList(key);
+  if (!list) {
+    return;
   }
-
-  if (!b) {
-    return !a || a->empty();
+  if (list->empty()) {
+    dict.Remove(key);
+    return;
   }
-
-  base::ranges::sort(*a);
-  base::ranges::sort(*b);
-  return *a == *b;
+  base::ranges::sort(*list);
 }
 
 class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
@@ -129,14 +128,14 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   base::Value::Dict& expected_output_dict = expected_output->GetDict();
 
-  for (const char* field :
-       {kEventLevelResultsKey, kDebugEventLevelResultsKey,
-        kAggregatableResultsKey, kDebugAggregatableResultsKey,
-        kVerboseDebugReportsKey}) {
-    EXPECT_TRUE(UnorderedMatch(actual_output->FindList(field),
-                               expected_output_dict.FindList(field)))
-        << field;
+  for (const char* key : {kEventLevelResultsKey, kDebugEventLevelResultsKey,
+                          kAggregatableResultsKey, kDebugAggregatableResultsKey,
+                          kVerboseDebugReportsKey}) {
+    ProcessReports(*actual_output, key);
+    ProcessReports(expected_output_dict, key);
   }
+
+  EXPECT_THAT(*actual_output, base::test::IsJson(expected_output_dict));
 }
 
 INSTANTIATE_TEST_SUITE_P(
