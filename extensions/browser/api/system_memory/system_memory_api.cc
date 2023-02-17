@@ -11,12 +11,6 @@ namespace extensions {
 
 using api::system_memory::MemoryInfo;
 
-SystemMemoryGetInfoFunction::SystemMemoryGetInfoFunction() {
-}
-
-SystemMemoryGetInfoFunction::~SystemMemoryGetInfoFunction() {
-}
-
 ExtensionFunction::ResponseAction SystemMemoryGetInfoFunction::Run() {
   MemoryInfoProvider::Get()->StartQueryInfo(base::BindOnce(
       &SystemMemoryGetInfoFunction::OnGetMemoryInfoCompleted, this));

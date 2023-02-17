@@ -25,8 +25,8 @@ class MemoryInfoProvider : public SystemInfoProvider {
  private:
   friend class MockMemoryInfoProviderImpl;
 
-  MemoryInfoProvider();
-  ~MemoryInfoProvider() override;
+  MemoryInfoProvider() = default;
+  ~MemoryInfoProvider() override = default;
 
   // Overriden from SystemInfoProvider.
   bool QueryInfo() override;

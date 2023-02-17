@@ -6,21 +6,20 @@
 #define EXTENSIONS_BROWSER_API_SYSTEM_MEMORY_SYSTEM_MEMORY_API_H_
 
 #include "extensions/browser/extension_function.h"
-#include "extensions/common/api/system_memory.h"
 
 namespace extensions {
 
 class SystemMemoryGetInfoFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.memory.getInfo", SYSTEM_MEMORY_GETINFO)
-  SystemMemoryGetInfoFunction();
 
+  SystemMemoryGetInfoFunction() = default;
   SystemMemoryGetInfoFunction(const SystemMemoryGetInfoFunction&) = delete;
   SystemMemoryGetInfoFunction& operator=(const SystemMemoryGetInfoFunction&) =
       delete;
 
  private:
-  ~SystemMemoryGetInfoFunction() override;
+  ~SystemMemoryGetInfoFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
