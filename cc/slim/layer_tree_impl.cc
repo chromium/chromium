@@ -6,15 +6,24 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "base/auto_reset.h"
+#include "base/containers/adapters.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/slim/frame_sink_impl.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
+#include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/draw_quad.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc::slim {
 
@@ -76,7 +85,7 @@ void LayerTreeImpl::RequestSuccessfulPresentationTimeForNextFrame(
 }
 
 void LayerTreeImpl::set_display_transform_hint(gfx::OverlayTransform hint) {
-  // TODO(crbug.com/1408128): Implement.
+  display_transform_hint_ = hint;
 }
 
 void LayerTreeImpl::RequestCopyOfOutput(
@@ -182,9 +191,16 @@ bool LayerTreeImpl::BeginFrame(
   // changes made by client `BeginFrame` are about to be drawn, so there is no
   // need for another frame.
   needs_draw_ = false;
-  // TODO(crbug.com/1408128): Implement frame production here.
+
+  if (!root_) {
+    UpdateNeedsBeginFrame();
+    return false;
+  }
+
+  GenerateCompositorFrame(args, out_frame, out_resource_ids,
+                          out_hit_test_region_list);
   UpdateNeedsBeginFrame();
-  return false;
+  return true;
 }
 
 void LayerTreeImpl::DidReceiveCompositorFrameAck() {
@@ -260,6 +276,90 @@ bool LayerTreeImpl::NeedsBeginFrames() const {
     return false;
   }
   return client_needs_one_begin_frame_ || needs_draw_;
+}
+
+void LayerTreeImpl::GenerateCompositorFrame(
+    const viz::BeginFrameArgs& args,
+    viz::CompositorFrame& out_frame,
+    base::flat_set<viz::ResourceId>& out_resource_ids,
+    viz::HitTestRegionList& out_hit_test_region_list) {
+  // TODO(crbug.com/1408128): Only has a very simple and basic compositor frame
+  // generation. Some missing features include:
+  // * Support multiple render passes (non-axis aligned clip, filters)
+  // * Damage tracking
+  // * Occlusion culling
+  // * Visible rect (ie clip) on quads
+  // * Surface embedding fields (referenced surfaces, activation dependency,
+  //   deadline)
+  TRACE_EVENT0("cc", "slim::LayerTreeImpl::ProduceFrame");
+  auto render_pass = viz::CompositorRenderPass::Create();
+  render_pass->SetNew(viz::CompositorRenderPassId(root_->id()),
+                      /*output_rect=*/device_viewport_rect_,
+                      /*damage_rect=*/device_viewport_rect_,
+                      /*transform_to_root_target=*/gfx::Transform());
+
+  out_frame.metadata.frame_token = ++next_frame_token_;
+  out_frame.metadata.begin_frame_ack =
+      viz::BeginFrameAck(args, /*has_damage=*/true);
+  out_frame.metadata.device_scale_factor = device_scale_factor_;
+  out_frame.metadata.root_background_color = background_color_;
+  out_frame.metadata.referenced_surfaces = std::vector<viz::SurfaceRange>(
+      referenced_surfaces_.begin(), referenced_surfaces_.end());
+  out_frame.metadata.top_controls_visible_height = top_controls_visible_height_;
+  top_controls_visible_height_.reset();
+  out_frame.metadata.display_transform_hint = display_transform_hint_;
+
+  Draw(*root_, *render_pass, /*transform_to_target=*/gfx::Transform(),
+       /*clip_from_parent=*/nullptr);
+
+  out_frame.render_pass_list.push_back(std::move(render_pass));
+
+  for (const auto& pass : out_frame.render_pass_list) {
+    for (const auto* quad : pass->quad_list) {
+      for (viz::ResourceId resource_id : quad->resources) {
+        out_resource_ids.insert(resource_id);
+      }
+    }
+  }
+}
+
+void LayerTreeImpl::Draw(Layer& layer,
+                         viz::CompositorRenderPass& parent_pass,
+                         const gfx::Transform& transform_to_target,
+                         const gfx::Rect* clip_from_parent) {
+  if (layer.hide_layer_and_subtree()) {
+    return;
+  }
+
+  gfx::Transform transform_to_parent = layer.ComputeTransformToParent();
+
+  // New transform is: parent transform x layer transform.
+  gfx::Transform new_transform_to_target = transform_to_target;
+  new_transform_to_target.PreConcat(transform_to_parent);
+
+  bool use_new_clip = false;
+  gfx::Rect new_clip;
+  // Drop non-axis aligned clip instead of using new render pass.
+  // TODO(crbug.com/1408128): Clip in layer space (visible rect) for clip
+  // that is not an exact integer.
+  if (layer.masks_to_bounds() &&
+      new_transform_to_target.Preserves2dAxisAlignment()) {
+    new_clip.set_size(layer.bounds());
+    new_clip = new_transform_to_target.MapRect(new_clip);
+    if (clip_from_parent) {
+      new_clip.Intersect(*clip_from_parent);
+    }
+    use_new_clip = true;
+  }
+  const gfx::Rect* clip = use_new_clip ? &new_clip : clip_from_parent;
+
+  for (auto& child : base::Reversed(layer.children())) {
+    Draw(*child, parent_pass, new_transform_to_target, clip);
+  }
+
+  if (!layer.bounds().IsEmpty() && layer.HasDrawableContent()) {
+    layer.AppendQuads(parent_pass, new_transform_to_target, clip);
+  }
 }
 
 }  // namespace cc::slim
