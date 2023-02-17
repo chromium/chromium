@@ -102,10 +102,7 @@
         </template>
       </div>
     </cr-drawer>
-    <!-- TODO(dizhangg): Need negative tabindex so the container doesn't get
-         focused. Delete this comment when KeyboardFocusableScrollers is enabled
-         by default. -->
-    <div id="container" class="no-outline" tabindex="-1">
+    <div id="container" class="no-outline">
       <div id="left" hidden$="[[narrow_]]">
         <settings-menu id="leftMenu"
             page-visibility="[[pageVisibility_]]"
