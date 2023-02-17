@@ -118,7 +118,7 @@
  */
 import { Disconnectable, Part } from './lit-html.js';
 import { Directive } from './directive.js';
-export { directive } from './directive.js';
+export * from './directive.js';
 /**
  * An abstract `Directive` base class whose `disconnected` method will be
  * called when the part containing the directive is cleared as a result of

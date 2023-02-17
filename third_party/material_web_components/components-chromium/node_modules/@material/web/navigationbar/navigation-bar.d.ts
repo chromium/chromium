@@ -1,0 +1,19 @@
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import { NavigationBar } from './lib/navigation-bar.js';
+declare global {
+    interface HTMLElementTagNameMap {
+        'md-navigation-bar': MdNavigationBar;
+    }
+}
+/**
+ * @soyCompatible
+ * @final
+ * @suppress {visibility}
+ */
+export declare class MdNavigationBar extends NavigationBar {
+    static styles: import("lit").CSSResult[];
+}

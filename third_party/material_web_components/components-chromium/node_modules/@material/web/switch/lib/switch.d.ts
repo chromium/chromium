@@ -1,0 +1,82 @@
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import '../../focus/focus-ring.js';
+import '../../ripple/ripple.js';
+import { LitElement, TemplateResult } from 'lit';
+import { getFormValue } from '../../controller/form-controller.js';
+/**
+ * @fires input {InputEvent} Fired whenever `selected` changes due to user
+ * interaction (bubbles and composed).
+ * @fires change {Event} Fired whenever `selected` changes due to user
+ * interaction (bubbles).
+ */
+export declare class Switch extends LitElement {
+    static shadowRootOptions: ShadowRootInit;
+    /**
+     * @nocollapse
+     */
+    static formAssociated: boolean;
+    /**
+     * Disables the switch and makes it non-interactive.
+     */
+    disabled: boolean;
+    /**
+     * Puts the switch in the selected state and sets the form submission value to
+     * the `value` property.
+     */
+    selected: boolean;
+    /**
+     * Shows both the selected and deselected icons.
+     */
+    icons: boolean;
+    /**
+     * Shows only the selected icon, and not the deselected icon. If `true`,
+     * overrides the behavior of the `icons` property.
+     */
+    showOnlySelectedIcon: boolean;
+    ariaLabel: string;
+    ariaLabelledBy: string;
+    private showFocusRing;
+    private showRipple;
+    private readonly ripple;
+    private readonly button;
+    /**
+     * The associated form element with which this element's value will submit.
+     */
+    get form(): HTMLFormElement;
+    /**
+     * The HTML name to use in form submission.
+     */
+    name: string;
+    /**
+     * The value associated with this switch on form submission. `null` is
+     * submitted when `selected` is `false`.
+     */
+    value: string;
+    [getFormValue](): string;
+    constructor();
+    protected render(): TemplateResult;
+    private getRenderClasses;
+    private readonly renderRipple;
+    private readonly getRipple;
+    private readonly renderFocusRing;
+    private renderHandle;
+    private renderIcons;
+    /**
+     * https://fonts.google.com/icons?selected=Material%20Symbols%20Outlined%3Acheck%3AFILL%400%3Bwght%40500%3BGRAD%400%3Bopsz%4024
+     */
+    private renderOnIcon;
+    /**
+     * https://fonts.google.com/icons?selected=Material%20Symbols%20Outlined%3Aclose%3AFILL%400%3Bwght%40500%3BGRAD%400%3Bopsz%4024
+     */
+    private renderOffIcon;
+    private renderTouchTarget;
+    private shouldShowIcons;
+    private handleClick;
+    private handleFocus;
+    private handleBlur;
+    private handlePointerDown;
+}

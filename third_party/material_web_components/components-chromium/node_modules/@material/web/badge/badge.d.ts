@@ -1,0 +1,19 @@
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import { Badge } from './lib/badge.js';
+declare global {
+    interface HTMLElementTagNameMap {
+        'md-badge': MdBadge;
+    }
+}
+/**
+ * @soyCompatible
+ * @final
+ * @suppress {visibility}
+ */
+export declare class MdBadge extends Badge {
+    static styles: import("lit").CSSResult[];
+}

@@ -19,13 +19,16 @@ argparse/
 
 # lit
 lit/decorators
+lit/*/node/*
 
 # lit-element
 lit-element/private-ssr-support.*
 lit-element/decorators
+lit-element/*/node/*
 
 # lit-html
 lit-html/private-ssr-support.*
+lit-html/*/node/*
 
 # tslib
 tslib/modules
@@ -33,3 +36,8 @@ tslib/tslib.js
 
 # @material
 @material/animation
+@material/*/node/*
+@material/**/harness.js
+
+# @lit
+@lit/*/node/*

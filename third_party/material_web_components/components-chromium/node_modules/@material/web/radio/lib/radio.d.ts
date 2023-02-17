@@ -1,0 +1,60 @@
+/**
+ * @license
+ * Copyright 2018 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import '../../focus/focus-ring.js';
+import '../../ripple/ripple.js';
+import { LitElement, TemplateResult } from 'lit';
+import { getFormValue } from '../../controller/form-controller.js';
+declare const CHECKED: unique symbol;
+/**
+ * A radio component.
+ */
+export declare class Radio extends LitElement {
+    static shadowRootOptions: ShadowRootInit;
+    /**
+     * @nocollapse
+     */
+    static formAssociated: boolean;
+    /**
+     * Whether or not the radio is selected.
+     */
+    get checked(): boolean;
+    set checked(checked: boolean);
+    [CHECKED]: boolean;
+    /**
+     * Whether or not the radio is disabled.
+     */
+    disabled: boolean;
+    /**
+     * The element value to use in form submission when checked.
+     */
+    value: string;
+    /**
+     * The HTML name to use in form submission.
+     */
+    name: string;
+    ariaLabel: string;
+    /**
+     * The associated form element with which this element's value will submit.
+     */
+    get form(): HTMLFormElement;
+    private readonly input;
+    private readonly ripple;
+    private readonly selectionController;
+    private showFocusRing;
+    private showRipple;
+    constructor();
+    [getFormValue](): string;
+    focus(): void;
+    protected render(): TemplateResult;
+    private handleBlur;
+    private handleFocus;
+    private handleChange;
+    private handlePointerDown;
+    private readonly getRipple;
+    private readonly renderRipple;
+    private renderFocusRing;
+}
+export {};

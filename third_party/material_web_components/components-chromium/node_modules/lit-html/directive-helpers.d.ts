@@ -20,7 +20,7 @@ export declare type TemplateResultType = typeof TemplateResultType[keyof typeof 
 /**
  * Tests if a value is a TemplateResult.
  */
-export declare const isTemplateResult: (value: unknown, type?: TemplateResultType | undefined) => value is TemplateResult<1 | 2>;
+export declare const isTemplateResult: (value: unknown, type?: TemplateResultType) => value is TemplateResult<1 | 2>;
 /**
  * Tests if a value is a DirectiveResult.
  */

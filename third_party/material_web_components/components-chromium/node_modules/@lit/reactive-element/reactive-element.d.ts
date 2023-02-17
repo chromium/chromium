@@ -316,10 +316,10 @@ export declare abstract class ReactiveElement extends HTMLElement implements Rea
      * Element styles are implemented with `<style>` tags when the browser doesn't
      * support adopted StyleSheets. To use such `<style>` tags with the style-src
      * CSP directive, the style-src value must either include 'unsafe-inline' or
-     * 'nonce-<base64-value>' with <base64-value> replaced be a server-generated
+     * `nonce-<base64-value>` with `<base64-value>` replaced be a server-generated
      * nonce.
      *
-     * To provide a nonce to use on generated <style> elements, set
+     * To provide a nonce to use on generated `<style>` elements, set
      * `window.litNonce` to a server-generated nonce in your page's HTML, before
      * loading application code:
      *

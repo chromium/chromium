@@ -19,5 +19,9 @@ declare class Keyed extends Directive {
  * animation techniques.
  */
 export declare const keyed: (k: unknown, v: unknown) => import("../directive.js").DirectiveResult<typeof Keyed>;
-export {};
+/**
+ * The type of the class that powers this directive. Necessary for naming the
+ * directive's return type.
+ */
+export type { Keyed };
 //# sourceMappingURL=keyed.d.ts.map

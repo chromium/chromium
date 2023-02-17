@@ -1,0 +1,19 @@
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import { Icon } from './lib/icon.js';
+declare global {
+    interface HTMLElementTagNameMap {
+        'md-icon': MdIcon;
+    }
+}
+/**
+ * @soyCompatible
+ * @final
+ * @suppress {visibility}
+ */
+export declare class MdIcon extends Icon {
+    static styles: import("lit").CSSResult[];
+}
