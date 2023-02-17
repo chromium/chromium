@@ -275,6 +275,11 @@ class NET_EXPORT UDPSocketPosix {
   // Sets "don't close" flag for the socket.
   void SetDontClose(bool dont_close);
 
+  // Takes ownership of `socket`, which should be a socket descriptor opened
+  // with the specified address family. The socket should only be created but
+  // not bound or connected to an address.
+  int AdoptOpenedSocket(AddressFamily address_family, int socket);
+
  private:
   enum SocketOptions {
     SOCKET_OPTION_MULTICAST_LOOP = 1 << 0
@@ -367,6 +372,9 @@ class NET_EXPORT UDPSocketPosix {
   int DoBind(const IPEndPoint& address);
   // Binds to a random port on |address|.
   int RandomBind(const IPAddress& address);
+
+  // Sets `socket_hash_` and `tag_` on opened `socket_`.
+  int ConfigureOpenedSocket();
 
   int socket_;
 

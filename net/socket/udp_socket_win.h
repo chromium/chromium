@@ -350,6 +350,11 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Apply |tag| to this socket.
   void ApplySocketTag(const SocketTag& tag);
 
+  // Takes ownership of `socket`, which should be a socket descriptor opened
+  // with the specified address family. The socket should only be created but
+  // not bound or connected to an address.
+  int AdoptOpenedSocket(AddressFamily address_family, SOCKET socket);
+
  private:
   enum SocketOptions {
     SOCKET_OPTION_MULTICAST_LOOP = 1 << 0
@@ -405,6 +410,9 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Bind().
   int SetMulticastOptions();
   int DoBind(const IPEndPoint& address);
+
+  // Configures opened `socket_` depending on whether it uses nonblocking IO.
+  void ConfigureOpenedSocket();
 
   // This is provided to allow QwaveApi mocking in tests. |UDPSocketWin| method
   // implementations should call |GetQwaveApi()| instead of

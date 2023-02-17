@@ -154,10 +154,33 @@ int UDPSocketPosix::Open(AddressFamily address_family) {
   if (owned_socket_count.empty())
     return ERR_INSUFFICIENT_RESOURCES;
 
+  owned_socket_count_ = std::move(owned_socket_count);
   addr_family_ = ConvertAddressFamily(address_family);
   socket_ = CreatePlatformSocket(addr_family_, SOCK_DGRAM, 0);
-  if (socket_ == kInvalidSocket)
+  if (socket_ == kInvalidSocket) {
+    owned_socket_count_.Reset();
     return MapSystemError(errno);
+  }
+
+  return ConfigureOpenedSocket();
+}
+
+int UDPSocketPosix::AdoptOpenedSocket(AddressFamily address_family,
+                                      int socket) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_EQ(socket_, kInvalidSocket);
+  auto owned_socket_count = TryAcquireGlobalUDPSocketCount();
+  if (owned_socket_count.empty()) {
+    return ERR_INSUFFICIENT_RESOURCES;
+  }
+
+  owned_socket_count_ = std::move(owned_socket_count);
+  socket_ = socket;
+  addr_family_ = ConvertAddressFamily(address_family);
+  return ConfigureOpenedSocket();
+}
+
+int UDPSocketPosix::ConfigureOpenedSocket() {
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   PCHECK(change_fdguard_np(socket_, nullptr, 0, &kSocketFdGuard,
                            GUARD_CLOSE | GUARD_DUP, nullptr) == 0);
@@ -171,7 +194,6 @@ int UDPSocketPosix::Open(AddressFamily address_family) {
   if (tag_ != SocketTag())
     tag_.Apply(socket_);
 
-  owned_socket_count_ = std::move(owned_socket_count);
   return OK;
 }
 

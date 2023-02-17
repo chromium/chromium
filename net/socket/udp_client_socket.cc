@@ -178,4 +178,9 @@ void UDPClientSocket::SetDontClose(bool dont_close) {
 #endif
 }
 
+void UDPClientSocket::AdoptOpenedSocket(AddressFamily address_family,
+                                        SocketDescriptor socket) {
+  socket_.AdoptOpenedSocket(address_family, socket);
+}
+
 }  // namespace net

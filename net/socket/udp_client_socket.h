@@ -9,6 +9,7 @@
 
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"
+#include "net/socket/socket_descriptor.h"
 #include "net/socket/udp_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -73,6 +74,9 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   int SetMulticastInterface(uint32_t interface_index) override;
   void SetIOSNetworkServiceType(int ios_network_service_type) override;
   void SetDontClose(bool dont_close) override;
+
+  // Takes ownership of an opened but unconnected and unbound `socket`.
+  void AdoptOpenedSocket(AddressFamily address_family, SocketDescriptor socket);
 
  private:
   UDPSocket socket_;
