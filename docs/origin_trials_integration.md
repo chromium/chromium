@@ -36,8 +36,9 @@ The following fields of an entry are relevant:
   trial to be enabled. The list values are case-insensitive, but must match one
   of the defined `OS_<platform>` macros (see [build_config.h]).
 - `base_feature`: Generates a `base::Feature` in the `blink::features`
-  namespace. It helps to control the Origin Trial remotely. See also
-  [Generate a `base::Feature` instance from a Blink Feature][from blink].
+  namespace if the value is not `"none"`. It helps to control the Origin Trial
+  remotely. See also [Generate a `base::Feature` instance from a Blink Feature]
+  [from blink].
 
 Not specific to Origin Trial:
 
@@ -63,18 +64,19 @@ same:
 {
   name: "MyFeature",  // Generates `RuntimeEnabledFeatures::MyFeatureEnabled()`
   origin_trial_feature_name: "MyFeature",
-  base_feature: "MyFeature",  // Generates blink::features::kMyFeature
   status: "experimental",
+  // No need to specify base_feature.
 },
 ```
 
-RuntimeEnabledFeature flag name and trial name are different:
+RuntimeEnabledFeature flag name, trial name, and `base::Feature` name are
+different:
 
 ```json
 {
   name: "MyFeature",
   origin_trial_feature_name: "MyFeatureTrial",
-  base_feature: "MyFeature",  // Generates blink::features::kMyFeature
+  base_feature: "MyBaseFeature",  // Generates blink::features::kMyBaseFeature
   status: "experimental",
 },
 ```

@@ -73,6 +73,10 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
             # Specify the type of status
             feature['status_type'] = "dict" if isinstance(
                 feature['status'], dict) else "str"
+            if feature['base_feature'] == 'none':
+                feature['base_feature'] = ''
+            elif feature['base_feature'] == '':
+                feature['base_feature'] = feature['name']
 
         self._origin_trial_features = [
             feature for feature in self._features if feature['in_origin_trial']
