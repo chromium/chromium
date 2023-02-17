@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "reclient", "xcode")
+load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient", "xcode")
 
 luci.bucket(
     name = "webrtc.fyi",
@@ -72,7 +72,6 @@ builder(
         android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-webrtc",
     ),
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
@@ -97,7 +96,6 @@ builder(
         android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-webrtc",
     ),
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
@@ -122,7 +120,6 @@ builder(
         android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-webrtc",
     ),
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
@@ -195,7 +192,6 @@ builder(
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
@@ -213,7 +209,6 @@ builder(
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
@@ -255,7 +250,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    goma_backend = goma.backend.RBE_PROD,
     xcode = xcode.x14main,
 )
 
@@ -275,7 +269,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
@@ -319,8 +312,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.WINDOWS_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_enable_ats = True,
 )
 
 builder(
@@ -339,8 +330,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.WINDOWS_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_enable_ats = True,
 )
 
 builder(
@@ -384,7 +373,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    goma_backend = goma.backend.RBE_PROD,
     xcode = xcode.x14main,
 )
 
@@ -405,6 +393,5 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    goma_backend = goma.backend.RBE_PROD,
     xcode = xcode.x14main,
 )
