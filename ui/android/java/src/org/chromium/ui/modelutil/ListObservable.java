@@ -70,5 +70,13 @@ public interface ListObservable<P> {
          * @param newIndex New position of the moved item.
          */
         default void onItemMoved(ListObservable source, int curIndex, int newIndex) {}
+
+        /**
+         * Notifies that the items as {@code firstIndex} and {@code secondIndex} have been swapped.
+         *
+         * @param firstIndex The first position of the swap.
+         * @param secondIndex The second position of the swap.
+         */
+        default void onItemSwapped(ListObservable source, int firstIndex, int secondIndex) {}
     }
 }

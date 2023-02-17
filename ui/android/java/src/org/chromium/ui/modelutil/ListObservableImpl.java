@@ -103,4 +103,16 @@ public abstract class ListObservableImpl<P> implements ListObservable<P> {
             observer.onItemMoved(this, curIndex, newIndex);
         }
     }
+
+    /**
+     * Notifies that the items as {@code firstIndex} and {@code secondIndex} have been swapped.
+     *
+     * @param firstIndex The first position of the swap.
+     * @param secondIndex The second position of the swap.
+     */
+    protected void notifyItemSwapped(int firstIndex, int secondIndex) {
+        for (ListObserver observer : mObservers) {
+            observer.onItemSwapped(this, firstIndex, secondIndex);
+        }
+    }
 }

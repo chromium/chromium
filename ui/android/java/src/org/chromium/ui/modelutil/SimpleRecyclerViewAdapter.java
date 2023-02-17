@@ -60,7 +60,7 @@ public class SimpleRecyclerViewAdapter
     }
 
     /** The data that is shown in the list. */
-    private final ModelList mListData;
+    protected final ModelList mListData;
 
     /** The observer that watches the data for changes. */
     private final ListObserver<Void> mListObserver;
@@ -91,6 +91,9 @@ public class SimpleRecyclerViewAdapter
             public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
                 notifyItemMoved(curIndex, newIndex);
             }
+
+            @Override
+            public void onItemSwapped(ListObservable source, int firstIndex, int secondIndex) {}
         };
         mListData.addObserver(mListObserver);
     }
