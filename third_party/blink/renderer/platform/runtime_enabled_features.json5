@@ -3559,8 +3559,8 @@
       base_feature: "none",
       public: true,
     },
-    // WebBluetooth is enabled by default on Android, ChromeOS and Mac.
-    // It is also supported in Windows 10 which is handled in runtime_features.cc
+    // WebBluetooth is enabled by default on Android, ChromeOS, macOS and
+    // Windows.
     {
       name: "WebBluetooth",
       public: true,
@@ -3568,6 +3568,7 @@
         "Android": "stable",
         "ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable",
         "Mac": "stable",
+        "Win": "stable",
         "default": "experimental",
       },
       base_feature: "none",

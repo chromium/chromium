@@ -68,9 +68,6 @@ void SetRuntimeFeatureDefaultsForPlatform(
 #if defined(USE_AURA)
   WebRuntimeFeatures::EnableCompositedSelectionUpdate(true);
 #endif
-#if BUILDFLAG(IS_WIN)
-  WebRuntimeFeatures::EnableWebBluetooth(true);
-#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool enable_canvas_2d_image_chromium =
