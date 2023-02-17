@@ -511,6 +511,7 @@ void OverviewSession::AddItem(
   if (!grid || grid->GetOverviewItemContaining(window))
     return;
 
+  base::AutoReset<bool> ignore(&ignore_activations_, true);
   grid->AddItem(window, reposition, animate, ignored_items, index,
                 /*use_spawn_animation=*/false, /*restack=*/false);
   OnItemAdded(window);
@@ -524,6 +525,7 @@ void OverviewSession::AppendItem(aura::Window* window,
   if (!grid || grid->GetOverviewItemContaining(window))
     return;
 
+  base::AutoReset<bool> ignore(&ignore_activations_, true);
   grid->AppendItem(window, reposition, animate, /*use_spawn_animation=*/true);
   OnItemAdded(window);
 }
@@ -538,6 +540,7 @@ void OverviewSession::AddItemInMruOrder(aura::Window* window,
   if (!grid || grid->GetOverviewItemContaining(window))
     return;
 
+  base::AutoReset<bool> ignore(&ignore_activations_, true);
   grid->AddItemInMruOrder(window, reposition, animate, restack,
                           use_spawn_animation);
   OnItemAdded(window);

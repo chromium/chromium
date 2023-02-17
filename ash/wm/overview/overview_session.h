@@ -347,6 +347,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   OverviewDelegate* delegate() { return delegate_; }
 
+  void set_ignore_activations(bool ignore_activations) {
+    ignore_activations_ = ignore_activations;
+  }
+
   bool is_shutting_down() const { return is_shutting_down_; }
   void set_is_shutting_down(bool is_shutting_down) {
     is_shutting_down_ = is_shutting_down;
