@@ -811,24 +811,6 @@
       "use_remoteexec": true
     }
   },
-  "android-weblayer-marshmallow-x86-rel-tests": {
-    "gn_args": {
-      "android_static_analysis": "off",
-      "chrome_public_manifest_package": "com.android.chrome",
-      "dcheck_always_on": true,
-      "debuggable_apks": false,
-      "enable_proguard_obfuscation": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "target_os": "android",
-      "use_remoteexec": true
-    }
-  },
   "android-weblayer-pie-x86-fyi-rel": {
     "gn_args": {
       "android_static_analysis": "off",
