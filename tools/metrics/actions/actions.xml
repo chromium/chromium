@@ -21328,6 +21328,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileTabStripScrollDidEnd">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>User scrolled the tabStrip view.</description>
+</action>
+
 <action name="MobileTabStripShowTabGridMenu">
   <owner>justincohen@chromium.org</owner>
   <description>User long-pressed on the tab strip tab grid button.</description>

@@ -516,6 +516,7 @@ const CGFloat kSymbolSize = 18;
     _tabStripView.autoresizingMask =
         (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
     _tabStripView.backgroundColor = _view.backgroundColor;
+    _tabStripView.delegate = self;
     _tabStripView.layoutDelegate = self;
     _tabStripView.accessibilityIdentifier =
         style == INCOGNITO ? kIncognitoTabStripId : kRegularTabStripId;
@@ -974,6 +975,13 @@ const CGFloat kSymbolSize = 18;
       return;
     }
   }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
+                  willDecelerate:(BOOL)decelerate {
+  base::RecordAction(UserMetricsAction("MobileTabStripScrollDidEnd"));
 }
 
 #pragma mark - Tab Drag and Drop methods
