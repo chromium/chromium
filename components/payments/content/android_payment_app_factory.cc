@@ -84,13 +84,21 @@ class AppFinder : public base::SupportsUserData::Data {
   }
 
  private:
+  // Check that our required dependencies are still valid, i.e. that the page
+  // isn't currently being torn down.
+  bool PageIsValid() {
+    return communication_ && delegate_ && delegate_->GetSpec() &&
+           delegate_->GetInitiatorRenderFrameHost();
+  }
+
   void OnGetAppDescriptions(
       const absl::optional<std::string>& error_message,
       std::vector<std::unique_ptr<AndroidAppDescription>> app_descriptions) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // The browser could be shutting down.
-    if (!communication_ || !delegate_ || !delegate_->GetSpec())
+    if (!PageIsValid()) {
       return;
+    }
 
     if (error_message.has_value()) {
       delegate_->OnPaymentAppCreationError(error_message.value());
@@ -180,8 +188,7 @@ class AppFinder : public base::SupportsUserData::Data {
     DCHECK_LT(0U, number_of_pending_is_ready_to_pay_queries_);
 
     // The browser could be shutting down.
-    if (!communication_ || !delegate_ || !delegate_->GetSpec() ||
-        !delegate_->GetInitiatorRenderFrameHost()) {
+    if (!PageIsValid()) {
       OnDoneCreatingPaymentApps();
       return;
     }
