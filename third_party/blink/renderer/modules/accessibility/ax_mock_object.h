@@ -53,9 +53,6 @@ class MODULES_EXPORT AXMockObject : public AXObject {
   bool IsMockObject() const final { return true; }
   Document* GetDocument() const override;
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
-
- private:
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 };
 
 template <>

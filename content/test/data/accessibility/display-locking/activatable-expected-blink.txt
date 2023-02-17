@@ -5,7 +5,7 @@ rootWebArea
 ++++++++genericContainer
 ++++++++genericContainer offscreen
 ++++++++++staticText offscreen name='<newline>    '
-++++++++++genericContainer offscreen
+++++++++++genericContainer ignored offscreen
 ++++++++++++staticText offscreen name='child'
 ++++++++++staticText offscreen name='<newline>    '
 ++++++++++genericContainer offscreen

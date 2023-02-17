@@ -7,5 +7,4 @@ WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chr
 ++++++++TextView text:"So are " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++++View text:"other elements" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="mark", roleDescription="highlight"]
 ++++++++TextView text:"!" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++TextView text:"pipe2" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="200"]
 ++++++Button text:"Even a button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]

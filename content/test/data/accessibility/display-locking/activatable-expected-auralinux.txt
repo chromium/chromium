@@ -2,8 +2,7 @@
 ++[section]
 ++[section]
 ++++[static] name='<newline>    '
-++++[section]
-++++++[static] name='child'
+++++[static] name='child'
 ++++[static] name='<newline>    '
 ++++[section]
 ++++++[static] name='nested locked element!'

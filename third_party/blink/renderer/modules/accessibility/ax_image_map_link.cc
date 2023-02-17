@@ -80,11 +80,6 @@ ax::mojom::blink::Role AXImageMapLink::NativeRoleIgnoringAria() const {
   return ax::mojom::blink::Role::kGenericContainer;
 }
 
-bool AXImageMapLink::ComputeAccessibilityIsIgnored(
-    IgnoredReasons* ignored_reasons) const {
-  return AccessibilityIsIgnoredByDefault(ignored_reasons);
-}
-
 Element* AXImageMapLink::ActionElement() const {
   return AnchorElement();
 }

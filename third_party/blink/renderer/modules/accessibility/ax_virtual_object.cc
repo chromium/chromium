@@ -35,11 +35,6 @@ Document* AXVirtualObject::GetDocument() const {
   return GetAccessibleNode() ? GetAccessibleNode()->GetDocument() : nullptr;
 }
 
-bool AXVirtualObject::ComputeAccessibilityIsIgnored(
-    IgnoredReasons* ignoredReasons) const {
-  return AccessibilityIsIgnoredByDefault(ignoredReasons);
-}
-
 void AXVirtualObject::AddChildren() {
 #if defined(AX_FAIL_FAST_BUILD)
   DCHECK(!IsDetached());

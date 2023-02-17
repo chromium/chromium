@@ -2837,6 +2837,10 @@ bool AXObject::AccessibilityIsIgnored() const {
         << "\nThe Detach() method sets cached_is_ignored_ to true, but "
            "something has recomputed it.";
   }
+  if (!cached_is_ignored_ && IsA<Document>(GetNode()) && CachedParentObject() &&
+      CachedParentObject()->IsMenuList()) {
+    NOTREACHED() << "The menulist popup's document must be ignored.";
+  }
 #endif
   return cached_is_ignored_;
 }
@@ -2888,7 +2892,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   const ComputedStyle* style = GetComputedStyle();
 
-  cached_is_hidden_via_style = ComputeIsHiddenViaStyle(style);
+  cached_is_hidden_via_style_ = ComputeIsHiddenViaStyle(style);
 
   // Decisions in what subtree descendants are included (each descendant's
   // cached children_) depends on the ARIA hidden state. When it changes,
@@ -2973,30 +2977,64 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   }
 }
 
-bool AXObject::AccessibilityIsIgnoredByDefault(
+bool AXObject::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignored_reasons) const {
-  return DefaultObjectInclusion(ignored_reasons) == kIgnoreObject;
+  return ShouldIgnoreForHiddenOrInert(ignored_reasons);
 }
 
-AXObjectInclusion AXObject::DefaultObjectInclusion(
+bool AXObject::ShouldIgnoreForHiddenOrInert(
     IgnoredReasons* ignored_reasons) const {
-  if (IsAriaHidden()) {
+  DCHECK(AXObjectCache().ModificationCount() == last_modification_count_)
+      << "Hidden values must be computed before ignored.";
+
+  // All nodes must have an unignored parent within their tree under
+  // the root node of the web area, so force that node to always be unignored.
+  if (IsA<Document>(GetNode())) {
+    return false;
+  }
+
+  if (cached_is_aria_hidden_) {
     // Keep keyboard focusable elements that are aria-hidden in tree, so that
     // they can still fire events such as focus and value changes.
     if (!IsKeyboardFocusable()) {
       if (ignored_reasons)
         ComputeIsAriaHidden(ignored_reasons);
-      return kIgnoreObject;
+      return true;
     }
   }
 
-  if (IsInert()) {
-    if (ignored_reasons)
+  if (cached_is_inert_) {
+    if (ignored_reasons) {
       ComputeIsInert(ignored_reasons);
-    return kIgnoreObject;
+    }
+    return true;
   }
 
-  return kDefaultBehavior;
+  // aria-hidden=false is meant to override visibility as the determinant in
+  // AX hierarchy inclusion, but only for the element it is specified, and not
+  // the entire subtree. See https://w3c.github.io/aria/#aria-hidden.
+  if (AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty::kHidden)) {
+    return false;
+  }
+
+  if (cached_is_hidden_via_style_) {
+    if (ignored_reasons) {
+      ignored_reasons->push_back(
+          IgnoredReason(GetLayoutObject() ? kAXNotVisible : kAXNotRendered));
+    }
+    return true;
+  }
+
+  // Hide nodes that are whitespace or are occluded by CSS alt text.
+  if (!GetLayoutObject() && GetNode() && !IsA<HTMLAreaElement>(GetNode()) &&
+      !DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode())) {
+    if (ignored_reasons) {
+      ignored_reasons->push_back(IgnoredReason(kAXNotRendered));
+    }
+    return true;
+  }
+
+  return false;
 }
 
 // Note: do not rely on the value of this inside of display:none.
@@ -4000,7 +4038,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) const {
 
 bool AXObject::IsHiddenViaStyle() const {
   UpdateCachedAttributeValuesIfNeeded();
-  return cached_is_hidden_via_style;
+  return cached_is_hidden_via_style_;
 }
 
 // Return true if this should be removed from accessible name computations.
@@ -6962,8 +7000,9 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     } else if (AriaHiddenRoot()) {
       string_builder = string_builder + " ariaHiddenRootExtra";
     }
-    if (cached_values_only ? cached_is_hidden_via_style : IsHiddenViaStyle())
+    if (cached_values_only ? cached_is_hidden_via_style_ : IsHiddenViaStyle()) {
       string_builder = string_builder + " isHiddenViaCSS";
+    }
     if (cached_values_only ? cached_is_inert_ : IsInert())
       string_builder = string_builder + " isInert";
     if (IsMissingParent())

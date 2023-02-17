@@ -44,11 +44,6 @@ ax::mojom::blink::Role AXProgressIndicator::NativeRoleIgnoringAria() const {
   return ax::mojom::blink::Role::kProgressIndicator;
 }
 
-bool AXProgressIndicator::ComputeAccessibilityIsIgnored(
-    IgnoredReasons* ignored_reasons) const {
-  return AccessibilityIsIgnoredByDefault(ignored_reasons);
-}
-
 bool AXProgressIndicator::ValueForRange(float* out_value) const {
   float value_now;
   if (HasAOMPropertyOrARIAAttribute(AOMFloatProperty::kValueNow, value_now)) {

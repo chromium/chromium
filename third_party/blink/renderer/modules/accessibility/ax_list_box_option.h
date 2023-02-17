@@ -61,7 +61,6 @@ class AXListBoxOption final : public AXLayoutObject {
 
  private:
   bool CanHaveChildren() const override { return false; }
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
   HTMLSelectElement* ListBoxOptionParentNode() const;
 };

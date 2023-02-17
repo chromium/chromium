@@ -54,7 +54,6 @@ class AXImageMapLink final : public AXNodeObject {
   HTMLMapElement* MapElement() const;
 
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
   bool CanHaveChildren() const override {
     // If the area has child nodes, those will be rendered, and the combination
     // of Role::kGenericContainer and CanHaveChildren() = true allows for those

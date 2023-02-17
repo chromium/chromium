@@ -3,8 +3,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_STATICTEXT name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
 ++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_STATICTEXT name='<newline>    '
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='child text will be in AX tree but without layout'
+++++ROLE_SYSTEM_STATICTEXT name='child text will be in AX tree but without layout'
 ++++ROLE_SYSTEM_STATICTEXT name='<newline>    '
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='<newline>      nested activatable locked element will be in AX tree but without layout<newline>    '

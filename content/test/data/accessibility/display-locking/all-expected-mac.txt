@@ -3,8 +3,7 @@ AXWebArea
 ++++AXStaticText AXValue='spacer so that everything below will be offscreen (and won't get viewport-activated)'
 ++AXGroup
 ++++AXStaticText AXValue='<newline>    '
-++++AXGroup
-++++++AXStaticText AXValue='child text will be in AX tree but without layout'
+++++AXStaticText AXValue='child text will be in AX tree but without layout'
 ++++AXStaticText AXValue='<newline>    '
 ++++AXGroup
 ++++++AXStaticText AXValue='<newline>      nested activatable locked element will be in AX tree but without layout<newline>    '

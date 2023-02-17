@@ -9,5 +9,4 @@
 ++++++++[static]
 ++++++++++[static] name='other elements'
 ++++++++[static] name='!'
-++++++[static] name='pipe2'
 ++++++[push button] name='Even a button'

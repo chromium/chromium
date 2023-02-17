@@ -373,28 +373,6 @@ bool AXLayoutObject::IsNotUserSelectable() const {
 // Whether objects are ignored, i.e. not included in the tree.
 //
 
-AXObjectInclusion AXLayoutObject::DefaultObjectInclusion(
-    IgnoredReasons* ignored_reasons) const {
-  if (!layout_object_) {
-    if (ignored_reasons)
-      ignored_reasons->push_back(IgnoredReason(kAXNotRendered));
-    return kIgnoreObject;
-  }
-
-  if (layout_object_->Style()->Visibility() != EVisibility::kVisible) {
-    // aria-hidden is meant to override visibility as the determinant in AX
-    // hierarchy inclusion.
-    if (AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty::kHidden))
-      return kDefaultBehavior;
-
-    if (ignored_reasons)
-      ignored_reasons->push_back(IgnoredReason(kAXNotVisible));
-    return kIgnoreObject;
-  }
-
-  return AXObject::DefaultObjectInclusion(ignored_reasons);
-}
-
 // Is this the anonymous placeholder for a text control?
 bool AXLayoutObject::IsPlaceholder() const {
   AXObject* parent_object = ParentObject();
@@ -419,34 +397,13 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   DCHECK(initialized_);
 #endif
 
-  // All nodes must have an unignored parent within their tree under the root
-  // node of the main web area, so force that node to always be unignored.
-  // The web area for a <select>'s' popup document is ignored, because the
-  // popup object hierarchy is constructed without the document root.
-  if (IsA<Document>(GetNode())) {
-    return CachedParentObject() && CachedParentObject()->IsMenuList();
-  }
-
-  const Node* node = GetNode();
-  if (IsA<HTMLHtmlElement>(node))
-    return true;
-
-  if (!layout_object_) {
-    if (ignored_reasons)
-      ignored_reasons->push_back(IgnoredReason(kAXNotRendered));
-    return true;
-  }
-
   // Ignore continuations, they're duplicate copies of inline nodes with blocks
   // inside. AXObjects are no longer created for these.
   DCHECK(!layout_object_->IsElementContinuation());
 
-  // Check first if any of the common reasons cause this element to be ignored.
-  AXObjectInclusion default_inclusion = DefaultObjectInclusion(ignored_reasons);
-  if (default_inclusion == kIncludeObject)
-    return false;
-  if (default_inclusion == kIgnoreObject)
+  if (AXObject::ShouldIgnoreForHiddenOrInert(ignored_reasons)) {
     return true;
+  }
 
   AXObjectInclusion semantic_inclusion =
       ShouldIncludeBasedOnSemantics(ignored_reasons);
@@ -458,6 +415,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   // Inner editor element of editable area with empty text provides bounds
   // used to compute the character extent for index 0. This is the same as
   // what the caret's bounds would be if the editable area is focused.
+  Node* node = GetNode();
   if (node) {
     const TextControlElement* text_control = EnclosingTextControl(node);
     if (text_control) {
@@ -488,16 +446,12 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     }
   }
 
-  // The SVG-AAM says the foreignObject element is normally presentational.
-  if (layout_object_->IsSVGForeignObjectIncludingNG()) {
-    if (ignored_reasons)
-      ignored_reasons->push_back(IgnoredReason(kAXPresentational));
-    return true;
-  }
-
-  // Make sure renderers with layers stay in the tree.
-  if (GetLayoutObject() && GetLayoutObject()->HasLayer() && node &&
-      node->hasChildren()) {
+  // Layers are used on objects that have styles where Blink is likely to
+  // attempt to optimize them in for the GPU, such as animations, z-indexing and
+  // hidden overflow. Ensure layered objects are unignored, except for <html>.
+  // TODO(accessibility) There is no clear reason to specifically include these,
+  // consider removal of this special case.
+  if (layout_object_->HasLayer() && node && node->hasChildren()) {
     return false;
   }
 
@@ -505,6 +459,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     if (CanvasHasFallbackContent())
       return false;
 
+    // A 1x1 canvas is too small for the user to see and thus ignored.
     const auto* canvas = DynamicTo<LayoutHTMLCanvas>(GetLayoutObject());
     if (canvas &&
         (canvas->Size().Height() <= 1 || canvas->Size().Width() <= 1)) {
@@ -594,14 +549,6 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     // changes on each platform.
     NGInlineCursor cursor(*block_flow);
     if (cursor.HasRoot()) {
-      return false;
-    }
-  }
-
-  // If setting enabled, do not ignore SVG grouping (<g>) elements.
-  if (IsA<SVGGElement>(node)) {
-    Settings* settings = GetDocument()->GetSettings();
-    if (settings->GetAccessibilityIncludeSvgGElement()) {
       return false;
     }
   }

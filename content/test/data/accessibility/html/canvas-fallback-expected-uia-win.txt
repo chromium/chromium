@@ -10,12 +10,6 @@ Document
 ++++++Group
 ++++++++Text Name='This is another paragraph in fallback'
 ++++++Text Name='<newline>    '
-++++++Text IsControlElement=false
-++++++++Text Name='Aria hidden paragraph in fallback content' IsControlElement=false
 ++++++Text Name='<newline>    '
-++++++Text IsControlElement=false
-++++++++Text Name='Display none text in fallback content ' IsControlElement=false
 ++++++Text Name='<newline>    '
-++++++Text IsControlElement=false
-++++++++Text Name='Visibility hidden paragraph in fallback content' IsControlElement=false
 ++++++Text Name='<newline>  '

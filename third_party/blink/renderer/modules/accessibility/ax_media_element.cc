@@ -48,11 +48,6 @@ bool AccessibilityMediaElement::CanHaveChildren() const {
   return true;
 }
 
-bool AccessibilityMediaElement::ComputeAccessibilityIsIgnored(
-    IgnoredReasons* ignored_reasons) const {
-  return false;
-}
-
 AXRestriction AccessibilityMediaElement::Restriction() const {
   if (IsUnplayable())
     return kRestrictionDisabled;

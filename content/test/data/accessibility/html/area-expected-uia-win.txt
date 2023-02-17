@@ -2,4 +2,3 @@ Document
 ++Group IsControlElement=false
 ++++Document Name='pipe'
 ++++++Hyperlink Name='pipe1'
-++++++Text Name='pipe2'

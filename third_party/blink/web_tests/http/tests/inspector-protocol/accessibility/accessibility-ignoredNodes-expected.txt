@@ -12,6 +12,13 @@ RootWebArea
     domNode : html
     ignored : true
     ignoredReasons : [
+        [0] : {
+            name : uninteresting
+            value : {
+                type : boolean
+                value : true
+            }
+        }
     ]
     nodeId : <string>
     parentId : <string>

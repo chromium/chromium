@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++image name='pipe'
 ++++++++link name='pipe1'
-++++++++staticText name='pipe2'
+++++++++staticText ignored name='pipe2'

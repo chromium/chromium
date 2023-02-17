@@ -11,12 +11,12 @@ rootWebArea
 ++++++++paragraph description='Visibility hidden paragraph in fallback content'
 ++++++++++staticText name='This is another paragraph in fallback'
 ++++++++staticText name='<newline>    '
-++++++++heading invisible hierarchicalLevel=1
-++++++++++staticText invisible name='Aria hidden paragraph in fallback content'
+++++++++heading ignored invisible
+++++++++++staticText ignored invisible name='Aria hidden paragraph in fallback content'
 ++++++++staticText name='<newline>    '
-++++++++heading invisible hierarchicalLevel=1
-++++++++++staticText invisible name='Display none text in fallback content '
+++++++++heading ignored invisible
+++++++++++staticText ignored invisible name='Display none text in fallback content '
 ++++++++staticText name='<newline>    '
-++++++++heading invisible hierarchicalLevel=2
-++++++++++staticText invisible name='Visibility hidden paragraph in fallback content'
+++++++++heading ignored invisible
+++++++++++staticText ignored invisible name='Visibility hidden paragraph in fallback content'
 ++++++++staticText name='<newline>  '

@@ -45,7 +45,6 @@ class AXProgressIndicator final : public AXLayoutObject {
   bool MinValueForRange(float* out_value) const override;
 
   HTMLProgressElement* GetProgressElement() const;
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 };
 
 }  // namespace blink

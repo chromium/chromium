@@ -41,8 +41,6 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
   ax::mojom::blink::Role AriaRoleAttribute() const override;
 
  private:
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-
   Member<AccessibleNode> accessible_node_;
 
   ax::mojom::blink::Role aria_role_;

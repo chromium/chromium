@@ -83,8 +83,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   bool IsNotUserSelectable() const override;
 
   // Whether objects are ignored, i.e. not included in the tree.
-  AXObjectInclusion DefaultObjectInclusion(
-      IgnoredReasons* = nullptr) const override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
   // Properties of static elements.

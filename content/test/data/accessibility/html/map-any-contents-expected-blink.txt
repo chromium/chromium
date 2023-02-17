@@ -14,7 +14,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='other elements'
 ++++++++++staticText name='!'
 ++++++++++++inlineTextBox name='!'
-++++++++staticText name='pipe2'
+++++++++staticText ignored name='pipe2'
 ++++++++button name='Even a button'
 ++++++++++staticText name='Even a button'
 ++++++++++++inlineTextBox name='Even a button'

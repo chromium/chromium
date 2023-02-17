@@ -63,17 +63,6 @@ bool AXListBoxOption::IsSelectedOptionActive() const {
   return list_box_parent_node->ActiveSelectionEnd() == GetNode();
 }
 
-bool AXListBoxOption::ComputeAccessibilityIsIgnored(
-    IgnoredReasons* ignored_reasons) const {
-  if (!GetNode())
-    return true;
-
-  if (AccessibilityIsIgnoredByDefault(ignored_reasons))
-    return true;
-
-  return false;
-}
-
 String AXListBoxOption::TextAlternative(
     bool recursive,
     const AXObject* aria_label_or_description_root,

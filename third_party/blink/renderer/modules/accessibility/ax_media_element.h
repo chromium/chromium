@@ -34,7 +34,6 @@ class AccessibilityMediaElement : public AXLayoutObject {
 
   // AXNodeObject overrides.
   bool CanHaveChildren() const override;
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
   AXRestriction Restriction() const override;
 
  protected:
