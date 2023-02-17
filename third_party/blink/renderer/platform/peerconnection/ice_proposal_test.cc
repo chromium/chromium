@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/webrtc_overrides/p2p/base/ice_ping_proposal.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
 #include <vector>
@@ -21,16 +23,35 @@ using ::cricket::IceControllerInterface;
 using ::cricket::IceRecheckEvent;
 using ::cricket::IceSwitchReason;
 
+using ::blink::IcePingProposal;
+using ::blink::IcePruneProposal;
 using ::blink::IceSwitchProposal;
+using ::blink::PingProposalEq;
+using ::blink::PruneProposalEq;
 using ::blink::SwitchProposalEq;
 
 static const std::string kIp = "1.2.3.4";
 static const std::string kIpTwo = "1.3.5.7";
 static const int kPort = 6745;
 
-class IceSwitchProposalTest : public blink::FakeConnectionTestBase {};
+class IceProposalTest : public blink::FakeConnectionTestBase {};
 
-TEST_F(IceSwitchProposalTest, Construct) {
+TEST_F(IceProposalTest, ConstructIcePingProposal) {
+  const Connection* conn = GetConnection(kIp, kPort);
+  const int recheck_delay_ms = 10;
+  const bool reply_expected = true;
+
+  IceControllerInterface::PingResult ping_result(conn, recheck_delay_ms);
+  EXPECT_THAT(IcePingProposal(ping_result, reply_expected),
+              PingProposalEq(ping_result, reply_expected));
+
+  IceControllerInterface::PingResult null_ping_result(nullptr,
+                                                      recheck_delay_ms);
+  EXPECT_THAT(IcePingProposal(null_ping_result, reply_expected),
+              PingProposalEq(null_ping_result, reply_expected));
+}
+
+TEST_F(IceProposalTest, ConstructIceSwitchProposal) {
   const Connection* conn = GetConnection(kIp, kPort);
   const Connection* conn_two = GetConnection(kIpTwo, kPort);
   const IceSwitchReason reason = IceSwitchReason::CONNECT_STATE_CHANGE;
@@ -76,6 +97,28 @@ TEST_F(IceSwitchProposalTest, Construct) {
                                 reply_expected),
               SwitchProposalEq(reason, switch_result_null_conns_to_forget,
                                reply_expected));
+}
+
+TEST_F(IceProposalTest, ConstructIcePruneProposal) {
+  const Connection* conn = GetConnection(kIp, kPort);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  const bool reply_expected = true;
+
+  std::vector<const Connection*> conns_to_prune{conn, conn_two};
+  EXPECT_THAT(IcePruneProposal(conns_to_prune, reply_expected),
+              PruneProposalEq(conns_to_prune, reply_expected));
+
+  std::vector<const Connection*> empty_conns_to_prune{};
+  EXPECT_THAT(IcePruneProposal(empty_conns_to_prune, reply_expected),
+              PruneProposalEq(empty_conns_to_prune, reply_expected));
+
+  std::vector<const Connection*> null_conns_to_prune{nullptr};
+  EXPECT_THAT(IcePruneProposal(null_conns_to_prune, reply_expected),
+              PruneProposalEq(null_conns_to_prune, reply_expected));
+
+  std::vector<const Connection*> mixed_conns_to_prune{nullptr, conn, nullptr};
+  EXPECT_THAT(IcePruneProposal(mixed_conns_to_prune, reply_expected),
+              PruneProposalEq(mixed_conns_to_prune, reply_expected));
 }
 
 }  // unnamed namespace
