@@ -38,6 +38,9 @@ class KAnonymityServiceStorage {
   enum InitStatus {
     kInitOk,
     kInitError,
+    // kInitNotReady is only be used internally, not as a response to
+    // WaitUntilReady.
+    kInitNotReady,
   };
   virtual ~KAnonymityServiceStorage();
   virtual void WaitUntilReady(

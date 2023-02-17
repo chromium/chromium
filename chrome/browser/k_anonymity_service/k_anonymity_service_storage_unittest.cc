@@ -66,6 +66,29 @@ TEST_P(KAnonymityServiceStorageTest, InitializeDatabase) {
   std::unique_ptr<KAnonymityServiceStorage> storage = CreateStorage();
 }
 
+TEST_P(KAnonymityServiceStorageTest, MultipleWaitUntilReady) {
+  std::unique_ptr<KAnonymityServiceStorage> storage;
+  if (StorageIsPersistent()) {
+    storage = CreateKAnonymitySqlStorageForPath(db_path());
+  } else {
+    storage = std::make_unique<KAnonymityServiceMemoryStorage>();
+  }
+  int seq_num = 0;
+  base::RunLoop run_loop;
+  storage->WaitUntilReady(base::BindLambdaForTesting(
+      [&](KAnonymityServiceStorage::InitStatus status) {
+        EXPECT_EQ(status, KAnonymityServiceStorage::InitStatus::kInitOk);
+        EXPECT_EQ(1, ++seq_num);
+      }));
+  storage->WaitUntilReady(base::BindLambdaForTesting(
+      [&](KAnonymityServiceStorage::InitStatus status) {
+        EXPECT_EQ(status, KAnonymityServiceStorage::InitStatus::kInitOk);
+        EXPECT_EQ(2, ++seq_num);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 TEST_P(KAnonymityServiceStorageTest, SaveAndLoadOHTTPKeys) {
   url::Origin test_origin = url::Origin::Create(GURL(kTestOrigin));
   std::string test_ohttp_key(kTestOhttpKey);

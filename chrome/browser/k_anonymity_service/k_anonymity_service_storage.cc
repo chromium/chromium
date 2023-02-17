@@ -71,13 +71,16 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
                 table_manager_,
                 trust_token_key_commitment_table_.get(),
                 /*max_num_entries=*/absl::nullopt,
-                kFlushDelay)) {}
+                kFlushDelay)),
+        weak_factory_(this) {}
 
   ~KAnonymityServiceSqlStorage() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Enqueue a flush
-    ohttp_key_data_->FlushDataToDisk();
-    trust_token_key_commitment_data_->FlushDataToDisk();
+    if (status_ == kInitOk) {
+      // Enqueue a flush
+      ohttp_key_data_->FlushDataToDisk();
+      trust_token_key_commitment_data_->FlushDataToDisk();
+    }
 
     // Shutdown `table_manager_`, delete database on db
     // sequence, then delete the KeyValueTable/KeyValueData on main sequence.
@@ -103,11 +106,17 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
 
   void WaitUntilReady(base::OnceCallback<void(InitStatus)> on_ready) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (ready_) {
+    if (status_ != kInitNotReady) {
       std::move(on_ready).Run(InitStatus::kInitOk);
       return;
     }
-    ready_ = true;
+
+    waiting_tasks_.emplace_back(std::move(on_ready));
+    if (waiting_tasks_.size() > 1) {
+      // We're in the process of initializing.
+      return;
+    }
+
     // This is safe because tasks are serialized on the db_task_runner sequence
     // and the `table_manager_`, `ohttp_key_data_`, and
     // `trust_token_key_commitment_data_` are only freed after a response from a
@@ -122,7 +131,15 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
             base::Unretained(table_manager_.get()),
             base::Unretained(ohttp_key_data_.get()),
             base::Unretained(trust_token_key_commitment_data_.get())),
-        std::move(on_ready));
+        base::BindOnce(&KAnonymityServiceSqlStorage::OnReady,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnReady(InitStatus status) {
+    status_ = status;
+    for (auto& waiting_task : waiting_tasks_) {
+      std::move(waiting_task).Run(status);
+    }
   }
 
   static InitStatus InitializeOnDbSequence(
@@ -148,6 +165,7 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
   absl::optional<OHTTPKeyAndExpiration> GetOHTTPKeyFor(
       const url::Origin& origin) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(status_ != kInitNotReady);
     proto::OHTTPKeyAndExpiration result;
     if (!ohttp_key_data_->TryGetData(origin.Serialize(), &result)) {
       return absl::nullopt;
@@ -159,6 +177,7 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
   void UpdateOHTTPKeyFor(const url::Origin& origin,
                          const OHTTPKeyAndExpiration& value) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(status_ != kInitNotReady);
     proto::OHTTPKeyAndExpiration proto_value;
     proto_value.set_hpke_key(value.key);
     proto_value.set_expiration_us(
@@ -170,6 +189,7 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
   absl::optional<KeyAndNonUniqueUserIdWithExpiration> GetKeyAndNonUniqueUserId()
       const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(status_ != kInitNotReady);
     proto::TrustTokenKeyCommitmentWithExpiration result;
     if (!trust_token_key_commitment_data_->TryGetData(
             kTrustTokenKeyCommitmentKey, &result)) {
@@ -183,6 +203,7 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
   void UpdateKeyAndNonUniqueUserId(
       const KeyAndNonUniqueUserIdWithExpiration& value) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(status_ != kInitNotReady);
     proto::TrustTokenKeyCommitmentWithExpiration proto_value;
     proto_value.set_key_commitment(value.key_and_id.key_commitment);
     proto_value.set_non_unique_id(value.key_and_id.non_unique_user_id);
@@ -211,8 +232,11 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
   std::unique_ptr<
       sqlite_proto::KeyValueData<proto::TrustTokenKeyCommitmentWithExpiration>>
       trust_token_key_commitment_data_;
-  bool ready_ = false;
+
+  InitStatus status_ = kInitNotReady;
+  std::vector<base::OnceCallback<void(InitStatus)>> waiting_tasks_;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<KAnonymityServiceSqlStorage> weak_factory_;
 };
 
 }  // namespace
