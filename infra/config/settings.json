@@ -13,24 +13,8 @@
             "description": "beta/stable",
             "sheriff_rotation": "chrome_browser_release"
         },
-        "fuchsia": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "ios": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "linux": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "mac": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
         "windows": {
-            "description": "beta/stable",
+            "description": "long-term support for Windows pre-10: crbug.com/1406951",
             "sheriff_rotation": "chrome_browser_release"
         }
     }
