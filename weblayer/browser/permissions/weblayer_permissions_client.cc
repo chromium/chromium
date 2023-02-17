@@ -11,6 +11,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "weblayer/browser/cookie_settings_factory.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
+#include "weblayer/browser/permissions/origin_keyed_permission_action_service_factory.h"
 #include "weblayer/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
 
@@ -50,7 +51,8 @@ bool WebLayerPermissionsClient::IsSubresourceFilterActivated(
 permissions::OriginKeyedPermissionActionService*
 WebLayerPermissionsClient::GetOriginKeyedPermissionActionService(
     content::BrowserContext* browser_context) {
-  return nullptr;
+  return OriginKeyedPermissionActionServiceFactory::GetForBrowserContext(
+      browser_context);
 }
 
 permissions::PermissionDecisionAutoBlocker*
