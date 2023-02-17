@@ -1224,6 +1224,8 @@ chromium-metrics-reviews@google.com.
     <variant name="PersistClustersLatency"
         summary="receiving acknowledgement for completion of persisting the
                  clusters to the history DB"/>
+    <variant name="Total"
+        summary="the main thread being notified that the work was completed"/>
   </token>
 </histogram>
 
@@ -1314,6 +1316,8 @@ chromium-metrics-reviews@google.com.
         summary="receiving acknowledgement for completion of persisting the
                  context clusters formed from unclustered visits to the
                  history DB"/>
+    <variant name="Total"
+        summary="the main thread being notified that the work was completed"/>
   </token>
 </histogram>
 

@@ -40,6 +40,15 @@
 
 namespace history_clusters {
 
+namespace {
+
+void RecordUpdateClustersLatencyHistogram(const std::string& histogram_name,
+                                          base::ElapsedTimer elapsed_timer) {
+  base::UmaHistogramMediumTimes(histogram_name, elapsed_timer.Elapsed());
+}
+
+}  // namespace
+
 VisitDeletionObserver::VisitDeletionObserver(
     HistoryClustersService* history_clusters_service)
     : history_clusters_service_(history_clusters_service) {}
@@ -262,13 +271,19 @@ void HistoryClustersService::UpdateClusters() {
     update_clusters_task_ =
         std::make_unique<HistoryClustersServiceTaskUpdateClusterTriggerability>(
             weak_ptr_factory_.GetWeakPtr(), backend_.get(), history_service_,
-            base::DoNothing());
+            base::BindOnce(
+                &RecordUpdateClustersLatencyHistogram,
+                "History.Clusters.Backend.UpdateClusterTriggerability.Total",
+                base::ElapsedTimer()));
   } else {
     update_clusters_task_ =
         std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
             weak_ptr_factory_.GetWeakPtr(),
             incomplete_visit_context_annotations_, backend_.get(),
-            history_service_, base::DoNothing());
+            history_service_,
+            base::BindOnce(&RecordUpdateClustersLatencyHistogram,
+                           "History.Clusters.Backend.UpdateClusters.Total",
+                           base::ElapsedTimer()));
   }
 }
 
