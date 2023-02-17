@@ -18,6 +18,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 
@@ -432,14 +433,28 @@ StatisticsRecorder::Histograms StatisticsRecorder::Sort(Histograms histograms) {
 // static
 StatisticsRecorder::Histograms StatisticsRecorder::WithName(
     Histograms histograms,
-    const std::string& query) {
+    const std::string& query,
+    bool case_sensitive) {
   // Need a C-string query for comparisons against C-string histogram name.
-  const char* const query_string = query.c_str();
+  std::string lowercase_query;
+  const char* query_string;
+  if (case_sensitive) {
+    query_string = query.c_str();
+  } else {
+    lowercase_query = base::ToLowerASCII(query);
+    query_string = lowercase_query.c_str();
+  }
+
   histograms.erase(
-      ranges::remove_if(histograms,
-                        [query_string](const HistogramBase* const h) {
-                          return !strstr(h->histogram_name(), query_string);
-                        }),
+      ranges::remove_if(
+          histograms,
+          [query_string, case_sensitive](const HistogramBase* const h) {
+            return !strstr(
+                case_sensitive
+                    ? h->histogram_name()
+                    : base::ToLowerASCII(h->histogram_name()).c_str(),
+                query_string);
+          }),
       histograms.end());
   return histograms;
 }

@@ -275,7 +275,11 @@ class BASE_EXPORT StatisticsRecorder {
 
   // Filters histograms by name. Only histograms which have |query| as a
   // substring in their name are kept. An empty query keeps all histograms.
-  static Histograms WithName(Histograms histograms, const std::string& query);
+  // |case_sensitive| determines whether the matching should be done in a
+  // case sensitive way.
+  static Histograms WithName(Histograms histograms,
+                             const std::string& query,
+                             bool case_sensitive = true);
 
   using GlobalSampleCallback = void (*)(const char* /*=histogram_name*/,
                                         uint64_t /*=name_hash*/,
