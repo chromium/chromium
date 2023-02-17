@@ -123,9 +123,9 @@ bool IsValidPsm(int psm) {
 
 }  // namespace
 
-BluetoothSocketAsyncApiFunction::BluetoothSocketAsyncApiFunction() {}
+BluetoothSocketAsyncApiFunction::BluetoothSocketAsyncApiFunction() = default;
 
-BluetoothSocketAsyncApiFunction::~BluetoothSocketAsyncApiFunction() {}
+BluetoothSocketAsyncApiFunction::~BluetoothSocketAsyncApiFunction() = default;
 
 bool BluetoothSocketAsyncApiFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
@@ -172,9 +172,9 @@ std::unordered_set<int>* BluetoothSocketAsyncApiFunction::GetSocketIds() {
   return manager_->GetResourceIds(extension_id());
 }
 
-BluetoothSocketCreateFunction::BluetoothSocketCreateFunction() {}
+BluetoothSocketCreateFunction::BluetoothSocketCreateFunction() = default;
 
-BluetoothSocketCreateFunction::~BluetoothSocketCreateFunction() {}
+BluetoothSocketCreateFunction::~BluetoothSocketCreateFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketCreateFunction::Run() {
   DCHECK_CURRENTLY_ON(work_thread_id());
@@ -195,9 +195,9 @@ ExtensionFunction::ResponseAction BluetoothSocketCreateFunction::Run() {
       ArgumentList(bluetooth_socket::Create::Results::Create(create_info)));
 }
 
-BluetoothSocketUpdateFunction::BluetoothSocketUpdateFunction() {}
+BluetoothSocketUpdateFunction::BluetoothSocketUpdateFunction() = default;
 
-BluetoothSocketUpdateFunction::~BluetoothSocketUpdateFunction() {}
+BluetoothSocketUpdateFunction::~BluetoothSocketUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketUpdateFunction::Run() {
   auto params = bluetooth_socket::Update::Params::Create(args());
@@ -211,9 +211,9 @@ ExtensionFunction::ResponseAction BluetoothSocketUpdateFunction::Run() {
   return RespondNow(ArgumentList(bluetooth_socket::Update::Results::Create()));
 }
 
-BluetoothSocketSetPausedFunction::BluetoothSocketSetPausedFunction() {}
+BluetoothSocketSetPausedFunction::BluetoothSocketSetPausedFunction() = default;
 
-BluetoothSocketSetPausedFunction::~BluetoothSocketSetPausedFunction() {}
+BluetoothSocketSetPausedFunction::~BluetoothSocketSetPausedFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketSetPausedFunction::Run() {
   auto params = bluetooth_socket::SetPaused::Params::Create(args());
@@ -240,9 +240,9 @@ ExtensionFunction::ResponseAction BluetoothSocketSetPausedFunction::Run() {
       ArgumentList(bluetooth_socket::SetPaused::Results::Create()));
 }
 
-BluetoothSocketListenFunction::BluetoothSocketListenFunction() {}
+BluetoothSocketListenFunction::BluetoothSocketListenFunction() = default;
 
-BluetoothSocketListenFunction::~BluetoothSocketListenFunction() {}
+BluetoothSocketListenFunction::~BluetoothSocketListenFunction() = default;
 
 bool BluetoothSocketListenFunction::PreRunValidation(std::string* error) {
   if (!BluetoothSocketAsyncApiFunction::PreRunValidation(error))
@@ -489,9 +489,9 @@ void BluetoothSocketAbstractConnectFunction::OnConnectError(
   Respond(Error(message));
 }
 
-BluetoothSocketConnectFunction::BluetoothSocketConnectFunction() {}
+BluetoothSocketConnectFunction::BluetoothSocketConnectFunction() = default;
 
-BluetoothSocketConnectFunction::~BluetoothSocketConnectFunction() {}
+BluetoothSocketConnectFunction::~BluetoothSocketConnectFunction() = default;
 
 void BluetoothSocketConnectFunction::ConnectToService(
     device::BluetoothDevice* device,
@@ -501,9 +501,11 @@ void BluetoothSocketConnectFunction::ConnectToService(
       base::BindOnce(&BluetoothSocketConnectFunction::OnConnectError, this));
 }
 
-BluetoothSocketDisconnectFunction::BluetoothSocketDisconnectFunction() {}
+BluetoothSocketDisconnectFunction::BluetoothSocketDisconnectFunction() =
+    default;
 
-BluetoothSocketDisconnectFunction::~BluetoothSocketDisconnectFunction() {}
+BluetoothSocketDisconnectFunction::~BluetoothSocketDisconnectFunction() =
+    default;
 
 ExtensionFunction::ResponseAction BluetoothSocketDisconnectFunction::Run() {
   DCHECK_CURRENTLY_ON(work_thread_id());
@@ -525,7 +527,7 @@ void BluetoothSocketDisconnectFunction::OnSuccess() {
   Respond(ArgumentList(bluetooth_socket::Disconnect::Results::Create()));
 }
 
-BluetoothSocketCloseFunction::BluetoothSocketCloseFunction() {}
+BluetoothSocketCloseFunction::BluetoothSocketCloseFunction() = default;
 
 BluetoothSocketCloseFunction::~BluetoothSocketCloseFunction() = default;
 
@@ -543,7 +545,7 @@ ExtensionFunction::ResponseAction BluetoothSocketCloseFunction::Run() {
 BluetoothSocketSendFunction::BluetoothSocketSendFunction()
     : io_buffer_size_(0) {}
 
-BluetoothSocketSendFunction::~BluetoothSocketSendFunction() {}
+BluetoothSocketSendFunction::~BluetoothSocketSendFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketSendFunction::Run() {
   DCHECK_CURRENTLY_ON(work_thread_id());
@@ -577,9 +579,9 @@ void BluetoothSocketSendFunction::OnError(
   Respond(Error(message));
 }
 
-BluetoothSocketGetInfoFunction::BluetoothSocketGetInfoFunction() {}
+BluetoothSocketGetInfoFunction::BluetoothSocketGetInfoFunction() = default;
 
-BluetoothSocketGetInfoFunction::~BluetoothSocketGetInfoFunction() {}
+BluetoothSocketGetInfoFunction::~BluetoothSocketGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketGetInfoFunction::Run() {
   auto params = bluetooth_socket::GetInfo::Params::Create(args());
@@ -593,9 +595,11 @@ ExtensionFunction::ResponseAction BluetoothSocketGetInfoFunction::Run() {
       CreateSocketInfo(params->socket_id, socket))));
 }
 
-BluetoothSocketGetSocketsFunction::BluetoothSocketGetSocketsFunction() {}
+BluetoothSocketGetSocketsFunction::BluetoothSocketGetSocketsFunction() =
+    default;
 
-BluetoothSocketGetSocketsFunction::~BluetoothSocketGetSocketsFunction() {}
+BluetoothSocketGetSocketsFunction::~BluetoothSocketGetSocketsFunction() =
+    default;
 
 ExtensionFunction::ResponseAction BluetoothSocketGetSocketsFunction::Run() {
   std::vector<bluetooth_socket::SocketInfo> socket_infos;

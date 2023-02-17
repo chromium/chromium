@@ -95,14 +95,14 @@ BluetoothSocketEventDispatcher::BluetoothSocketEventDispatcher(
   sockets_ = manager->data_;
 }
 
-BluetoothSocketEventDispatcher::~BluetoothSocketEventDispatcher() {}
+BluetoothSocketEventDispatcher::~BluetoothSocketEventDispatcher() = default;
 
-BluetoothSocketEventDispatcher::SocketParams::SocketParams() {}
+BluetoothSocketEventDispatcher::SocketParams::SocketParams() = default;
 
 BluetoothSocketEventDispatcher::SocketParams::SocketParams(
     const SocketParams& other) = default;
 
-BluetoothSocketEventDispatcher::SocketParams::~SocketParams() {}
+BluetoothSocketEventDispatcher::SocketParams::~SocketParams() = default;
 
 void BluetoothSocketEventDispatcher::OnSocketConnect(
     const std::string& extension_id,
