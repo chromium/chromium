@@ -23,6 +23,7 @@
 
     // Requests permission from the user to use a device.
     [
+        Exposed(Window WebHID),
         CallWith=ScriptState,
         RaisesException,
         MeasureAs=HidRequestDevice

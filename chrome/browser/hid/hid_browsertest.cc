@@ -318,16 +318,10 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
   constexpr char kBackgroundJs[] = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
-        const devices = await navigator.hid.requestDevice({filters:[]});
-        chrome.test.fail('fail to throw exception');
-      } catch (e) {
-        const expected_error_name = 'NotSupportedError';
-        const expected_error_message =
-          'Failed to execute \'requestDevice\' on \'HID\': ' +
-          'Script context has shut down.';
-        chrome.test.assertEq(expected_error_name, e.name);
-        chrome.test.assertEq(expected_error_message, e.message);
+        chrome.test.assertEq(navigator.hid.requestDevice, undefined);
         chrome.test.notifyPass();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
       }
     });
   )";
