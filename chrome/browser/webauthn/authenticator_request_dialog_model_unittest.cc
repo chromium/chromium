@@ -104,6 +104,7 @@ enum class TransportAvailabilityParam {
   kOneRecognizedCred,
   kTwoRecognizedCreds,
   kEmptyAllowList,
+  kOnlyHybridOrInternal,
   kHasWinNativeAuthenticator,
   kHasCableV1Extension,
   kHasCableV2Extension,
@@ -125,6 +126,8 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kTwoRecognizedCreds";
     case TransportAvailabilityParam::kEmptyAllowList:
       return "kEmptyAllowList";
+    case TransportAvailabilityParam::kOnlyHybridOrInternal:
+      return "kOnlyHybridOrInternal";
     case TransportAvailabilityParam::kHasWinNativeAuthenticator:
       return "kHasWinNativeAuthenticator";
     case TransportAvailabilityParam::kHasCableV1Extension:
@@ -184,6 +187,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto one_cred = TransportAvailabilityParam::kOneRecognizedCred;
   const auto two_cred = TransportAvailabilityParam::kTwoRecognizedCreds;
   const auto empty_al = TransportAvailabilityParam::kEmptyAllowList;
+  const auto only_hybrid_or_internal =
+      TransportAvailabilityParam::kOnlyHybridOrInternal;
   const auto rk = TransportAvailabilityParam::kRequireResidentKey;
   const auto c_ui = TransportAvailabilityParam::kIsConditionalUI;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
@@ -306,7 +311,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       // caBLE isn't an option.
       {ga, {cable}, {has_winapi, empty_al}, {}, {winapi, add}, mss},
       {ga, {}, {has_winapi, empty_al}, {}, {winapi}, plat_ui},
-      // But with a non-empty allow list, always jump to Windows UI.
+      // But with a non-empty allow list containing non phone credentials,
+      // always jump to Windows UI.
       {ga, {cable}, {has_winapi}, {}, {winapi, add}, plat_ui},
       {ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
       // Except when the request is legacy cable.
@@ -358,6 +364,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {t(internal), t(usb), add},
        qr,
        {qr1st}},
+      // And if the allow list only contains phones.
+      {ga,
+       {internal, cable},
+       {only_hybrid_or_internal},
+       {},
+       {t(internal), add},
+       qr,
+       {qr1st}},
       // Unless there is a phone paired already.
       {ga,
        {usb, internal, cable},
@@ -382,7 +396,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {t(usb), add},
        qr,
        {qr1st}},
-      // If there is an allow-list, go to transport selection instead.
+      // If there is an allow-list containing USB, go to transport selection
+      // instead.
       {ga,
        {usb, internal, cable},
        {},
@@ -456,6 +471,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     }
     transports_info.has_empty_allow_list = base::Contains(
         test.params, TransportAvailabilityParam::kEmptyAllowList);
+    transports_info.is_only_hybrid_or_internal = base::Contains(
+        test.params, TransportAvailabilityParam::kOnlyHybridOrInternal);
 
     if (base::Contains(
             test.params,

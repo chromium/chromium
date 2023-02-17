@@ -30,6 +30,7 @@
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/make_credential_task.h"
 #include "device/fido/mock_fido_device.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/u2f_command_constructor.h"
 #include "device/fido/virtual_fido_device_factory.h"
@@ -127,6 +128,19 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
     return handler;
   }
 
+  std::unique_ptr<GetAssertionRequestHandler>
+  CreateGetAssertionHandlerWithRequestedTransports(
+      std::vector<std::vector<FidoTransportProtocol>> transports) {
+    CtapGetAssertionRequest request(test_data::kRelyingPartyId,
+                                    test_data::kClientDataJson);
+    for (uint8_t i = 0; i < transports.size(); ++i) {
+      request.allow_list.emplace_back(CredentialType::kPublicKey,
+                                      std::vector<uint8_t>{i});
+      request.allow_list.back().transports = transports[i];
+    }
+    return CreateGetAssertionHandlerWithRequest(std::move(request));
+  }
+
   void ExpectAllowedTransportsForRequestAre(
       GetAssertionRequestHandler* request_handler,
       base::flat_set<FidoTransportProtocol> transports) {
@@ -205,12 +219,73 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
 };
 
 TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
-  auto request_handler =
-      CreateGetAssertionHandlerWithRequest(CtapGetAssertionRequest(
-          test_data::kRelyingPartyId, test_data::kClientDataJson));
-
-  EXPECT_EQ(FidoRequestType::kGetAssertion,
-            request_handler->transport_availability_info().request_type);
+  {
+    // Empty allow list.
+    auto request_handler = CreateGetAssertionHandlerWithRequestedTransports({});
+    EXPECT_EQ(FidoRequestType::kGetAssertion,
+              request_handler->transport_availability_info().request_type);
+    EXPECT_FALSE(request_handler->transport_availability_info()
+                     .transport_list_did_include_internal);
+    EXPECT_TRUE(
+        request_handler->transport_availability_info().has_empty_allow_list);
+    EXPECT_FALSE(request_handler->transport_availability_info()
+                     .is_only_hybrid_or_internal);
+  }
+  {
+    // Internal and a phone.
+    auto request_handler = CreateGetAssertionHandlerWithRequestedTransports(
+        {{FidoTransportProtocol::kInternal},
+         {FidoTransportProtocol::kInternal, FidoTransportProtocol::kHybrid}});
+    EXPECT_EQ(FidoRequestType::kGetAssertion,
+              request_handler->transport_availability_info().request_type);
+    EXPECT_TRUE(request_handler->transport_availability_info()
+                    .transport_list_did_include_internal);
+    EXPECT_FALSE(
+        request_handler->transport_availability_info().has_empty_allow_list);
+    EXPECT_TRUE(request_handler->transport_availability_info()
+                    .is_only_hybrid_or_internal);
+  }
+  {
+    // Internal, a phone, and USB.
+    auto request_handler = CreateGetAssertionHandlerWithRequestedTransports(
+        {{FidoTransportProtocol::kUsbHumanInterfaceDevice},
+         {FidoTransportProtocol::kInternal},
+         {FidoTransportProtocol::kInternal, FidoTransportProtocol::kHybrid}});
+    EXPECT_EQ(FidoRequestType::kGetAssertion,
+              request_handler->transport_availability_info().request_type);
+    EXPECT_TRUE(request_handler->transport_availability_info()
+                    .transport_list_did_include_internal);
+    EXPECT_FALSE(
+        request_handler->transport_availability_info().has_empty_allow_list);
+    EXPECT_FALSE(request_handler->transport_availability_info()
+                     .is_only_hybrid_or_internal);
+  }
+  {
+    // Only USB.
+    auto request_handler = CreateGetAssertionHandlerWithRequestedTransports(
+        {{FidoTransportProtocol::kUsbHumanInterfaceDevice}});
+    EXPECT_EQ(FidoRequestType::kGetAssertion,
+              request_handler->transport_availability_info().request_type);
+    EXPECT_FALSE(request_handler->transport_availability_info()
+                     .transport_list_did_include_internal);
+    EXPECT_FALSE(
+        request_handler->transport_availability_info().has_empty_allow_list);
+    EXPECT_FALSE(request_handler->transport_availability_info()
+                     .is_only_hybrid_or_internal);
+  }
+  {
+    // A phone and an unknown (empty) transport credential.
+    auto request_handler = CreateGetAssertionHandlerWithRequestedTransports(
+        {{}, {FidoTransportProtocol::kHybrid}});
+    EXPECT_EQ(FidoRequestType::kGetAssertion,
+              request_handler->transport_availability_info().request_type);
+    EXPECT_TRUE(request_handler->transport_availability_info()
+                    .transport_list_did_include_internal);
+    EXPECT_FALSE(
+        request_handler->transport_availability_info().has_empty_allow_list);
+    EXPECT_FALSE(request_handler->transport_availability_info()
+                     .is_only_hybrid_or_internal);
+  }
 }
 
 TEST_F(FidoGetAssertionHandlerTest, CtapRequestOnSingleDevice) {

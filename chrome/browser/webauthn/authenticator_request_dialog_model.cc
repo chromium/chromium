@@ -31,6 +31,7 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -1071,7 +1072,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
   const bool is_get_assertion = transport_availability_.request_type ==
                                 device::FidoRequestType::kGetAssertion;
   const bool is_passkey_request =
-      ((is_get_assertion && transport_availability_.has_empty_allow_list) ||
+      ((is_get_assertion &&
+        (transport_availability_.has_empty_allow_list ||
+         transport_availability_.is_only_hybrid_or_internal)) ||
        (!is_get_assertion && resident_key_requirement() !=
                                  device::ResidentKeyRequirement::kDiscouraged));
   // priority_transport contains the transport that should be activated
