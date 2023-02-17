@@ -124,6 +124,7 @@ and then write commands into it:
   $ echo where   >%1$s  # prints the current position
   $ echo show -1 >%1$s  # prints last 1 actions
   $ echo show 1  >%1$s  # prints next 1 actions
+  $ echo failure >%1$s  # unpauses execution until failure
   $ echo help    >%1$s  # prints this text
 )";
   LOG(INFO) << base::StringPrintf(msg,
@@ -168,6 +169,7 @@ enum class ExecutionCommandType {
   kSkipAction,
   kShowAction,
   kWhereAmI,
+  kRunUntilFailure
 };
 
 struct ExecutionCommand {
@@ -207,6 +209,11 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
         commands.push_back({ExecutionCommandType::kShowAction, GetParamOr(1)});
       } else if (base::StartsWith(command, "where")) {
         commands.push_back({ExecutionCommandType::kWhereAmI});
+      } else if (base::StartsWith(command, "failure")) {
+        commands.push_back({ExecutionCommandType::kRunUntilFailure});
+        // also add an absolute max limit (like a" run" command).
+        commands.push_back({ExecutionCommandType::kAbsoluteLimit,
+                            std::numeric_limits<int>::max()});
       } else if (base::StartsWith(command, "help")) {
         PrintDebugInstructions(command_file_path);
       }
@@ -222,6 +229,8 @@ struct ExecutionState {
   int limit = std::numeric_limits<int>::max();
   // The number of actions to be executed.
   int length = 0;
+  // Whether to stop at a step if a failure is detected.
+  bool pause_on_failure = false;
 };
 
 // Blockingly reads the commands from |command_file_path| and executes them.
@@ -266,6 +275,12 @@ ExecutionState ProcessCommands(ExecutionState execution_state,
           LOG(INFO) << "Next action is at position " << execution_state.index
                     << ", limit (excl) is at " << execution_state.limit
                     << ", last (excl) is at " << execution_state.length;
+          break;
+        }
+        case ExecutionCommandType::kRunUntilFailure: {
+          LOG(INFO) << "Will stop when a failure is found.";
+          execution_state.pause_on_failure = true;
+          break;
         }
       }
     }
@@ -1099,6 +1114,14 @@ bool TestRecipeReplayer::ReplayRecordedActions(
   }
 
   while (execution_state.index < execution_state.length) {
+    if (execution_state.pause_on_failure &&
+        (testing::Test::HasNonfatalFailure() ||
+         testing::Test::HasFatalFailure() || validation_failures_.size() > 0)) {
+      // If set to pause on a failure, move limit to current, but then reset
+      // `pause_on_failure` so it can continue if the user requests.
+      execution_state.limit = execution_state.index;
+      execution_state.pause_on_failure = false;
+    }
     if (command_file_path.has_value()) {
       while (execution_state.limit <= execution_state.index) {
         bool thread_finished = false;
