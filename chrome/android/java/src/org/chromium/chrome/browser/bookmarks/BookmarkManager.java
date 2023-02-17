@@ -92,9 +92,10 @@ public class BookmarkManager implements BookmarkDelegate, SearchDelegate,
     private boolean mIsIncognito;
     private boolean mIsDestroyed;
 
-    private BookmarkItemsAdapter mAdapter;
-    private BookmarkDragStateDelegate mDragStateDelegate;
-    private AdapterDataObserver mAdapterDataObserver;
+    private final BookmarkItemsAdapter mAdapter;
+    private final BookmarkManagerCoordinator mBookmarkManagerCoordinator;
+    private final BookmarkDragStateDelegate mDragStateDelegate;
+    private final AdapterDataObserver mAdapterDataObserver;
     private final BookmarkOpener mBookmarkOpener;
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
@@ -239,7 +240,8 @@ public class BookmarkManager implements BookmarkDelegate, SearchDelegate,
         mSelectableListLayout.getHandleBackPressChangedSupplier().addObserver(
                 (x) -> onBackPressStateChanged());
 
-        mAdapter = new BookmarkItemsAdapter(mContext, snackbarManager);
+        mAdapter = new BookmarkItemsAdapter(mContext);
+        mBookmarkManagerCoordinator = new BookmarkManagerCoordinator(profile, snackbarManager);
 
         mAdapterDataObserver = new AdapterDataObserver() {
             @Override
@@ -270,7 +272,10 @@ public class BookmarkManager implements BookmarkDelegate, SearchDelegate,
         if (!sPreventLoadingForTesting) {
             Runnable modelLoadedRunnable = () -> {
                 mDragStateDelegate.onBookmarkDelegateInitialized(BookmarkManager.this);
-                mAdapter.onBookmarkDelegateInitialized(BookmarkManager.this);
+                mAdapter.onBookmarkDelegateInitialized(
+                        BookmarkManager.this, mBookmarkManagerCoordinator::createView);
+                mBookmarkManagerCoordinator.onBookmarkDelegateInitialized(
+                        this, mAdapter.getPromoHeaderManager());
                 mToolbar.onBookmarkDelegateInitialized(BookmarkManager.this);
                 mAdapter.addDragListener(mToolbar);
 

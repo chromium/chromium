@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -108,28 +106,15 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         return mPromoState;
     }
 
-    /**
-     * @return Personalized signin promo header {@link ViewHolder} instance that can be used with
-     *         {@link RecyclerView}.
-     */
-    ViewHolder createPersonalizedSigninAndSyncPromoHolder(ViewGroup parent) {
-        View view = LayoutInflater.from(mContext).inflate(
+    /** Returns personalized signin promo header {@link View}. */
+    View createPersonalizedSigninAndSyncPromoHolder(ViewGroup parent) {
+        return LayoutInflater.from(mContext).inflate(
                 R.layout.sync_promo_view_bookmarks, parent, false);
-
-        // ViewHolder is abstract and it cannot be instantiated directly.
-        return new ViewHolder(view) {};
     }
 
-    /**
-     * @return Sync promo header {@link ViewHolder} instance that can be used with
-     *         {@link RecyclerView}.
-     */
-    ViewHolder createSyncPromoHolder(ViewGroup parent) {
-        LegacySyncPromoView view =
-                LegacySyncPromoView.create(parent, SigninAccessPoint.BOOKMARK_MANAGER);
-
-        // ViewHolder is abstract and it cannot be instantiated directly.
-        return new ViewHolder(view) {};
+    /** Returns sync promo header {@link View}. */
+    View createSyncPromoHolder(ViewGroup parent) {
+        return LegacySyncPromoView.create(parent, SigninAccessPoint.BOOKMARK_MANAGER);
     }
 
     /**
