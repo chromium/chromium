@@ -119,6 +119,7 @@ AndroidZpsSection::AndroidZpsSection(omnibox::GroupConfigMap& group_configs)
 DesktopZpsSection::DesktopZpsSection(omnibox::GroupConfigMap& group_configs)
     : ZpsSection(8,
                  {{8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                  {8, omnibox::GROUP_VISITED_DOC_RELATED},
                   {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
                   {8, omnibox::GROUP_TRENDS}},
                  group_configs) {}
