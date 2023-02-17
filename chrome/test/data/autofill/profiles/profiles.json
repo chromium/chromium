@@ -1,0 +1,21 @@
+{
+  "profiles": [
+    {
+      "ADDRESS_HOME_COUNTRY" : "US",
+      "NAME_FULL" : "USFirstName USMiddleName USLastName",
+      "NAME_FIRST" : "USFirstName",
+      "NAME_MIDDLE" : "USMiddleName",
+      "NAME_LAST" : "USLastName",
+      "COMPANY_NAME" : "USCompany",
+      "ADDRESS_HOME_STREET_ADDRESS" : "1600 Amphitheatre Parkway\nApartment 1",
+      "ADDRESS_HOME_STREET_NAME" : "Amphitheatre Parkway",
+      "ADDRESS_HOME_HOUSE_NUMBER" : "1600",
+      "ADDRESS_HOME_APT_NUM" : "1",
+      "ADDRESS_HOME_ZIP" : "94043",
+      "ADDRESS_HOME_CITY" : "Mountain View",
+      "ADDRESS_HOME_STATE" : "CA",
+      "EMAIL_ADDRESS" : "test@example.us",
+      "PHONE_HOME_CITY_AND_NUMBER" : "601-952-1325"
+    }
+  ]
+}
