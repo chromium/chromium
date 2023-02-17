@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 257 tests; 248 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 260 tests; 251 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
 PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
@@ -257,5 +257,8 @@ PASS [["forwarddelete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>" comp
 PASS [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
 PASS [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
 PASS [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}": execCommand("delete", false, "") return value
+PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" checks for modifications to non-editable content
+PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" compare innerHTML
 Harness: the test ran to completion.
 

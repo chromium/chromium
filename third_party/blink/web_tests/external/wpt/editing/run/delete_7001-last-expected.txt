@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 590 tests; 575 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 593 tests; 578 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandState("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandValue("delete") after
@@ -590,5 +590,8 @@ PASS [["delete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>" compare inn
 PASS [["delete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
 PASS [["delete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}": execCommand("delete", false, "") return value
+PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" checks for modifications to non-editable content
+PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" compare innerHTML
 Harness: the test ran to completion.
 
