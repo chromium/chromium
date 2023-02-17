@@ -99,8 +99,6 @@ Surface::Surface(const SurfaceInfo& surface_info,
 Surface::~Surface() {
   ClearCopyRequests();
 
-  if (surface_client_)
-    surface_client_->OnSurfaceDestroyed(this);
   surface_manager_->SurfaceDestroyed(this);
 
   UnrefFrameResourcesAndRunCallbacks(std::move(pending_frame_data_));
@@ -120,6 +118,9 @@ Surface::~Surface() {
                          "Surface", this, "surface_info",
                          surface_info_.ToString());
   allocation_group_->UnregisterSurface(this);
+  if (surface_client_) {
+    surface_client_->OnSurfaceDestroyed(this);
+  }
 }
 
 void Surface::SetDependencyDeadline(

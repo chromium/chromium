@@ -90,6 +90,8 @@ struct BeginFrameInfo {
   uint32 sink_id;
   BeginFrameArgs args;
   map<uint32, FrameTimingDetails> details;
+  bool frame_ack;
+  array<ReturnedResource> resources;
 };
 
 // Client interface for FrameSinkBundle. This behaves as an aggregated

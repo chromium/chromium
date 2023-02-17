@@ -249,6 +249,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   friend class CompositorFrameSinkSupportTest;
   friend class DisplayTest;
   friend class FrameSinkManagerTest;
+  friend class OnBeginFrameAcksCompositorFrameSinkSupportTest;
   friend class SurfaceAggregatorWithResourcesTest;
 
   // Creates a surface reference from the top-level root to |surface_id|.
@@ -333,6 +334,16 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Counts the number of CompositorFrames that have been submitted and have not
   // yet received an ACK.
   int ack_pending_count_ = 0;
+
+  // When `true` we have received frames from a client using its own
+  // BeginFrameSource. While dealing with frames from multiple sources we cannot
+  // fely on `ack_pending_count_` to throttle frame production.
+  //
+  // TODO(crbug.com/1396081): Track acks, presentation feedback, and resources
+  // being returned, on a per BeginFrameSource basis. For
+  // BeginFrameArgs::kManualSourceId the feedback and resources should not be
+  // tied to the current `begin_frame_source_`;
+  bool pending_manual_begin_frame_source_ = false;
   std::vector<ReturnedResource> surface_returned_resources_;
 
   // The begin frame source being observered. Null if none.

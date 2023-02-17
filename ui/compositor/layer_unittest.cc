@@ -1876,6 +1876,7 @@ TEST_F(LayerWithRealCompositorTest, MAYBE_CompositorObservers) {
   // Moving, but not resizing, a layer should alert the observers.
   observer.Reset();
   l2->SetBounds(gfx::Rect(0, 0, 350, 350));
+  WaitForDraw();
   WaitForSwap();
   EXPECT_TRUE(observer.notified());
 

@@ -113,6 +113,10 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
   }
   void DidReceiveCompositorFrameAck(
       std::vector<viz::ReturnedResource> resources) override {
+    if (!frame_ack_pending_) {
+      DCHECK(resources.empty());
+      return;
+    }
     DCHECK(frame_ack_pending_);
     frame_ack_pending_ = false;
     TestLayerTreeFrameSink::DidReceiveCompositorFrameAck(std::move(resources));

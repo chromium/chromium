@@ -222,6 +222,7 @@ class CompositorFrameBuilder {
 
   // Sets the BeginFrameAck. This replaces the default BeginFrameAck.
   CompositorFrameBuilder& SetBeginFrameAck(const BeginFrameAck& ack);
+  CompositorFrameBuilder& SetBeginFrameSourceId(uint64_t source_id);
   CompositorFrameBuilder& SetDeviceScaleFactor(float device_scale_factor);
   CompositorFrameBuilder& AddLatencyInfo(ui::LatencyInfo latency_info);
   CompositorFrameBuilder& AddLatencyInfos(
@@ -249,7 +250,8 @@ CompositorRenderPassList CopyRenderPasses(
 
 // Creates a CompositorFrame that has a render pass with 20x20 output_rect and
 // empty damage_rect. This CompositorFrame is valid and can be sent over IPC.
-CompositorFrame MakeDefaultCompositorFrame();
+CompositorFrame MakeDefaultCompositorFrame(
+    uint64_t source_id = BeginFrameArgs::kManualSourceId);
 
 // Creates a CompositorFrame with provided render pass.
 CompositorFrame MakeCompositorFrame(

@@ -15,9 +15,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -67,6 +69,8 @@ const base::UnguessableToken kSurfaceTokenC =
 const LocalSurfaceId kSurfaceA{2, kSurfaceTokenA};
 const LocalSurfaceId kSurfaceB{3, kSurfaceTokenB};
 const LocalSurfaceId kSurfaceC{4, kSurfaceTokenC};
+
+const uint64_t kBeginFrameSourceId = 1337;
 
 gpu::SyncToken MakeVerifiedSyncToken(int id) {
   gpu::SyncToken token;
@@ -241,7 +245,7 @@ class FrameSinkBundleImplTest : public testing::Test {
       const FrameSinkId& frame_sink_id,
       const LocalSurfaceId& surface_id,
       std::vector<ResourceId> resource_ids = {}) {
-    auto frame = MakeDefaultCompositorFrame();
+    auto frame = MakeDefaultCompositorFrame(kBeginFrameSourceId);
     for (const auto& id : resource_ids) {
       TransferableResource resource;
       resource.id = id;
@@ -343,7 +347,41 @@ TEST_F(FrameSinkBundleImplTest, OnBeginFrame) {
   EXPECT_EQ(1u, begin_frame_source().num_observers());
 }
 
-TEST_F(FrameSinkBundleImplTest, SubmitAndAck) {
+class OnBeginFrameAcksFrameSinkBundleImplTest
+    : public FrameSinkBundleImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OnBeginFrameAcksFrameSinkBundleImplTest();
+  ~OnBeginFrameAcksFrameSinkBundleImplTest() override = default;
+
+  // This will IssueOnBeginFrame if BeginFrameAcksEnabled is true. Since we no
+  // longer send the ack separately, we need the OnBeginFrame both to be the
+  // ack, and so there are messages to flush.
+  void MaybeIssueOnBeginFrame();
+
+  bool BeginFrameAcksEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+OnBeginFrameAcksFrameSinkBundleImplTest::
+    OnBeginFrameAcksFrameSinkBundleImplTest() {
+  if (BeginFrameAcksEnabled()) {
+    scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
+  } else {
+    scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
+  }
+}
+
+void OnBeginFrameAcksFrameSinkBundleImplTest::MaybeIssueOnBeginFrame() {
+  if (!BeginFrameAcksEnabled()) {
+    return;
+  }
+  IssueOnBeginFrame();
+}
+
+TEST_P(OnBeginFrameAcksFrameSinkBundleImplTest, SubmitAndAck) {
   TestFrameSink frame_a(manager(), kSubFrameA, kMainFrame, kBundleId);
   TestFrameSink frame_b(manager(), kSubFrameB, kMainFrame, kBundleId);
   TestFrameSink frame_c(manager(), kSubFrameC, kMainFrame, kBundleId);
@@ -357,13 +395,22 @@ TEST_F(FrameSinkBundleImplTest, SubmitAndAck) {
   bundle()->Submit(std::move(submissions));
 
   std::vector<mojom::BundledReturnedResourcesPtr> acks;
-  test_client().WaitForNextFlush(&acks, nullptr, nullptr);
-
-  EXPECT_THAT(acks, ElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
-                                ForSink(kSubFrameC)));
+  std::vector<mojom::BeginFrameInfoPtr> begin_frames;
+  MaybeIssueOnBeginFrame();
+  test_client().WaitForNextFlush(&acks, &begin_frames, nullptr);
+  if (BeginFrameAcksEnabled()) {
+    EXPECT_TRUE(acks.empty());
+    EXPECT_THAT(begin_frames,
+                UnorderedElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
+                                     ForSink(kSubFrameC)));
+  } else {
+    EXPECT_THAT(acks, ElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
+                                  ForSink(kSubFrameC)));
+    EXPECT_TRUE(begin_frames.empty());
+  }
 }
 
-TEST_F(FrameSinkBundleImplTest, NoAckIfDidNotProduceFrame) {
+TEST_P(OnBeginFrameAcksFrameSinkBundleImplTest, NoAckIfDidNotProduceFrame) {
   TestFrameSink frame_a(manager(), kSubFrameA, kMainFrame, kBundleId);
   TestFrameSink frame_b(manager(), kSubFrameB, kMainFrame, kBundleId);
   TestFrameSink frame_c(manager(), kSubFrameC, kMainFrame, kBundleId);
@@ -376,11 +423,21 @@ TEST_F(FrameSinkBundleImplTest, NoAckIfDidNotProduceFrame) {
   bundle()->Submit(std::move(submissions));
 
   std::vector<mojom::BundledReturnedResourcesPtr> acks;
-  test_client().WaitForNextFlush(&acks, nullptr, nullptr);
-  EXPECT_THAT(acks, ElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameC)));
+  std::vector<mojom::BeginFrameInfoPtr> begin_frames;
+  MaybeIssueOnBeginFrame();
+  test_client().WaitForNextFlush(&acks, &begin_frames, nullptr);
+  if (BeginFrameAcksEnabled()) {
+    EXPECT_TRUE(acks.empty());
+    EXPECT_THAT(begin_frames,
+                UnorderedElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
+                                     ForSink(kSubFrameC)));
+  } else {
+    EXPECT_THAT(acks, ElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameC)));
+    EXPECT_TRUE(begin_frames.empty());
+  }
 }
 
-TEST_F(FrameSinkBundleImplTest, ReclaimResourcesOnAck) {
+TEST_P(OnBeginFrameAcksFrameSinkBundleImplTest, ReclaimResourcesOnAck) {
   TestFrameSink frame_a(manager(), kSubFrameA, kMainFrame, kBundleId);
   TestFrameSink frame_b(manager(), kSubFrameB, kMainFrame, kBundleId);
   TestFrameSink frame_c(manager(), kSubFrameC, kMainFrame, kBundleId);
@@ -393,9 +450,19 @@ TEST_F(FrameSinkBundleImplTest, ReclaimResourcesOnAck) {
   bundle()->Submit(std::move(submissions));
 
   std::vector<mojom::BundledReturnedResourcesPtr> acks;
-  test_client().WaitForNextFlush(&acks, nullptr, nullptr);
-  EXPECT_THAT(acks, ElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
-                                ForSink(kSubFrameC)));
+  std::vector<mojom::BeginFrameInfoPtr> begin_frames;
+  MaybeIssueOnBeginFrame();
+  test_client().WaitForNextFlush(&acks, &begin_frames, nullptr);
+  if (BeginFrameAcksEnabled()) {
+    EXPECT_TRUE(acks.empty());
+    EXPECT_THAT(begin_frames,
+                UnorderedElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
+                                     ForSink(kSubFrameC)));
+  } else {
+    EXPECT_THAT(acks, ElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
+                                  ForSink(kSubFrameC)));
+    EXPECT_TRUE(begin_frames.empty());
+  }
 
   // Now frame C will submit with resources to a dead surface and be rejected
   // immediately. This should result in an ack which immediately returns the
@@ -408,12 +475,42 @@ TEST_F(FrameSinkBundleImplTest, ReclaimResourcesOnAck) {
   bundle()->Submit(std::move(submissions));
 
   acks.clear();
-  test_client().WaitForNextFlush(&acks, nullptr, nullptr);
-  EXPECT_THAT(acks, ElementsAre(ForSink(kSubFrameC)));
+  begin_frames.clear();
+  MaybeIssueOnBeginFrame();
+  test_client().WaitForNextFlush(&acks, &begin_frames, nullptr);
+  if (BeginFrameAcksEnabled()) {
+    // Without the OnBeginFrame there is no message waiting to flush. While
+    // `bundle()->Submit` executes during this RunLoop, the resources won't have
+    // been acked by the time we issue the OnBeginFrame.
+    EXPECT_THAT(begin_frames,
+                UnorderedElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
+                                     ForSink(kSubFrameC)));
 
-  EXPECT_EQ(kSubFrameC.sink_id(), acks[0]->sink_id);
-  EXPECT_THAT(acks[0]->resources, ElementsAre(ForResource(resource)));
+    // Resources are returned as a part of future OnBeginFrames, after the
+    // frame sink has internally Acked the frame. The `Submit` above will have
+    // enqueued the resources to return.
+    begin_frames.clear();
+    IssueOnBeginFrame();
+    test_client().WaitForNextFlush(nullptr, &begin_frames, nullptr);
+    EXPECT_THAT(begin_frames,
+                UnorderedElementsAre(ForSink(kSubFrameA), ForSink(kSubFrameB),
+                                     ForSink(kSubFrameC)));
+    EXPECT_EQ(kSubFrameC.sink_id(), begin_frames[2]->sink_id);
+    EXPECT_THAT(begin_frames[2]->resources, ElementsAre(ForResource(resource)));
+  } else {
+    EXPECT_THAT(acks, ElementsAre(ForSink(kSubFrameC)));
+
+    EXPECT_EQ(kSubFrameC.sink_id(), acks[0]->sink_id);
+    EXPECT_THAT(acks[0]->resources, ElementsAre(ForResource(resource)));
+  }
 }
 
+INSTANTIATE_TEST_SUITE_P(,
+                         OnBeginFrameAcksFrameSinkBundleImplTest,
+                         testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "BeginFrameAcks"
+                                             : "CompositoFrameAcks";
+                         });
 }  // namespace
 }  // namespace viz

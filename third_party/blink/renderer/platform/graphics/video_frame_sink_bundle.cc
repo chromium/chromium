@@ -248,7 +248,8 @@ void VideoFrameSinkBundle::FlushNotifications(
     auto it = clients_.find(entry->sink_id);
     if (it == clients_.end())
       continue;
-    it->value->OnBeginFrame(std::move(entry->args), std::move(entry->details));
+    it->value->OnBeginFrame(std::move(entry->args), std::move(entry->details),
+                            entry->frame_ack, std::move(entry->resources));
   }
   defer_submissions_ = false;
 

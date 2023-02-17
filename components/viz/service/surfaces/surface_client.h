@@ -47,7 +47,7 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
   // Called when |surface| has a new CompositorFrame available for display.
   virtual void OnSurfaceActivated(Surface* surface) = 0;
 
-  // Called when |surface| is about to be destroyed.
+  // Called when |surface| has completed destruction.
   virtual void OnSurfaceDestroyed(Surface* surface) = 0;
 
   // Called when a |surface| is about to be drawn.

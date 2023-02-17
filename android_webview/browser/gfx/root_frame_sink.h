@@ -84,7 +84,9 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   void DidReceiveCompositorFrameAck(
       std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
-                    const viz::FrameTimingDetailsMap& feedbacks) override {}
+                    const viz::FrameTimingDetailsMap& feedbacks,
+                    bool frame_ack,
+                    std::vector<viz::ReturnedResource> resources) override {}
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(

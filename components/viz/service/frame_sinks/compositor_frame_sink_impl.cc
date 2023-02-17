@@ -49,10 +49,13 @@ class BundleClientProxy : public mojom::CompositorFrameSinkClient {
   }
 
   void OnBeginFrame(const BeginFrameArgs& args,
-                    const FrameTimingDetailsMap& timing_details) override {
+                    const FrameTimingDetailsMap& timing_details,
+                    bool frame_ack,
+                    std::vector<ReturnedResource> resources) override {
     if (auto* bundle = GetBundle()) {
       bundle->EnqueueOnBeginFrame(frame_sink_id_.sink_id(), args,
-                                  timing_details);
+                                  timing_details, frame_ack,
+                                  std::move(resources));
     }
   }
 

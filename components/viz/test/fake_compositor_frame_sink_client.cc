@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "components/viz/common/features.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 
 namespace viz {
@@ -18,7 +19,16 @@ void FakeCompositorFrameSinkClient::DidReceiveCompositorFrameAck(
 
 void FakeCompositorFrameSinkClient::OnBeginFrame(
     const BeginFrameArgs& args,
-    const FrameTimingDetailsMap& timing_details) {
+    const FrameTimingDetailsMap& timing_details,
+    bool frame_ack,
+    std::vector<ReturnedResource> resources) {
+  if (features::IsOnBeginFrameAcksEnabled()) {
+    if (frame_ack) {
+      DidReceiveCompositorFrameAck(std::move(resources));
+    } else if (!resources.empty()) {
+      ReclaimResources(std::move(resources));
+    }
+  }
   for (const auto& [frame_token, timing] : timing_details) {
     all_frame_timing_details_.insert_or_assign(frame_token, timing);
   }

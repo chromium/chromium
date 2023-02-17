@@ -86,7 +86,10 @@ class SoftwareCompositorFrameSinkClient
     DCHECK(resources.empty());
   }
   void OnBeginFrame(const viz::BeginFrameArgs& args,
-                    const viz::FrameTimingDetailsMap& timing_details) override {
+                    const viz::FrameTimingDetailsMap& timing_details,
+                    bool frame_ack,
+                    std::vector<viz::ReturnedResource> resources) override {
+    DCHECK(resources.empty());
   }
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
     DCHECK(resources.empty());
@@ -587,8 +590,17 @@ void SynchronousLayerTreeFrameSink::DidReceiveCompositorFrameAck(
 
 void SynchronousLayerTreeFrameSink::OnBeginFrame(
     const viz::BeginFrameArgs& args,
-    const HashMap<uint32_t, viz::FrameTimingDetails>& timing_details) {
+    const HashMap<uint32_t, viz::FrameTimingDetails>& timing_details,
+    bool frame_ack,
+    Vector<viz::ReturnedResource> resources) {
   DCHECK(viz_frame_submission_enabled_);
+  if (features::IsOnBeginFrameAcksEnabled()) {
+    if (frame_ack) {
+      DidReceiveCompositorFrameAck(std::move(resources));
+    } else if (!resources.empty()) {
+      ReclaimResources(std::move(resources));
+    }
+  }
 
   // We do not receive BeginFrames via CompositorFrameSink, so we do not forward
   // it to cc. We still might get one with FrameTimingDetailsMap, so we report

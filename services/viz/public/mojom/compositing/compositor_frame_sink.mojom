@@ -113,9 +113,14 @@ interface CompositorFrameSinkClient {
   // Notification for the client to generate a CompositorFrame. The client is
   // required to respond with either SubmitCompositorFrame() or
   // DidNotProduceFrame(). If the client is unresponsive then begin frames will
-  // be throttled and eventually stopped entirely.
+  // be throttled and eventually stopped entirely. We also return whether this
+  // OnBeginFrame is to act as DidReceiveCompositorFrameAck. We also return a
+  // list of resources, previously sent to SubmitCompositorFrame, to be reused
+  // or freed.
   OnBeginFrame(BeginFrameArgs args,
-               map<uint32, FrameTimingDetails> details);
+               map<uint32, FrameTimingDetails> details,
+               bool frame_ack,
+               array<ReturnedResource> resources);
 
   // Inform the client that OnBeginFrame may not be called for some time.
   OnBeginFramePausedChanged(bool paused);

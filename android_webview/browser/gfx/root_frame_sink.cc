@@ -49,7 +49,9 @@ class RootFrameSink::ChildCompositorFrameSink
     ReclaimResources(std::move(resources));
   }
   void OnBeginFrame(const viz::BeginFrameArgs& args,
-                    const viz::FrameTimingDetailsMap& feedbacks) override {}
+                    const viz::FrameTimingDetailsMap& feedbacks,
+                    bool frame_ack,
+                    std::vector<viz::ReturnedResource> resources) override {}
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
     owner_->ReturnResources(frame_sink_id_, layer_tree_frame_sink_id_,

@@ -225,6 +225,13 @@ BASE_FEATURE(kRendererAllocatesImages,
 // begin also evicting the entire FrameTree.
 BASE_FEATURE(kEvictSubtree, "EvictSubtree", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+// If enabled, CompositorFrameSinkClient::OnBeginFrame is also treated as the
+// DidReceiveCompositorFrameAck. Both in providing the Ack for the previous
+// frame, and in returning resources. While enabled the separate Ack and
+// ReclaimResources signals will not be sent.
+BASE_FEATURE(kOnBeginFrameAcks,
+             "OnBeginFrameAcks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
@@ -366,6 +373,10 @@ bool ShouldOverrideThrottledFrameRateParams() {
 
 bool ShouldRendererAllocateImages() {
   return base::FeatureList::IsEnabled(kRendererAllocatesImages);
+}
+
+bool IsOnBeginFrameAcksEnabled() {
+  return base::FeatureList::IsEnabled(features::kOnBeginFrameAcks);
 }
 
 }  // namespace features

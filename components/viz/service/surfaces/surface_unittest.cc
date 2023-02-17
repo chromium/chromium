@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/test/scheduler_test_common.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -29,6 +31,7 @@ namespace {
 
 constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 constexpr bool kIsRoot = true;
+const uint64_t kBeginFrameSourceId = 1337;
 
 class SurfaceTest : public testing::Test {
  public:
@@ -41,7 +44,31 @@ class SurfaceTest : public testing::Test {
   FrameSinkManagerImpl frame_sink_manager_;
 };
 
-TEST_F(SurfaceTest, PresentationCallback) {
+// Supports testing features::OnBeginFrameAcks, which changes the expectations
+// of what IPCs are sent to the CompositorFrameSinkClient. When enabled
+// OnBeginFrame also handles ReturnResources as well as
+// DidReceiveCompositorFrameAck.
+class OnBeginFrameAcksSurfaceTest : public SurfaceTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  OnBeginFrameAcksSurfaceTest();
+  ~OnBeginFrameAcksSurfaceTest() override = default;
+
+  bool BeginFrameAcksEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+OnBeginFrameAcksSurfaceTest::OnBeginFrameAcksSurfaceTest() {
+  if (BeginFrameAcksEnabled()) {
+    scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
+  } else {
+    scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
+  }
+}
+
+TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
   constexpr gfx::Size kSurfaceSize(300, 300);
   constexpr gfx::Rect kDamageRect(0, 0);
   const LocalSurfaceId local_surface_id(6, base::UnguessableToken::Create());
@@ -54,10 +81,12 @@ TEST_F(SurfaceTest, PresentationCallback) {
     CompositorFrame frame =
         CompositorFrameBuilder()
             .AddRenderPass(gfx::Rect(kSurfaceSize), kDamageRect)
+            .SetBeginFrameSourceId(kBeginFrameSourceId)
             .Build();
     frame_token = frame.metadata.frame_token;
     ASSERT_NE(frame_token, 0u);
-    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_)).Times(1);
+    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_))
+        .Times(BeginFrameAcksEnabled() ? 0 : 1);
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));
     testing::Mock::VerifyAndClearExpectations(&client);
   }
@@ -68,14 +97,24 @@ TEST_F(SurfaceTest, PresentationCallback) {
     CompositorFrame frame =
         CompositorFrameBuilder()
             .AddRenderPass(gfx::Rect(kSurfaceSize), kDamageRect)
+            .SetBeginFrameSourceId(kBeginFrameSourceId)
             .Build();
-    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_)).Times(1);
+    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_))
+        .Times(BeginFrameAcksEnabled() ? 0 : 1);
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));
     ASSERT_EQ(1u, support->timing_details().size());
     EXPECT_EQ(frame_token, support->timing_details().begin()->first);
     testing::Mock::VerifyAndClearExpectations(&client);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         OnBeginFrameAcksSurfaceTest,
+                         testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "BeginFrameAcks"
+                                             : "CompositoFrameAcks";
+                         });
 
 TEST_F(SurfaceTest, SurfaceIds) {
   for (size_t i = 0; i < 3; ++i) {
@@ -104,7 +143,7 @@ TEST_F(SurfaceTest, CopyRequestLifetime) {
 
   LocalSurfaceId local_surface_id(6, base::UnguessableToken::Create());
   SurfaceId surface_id(kArbitraryFrameSinkId, local_surface_id);
-  CompositorFrame frame = MakeDefaultCompositorFrame();
+  CompositorFrame frame = MakeDefaultCompositorFrame(kBeginFrameSourceId);
   support->SubmitCompositorFrame(local_surface_id, std::move(frame));
   Surface* surface = surface_manager->GetSurfaceForId(surface_id);
   ASSERT_TRUE(surface);
@@ -209,8 +248,9 @@ TEST_F(SurfaceTest, ActiveSurfaceReferencesWithOverlappingReferences) {
 
   // Submit something to the second child surface and verify it's now included
   // in active referenced surfaces.
-  child_support2->SubmitCompositorFrame(child_surface_id2.local_surface_id(),
-                                        MakeDefaultCompositorFrame());
+  child_support2->SubmitCompositorFrame(
+      child_surface_id2.local_surface_id(),
+      MakeDefaultCompositorFrame(kBeginFrameSourceId));
   EXPECT_TRUE(surface_manager->GetSurfaceForId(child_surface_id2));
   EXPECT_THAT(root_surface->active_referenced_surfaces(),
               testing::ElementsAre(child_surface_id2));
@@ -220,8 +260,9 @@ TEST_F(SurfaceTest, ActiveSurfaceReferencesWithOverlappingReferences) {
   // normally the |child_surface_id1| would have activated first if the browser
   // is navigating away from it but if the first renderer is slow to produce
   // content the order can be reversed.
-  child_support1->SubmitCompositorFrame(child_surface_id1.local_surface_id(),
-                                        MakeDefaultCompositorFrame());
+  child_support1->SubmitCompositorFrame(
+      child_surface_id1.local_surface_id(),
+      MakeDefaultCompositorFrame(kBeginFrameSourceId));
   EXPECT_TRUE(surface_manager->GetSurfaceForId(child_surface_id1));
   EXPECT_THAT(root_surface->active_referenced_surfaces(),
               testing::ElementsAre(child_surface_id1, child_surface_id2));

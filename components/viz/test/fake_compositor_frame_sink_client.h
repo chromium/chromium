@@ -31,7 +31,9 @@ class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
   void DidReceiveCompositorFrameAck(
       std::vector<ReturnedResource> resources) override;
   void OnBeginFrame(const BeginFrameArgs& args,
-                    const FrameTimingDetailsMap& timing_details) override;
+                    const FrameTimingDetailsMap& timing_details,
+                    bool frame_ack,
+                    std::vector<ReturnedResource> resources) override;
   void ReclaimResources(std::vector<ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
   void OnCompositorFrameTransitionDirectiveProcessed(

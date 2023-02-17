@@ -85,7 +85,9 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
   void EnqueueOnBeginFrame(
       uint32_t sink_id,
       const BeginFrameArgs& args,
-      const base::flat_map<uint32_t, FrameTimingDetails>& details);
+      const base::flat_map<uint32_t, FrameTimingDetails>& details,
+      bool frame_ack,
+      std::vector<ReturnedResource> resources);
   void EnqueueReclaimResources(uint32_t sink_id,
                                std::vector<ReturnedResource> resources);
   void SendOnBeginFramePausedChanged(uint32_t sink_id, bool paused);

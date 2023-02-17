@@ -312,6 +312,13 @@ void CompositorFrameSinkSupport::OnSurfaceDestroyed(Surface* surface) {
 
   if (surface->surface_id() == last_created_surface_id_)
     last_created_surface_id_ = SurfaceId();
+
+  if (!features::IsOnBeginFrameAcksEnabled() || !client_ ||
+      surface_returned_resources_.empty()) {
+    return;
+  }
+  client_->ReclaimResources(std::move(surface_returned_resources_));
+  surface_returned_resources_.clear();
 }
 
 void CompositorFrameSinkSupport::OnSurfacePresented(
@@ -344,7 +351,20 @@ void CompositorFrameSinkSupport::ReturnResources(
     std::vector<ReturnedResource> resources) {
   if (resources.empty())
     return;
-  if (!ack_pending_count_ && client_) {
+
+  // When features::OnBeginFrameAcks is disabled we attempt to return resources
+  // in DidReceiveCompositorFrameAck. However if there is no
+  // `ack_pending_count_` then we don't expect that signal soon. In which case
+  // we return the resources to the `client_` now.
+  //
+  // When features::OnBeginFrameAcks is enabled we attempt to return resources
+  // during the next OnBeginFrame. However if we currently do not
+  // `needs_begin_frame_` or if we have been disconnected from a
+  // `begin_frame_source_` then we don't expect that signal soon. In which case
+  // we return the resources to the `client_` now.
+  if (!ack_pending_count_ && client_ &&
+      (!features::IsOnBeginFrameAcksEnabled() ||
+       (!needs_begin_frame_ || !begin_frame_source_))) {
     client_->ReclaimResources(std::move(resources));
     return;
   }
@@ -533,6 +553,11 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   begin_frame_tracker_.ReceivedAck(frame.metadata.begin_frame_ack);
   ++ack_pending_count_;
 
+  if (frame.metadata.begin_frame_ack.frame_id.source_id ==
+      BeginFrameArgs::kManualSourceId) {
+    pending_manual_begin_frame_source_ = true;
+  }
+
   compositor_frame_callback_ = std::move(callback);
   if (compositor_frame_callback_) {
     callback_received_begin_frame_ = false;
@@ -705,7 +730,12 @@ void CompositorFrameSinkSupport::HandleCallback() {
 
 void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
   DCHECK_GT(ack_pending_count_, 0);
+  bool was_pending_manual_begin_frame_source_ =
+      pending_manual_begin_frame_source_;
   ack_pending_count_--;
+  if (!ack_pending_count_) {
+    pending_manual_begin_frame_source_ = false;
+  }
   if (!client_)
     return;
 
@@ -714,6 +744,11 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
     callback_received_receive_ack_ = true;
     UpdateNeedsBeginFramesInternal();
     HandleCallback();
+    return;
+  }
+
+  if (features::IsOnBeginFrameAcksEnabled() &&
+      !was_pending_manual_begin_frame_source_) {
     return;
   }
 
@@ -843,7 +878,16 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     frames_throttled_since_last_ = 0;
 
     last_frame_time_ = adjusted_args.frame_time;
-    client_->OnBeginFrame(adjusted_args, std::move(frame_timing_details_));
+    if (features::IsOnBeginFrameAcksEnabled()) {
+      client_->OnBeginFrame(adjusted_args, std::move(frame_timing_details_),
+                            !ack_pending_count_,
+                            std::move(surface_returned_resources_));
+      surface_returned_resources_.clear();
+    } else {
+      client_->OnBeginFrame(adjusted_args, std::move(frame_timing_details_),
+                            /*frame_ack=*/false,
+                            std::vector<ReturnedResource>());
+    }
     begin_frame_tracker_.SentBeginFrame(adjusted_args);
     frame_sink_manager_->DidBeginFrame(frame_sink_id_, adjusted_args);
     frame_timing_details_.clear();
@@ -866,11 +910,14 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
     return;
 
   // We require a begin frame if there's a callback pending, or if the client
-  // requested it, or if the client needs to get some frame timing details.
+  // requested it, or if the client needs to get some frame timing details, or
+  // if there are resources to return.
   needs_begin_frame_ =
       (client_needs_begin_frame_ || !frame_timing_details_.empty() ||
        !pending_surfaces_.empty() ||
-       (compositor_frame_callback_ && !callback_received_begin_frame_));
+       (compositor_frame_callback_ && !callback_received_begin_frame_) ||
+       (features::IsOnBeginFrameAcksEnabled() &&
+        !surface_returned_resources_.empty()));
 
   if (bundle_id_.has_value()) {
     // When bundled with other sinks, observation of BeginFrame notifications is
