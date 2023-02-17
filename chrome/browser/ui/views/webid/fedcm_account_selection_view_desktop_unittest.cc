@@ -109,7 +109,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
       const std::u16string& rp_etld_plus_one,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
-      bool show_auto_signin_checkbox) override {
+      bool show_auto_reauthn_checkbox) override {
     ++num_bubbles_;
     return widget_;
   }
@@ -178,7 +178,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
       const std::vector<content::IdentityRequestAccount>& accounts,
       SignInMode mode,
-      bool show_auto_signin_checkbox = false) {
+      bool show_auto_reauthn_checkbox = false) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), widget_.get(), bubble_view_.get());
     Show(*controller, accounts, mode);
@@ -188,13 +188,13 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   void Show(TestFedCmAccountSelectionView& controller,
             const std::vector<content::IdentityRequestAccount>& accounts,
             SignInMode mode,
-            bool show_auto_signin_checkbox = false) {
+            bool show_auto_reauthn_checkbox = false) {
     controller.Show(
         kRpEtldPlusOne,
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL()),
           blink::mojom::RpContext::kSignIn}},
-        mode, show_auto_signin_checkbox);
+        mode, show_auto_reauthn_checkbox);
   }
 
   ui::MouseEvent CreateMouseEvent() {
@@ -367,7 +367,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(1u, controller->num_bubbles_);
 }
 
-TEST_F(FedCmAccountSelectionViewDesktopTest, AutoSigninSingleAccountFlow) {
+TEST_F(FedCmAccountSelectionViewDesktopTest, AutoReauthnSingleAccountFlow) {
   const char kAccountId[] = "account_id";
   IdentityProviderDisplayData idp_data =
       CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignIn}});

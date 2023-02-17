@@ -46,7 +46,7 @@ const std::u16string kTitleSignIn =
     u"Sign in to rp-example.com with idp-example.com";
 const std::u16string kTitleSignInWithoutIdp = u"Sign in to rp-example.com";
 const std::u16string kTitleSigningIn = u"Verifying…";
-const std::u16string kTitleSigningInWithAutoSignin = u"Signing you in…";
+const std::u16string kTitleSigningInWithAutoReauthn = u"Signing you in…";
 
 constexpr char kIdBase[] = "id";
 constexpr char kEmailBase[] = "email";
@@ -111,7 +111,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
  protected:
   void CreateAccountSelectionBubble(bool exclude_title,
-                                    bool show_auto_signin_checkbox) {
+                                    bool show_auto_reauthn_checkbox) {
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -125,7 +125,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                       : absl::make_optional<std::u16string>(kIdpETLDPlusOne);
     dialog_ = new AccountSelectionBubbleView(
         kRpETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
-        show_auto_signin_checkbox, anchor_widget_->GetContentsView(),
+        show_auto_reauthn_checkbox, anchor_widget_->GetContentsView(),
         shared_url_loader_factory(),
         /*observer=*/nullptr);
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
@@ -134,9 +134,9 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   void CreateSingleAccountPicker(bool show_back_button,
                                  const content::IdentityRequestAccount& account,
                                  const std::string& terms_of_service_url,
-                                 bool show_auto_signin_checkbox = false) {
+                                 bool show_auto_reauthn_checkbox = false) {
     CreateAccountSelectionBubble(/*exclude_title=*/false,
-                                 show_auto_signin_checkbox);
+                                 show_auto_reauthn_checkbox);
     IdentityProviderDisplayData idp_data(
         kIdpETLDPlusOne, content::IdentityProviderMetadata(),
         CreateTestClientMetadata(terms_of_service_url), {account});
@@ -147,7 +147,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   void CreateMultiIdpAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) {
     CreateAccountSelectionBubble(/*exclude_title=*/true,
-                                 /*show_auto_signin_checkbox=*/false);
+                                 /*show_auto_reauthn_checkbox=*/false);
     dialog_->ShowMultiAccountPicker(idp_data_list);
   }
 
@@ -276,7 +276,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
               content::IdentityRequestAccount::LoginState::kSignUp);
 
       CreateAccountSelectionBubble(/*exclude_title=*/false,
-                                   /*show_auto_signin_checkbox=*/false);
+                                   /*show_auto_reauthn_checkbox=*/false);
       std::vector<IdentityProviderDisplayData> idp_data;
       idp_data.emplace_back(
           kIdpETLDPlusOne, content::IdentityProviderMetadata(),
@@ -473,7 +473,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
       content::ClientMetadata(GURL(), GURL()), {account});
 
   CreateAccountSelectionBubble(/*exclude_title=*/false,
-                               /*show_auto_signin_checkbox=*/false);
+                               /*show_auto_reauthn_checkbox=*/false);
   dialog_->ShowVerifyingSheet(
       account, idp_data, l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 
@@ -487,7 +487,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
   CheckAccountRow(row_container->children()[0], kAccountSuffix);
 }
 
-TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoSignin) {
+TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
   const std::string kAccountSuffix = "suffix";
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
@@ -496,14 +496,14 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoSignin) {
       content::ClientMetadata(GURL(), GURL()), {account});
 
   CreateAccountSelectionBubble(/*exclude_title=*/false,
-                               /*show_auto_signin_checkbox=*/false);
+                               /*show_auto_reauthn_checkbox=*/false);
   const auto title =
-      l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN);
+      l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN);
   dialog_->ShowVerifyingSheet(account, idp_data, title);
 
   const std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], kTitleSigningInWithAutoSignin,
+  PerformHeaderChecks(children[0], kTitleSigningInWithAutoReauthn,
                       /*expect_idp_brand_icon_in_header=*/true);
 
   views::View* row_container = dialog()->children()[2];
@@ -511,13 +511,13 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoSignin) {
   CheckAccountRow(row_container->children()[0], kAccountSuffix);
 }
 
-TEST_F(AccountSelectionBubbleViewTest, AutoSigninCheckboxDisplayed) {
+TEST_F(AccountSelectionBubbleViewTest, AutoReauthnCheckboxDisplayed) {
   const std::string kAccountSuffix = "suffix";
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       {kAccountSuffix}, content::IdentityRequestAccount::LoginState::kSignUp);
   CreateSingleAccountPicker(
       /*show_back_button=*/false, account, /*terms_of_service_url=*/"",
-      /*show_auto_signin_checkbox=*/true);
+      /*show_auto_reauthn_checkbox=*/true);
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
@@ -535,7 +535,7 @@ TEST_F(AccountSelectionBubbleViewTest, AutoSigninCheckboxDisplayed) {
             base::UTF8ToUTF16("Continue as " + std::string(kGivenNameBase) +
                               kAccountSuffix));
 
-  // Check the auto sign-in checkbox.
+  // Check the auto re-authn checkbox.
   views::Checkbox* checkbox =
       static_cast<views::Checkbox*>(single_account_chooser->children()[2]);
 

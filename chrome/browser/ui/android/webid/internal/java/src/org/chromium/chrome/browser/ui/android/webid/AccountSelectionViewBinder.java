@@ -360,8 +360,8 @@ class AccountSelectionViewBinder {
     /**
      * Returns text for the {@link HeaderType.VERIFY_AUTO_REAUTHN} header.
      */
-    static @StringRes int getVerifyHeaderAutoStringId() {
-        return R.string.verify_sheet_title_auto_signin;
+    static @StringRes int getVerifyHeaderAutoReauthnStringId() {
+        return R.string.verify_sheet_title_auto_reauthn;
     }
 
     private static String computeHeaderTitle(
@@ -370,7 +370,7 @@ class AccountSelectionViewBinder {
             return resources.getString(getVerifyHeaderStringId());
         }
         if (type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
-            return resources.getString(getVerifyHeaderAutoStringId());
+            return resources.getString(getVerifyHeaderAutoReauthnStringId());
         }
         @StringRes
         int titleStringId = R.string.account_selection_sheet_title_explicit;

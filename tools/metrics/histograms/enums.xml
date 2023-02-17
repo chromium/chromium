@@ -18730,7 +18730,7 @@ Called by update_net_error_codes.py.-->
       label="Federated identity identity-provider-sign-in-status API"/>
   <int value="92" label="Unused site permissions"/>
   <int value="93" label="Top-level Storage Access"/>
-  <int value="94" label="Federated identity auto sign-in"/>
+  <int value="94" label="Federated identity auto re-authn"/>
   <int value="95" label="Federated identity IdP Registration API"/>
 </enum>
 

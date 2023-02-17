@@ -564,8 +564,8 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  Register(ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
-           "webid-auto-signin", CONTENT_SETTING_ALLOW,
+  Register(ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
+           "webid-auto-reauthn", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::UNSYNCABLE,
            /*allowlisted_schemes=*/{},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},

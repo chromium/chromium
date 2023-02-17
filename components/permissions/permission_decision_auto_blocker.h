@@ -130,7 +130,7 @@ class PermissionDecisionAutoBlocker : public KeyedService {
                               bool ignored_prompt_was_quiet);
 
   // Records that a prompt was displayed for |permission|. If
-  // features::kBlockRepeatedAutoSigninPrompts is enabled, it will place |url|
+  // features::kBlockRepeatedAutoReauthnPrompts is enabled, it will place |url|
   // under embargo for |permission|.
   bool RecordDisplayAndEmbargo(const GURL& url, ContentSettingsType permission);
 

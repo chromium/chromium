@@ -42,11 +42,11 @@ public interface AccountSelectionComponent {
      * @param accounts A list of {@link Account}s that will be displayed.
      * @param idpMetadata Metadata related to identity provider.
      * @param clientMetadata Metadata related to relying party.
-     * @param isAutoSignIn A {@link boolean} that represents whether this is an auto sign in flow.
+     * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
      */
     void showAccounts(String rpEtldPlusOne, String idpEtldPlusOne, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
-            boolean isAutoSignIn);
+            boolean isAutoReauthn);
 
     /**
      * Closes the outstanding bottom sheet.

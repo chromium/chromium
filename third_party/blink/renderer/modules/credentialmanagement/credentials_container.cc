@@ -1416,7 +1416,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
     }
 
-    bool prefer_auto_sign_in = options->identity()->autoReauthn();
+    bool auto_reauthn = options->identity()->autoReauthn();
 
     mojom::blink::RpContext rp_context = mojom::blink::RpContext::kSignIn;
     if (RuntimeEnabledFeatures::FedCmRpContextEnabled() &&
@@ -1435,8 +1435,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
       mojom::blink::IdentityProviderGetParametersPtr get_params =
           mojom::blink::IdentityProviderGetParameters::New(
-              std::move(identity_provider_ptrs), prefer_auto_sign_in,
-              rp_context);
+              std::move(identity_provider_ptrs), auto_reauthn, rp_context);
       idp_get_params.push_back(std::move(get_params));
 
       auto* auth_request =
@@ -1462,7 +1461,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
 
     web_identity_requester_->AppendGetCall(WrapPersistent(resolver),
                                            options->identity()->providers(),
-                                           prefer_auto_sign_in, rp_context);
+                                           auto_reauthn, rp_context);
 
     return promise;
   }

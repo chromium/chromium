@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/webid/federated_identity_auto_signin_permission_context.h"
+#include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context.h"
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/webid/federated_identity_auto_signin_permission_context_factory.h"
+#include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/test/browser_task_environment.h"
@@ -14,18 +14,18 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-class FederatedIdentityAutoSigninPermissionContextTest : public testing::Test {
+class FederatedIdentityAutoReauthnPermissionContextTest : public testing::Test {
  public:
-  FederatedIdentityAutoSigninPermissionContextTest() = default;
-  ~FederatedIdentityAutoSigninPermissionContextTest() override = default;
-  FederatedIdentityAutoSigninPermissionContextTest(
-      FederatedIdentityAutoSigninPermissionContextTest&) = delete;
-  FederatedIdentityAutoSigninPermissionContextTest& operator=(
-      FederatedIdentityAutoSigninPermissionContextTest&) = delete;
+  FederatedIdentityAutoReauthnPermissionContextTest() = default;
+  ~FederatedIdentityAutoReauthnPermissionContextTest() override = default;
+  FederatedIdentityAutoReauthnPermissionContextTest(
+      FederatedIdentityAutoReauthnPermissionContextTest&) = delete;
+  FederatedIdentityAutoReauthnPermissionContextTest& operator=(
+      FederatedIdentityAutoReauthnPermissionContextTest&) = delete;
 
   void SetUp() override {
     context_ =
-        FederatedIdentityAutoSigninPermissionContextFactory::GetForProfile(
+        FederatedIdentityAutoReauthnPermissionContextFactory::GetForProfile(
             &profile_);
     host_content_settings_map_ =
         HostContentSettingsMapFactory::GetForProfile(&profile_);
@@ -34,13 +34,13 @@ class FederatedIdentityAutoSigninPermissionContextTest : public testing::Test {
   Profile* profile() { return &profile_; }
 
  protected:
-  base::raw_ptr<FederatedIdentityAutoSigninPermissionContext> context_;
+  base::raw_ptr<FederatedIdentityAutoReauthnPermissionContext> context_;
   base::raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
   ContentSetting GetContentSetting(const GURL& rp_url) {
     return host_content_settings_map_->GetContentSetting(
         rp_url, rp_url,
-        ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+        ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
   }
 
  private:
@@ -48,21 +48,21 @@ class FederatedIdentityAutoSigninPermissionContextTest : public testing::Test {
   TestingProfile profile_;
 };
 
-// Test that FedCM auto sign-in is opt-in by default.
-TEST_F(FederatedIdentityAutoSigninPermissionContextTest,
-       AutoSigninEnabledByDefault) {
+// Test that FedCM auto re-authn is opt-in by default.
+TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
+       AutoReauthnEnabledByDefault) {
   GURL rp_url("https://rp.com");
   EXPECT_EQ(true,
-            context_->HasAutoSigninPermission(url::Origin::Create(rp_url)));
+            context_->HasAutoReauthnPermission(url::Origin::Create(rp_url)));
 }
 
 // Test that
-// FederatedIdentityAutoSigninPermissionContext::RecordDisplayAndEmbargo()
+// FederatedIdentityAutoReauthnPermissionContext::RecordDisplayAndEmbargo()
 // blocks the permission if it is enabled.
-TEST_F(FederatedIdentityAutoSigninPermissionContextTest, EnabledEmbargo) {
+TEST_F(FederatedIdentityAutoReauthnPermissionContextTest, EnabledEmbargo) {
   GURL rp_url("https://rp.com");
   host_content_settings_map_->SetDefaultContentSetting(
-      ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
+      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
       CONTENT_SETTING_ALLOW);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(rp_url));
 

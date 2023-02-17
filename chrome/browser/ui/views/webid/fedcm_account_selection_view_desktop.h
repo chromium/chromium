@@ -51,7 +51,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::string& rp_etld_plus_one,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
-      bool show_auto_signin_checkbox) override;
+      bool show_auto_reauthn_checkbox) override;
   void ShowFailureDialog(const std::string& rp_etld_plus_one,
                          const std::string& idp_etld_plus_one) override;
 
@@ -77,7 +77,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::u16string& rp_etld_plus_one,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
-      bool show_auto_signin_checkbox);
+      bool show_auto_reauthn_checkbox);
 
   // Returns AccountSelectionBubbleViewInterface for bubble views::Widget.
   virtual AccountSelectionBubbleViewInterface* GetBubbleView();

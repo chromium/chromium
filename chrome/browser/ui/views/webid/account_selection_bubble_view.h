@@ -67,7 +67,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::u16string& rp_for_display,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
-      bool show_auto_signin_checkbox,
+      bool show_auto_reauthn_checkbox,
       views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Observer* observer);
@@ -176,11 +176,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // View containing the continue button.
   raw_ptr<views::MdTextButton> continue_button_ = nullptr;
 
-  // Auto sign-in opt-out checkbox.
-  raw_ptr<views::Checkbox> auto_signin_checkbox_ = nullptr;
+  // Auto re-authn opt-out checkbox.
+  raw_ptr<views::Checkbox> auto_reauthn_checkbox_ = nullptr;
 
-  // Whether to show the auto sign-in opt-out checkbox;
-  bool show_auto_signin_checkbox_{false};
+  // Whether to show the auto re-authn opt-out checkbox;
+  bool show_auto_reauthn_checkbox_{false};
 
   // Observes events on AccountSelectionBubbleView.
   raw_ptr<Observer> observer_{nullptr};

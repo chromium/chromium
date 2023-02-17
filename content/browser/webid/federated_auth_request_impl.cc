@@ -25,7 +25,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
-#include "content/public/browser/federated_identity_auto_signin_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_auto_reauthn_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -276,11 +276,11 @@ std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
 
 FederatedAuthRequestImpl::NumReturningAccounts GetNumReturningAccounts(
     bool has_single_returning_account,
-    const IdentityRequestAccount* auto_signin_account) {
+    const IdentityRequestAccount* auto_reauthn_account) {
   if (has_single_returning_account) {
     return FederatedAuthRequestImpl::NumReturningAccounts::ONE;
   }
-  if (auto_signin_account) {
+  if (auto_reauthn_account) {
     return FederatedAuthRequestImpl::MULTIPLE;
   }
   return FederatedAuthRequestImpl::ZERO;
@@ -293,10 +293,10 @@ FederatedAuthRequestImpl::FetchData::~FetchData() = default;
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
     blink::mojom::IdentityProviderConfigPtr provider,
-    bool prefer_auto_signin,
+    bool auto_reauthn,
     blink::mojom::RpContext rp_context)
     : provider(std::move(provider)),
-      prefer_auto_signin(prefer_auto_signin),
+      auto_reauthn(auto_reauthn),
       rp_context(rp_context) {}
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::~IdentityProviderGetInfo() =
@@ -310,7 +310,7 @@ FederatedAuthRequestImpl::IdentityProviderGetInfo&
 FederatedAuthRequestImpl::IdentityProviderGetInfo::operator=(
     const IdentityProviderGetInfo& other) {
   provider = other.provider->Clone();
-  prefer_auto_signin = other.prefer_auto_signin;
+  auto_reauthn = other.auto_reauthn;
   rp_context = other.rp_context;
   return *this;
 }
@@ -319,12 +319,12 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
     const blink::mojom::IdentityProviderConfigPtr& provider,
     IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata metadata,
-    bool prefer_auto_signin,
+    bool auto_reauthn,
     blink::mojom::RpContext rp_context)
     : provider(provider->Clone()),
       endpoints(std::move(endpoints)),
       metadata(std::move(metadata)),
-      prefer_auto_signin(prefer_auto_signin),
+      auto_reauthn(auto_reauthn),
       rp_context(rp_context) {}
 
 FederatedAuthRequestImpl::IdentityProviderInfo::~IdentityProviderInfo() =
@@ -334,7 +334,7 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
   provider = other.provider->Clone();
   endpoints = other.endpoints;
   metadata = other.metadata;
-  prefer_auto_signin = other.prefer_auto_signin;
+  auto_reauthn = other.auto_reauthn;
   has_failing_idp_signin_status = other.has_failing_idp_signin_status;
   rp_context = other.rp_context;
   data = other.data;
@@ -343,13 +343,13 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     RenderFrameHost& host,
     FederatedIdentityApiPermissionContextDelegate* api_permission_context,
-    FederatedIdentityAutoSigninPermissionContextDelegate*
-        auto_signin_permission_context,
+    FederatedIdentityAutoReauthnPermissionContextDelegate*
+        auto_reauthn_permission_context,
     FederatedIdentityPermissionContextDelegate* permission_context,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : DocumentService(host, std::move(receiver)),
       api_permission_delegate_(api_permission_context),
-      auto_signin_permission_delegate_(auto_signin_permission_context),
+      auto_reauthn_permission_delegate_(auto_reauthn_permission_context),
       permission_delegate_(permission_context),
       token_request_delay_(kDefaultTokenRequestDelay) {}
 
@@ -388,12 +388,12 @@ void FederatedAuthRequestImpl::Create(
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_context =
           browser_context->GetFederatedIdentityApiPermissionContext();
-  raw_ptr<FederatedIdentityAutoSigninPermissionContextDelegate>
-      auto_signin_permission_context =
-          browser_context->GetFederatedIdentityAutoSigninPermissionContext();
+  raw_ptr<FederatedIdentityAutoReauthnPermissionContextDelegate>
+      auto_reauthn_permission_context =
+          browser_context->GetFederatedIdentityAutoReauthnPermissionContext();
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_context =
       browser_context->GetFederatedIdentityPermissionContext();
-  if (!api_permission_context || !auto_signin_permission_context ||
+  if (!api_permission_context || !auto_reauthn_permission_context ||
       !permission_context) {
     return;
   }
@@ -402,19 +402,19 @@ void FederatedAuthRequestImpl::Create(
   // interface error occurs, the RenderFrameHost is deleted, or the
   // RenderFrameHost navigates to a new document.
   new FederatedAuthRequestImpl(*host, api_permission_context,
-                               auto_signin_permission_context,
+                               auto_reauthn_permission_context,
                                permission_context, std::move(receiver));
 }
 
 FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
     RenderFrameHost& host,
     FederatedIdentityApiPermissionContextDelegate* api_permission_context,
-    FederatedIdentityAutoSigninPermissionContextDelegate*
-        auto_signin_permission_context,
+    FederatedIdentityAutoReauthnPermissionContextDelegate*
+        auto_reauthn_permission_context,
     FederatedIdentityPermissionContextDelegate* permission_context,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
   return *new FederatedAuthRequestImpl(host, api_permission_context,
-                                       auto_signin_permission_context,
+                                       auto_reauthn_permission_context,
                                        permission_context, std::move(receiver));
 }
 
@@ -548,10 +548,10 @@ void FederatedAuthRequestImpl::RequestToken(
       const GURL& idp_config_url = idp_ptr->config_url;
       token_request_get_infos_.emplace(
           idp_config_url,
-          IdentityProviderGetInfo(std::move(idp_ptr),
-                                  idp_get_params_ptr->prefer_auto_sign_in &&
-                                      IsFedCmAutoReauthnEnabled(),
-                                  rp_context));
+          IdentityProviderGetInfo(
+              std::move(idp_ptr),
+              idp_get_params_ptr->auto_reauthn && IsFedCmAutoReauthnEnabled(),
+              rp_context));
     }
   }
 
@@ -772,8 +772,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
             get_info_it->second.provider, std::move(fetch_result.endpoints),
             fetch_result.metadata ? std::move(*fetch_result.metadata)
                                   : IdentityProviderMetadata(),
-            get_info_it->second.prefer_auto_signin,
-            get_info_it->second.rp_context);
+            get_info_it->second.auto_reauthn, get_info_it->second.rp_context);
 
     if (fetch_result.error) {
       const FederatedProviderFetcher::FetchError& fetch_error =
@@ -916,61 +915,63 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   std::string rp_url_for_display = FormatOriginForDisplay(GetEmbeddingOrigin());
 
-  // TODO(crbug.com/1383384): Handle prefer_auto_sign_in for multi IDP.
-  bool prefer_auto_signin = true;
+  // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
+  bool idp_enabled_auto_reauthn = true;
   std::vector<IdentityProviderData> idp_data_for_display;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
       idp_data_for_display.push_back(*idp_info_it->second->data);
-      prefer_auto_signin &= idp_info_it->second->prefer_auto_signin;
+      idp_enabled_auto_reauthn &= idp_info_it->second->auto_reauthn;
     }
   }
 
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
-  bool auto_reauthn_enabled = prefer_auto_signin && IsFedCmAutoReauthnEnabled();
+  bool auto_reauthn_enabled =
+      idp_enabled_auto_reauthn && IsFedCmAutoReauthnEnabled();
 
   bool auto_reauthn = auto_reauthn_enabled;
   if (auto_reauthn_enabled &&
-      !auto_signin_permission_delegate_->HasAutoSigninPermission(
+      !auto_reauthn_permission_delegate_->HasAutoReauthnPermission(
           GetEmbeddingOrigin())) {
-    // `auto_signin_permission_delegate_` will log the failure reason, so no
+    // `auto_reauthn_permission_delegate_` will log the failure reason, so no
     // need to log it here.
     auto_reauthn = false;
   }
 
-  const IdentityProviderData* auto_signin_idp = nullptr;
-  const IdentityRequestAccount* auto_signin_account = nullptr;
+  const IdentityProviderData* auto_reauthn_idp = nullptr;
+  const IdentityRequestAccount* auto_reauthn_account = nullptr;
   if (auto_reauthn_enabled) {
     // Auto signs in returning users if they have a single returning account and
     // are signing in.
     bool has_single_returning_account =
-        GetSingleReturningAccount(&auto_signin_idp, &auto_signin_account);
+        GetSingleReturningAccount(&auto_reauthn_idp, &auto_reauthn_account);
     auto_reauthn &= has_single_returning_account;
     UMA_HISTOGRAM_ENUMERATION(
         "Blink.FedCm.AutoReauthn.ReturningAccounts",
         GetNumReturningAccounts(has_single_returning_account,
-                                auto_signin_account),
+                                auto_reauthn_account),
         NumReturningAccounts::COUNT);
   }
 
   if (auto_reauthn) {
-    IdentityRequestAccount account{*auto_signin_account};
-    IdentityProviderData idp{*auto_signin_idp};
+    IdentityRequestAccount account{*auto_reauthn_account};
+    IdentityProviderData idp{*auto_reauthn_idp};
     idp.accounts = {account};
     idp_data_for_display = {idp};
 
-    // Embargo auto sign-in to mitigate a deadloop where an auto signed-in user
-    // gets re-auto signed-in soon after logging out of the active session.
-    auto_signin_permission_delegate_->RecordDisplayAndEmbargo(
+    // Embargo auto re-authn to mitigate a deadloop where an auto
+    // re-authenticated user gets auto re-authenticated again soon after logging
+    // out of the active session.
+    auto_reauthn_permission_delegate_->RecordDisplayAndEmbargo(
         GetEmbeddingOrigin());
   }
 
   // TODO(crbug.com/1408520): opt-out affordance is not included in the origin
   // trial. Should revisit based on the OT feedback.
-  bool show_auto_signin_checkbox = false;
+  bool show_auto_reauthn_checkbox = false;
 
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
@@ -978,7 +979,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       WebContents::FromRenderFrameHost(&render_frame_host()),
       rp_url_for_display, idp_data_for_display,
       auto_reauthn ? SignInMode::kAuto : SignInMode::kExplicit,
-      show_auto_signin_checkbox,
+      show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,

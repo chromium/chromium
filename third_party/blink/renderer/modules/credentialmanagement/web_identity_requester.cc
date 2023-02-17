@@ -76,7 +76,7 @@ void WebIdentityRequester::RequestToken() {
 void WebIdentityRequester::AppendGetCall(
     ScriptPromiseResolver* resolver,
     const HeapVector<Member<IdentityProviderConfig>>& providers,
-    bool prefer_auto_sign_in,
+    bool auto_reauthn,
     mojom::blink::RpContext rp_context) {
   if (is_requesting_token_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -106,7 +106,7 @@ void WebIdentityRequester::AppendGetCall(
 
   mojom::blink::IdentityProviderGetParametersPtr get_params =
       mojom::blink::IdentityProviderGetParameters::New(
-          std::move(idp_ptrs), prefer_auto_sign_in, rp_context);
+          std::move(idp_ptrs), auto_reauthn, rp_context);
   idp_get_params_.push_back(std::move(get_params));
 
   if (window_onload_event_listener_ || has_posted_task_)

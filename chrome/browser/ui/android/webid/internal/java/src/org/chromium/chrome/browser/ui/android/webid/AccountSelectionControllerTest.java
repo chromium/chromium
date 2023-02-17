@@ -160,7 +160,7 @@ public class AccountSelectionControllerTest {
                 .fetchImage(any(), any(Callback.class));
 
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
-                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
+                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoReauthn */);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
@@ -183,7 +183,7 @@ public class AccountSelectionControllerTest {
                 .fetchImage(any(), any(Callback.class));
 
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
-                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
+                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoReauthn */);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         // Brand icon should be transparent placeholder icon. This is useful so that the header text
@@ -200,7 +200,7 @@ public class AccountSelectionControllerTest {
         IdentityProviderMetadata idpMetadataNoBrandIconUrl =
                 new IdentityProviderMetadata(Color.BLACK, Color.BLACK, "", TEST_CONFIG_URL);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
-                idpMetadataNoBrandIconUrl, CLIENT_ID_METADATA, false /* isAutoSignIn */);
+                idpMetadataNoBrandIconUrl, CLIENT_ID_METADATA, false /* isAutoReauthn */);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertNull(headerModel.get(IDP_BRAND_ICON));
@@ -214,7 +214,7 @@ public class AccountSelectionControllerTest {
     @Test
     public void testShowAccountSignUpHeader() {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(NEW_USER),
-                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
+                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoReauthn */);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
@@ -397,11 +397,11 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testCallsDelegateAndHidesOnAutoSignIn() {
+    public void testCallsDelegateAndHidesOnAutoReauthn() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, true);
-        // Auto signs in if no action is taken.
+        // Auto reauthenticates if no action is taken.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
         assertFalse(mMediator.wasDismissed());
@@ -410,11 +410,11 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testCallsDelegateAndHidesOnlyOnceWithAutoSignIn() {
+    public void testCallsDelegateAndHidesOnlyOnceWithAutoReauthn() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, true);
-        // Auto signs in even if dismissed.
+        // Auto reauthenticates even if dismissed.
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
@@ -449,7 +449,7 @@ public class AccountSelectionControllerTest {
     public void testShowVerifySheetExplicitSignin() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, Arrays.asList(NEW_USER),
-                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
+                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoReauthn */);
         mMediator.showVerifySheet(ANA);
 
         assertEquals(1, mSheetAccountItems.size());
@@ -457,11 +457,11 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testShowVerifySheetAutoSignin() {
+    public void testShowVerifySheetAutoReauthn() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
-        // showVerifySheet is called in showAccounts when isAutoSignIn is true
+        // showVerifySheet is called in showAccounts when isAutoReauthn is true
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
-                IDP_METADATA, CLIENT_ID_METADATA, true /* isAutoSignIn */);
+                IDP_METADATA, CLIENT_ID_METADATA, true /* isAutoReauthn */);
 
         assertEquals(1, mSheetAccountItems.size());
         assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, mModel.get(ItemProperties.HEADER).get(TYPE));

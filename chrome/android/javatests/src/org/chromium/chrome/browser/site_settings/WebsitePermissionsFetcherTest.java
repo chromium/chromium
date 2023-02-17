@@ -551,7 +551,7 @@ public class WebsitePermissionsFetcherTest {
                 ContentSettingsType.FEDERATED_IDENTITY_API, googleOrigin,
                 ContentSettingValues.DEFAULT, preferenceSource, /*isEmbargoed=*/false));
         websitePreferenceBridge.addContentSettingException(new ContentSettingException(
-                ContentSettingsType.FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION, googleOrigin,
+                ContentSettingsType.FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION, googleOrigin,
                 ContentSettingValues.DEFAULT, preferenceSource, /*isEmbargoed=*/false));
 
         // Add storage info.

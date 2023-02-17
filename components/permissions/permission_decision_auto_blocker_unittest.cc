@@ -823,9 +823,9 @@ void CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
   EXPECT_FALSE(result.has_value());
 }
 
-// Checks that embargo on federated identity auto sign-in permission is lifted
+// Checks that embargo on federated identity auto re-authn permission is lifted
 // only after the passed-in |time_delta| has elapsed.
-void CheckFederatedIdentityAutoSigninEmbargoLiftedAfterTimeElapsing(
+void CheckFederatedIdentityAutoReauthnEmbargoLiftedAfterTimeElapsing(
     PermissionDecisionAutoBlocker* autoblocker,
     base::SimpleTestClock* clock,
     const GURL& url,
@@ -834,13 +834,13 @@ void CheckFederatedIdentityAutoSigninEmbargoLiftedAfterTimeElapsing(
 
   clock->Advance(time_delta - base::Minutes(1));
   absl::optional<PermissionResult> result = autoblocker->GetEmbargoResult(
-      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result->content_setting);
   EXPECT_EQ(PermissionStatusSource::RECENT_DISPLAY, result->source);
 
   clock->Advance(base::Minutes(2));
   result = autoblocker->GetEmbargoResult(
-      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -899,18 +899,18 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
 }
 
 TEST_F(PermissionDecisionAutoBlockerUnitTest,
-       TestLogoutFederatedIdentityAutoSigninBackoff) {
+       TestLogoutFederatedIdentityAutoReauthnBackoff) {
   GURL url("https://www.google.com");
   clock()->SetNow(base::Time::Now());
 
   absl::optional<PermissionResult> result = autoblocker()->GetEmbargoResult(
-      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
   EXPECT_FALSE(result.has_value());
 
   // 10 minute embargo
   EXPECT_TRUE(autoblocker()->RecordDisplayAndEmbargo(
-      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION));
-  CheckFederatedIdentityAutoSigninEmbargoLiftedAfterTimeElapsing(
+      url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION));
+  CheckFederatedIdentityAutoReauthnEmbargoLiftedAfterTimeElapsing(
       autoblocker(), clock(), url, base::Minutes(10));
 }
 

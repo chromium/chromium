@@ -105,8 +105,8 @@ struct IdentityProviderGetParameters {
   // Details of identity provider(s).
   array<IdentityProviderConfig> providers;
 
-  // Whether auto sign in is preferred by the caller.
-  bool prefer_auto_sign_in;
+  // Whether auto re-authn is enabled by the caller.
+  bool auto_reauthn;
 
   // Controls the wording of the FedCM prompt.
   // TODO(crbug.com/1335237): consider moving this up to IdentityProviderConfig

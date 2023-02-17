@@ -34,7 +34,7 @@ class MODULES_EXPORT WebIdentityRequester final
   void AppendGetCall(
       ScriptPromiseResolver* resolver,
       const HeapVector<Member<IdentityProviderConfig>>& providers,
-      bool prefer_auto_sign_in,
+      bool auto_reauthn,
       mojom::blink::RpContext rp_context);
   void InsertScopedAbortState(
       std::unique_ptr<ScopedAbortState> scoped_abort_state);
@@ -56,7 +56,7 @@ class MODULES_EXPORT WebIdentityRequester final
   // A vector of pointers to mojom class objects. Each mojom class object
   // corresponds to parameters of a navigator.credentials.get call and contains
   // a vector of IDPs. This is to reduce storage of duplicate data such as
-  // prefer_auto_sign_in values. We flatten these arrays of IDPs into a single
+  // auto_reauthn values. We flatten these arrays of IDPs into a single
   // array of IDPs in FederatedAuthRequestImpl::RequestToken.
   Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params_;
   Member<ExecutionContext> execution_context_;

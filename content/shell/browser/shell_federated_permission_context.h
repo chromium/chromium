@@ -13,7 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
-#include "content/public/browser/federated_identity_auto_signin_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_auto_reauthn_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "url/gurl.h"
 
@@ -24,7 +24,7 @@ namespace content {
 // can run wpt tests against it.
 class ShellFederatedPermissionContext
     : public FederatedIdentityApiPermissionContextDelegate,
-      public FederatedIdentityAutoSigninPermissionContextDelegate,
+      public FederatedIdentityAutoReauthnPermissionContextDelegate,
       public FederatedIdentityPermissionContextDelegate {
  public:
   ShellFederatedPermissionContext();
@@ -39,8 +39,8 @@ class ShellFederatedPermissionContext
       const url::Origin& relying_party_embedder) override;
   bool ShouldCompleteRequestImmediately() const override;
 
-  // FederatedIdentityAutoSigninPermissionContextDelegate
-  bool HasAutoSigninPermission(
+  // FederatedIdentityAutoReauthnPermissionContextDelegate
+  bool HasAutoReauthnPermission(
       const url::Origin& relying_party_embedder) override;
   void RecordDisplayAndEmbargo(
       const url::Origin& relying_party_embedder) override;
@@ -92,7 +92,7 @@ class ShellFederatedPermissionContext
 
   base::RepeatingClosure idp_signin_status_closure_;
 
-  bool auto_signin_permission_{true};
+  bool auto_reauthn_permission_{true};
 
   // A vector of registered IdPs.
   std::vector<GURL> idp_registry_;

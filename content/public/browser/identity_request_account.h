@@ -34,8 +34,8 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   enum class SignInMode {
     // This is the default sign in mode for returning users.
     kExplicit,
-    // This represents the auto sign in flow. Currently it's only available when
-    // RP specifies |autoReauthn = true| AND there is only one signed in
+    // This represents the auto re-authn flow. Currently it's only available
+    // when RP specifies |autoReauthn = true| AND there is only one signed in
     // account.
     kAuto,
   };

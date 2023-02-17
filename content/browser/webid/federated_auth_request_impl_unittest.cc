@@ -24,7 +24,7 @@
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
-#include "content/browser/webid/test/mock_auto_signin_permission_delegate.h"
+#include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
@@ -149,7 +149,7 @@ struct IdentityProviderParameters {
 // Parameters for a call to RequestToken.
 struct RequestParameters {
   std::vector<IdentityProviderParameters> identity_providers;
-  bool prefer_auto_sign_in;
+  bool auto_reauthn;
   blink::mojom::RpContext rp_context;
 };
 
@@ -230,7 +230,7 @@ static const IdentityProviderParameters kDefaultIdentityProviderConfig{
 
 static const RequestParameters kDefaultRequestParameters{
     std::vector<IdentityProviderParameters>{kDefaultIdentityProviderConfig},
-    /*prefer_auto_sign_in=*/false, blink::mojom::RpContext::kSignIn};
+    /*auto_reauthn=*/false, blink::mojom::RpContext::kSignIn};
 
 static const MockIdpInfo kDefaultIdentityProviderInfo{
     {kWellKnown},
@@ -280,7 +280,7 @@ static const RequestParameters kDefaultMultiIdpRequestParameters{
     std::vector<IdentityProviderParameters>{
         {kProviderUrlFull, kClientId, kNonce},
         {kProviderTwoUrlFull, kClientId, kNonce}},
-    /*prefer_auto_sign_in=*/false,
+    /*auto_reauthn=*/false,
     /*rp_context=*/blink::mojom::RpContext::kSignIn};
 
 MockConfiguration kConfigurationMultiIdpValid{
@@ -504,7 +504,7 @@ class TestDialogController
       const std::string& rp_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
-      bool show_auto_signin_checkbox,
+      bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {
@@ -630,8 +630,8 @@ class TestPermissionDelegate : public NiceMock<MockPermissionDelegate> {
   }
 };
 
-class TestAutoSigninPermissionDelegate
-    : public MockAutoSigninPermissionDelegate {
+class TestAutoReauthnPermissionDelegate
+    : public MockAutoReauthnPermissionDelegate {
  public:
   std::set<url::Origin> embargoed_origins_;
 
@@ -654,15 +654,15 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
     test_permission_delegate_ = std::make_unique<TestPermissionDelegate>();
-    test_auto_signin_permission_delegate_ =
-        std::make_unique<TestAutoSigninPermissionDelegate>();
+    test_auto_reauthn_permission_delegate_ =
+        std::make_unique<TestAutoReauthnPermissionDelegate>();
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
-        test_auto_signin_permission_delegate_.get(),
+        test_auto_reauthn_permission_delegate_.get(),
         test_permission_delegate_.get(),
         request_remote_.BindNewPipeAndPassReceiver());
 
@@ -731,7 +731,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       idp_ptrs.push_back(std::move(idp_ptr));
       blink::mojom::IdentityProviderGetParametersPtr get_params =
           blink::mojom::IdentityProviderGetParameters::New(
-              std::move(idp_ptrs), request_parameters.prefer_auto_sign_in,
+              std::move(idp_ptrs), request_parameters.auto_reauthn,
               request_parameters.rp_context);
       idp_get_params.push_back(std::move(get_params));
     }
@@ -997,8 +997,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> test_permission_delegate_;
-  std::unique_ptr<TestAutoSigninPermissionDelegate>
-      test_auto_signin_permission_delegate_;
+  std::unique_ptr<TestAutoReauthnPermissionDelegate>
+      test_auto_reauthn_permission_delegate_;
 
   AuthRequestCallbackHelper auth_helper_;
 
@@ -1154,7 +1154,7 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
                                                kClientId, kNonce};
   RequestParameters request{
       std::vector<IdentityProviderParameters>{identity_provider},
-      /*prefer_auto_sign_in=*/false,
+      /*auto_reauthn=*/false,
       /*rp_context=*/blink::mojom::RpContext::kSignIn};
   MockConfiguration configuration = kConfigurationValid;
   RequestExpectations expectations = {
@@ -1313,17 +1313,18 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
 }
 
-// Test that auto sign-in permission is not embargoed upon explicit sign-in.
+// Test that auto re-authn permission is not embargoed upon explicit sign-in.
 TEST_F(FederatedAuthRequestImplTest, ExplicitSigninEmbargo) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
   EXPECT_TRUE(
-      test_auto_signin_permission_delegate_->embargoed_origins_.empty());
+      test_auto_reauthn_permission_delegate_->embargoed_origins_.empty());
 }
 
-// Test that auto sign-in permission is embargoed upon successful auto sign-in.
-TEST_F(FederatedAuthRequestImplTest, AutoSigninEmbargo) {
+// Test that auto re-authn permission is embargoed upon successful auto
+// re-authn.
+TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
@@ -1335,19 +1336,19 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninEmbargo) {
       .Times(2)
       .WillRepeatedly(Return(true));
 
-  // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*test_auto_signin_permission_delegate_,
-              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
+  request_parameters.auto_reauthn = true;
   RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
-  EXPECT_TRUE(test_auto_signin_permission_delegate_->embargoed_origins_.count(
+  EXPECT_TRUE(test_auto_reauthn_permission_delegate_->embargoed_origins_.count(
       OriginFromString(kRpUrl)));
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
@@ -1357,10 +1358,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninEmbargo) {
       static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
 }
 
-// Test that auto sign-in with a single account where the account is a returning
-// user sets the sign-in mode to auto.
+// Test that auto re-authn with a single account where the account is a
+// returning user sets the sign-in mode to auto.
 TEST_F(FederatedAuthRequestImplTest,
-       AutoSigninForSingleReturningUserSingleAccount) {
+       AutoReauthnForSingleReturningUserSingleAccount) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
@@ -1372,16 +1373,16 @@ TEST_F(FederatedAuthRequestImplTest,
       .Times(2)
       .WillRepeatedly(Return(true));
 
-  // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*test_auto_signin_permission_delegate_,
-              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
   }
   RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
+  request_parameters.auto_reauthn = true;
   RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
@@ -1395,10 +1396,10 @@ TEST_F(FederatedAuthRequestImplTest,
       static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
 }
 
-// Test that auto sign-in with multiple accounts and a single returning user
+// Test that auto re-authn with multiple accounts and a single returning user
 // sets the sign-in mode to auto.
 TEST_F(FederatedAuthRequestImplTest,
-       AutoSigninForSingleReturningUserMultipleAccounts) {
+       AutoReauthnForSingleReturningUserMultipleAccounts) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
@@ -1424,13 +1425,13 @@ TEST_F(FederatedAuthRequestImplTest,
                            OriginFromString(kProviderUrlFull), kAccountIdZach))
       .WillOnce(Return(false));
 
-  // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*test_auto_signin_permission_delegate_,
-              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
+  request_parameters.auto_reauthn = true;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
@@ -1448,10 +1449,10 @@ TEST_F(FederatedAuthRequestImplTest,
       static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
 }
 
-// Test that auto sign-in with multiple accounts and multiple returning users
+// Test that auto re-authn with multiple accounts and multiple returning users
 // sets the sign-in mode to explicit.
 TEST_F(FederatedAuthRequestImplTest,
-       AutoSigninForMultipleReturningUsersMultipleAccounts) {
+       AutoReauthnForMultipleReturningUsersMultipleAccounts) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
@@ -1478,13 +1479,13 @@ TEST_F(FederatedAuthRequestImplTest,
                            OriginFromString(kProviderUrlFull), kAccountIdZach))
       .WillOnce(Return(false));
 
-  // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*test_auto_signin_permission_delegate_,
-              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
+  request_parameters.auto_reauthn = true;
 
   AccountList multiple_accounts = kMultipleAccounts;
   multiple_accounts[0].login_state = LoginState::kSignIn;
@@ -1505,9 +1506,9 @@ TEST_F(FederatedAuthRequestImplTest,
       1);
 }
 
-// Test that auto sign-in with single non-returning account sets the sign-in
+// Test that auto re-authn with single non-returning account sets the sign-in
 // mode to explicit.
-TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
+TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
@@ -1518,16 +1519,16 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(false));
 
-  // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*test_auto_signin_permission_delegate_,
-              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
   }
   RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
+  request_parameters.auto_reauthn = true;
   RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
@@ -1542,10 +1543,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
       1);
 }
 
-// Test that auto sign-in with multiple accounts and a single returning user
+// Test that auto re-authn with multiple accounts and a single returning user
 // sets the sign-in mode to kExplicit if `autoReauthn` is not specified.
 TEST_F(FederatedAuthRequestImplTest,
-       AutoSigninForSingleReturningUserWithoutSettingPreferAutoSignin) {
+       AutoReauthnForSingleReturningUserWithoutSettingAutoReauthn) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
@@ -1557,7 +1558,7 @@ TEST_F(FederatedAuthRequestImplTest,
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
-  // request_parameters.prefer_auto_sign_in is default to false;
+  // request_parameters.auto_reauthn is default to false;
   RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
@@ -1567,7 +1568,8 @@ TEST_F(FederatedAuthRequestImplTest,
 
 // Test that if browser has not observed sign-in in the past, the sign-in mode
 // is set to explicit regardless the account's login state.
-TEST_F(FederatedAuthRequestImplTest, AutoSigninBrowserNotObservedSigninBefore) {
+TEST_F(FederatedAuthRequestImplTest,
+       AutoReauthnBrowserNotObservedSigninBefore) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
@@ -1579,13 +1581,13 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninBrowserNotObservedSigninBefore) {
       .Times(2)
       .WillRepeatedly(Return(false));
 
-  // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*test_auto_signin_permission_delegate_,
-              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
+  request_parameters.auto_reauthn = true;
 
   // Set IDP claims user is signed in.
   MockConfiguration configuration = kConfigurationValid;
@@ -1599,19 +1601,19 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninBrowserNotObservedSigninBefore) {
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 }
 
-// Test that auto sign-in for a first time user sets the sign-in mode to
+// Test that auto re-authn for a first time user sets the sign-in mode to
 // explicit.
-TEST_F(FederatedAuthRequestImplTest, AutoSigninForFirstTimeUser) {
+TEST_F(FederatedAuthRequestImplTest, AutoReauthnForFirstTimeUser) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
-  // Pretend the auto sign-in permission has been granted.
-  EXPECT_CALL(*test_auto_signin_permission_delegate_,
-              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
+  request_parameters.auto_reauthn = true;
   RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
@@ -1619,10 +1621,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForFirstTimeUser) {
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 }
 
-// Test that auto sign-in where the auto sign-in permission is blocked sets the
-// sign-in mode to explicit.
+// Test that auto re-authn where the auto re-authn permission is blocked sets
+// the sign-in mode to explicit.
 TEST_F(FederatedAuthRequestImplTest,
-       AutoSigninWithBlockedAutoSigninPermissions) {
+       AutoReauthnWithBlockedAutoReauthnPermissions) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
@@ -1633,13 +1635,13 @@ TEST_F(FederatedAuthRequestImplTest,
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillRepeatedly(Return(true));
 
-  // Pretend the auto sign-in permission has been blocked for this account.
-  EXPECT_CALL(*test_auto_signin_permission_delegate_,
-              HasAutoSigninPermission(OriginFromString(kRpUrl)))
+  // Pretend the auto re-authn permission has been blocked for this account.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
       .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
+  request_parameters.auto_reauthn = true;
   RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
@@ -2127,7 +2129,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       const std::string& rp_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       SignInMode sign_in_mode,
-      bool show_auto_signin_checkbox,
+      bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {
@@ -2138,7 +2140,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
     // Call parent class method in order to store callback parameters.
     TestDialogController::ShowAccountsDialog(
         rp_web_contents, rp_for_display, std::move(identity_provider_data),
-        sign_in_mode, show_auto_signin_checkbox, std::move(on_selected),
+        sign_in_mode, show_auto_reauthn_checkbox, std::move(on_selected),
         std::move(dismiss_callback));
   }
 

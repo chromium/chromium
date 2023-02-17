@@ -152,7 +152,7 @@ class AccountSelectionMediator {
     private void handleBackPress() {
         mSelectedAccount = null;
         showAccountsInternal(mRpForDisplay, mIdpForDisplay, mAccounts, mIdpMetadata,
-                mClientMetadata, /*isAutoSignIn=*/false, /*focusItem=*/ItemProperties.HEADER);
+                mClientMetadata, /*isAutoReauthn=*/false, /*focusItem=*/ItemProperties.HEADER);
     }
 
     private PropertyModel createHeaderItem(HeaderType headerType, String rpForDisplay,
@@ -227,7 +227,7 @@ class AccountSelectionMediator {
 
     void showAccounts(String rpForDisplay, String idpForDisplay, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
-            boolean isAutoSignIn) {
+            boolean isAutoReauthn) {
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
             // Use placeholder icon so that the header text wrapping does not change when the icon
             // is fetched.
@@ -238,7 +238,7 @@ class AccountSelectionMediator {
 
         mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
         showAccountsInternal(rpForDisplay, idpForDisplay, accounts, idpMetadata, clientMetadata,
-                isAutoSignIn, /*focusItem=*/ItemProperties.HEADER);
+                isAutoReauthn, /*focusItem=*/ItemProperties.HEADER);
         setComponentShowTime(SystemClock.elapsedRealtime());
 
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
@@ -265,7 +265,7 @@ class AccountSelectionMediator {
 
     private void showAccountsInternal(String rpForDisplay, String idpForDisplay,
             List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoSignIn, PropertyKey focusItem) {
+            ClientIdMetadata clientMetadata, boolean isAutoReauthn, PropertyKey focusItem) {
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mAccounts = accounts;
@@ -276,7 +276,7 @@ class AccountSelectionMediator {
             accounts = Arrays.asList(mSelectedAccount);
         }
 
-        mHeaderType = isAutoSignIn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
+        mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
         updateSheet(accounts, /*areAccountsClickable=*/mSelectedAccount == null, focusItem);
         updateBackPressBehavior();
     }
@@ -385,7 +385,7 @@ class AccountSelectionMediator {
         mSelectedAccount = selectedAccount;
         if (oldSelectedAccount == null && !mSelectedAccount.isSignIn()) {
             showAccountsInternal(mRpForDisplay, mIdpForDisplay, mAccounts, mIdpMetadata,
-                    mClientMetadata, /*isAutoSignIn=*/false,
+                    mClientMetadata, /*isAutoReauthn=*/false,
                     /*focusItem=*/ItemProperties.CONTINUE_BUTTON);
             return;
         }

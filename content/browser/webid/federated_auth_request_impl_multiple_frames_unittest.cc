@@ -19,7 +19,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
-#include "content/browser/webid/test/mock_auto_signin_permission_delegate.h"
+#include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
@@ -143,7 +143,7 @@ class TestDialogController
       const std::string& rp_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
-      bool show_auto_signin_checkbox,
+      bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {
@@ -179,8 +179,8 @@ class FederatedAuthRequestImplMultipleFramesTest
     RenderViewHostImplTestHarness::SetUp();
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
-    mock_auto_signin_permission_delegate_ =
-        std::make_unique<NiceMock<MockAutoSigninPermissionDelegate>>();
+    mock_auto_reauthn_permission_delegate_ =
+        std::make_unique<NiceMock<MockAutoReauthnPermissionDelegate>>();
     mock_permission_delegate_ =
         std::make_unique<NiceMock<MockPermissionDelegate>>();
 
@@ -214,7 +214,7 @@ class FederatedAuthRequestImplMultipleFramesTest
     FederatedAuthRequestImpl* federated_auth_request_impl =
         &FederatedAuthRequestImpl::CreateForTesting(
             render_frame_host, test_api_permission_delegate_.get(),
-            mock_auto_signin_permission_delegate_.get(),
+            mock_auto_reauthn_permission_delegate_.get(),
             mock_permission_delegate_.get(),
             request_remote.BindNewPipeAndPassReceiver());
     federated_auth_request_impl->SetDialogControllerForTests(
@@ -238,7 +238,7 @@ class FederatedAuthRequestImplMultipleFramesTest
     std::vector<blink::mojom::IdentityProviderConfigPtr> idp_ptrs;
     idp_ptrs.push_back(std::move(idp_ptr));
     auto get_params = blink::mojom::IdentityProviderGetParameters::New(
-        std::move(idp_ptrs), /*prefer_auto_signin=*/true,
+        std::move(idp_ptrs), /*auto_reauthn=*/true,
         /*rp_context=*/blink::mojom::RpContext::kSignIn);
     std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
     idp_get_params.push_back(std::move(get_params));
@@ -250,8 +250,8 @@ class FederatedAuthRequestImplMultipleFramesTest
 
  protected:
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
-  std::unique_ptr<NiceMock<MockAutoSigninPermissionDelegate>>
-      mock_auto_signin_permission_delegate_;
+  std::unique_ptr<NiceMock<MockAutoReauthnPermissionDelegate>>
+      mock_auto_reauthn_permission_delegate_;
   std::unique_ptr<NiceMock<MockPermissionDelegate>> mock_permission_delegate_;
 };
 

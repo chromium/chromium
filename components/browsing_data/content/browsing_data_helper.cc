@@ -194,7 +194,7 @@ void RemoveFederatedSiteSettingsData(
       pattern_predicate);
 
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
+      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
       delete_begin, delete_end, pattern_predicate);
 
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(

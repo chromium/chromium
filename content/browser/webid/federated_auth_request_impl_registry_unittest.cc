@@ -16,7 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
-#include "content/browser/webid/test/mock_auto_signin_permission_delegate.h"
+#include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
@@ -74,12 +74,12 @@ class FederatedAuthRequestImplRegistryTest
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kIdpUrl), ui::PAGE_TRANSITION_LINK);
 
-    mock_auto_signin_permission_delegate_ =
-        std::make_unique<NiceMock<MockAutoSigninPermissionDelegate>>();
+    mock_auto_reauthn_permission_delegate_ =
+        std::make_unique<NiceMock<MockAutoReauthnPermissionDelegate>>();
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
-        mock_auto_signin_permission_delegate_.get(),
+        mock_auto_reauthn_permission_delegate_.get(),
         mock_permission_delegate_.get(),
         request_remote_.BindNewPipeAndPassReceiver());
     auto mock_dialog_controller =
@@ -99,8 +99,8 @@ class FederatedAuthRequestImplRegistryTest
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<StrictMock<MockPermissionDelegate>> mock_permission_delegate_;
-  std::unique_ptr<NiceMock<MockAutoSigninPermissionDelegate>>
-      mock_auto_signin_permission_delegate_;
+  std::unique_ptr<NiceMock<MockAutoReauthnPermissionDelegate>>
+      mock_auto_reauthn_permission_delegate_;
 };
 
 // Test Registering an IdP successfully.

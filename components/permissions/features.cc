@@ -20,10 +20,10 @@ BASE_FEATURE(kBlockPromptsIfIgnoredOften,
              "BlockPromptsIfIgnoredOften",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Once the user has auto signed-in, automatically block subsequent auto sign-in
-// prompts within the next 10 minutes.
-BASE_FEATURE(kBlockRepeatedAutoSigninPrompts,
-             "BlockRepeatedAutoSigninPrompts",
+// Once the user has auto re-authenticated, automatically block subsequent auto
+// re-authn prompts within the next 10 minutes.
+BASE_FEATURE(kBlockRepeatedAutoReauthnPrompts,
+             "BlockRepeatedAutoReauthnPrompts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Once the user declines a notification permission prompt in a WebContents,

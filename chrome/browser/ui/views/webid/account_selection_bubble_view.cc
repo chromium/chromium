@@ -379,7 +379,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::u16string& rp_for_display,
     const absl::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
-    bool show_auto_signin_checkbox,
+    bool show_auto_reauthn_checkbox,
 
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -412,7 +412,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
 
   rp_context_ = rp_context;
-  show_auto_signin_checkbox_ = show_auto_signin_checkbox;
+  show_auto_reauthn_checkbox_ = show_auto_reauthn_checkbox;
   accessible_title_ =
       idp_title.has_value()
           ? l10n_util::GetStringFUTF16(
@@ -654,10 +654,11 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   button->SetProminent(true);
   continue_button_ = row->AddChildView(std::move(button));
 
-  if (show_auto_signin_checkbox_) {
-    auto_signin_checkbox_ = row->AddChildView(std::make_unique<views::Checkbox>(
-        l10n_util::GetStringUTF16(IDS_AUTO_SIGNIN_OPTOUT_CHECKBOX)));
-    auto_signin_checkbox_->SetChecked(true);
+  if (show_auto_reauthn_checkbox_) {
+    auto_reauthn_checkbox_ =
+        row->AddChildView(std::make_unique<views::Checkbox>(
+            l10n_util::GetStringUTF16(IDS_AUTO_REAUTHN_OPTOUT_CHECKBOX)));
+    auto_reauthn_checkbox_->SetChecked(true);
   }
 
   // Do not add disclosure text if this is a sign in.

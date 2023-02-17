@@ -387,8 +387,8 @@ BrowserContext::GetFederatedIdentityApiPermissionContext() {
   return nullptr;
 }
 
-FederatedIdentityAutoSigninPermissionContextDelegate*
-BrowserContext::GetFederatedIdentityAutoSigninPermissionContext() {
+FederatedIdentityAutoReauthnPermissionContextDelegate*
+BrowserContext::GetFederatedIdentityAutoReauthnPermissionContext() {
   return nullptr;
 }
 

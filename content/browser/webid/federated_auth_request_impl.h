@@ -29,7 +29,7 @@ namespace content {
 
 class FederatedAuthUserInfoRequest;
 class FederatedIdentityApiPermissionContextDelegate;
-class FederatedIdentityAutoSigninPermissionContextDelegate;
+class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
@@ -51,7 +51,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   static FederatedAuthRequestImpl& CreateForTesting(
       RenderFrameHost&,
       FederatedIdentityApiPermissionContextDelegate*,
-      FederatedIdentityAutoSigninPermissionContextDelegate*,
+      FederatedIdentityAutoReauthnPermissionContextDelegate*,
       FederatedIdentityPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
@@ -93,14 +93,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderConfigPtr,
-                            bool prefer_auto_signin,
+                            bool auto_reauthn,
                             blink::mojom::RpContext rp_context);
     ~IdentityProviderGetInfo();
     IdentityProviderGetInfo(const IdentityProviderGetInfo&);
     IdentityProviderGetInfo& operator=(const IdentityProviderGetInfo& other);
 
     blink::mojom::IdentityProviderConfigPtr provider;
-    bool prefer_auto_signin{false};
+    bool auto_reauthn{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
   };
 
@@ -108,7 +108,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     IdentityProviderInfo(const blink::mojom::IdentityProviderConfigPtr&,
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata,
-                         bool prefer_auto_signin,
+                         bool auto_reauthn,
                          blink::mojom::RpContext rp_context);
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
@@ -116,7 +116,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     blink::mojom::IdentityProviderConfigPtr provider;
     IdpNetworkRequestManager::Endpoints endpoints;
     IdentityProviderMetadata metadata;
-    bool prefer_auto_signin{false};
+    bool auto_reauthn{false};
     bool has_failing_idp_signin_status{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     absl::optional<IdentityProviderData> data;
@@ -142,7 +142,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   FederatedAuthRequestImpl(
       RenderFrameHost&,
       FederatedIdentityApiPermissionContextDelegate*,
-      FederatedIdentityAutoSigninPermissionContextDelegate*,
+      FederatedIdentityAutoReauthnPermissionContextDelegate*,
       FederatedIdentityPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
@@ -294,8 +294,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;
-  raw_ptr<FederatedIdentityAutoSigninPermissionContextDelegate>
-      auto_signin_permission_delegate_ = nullptr;
+  raw_ptr<FederatedIdentityAutoReauthnPermissionContextDelegate>
+      auto_reauthn_permission_delegate_ = nullptr;
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
 

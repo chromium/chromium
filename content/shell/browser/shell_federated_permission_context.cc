@@ -33,10 +33,10 @@ bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
   return switches::IsRunWebTestsSwitchPresent();
 }
 
-// FederatedIdentityAutoSigninPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasAutoSigninPermission(
+// FederatedIdentityAutoReauthnPermissionContextDelegate
+bool ShellFederatedPermissionContext::HasAutoReauthnPermission(
     const url::Origin& relying_party_embedder) {
-  return auto_signin_permission_;
+  return auto_reauthn_permission_;
 }
 
 void ShellFederatedPermissionContext::RecordDisplayAndEmbargo(
