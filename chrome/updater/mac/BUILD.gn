@@ -74,6 +74,9 @@ mac_app_bundle("updater_bundle_test") {
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
   ]
+  if (is_asan) {
+    deps += [ ":keystone_agent_bundle_resource_executable_test_asan_dylib" ]
+  }
   public_deps = [
     ":ksadmin_test_copy",
     ":ksadmin_test_link",
@@ -460,9 +463,13 @@ bundle_data("keystone_agent_bundle_resource_executable_test") {
 
   outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent" ]
   public_deps = [ ":keystone_agent_bundle_test" ]
+}
 
-  if (is_asan) {
-    sources += [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+if (is_asan) {
+  bundle_data("keystone_agent_bundle_resource_executable_test_asan_dylib") {
+    sources = [ "$root_out_dir/${keystone_app_name}Agent_test.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+    outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/{{source_file_part}}" ]
+    public_deps = [ ":keystone_agent_bundle_test" ]
   }
 }
 
