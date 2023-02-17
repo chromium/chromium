@@ -14,23 +14,23 @@
         <include name="IDR_DEFAULT_POPULAR_SITES_ICON6" file="../ntp_tiles/resources/internal/icon6.webp" type="BINDATA" />
         <include name="IDR_DEFAULT_POPULAR_SITES_ICON7" file="../ntp_tiles/resources/internal/icon7.webp" type="BINDATA" />
         <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_JSON" file="../ntp_tiles/resources/internal/default_popular_sites_with_popular_apps.json" type="BINDATA" compress="gzip" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON0" file="../ntp_tiles/resources/internal/icon0_with_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON1" file="../ntp_tiles/resources/internal/icon1_with_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON2" file="../ntp_tiles/resources/internal/icon2_with_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON3" file="../ntp_tiles/resources/internal/icon3_with_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON4" file="../ntp_tiles/resources/internal/icon4_with_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON5" file="../ntp_tiles/resources/internal/icon5_with_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON6" file="../ntp_tiles/resources/internal/icon6_with_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON7" file="../ntp_tiles/resources/internal/icon7_with_popular_apps.png" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON0" file="../ntp_tiles/resources/internal/icon0_with_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON1" file="../ntp_tiles/resources/internal/icon1_with_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON2" file="../ntp_tiles/resources/internal/icon2_with_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON3" file="../ntp_tiles/resources/internal/icon3_with_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON4" file="../ntp_tiles/resources/internal/icon4_with_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON5" file="../ntp_tiles/resources/internal/icon5_with_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON6" file="../ntp_tiles/resources/internal/icon6_with_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON7" file="../ntp_tiles/resources/internal/icon7_with_popular_apps.webp" type="BINDATA" />
         <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_JSON" file="../ntp_tiles/resources/internal/default_popular_sites_without_popular_apps.json" type="BINDATA" compress="gzip" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON0" file="../ntp_tiles/resources/internal/icon0_without_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON1" file="../ntp_tiles/resources/internal/icon1_without_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON2" file="../ntp_tiles/resources/internal/icon2_without_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON3" file="../ntp_tiles/resources/internal/icon3_without_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON4" file="../ntp_tiles/resources/internal/icon4_without_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON5" file="../ntp_tiles/resources/internal/icon5_without_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON6" file="../ntp_tiles/resources/internal/icon6_without_popular_apps.png" type="BINDATA" />
-        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON7" file="../ntp_tiles/resources/internal/icon7_without_popular_apps.png" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON0" file="../ntp_tiles/resources/internal/icon0_without_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON1" file="../ntp_tiles/resources/internal/icon1_without_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON2" file="../ntp_tiles/resources/internal/icon2_without_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON3" file="../ntp_tiles/resources/internal/icon3_without_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON4" file="../ntp_tiles/resources/internal/icon4_without_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON5" file="../ntp_tiles/resources/internal/icon5_without_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON6" file="../ntp_tiles/resources/internal/icon6_without_popular_apps.webp" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON7" file="../ntp_tiles/resources/internal/icon7_without_popular_apps.webp" type="BINDATA" />
       </then>
       <else>
         <!-- Fall back to a local resource so popular sites can be tested properly. -->
