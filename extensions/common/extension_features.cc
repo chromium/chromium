@@ -81,7 +81,7 @@ BASE_FEATURE(kNewExtensionFaviconHandling,
 
 // Determine if dynamic extension URLs are handled and redirected.
 BASE_FEATURE(kExtensionDynamicURLRedirection,
-             "kExtensionDynamicURLRedirection",
+             "ExtensionDynamicURLRedirection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables enhanced site control for extensions and allowing the user to control
