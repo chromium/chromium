@@ -276,6 +276,12 @@ void SampleVectorBase::MoveSingleSampleToCounts() {
   if (sample.count == 0)
     return;
 
+  // Stop here if the sample bucket would be out of range for the AtomicCount
+  // array.
+  if (sample.bucket >= counts_size()) {
+    return;
+  }
+
   // Move the value into storage. Sum and redundant-count already account
   // for this entry so no need to call IncreaseSumAndCount().
   subtle::NoBarrier_AtomicIncrement(&counts()[sample.bucket], sample.count);
