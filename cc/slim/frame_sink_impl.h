@@ -122,6 +122,8 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
       pending_client_receiver_;
 
   mojo::AssociatedRemote<viz::mojom::CompositorFrameSink> frame_sink_remote_;
+  // Separate from AssociatedRemote above for testing.
+  viz::mojom::CompositorFrameSink* frame_sink_ = nullptr;
   mojo::Receiver<viz::mojom::CompositorFrameSinkClient> client_receiver_{this};
   scoped_refptr<viz::ContextProvider> context_provider_;
   raw_ptr<FrameSinkImplClient> client_ = nullptr;
@@ -132,6 +134,10 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   // Last `HitTestRegionList` sent to viz.
   absl::optional<viz::HitTestRegionList> hit_test_region_list_;
   base::PlatformThreadId io_thread_id_;
+
+  viz::LocalSurfaceId last_submitted_local_surface_id_;
+  float last_submitted_device_scale_factor_ = 1.f;
+  gfx::Size last_submitted_size_in_pixels_;
 
   bool needs_begin_frame_ = false;
 };

@@ -23,10 +23,16 @@ namespace cc {
 class Layer;
 }
 
+namespace viz {
+class CompositorRenderPass;
+class SharedQuadState;
+}  // namespace viz
+
 namespace cc::slim {
 
 class LayerTree;
 class LayerTreeCcWrapper;
+class LayerTreeImpl;
 
 // Base class for composited layers. Special layer types are derived from
 // this class. Each layer is an independent unit in the compositor, be that
@@ -178,15 +184,24 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
 
  protected:
   friend class LayerTreeCcWrapper;
+  friend class LayerTreeImpl;
 
   explicit Layer(scoped_refptr<cc::Layer> cc_layer);
   virtual ~Layer();
 
   // Called by LayerTree.
+  gfx::Transform ComputeTransformToParent();
   virtual bool HasDrawableContent() const;
+  virtual void AppendQuads(viz::CompositorRenderPass& render_pass,
+                           const gfx::Transform& transform,
+                           const gfx::Rect* clip);
 
   void NotifyTreeChanged();
   void NotifyPropertyChanged();
+  virtual viz::SharedQuadState* CreateAndAppendSharedQuadState(
+      viz::CompositorRenderPass& render_pass,
+      const gfx::Transform& transform,
+      const gfx::Rect* clip);
 
   const scoped_refptr<cc::Layer> cc_layer_;
 

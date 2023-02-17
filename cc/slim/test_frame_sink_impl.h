@@ -24,6 +24,7 @@ class TestFrameSinkImpl : public FrameSinkImpl {
     DCHECK(!bind_to_client_called_);
     bind_to_client_result_ = result;
   }
+  viz::CompositorFrame TakeLastFrame();
   bool bind_to_client_called() const { return bind_to_client_called_; }
   bool needs_begin_frames() const { return needs_begin_frames_; }
 
@@ -32,6 +33,7 @@ class TestFrameSinkImpl : public FrameSinkImpl {
   void SetNeedsBeginFrame(bool needs_begin_frame) override;
 
  private:
+  class TestMojoCompositorFrameSink;
   TestFrameSinkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojo::PendingAssociatedRemote<viz::mojom::CompositorFrameSink>
@@ -42,8 +44,7 @@ class TestFrameSinkImpl : public FrameSinkImpl {
       mojo::PendingAssociatedReceiver<viz::mojom::CompositorFrameSink>
           sink_receiver);
 
-  mojo::PendingAssociatedReceiver<viz::mojom::CompositorFrameSink>
-      pending_sink_receiver_;
+  std::unique_ptr<TestMojoCompositorFrameSink> mojo_sink_;
 
   bool bind_to_client_called_ = false;
   bool bind_to_client_result_ = true;

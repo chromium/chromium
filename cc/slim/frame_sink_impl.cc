@@ -85,7 +85,8 @@ bool FrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
       base::BindOnce(&FrameSinkImpl::OnContextLost, base::Unretained(this)));
   client_receiver_.Bind(std::move(pending_client_receiver_), task_runner_);
 
-  frame_sink_remote_->InitializeCompositorFrameSinkType(
+  frame_sink_ = frame_sink_remote_.get();
+  frame_sink_->InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType::kLayerTree);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -94,7 +95,7 @@ bool FrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
   if (io_thread_id_ != base::kInvalidThreadId) {
     thread_ids.push_back(io_thread_id_);
   }
-  frame_sink_remote_->SetThreadIds(thread_ids);
+  frame_sink_->SetThreadIds(thread_ids);
 #endif
   return true;
 }
@@ -108,7 +109,7 @@ void FrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
     return;
   }
   needs_begin_frame_ = needs_begin_frame;
-  frame_sink_remote_->SetNeedsBeginFrame(needs_begin_frame);
+  frame_sink_->SetNeedsBeginFrame(needs_begin_frame);
 }
 
 void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
@@ -225,7 +226,7 @@ void FrameSinkImpl::OnBeginFrame(
   }
 
   if (!local_surface_id_.is_valid()) {
-    frame_sink_remote_->DidNotProduceFrame(
+    frame_sink_->DidNotProduceFrame(
         viz::BeginFrameAck(begin_frame_args, false));
     return;
   }
@@ -235,9 +236,17 @@ void FrameSinkImpl::OnBeginFrame(
   viz::HitTestRegionList hit_test_region_list;
   if (!client_->BeginFrame(begin_frame_args, frame, viz_resource_ids,
                            hit_test_region_list)) {
-    frame_sink_remote_->DidNotProduceFrame(
+    frame_sink_->DidNotProduceFrame(
         viz::BeginFrameAck(begin_frame_args, false));
     return;
+  }
+
+  if (local_surface_id_ == last_submitted_local_surface_id_) {
+    DCHECK_EQ(last_submitted_device_scale_factor_, frame.device_scale_factor());
+    DCHECK_EQ(last_submitted_size_in_pixels_.height(),
+              frame.size_in_pixels().height());
+    DCHECK_EQ(last_submitted_size_in_pixels_.width(),
+              frame.size_in_pixels().width());
   }
 
   resource_provider_.PrepareSendToParent(std::move(viz_resource_ids).extract(),
@@ -254,7 +263,7 @@ void FrameSinkImpl::OnBeginFrame(
 
   {
     TRACE_EVENT0("cc", "SubmitCompositorFrame");
-    frame_sink_remote_->SubmitCompositorFrame(
+    frame_sink_->SubmitCompositorFrame(
         local_surface_id_, std::move(frame),
         send_new_hit_test_region_list ? hit_test_region_list_ : absl::nullopt,
         0);

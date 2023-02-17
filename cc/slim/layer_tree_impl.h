@@ -32,6 +32,10 @@ namespace cc {
 class UIResourceManager;
 }  // namespace cc
 
+namespace viz {
+class CompositorRenderPass;
+}  // namespace viz
+
 namespace cc::slim {
 
 class FrameSinkImpl;
@@ -104,6 +108,15 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   // submitted in a CompositorFrame.
   void SetNeedsDraw();
   bool NeedsBeginFrames() const;
+  void GenerateCompositorFrame(
+      const viz::BeginFrameArgs& args,
+      viz::CompositorFrame& out_frame,
+      base::flat_set<viz::ResourceId>& out_resource_ids,
+      viz::HitTestRegionList& out_hit_test_region_list);
+  void Draw(Layer& layer,
+            viz::CompositorRenderPass& render_pass,
+            const gfx::Transform& transform_to_target,
+            const gfx::Rect* clip_from_parent);
 
   const raw_ptr<LayerTreeClient> client_;
   scoped_refptr<Layer> root_;
@@ -132,6 +145,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   SkColor4f background_color_ = SkColors::kWhite;
   absl::optional<float> top_controls_visible_height_;
   base::flat_set<viz::SurfaceRange> referenced_surfaces_;
+  viz::FrameTokenGenerator next_frame_token_;
+  gfx::OverlayTransform display_transform_hint_ = gfx::OVERLAY_TRANSFORM_NONE;
 
   base::WeakPtrFactory<LayerTreeImpl> weak_factory_{this};
 };
