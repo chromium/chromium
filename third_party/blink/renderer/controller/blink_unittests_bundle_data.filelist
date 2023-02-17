@@ -247,6 +247,9 @@
 ../../../../media/test/data/bear_audio_longer_than_video.ogv
 ../../../../media/test/data/bear_audio_shorter_than_video.ogv
 ../../../../media/test/data/bear_divx_mp3.avi
+../../../../media/test/data/bear_dtsc.mp4
+../../../../media/test/data/bear_dtse.mp4
+../../../../media/test/data/bear_dtsx.mp4
 ../../../../media/test/data/bear_gsm_ms.wav
 ../../../../media/test/data/bear_h264_aac.3gp
 ../../../../media/test/data/bear_mpeg4_amrnb.3gp
@@ -296,6 +299,7 @@
 ../../../../media/test/data/double-bear.ogv
 ../../../../media/test/data/double-sfx.ogg
 ../../../../media/test/data/dts.bin
+../../../../media/test/data/dtsx.bin
 ../../../../media/test/data/eme_and_get_display_media.html
 ../../../../media/test/data/eme_load_session_after_close_test.html
 ../../../../media/test/data/eme_player.html
