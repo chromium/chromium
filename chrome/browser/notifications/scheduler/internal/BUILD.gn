@@ -60,6 +60,8 @@ source_set("lib") {
     "webui_client.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   # This target should not depend on anything in //chrome/* except the proto library.
   deps = [
     "//base",

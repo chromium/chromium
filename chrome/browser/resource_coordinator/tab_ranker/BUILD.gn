@@ -21,6 +21,8 @@ source_set("tab_ranker") {
     "window_features.cc",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ "//base" ]
 
   deps = [

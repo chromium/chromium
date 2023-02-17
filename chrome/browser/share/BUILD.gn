@@ -20,6 +20,8 @@ source_set("share") {
     "share_ranking.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/browser/favicon",

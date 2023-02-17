@@ -18,6 +18,8 @@ source_set("announcement_notification") {
     "empty_announcement_notification_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   # TODO(xingliu): Move code depends on //chrome/browser out of this module.
   deps = [
     "//base",

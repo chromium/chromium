@@ -45,6 +45,8 @@ source_set("privacy_budget") {
     "surface_set_with_valuation.cc",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ ":headers" ]
 
   deps = [
