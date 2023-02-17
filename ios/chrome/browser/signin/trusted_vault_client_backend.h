@@ -7,6 +7,7 @@
 
 #include <UIKit/UIKit.h>
 
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -23,12 +24,21 @@ class TrustedVaultClientBackend : public KeyedService {
   using SharedKey = std::vector<uint8_t>;
   using SharedKeyList = std::vector<SharedKey>;
 
+  // A public key.
+  using PublicKey = std::vector<uint8_t>;
+
   // Represents the TrustedVaultClientBackend observers.
   using Observer = syncer::TrustedVaultClient::Observer;
 
   // Types for the different callbacks.
   using KeyFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
+
+  // Callback used to verify local device registration and log the result to
+  // UMA metrics. The first argument is the gaia ID and the second is the local
+  // client's public key.
+  using VerifierCallback =
+      base::OnceCallback<void(const std::string&, const PublicKey&)>;
 
   TrustedVaultClientBackend();
 
@@ -41,6 +51,12 @@ class TrustedVaultClientBackend : public KeyedService {
   // Adds/removes observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Registers a delegate-like callback that implements device registration
+  // verification.
+  // TODO(crbug.com/1416626): Make abstract once all implementations land.
+  virtual void SetDeviceRegistrationPublicKeyVerifierForUMA(
+      VerifierCallback verifier);
 
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
@@ -85,6 +101,12 @@ class TrustedVaultClientBackend : public KeyedService {
   // will not be called. If no reauthentication dialog is not present,
   // `callback` is called synchronously.
   virtual void CancelDialog(BOOL animated, ProceduralBlock callback) = 0;
+
+  // Clears local data belonging to `identity`, such as shared keys. This
+  // excludes the physical client's key pair, which remains unchanged.
+  // TODO(crbug.com/1416626): Make abstract once all implementations land.
+  virtual void ClearLocalData(id<SystemIdentity> identity,
+                              base::OnceCallback<void(bool)> callback);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_TRUSTED_VAULT_CLIENT_BACKEND_H_
