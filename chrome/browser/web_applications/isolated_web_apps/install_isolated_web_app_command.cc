@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
@@ -171,11 +172,9 @@ void InstallIsolatedWebAppCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_ = std::move(lock);
+  const PrefService& prefs =
+      *Profile::FromBrowserContext(&*browser_context_)->GetPrefs();
 
-  CheckTrustAndSignatures();
-}
-
-void InstallIsolatedWebAppCommand::CheckTrustAndSignatures() {
   absl::visit(
       base::Overloaded{
           [&](const InstalledBundle& location) {
@@ -186,11 +185,19 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignatures() {
           [&](const DevModeBundle& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
+            if (!IsIwaDevModeEnabled(prefs)) {
+              ReportFailure(kIwaDevModeNotEnabledMessage);
+              return;
+            }
             CheckTrustAndSignaturesOfBundle(location.path);
           },
           [&](const DevModeProxy& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kDevelopment);
+            if (!IsIwaDevModeEnabled(prefs)) {
+              ReportFailure(kIwaDevModeNotEnabledMessage);
+              return;
+            }
             // Dev mode proxy mode does not use Web Bundles, hence there is no
             // bundle to validate / trust and no signatures to check.
             OnTrustAndSignaturesChecked(absl::nullopt);

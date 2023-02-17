@@ -472,7 +472,8 @@ class IsolatedWebAppTestHarnessWithDirectSocketsEnabled
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   IsolatedWebAppTestHarnessWithDirectSocketsEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }
 
  private:

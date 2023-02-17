@@ -129,7 +129,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
                   std::map<GURL, std::vector<SkBitmap>> icons_map,
                   std::map<GURL, int /*http_status_code*/> icons_http_results);
 
-  void CheckTrustAndSignatures();
   void CheckTrustAndSignaturesOfBundle(const base::FilePath& path);
   void OnTrustAndSignaturesChecked(
       absl::optional<IsolatedWebAppResponseReaderFactory::Error> error);

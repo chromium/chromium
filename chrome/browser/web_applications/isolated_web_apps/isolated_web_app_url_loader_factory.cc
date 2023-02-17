@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
@@ -352,13 +353,34 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  auto forward_request_to_app_content =
-      [&](const IsolatedWebAppLocation& location) {
+  auto handle_request =
+      [&](const IsolatedWebAppLocation& location, bool is_pending_install) {
+        if (!absl::holds_alternative<InstalledBundle>(location)) {
+          const PrefService& prefs = *profile_->GetPrefs();
+          if (!IsIwaDevModeEnabled(prefs)) {
+            LogErrorAndFail(
+                base::StrCat({"Unable to load Isolated Web App that was "
+                              "installed in Developer Mode: ",
+                              kIwaDevModeNotEnabledMessage}),
+                std::move(loader_client));
+            return;
+          }
+        }
+
         if (!IsSupportedHttpMethod(resource_request.method)) {
           CompleteWithGeneratedHtmlResponse(
               mojo::Remote<network::mojom::URLLoaderClient>(
                   std::move(loader_client)),
               net::HTTP_METHOD_NOT_ALLOWED, /*body=*/absl::nullopt);
+          return;
+        }
+
+        if (is_pending_install &&
+            resource_request.url.path() == kInstallPagePath) {
+          CompleteWithGeneratedHtmlResponse(
+              mojo::Remote<network::mojom::URLLoaderClient>(
+                  std::move(loader_client)),
+              net::HTTP_OK, kInstallPageContent);
           return;
         }
 
@@ -380,7 +402,7 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                   // A Signed Web Bundle installed in dev mode is treated just
                   // like a properly installed Signed Web Bundle, with the only
                   // difference being that we implicitly trust its public
-                  // key(s).
+                  // key(s) when developer mode is enabled.
                   HandleSignedBundle(location.path, url_info->web_bundle_id(),
                                      std::move(loader_receiver),
                                      resource_request,
@@ -397,28 +419,17 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
             location);
       };
 
-  absl::optional<IsolatedWebAppLocation> pending_install_app_location =
-      absl::nullopt;
-
   if (frame_tree_node_id_.has_value()) {
-    pending_install_app_location =
+    absl::optional<IsolatedWebAppLocation> pending_install_app_location =
         IsolatedWebAppPendingInstallInfo::FromWebContents(
             *content::WebContents::FromFrameTreeNodeId(*frame_tree_node_id_))
             .location();
-  }
 
-  if (pending_install_app_location.has_value()) {
-    if (resource_request.url.path() == kInstallPagePath &&
-        IsSupportedHttpMethod(resource_request.method)) {
-      CompleteWithGeneratedHtmlResponse(
-          mojo::Remote<network::mojom::URLLoaderClient>(
-              std::move(loader_client)),
-          net::HTTP_OK, kInstallPageContent);
+    if (pending_install_app_location.has_value()) {
+      handle_request(*pending_install_app_location,
+                     /*is_pending_install=*/true);
       return;
     }
-
-    forward_request_to_app_content(*pending_install_app_location);
-    return;
   }
 
   base::expected<std::reference_wrapper<const WebApp>, std::string> iwa =
@@ -429,7 +440,8 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  forward_request_to_app_content(iwa->get().isolation_data()->location);
+  handle_request(iwa->get().isolation_data()->location,
+                 /*is_pending_install=*/false);
 }
 
 void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(

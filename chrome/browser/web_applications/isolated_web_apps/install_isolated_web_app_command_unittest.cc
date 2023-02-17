@@ -24,6 +24,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -47,12 +48,14 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -212,6 +215,8 @@ class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
 class InstallIsolatedWebAppCommandTest : public ::testing::Test {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
 
     auto command_manager_url_loader = std::make_unique<TestWebAppUrlLoader>();
@@ -343,6 +348,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
   //
   // See details in //docs/threading_and_tasks_testing.md.
   content::BrowserTaskEnvironment browser_task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TestingProfile> profile_ = []() {
     TestingProfile::Builder builder;
@@ -505,6 +511,17 @@ TEST_F(InstallIsolatedWebAppCommandTest,
                   .url_info = url_info,
               }),
               IsInstallationOk());
+}
+
+TEST_F(InstallIsolatedWebAppCommandTest,
+       InstallationFailsWhenDevModeIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebAppDevMode);
+
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
+              IsInstallationError(
+                  HasSubstr("Isolated Web App Developer Mode is not enabled")));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -1145,16 +1162,18 @@ class InstallIsolatedWebAppCommandBundleTest
       public ::testing::WithParamInterface<bool> {
  public:
   InstallIsolatedWebAppCommandBundleTest()
-      : location_(GetParam() ? IsolatedWebAppLocation(InstalledBundle{
-                                   .path = base::FilePath{FILE_PATH_LITERAL(
-                                       "/testing/path/to/a/bundle")},
-                               })
-                             : IsolatedWebAppLocation(DevModeBundle{
-                                   .path = base::FilePath{FILE_PATH_LITERAL(
-                                       "/testing/path/to/a/bundle")},
-                               })) {}
+      : is_dev_mode_(GetParam()),
+        location_(is_dev_mode_ ? IsolatedWebAppLocation(InstalledBundle{
+                                     .path = base::FilePath{FILE_PATH_LITERAL(
+                                         "/testing/path/to/a/bundle")},
+                                 })
+                               : IsolatedWebAppLocation(DevModeBundle{
+                                     .path = base::FilePath{FILE_PATH_LITERAL(
+                                         "/testing/path/to/a/bundle")},
+                                 })) {}
 
  protected:
+  bool is_dev_mode_;
   IsolatedWebAppLocation location_;
 };
 
@@ -1177,12 +1196,31 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, ErrorsOnBundleError) {
       IsInstallationError(HasSubstr("test error")));
 }
 
+TEST_P(InstallIsolatedWebAppCommandBundleTest,
+       DoesNotInstallDevModeBundleWhenDevModeIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebAppDevMode);
+
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+  auto installation_result =
+      ExecuteCommand(Parameters{.url_info = url_info,
+                                .location = location_,
+                                .bundle_error = absl::nullopt});
+  if (GetParam()) {
+    EXPECT_THAT(installation_result, IsInstallationOk());
+  } else {
+    EXPECT_THAT(installation_result,
+                IsInstallationError(HasSubstr(
+                    "Isolated Web App Developer Mode is not enabled")));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          InstallIsolatedWebAppCommandBundleTest,
                          ::testing::Bool(),
                          [](::testing::TestParamInfo<bool> param_info) {
-                           return param_info.param ? "InstalledBundle"
-                                                   : "DevModeBundle";
+                           return param_info.param ? "DevModeBundle"
+                                                   : "InstalledBundle";
                          });
 
 }  // namespace
