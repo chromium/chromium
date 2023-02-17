@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.offlinepages;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -97,7 +97,7 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
      */
     @VisibleForTesting
     static boolean startScheduledProcessing(BackgroundSchedulerProcessor bridge, Context context,
-            Bundle taskExtras, Callback<Boolean> callback) {
+            PersistableBundle taskExtras, Callback<Boolean> callback) {
         // Gather UMA data to measure how often the user's machine is amenable to background
         // loading when we wake to do a task.
         DeviceConditions deviceConditions = DeviceConditions.getCurrent(context);
@@ -106,7 +106,7 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
 
     /** @returns Whether conditions for running the tasks are met. */
     @VisibleForTesting
-    static boolean checkConditions(Context context, Bundle taskExtras) {
+    static boolean checkConditions(Context context, PersistableBundle taskExtras) {
         TriggerConditions triggerConditions =
                 TaskExtrasPacker.unpackTriggerConditionsFromBundle(taskExtras);
 

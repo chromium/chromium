@@ -5,7 +5,7 @@
 package org.chromium.components.background_task_scheduler;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -420,7 +420,7 @@ public class TaskInfo {
      * The extras to provide to the {@link BackgroundTask} when it is run.
      */
     @NonNull
-    private final Bundle mExtras;
+    private final PersistableBundle mExtras;
 
     /**
      * The type of network the task requires to run.
@@ -450,7 +450,7 @@ public class TaskInfo {
 
     private TaskInfo(Builder builder) {
         mTaskId = builder.mTaskId;
-        mExtras = builder.mExtras == null ? new Bundle() : builder.mExtras;
+        mExtras = builder.mExtras == null ? new PersistableBundle() : builder.mExtras;
         mRequiredNetworkType = builder.mRequiredNetworkType;
         mRequiresCharging = builder.mRequiresCharging;
         mIsPersisted = builder.mIsPersisted;
@@ -469,7 +469,7 @@ public class TaskInfo {
      * @return the extras that will be provided to the {@link BackgroundTask}.
      */
     @NonNull
-    public Bundle getExtras() {
+    public PersistableBundle getExtras() {
         return mExtras;
     }
 
@@ -652,7 +652,7 @@ public class TaskInfo {
     public static final class Builder {
         private final int mTaskId;
 
-        private Bundle mExtras;
+        private PersistableBundle mExtras;
         @NetworkType
         private int mRequiredNetworkType;
         private boolean mRequiresCharging;
@@ -678,7 +678,7 @@ public class TaskInfo {
          * @param bundle the bundle of extra values necessary for this task.
          * @return this {@link Builder}.
          */
-        public Builder setExtras(Bundle bundle) {
+        public Builder setExtras(PersistableBundle bundle) {
             mExtras = bundle;
             return this;
         }

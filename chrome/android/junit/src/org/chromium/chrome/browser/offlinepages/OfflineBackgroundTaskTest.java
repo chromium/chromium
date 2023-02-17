@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.junit.After;
 import org.junit.Before;
@@ -64,7 +64,7 @@ public class OfflineBackgroundTaskTest {
     private static final boolean SCREEN_ON_AND_UNLOCKED = true;
     private static final int MINIMUM_BATTERY_LEVEL = 33;
 
-    private Bundle mTaskExtras;
+    private PersistableBundle mTaskExtras;
     private long mTestTime;
     private TriggerConditions mTriggerConditions =
             new TriggerConditions(!REQUIRE_POWER, MINIMUM_BATTERY_LEVEL, REQUIRE_UNMETERED);
@@ -99,7 +99,7 @@ public class OfflineBackgroundTaskTest {
         BackgroundSchedulerProcessor.setInstanceForTesting(mBackgroundSchedulerProcessor);
 
         // Build a bundle with trigger conditions.
-        mTaskExtras = new Bundle();
+        mTaskExtras = new PersistableBundle();
         TaskExtrasPacker.packTimeInBundle(mTaskExtras);
         TaskExtrasPacker.packTriggerConditionsInBundle(mTaskExtras, mTriggerConditions);
 

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.download.service;
 
-import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.format.DateUtils;
 
 import org.chromium.base.ContextUtils;
@@ -33,7 +33,7 @@ public class DownloadTaskScheduler {
     private static void scheduleTask(@DownloadTaskType int taskType,
             boolean requiresUnmeteredNetwork, boolean requiresCharging,
             int optimalBatteryPercentage, long windowStartTimeSeconds, long windowEndTimeSeconds) {
-        Bundle bundle = new Bundle();
+        PersistableBundle bundle = new PersistableBundle();
         bundle.putInt(EXTRA_TASK_TYPE, taskType);
         bundle.putInt(EXTRA_OPTIMAL_BATTERY_PERCENTAGE, optimalBatteryPercentage);
         bundle.putBoolean(EXTRA_BATTERY_REQUIRES_CHARGING, requiresCharging);

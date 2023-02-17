@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.background_sync;
 
-import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
@@ -136,7 +136,7 @@ public class BackgroundSyncBackgroundTaskScheduler {
     @CalledByNative
     protected boolean scheduleOneOffTask(@BackgroundSyncTask int taskType, long minDelayMs) {
         // Pack SOONEST_EXPECTED_WAKETIME in extras.
-        Bundle taskExtras = new Bundle();
+        PersistableBundle taskExtras = new PersistableBundle();
         taskExtras.putLong(SOONEST_EXPECTED_WAKETIME, System.currentTimeMillis() + minDelayMs);
 
         // We setWindowEndTime to Long.MAX_VALUE to wait a long time for network connectivity,

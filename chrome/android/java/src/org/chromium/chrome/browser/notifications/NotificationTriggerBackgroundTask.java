@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.notifications;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -72,7 +72,7 @@ public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
      * @param delay The delay from now in milliseconds when this task should trigger.
      */
     public static void schedule(long timestamp, long delay) {
-        Bundle bundle = new Bundle();
+        PersistableBundle bundle = new PersistableBundle();
         bundle.putLong(KEY_TIMESTAMP, timestamp);
         TaskInfo.TimingInfo exactInfo =
                 TaskInfo.ExactInfo.create().setTriggerAtMs(timestamp).build();

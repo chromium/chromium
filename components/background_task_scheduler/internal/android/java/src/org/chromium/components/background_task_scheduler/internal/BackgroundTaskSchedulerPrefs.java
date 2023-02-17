@@ -6,7 +6,7 @@ package org.chromium.components.background_task_scheduler.internal;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Base64;
 
 import androidx.annotation.VisibleForTesting;
@@ -51,13 +51,13 @@ public class BackgroundTaskSchedulerPrefs {
 
     private static class ScheduledTaskProtoVisitor implements TaskInfo.TimingInfoVisitor {
         private String mSerializedScheduledTask;
-        private final Bundle mExtras;
+        private final PersistableBundle mExtras;
         @TaskInfo.NetworkType
         private final int mRequiredNetworkType;
         private final boolean mRequiresCharging;
 
-        ScheduledTaskProtoVisitor(Bundle extras, @TaskInfo.NetworkType int requiredNetworkType,
-                boolean requiresCharging) {
+        ScheduledTaskProtoVisitor(PersistableBundle extras,
+                @TaskInfo.NetworkType int requiredNetworkType, boolean requiresCharging) {
             mExtras = extras;
             mRequiredNetworkType = requiredNetworkType;
             mRequiresCharging = requiresCharging;

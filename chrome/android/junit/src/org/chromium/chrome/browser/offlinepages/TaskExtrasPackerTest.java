@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +24,7 @@ public class TaskExtrasPackerTest {
     @Test
     @Feature({"OfflinePages"})
     public void testScheduledTimeExtra() {
-        Bundle taskExtras = new Bundle();
+        PersistableBundle taskExtras = new PersistableBundle();
         long beforeMillis = System.currentTimeMillis();
         TaskExtrasPacker.packTimeInBundle(taskExtras);
         long afterMillis = System.currentTimeMillis();
@@ -36,7 +36,7 @@ public class TaskExtrasPackerTest {
     @Test
     @Feature({"OfflinePages"})
     public void testTriggerConditionsExtra() {
-        Bundle taskExtras = new Bundle();
+        PersistableBundle taskExtras = new PersistableBundle();
         TriggerConditions conditions1 = new TriggerConditions(true, 25, false);
         TaskExtrasPacker.packTriggerConditionsInBundle(taskExtras, conditions1);
         TriggerConditions unpackedConditions1 =
@@ -54,7 +54,7 @@ public class TaskExtrasPackerTest {
     @Feature({"OfflinePages"})
     public void testTriggerConditionsExtraDefaults() {
         TriggerConditions unpackedConditionsFromEmptyBundle =
-                TaskExtrasPacker.unpackTriggerConditionsFromBundle(new Bundle());
+                TaskExtrasPacker.unpackTriggerConditionsFromBundle(new PersistableBundle());
 
         // Verify conservative defaults:
         assertTrue(unpackedConditionsFromEmptyBundle.requirePowerConnected());

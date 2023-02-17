@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.offlinepages.prefetch;
 
-import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.format.DateUtils;
 
 import org.chromium.base.ContextUtils;
@@ -62,7 +62,7 @@ public class PrefetchBackgroundTaskScheduler {
          */
         if (limitlessPrefetching) {
             taskInfoBuilder.setRequiredNetworkType(TaskInfo.NetworkType.ANY);
-            Bundle bundle = new Bundle(1);
+            PersistableBundle bundle = new PersistableBundle(1);
             bundle.putBoolean(PrefetchBackgroundTask.LIMITLESS_BUNDLE_KEY, true);
             taskInfoBuilder.setExtras(bundle);
         }

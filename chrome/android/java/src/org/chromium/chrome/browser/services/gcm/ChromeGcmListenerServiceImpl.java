@@ -143,10 +143,18 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
      * delayed by Android if the device is currently in doze mode.
      */
     private static void scheduleBackgroundTask(GCMMessage message) {
+        BundleToPersistableBundleConverter.Result convertedData =
+                BundleToPersistableBundleConverter.convert(message.toBundle());
+        if (convertedData.hasErrors()) {
+            Log.w(TAG,
+                    "Failed converting extras to PersistableBundle: "
+                            + convertedData.getFailedKeysErrorString());
+        }
+
         // TODO(peter): Add UMA for measuring latency introduced by the BackgroundTaskScheduler.
         TaskInfo backgroundTask =
                 TaskInfo.createOneOffTask(TaskIds.GCM_BACKGROUND_TASK_JOB_ID, 0 /* immediately */)
-                        .setExtras(message.toBundle())
+                        .setExtras(convertedData.getPersistableBundle())
                         .build();
         BackgroundTaskSchedulerFactory.getScheduler().schedule(
                 ContextUtils.getApplicationContext(), backgroundTask);

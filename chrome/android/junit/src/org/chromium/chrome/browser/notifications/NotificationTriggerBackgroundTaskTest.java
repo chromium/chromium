@@ -14,7 +14,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.junit.After;
 import org.junit.Before;
@@ -64,7 +64,7 @@ public class NotificationTriggerBackgroundTaskTest {
     }
 
     private static TaskParameters createTaskParameters(long timestamp) {
-        Bundle extras = new Bundle();
+        PersistableBundle extras = new PersistableBundle();
         extras.putLong(NotificationTriggerBackgroundTask.KEY_TIMESTAMP, timestamp);
         return TaskParameters.create(TaskIds.NOTIFICATION_TRIGGER_JOB_ID).addExtras(extras).build();
     }

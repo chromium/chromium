@@ -104,7 +104,6 @@ if (is_android) {
     sources = [
       "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerImplWithMockTest.java",
       "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerJobServiceTest.java",
-      "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BundleToPersistableBundleConverterTest.java",
       "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/MockBackgroundTaskSchedulerDelegate.java",
       "internal/android/junit/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskJobServiceTest.java",
       "internal/android/junit/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerAlarmManagerTest.java",

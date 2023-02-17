@@ -9,7 +9,6 @@ import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.Bundle;
 import android.os.PersistableBundle;
 
 import androidx.annotation.VisibleForTesting;
@@ -96,7 +95,7 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
         PersistableBundle persistableTaskExtras =
                 jobExtras.getPersistableBundle(BACKGROUND_TASK_EXTRAS_KEY);
 
-        Bundle taskExtras = new Bundle();
+        PersistableBundle taskExtras = new PersistableBundle();
         taskExtras.putAll(persistableTaskExtras);
         builder.addExtras(taskExtras);
 
@@ -107,7 +106,7 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
     static JobInfo createJobInfoFromTaskInfo(Context context, TaskInfo taskInfo) {
         PersistableBundle jobExtras = new PersistableBundle();
 
-        PersistableBundle persistableBundle = getTaskExtrasAsPersistableBundle(taskInfo);
+        PersistableBundle persistableBundle = taskInfo.getExtras();
         jobExtras.putPersistableBundle(BACKGROUND_TASK_EXTRAS_KEY, persistableBundle);
 
         JobInfo.Builder builder =
@@ -190,18 +189,6 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
             @TaskInfo.NetworkType int networkType) {
         // The values are hard coded to represent the same as the network type from JobService.
         return networkType;
-    }
-
-    private static PersistableBundle getTaskExtrasAsPersistableBundle(TaskInfo taskInfo) {
-        Bundle taskExtras = taskInfo.getExtras();
-        BundleToPersistableBundleConverter.Result convertedData =
-                BundleToPersistableBundleConverter.convert(taskExtras);
-        if (convertedData.hasErrors()) {
-            Log.w(TAG,
-                    "Failed converting extras to PersistableBundle: "
-                            + convertedData.getFailedKeysErrorString());
-        }
-        return convertedData.getPersistableBundle();
     }
 
     @Override

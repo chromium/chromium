@@ -5,7 +5,6 @@
 package org.chromium.components.background_task_scheduler.internal;
 
 import android.app.job.JobInfo;
-import android.os.Bundle;
 import android.os.PersistableBundle;
 
 import org.junit.Assert;
@@ -132,7 +131,7 @@ public class BackgroundTaskSchedulerJobServiceTest {
 
     @Test
     public void testTaskInfoWithExtras() {
-        Bundle taskExtras = new Bundle();
+        PersistableBundle taskExtras = new PersistableBundle();
         taskExtras.putString("foo", "bar");
         taskExtras.putBoolean("bools", true);
         taskExtras.putLong("longs", 1342543L);

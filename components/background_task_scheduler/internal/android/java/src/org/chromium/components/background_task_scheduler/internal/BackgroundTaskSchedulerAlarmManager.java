@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -48,7 +49,7 @@ public class BackgroundTaskSchedulerAlarmManager implements BackgroundTaskSchedu
             return null;
         }
 
-        Bundle taskExtras =
+        PersistableBundle taskExtras =
                 ExtrasToProtoConverter.convertProtoExtrasToExtras(scheduledTask.getExtrasList());
         if (taskExtras == null) {
             Log.e(TAG, "Cannot get extras data for task ID " + taskId);

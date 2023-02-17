@@ -19,7 +19,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerJobService.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerPrefs.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerUma.java",
-      "android/java/src/org/chromium/components/background_task_scheduler/internal/BundleToPersistableBundleConverter.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/ExtrasToProtoConverter.java",
     ]
 

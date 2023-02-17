@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.background_task_scheduler.internal;
+package org.chromium.chrome.browser.services.gcm;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -12,16 +12,7 @@ import androidx.annotation.NonNull;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Converts from {@link Bundle} to {@link PersistableBundle}.
- *
- * The {@link android.app.job.JobScheduler} API requires the use of {@link PersistableBundle} in
- * the {@link android.app.job.JobInfo}, but that was added in API 21 (Lollipop). A later change
- * related to booleans means that this class required API 22 (Lollipop MR1).
- * the API of the {@link BackgroundTaskScheduler} needs to take a {@link Bundle}, but convert it to
- * a {@link PersistableBundle} in the case of using {@link android.app.job.JobScheduler} as the
- * backend for scheduling.
- */
+/** Converts from {@link Bundle} to {@link PersistableBundle}. */
 class BundleToPersistableBundleConverter {
     /**
      * A Result which contains the resulting {@link PersistableBundle} after a conversion, and also

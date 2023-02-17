@@ -4,7 +4,7 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.chromium.base.Log;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Converts the extras from {@link Bundle} to the specific proto representation in
+ * Converts the extras from {@link PersistableBundle} to the specific proto representation in
  * {@link ScheduledTaskProto.ScheduledTask}.
  */
 public final class ExtrasToProtoConverter {
@@ -21,15 +21,15 @@ public final class ExtrasToProtoConverter {
     private ExtrasToProtoConverter() {}
 
     /**
-     * Converts information stored in a {@link Bundle} to its proto buffer representation to be
-     * stored by {@link BackgroundTaskSchedulerPrefs}. In case null values are passed, they are
-     * stored as null Strings.
+     * Converts information stored in a {@link PersistableBundle} to its proto buffer representation
+     * to be stored by {@link BackgroundTaskSchedulerPrefs}. In case null values are passed, they
+     * are stored as null Strings.
      *
      * @param extras the extras stored for the {@link BackgroundTask}.
      * @return a list of proto messages representing each extra.
      */
     static List<ScheduledTaskProto.ScheduledTask.ExtraItem> convertExtrasToProtoExtras(
-            Bundle extras) {
+            PersistableBundle extras) {
         List<ScheduledTaskProto.ScheduledTask.ExtraItem> protoExtras = new ArrayList<>();
 
         for (String key : extras.keySet()) {
@@ -121,16 +121,16 @@ public final class ExtrasToProtoConverter {
     }
 
     /**
-     * Converts information stored in the proto buffer to a {@link Bundle} to be used by the
-     * {@link BackgroundTask}.
+     * Converts information stored in the proto buffer to a {@link PersistableBundle} to be used by
+     * the {@link BackgroundTask}.
      *
      * @param protoExtras list of {@link ScheduledTaskProto.ScheduledTask.ExtraItem} objects that
      * store the extras for the {@link BackgroundTask}.
-     * @return a {@link Bundle} object with all the extras.
+     * @return a {@link PersistableBundle} object with all the extras.
      */
-    static Bundle convertProtoExtrasToExtras(
+    static PersistableBundle convertProtoExtrasToExtras(
             List<ScheduledTaskProto.ScheduledTask.ExtraItem> protoExtras) {
-        Bundle extras = new Bundle();
+        PersistableBundle extras = new PersistableBundle();
 
         for (ScheduledTaskProto.ScheduledTask.ExtraItem protoExtra : protoExtras) {
             List<ScheduledTaskProto.ScheduledTask.ExtraItem.ExtraValue> protoValues =

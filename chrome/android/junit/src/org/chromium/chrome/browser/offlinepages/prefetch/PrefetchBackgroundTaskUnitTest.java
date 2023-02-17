@@ -15,7 +15,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -227,7 +227,7 @@ public class PrefetchBackgroundTaskUnitTest {
     @Test
     public void createNativeTaskLimitless() {
         final ArrayList<Boolean> reschedules = new ArrayList<>();
-        Bundle extrasBundle = new Bundle();
+        PersistableBundle extrasBundle = new PersistableBundle();
         extrasBundle.putBoolean(PrefetchBackgroundTask.LIMITLESS_BUNDLE_KEY, true);
         TaskParameters params = TaskParameters.create(TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID)
                                         .addExtras(extrasBundle)
@@ -330,7 +330,7 @@ public class PrefetchBackgroundTaskUnitTest {
         ShadowDeviceConditions.setCurrentConditions(deviceConditionsNoNetwork);
 
         // Check impact on starting before native loaded.
-        Bundle extrasBundle = new Bundle();
+        PersistableBundle extrasBundle = new PersistableBundle();
         extrasBundle.putBoolean(PrefetchBackgroundTask.LIMITLESS_BUNDLE_KEY, true);
         TaskParameters params = TaskParameters.create(TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID)
                                         .addExtras(extrasBundle)

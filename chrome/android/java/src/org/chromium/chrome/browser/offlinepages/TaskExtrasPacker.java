@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 /**
  * Class to put our custom task information into the task bundle.
@@ -19,24 +19,25 @@ public class TaskExtrasPacker {
     private static final String UNMETERED_NETWORK_TAG = "UnmeteredNetwork";
 
     /** Puts current time into the input bundle. */
-    public static void packTimeInBundle(Bundle bundle) {
+    public static void packTimeInBundle(PersistableBundle bundle) {
         bundle.putLong(SCHEDULED_TIME_TAG, System.currentTimeMillis());
     }
 
     /** Extracts the time we put into the bundle. */
-    public static long unpackTimeFromBundle(Bundle bundle) {
+    public static long unpackTimeFromBundle(PersistableBundle bundle) {
         return bundle.getLong(SCHEDULED_TIME_TAG);
     }
 
     /** Puts trigger conditions into the input bundle. */
-    public static void packTriggerConditionsInBundle(Bundle bundle, TriggerConditions conditions) {
+    public static void packTriggerConditionsInBundle(
+            PersistableBundle bundle, TriggerConditions conditions) {
         bundle.putBoolean(POWER_CONNECTED_TAG, conditions.requirePowerConnected());
         bundle.putInt(BATTERY_PERCENTAGE_TAG, conditions.getMinimumBatteryPercentage());
         bundle.putBoolean(UNMETERED_NETWORK_TAG, conditions.requireUnmeteredNetwork());
     }
 
     /** Extracts the trigger conditions we put into the bundle. */
-    public static TriggerConditions unpackTriggerConditionsFromBundle(Bundle bundle) {
+    public static TriggerConditions unpackTriggerConditionsFromBundle(PersistableBundle bundle) {
         boolean requirePowerConnected = bundle.getBoolean(POWER_CONNECTED_TAG, true);
         int minimumBatteryPercentage = bundle.getInt(BATTERY_PERCENTAGE_TAG, 100);
         boolean requireUnmeteredNetwork = bundle.getBoolean(UNMETERED_NETWORK_TAG, true);

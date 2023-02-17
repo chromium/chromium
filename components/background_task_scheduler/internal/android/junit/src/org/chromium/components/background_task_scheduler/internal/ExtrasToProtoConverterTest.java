@@ -7,7 +7,7 @@ package org.chromium.components.background_task_scheduler.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +54,7 @@ public class ExtrasToProtoConverterTest {
     @Feature({"BackgroundTaskScheduler"})
     public void testBundleToProtoAndBack() {
         // Construct Bundle object to store extras.
-        Bundle extras = new Bundle();
+        PersistableBundle extras = new PersistableBundle();
 
         extras.putBoolean(BOOLEAN_KEY, BOOLEAN_VALUE);
         extras.putBooleanArray(BOOLEAN_ARRAY_KEY, BOOLEAN_ARRAY_VALUE);
@@ -82,7 +82,8 @@ public class ExtrasToProtoConverterTest {
         checkExtrasToProtoConversion(protoExtras);
 
         // Convert proto representation to extras.
-        Bundle convertedExtras = ExtrasToProtoConverter.convertProtoExtrasToExtras(protoExtras);
+        PersistableBundle convertedExtras =
+                ExtrasToProtoConverter.convertProtoExtrasToExtras(protoExtras);
 
         // Check conversion.
         checkProtoToExtrasConversion(extras, convertedExtras);
@@ -201,7 +202,8 @@ public class ExtrasToProtoConverterTest {
                         .build()));
     }
 
-    static void checkProtoToExtrasConversion(Bundle expectedExtras, Bundle actualExtras) {
+    static void checkProtoToExtrasConversion(
+            PersistableBundle expectedExtras, PersistableBundle actualExtras) {
         assertEquals(expectedExtras.keySet().size(), actualExtras.keySet().size());
         assertEquals(expectedExtras.getBoolean(BOOLEAN_KEY), actualExtras.getBoolean(BOOLEAN_KEY));
         boolean[] expectedB = expectedExtras.getBooleanArray(BOOLEAN_ARRAY_KEY);
