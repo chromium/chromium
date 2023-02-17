@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -17,6 +18,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_control_buttons_view.h"
 
 namespace ash {
 
@@ -85,6 +87,37 @@ class AshNotificationViewPixelTestBase : public AshTestBase {
  private:
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
+
+// Tests that a notification's close button is visible when it is focused.
+TEST_F(AshNotificationViewPixelTestBase, CloseButtonFocused) {
+  // Create a notification and open the notification center bubble to view it.
+  const auto id = test_api()->AddNotification();
+  test_api()->ToggleBubble();
+
+  // Verify that the close button is neither focused nor visible. Note that the
+  // close button, as a `views::ImageButton`, will actually be visible in the
+  // sense of `views::View::GetVisible()`, but its parent's `ui::Layer` will
+  // have an opacity of zero, making it visually invisible.
+  auto* notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+  auto* control_buttons_layer =
+      notification_view->GetControlButtonsView()->layer();
+  auto* close_button =
+      notification_view->GetControlButtonsView()->close_button();
+  EXPECT_EQ(control_buttons_layer->opacity(), 0);
+  EXPECT_FALSE(close_button->HasFocus());
+
+  // Move focus to the close button.
+  close_button->GetWidget()->widget_delegate()->SetCanActivate(true);
+  close_button->RequestFocus();
+
+  // Verify, with both an assertion and a pixel test, that the close button has
+  // focus and is visible.
+  EXPECT_TRUE(close_button->HasFocus());
+  EXPECT_EQ(control_buttons_layer->opacity(), 1);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "close_button_focused", 0u, notification_view));
+}
 
 class AshNotificationViewTitlePixelTest
     : public AshNotificationViewPixelTestBase,

@@ -292,6 +292,8 @@ BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
 END_METADATA
 
 void AshNotificationView::AddedToWidget() {
+  MessageView::AddedToWidget();
+
   // crbug/1337661: We need to abort animations in a grouped parent view when
   // it's widget is being destroyed. By default when a widget is destroyed, all
   // current animations are forced to finish. The grouped notification removal
