@@ -5,7 +5,6 @@ include_rules = [
     "+include",
     "+knowledge",
     "+lib",
-    "+libutf",
     "+pybind11",
     "+re2",
     "+src",

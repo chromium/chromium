@@ -139,7 +139,6 @@ static_library("tflite_support") {
     "//third_party/tflite",
     "//third_party/tflite:tflite-config-proto",
     "//third_party/tflite:tflite_public_headers",
-    "//third_party/utf",
     "//third_party/zlib:minizip",
   ]
 
