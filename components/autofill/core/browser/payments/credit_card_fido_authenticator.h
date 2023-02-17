@@ -228,6 +228,13 @@ class CreditCardFidoAuthenticator
       blink::mojom::MakeCredentialAuthenticatorResponsePtr
           attestation_response);
 
+  // Returns true if |request_options| contains a challenge and has a non-empty
+  // list of keys that each have a Credential ID.
+  bool IsValidRequestOptions(const base::Value::Dict& request_options);
+
+  // Returns true if |request_options| contains a challenge.
+  bool IsValidCreationOptions(const base::Value::Dict& creation_options);
+
   // Logs the result of a WebAuthn prompt.
   void LogWebauthnResult(blink::mojom::AuthenticatorStatus status);
 
