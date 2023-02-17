@@ -915,6 +915,9 @@ crbug.com/1142958 external/wpt/layout-instability/absolute-child-shift-with-pare
 
 crbug.com/922249 virtual/android/fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure Pass ]
 
+# Fractional paint offsets lead to 1px bleed with position sticky.
+crbug.com/1136079 external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
+
 # ====== Layout team owned tests from here ======
 
 crbug.com/711704 external/wpt/css/CSS2/floats/floats-rule3-outside-left-002.xht [ Failure ]
