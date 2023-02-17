@@ -166,7 +166,6 @@ class NET_EXPORT CertVerifyProc
   //
   // * ocsp_result
   // * has_sha1
-  // * has_sha1_leaf
   //
   // which will be filled in by |Verify()|. If an error code is returned,
   // |verify_result->cert_status| should be non-zero, indicating an

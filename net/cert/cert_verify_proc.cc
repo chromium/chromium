@@ -363,8 +363,6 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
     return false;
   }
 
-  verify_result->has_sha1_leaf = verify_result->has_sha1;
-
   // Fill in hash algorithms for the intermediate cerificates, excluding the
   // final one (which is presumably the trust anchor; may be incorrect for
   // partial chains).
@@ -560,16 +558,9 @@ int CertVerifyProc::Verify(X509Certificate* cert,
     verify_result->cert_status |= CERT_STATUS_SHA1_SIGNATURE_PRESENT;
 
   // Flag certificates using weak signature algorithms.
-
-  // Current SHA-1 behaviour:
-  // - Reject all SHA-1
-  // - ... unless it's not publicly trusted and SHA-1 is allowed
-  bool current_sha1_issue =
-      (verify_result->is_issued_by_known_root ||
-       !(flags & VERIFY_ENABLE_SHA1_LOCAL_ANCHORS)) &&
-      (verify_result->has_sha1_leaf || verify_result->has_sha1);
-
-  if (current_sha1_issue) {
+  bool sha1_allowed = (flags & VERIFY_ENABLE_SHA1_LOCAL_ANCHORS) &&
+                      !verify_result->is_issued_by_known_root;
+  if (!sha1_allowed && verify_result->has_sha1) {
     verify_result->cert_status |= CERT_STATUS_WEAK_SIGNATURE_ALGORITHM;
     // Avoid replacing a more serious error, such as an OS/library failure,
     // by ensuring that if verification failed, it failed with a certificate

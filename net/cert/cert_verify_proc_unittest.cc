@@ -5812,14 +5812,13 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, UnknownExtension) {
   }
 }
 
-TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
+TEST(CertVerifyProcTest, RejectsPublicSHA1) {
   scoped_refptr<X509Certificate> cert(
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(cert);
 
   CertVerifyResult result;
   result.has_sha1 = true;
-  result.has_sha1_leaf = true;
   result.is_issued_by_known_root = true;
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
@@ -5831,22 +5830,11 @@ TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
       CertificateList(), &verify_result, NetLogWithSource());
   EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
-}
 
-TEST(CertVerifyProcTest, RejectsPublicSHA1Intermediates) {
-  scoped_refptr<X509Certificate> cert(ImportCertFromFile(
-      GetTestCertsDirectory(), "39_months_after_2015_04.pem"));
-  ASSERT_TRUE(cert);
-
-  CertVerifyResult result;
-  result.has_sha1 = true;
-  result.has_sha1_leaf = false;
-  result.is_issued_by_known_root = true;
-  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  int error = verify_proc->Verify(
+  // VERIFY_ENABLE_SHA1_LOCAL_ANCHORS should not impact this.
+  flags = CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS;
+  verify_result.Reset();
+  error = verify_proc->Verify(
       cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
       CertificateList(), &verify_result, NetLogWithSource());
@@ -5861,7 +5849,6 @@ TEST(CertVerifyProcTest, RejectsPrivateSHA1UnlessFlag) {
 
   CertVerifyResult result;
   result.has_sha1 = true;
-  result.has_sha1_leaf = true;
   result.is_issued_by_known_root = false;
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
@@ -5888,8 +5875,7 @@ TEST(CertVerifyProcTest, RejectsPrivateSHA1UnlessFlag) {
 
 enum ExpectedAlgorithms {
   EXPECT_SHA1 = 1 << 0,
-  EXPECT_SHA1_LEAF = 1 << 2,
-  EXPECT_STATUS_INVALID = 1 << 3,
+  EXPECT_STATUS_INVALID = 1 << 1,
 };
 
 struct WeakDigestTestData {
@@ -5969,8 +5955,6 @@ TEST_P(CertVerifyProcWeakDigestTest, VerifyDetectsAlgorithm) {
                            CRLSet::BuiltinCRLSet().get(), CertificateList(),
                            &verify_result, NetLogWithSource());
   EXPECT_EQ(!!(data.expected_algorithms & EXPECT_SHA1), verify_result.has_sha1);
-  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_SHA1_LEAF),
-            verify_result.has_sha1_leaf);
   EXPECT_EQ(!!(data.expected_algorithms & EXPECT_STATUS_INVALID),
             !!(verify_result.cert_status & CERT_STATUS_INVALID));
   EXPECT_EQ(!!(data.expected_algorithms & EXPECT_STATUS_INVALID),
@@ -5980,11 +5964,11 @@ TEST_P(CertVerifyProcWeakDigestTest, VerifyDetectsAlgorithm) {
 // The signature algorithm of the root CA should not matter.
 const WeakDigestTestData kVerifyRootCATestData[] = {
     {"weak_digest_md5_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem", EXPECT_SHA1},
     {"weak_digest_md4_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem", EXPECT_SHA1},
     {"weak_digest_md2_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem", EXPECT_SHA1},
 };
 INSTANTIATE_TEST_SUITE_P(VerifyRoot,
                          CertVerifyProcWeakDigestTest,
@@ -5993,14 +5977,11 @@ INSTANTIATE_TEST_SUITE_P(VerifyRoot,
 // The signature algorithm of intermediates should be properly detected.
 const WeakDigestTestData kVerifyIntermediateCATestData[] = {
     {"weak_digest_sha1_root.pem", "weak_digest_md5_intermediate.pem",
-     "weak_digest_sha1_ee.pem",
-     EXPECT_STATUS_INVALID | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem", EXPECT_STATUS_INVALID | EXPECT_SHA1},
     {"weak_digest_sha1_root.pem", "weak_digest_md4_intermediate.pem",
-     "weak_digest_sha1_ee.pem",
-     EXPECT_STATUS_INVALID | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem", EXPECT_STATUS_INVALID | EXPECT_SHA1},
     {"weak_digest_sha1_root.pem", "weak_digest_md2_intermediate.pem",
-     "weak_digest_sha1_ee.pem",
-     EXPECT_STATUS_INVALID | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem", EXPECT_STATUS_INVALID | EXPECT_SHA1},
 };
 
 INSTANTIATE_TEST_SUITE_P(VerifyIntermediate,
@@ -6028,11 +6009,11 @@ INSTANTIATE_TEST_SUITE_P(VerifyEndEntity,
 // this intermediate is treated like a trust anchor.
 const WeakDigestTestData kVerifyIncompleteIntermediateTestData[] = {
     {nullptr, "weak_digest_md5_intermediate.pem", "weak_digest_sha1_ee.pem",
-     EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     EXPECT_SHA1},
     {nullptr, "weak_digest_md4_intermediate.pem", "weak_digest_sha1_ee.pem",
-     EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     EXPECT_SHA1},
     {nullptr, "weak_digest_md2_intermediate.pem", "weak_digest_sha1_ee.pem",
-     EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     EXPECT_SHA1},
 };
 
 INSTANTIATE_TEST_SUITE_P(
