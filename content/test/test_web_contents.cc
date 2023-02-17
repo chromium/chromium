@@ -460,10 +460,9 @@ int TestWebContents::AddPrerender(const GURL& url) {
   return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
       url, PrerenderTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"", Referrer(),
-      rfhi->GetLastCommittedOrigin(), rfhi->GetLastCommittedURL(),
-      rfhi->GetProcess()->GetID(), GetWeakPtr(), rfhi->GetFrameToken(),
-      rfhi->GetFrameTreeNodeId(), rfhi->GetPageUkmSourceId(),
-      ui::PAGE_TRANSITION_LINK,
+      rfhi->GetLastCommittedOrigin(), rfhi->GetProcess()->GetID(), GetWeakPtr(),
+      rfhi->GetFrameToken(), rfhi->GetFrameTreeNodeId(),
+      rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/absl::nullopt));
 }
 

@@ -95,11 +95,10 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     return PrerenderAttributes(
         url, PrerenderTriggerType::kSpeculationRule,
         /*embedder_histogram_suffix=*/"", Referrer(),
-        rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
-        rfh->GetProcess()->GetID(), contents()->GetWeakPtr(),
-        rfh->GetFrameToken(), rfh->GetFrameTreeNodeId(),
-        rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-        std::move(url_match_predicate));
+        rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),
+        contents()->GetWeakPtr(), rfh->GetFrameToken(),
+        rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
+        ui::PAGE_TRANSITION_LINK, std::move(url_match_predicate));
   }
 
   void ExpectFinalStatus(PrerenderFinalStatus status) {

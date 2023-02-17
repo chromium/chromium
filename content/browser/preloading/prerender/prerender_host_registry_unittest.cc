@@ -196,10 +196,10 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     if (trigger_type == PrerenderTriggerType::kSpeculationRule) {
       return PrerenderAttributes(
           url, trigger_type, embedder_histogram_suffix, Referrer(),
-          rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
-          rfh->GetProcess()->GetID(), contents()->GetWeakPtr(),
-          rfh->GetFrameToken(), rfh->GetFrameTreeNodeId(),
-          rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+          rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),
+          contents()->GetWeakPtr(), rfh->GetFrameToken(),
+          rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
+          ui::PAGE_TRANSITION_LINK,
           /*url_match_predicate=*/absl::nullopt);
     } else {
       // TODO(https://crbug.com/1325211): remove initiator_origin and
@@ -208,7 +208,6 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
       return PrerenderAttributes(
           url, trigger_type, embedder_histogram_suffix, Referrer(),
           /*initiator_origin=*/rfh->GetLastCommittedOrigin(),
-          rfh->GetLastCommittedURL(),
           /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
           contents()->GetWeakPtr(),
           /*initiator_frame_token=*/rfh->GetFrameToken(),

@@ -26,7 +26,6 @@ struct CONTENT_EXPORT PrerenderAttributes {
       const std::string& embedder_histogram_suffix,
       Referrer referrer,
       absl::optional<url::Origin> initiator_origin,
-      const GURL& initiator_url,
       int initiator_process_id,
       base::WeakPtr<WebContents> initiator_web_contents,
       absl::optional<blink::LocalFrameToken> initiator_frame_token,
@@ -57,8 +56,6 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // This is absl::nullopt when prerendering is initiated by the browser
   // (not by a renderer using Speculation Rules API).
   absl::optional<url::Origin> initiator_origin;
-
-  GURL initiator_url;
 
   // This is ChildProcessHost::kInvalidUniqueID when prerendering is initiated
   // by the browser.
