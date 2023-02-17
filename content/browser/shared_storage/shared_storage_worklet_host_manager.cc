@@ -101,4 +101,18 @@ void SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished(
   keep_alive_shared_storage_worklet_hosts_.erase(worklet_host);
 }
 
+void SharedStorageWorkletHostManager::NotifyUrnUuidGenerated(
+    const GURL& urn_uuid) {
+  for (SharedStorageObserverInterface& observer : observers_) {
+    observer.OnUrnUuidGenerated(urn_uuid);
+  }
+}
+
+void SharedStorageWorkletHostManager::NotifyConfigPopulated(
+    const absl::optional<FencedFrameConfig>& config) {
+  for (SharedStorageObserverInterface& observer : observers_) {
+    observer.OnConfigPopulated(config);
+  }
+}
+
 }  // namespace content

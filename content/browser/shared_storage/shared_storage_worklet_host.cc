@@ -136,12 +136,16 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
     const GURL& urn_uuid = it->first;
 
     bool failed_due_to_no_budget = false;
-    page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
-        urn_uuid,
-        CreateSharedStorageURNMappingResult(
-            storage_partition_, browser_context_, shared_storage_origin_,
-            std::move(it->second),
-            /*index=*/0, /*budget_remaining=*/0.0, failed_due_to_no_budget));
+    absl::optional<FencedFrameConfig> config =
+        page_->fenced_frame_urls_map()
+            .OnSharedStorageURNMappingResultDetermined(
+                urn_uuid, CreateSharedStorageURNMappingResult(
+                              storage_partition_, browser_context_,
+                              shared_storage_origin_, std::move(it->second),
+                              /*index=*/0, /*budget_remaining=*/0.0,
+                              failed_due_to_no_budget));
+
+    shared_storage_worklet_host_manager_->NotifyConfigPopulated(config);
 
     it = unresolved_urns_.erase(it);
   }
@@ -264,6 +268,8 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
       /*success=*/true, /*error_message=*/{},
       /*result_config=*/
       config.RedactFor(FencedFrameEntity::kEmbedder));
+
+  shared_storage_worklet_host_manager_->NotifyUrnUuidGenerated(urn_uuid);
 
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
       name, urls, serialized_data,
@@ -774,8 +780,12 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
       }
     }
 
-    page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
-        urn_uuid, std::move(mapping_result));
+    absl::optional<FencedFrameConfig> config =
+        page_->fenced_frame_urls_map()
+            .OnSharedStorageURNMappingResultDetermined(
+                urn_uuid, std::move(mapping_result));
+
+    shared_storage_worklet_host_manager_->NotifyConfigPopulated(config);
   }
 
   base::UmaHistogramLongTimes(

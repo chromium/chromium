@@ -8,12 +8,21 @@
 #include <stddef.h>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/variant.h"
+
 class GURL;
 
 namespace content {
 
 class RenderFrameHost;
+class SharedStorageWorkletHostManager;
 class StoragePartition;
+
+using FencedFrameNavigationTarget = absl::variant<GURL, std::string>;
+
+SharedStorageWorkletHostManager*
+GetSharedStorageWorkletHostManagerForStoragePartition(
+    StoragePartition* storage_partition);
 
 std::string GetSharedStorageDisabledMessage();
 
@@ -29,7 +38,10 @@ size_t GetAttachedSharedStorageWorkletHostsCount(
 size_t GetKeepAliveSharedStorageWorkletHostsCount(
     StoragePartition* storage_partition);
 
-RenderFrameHost* CreateFencedFrame(RenderFrameHost* root, const GURL& url);
+// TODO(crbug.com/1414429): This function should be removed. Use
+// `CreateFencedFrame` in fenced_frame_test_util.h instead.
+RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
+                                   const FencedFrameNavigationTarget& target);
 
 }  // namespace content
 

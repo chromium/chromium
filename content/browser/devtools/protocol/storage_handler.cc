@@ -294,6 +294,11 @@ class StorageHandler::SharedStorageObserver
                                         owner_origin, params);
   }
 
+  void OnUrnUuidGenerated(const GURL& urn_uuid) override {}
+
+  void OnConfigPopulated(
+      const absl::optional<FencedFrameConfig>& config) override {}
+
  private:
   raw_ptr<StorageHandler> const owner_;
   base::ScopedObservation<

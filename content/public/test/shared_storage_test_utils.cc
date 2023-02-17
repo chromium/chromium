@@ -6,7 +6,7 @@
 
 #include <map>
 
-#include "base/task/task_runner.h"
+#include "base/functional/overloaded.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
@@ -22,16 +22,12 @@
 
 namespace content {
 
-namespace {
-
 SharedStorageWorkletHostManager*
 GetSharedStorageWorkletHostManagerForStoragePartition(
     StoragePartition* storage_partition) {
   return static_cast<StoragePartitionImpl*>(storage_partition)
       ->GetSharedStorageWorkletHostManager();
 }
-
-}  // namespace
 
 std::string GetSharedStorageDisabledMessage() {
   return kSharedStorageDisabledMessage;
@@ -66,7 +62,8 @@ size_t GetKeepAliveSharedStorageWorkletHostsCount(
   return manager->GetKeepAliveWorkletHostsForTesting().size();
 }
 
-RenderFrameHost* CreateFencedFrame(RenderFrameHost* root, const GURL& url) {
+RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
+                                   const FencedFrameNavigationTarget& target) {
   FrameTreeNode* root_node =
       static_cast<RenderFrameHostImpl*>(root)->frame_tree_node();
   size_t initial_child_count = root_node->child_count();
@@ -80,18 +77,28 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root, const GURL& url) {
   FrameTreeNode* fenced_frame_root_node =
       GetFencedFrameRootNode(root_node->child_at(initial_child_count));
 
-  std::string navigate_fenced_frame_script =
-      JsReplace("f.src = $1;", url.spec());
-
   TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
-  EXPECT_EQ(url.spec(), EvalJs(root, navigate_fenced_frame_script));
+  EvalJsResult result = EvalJs(
+      root,
+      absl::visit(
+          base::Overloaded{
+              [](const GURL& url) { return JsReplace("f.src = $1;", url); },
+              [](const std::string& config) {
+                return JsReplace("f.config =  window[$1]", config);
+              },
+          },
+          target));
 
   observer.Wait();
 
-  return static_cast<RenderFrameHost*>(
-      fenced_frame_root_node->current_frame_host());
+  EXPECT_TRUE(result.error.empty());
+  if (absl::holds_alternative<GURL>(target)) {
+    EXPECT_EQ(result, absl::get<GURL>(target).spec());
+  }
+
+  return fenced_frame_root_node->current_frame_host();
 }
 
 }  // namespace content

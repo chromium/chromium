@@ -219,7 +219,8 @@ void FencedFrameURLMapping::RemoveObserverForURN(
   it->second.erase(observer_it);
 }
 
-void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
+absl::optional<FencedFrameConfig>
+FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     const GURL& urn_uuid,
     const SharedStorageURNMappingResult& mapping_result) {
   auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
@@ -254,6 +255,8 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   }
 
   pending_urn_uuid_to_url_map_.erase(pending_it);
+
+  return config;
 }
 
 SharedStorageBudgetMetadata*

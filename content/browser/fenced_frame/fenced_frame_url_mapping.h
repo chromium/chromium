@@ -31,6 +31,9 @@ using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
 // Keeps a mapping of fenced frames URN:UUID and URL. Also keeps a set of
 // pending mapped URN:UUIDs to support asynchronous mapping. See
 // https://github.com/WICG/fenced-frame/blob/master/explainer/opaque_src.md
+// TODO(crbug.com/1405477): Add methods for:
+// 1. generating the pending config.
+// 2. finalizing the pending config.
 class CONTENT_EXPORT FencedFrameURLMapping {
  public:
   // The runURLSelectionOperation's url mapping result. It contains the mapped
@@ -126,7 +129,12 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // will trigger the observers' OnFencedFrameURLMappingComplete() method
   // associated with the `urn_uuid`, unregister those observers, and move the
   // `urn_uuid` from `pending_urn_uuid_to_url_map_` to `urn_uuid_to_url_map_`.
-  void OnSharedStorageURNMappingResultDetermined(
+  // If the resolved URL is fenced-frame-compatible, the return value is the
+  // populated fenced frame config. It is used to notify the observers in shared
+  // storage worklet host manager. Tests can then obtain the populated fenced
+  // frame configs from the observers.
+  // Otherwise this method returns an absl::nullopt.
+  absl::optional<FencedFrameConfig> OnSharedStorageURNMappingResultDetermined(
       const GURL& urn_uuid,
       const SharedStorageURNMappingResult& mapping_result);
 

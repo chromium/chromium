@@ -17,6 +17,7 @@
 
 namespace content {
 
+struct FencedFrameConfig;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageWorkletDriver;
 class SharedStorageWorkletHost;
@@ -55,6 +56,11 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
         const std::string& main_frame_id,
         const std::string& owner_origin,
         const SharedStorageEventParams& params) = 0;
+
+    virtual void OnUrnUuidGenerated(const GURL& urn_uuid) = 0;
+
+    virtual void OnConfigPopulated(
+        const absl::optional<FencedFrameConfig>& config) = 0;
   };
 
   void OnDocumentServiceDestroyed(
@@ -84,6 +90,10 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
   GetKeepAliveWorkletHostsForTesting() {
     return keep_alive_shared_storage_worklet_hosts_;
   }
+
+  void NotifyUrnUuidGenerated(const GURL& urn_uuid);
+
+  void NotifyConfigPopulated(const absl::optional<FencedFrameConfig>& config);
 
  protected:
   void OnWorkletKeepAliveFinished(SharedStorageWorkletHost*);

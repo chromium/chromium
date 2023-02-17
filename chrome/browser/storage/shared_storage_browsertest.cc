@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -31,6 +32,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_select_url_fenced_frame_config_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -103,6 +105,14 @@ constexpr char kTimingRemainingBudgetHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.RemainingBudget";
 
 const double kBudgetAllowed = 5.0;
+
+auto describe_param = [](const auto& info) {
+  if (info.param) {
+    return "ResolveSelectURLToConfig";
+  } else {
+    return "ResolveSelectURLToURN";
+  }
+};
 
 #if BUILDFLAG(IS_ANDROID)
 base::FilePath GetChromeTestDataDir() {
@@ -199,9 +209,9 @@ content::RenderFrameHost* CreateIframe(content::RenderFrameHost* parent_rfh,
 
 }  // namespace
 
-class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
+class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
  public:
-  SharedStorageChromeBrowserTest() {
+  SharedStorageChromeBrowserTestBase() {
     base::test::TaskEnvironment task_environment;
 
     // TODO(crbug.com/1378703): Update the tests to support Privacy Sandbox 4.
@@ -223,7 +233,7 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
     InitPrefs();
   }
 
-  ~SharedStorageChromeBrowserTest() override = default;
+  ~SharedStorageChromeBrowserTestBase() override = default;
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -300,8 +310,7 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
         MakeFilter({"Finish executing customizable_module.js"}));
 
     base::StringPairs run_function_body_replacement;
-    run_function_body_replacement.push_back(
-        std::make_pair("{{RUN_FUNCTION_BODY}}", script));
+    run_function_body_replacement.emplace_back("{{RUN_FUNCTION_BODY}}", script);
 
     std::string host =
         execution_target.render_frame_host()->GetLastCommittedOrigin().host();
@@ -383,6 +392,8 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
     return result;
   }
 
+  virtual bool ResolveSelectURLToConfig() { return false; }
+
  protected:
   base::HistogramTester histogram_tester_;
 
@@ -391,31 +402,44 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-struct SharedStorageChromeBrowserParams {
-  bool enable_privacy_sandbox;
-  bool allow_third_party_cookies;
+class SharedStorageChromeBrowserTest
+    : public base::test::WithFeatureOverride,
+      public SharedStorageChromeBrowserTestBase {
+ public:
+  SharedStorageChromeBrowserTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kFencedFramesAPIChanges) {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kFencedFrames);
+  }
+  ~SharedStorageChromeBrowserTest() override = default;
+
+  bool ResolveSelectURLToConfig() override { return IsParamFeatureEnabled(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Used by `testing::PrintToStringParamName()`.
-std::string PrintToString(const SharedStorageChromeBrowserParams& p) {
-  return base::StrCat(
-      {"PrivacySandbox", p.enable_privacy_sandbox ? "Enabled" : "Disabled",
-       "_3PCookies", p.allow_third_party_cookies ? "Allowed" : "Blocked"});
-}
-
-std::vector<SharedStorageChromeBrowserParams>
-GetSharedStorageChromeBrowserParams() {
-  return std::vector<SharedStorageChromeBrowserParams>(
-      {{true, true}, {true, false}, {false, true}, {false, false}});
-}
+using SharedStorageChromeBrowserParams =
+    std::tuple</*resolve_to_config=*/bool,
+               /*enable_privacy_sandbox=*/bool,
+               /*allow_third_party_cookies=*/bool>;
 
 class SharedStoragePrefBrowserTest
-    : public SharedStorageChromeBrowserTest,
+    : public SharedStorageChromeBrowserTestBase,
       public testing::WithParamInterface<SharedStorageChromeBrowserParams> {
  public:
+  SharedStoragePrefBrowserTest() {
+    fenced_frame_api_change_feature_.InitWithFeatureState(
+        blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
+    fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);
+  }
+
+  bool ResolveSelectURLToConfig() override { return std::get<0>(GetParam()); }
+  bool EnablePrivacySandbox() const { return std::get<1>(GetParam()); }
+  bool AllowThirdPartyCookies() const { return std::get<2>(GetParam()); }
+
   bool SuccessExpected() {
-    return GetParam().enable_privacy_sandbox &&
-           GetParam().allow_third_party_cookies;
+    return EnablePrivacySandbox() && AllowThirdPartyCookies();
   }
 
   // Sets prefs as parametrized.
@@ -423,8 +447,7 @@ class SharedStoragePrefBrowserTest
   // TODO(crbug.com/1396748): We may need to update how preferences are set once
   // the Privacy Sandbox settings release 4 is launched (crbug.com/1378703).
   void InitPrefs() override {
-    SetPrefs(GetParam().enable_privacy_sandbox,
-             GetParam().allow_third_party_cookies);
+    SetPrefs(EnablePrivacySandbox(), AllowThirdPartyCookies());
   }
 
   void AddSimpleModuleWithPermissionBypassed(
@@ -462,8 +485,7 @@ class SharedStoragePrefBrowserTest
         MakeFilter({"Finish executing customizable_module.js"}));
 
     base::StringPairs run_function_body_replacement;
-    run_function_body_replacement.push_back(
-        std::make_pair("{{RUN_FUNCTION_BODY}}", script));
+    run_function_body_replacement.emplace_back("{{RUN_FUNCTION_BODY}}", script);
 
     std::string host =
         execution_target.render_frame_host()->GetLastCommittedOrigin().host();
@@ -530,13 +552,23 @@ class SharedStoragePrefBrowserTest
 
     return result.error.empty();
   }
+
+ private:
+  base::test::ScopedFeatureList fenced_frame_api_change_feature_;
+  base::test::ScopedFeatureList fenced_frame_feature_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SharedStoragePrefBrowserTest,
-    testing::ValuesIn(GetSharedStorageChromeBrowserParams()),
-    testing::PrintToStringParamName());
+    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<SharedStoragePrefBrowserTest::ParamType>&
+           info) {
+      return base::StrCat(
+          {"ResolveSelectURLTo", std::get<0>(info.param) ? "Config" : "URN",
+           "_PrivacySandbox", std::get<1>(info.param) ? "Enabled" : "Disabled",
+           "_3PCookies", std::get<2>(info.param) ? "Allowed" : "Blocked"});
+    });
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
   EXPECT_TRUE(content::NavigateToURL(
@@ -644,16 +676,48 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
   run_url_op_console_observer.SetFilter(
       MakeFilter({"Finish executing \'test-url-selection-operation\'"}));
 
-  content::EvalJsResult run_url_op_result =
-      content::EvalJs(GetActiveWebContents(), R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"},
-           {url: "fenced_frames/title1.html",
-            reportingMetadata: {"click": "fenced_frames/report1.html"}},
-           {url: "fenced_frames/title2.html"}],
-          {data: {'mockResult': 1}});
-    )");
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+
+  // Construct and add the `TestSelectURLFencedFrameConfigObserver` to shared
+  // storage worklet host manager.
+  content::StoragePartition* storage_partition =
+      content::ToRenderFrameHost(GetActiveWebContents())
+          .render_frame_host()
+          ->GetStoragePartition();
+  content::TestSelectURLFencedFrameConfigObserver config_observer(
+      storage_partition);
+  content::EvalJsResult run_url_op_result = EvalJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              },
+              {
+                url: "fenced_frames/title1.html",
+                reportingMetadata: {
+                  "click": "fenced_frames/report1.html"
+                }
+              },
+              {
+                url: "fenced_frames/title2.html"
+              }
+            ],
+            {
+              data: {'mockResult': 1},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )");
 
   WaitForHistograms({kTimingDocumentAddModuleHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
@@ -679,8 +743,15 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
   // Privacy Sandbox is enabled and 3P cookies are allowed, so Shared Storage
   // should be allowed.
   EXPECT_TRUE(run_url_op_result.error.empty());
-  EXPECT_TRUE(
-      blink::IsValidUrnUuidURL(GURL(run_url_op_result.ExtractString())));
+  absl::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+  GURL urn_uuid = observed_urn_uuid.value();
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(run_url_op_result.ExtractString(), observed_urn_uuid->spec());
+  }
+
   EXPECT_EQ(1u, run_url_op_console_observer.messages().size());
   EXPECT_EQ(
       "Finish executing \'test-url-selection-operation\'",
@@ -1059,7 +1130,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletRemainingBudget) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIterated) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1142,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                                       2);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_PartiallyIterated) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1239,7 +1310,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                                       0);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIteratedLessThanTenKeys) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1322,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                                       2);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_PartiallyIteratedLessThanTenKeys) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1417,7 +1488,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                                       0);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIteratedNoKeys) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1480,7 +1551,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                                       0);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_InvalidScriptUrlError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1505,7 +1576,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_CrossOriginScriptError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1532,7 +1603,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_LoadFailureError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1555,7 +1626,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_UnexpectedRedirectError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1578,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_EmptyResultError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1601,7 +1672,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_MultipleAddModuleError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1634,7 +1705,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
       https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
@@ -1651,7 +1722,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
       blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
       https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
@@ -1680,7 +1751,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_FunctionError) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_FunctionError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
       https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
@@ -1709,7 +1780,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_FunctionError) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotAPromiseError) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotAPromiseError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
       https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
@@ -1738,7 +1809,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotAPromiseError) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_ScriptError) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_ScriptError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
       https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
@@ -1767,7 +1838,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_ScriptError) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        Run_UnexpectedCustomDataError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1797,18 +1868,36 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_NotLoadedError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
       https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
-  content::EvalJsResult result = content::EvalJs(GetActiveWebContents(),
-                                                 R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation-1',
-          [{url: "fenced_frames/title0.html"}], {data: {}});
-    )");
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  content::EvalJsResult result = EvalJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation-1',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )");
 
   EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
                           "sharedStorage.worklet.addModule() has to be ",
@@ -1822,7 +1911,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       blink::SharedStorageWorkletErrorType::kSelectURLWebVisible, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_NotRegisteredError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1834,12 +1923,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation-1',
-          [{url: "fenced_frames/title0.html"}], {data: {}});
-    )"));
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation-1',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -1853,7 +1960,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_FunctionError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1865,12 +1972,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}], {data: {}});
-    )"));
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -1884,7 +2009,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_NotAPromiseError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1896,12 +2021,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}], {data: {}});
-    )"));
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -1915,7 +2058,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
       https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
@@ -1926,12 +2069,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}], {data: {}});
-    )"));
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -1945,7 +2106,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_UnexpectedCustomDataError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1957,13 +2118,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'customField': 'customValue123'}});
-    )"));
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {'customField': 'customValue123'},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -1977,7 +2155,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_OutOfRangeError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -1989,12 +2167,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation-1',
-          [{url: "fenced_frames/title0.html"}], {data: {}});
-    )"));
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation-1',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -2008,7 +2204,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        SelectUrl_ReturnValueToIntError) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -2020,12 +2216,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation-2',
-          [{url: "fenced_frames/title0.html"}], {data: {}});
-    )"));
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(),
+                     content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation-2',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -2039,7 +2253,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, DocumentTiming) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, DocumentTiming) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
   EXPECT_TRUE(content::NavigateToURL(
@@ -2076,7 +2290,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, DocumentTiming) {
   histogram_tester_.ExpectTotalCount(kTimingDocumentClearHistogram, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, WorkletTiming) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
   EXPECT_TRUE(content::NavigateToURL(
@@ -2136,7 +2350,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, WorkletTiming) {
 }
 
 // Flaky: https://crbug.com/1406845
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        DISABLED_WorkletNumPerPage_Two) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -2176,7 +2390,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 }
 
 // Flaky: https://crbug.com/1406845
-IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        DISABLED_WorkletNumPerPage_Three) {
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
@@ -2225,23 +2439,31 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
             histogram_tester_.GetAllSamples(kTimingWorkletSetHistogram).size());
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageChromeBrowserTest,
+                         testing::Bool(),
+                         describe_param);
+
 class SharedStorageFencedFrameChromeBrowserTest
-    : public SharedStorageChromeBrowserTest {
+    : public base::test::WithFeatureOverride,
+      public SharedStorageChromeBrowserTestBase {
  public:
-  SharedStorageFencedFrameChromeBrowserTest() {
+  SharedStorageFencedFrameChromeBrowserTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kFencedFramesAPIChanges) {
     base::test::TaskEnvironment task_environment;
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{blink::features::kSharedStorageAPI,
           {{"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)}}},
-         {blink::features::kFencedFrames, {}},
-         {privacy_sandbox::kPrivacySandboxSettings3, {}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+         {blink::features::kFencedFrames, {}}},
         /*disabled_features=*/{});
   }
 
   ~SharedStorageFencedFrameChromeBrowserTest() override = default;
+
+  bool ResolveSelectURLToConfig() override { return IsParamFeatureEnabled(); }
 
   content::RenderFrameHost* SelectURLAndCreateFencedFrame(
       content::RenderFrameHost* render_frame_host,
@@ -2254,36 +2476,80 @@ class SharedStorageFencedFrameChromeBrowserTest
     run_url_op_console_observer.SetFilter(
         MakeFilter({"Finish executing \'test-url-selection-operation\'"}));
 
-    content::EvalJsResult run_url_op_result =
-        content::EvalJs(render_frame_host, R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"},
-           {url: "fenced_frames/title1.html",
-            reportingMetadata: {"click": "fenced_frames/report1.html"}},
-           {url: "fenced_frames/title2.html"}],
-          {data: {'mockResult': 1}});
-    )");
+    EXPECT_TRUE(
+        ExecJs(render_frame_host,
+               content::JsReplace("window.resolveSelectURLToConfig = $1;",
+                                  ResolveSelectURLToConfig())));
+
+    // Construct and add the `TestSelectURLFencedFrameConfigObserver` to shared
+    // storage worklet host manager.
+    content::StoragePartition* storage_partition =
+        content::ToRenderFrameHost(GetActiveWebContents())
+            .render_frame_host()
+            ->GetStoragePartition();
+    content::TestSelectURLFencedFrameConfigObserver config_observer(
+        storage_partition);
+    content::EvalJsResult run_url_op_result = EvalJs(render_frame_host, R"(
+        (async function() {
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              },
+              {
+                url: "fenced_frames/title1.html",
+                reportingMetadata:
+                {
+                  "click": "fenced_frames/report1.html"
+                }
+              },
+              {
+                url: "fenced_frames/title2.html"
+              }
+            ],
+            {
+              data: {'mockResult': 1},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )");
 
     EXPECT_TRUE(run_url_op_console_observer.Wait());
-
     EXPECT_TRUE(run_url_op_result.error.empty());
-    EXPECT_TRUE(
-        blink::IsValidUrnUuidURL(GURL(run_url_op_result.ExtractString())));
+    const absl::optional<GURL>& observed_urn_uuid =
+        config_observer.GetUrnUuid();
+    EXPECT_TRUE(observed_urn_uuid.has_value());
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+    if (!ResolveSelectURLToConfig()) {
+      EXPECT_EQ(run_url_op_result.ExtractString(), observed_urn_uuid->spec());
+    }
+
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
     EXPECT_EQ(1u, run_url_op_console_observer.messages().size());
     EXPECT_EQ(
         "Finish executing \'test-url-selection-operation\'",
         base::UTF16ToUTF8(run_url_op_console_observer.messages()[0].message));
 
-    return content::CreateFencedFrame(render_frame_host,
-                                      GURL(run_url_op_result.ExtractString()));
+    return content::CreateFencedFrame(
+        render_frame_host,
+        ResolveSelectURLToConfig()
+            ? content::FencedFrameNavigationTarget("select_url_result")
+            : content::FencedFrameNavigationTarget(observed_urn_uuid.value()));
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameChromeBrowserTest,
                        FencedFrameNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
@@ -2300,9 +2566,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
 
   content::TestNavigationObserver top_navigation_observer(
       GetActiveWebContents());
-  EXPECT_TRUE(ExecJs(fenced_frame_root_node,
-                     content::JsReplace("window.open($1, '_unfencedTop')",
-                                        new_page_url.spec())));
+  EXPECT_TRUE(ExecJs(
+      fenced_frame_root_node,
+      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
   top_navigation_observer.Wait();
 
   content::RenderFrameHost* new_iframe =
@@ -2331,7 +2597,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
   EXPECT_EQ(2, histogram_tester_.GetTotalSum(kWorkletNumPerPageHistogram));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageFencedFrameChromeBrowserTest,
     TwoFencedFrames_DifferentURNs_EachNavigateOnce_BudgetWithdrawalTwice) {
   GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
@@ -2350,9 +2616,9 @@ IN_PROC_BROWSER_TEST_F(
 
   content::TestNavigationObserver top_navigation_observer1(
       GetActiveWebContents());
-  EXPECT_TRUE(ExecJs(fenced_frame_root_node1,
-                     content::JsReplace("window.open($1, '_unfencedTop')",
-                                        new_page_url1.spec())));
+  EXPECT_TRUE(ExecJs(
+      fenced_frame_root_node1,
+      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url1)));
   top_navigation_observer1.Wait();
 
   content::RenderFrameHost* iframe2 =
@@ -2372,9 +2638,9 @@ IN_PROC_BROWSER_TEST_F(
 
   content::TestNavigationObserver top_navigation_observer2(
       GetActiveWebContents());
-  EXPECT_TRUE(ExecJs(fenced_frame_root_node2,
-                     content::JsReplace("window.open($1, '_unfencedTop')",
-                                        new_page_url2.spec())));
+  EXPECT_TRUE(ExecJs(
+      fenced_frame_root_node2,
+      content::JsReplace("window.open($1, '_unfencedTop')", new_page_url2)));
   top_navigation_observer2.Wait();
 
   content::RenderFrameHost* iframe3 =
@@ -2402,5 +2668,10 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester_.ExpectBucketCount(kWorkletNumPerPageHistogram, 1, 3);
   EXPECT_EQ(3, histogram_tester_.GetTotalSum(kWorkletNumPerPageHistogram));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageFencedFrameChromeBrowserTest,
+                         testing::Bool(),
+                         describe_param);
 
 }  // namespace storage

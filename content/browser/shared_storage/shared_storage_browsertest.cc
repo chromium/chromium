@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
@@ -18,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -38,9 +40,9 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_select_url_fenced_frame_config_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -52,6 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -99,35 +102,20 @@ const int kMaxSelectURLCalls = 2;
 
 const int kReportEventBitBudget = 6;
 
-const char kSelectFrom8URLsScript[] = R"(
-    let urls = [];
-    for (let i = 0; i < 8; ++i) {
-      urls.push({url: '/fenced_frames/title' + i.toString() + '.html',
-                 reportingMetadata: {
-                   'click': '/fenced_frames/report' + i.toString() + '.html',
-                   'mouse interaction':
-                   '/fenced_frames/report' + (i + 1).toString() + '.html'
-                 }});
-    }
-
-    sharedStorage.selectURL(
-        'test-url-selection-operation', urls, {data: {'mockResult': 1}});
-  )";
-
-const char kSelectFrom4URLsScript[] = R"(
-    let urls = [];
-    for (let i = 0; i < 4; ++i) {
-      urls.push({url: '/fenced_frames/title' + i.toString() + '.html',
-                 reportingMetadata: {
-                   'click': '/fenced_frames/report' + i.toString() + '.html',
-                   'mouse interaction':
-                   '/fenced_frames/report' + (i + 1).toString() + '.html'
-                 }});
-    }
-
-    sharedStorage.selectURL(
-        'test-url-selection-operation', urls, {data: {'mockResult': 1}});
-  )";
+const char kGenerateURLsListScript[] = R"(
+  function generateUrls(size) {
+    return new Array(size).fill(0).map((e, i) => {
+      return {
+        url: '/fenced_frames/title' + i.toString() + '.html',
+        reportingMetadata: {
+          'click': '/fenced_frames/report' + i.toString() + '.html',
+          'mouse interaction':
+            '/fenced_frames/report' + (i + 1).toString() + '.html'
+        }
+      }
+    });
+  }
+)";
 
 const char kRemainingBudgetPrefix[] = "remaining budget: ";
 
@@ -212,6 +200,18 @@ std::string SerializeOptionalUrlsWithMetadata(
 
   return base::StrCat(urls_str_vector);
 }
+
+bool IsErrorMessage(const content::WebContentsConsoleObserver::Message& msg) {
+  return msg.log_level == blink::mojom::ConsoleMessageLevel::kError;
+}
+
+auto describe_param = [](const auto& info) {
+  if (info.param) {
+    return "ResolveSelectURLToConfig";
+  } else {
+    return "ResolveSelectURLToURN";
+  }
+};
 
 }  // namespace
 
@@ -421,6 +421,11 @@ class TestSharedStorageObserver
     accesses_.emplace_back(type, main_frame_id, owner_origin, params);
   }
 
+  void OnUrnUuidGenerated(const GURL& urn_uuid) override {}
+
+  void OnConfigPopulated(
+      const absl::optional<FencedFrameConfig>& config) override {}
+
   bool EventParamsMatch(const SharedStorageEventParams& expected_params,
                         const SharedStorageEventParams& actual_params) {
     if (expected_params.script_source_url != actual_params.script_source_url) {
@@ -614,24 +619,21 @@ class TestSharedStorageWorkletHostManager
   bool should_defer_worklet_messages_ = false;
 };
 
-class SharedStorageBrowserTest : public ContentBrowserTest {
+class SharedStorageBrowserTestBase : public ContentBrowserTest {
  public:
   using AccessType = TestSharedStorageObserver::AccessType;
 
-  SharedStorageBrowserTest() {
-    scoped_feature_list_
-        .InitWithFeaturesAndParameters(/*enabled_features=*/
-                                       {{blink::features::kSharedStorageAPI,
-                                         {{"SharedStorageBitBudget",
-                                           base::NumberToString(
-                                               kBudgetAllowed)},
-                                          {"SharedStorageStalenessThreshold",
-                                           TimeDeltaToString(base::Days(
-                                               kStalenessThresholdDays))}}},
-                                        {features::
-                                             kPrivacySandboxAdsAPIsOverride,
-                                         {}}},
-                                       /*disabled_features=*/{});
+  SharedStorageBrowserTestBase() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kSharedStorageAPI,
+          {
+              {"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)},
+              {"SharedStorageStalenessThreshold",
+               TimeDeltaToString(base::Days(kStalenessThresholdDays))},
+          }},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -642,15 +644,21 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
     test_worklet_host_manager->AddSharedStorageObserver(observer_.get());
     test_worklet_host_manager_ = test_worklet_host_manager.get();
 
-    static_cast<StoragePartitionImpl*>(shell()
-                                           ->web_contents()
-                                           ->GetBrowserContext()
-                                           ->GetDefaultStoragePartition())
+    static_cast<StoragePartitionImpl*>(GetStoragePartition())
         ->OverrideSharedStorageWorkletHostManagerForTesting(
             std::move(test_worklet_host_manager));
 
     host_resolver()->AddRule("*", "127.0.0.1");
     FinishSetup();
+  }
+
+  virtual bool ResolveSelectURLToConfig() { return false; }
+
+  StoragePartition* GetStoragePartition() {
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition();
   }
 
   void TearDownOnMainThread() override {
@@ -673,10 +681,7 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
 
   double GetRemainingBudget(const url::Origin& origin) {
     base::test::TestFuture<SharedStorageWorkletHost::BudgetResult> future;
-    static_cast<StoragePartitionImpl*>(shell()
-                                           ->web_contents()
-                                           ->GetBrowserContext()
-                                           ->GetDefaultStoragePartition())
+    static_cast<StoragePartitionImpl*>(GetStoragePartition())
         ->GetSharedStorageManager()
         ->GetRemainingBudget(origin, future.GetCallback());
     return future.Take().bits;
@@ -733,8 +738,7 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
     DCHECK(out_module_script_url);
 
     base::StringPairs run_function_body_replacement;
-    run_function_body_replacement.push_back(
-        std::make_pair("{{RUN_FUNCTION_BODY}}", script));
+    run_function_body_replacement.emplace_back("{{RUN_FUNCTION_BODY}}", script);
 
     std::string host =
         execution_target.render_frame_host()->GetLastCommittedOrigin().host();
@@ -771,11 +775,9 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
     EXPECT_EQ(initial_child_count + 1, root->child_count());
     FrameTreeNode* child_node = root->child_at(initial_child_count);
 
-    std::string navigate_frame_script = JsReplace("f.src = $1;", url.spec());
+    TestFrameNavigationObserver observer(child_node);
 
-    TestFrameNavigationObserver observer(child_node->current_frame_host());
-
-    EXPECT_EQ(url.spec(), EvalJs(root, navigate_frame_script));
+    EXPECT_EQ(url.spec(), EvalJs(root, JsReplace("f.src = $1;", url)));
 
     observer.Wait();
 
@@ -802,15 +804,49 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
         sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
       )"));
 
-    std::string urn_uuid =
-        EvalJs(iframe, kSelectFrom8URLsScript).ExtractString();
+    // Generate 8 candidates urls in to a list variable `urls`.
+    EXPECT_TRUE(ExecJs(iframe, kGenerateURLsListScript));
+    EXPECT_TRUE(
+        ExecJs(iframe, JsReplace("window.resolveSelectURLToConfig = $1;",
+                                 ResolveSelectURLToConfig())));
+
+    TestSelectURLFencedFrameConfigObserver config_observer(
+        GetStoragePartition());
+    EvalJsResult result = EvalJs(iframe, R"(
+        (async function() {
+          const urls = generateUrls(8);
+          window.select_url_result = await sharedStorage.selectURL(
+            'test-url-selection-operation',
+            urls,
+            {
+              data: {'mockResult': 1},
+              resolveToConfig: resolveSelectURLToConfig
+            }
+          );
+          if (resolveSelectURLToConfig &&
+              !(select_url_result instanceof FencedFrameConfig)) {
+            throw new Error('selectURL() did not return a FencedFrameConfig.');
+          }
+          return window.select_url_result;
+        })()
+      )");
+
+    EXPECT_TRUE(result.error.empty());
+    const absl::optional<GURL>& observed_urn_uuid =
+        config_observer.GetUrnUuid();
+    EXPECT_TRUE(observed_urn_uuid.has_value());
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+    if (!ResolveSelectURLToConfig()) {
+      EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+    }
 
     // There are 2 "worklet operations": `addModule()` and `selectURL()`.
     test_worklet_host_manager()
         .GetAttachedWorkletHostForFrame(iframe->current_frame_host())
         ->WaitForWorkletResponsesCount(2);
 
-    return GURL(urn_uuid);
+    return observed_urn_uuid.value();
   }
 
   // Prerequisite: The worklet for `frame` has registered a
@@ -874,7 +910,7 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
     return *test_worklet_host_manager_;
   }
 
-  ~SharedStorageBrowserTest() override = default;
+  ~SharedStorageBrowserTestBase() override = default;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -886,7 +922,24 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
   std::unique_ptr<TestSharedStorageObserver> observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {
+class SharedStorageBrowserTest : public base::test::WithFeatureOverride,
+                                 public SharedStorageBrowserTestBase {
+ public:
+  SharedStorageBrowserTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kFencedFramesAPIChanges) {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kFencedFrames);
+  }
+
+  bool ResolveSelectURLToConfig() override { return IsParamFeatureEnabled(); }
+
+  ~SharedStorageBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_Success) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
@@ -927,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {
             "a.test", "/shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -957,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
             "a.test", "/shared_storage/nonexistent_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -989,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
             "a.test", "/server-redirect?shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AddModule_ScriptExecutionFailure) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -1022,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             "a.test", "/shared_storage/erroneous_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AddModule_MultipleAddModuleFailure) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
@@ -1076,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, RunOperation_Success) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -1125,7 +1178,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, RunOperation_Success) {
                                                std::vector<uint8_t>())}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        RunOperation_Failure_RunOperationBeforeAddModule) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
@@ -1192,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        RunOperation_Failure_InvalidOptionsArgument) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -1225,7 +1278,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        RunOperation_Failure_ErrorInRunOperation) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -1282,7 +1335,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                                                std::vector<uint8_t>())}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, WorkletDestroyed) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WorkletDestroyed) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
@@ -1319,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, WorkletDestroyed) {
             "a.test", "/shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, TwoWorklets) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
@@ -1382,7 +1435,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
             "a.test", "/shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageBrowserTest,
     KeepAlive_StartBeforeAddModuleComplete_EndAfterAddModuleComplete) {
   // The test assumes pages get deleted after navigation. To ensure this,
@@ -1450,7 +1503,7 @@ IN_PROC_BROWSER_TEST_F(
             "a.test", "/shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        KeepAlive_StartBeforeAddModuleComplete_EndAfterTimeout) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
@@ -1512,7 +1565,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageBrowserTest,
     KeepAlive_StartBeforeRunOperationComplete_EndAfterRunOperationComplete) {
   // The test assumes pages get deleted after navigation. To ensure this,
@@ -1594,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(
                                                std::vector<uint8_t>())}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
@@ -1688,7 +1741,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
             "a.test", "/shared_storage/simple_module2.js"))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        RenderProcessHostDestroyedDuringWorkletKeepAlive) {
   // The test assumes pages gets deleted after navigation, letting the worklet
   // enter keep-alive phase. To ensure this, disable back/forward cache.
@@ -1722,7 +1775,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
 // Test that there's no need to charge budget if the input urls' size is 1.
 // This specifically tests the operation success scenario.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageBrowserTest,
     SelectURL_BudgetMetadata_OperationSuccess_SingleInputURL) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
@@ -1733,31 +1786,63 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  std::string urn_uuid = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
           'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html",
-          reportingMetadata: {"click": "fenced_frames/report1.html",
-              "mouse interaction": "fenced_frames/report2.html"}}],
-          {data: {'mockResult':0}});
-    )")
-                             .ExtractString();
+          [
+            {
+              url: "fenced_frames/title0.html",
+              reportingMetadata: {
+                "click": "fenced_frames/report1.html",
+                "mouse interaction": "fenced_frames/report2.html"
+              }
+            }
+          ],
+          {
+            data: {'mockResult': 0},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
 
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are 2 "worklet operations": `addModule()` and `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
 
-  EXPECT_THAT(GetSharedStorageReportingMap(GURL(urn_uuid)),
+  EXPECT_THAT(GetSharedStorageReportingMap(observed_urn_uuid.value()),
               UnorderedElementsAre(
                   Pair("click", https_server()->GetURL(
                                     "a.test", "/fenced_frames/report1.html")),
@@ -1795,7 +1880,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that there's no need to charge budget if the input urls' size is 1.
 // This specifically tests the operation failure scenario.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageBrowserTest,
     SelectURL_BudgetMetadata_OperationFailure_SingleInputURL) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
@@ -1806,30 +1891,62 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  std::string urn_uuid = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
           'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html",
-          reportingMetadata: {"click": "fenced_frames/report1.html"}}],
-          {data: {'mockResult':-1}});
-    )")
-                             .ExtractString();
+          [
+            {
+              url: "fenced_frames/title0.html",
+              reportingMetadata: {
+                "click": "fenced_frames/report1.html"
+              }
+            }
+          ],
+          {
+            data: {'mockResult': -1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
 
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are 2 "worklet operations": `addModule()` and `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
 
-  EXPECT_THAT(GetSharedStorageReportingMap(GURL(urn_uuid)),
+  EXPECT_THAT(GetSharedStorageReportingMap(observed_urn_uuid.value()),
               UnorderedElementsAre(
                   Pair("click", https_server()->GetURL(
                                     "a.test", "/fenced_frames/report1.html"))));
@@ -1859,7 +1976,7 @@ IN_PROC_BROWSER_TEST_F(
                         .spec()}}}}))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        SelectURL_BudgetMetadata_Origin) {
   EXPECT_TRUE(NavigateToURL(
       shell(), https_server()->GetURL("a.test", kPageWithBlankIframePath)));
@@ -1877,31 +1994,69 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  std::string urn_uuid = EvalJs(iframe, R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"},
-          {url: "fenced_frames/title1.html",
-          reportingMetadata: {"click": "fenced_frames/report1.html"}},
-          {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
-    )")
-                             .ExtractString();
+  EXPECT_TRUE(ExecJs(iframe, JsReplace("window.resolveSelectURLToConfig = $1;",
+                                       ResolveSelectURLToConfig())));
 
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(iframe, R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [
+            {
+              url: "fenced_frames/title0.html"
+            },
+            {
+              url: "fenced_frames/title1.html",
+              reportingMetadata: {
+                "click": "fenced_frames/report1.html"
+              }
+            },
+            {
+              url: "fenced_frames/title2.html"
+            }
+          ],
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are 2 "worklet operations": `addModule()` and `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("b.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, std::log2(3));
 
   SharedStorageReportingMap reporting_map =
-      GetSharedStorageReportingMap(GURL(urn_uuid));
+      GetSharedStorageReportingMap(observed_urn_uuid.value());
   EXPECT_FALSE(reporting_map.empty());
   EXPECT_EQ(1U, reporting_map.size());
   EXPECT_EQ("click", reporting_map.begin()->first);
@@ -1935,7 +2090,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                   {}}}))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        SelectURL_ReportingMetadata_EmptyReportEvent) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1945,30 +2100,62 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  std::string urn_uuid = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
           'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html",
-          reportingMetadata: {"": "fenced_frames/report1.html"}}],
-          {data: {'mockResult':0}});
-    )")
-                             .ExtractString();
+          [
+            {
+              url: "fenced_frames/title0.html",
+              reportingMetadata: {
+                "": "fenced_frames/report1.html"
+              }
+            }
+          ],
+          {
+            data: {'mockResult': 0},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
 
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are 2 "worklet operations": `addModule()` and `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
 
-  EXPECT_THAT(GetSharedStorageReportingMap(GURL(urn_uuid)),
+  EXPECT_THAT(GetSharedStorageReportingMap(observed_urn_uuid.value()),
               UnorderedElementsAre(
                   Pair("", https_server()->GetURL(
                                "a.test", "/fenced_frames/report1.html"))));
@@ -1996,7 +2183,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                             .spec()}}}}))}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInDocument) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInDocument) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2072,7 +2259,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInDocument) {
         SharedStorageEventParams::CreateDefault()}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInDocument) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInDocument) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2119,7 +2306,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInDocument) {
         SharedStorageEventParams::CreateForGetOrDelete("key0")}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInDocument) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInDocument) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2157,7 +2344,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInDocument) {
         SharedStorageEventParams::CreateDefault()}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2231,7 +2418,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
         SharedStorageEventParams::CreateDefault()}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AppendOperationFailedInWorklet) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -2270,7 +2457,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForAppend("key0", "a")}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInWorklet) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInWorklet) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2329,7 +2516,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInWorklet) {
         SharedStorageEventParams::CreateForGetOrDelete("key0")}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInWorklet) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2375,13 +2562,10 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInWorklet) {
         SharedStorageEventParams::CreateDefault()}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, GetOperationInWorklet) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, GetOperationInWorklet) {
   base::SimpleTestClock clock;
   base::RunLoop loop;
-  static_cast<StoragePartitionImpl*>(shell()
-                                         ->web_contents()
-                                         ->GetBrowserContext()
-                                         ->GetDefaultStoragePartition())
+  static_cast<StoragePartitionImpl*>(GetStoragePartition())
       ->GetSharedStorageManager()
       ->OverrideClockForTesting(&clock, loop.QuitClosure());
   loop.Run();
@@ -2465,7 +2649,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, GetOperationInWorklet) {
         SharedStorageEventParams::CreateForGetOrDelete("key0")}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AccessStorageInSameOriginDocument) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -2504,7 +2688,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateDefault()}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AccessStorageInDifferentOriginDocument) {
   GURL url1 = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url1));
@@ -2544,7 +2728,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateDefault()}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeysAndEntriesOperation) {
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2600,7 +2784,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeysAndEntriesOperation) {
         SharedStorageEventParams::CreateDefault()}});
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        KeysAndEntriesOperation_MultipleBatches) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -2664,19 +2848,31 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   ExpectAccessObserved(expected_accesses);
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageBrowserTest,
+                         testing::Bool(),
+                         describe_param);
+
 class SharedStorageAllowURNsInIframesBrowserTest
-    : public SharedStorageBrowserTest {
+    : public base::test::WithFeatureOverride,
+      public SharedStorageBrowserTestBase {
  public:
-  SharedStorageAllowURNsInIframesBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kAllowURNsInIframes);
+  SharedStorageAllowURNsInIframesBrowserTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kFencedFramesAPIChanges) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kFencedFrames, blink::features::kAllowURNsInIframes},
+        /*disabled_features=*/{});
   }
+
+  bool ResolveSelectURLToConfig() override { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedStorageAllowURNsInIframesBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageAllowURNsInIframesBrowserTest,
                        RenderSelectURLResultInIframe) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2698,7 +2894,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageAllowURNsInIframesBrowserTest,
 
   TestNavigationObserver top_navigation_observer(shell()->web_contents());
   EXPECT_TRUE(
-      ExecJs(iframe_node, JsReplace("top.location = $1", new_page_url.spec())));
+      ExecJs(iframe_node, JsReplace("top.location = $1", new_page_url)));
   top_navigation_observer.Wait();
 
   // After the top navigation, log(8)=3 bits should have been withdrawn from the
@@ -2707,17 +2903,24 @@ IN_PROC_BROWSER_TEST_F(SharedStorageAllowURNsInIframesBrowserTest,
                    kBudgetAllowed - 3);
 }
 
-class SharedStorageFencedFrameInteractionBrowserTest
-    : public SharedStorageBrowserTest {
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageAllowURNsInIframesBrowserTest,
+                         testing::Bool(),
+                         describe_param);
+
+class SharedStorageFencedFrameInteractionBrowserTestBase
+    : public SharedStorageBrowserTestBase {
  public:
-  SharedStorageFencedFrameInteractionBrowserTest() {
-    scoped_feature_list_
-        .InitWithFeaturesAndParameters(/*enabled_features=*/
-                                       {{blink::features::kFencedFrames, {}}},
-                                       /*disabled_features=*/{});
+  SharedStorageFencedFrameInteractionBrowserTestBase() {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kFencedFrames);
   }
 
-  FrameTreeNode* CreateFencedFrame(FrameTreeNode* root, const GURL& url) {
+  using FencedFrameNavigationTarget = absl::variant<GURL, std::string>;
+
+  // TODO(crbug.com/1414429): This function should be removed. Use
+  // `CreateFencedFrame` in fenced_frame_test_util.h instead.
+  FrameTreeNode* CreateFencedFrame(FrameTreeNode* root,
+                                   const FencedFrameNavigationTarget& target) {
     size_t initial_child_count = root->child_count();
 
     EXPECT_TRUE(ExecJs(root,
@@ -2729,28 +2932,55 @@ class SharedStorageFencedFrameInteractionBrowserTest
     FrameTreeNode* fenced_frame_root_node =
         GetFencedFrameRootNode(root->child_at(initial_child_count));
 
-    std::string navigate_fenced_frame_script =
-        JsReplace("f.src = $1;", url.spec());
+    TestFrameNavigationObserver observer(fenced_frame_root_node);
 
-    TestFrameNavigationObserver observer(
-        fenced_frame_root_node->current_frame_host());
-
-    EXPECT_EQ(url.spec(), EvalJs(root, navigate_fenced_frame_script));
+    EvalJsResult result = NavigateFencedFrame(root, target);
 
     observer.Wait();
+
+    EXPECT_TRUE(result.error.empty());
+    if (absl::holds_alternative<GURL>(target)) {
+      EXPECT_EQ(result, absl::get<GURL>(target).spec());
+    }
 
     return fenced_frame_root_node;
   }
 
-  FrameTreeNode* CreateFencedFrame(const GURL& url) {
-    return CreateFencedFrame(PrimaryFrameTreeNodeRoot(), url);
+  FrameTreeNode* CreateFencedFrame(const FencedFrameNavigationTarget& target) {
+    return CreateFencedFrame(PrimaryFrameTreeNodeRoot(), target);
+  }
+
+  EvalJsResult NavigateFencedFrame(FrameTreeNode* root,
+                                   const FencedFrameNavigationTarget& target) {
+    return EvalJs(root, absl::visit(base::Overloaded{
+                                        [](const GURL& url) {
+                                          return JsReplace("f.src = $1;", url);
+                                        },
+                                        [](const std::string& config) {
+                                          return JsReplace(
+                                              "f.config = window[$1]", config);
+                                        },
+                                    },
+                                    target));
+    ;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+class SharedStorageFencedFrameInteractionBrowserTest
+    : public base::test::WithFeatureOverride,
+      public SharedStorageFencedFrameInteractionBrowserTestBase {
+ public:
+  SharedStorageFencedFrameInteractionBrowserTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kFencedFramesAPIChanges) {}
+
+  bool ResolveSelectURLToConfig() override { return IsParamFeatureEnabled(); }
+};
+
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURL_FinishBeforeStartingFencedFrameNavigation) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2769,30 +2999,68 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ("Finish executing simple_module.js",
             base::UTF16ToUTF8(console_observer.messages()[1].message));
 
-  std::string urn_uuid = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"},
-          {url: "fenced_frames/title1.html",
-          reportingMetadata: {"click": "fenced_frames/report1.html"}},
-          {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
-    )")
-                             .ExtractString();
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [
+            {
+              url: "fenced_frames/title0.html"
+            },
+            {
+              url: "fenced_frames/title1.html",
+              reportingMetadata: {
+                "click": "fenced_frames/report1.html"
+              }
+            },
+            {
+              url: "fenced_frames/title2.html"
+            }
+          ],
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are 2 "worklet operations": `addModule()` and `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, std::log2(3));
 
-  EXPECT_THAT(GetSharedStorageReportingMap(GURL(urn_uuid)),
+  EXPECT_THAT(GetSharedStorageReportingMap(observed_urn_uuid.value()),
               UnorderedElementsAre(
                   Pair("click", https_server()->GetURL(
                                     "a.test", "/fenced_frames/report1.html"))));
@@ -2823,13 +3091,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   FrameTreeNode* fenced_frame_root_node =
       GetFencedFrameRootNode(root->child_at(0));
 
-  std::string navigate_fenced_frame_to_urn_script =
-      JsReplace("f.src = $1;", urn_uuid);
+  TestFrameNavigationObserver observer(fenced_frame_root_node);
 
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
-
-  EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
+  EvalJsResult navigation_result = NavigateFencedFrame(
+      root, ResolveSelectURLToConfig()
+                ? FencedFrameNavigationTarget("select_url_result")
+                : FencedFrameNavigationTarget(observed_urn_uuid.value()));
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(navigation_result, observed_urn_uuid.value());
+  }
 
   observer.Wait();
 
@@ -2842,7 +3112,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURL_FinishAfterStartingFencedFrameNavigation) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2860,17 +3130,49 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       .GetAttachedWorkletHost()
       ->set_should_defer_worklet_messages(true);
 
-  std::string urn_uuid = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"},
-          {url: "fenced_frames/title1.html",
-          reportingMetadata: {"click": "fenced_frames/report1.html"}},
-          {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
-    )")
-                             .ExtractString();
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [
+            {
+              url: "fenced_frames/title0.html"
+            },
+            {
+              url: "fenced_frames/title1.html",
+              reportingMetadata: {
+                "click": "fenced_frames/report1.html"
+              }
+            },
+            {
+              url: "fenced_frames/title2.html"
+            }
+          ],
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are 2 "worklet operations": `addModule()` and `selectURL()`.
   test_worklet_host_manager()
@@ -2888,13 +3190,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   FrameTreeNode* fenced_frame_root_node =
       GetFencedFrameRootNode(root->child_at(0));
 
-  std::string navigate_fenced_frame_to_urn_script =
-      JsReplace("f.src = $1;", urn_uuid);
+  TestFrameNavigationObserver observer(fenced_frame_root_node);
 
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
-
-  EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
+  EvalJsResult navigation_result = NavigateFencedFrame(
+      root, ResolveSelectURLToConfig()
+                ? FencedFrameNavigationTarget("select_url_result")
+                : FencedFrameNavigationTarget(observed_urn_uuid.value()));
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(navigation_result, observed_urn_uuid.value());
+  }
 
   // After the previous EvalJs, the NavigationRequest should have been created,
   // but may not have begun. Wait for BeginNavigation() and expect it to be
@@ -2913,7 +3217,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
   FencedFrameURLMappingTestPeer url_mapping_test_peer(&url_mapping);
 
-  EXPECT_TRUE(url_mapping_test_peer.HasObserver(GURL(urn_uuid), request));
+  EXPECT_TRUE(
+      url_mapping_test_peer.HasObserver(observed_urn_uuid.value(), request));
 
   // Execute the deferred messages. This should finish the url mapping and
   // resume the deferred navigation.
@@ -2923,13 +3228,19 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
   observer.Wait();
 
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, std::log2(3));
 
-  EXPECT_THAT(GetSharedStorageReportingMap(GURL(urn_uuid)),
+  EXPECT_THAT(GetSharedStorageReportingMap(observed_urn_uuid.value()),
               UnorderedElementsAre(
                   Pair("click", https_server()->GetURL(
                                     "a.test", "/fenced_frames/report1.html"))));
@@ -2948,7 +3259,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
 // Tests that the URN from SelectURL() is valid in different
 // context in the page, but it's not valid in a new page.
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURL_URNLifetime) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2959,9 +3270,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   FrameTreeNode* iframe_node = PrimaryFrameTreeNodeRoot()->child_at(0);
 
   // Navigate the iframe to about:blank.
-  TestFrameNavigationObserver observer(iframe_node->current_frame_host());
+  TestFrameNavigationObserver observer(iframe_node);
   EXPECT_TRUE(ExecJs(iframe_node, JsReplace("window.location.href=$1",
-                                            GURL(url::kAboutBlankURL).spec())));
+                                            GURL(url::kAboutBlankURL))));
   observer.Wait();
 
   // Verify that the `urn_uuid` is still valid in the main page.
@@ -2987,7 +3298,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
 // Tests that if the URN mapping is not finished before the keep-alive timeout,
 // the mapping will be considered to be failed when the timeout is reached.
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURL_NotFinishBeforeKeepAliveTimeout) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
@@ -3014,7 +3325,49 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       .GetAttachedWorkletHost()
       ->set_should_defer_worklet_messages(true);
 
-  std::string urn_uuid = EvalJs(iframe, kSelectFrom8URLsScript).ExtractString();
+  EXPECT_TRUE(ExecJs(iframe, kGenerateURLsListScript));
+  EXPECT_TRUE(ExecJs(iframe, JsReplace("window.resolveSelectURLToConfig = $1;",
+                                       ResolveSelectURLToConfig())));
+
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(iframe, R"(
+      (async function() {
+        const urls = generateUrls(8);
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
+
+  FrameTreeNode* root = PrimaryFrameTreeNodeRoot();
+  if (ResolveSelectURLToConfig()) {
+    // Preserve the config in a variable. It is then installed to the new fenced
+    // frame. Without this step, the config will be gone after navigating the
+    // iframe to about::blank.
+    EXPECT_TRUE(ExecJs(root, R"(var fenced_frame_config = document
+                                        .getElementById('test_iframe')
+                                        .contentWindow
+                                        .select_url_result;)"));
+  }
 
   // Navigate away to let the subframe's worklet enter keep-alive.
   NavigateIframeToURL(shell()->web_contents(), "test_iframe",
@@ -3028,8 +3381,6 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       .GetKeepAliveWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
-  FrameTreeNode* root = PrimaryFrameTreeNodeRoot();
-
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
                      "f.mode = 'opaque-ads';"
@@ -3039,13 +3390,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   FrameTreeNode* fenced_frame_root_node =
       GetFencedFrameRootNode(root->child_at(1));
 
-  std::string navigate_fenced_frame_to_urn_script =
-      JsReplace("f.src = $1;", urn_uuid);
+  TestFrameNavigationObserver observer(fenced_frame_root_node);
 
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
-
-  EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
+  EvalJsResult navigation_result = NavigateFencedFrame(
+      root, ResolveSelectURLToConfig()
+                ? FencedFrameNavigationTarget("fenced_frame_config")
+                : FencedFrameNavigationTarget(observed_urn_uuid.value()));
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(navigation_result, observed_urn_uuid.value());
+  }
 
   // After the previous EvalJs, the NavigationRequest should have been created,
   // but may not have begun. Wait for BeginNavigation() and expect it to be
@@ -3060,6 +3413,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
     EXPECT_TRUE(request->is_deferred_on_fenced_frame_url_mapping_for_testing());
   }
 
+  ASSERT_FALSE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_FALSE(fenced_frame_config.has_value());
+
   // Fire the keep-alive timer. This will terminate the keep-alive, and the
   // deferred navigation will resume to navigate to the default url (at index
   // 0).
@@ -3073,12 +3431,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   observer.Wait();
 
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
 
-  EXPECT_THAT(GetSharedStorageReportingMap(GURL(urn_uuid)),
+  EXPECT_THAT(GetSharedStorageReportingMap(observed_urn_uuid.value()),
               UnorderedElementsAre(
                   Pair("click", https_server()->GetURL(
                                     "a.test", "/fenced_frames/report0.html")),
@@ -3094,14 +3452,21 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   // `kTimingSelectUrlExecutedInWorkletHistogram` histogram isn't recorded.
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      0);
+
+  // The worklet is destructed. The config corresponds to the unresolved URN is
+  // populated in the destructor of `SharedStorageWorkletHost`.
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURL_WorkletReturnInvalidIndex) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
@@ -3110,34 +3475,73 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  std::string urn_uuid = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"},
-          {url: "fenced_frames/title1.html",
-          reportingMetadata: {"click": "fenced_frames/report1.html"}},
-          {url: "fenced_frames/title2.html"}], {data: {'mockResult': 3}});
-    )")
-                             .ExtractString();
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [
+            {
+              url: "fenced_frames/title0.html"
+            },
+            {
+              url: "fenced_frames/title1.html",
+              reportingMetadata:
+              {
+                "click": "fenced_frames/report1.html"
+              }
+            },
+            {
+              url: "fenced_frames/title2.html"
+            }
+          ],
+          {
+            data: {'mockResult': 3},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are 2 "worklet operations": `addModule()` and `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid->spec());
+
   EXPECT_EQ(
       "Promise resolved to a number outside the length of the input urls.",
       base::UTF16ToUTF8(console_observer.messages().back().message));
 
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, std::log2(3));
 
-  EXPECT_TRUE(GetSharedStorageReportingMap(GURL(urn_uuid)).empty());
+  EXPECT_TRUE(GetSharedStorageReportingMap(observed_urn_uuid.value()).empty());
 
   FrameTreeNode* root = PrimaryFrameTreeNodeRoot();
 
@@ -3150,13 +3554,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   FrameTreeNode* fenced_frame_root_node =
       GetFencedFrameRootNode(root->child_at(0));
 
-  std::string navigate_fenced_frame_to_urn_script =
-      JsReplace("f.src = $1;", urn_uuid);
+  TestFrameNavigationObserver observer(fenced_frame_root_node);
 
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
-
-  EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
+  EvalJsResult navigation_result = NavigateFencedFrame(
+      root, ResolveSelectURLToConfig()
+                ? FencedFrameNavigationTarget("select_url_result")
+                : FencedFrameNavigationTarget(observed_urn_uuid.value()));
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(navigation_result, observed_urn_uuid.value());
+  }
 
   observer.Wait();
 
@@ -3169,7 +3575,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURL_DuplicateUrl) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3183,34 +3589,72 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  std::string urn_uuid = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title.html"},
-          {url: "fenced_frames/title0.html",
-          url: "fenced_frames/title1.html",
-          reportingMetadata: {"click": "fenced_frames/report1.html"}},
-          {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
-    )")
-                             .ExtractString();
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [
+            {
+              url: "fenced_frames/title0.html"
+            },
+            {
+              url: "fenced_frames/title1.html",
+              reportingMetadata:
+              {
+                "click": "fenced_frames/report1.html"
+              }
+            },
+            {
+              url: "fenced_frames/title2.html"
+            }
+          ],
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are 2 "worklet operations": `addModule()` and `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
+  ASSERT_TRUE(config_observer.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+      config_observer.GetConfig();
+  EXPECT_TRUE(fenced_frame_config.has_value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
 
   SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+      GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, std::log2(3));
 
-  EXPECT_THAT(GetSharedStorageReportingMap(GURL(urn_uuid)),
+  EXPECT_THAT(GetSharedStorageReportingMap(observed_urn_uuid.value()),
               UnorderedElementsAre(
                   Pair("click", https_server()->GetURL(
                                     "a.test", "/fenced_frames/report1.html"))));
@@ -3226,13 +3670,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   FrameTreeNode* fenced_frame_root_node =
       GetFencedFrameRootNode(root->child_at(0));
 
-  std::string navigate_fenced_frame_to_urn_script =
-      JsReplace("f.src = $1;", urn_uuid);
+  TestFrameNavigationObserver observer(fenced_frame_root_node);
 
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
-
-  EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
+  EvalJsResult navigation_result = NavigateFencedFrame(
+      root, ResolveSelectURLToConfig()
+                ? FencedFrameNavigationTarget("select_url_result")
+                : FencedFrameNavigationTarget(observed_urn_uuid.value()));
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(navigation_result, observed_urn_uuid.value());
+  }
 
   observer.Wait();
 
@@ -3245,7 +3691,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        FencedFrameNavigateSelf_NoBudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3262,8 +3708,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       RemainingBudgetViaJSForFrame(PrimaryFrameTreeNodeRoot()->child_at(0)),
       kBudgetAllowed);
 
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
+  TestFrameNavigationObserver observer(fenced_frame_root_node);
   EXPECT_TRUE(ExecJs(fenced_frame_root_node, "location.reload()"));
   observer.Wait();
 
@@ -3278,7 +3723,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        FencedFrameNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3298,9 +3743,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   GURL new_page_url = https_server()->GetURL("c.test", kSimplePagePath);
 
   TestNavigationObserver top_navigation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(
-      fenced_frame_root_node,
-      JsReplace("window.open($1, '_unfencedTop')", new_page_url.spec())));
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_root_node,
+             JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
   top_navigation_observer.Wait();
 
   // After the top navigation, log(8)=3 bits should have been withdrawn from the
@@ -3315,7 +3760,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageFencedFrameInteractionBrowserTest,
     FencedFrameNavigateFromParentToRegularURLAndThenNavigateTop_NoBudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
@@ -3335,11 +3780,10 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL new_frame_url = https_server()->GetURL("c.test", kFencedFramePath);
 
-  TestFrameNavigationObserver observer(
-      fenced_frame_root_node->current_frame_host());
+  TestFrameNavigationObserver observer(fenced_frame_root_node);
   std::string navigate_fenced_frame_script = JsReplace(
       "var f = document.getElementsByTagName('fencedframe')[0]; f.src = $1;",
-      new_frame_url.spec());
+      new_frame_url);
 
   EXPECT_TRUE(ExecJs(shell(), navigate_fenced_frame_script));
   observer.Wait();
@@ -3347,9 +3791,9 @@ IN_PROC_BROWSER_TEST_F(
   GURL new_page_url = https_server()->GetURL("d.test", kSimplePagePath);
 
   TestNavigationObserver top_navigation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(
-      fenced_frame_root_node,
-      JsReplace("window.open($1, '_unfencedTop')", new_page_url.spec())));
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_root_node,
+             JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
   top_navigation_observer.Wait();
 
   // No budget withdrawal as the initial fenced frame was navigated away by its
@@ -3367,7 +3811,7 @@ IN_PROC_BROWSER_TEST_F(
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageFencedFrameInteractionBrowserTest,
     FencedFrameNavigateSelfAndThenNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
@@ -3383,11 +3827,9 @@ IN_PROC_BROWSER_TEST_F(
   {
     GURL new_frame_url = https_server()->GetURL("c.test", kFencedFramePath);
 
-    TestFrameNavigationObserver observer(
-        fenced_frame_root_node->current_frame_host());
-    EXPECT_TRUE(
-        ExecJs(fenced_frame_root_node,
-               JsReplace("window.location.href=$1", new_frame_url.spec())));
+    TestFrameNavigationObserver observer(fenced_frame_root_node);
+    EXPECT_TRUE(ExecJs(fenced_frame_root_node,
+                       JsReplace("window.location.href=$1", new_frame_url)));
     observer.Wait();
   }
 
@@ -3400,9 +3842,9 @@ IN_PROC_BROWSER_TEST_F(
     GURL new_page_url = https_server()->GetURL("d.test", kSimplePagePath);
 
     TestNavigationObserver top_navigation_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecJs(
-        fenced_frame_root_node,
-        JsReplace("window.open($1, '_unfencedTop')", new_page_url.spec())));
+    EXPECT_TRUE(
+        ExecJs(fenced_frame_root_node,
+               JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
     top_navigation_observer.Wait();
   }
 
@@ -3418,7 +3860,7 @@ IN_PROC_BROWSER_TEST_F(
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        NestedFencedFrameNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3442,9 +3884,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
   GURL new_page_url = https_server()->GetURL("d.test", kSimplePagePath);
   TestNavigationObserver top_navigation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(
-      nested_fenced_frame_root_node,
-      JsReplace("window.open($1, '_unfencedTop')", new_page_url.spec())));
+  EXPECT_TRUE(
+      ExecJs(nested_fenced_frame_root_node,
+             JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
   top_navigation_observer.Wait();
 
   // After the top navigation, log(8)=3 bits should have been withdrawn from the
@@ -3459,73 +3901,85 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageFencedFrameInteractionBrowserTest,
     NestedFencedFrameNavigateTop_BudgetWithdrawalFromTwoMetadata) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  url::Origin shared_storage_origin1 =
+  url::Origin shared_storage_origin_1 =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid1 = SelectFrom8URLsInContext(shared_storage_origin1);
-  FrameTreeNode* fenced_frame_root_node1 = CreateFencedFrame(urn_uuid1);
+  GURL urn_uuid_1 = SelectFrom8URLsInContext(shared_storage_origin_1);
+  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(urn_uuid_1);
 
-  url::Origin shared_storage_origin2 =
+  url::Origin shared_storage_origin_2 =
       url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
 
-  GURL urn_uuid2 =
-      SelectFrom8URLsInContext(shared_storage_origin2, fenced_frame_root_node1);
+  GURL urn_uuid_2 = SelectFrom8URLsInContext(shared_storage_origin_2,
+                                             fenced_frame_root_node_1);
 
-  FrameTreeNode* fenced_frame_root_node2 =
-      CreateFencedFrame(fenced_frame_root_node1, urn_uuid2);
+  FrameTreeNode* fenced_frame_root_node_2 =
+      CreateFencedFrame(fenced_frame_root_node_1, urn_uuid_2);
 
-  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin1), kBudgetAllowed);
-  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin2), kBudgetAllowed);
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin_1), kBudgetAllowed);
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin_2), kBudgetAllowed);
 
   GURL new_page_url = https_server()->GetURL("d.test", kSimplePagePath);
   TestNavigationObserver top_navigation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(
-      fenced_frame_root_node2,
-      JsReplace("window.open($1, '_unfencedTop')", new_page_url.spec())));
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_root_node_2,
+             JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
   top_navigation_observer.Wait();
 
   // After the top navigation, log(8)=3 bits should have been withdrawn from
-  // both `shared_storage_origin1` and `shared_storage_origin2`.
-  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin1),
+  // both `shared_storage_origin_1` and `shared_storage_origin_2`.
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin_1),
                    kBudgetAllowed - 3);
-  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin2),
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin_2),
                    kBudgetAllowed - 3);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURLNotAllowedInNestedFencedFrame) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  url::Origin shared_storage_origin1 =
+  url::Origin shared_storage_origin_1 =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid1 = SelectFrom8URLsInContext(shared_storage_origin1);
-  FrameTreeNode* fenced_frame_root_node1 = CreateFencedFrame(urn_uuid1);
+  GURL urn_uuid_1 = SelectFrom8URLsInContext(shared_storage_origin_1);
+  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(urn_uuid_1);
 
-  url::Origin shared_storage_origin2 =
+  url::Origin shared_storage_origin_2 =
       url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
 
-  GURL urn_uuid2 =
-      SelectFrom8URLsInContext(shared_storage_origin2, fenced_frame_root_node1);
+  GURL urn_uuid_2 = SelectFrom8URLsInContext(shared_storage_origin_2,
+                                             fenced_frame_root_node_1);
 
-  FrameTreeNode* fenced_frame_root_node2 =
-      CreateFencedFrame(fenced_frame_root_node1, urn_uuid2);
+  FrameTreeNode* fenced_frame_root_node_2 =
+      CreateFencedFrame(fenced_frame_root_node_1, urn_uuid_2);
 
-  EXPECT_TRUE(ExecJs(fenced_frame_root_node2, R"(
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node_2, R"(
       sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
     )"));
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node_2,
+                     JsReplace("window.resolveSelectURLToConfig = $1;",
+                               ResolveSelectURLToConfig())));
 
-  EvalJsResult result = EvalJs(fenced_frame_root_node2, R"(
+  EvalJsResult result = EvalJs(fenced_frame_root_node_2, R"(
       sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "/fenced_frames/title0.html"}], {data: {'mockResult': 0}});
+        'test-url-selection-operation',
+        [
+          {
+            url: "fenced_frames/title0.html"
+          }
+        ],
+        {
+          data: {'mockResult': 0},
+          resolveToConfig: resolveSelectURLToConfig
+        }
+      );
     )");
 
   EXPECT_THAT(result.error,
@@ -3534,7 +3988,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                   "depth (2) exceeding the maximum allowed number (1)."));
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        IframeInFencedFrameNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3558,9 +4012,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
   GURL new_page_url = https_server()->GetURL("d.test", kSimplePagePath);
   TestNavigationObserver top_navigation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(
-      nested_fenced_frame_root_node,
-      JsReplace("window.open($1, '_unfencedTop')", new_page_url.spec())));
+  EXPECT_TRUE(
+      ExecJs(nested_fenced_frame_root_node,
+             JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
   top_navigation_observer.Wait();
 
   // After the top navigation, log(8)=3 bits should have been withdrawn from the
@@ -3575,7 +4029,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        FencedFrame_PopupTwice_BudgetWithdrawalOnce) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3614,7 +4068,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageFencedFrameInteractionBrowserTest,
     TwoFencedFrames_DifferentURNs_EachPopupOnce_BudgetWithdrawalTwice) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
@@ -3626,10 +4080,70 @@ IN_PROC_BROWSER_TEST_F(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
 
-  GURL urn_uuid1 =
-      GURL(EvalJs(shell(), kSelectFrom8URLsScript).ExtractString());
-  GURL urn_uuid2 =
-      GURL(EvalJs(shell(), kSelectFrom8URLsScript).ExtractString());
+  EXPECT_TRUE(ExecJs(shell(), kGenerateURLsListScript));
+  EXPECT_TRUE(ExecJs(shell(), "window.urls = generateUrls(8);"));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+
+  TestSelectURLFencedFrameConfigObserver config_observer_1(
+      GetStoragePartition());
+  EvalJsResult result_1 = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result_1 = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result_1 instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result_1;
+      })()
+    )");
+
+  EXPECT_TRUE(result_1.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid_1 =
+      config_observer_1.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid_1.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_1.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result_1.ExtractString(), observed_urn_uuid_1->spec());
+  }
+
+  TestSelectURLFencedFrameConfigObserver config_observer_2(
+      GetStoragePartition());
+  EvalJsResult result_2 = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result_2 = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result_2 instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result_2;
+      })()
+    )");
+
+  EXPECT_TRUE(result_2.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid_2 =
+      config_observer_2.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid_2.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_2.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result_2.ExtractString(), observed_urn_uuid_2->spec());
+  }
 
   // There are three "worklet operations": one `addModule()` and two
   // `selectURL()`.
@@ -3637,14 +4151,32 @@ IN_PROC_BROWSER_TEST_F(
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(3);
 
-  FrameTreeNode* fenced_frame_root_node1 = CreateFencedFrame(urn_uuid1);
-  FrameTreeNode* fenced_frame_root_node2 = CreateFencedFrame(urn_uuid2);
+  ASSERT_TRUE(config_observer_1.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config_1 =
+      config_observer_1.GetConfig();
+  EXPECT_TRUE(fenced_frame_config_1.has_value());
+  EXPECT_EQ(fenced_frame_config_1->urn_uuid_, observed_urn_uuid_1.value());
+
+  ASSERT_TRUE(config_observer_2.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config_2 =
+      config_observer_2.GetConfig();
+  EXPECT_TRUE(fenced_frame_config_2.has_value());
+  EXPECT_EQ(fenced_frame_config_2->urn_uuid_, observed_urn_uuid_2.value());
+
+  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(
+      ResolveSelectURLToConfig()
+          ? FencedFrameNavigationTarget("select_url_result_1")
+          : FencedFrameNavigationTarget(observed_urn_uuid_1.value()));
+  FrameTreeNode* fenced_frame_root_node_2 = CreateFencedFrame(
+      ResolveSelectURLToConfig()
+          ? FencedFrameNavigationTarget("select_url_result_2")
+          : FencedFrameNavigationTarget(observed_urn_uuid_2.value()));
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(RemainingBudgetViaJSForFrame(PrimaryFrameTreeNodeRoot()),
                    kBudgetAllowed);
 
-  OpenPopup(fenced_frame_root_node1,
+  OpenPopup(fenced_frame_root_node_1,
             https_server()->GetURL("b.test", kSimplePagePath), /*name=*/"");
 
   // After the popup, log(8)=3 bits should have been withdrawn from the
@@ -3652,7 +4184,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
 
-  OpenPopup(fenced_frame_root_node2,
+  OpenPopup(fenced_frame_root_node_2,
             https_server()->GetURL("b.test", kSimplePagePath), /*name=*/"");
 
   // After the popup, log(8)=3 bits should have been withdrawn from the
@@ -3669,7 +4201,7 @@ IN_PROC_BROWSER_TEST_F(
                                      2);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStorageFencedFrameInteractionBrowserTest,
     TwoFencedFrames_SameURNs_EachPopupOnce_BudgetWithdrawalOnce) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
@@ -3679,15 +4211,15 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
 
-  FrameTreeNode* fenced_frame_root_node1 = CreateFencedFrame(urn_uuid);
-  FrameTreeNode* fenced_frame_root_node2 = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node_2 = CreateFencedFrame(urn_uuid);
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(
       RemainingBudgetViaJSForFrame(PrimaryFrameTreeNodeRoot()->child_at(0)),
       kBudgetAllowed);
 
-  OpenPopup(fenced_frame_root_node1,
+  OpenPopup(fenced_frame_root_node_1,
             https_server()->GetURL("b.test", kSimplePagePath), /*name=*/"");
 
   // After the popup, log(8)=3 bits should have been withdrawn from the
@@ -3695,7 +4227,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
 
-  OpenPopup(fenced_frame_root_node2,
+  OpenPopup(fenced_frame_root_node_2,
             https_server()->GetURL("b.test", kSimplePagePath), /*name=*/"");
 
   // The budget can only be withdrawn once for each urn_uuid.
@@ -3709,7 +4241,7 @@ IN_PROC_BROWSER_TEST_F(
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURL_InsufficientBudget) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3717,37 +4249,115 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin = url::Origin::Create(main_url);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
 
-  GURL urn_uuid1 =
-      GURL(EvalJs(shell(), kSelectFrom8URLsScript).ExtractString());
+  EXPECT_TRUE(ExecJs(shell(), kGenerateURLsListScript));
+  EXPECT_TRUE(ExecJs(shell(), "window.urls = generateUrls(8);"));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  FrameTreeNode* fenced_frame_root_node1 = CreateFencedFrame(urn_uuid1);
-  OpenPopup(fenced_frame_root_node1,
+  TestSelectURLFencedFrameConfigObserver config_observer_1(
+      GetStoragePartition());
+  EvalJsResult result_1 = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result_1 = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result_1 instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result_1;
+      })()
+    )");
+
+  EXPECT_TRUE(result_1.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid_1 =
+      config_observer_1.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid_1.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_1.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result_1.ExtractString(), observed_urn_uuid_1->spec());
+  }
+
+  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(
+      ResolveSelectURLToConfig()
+          ? FencedFrameNavigationTarget("select_url_result_1")
+          : FencedFrameNavigationTarget(observed_urn_uuid_1.value()));
+  OpenPopup(fenced_frame_root_node_1,
             https_server()->GetURL("b.test", kSimplePagePath), /*name=*/"");
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
 
-  GURL urn_uuid2 =
-      GURL(EvalJs(shell(), kSelectFrom8URLsScript).ExtractString());
+  TestSelectURLFencedFrameConfigObserver config_observer_2(
+      GetStoragePartition());
+  EvalJsResult result_2 = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result_2 = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result_2 instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result_2;
+      })()
+    )");
+
+  EXPECT_TRUE(result_2.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid_2 =
+      config_observer_2.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid_2.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_2.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result_2.ExtractString(), observed_urn_uuid_2->spec());
+  }
 
   // Wait for the `addModule()` and two `selectURL()` to finish.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(3);
 
+  ASSERT_TRUE(config_observer_1.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config_1 =
+      config_observer_1.GetConfig();
+  EXPECT_TRUE(fenced_frame_config_1.has_value());
+  EXPECT_EQ(fenced_frame_config_1->urn_uuid_, observed_urn_uuid_1.value());
+
+  ASSERT_TRUE(config_observer_2.ConfigObserved());
+  const absl::optional<FencedFrameConfig>& fenced_frame_config_2 =
+      config_observer_2.GetConfig();
+  EXPECT_TRUE(fenced_frame_config_2.has_value());
+  EXPECT_EQ(fenced_frame_config_2->urn_uuid_, observed_urn_uuid_2.value());
+
   EXPECT_EQ("Insufficient budget for selectURL().",
             base::UTF16ToUTF8(console_observer.messages().back().message));
 
-  // The failed mapping due to insufficient budget (i.e. `urn_uuid2`) should not
-  // incur any budget withdrawal on subsequent top navigation from inside
+  // The failed mapping due to insufficient budget (i.e. `urn_uuid_2`) should
+  // not incur any budget withdrawal on subsequent top navigation from inside
   // the fenced frame.
-  FrameTreeNode* fenced_frame_root_node2 = CreateFencedFrame(urn_uuid2);
-  OpenPopup(fenced_frame_root_node2,
+  FrameTreeNode* fenced_frame_root_node_2 = CreateFencedFrame(
+      ResolveSelectURLToConfig()
+          ? FencedFrameNavigationTarget("select_url_result_2")
+          : FencedFrameNavigationTarget(observed_urn_uuid_2.value()));
+  OpenPopup(fenced_frame_root_node_2,
             https_server()->GetURL("c.test", kSimplePagePath), /*name=*/"");
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
@@ -3762,7 +4372,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
 // When number of urn mappings limit has been reached, subsequent `selectURL()`
 // calls will fail.
-IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        SelectURL_Fails_ExceedNumOfUrnMappingsLimit) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3776,12 +4386,23 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
 
-  EvalJsResult result = EvalJs(shell(), R"(
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+  std::string select_url_script = R"(
       sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}], {data: {'mockResult': 0}});
-    )");
-  EXPECT_TRUE(result.error.empty());
+        'test-url-selection-operation',
+        [
+          {
+            url: "fenced_frames/title0.html"
+          }
+        ],
+        {
+          data: {'mockResult': 0},
+          resolveToConfig: resolveSelectURLToConfig
+        }
+      );
+    )";
+  EXPECT_TRUE(ExecJs(shell(), select_url_script));
 
   // Wait for the `addModule()` and `selectURL()` to finish.
   test_worklet_host_manager()
@@ -3797,11 +4418,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   GURL url("https://a.test");
   fenced_frame_url_mapping_test_peer.FillMap(url);
 
-  EvalJsResult extra_result = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title1.html"}], {data: {'mockResult': 0}});
-    )");
+  EvalJsResult extra_result = EvalJs(shell(), select_url_script);
 
   // `selectURL()` fails when map is full.
   std::string expected_error = base::StrCat(
@@ -3811,30 +4428,33 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(expected_error, extra_result.error);
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageFencedFrameInteractionBrowserTest,
+                         testing::Bool(),
+                         describe_param);
+
 class SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest
     : public SharedStorageFencedFrameInteractionBrowserTest {
  public:
   SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest() {
-    scoped_feature_list_
-        .InitWithFeaturesAndParameters(/*enabled_features=*/
-                                       {{blink::features::kSharedStorageAPI,
-                                         {{"SharedStorageBitBudget",
-                                           base::NumberToString(
-                                               kBudgetAllowed)},
-                                          {"SharedStorageMaxAllowedFencedFrameD"
-                                           "epthForSelectURL",
-                                           "0"}}},
-                                        {features::
-                                             kPrivacySandboxAdsAPIsOverride,
-                                         {}}},
-                                       /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kSharedStorageAPI,
+          {{"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)},
+           {"SharedStorageMaxAllowedFencedFrameDepthForSelectURL", "0"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        /*disabled_features=*/{});
+
+    fenced_frame_api_change_feature_.InitWithFeatureState(
+        blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList fenced_frame_api_change_feature_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
                        SelectURLNotAllowedInFencedFrame) {
   GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
 
@@ -3852,10 +4472,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
   EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
+  EXPECT_TRUE(ExecJs(fenced_frame_node,
+                     JsReplace("window.resolveSelectURLToConfig = $1;",
+                               ResolveSelectURLToConfig())));
   EvalJsResult result = EvalJs(fenced_frame_node, R"(
       sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}], {data: {'mockResult': 0}});
+        'test-url-selection-operation',
+        [
+          {
+            url: "fenced_frames/title0.html"
+          }
+        ],
+        {
+          data: {'mockResult': 0},
+          resolveToConfig: resolveSelectURLToConfig
+        }
+      );
     )");
 
   EXPECT_THAT(result.error,
@@ -3863,6 +4495,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
                   "selectURL() is called in a context with a fenced frame "
                   "depth (1) exceeding the maximum allowed number (0)."));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
+    testing::Bool(),
+    describe_param);
 
 class SharedStorageReportEventBrowserTest
     : public SharedStorageFencedFrameInteractionBrowserTest {
@@ -3872,7 +4510,7 @@ class SharedStorageReportEventBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SharedStorageReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStorageReportEventBrowserTest,
                        SelectURL_ReportEvent) {
   net::test_server::ControllableHttpResponse response1(
       https_server(), "/fenced_frames/report1.html");
@@ -3888,17 +4526,47 @@ IN_PROC_BROWSER_TEST_F(SharedStorageReportEventBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
 
-  GURL urn_uuid = GURL(EvalJs(shell(), R"(
-      sharedStorage.selectURL(
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
           'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"},
-          {url: "fenced_frames/title1.html",
-          reportingMetadata: {'click': "fenced_frames/report1.html",
-              'mouse interaction': "fenced_frames/report2.html"}}],
-          {data: {'mockResult':1}});
-    )")
-                           .ExtractString());
+          [
+            {
+              url: "fenced_frames/title0.html"
+            },
+            {
+              url: "fenced_frames/title1.html",
+              reportingMetadata: {
+                "click": "fenced_frames/report1.html",
+                "mouse interaction": "fenced_frames/report2.html"
+              }
+            }
+          ],
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There are three "worklet operations": one `addModule()` and two
   // `selectURL()`.
@@ -3906,7 +4574,10 @@ IN_PROC_BROWSER_TEST_F(SharedStorageReportEventBrowserTest,
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(
+      ResolveSelectURLToConfig()
+          ? FencedFrameNavigationTarget("select_url_result")
+          : FencedFrameNavigationTarget(observed_urn_uuid.value()));
 
   std::string event_data1 = "this is a click";
   EXPECT_TRUE(
@@ -3937,8 +4608,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageReportEventBrowserTest,
                                      1);
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageReportEventBrowserTest,
+                         testing::Bool(),
+                         describe_param);
+
 class SharedStoragePrivateAggregationDisabledBrowserTest
-    : public SharedStorageBrowserTest {
+    : public SharedStorageBrowserTestBase {
  public:
   SharedStoragePrivateAggregationDisabledBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(content::kPrivateAggregationApi);
@@ -3969,7 +4645,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationDisabledBrowserTest,
 }
 
 class SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest
-    : public SharedStorageBrowserTest {
+    : public SharedStorageBrowserTestBase {
  public:
   SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -4003,7 +4679,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class SharedStoragePrivateAggregationEnabledBrowserTest
-    : public SharedStorageBrowserTest {
+    : public SharedStorageBrowserTestBase {
  public:
   // TODO(alexmt): Consider factoring out along with FLEDGE definition.
   class TestPrivateAggregationManagerImpl
@@ -4022,7 +4698,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    SharedStorageBrowserTest::SetUpOnMainThread();
+    SharedStorageBrowserTestBase::SetUpOnMainThread();
 
     browser_client_ =
         std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
@@ -4030,10 +4706,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
     a_test_origin_ = https_server()->GetOrigin("a.test");
 
     auto* storage_partition_impl =
-        static_cast<StoragePartitionImpl*>(shell()
-                                               ->web_contents()
-                                               ->GetBrowserContext()
-                                               ->GetDefaultStoragePartition());
+        static_cast<StoragePartitionImpl*>(GetStoragePartition());
 
     private_aggregation_host_ = new PrivateAggregationHost(
         /*on_report_request_received=*/mock_callback_.Get(),
@@ -4243,28 +4916,30 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 }
 
 class SharedStorageSelectURLLimitBrowserTest
-    : public SharedStorageBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public SharedStorageBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SharedStorageSelectURLLimitBrowserTest() {
-    if (GetParam()) {
-      feature_list_
-          .InitWithFeaturesAndParameters(/*enabled_features=*/
-                                         {{blink::features::
-                                               kSharedStorageSelectURLLimit,
-                                           {{"SharedStorageMaxAllowedSelectURLC"
-                                             "al"
-                                             "lsPerOriginPerPageLoad",
-                                             base::NumberToString(
-                                                 kMaxSelectURLCalls)}}}},
-                                         /*disabled_features=*/{});
+    if (LimitSelectURLCalls()) {
+      select_url_limit_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{blink::features::kSharedStorageSelectURLLimit,
+                                 {{"SharedStorageMaxAllowedSelectURLCallsPerOri"
+                                   "ginPerPageLoad",
+                                   base::NumberToString(kMaxSelectURLCalls)}}}},
+          /*disabled_features=*/{});
     } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{},
-          /*disabled_features=*/
-          {blink::features::kSharedStorageSelectURLLimit});
+      select_url_limit_feature_list_.InitAndDisableFeature(
+          blink::features::kSharedStorageSelectURLLimit);
     }
+
+    fenced_frame_api_change_feature_.InitWithFeatureState(
+        blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
+    fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);
   }
+
+  bool LimitSelectURLCalls() const { return std::get<0>(GetParam()); }
+
+  bool ResolveSelectURLToConfig() override { return std::get<1>(GetParam()); }
 
   // Precondition: `addModule('shared_storage/simple_module.js')` has been
   // called in the main frame.
@@ -4273,9 +4948,16 @@ class SharedStorageSelectURLLimitBrowserTest
       WebContentsConsoleObserver* console_observer) {
     std::string urn_uuid = EvalJs(shell(), R"(
       sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
+        'test-url-selection-operation',
+        [
+          {
+            url: "fenced_frames/title0.html"
+          }
+        ],
+        {
+          data: {'mockResult':0}
+        }
+      );
     )")
                                .ExtractString();
 
@@ -4303,16 +4985,43 @@ class SharedStorageSelectURLLimitBrowserTest
     EXPECT_TRUE(ExecJs(iframe_node, R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
+    EXPECT_TRUE(
+        ExecJs(iframe_node, JsReplace("window.resolveSelectURLToConfig = $1;",
+                                      ResolveSelectURLToConfig())));
 
-    std::string urn_uuid = EvalJs(iframe_node, R"(
-      sharedStorage.selectURL(
+    TestSelectURLFencedFrameConfigObserver config_observer(
+        GetStoragePartition());
+    EvalJsResult result = EvalJs(iframe_node, R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
           'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
-    )")
-                               .ExtractString();
+          [
+            {
+              url: "fenced_frames/title0.html"
+            }
+          ],
+          {
+            data: {'mockResult': 0},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
 
-    EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+    EXPECT_TRUE(result.error.empty());
+    const absl::optional<GURL>& observed_urn_uuid =
+        config_observer.GetUrnUuid();
+    EXPECT_TRUE(observed_urn_uuid.has_value());
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+    if (!ResolveSelectURLToConfig()) {
+      EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+    }
 
     // There are 2 "worklet operations": `addModule()` and  `selectURL()`.
     test_worklet_host_manager()
@@ -4320,7 +5029,7 @@ class SharedStorageSelectURLLimitBrowserTest
         ->WaitForWorkletResponsesCount(2);
 
     SharedStorageBudgetMetadata* metadata =
-        GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+        GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
     EXPECT_TRUE(metadata);
     EXPECT_EQ(metadata->origin, https_server()->GetOrigin(host_str));
     EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
@@ -4330,18 +5039,21 @@ class SharedStorageSelectURLLimitBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList select_url_limit_feature_list_;
+  base::test::ScopedFeatureList fenced_frame_api_change_feature_;
+  base::test::ScopedFeatureList fenced_frame_feature_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SharedStorageSelectURLLimitBrowserTest,
-                         testing::Bool(),
+                         testing::Combine(testing::Bool(), testing::Bool()),
                          [](const auto& info) {
-                           if (info.param) {
-                             return "SelectURLLimit";
-                           } else {
-                             return "NoSelectURLLimit";
-                           }
+                           return base::StrCat(
+                               {"LimitSelectURLCalls",
+                                std::get<0>(info.param) ? "Enabled"
+                                                        : "Disabled",
+                                "_ResolveSelectURLTo",
+                                std::get<1>(info.param) ? "Config" : "URN"});
                          });
 
 IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
@@ -4364,14 +5076,25 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
     RunSuccessfulSelectURLInMainFrame("a.test", &console_observer);
   }
 
-  if (GetParam()) {
+  if (LimitSelectURLCalls()) {
     // The limit for `selectURL()` has now been reached for "a.test". Make one
     // more call, which will be blocked.
+    EXPECT_TRUE(
+        ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                  ResolveSelectURLToConfig())));
     EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
+        'test-url-selection-operation',
+        [
+          {
+            url: "fenced_frames/title0.html"
+          }
+        ],
+        {
+          data: {'mockResult': 0},
+          resolveToConfig: resolveSelectURLToConfig
+        }
+      );
     )");
 
     EXPECT_EQ(
@@ -4386,7 +5109,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
   WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
 
   int expected_success_count =
-      GetParam() ? kMaxSelectURLCalls : kMaxSelectURLCalls + 1;
+      LimitSelectURLCalls() ? kMaxSelectURLCalls : kMaxSelectURLCalls + 1;
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      expected_success_count);
 
@@ -4429,7 +5152,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
   FrameTreeNode* iframe_node =
       CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
 
-  if (GetParam()) {
+  if (LimitSelectURLCalls()) {
     EXPECT_TRUE(ExecJs(iframe_node, R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
@@ -4441,11 +5164,22 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
 
     // The limit for `selectURL()` has now been reached for "b.test". Make one
     // more call, which will be blocked.
+    EXPECT_TRUE(
+        ExecJs(iframe_node, JsReplace("window.resolveSelectURLToConfig = $1;",
+                                      ResolveSelectURLToConfig())));
     EvalJsResult result = EvalJs(iframe_node, R"(
       sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
+        'test-url-selection-operation',
+        [
+          {
+            url: "fenced_frames/title0.html"
+          }
+        ],
+        {
+          data: {'mockResult': 0},
+          resolveToConfig: resolveSelectURLToConfig
+        }
+      );
     )");
 
     EXPECT_EQ(
@@ -4460,7 +5194,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
   WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
 
   int expected_success_count =
-      GetParam() ? kMaxSelectURLCalls : kMaxSelectURLCalls + 1;
+      LimitSelectURLCalls() ? kMaxSelectURLCalls : kMaxSelectURLCalls + 1;
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      expected_success_count);
 
@@ -4471,7 +5205,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
         AccessType::kDocumentAddModule, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
             "b.test", "/shared_storage/simple_module.js")));
-    if (GetParam() && i == kMaxSelectURLCalls) {
+    if (LimitSelectURLCalls() && i == kMaxSelectURLCalls) {
       break;
     }
     expected_accesses.emplace_back(
@@ -4551,27 +5285,39 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 class SharedStorageReportEventLimitBrowserTest
-    : public SharedStorageReportEventBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public SharedStorageFencedFrameInteractionBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SharedStorageReportEventLimitBrowserTest() {
-    if (GetParam()) {
-      feature_list_
-          .InitWithFeaturesAndParameters(/*enabled_features=*/
-                                         {{blink::features::
-                                               kSharedStorageReportEventLimit,
-                                           {{"SharedStorageReportEventBitBudget"
-                                             "PerPageLoad",
-                                             base::NumberToString(
-                                                 kReportEventBitBudget)}}}},
-                                         /*disabled_features=*/{});
+    if (LimitSharedStorageReportEventCalls()) {
+      report_event_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{blink::features::kSharedStorageReportEventLimit,
+            {{"SharedStorageReportEventBitBudgetPerPageLoad",
+              base::NumberToString(kReportEventBitBudget)}}}},
+          /*disabled_features=*/{});
     } else {
-      feature_list_.InitWithFeaturesAndParameters(
+      report_event_feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/{},
           /*disabled_features=*/
           {blink::features::kSharedStorageReportEventLimit});
     }
+
+    fenced_frame_feature_list_.InitWithFeatureState(
+        blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
   }
+
+  // Defer the server to start after `ControllableHttpResponse` is constructed.
+  void FinishSetup() override {
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  }
+
+  bool LimitSharedStorageReportEventCalls() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool ResolveSelectURLToConfig() override { return std::get<1>(GetParam()); }
 
   // Precondition: `addModule('shared_storage/simple_module.js')` and
   // `selectURL()` have been called in the main frame.
@@ -4605,19 +5351,19 @@ class SharedStorageReportEventLimitBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList report_event_feature_list_;
+  base::test::ScopedFeatureList fenced_frame_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SharedStorageReportEventLimitBrowserTest,
-                         testing::Bool(),
-                         [](const auto& info) {
-                           if (info.param) {
-                             return "ReportEventLimit";
-                           } else {
-                             return "NoReportEventLimit";
-                           }
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedStorageReportEventLimitBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const auto& info) {
+      return base::StrCat(
+          {"ReportEventLimit", std::get<0>(info.param) ? "Enabled" : "Disabled",
+           "_ResolveSelectURLTo", std::get<1>(info.param) ? "Config" : "URN"});
+    });
 
 IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
                        ReportEvent_SameEntropyCalls_LimitReached) {
@@ -4653,9 +5399,43 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(1);
 
+  EXPECT_TRUE(ExecJs(shell(), kGenerateURLsListScript));
+  EXPECT_TRUE(ExecJs(shell(), "window.urls = generateUrls(8);"));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
   std::vector<GURL> urns;
   for (size_t i = 0; i <= call_limit; ++i) {
-    urns.emplace_back(EvalJs(shell(), kSelectFrom8URLsScript).ExtractString());
+    TestSelectURLFencedFrameConfigObserver config_observer(
+        GetStoragePartition());
+    EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+    EXPECT_TRUE(result.error.empty());
+    const absl::optional<GURL>& observed_urn_uuid =
+        config_observer.GetUrnUuid();
+    EXPECT_TRUE(observed_urn_uuid.has_value());
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+    if (!ResolveSelectURLToConfig()) {
+      EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+    }
+
+    urns.push_back(observed_urn_uuid.value());
   }
 
   // There are `call_limit + 1` "worklet operations": `selectURL()`.
@@ -4672,7 +5452,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
 
   FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urns[call_limit]);
 
-  if (GetParam()) {
+  if (LimitSharedStorageReportEventCalls()) {
     // The limit for `reportEvent()` has now been reached for this page. Make
     // one more call, which will be blocked.
     std::string click_event_data = "this is a click";
@@ -4733,10 +5513,78 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
       ->WaitForWorkletResponsesCount(1);
 
   std::vector<GURL> urns;
-  urns.emplace_back(EvalJs(shell(), kSelectFrom8URLsScript).ExtractString());
+  EXPECT_TRUE(ExecJs(shell(), kGenerateURLsListScript));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+
+  TestSelectURLFencedFrameConfigObserver select_from_8urls_config_observer(
+      GetStoragePartition());
+  EvalJsResult select_from_8urls_result = EvalJs(shell(), R"(
+      (async function() {
+        const urls_8 = generateUrls(8);
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls_8,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(select_from_8urls_result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid_from_8urls =
+      select_from_8urls_config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid_from_8urls.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_from_8urls.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(select_from_8urls_result.ExtractString(),
+              observed_urn_uuid_from_8urls->spec());
+  }
+
+  urns.push_back(observed_urn_uuid_from_8urls.value());
+  EXPECT_TRUE(ExecJs(shell(), "window.urls_4 = generateUrls(4);"));
 
   for (size_t i = 0; i <= input4_call_limit; ++i) {
-    urns.emplace_back(EvalJs(shell(), kSelectFrom4URLsScript).ExtractString());
+    TestSelectURLFencedFrameConfigObserver select_from_4urls_config_observer(
+        GetStoragePartition());
+    EvalJsResult select_from_4urls_result = EvalJs(shell(), R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls_4,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+    EXPECT_TRUE(select_from_4urls_result.error.empty());
+    const absl::optional<GURL>& observed_urn_uuid_from_4urls =
+        select_from_4urls_config_observer.GetUrnUuid();
+    EXPECT_TRUE(observed_urn_uuid_from_4urls.has_value());
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_from_4urls.value()));
+
+    if (!ResolveSelectURLToConfig()) {
+      EXPECT_EQ(select_from_4urls_result.ExtractString(),
+                observed_urn_uuid_from_4urls->spec());
+    }
+
+    urns.push_back(observed_urn_uuid_from_4urls.value());
   }
 
   // There are `input4_call_limit + 2` "worklet operations": `selectURL()`.
@@ -4745,31 +5593,31 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
       ->WaitForWorkletResponsesCount(input4_call_limit + 2);
 
   // The first pair of `reportEvent()` calls will deduct 3 bits from the budget.
-  FrameTreeNode* fenced_frame_root_node0 = CreateFencedFrame(urns[0]);
+  FrameTreeNode* fenced_frame_root_node_0 = CreateFencedFrame(urns[0]);
 
-  RunSuccessfulReportEvents(fenced_frame_root_node0, responses[0].get(),
+  RunSuccessfulReportEvents(fenced_frame_root_node_0, responses[0].get(),
                             responses[1].get());
 
   for (size_t i = 1; i <= input4_call_limit; ++i) {
     // Subsequent pairs of calls to `reportEvent()` will deduct 2 bits from the
     // budget.
-    FrameTreeNode* fenced_frame_root_node1 = CreateFencedFrame(urns[i]);
+    FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(urns[i]);
 
-    RunSuccessfulReportEvents(fenced_frame_root_node1, responses[2 * i].get(),
+    RunSuccessfulReportEvents(fenced_frame_root_node_1, responses[2 * i].get(),
                               responses[2 * i + 1].get());
   }
 
-  FrameTreeNode* fenced_frame_root_node2 =
+  FrameTreeNode* fenced_frame_root_node_2 =
       CreateFencedFrame(urns[input4_call_limit + 1]);
 
   size_t current_response_index = 2 * (input4_call_limit + 1);
 
-  if (GetParam()) {
+  if (LimitSharedStorageReportEventCalls()) {
     // The limit for `reportEvent()` has now been reached for this page. Make
     // one more call, which will be blocked.
     std::string click_event_data = "this is a click";
     EXPECT_TRUE(
-        ExecJs(fenced_frame_root_node2,
+        ExecJs(fenced_frame_root_node_2,
                JsReplace("window.fence.reportEvent({"
                          "  eventType: 'click',"
                          "  eventData: $1,"
@@ -4783,12 +5631,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
         base::UTF16ToUTF8(console_observer.messages().back().message));
 
     // Running the first pair of calls again will not cause any errors.
-    RunSuccessfulReportEvents(fenced_frame_root_node0,
+    RunSuccessfulReportEvents(fenced_frame_root_node_0,
                               responses[current_response_index].get(),
                               responses[current_response_index + 1].get());
   } else {
     // The `reportEvent()` limit is disabled. The calls will run successfully.
-    RunSuccessfulReportEvents(fenced_frame_root_node2,
+    RunSuccessfulReportEvents(fenced_frame_root_node_2,
                               responses[current_response_index].get(),
                               responses[current_response_index + 1].get());
   }
@@ -4820,14 +5668,48 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(1);
 
-  GURL urn = GURL(EvalJs(shell(), kSelectFrom8URLsScript).ExtractString());
+  EXPECT_TRUE(ExecJs(shell(), kGenerateURLsListScript));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        const urls = generateUrls(8);
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There is one "worklet operation": `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(1);
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(
+      ResolveSelectURLToConfig()
+          ? FencedFrameNavigationTarget("select_url_result")
+          : FencedFrameNavigationTarget(observed_urn_uuid.value()));
 
   RunSuccessfulReportEvents(fenced_frame_root_node, responses[0].get(),
                             responses[1].get());
@@ -4872,21 +5754,56 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(1);
 
-  GURL urn = GURL(EvalJs(shell(), kSelectFrom8URLsScript).ExtractString());
+  EXPECT_TRUE(ExecJs(shell(), kGenerateURLsListScript));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.resolveSelectURLToConfig = $1;",
+                                        ResolveSelectURLToConfig())));
+
+  TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
+  EvalJsResult result = EvalJs(shell(), R"(
+      (async function() {
+        const urls = generateUrls(8);
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          urls,
+          {
+            data: {'mockResult': 1},
+            resolveToConfig: resolveSelectURLToConfig
+          }
+        );
+        if (resolveSelectURLToConfig &&
+            !(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )");
+
+  EXPECT_TRUE(result.error.empty());
+  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  EXPECT_TRUE(observed_urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+  if (!ResolveSelectURLToConfig()) {
+    EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+  }
 
   // There is one "worklet operation": `selectURL()`.
   test_worklet_host_manager()
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(1);
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(
+      ResolveSelectURLToConfig()
+          ? FencedFrameNavigationTarget("select_url_result")
+          : FencedFrameNavigationTarget(observed_urn_uuid.value()));
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(RemainingBudgetViaJSForFrame(PrimaryFrameTreeNodeRoot()),
                    kBudgetAllowed);
 
   OpenPopup(fenced_frame_root_node,
-            https_server()->GetURL("b.test", kSimplePagePath), /*name=*/"");
+            https_server()->GetURL("b.test", kSimplePagePath),
+            /*name=*/"");
 
   // After the popup, log(8)=3 bits should have been withdrawn from the
   // original shared storage origin.
@@ -4919,35 +5836,35 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
       MakeFilter({"The call to fence.reportEvent was blocked due to "
                   "insufficient budget."}));
 
-  url::Origin shared_storage_origin1 =
+  url::Origin shared_storage_origin_1 =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
   // This call to `selectURL()` will have 8 input URLs, and hence
   // 3 = log2(8) bits of entropy.
-  GURL urn_uuid1 = SelectFrom8URLsInContext(shared_storage_origin1);
-  FrameTreeNode* outer_fenced_frame_root_node = CreateFencedFrame(urn_uuid1);
+  GURL urn_uuid_1 = SelectFrom8URLsInContext(shared_storage_origin_1);
+  FrameTreeNode* outer_fenced_frame_root_node = CreateFencedFrame(urn_uuid_1);
 
-  url::Origin shared_storage_origin2 =
+  url::Origin shared_storage_origin_2 =
       url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
 
   // This call to `selectURL()` will have 8 input URLs, and hence
   // 3 = log2(8) bits of entropy.
-  GURL urn_uuid2 = SelectFrom8URLsInContext(shared_storage_origin2,
-                                            outer_fenced_frame_root_node);
+  GURL urn_uuid_2 = SelectFrom8URLsInContext(shared_storage_origin_2,
+                                             outer_fenced_frame_root_node);
 
   FrameTreeNode* inner_fenced_frame_root_node =
-      CreateFencedFrame(outer_fenced_frame_root_node, urn_uuid2);
+      CreateFencedFrame(outer_fenced_frame_root_node, urn_uuid_2);
 
   RunSuccessfulReportEvents(inner_fenced_frame_root_node, responses[0].get(),
                             responses[1].get());
 
   // This call to `selectURL()` will have 8 input URLs, and hence
   // 3 = log2(8) bits of entropy.
-  GURL extra_urn = SelectFrom8URLsInContext(shared_storage_origin1);
+  GURL extra_urn = SelectFrom8URLsInContext(shared_storage_origin_1);
 
   FrameTreeNode* extra_fenced_frame_root_node = CreateFencedFrame(extra_urn);
 
-  if (GetParam()) {
+  if (LimitSharedStorageReportEventCalls()) {
     // The limit for `reportEvent()` has now been reached for this page. Make
     // one more call, which will be blocked.
     std::string click_event_data = "this is a click";
