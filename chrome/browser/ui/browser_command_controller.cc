@@ -1066,9 +1066,10 @@ void BrowserCommandController::InitCommandState() {
     return;
 
   // Navigation commands
-  command_updater_.UpdateCommandEnabled(IDC_RELOAD, true);
-  command_updater_.UpdateCommandEnabled(IDC_RELOAD_BYPASSING_CACHE, true);
-  command_updater_.UpdateCommandEnabled(IDC_RELOAD_CLEARING_CACHE, true);
+  const bool can_reload = CanReload(browser_);
+  command_updater_.UpdateCommandEnabled(IDC_RELOAD, can_reload);
+  command_updater_.UpdateCommandEnabled(IDC_RELOAD_BYPASSING_CACHE, can_reload);
+  command_updater_.UpdateCommandEnabled(IDC_RELOAD_CLEARING_CACHE, can_reload);
 
   // Window management commands
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);
@@ -1326,11 +1327,10 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // Navigation commands
   command_updater_.UpdateCommandEnabled(IDC_BACK, CanGoBack(browser_));
   command_updater_.UpdateCommandEnabled(IDC_FORWARD, CanGoForward(browser_));
-  command_updater_.UpdateCommandEnabled(IDC_RELOAD, CanReload(browser_));
-  command_updater_.UpdateCommandEnabled(IDC_RELOAD_BYPASSING_CACHE,
-                                        CanReload(browser_));
-  command_updater_.UpdateCommandEnabled(IDC_RELOAD_CLEARING_CACHE,
-                                        CanReload(browser_));
+  const bool can_reload = CanReload(browser_);
+  command_updater_.UpdateCommandEnabled(IDC_RELOAD, can_reload);
+  command_updater_.UpdateCommandEnabled(IDC_RELOAD_BYPASSING_CACHE, can_reload);
+  command_updater_.UpdateCommandEnabled(IDC_RELOAD_CLEARING_CACHE, can_reload);
 
   // Window management commands
   bool is_app = browser_->is_type_app() || browser_->is_type_app_popup();

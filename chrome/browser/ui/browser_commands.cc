@@ -630,7 +630,8 @@ void ReloadBypassingCache(Browser* browser, WindowOpenDisposition disposition) {
 }
 
 bool CanReload(const Browser* browser) {
-  return browser && !browser->is_type_devtools();
+  return browser && !browser->is_type_devtools() &&
+         !browser->is_type_picture_in_picture();
 }
 
 void Home(Browser* browser, WindowOpenDisposition disposition) {
