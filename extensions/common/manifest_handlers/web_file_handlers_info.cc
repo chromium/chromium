@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 
 #include "base/strings/string_split.h"
 #include "extensions/common/api/file_handlers.h"
@@ -22,7 +22,7 @@ using FileHandlersManifestKeys = api::file_handlers::ManifestKeys;
 // is because the generated data type only accepts a string. This string can be
 // parsed with a method that gets a list of sizes.
 // TODO(crbug/1179530): Re-use Blink parser.
-std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
+std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
                                                std::u16string* error) {
   FileHandlersManifestKeys manifest_keys;
   if (!FileHandlersManifestKeys::ParseFromDictionary(
@@ -32,11 +32,11 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
 
   auto get_error = [](size_t i, base::StringPiece message) {
     return ErrorUtils::FormatErrorMessageUTF16(
-        manifest_errors::kInvalidFileHandlersMV3, base::NumberToString(i),
+        manifest_errors::kInvalidWebFileHandlers, base::NumberToString(i),
         message);
   };
 
-  auto info = std::make_unique<FileHandlersMV3>();
+  auto info = std::make_unique<WebFileHandlers>();
 
   // file_handlers: array. can't be empty
   if (manifest_keys.file_handlers.empty()) {
@@ -173,36 +173,36 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
 
 }  // namespace
 
-FileHandlersMV3::FileHandlersMV3() = default;
-FileHandlersMV3::~FileHandlersMV3() = default;
+WebFileHandlers::WebFileHandlers() = default;
+WebFileHandlers::~WebFileHandlers() = default;
 
 // static
-bool FileHandlersMV3::HasFileHandlers(const Extension& extension) {
-  const FileHandlersInfoMV3* info = GetFileHandlers(extension);
+bool WebFileHandlers::HasFileHandlers(const Extension& extension) {
+  const WebFileHandlersInfo* info = GetFileHandlers(extension);
   return info && info->size() > 0;
 }
 
 // static
-const FileHandlersInfoMV3* FileHandlersMV3::GetFileHandlers(
+const WebFileHandlersInfo* WebFileHandlers::GetFileHandlers(
     const Extension& extension) {
   // Guard against incompatible extension manifest versions.
-  if (!FileHandlersMV3::SupportsWebFileHandlers(extension.manifest_version())) {
+  if (!WebFileHandlers::SupportsWebFileHandlers(extension.manifest_version())) {
     return nullptr;
   }
 
-  FileHandlersMV3* info = static_cast<FileHandlersMV3*>(
+  WebFileHandlers* info = static_cast<WebFileHandlers*>(
       extension.GetManifestData(manifest_keys::kFileHandlers));
   return info ? &info->file_handlers : nullptr;
 }
 
-FileHandlersParserMV3::FileHandlersParserMV3() = default;
-FileHandlersParserMV3::~FileHandlersParserMV3() = default;
+WebFileHandlersParser::WebFileHandlersParser() = default;
+WebFileHandlersParser::~WebFileHandlersParser() = default;
 
-bool FileHandlersParserMV3::Parse(Extension* extension, std::u16string* error) {
+bool WebFileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   // Guard against incompatible extension manifest versions.
   DCHECK(extension);
   DCHECK(
-      FileHandlersMV3::SupportsWebFileHandlers(extension->manifest_version()));
+      WebFileHandlers::SupportsWebFileHandlers(extension->manifest_version()));
 
   auto info = ParseFromList(*extension, error);
   if (!info) {
@@ -214,13 +214,13 @@ bool FileHandlersParserMV3::Parse(Extension* extension, std::u16string* error) {
   return true;
 }
 
-base::span<const char* const> FileHandlersParserMV3::Keys() const {
+base::span<const char* const> WebFileHandlersParser::Keys() const {
   static constexpr const char* kKeys[] = {
       FileHandlersManifestKeys::kFileHandlers};
   return kKeys;
 }
 
-bool FileHandlersParserMV3::Validate(
+bool WebFileHandlersParser::Validate(
     const Extension* extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
@@ -228,9 +228,9 @@ bool FileHandlersParserMV3::Validate(
   return true;
 }
 
-bool FileHandlersMV3::SupportsWebFileHandlers(const int manifest_version) {
+bool WebFileHandlers::SupportsWebFileHandlers(const int manifest_version) {
   return manifest_version >= 3 &&
-         base::FeatureList::IsEnabled(extensions_features::kFileHandlersMV3);
+         base::FeatureList::IsEnabled(extensions_features::kWebFileHandlers);
 }
 
 }  // namespace extensions

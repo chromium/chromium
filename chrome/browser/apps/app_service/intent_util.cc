@@ -29,7 +29,7 @@
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
-#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -297,8 +297,8 @@ apps::IntentFilters CreateIntentFiltersForExtension(
 #if BUILDFLAG(IS_CHROMEOS)
   // MV3+ manifest support for the `file_handlers` key.
   DCHECK(extension);
-  const extensions::FileHandlersInfoMV3* intent_filter_data =
-      extensions::FileHandlersMV3::GetFileHandlers(*extension);
+  const extensions::WebFileHandlersInfo* intent_filter_data =
+      extensions::WebFileHandlers::GetFileHandlers(*extension);
   if (intent_filter_data && !intent_filter_data->empty()) {
     apps::IntentFilters filters;
     for (const auto& file_handler : *intent_filter_data) {

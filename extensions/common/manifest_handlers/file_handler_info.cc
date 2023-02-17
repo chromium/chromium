@@ -16,7 +16,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 
 namespace extensions {
 
@@ -148,7 +148,7 @@ FileHandlers::~FileHandlers() = default;
 // static
 const FileHandlersInfo* FileHandlers::GetFileHandlers(
     const Extension* extension) {
-  if (FileHandlersMV3::SupportsWebFileHandlers(extension->manifest_version())) {
+  if (WebFileHandlers::SupportsWebFileHandlers(extension->manifest_version())) {
     return nullptr;
   }
   FileHandlers* info = static_cast<FileHandlers*>(
@@ -162,8 +162,8 @@ FileHandlersParser::~FileHandlersParser() = default;
 
 bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   // If this is an MV3 extension, use the generated `file_handlers` object.
-  if (FileHandlersMV3::SupportsWebFileHandlers(extension->manifest_version())) {
-    return FileHandlersParserMV3().Parse(extension, error);
+  if (WebFileHandlers::SupportsWebFileHandlers(extension->manifest_version())) {
+    return WebFileHandlersParser().Parse(extension, error);
   }
 
   std::unique_ptr<FileHandlers> info(new FileHandlers);

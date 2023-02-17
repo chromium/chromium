@@ -22,7 +22,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
-#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
@@ -35,7 +35,7 @@ class ExtensionAppsChromeOsBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   ExtensionAppsChromeOsBrowserTest() {
-    feature_list_.InitAndEnableFeature(extensions_features::kFileHandlersMV3);
+    feature_list_.InitAndEnableFeature(extensions_features::kWebFileHandlers);
   }
 
  protected:
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, LaunchWithFileIntent) {
       LoadExtension(extension_dir.UnpackedPath());
   DCHECK(extension);
   auto* file_handlers =
-      extensions::FileHandlersMV3::GetFileHandlers(*extension);
+      extensions::WebFileHandlers::GetFileHandlers(*extension);
   EXPECT_EQ(1u, file_handlers->size());
 
   // Open app.

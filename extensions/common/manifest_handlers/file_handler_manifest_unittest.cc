@@ -13,7 +13,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
-#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,10 +91,10 @@ TEST_F(FileHandlersManifestTest, NotPlatformApp) {
   ASSERT_TRUE(handlers == nullptr);
 }
 
-class FileHandlersManifestV3Test : public ManifestTest {
+class WebFileHandlersTest : public ManifestTest {
  public:
-  FileHandlersManifestV3Test() : channel_(version_info::Channel::CANARY) {
-    feature_list_.InitAndEnableFeature(extensions_features::kFileHandlersMV3);
+  WebFileHandlersTest() : channel_(version_info::Channel::CANARY) {
+    feature_list_.InitAndEnableFeature(extensions_features::kWebFileHandlers);
   }
 
  protected:
@@ -118,7 +118,7 @@ class FileHandlersManifestV3Test : public ManifestTest {
 };
 
 // `file_handlers` examples.
-TEST_F(FileHandlersManifestV3Test, GeneralSuccess) {
+TEST_F(WebFileHandlersTest, GeneralSuccess) {
   struct {
     const char* title;
     const char* file_handler;
@@ -207,10 +207,10 @@ TEST_F(FileHandlersManifestV3Test, GeneralSuccess) {
     // Load extension and get file handlers.
     scoped_refptr<Extension> extension(LoadAndExpectSuccess(
         std::move(GetManifestData(test_case.file_handler))));
-    auto* file_handlers = FileHandlersMV3::GetFileHandlers(*extension.get());
+    auto* file_handlers = WebFileHandlers::GetFileHandlers(*extension.get());
     ASSERT_TRUE(file_handlers);
 
-    // Exercise `file_handlers` key with a subkey that only exists in MV3.
+    // Exercise the web `file_handlers` key with a subkey introduced in MV3.
     for (const auto& file_handler : *file_handlers) {
       EXPECT_TRUE(file_handler.action.size() > 0);
     }
@@ -218,7 +218,7 @@ TEST_F(FileHandlersManifestV3Test, GeneralSuccess) {
 }
 
 // General usage verification.
-TEST_F(FileHandlersManifestV3Test, GeneralErrors) {
+TEST_F(WebFileHandlersTest, GeneralErrors) {
   struct {
     const char* title;
     const char* file_handler;
@@ -312,7 +312,7 @@ TEST_F(FileHandlersManifestV3Test, GeneralErrors) {
 }
 
 // `accept` property verification.
-TEST_F(FileHandlersManifestV3Test, AcceptErrors) {
+TEST_F(WebFileHandlersTest, AcceptErrors) {
   struct {
     const char* title;
     const char* file_handler;
@@ -398,7 +398,7 @@ TEST_F(FileHandlersManifestV3Test, AcceptErrors) {
 }
 
 // `icon` property verification.
-TEST_F(FileHandlersManifestV3Test, IconErrors) {
+TEST_F(WebFileHandlersTest, IconErrors) {
   struct {
     const char* title;
     const char* file_handler;

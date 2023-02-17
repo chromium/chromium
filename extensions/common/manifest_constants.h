@@ -295,7 +295,7 @@ extern const char kInvalidFileBrowserHandlerMissingPermission[];
 extern const char16_t kInvalidFileFiltersList[];
 extern const char kInvalidFileFilterValue[];
 extern const char16_t kInvalidFileHandlers[];
-extern const char kInvalidFileHandlersMV3[];
+extern const char kInvalidWebFileHandlers[];
 extern const char16_t kInvalidFileHandlersTooManyTypesAndExtensions[];
 extern const char kInvalidFileHandlerExtension[];
 extern const char kInvalidFileHandlerExtensionElement[];

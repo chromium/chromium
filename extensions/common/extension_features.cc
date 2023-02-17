@@ -114,8 +114,8 @@ BASE_FEATURE(kExtensionSidePanelIntegration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // File Handlers.
-BASE_FEATURE(kFileHandlersMV3,
-             "FileHandlersMV3",
+BASE_FEATURE(kWebFileHandlers,
+             "WebFileHandlers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // IsValidSourceUrl enforcement for ExtensionHostMsg_OpenChannelToExtension IPC.

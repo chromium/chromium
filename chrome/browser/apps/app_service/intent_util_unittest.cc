@@ -385,11 +385,11 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
             R"(filesystem:chrome://file-manager/.*\..*)");
 }
 
-TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlersMV3) {
+TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_WebFileHandlers) {
   // Extension feature flag.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      extensions_features::kFileHandlersMV3);
+      extensions_features::kWebFileHandlers);
 
   // Create extension that provides file_handlers.
   extensions::ExtensionBuilder extension_builder("Test");

@@ -374,7 +374,7 @@ const char16_t kInvalidFileFiltersList[] = u"Invalid value for 'file_filters'.";
 const char kInvalidFileFilterValue[] =
     "Invalid value for 'file_filters[*]'.";
 const char16_t kInvalidFileHandlers[] = u"Invalid value for 'file_handlers'.";
-const char kInvalidFileHandlersMV3[] =
+const char kInvalidWebFileHandlers[] =
     "Invalid value for 'file_handlers[*]'. *";
 const char16_t kInvalidFileHandlersTooManyTypesAndExtensions[] =
     u"Too many MIME and extension file_handlers have been declared.";

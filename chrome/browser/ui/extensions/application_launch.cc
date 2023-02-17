@@ -49,8 +49,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
-#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
@@ -325,7 +325,7 @@ WebContents* OpenEnabledApplication(Profile* profile,
                             params.container);
 
   GURL url;
-  if (extensions::FileHandlersMV3::SupportsWebFileHandlers(
+  if (extensions::WebFileHandlers::SupportsWebFileHandlers(
           extension->manifest_version()) &&
       params.intent->activity_name.has_value()) {
     // `params.intent->activity_name` is actually the `action` url set in the

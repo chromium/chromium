@@ -81,8 +81,8 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
-#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -292,10 +292,10 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
     return;
   }
   bool is_quickoffice = extension_misc::IsQuickOfficeExtension(extension->id());
-  bool is_file_handlers_mv3 =
-      extensions::FileHandlersMV3::SupportsWebFileHandlers(
+  bool supports_web_file_handlers =
+      extensions::WebFileHandlers::SupportsWebFileHandlers(
           extension->manifest_version());
-  if (extension->is_app() || is_quickoffice || is_file_handlers_mv3) {
+  if (extension->is_app() || is_quickoffice || supports_web_file_handlers) {
     content::WebContents* web_contents = LaunchAppWithIntentImpl(
         app_id, event_flags, std::move(intent), launch_source,
         std::move(window_info), std::move(callback));
@@ -775,9 +775,9 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     }
 
     // Allow MV3 file handlers.
-    if (extensions::FileHandlersMV3::SupportsWebFileHandlers(
+    if (extensions::WebFileHandlers::SupportsWebFileHandlers(
             extension->manifest_version()) &&
-        extensions::FileHandlersMV3::HasFileHandlers(*extension)) {
+        extensions::WebFileHandlers::HasFileHandlers(*extension)) {
       return true;
     }
 

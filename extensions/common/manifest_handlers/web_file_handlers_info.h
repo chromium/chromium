@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_COMMON_MANIFEST_HANDLERS_FILE_HANDLER_INFO_MV3_H_
-#define EXTENSIONS_COMMON_MANIFEST_HANDLERS_FILE_HANDLER_INFO_MV3_H_
+#ifndef EXTENSIONS_COMMON_MANIFEST_HANDLERS_WEB_FILE_HANDLERS_INFO_H_
+#define EXTENSIONS_COMMON_MANIFEST_HANDLERS_WEB_FILE_HANDLERS_INFO_H_
 
 #include <string>
 #include <vector>
@@ -15,32 +15,33 @@
 namespace extensions {
 
 using FileHandler = api::file_handlers::FileHandler;
-using FileHandlersInfoMV3 = std::vector<FileHandler>;
+using WebFileHandlersInfo = std::vector<FileHandler>;
 
 // Structured contents of the `file_handlers` manifest key.
-struct FileHandlersMV3 : public Extension::ManifestData {
-  FileHandlersMV3();
-  ~FileHandlersMV3() override;
+struct WebFileHandlers : public Extension::ManifestData {
+  WebFileHandlers();
+  ~WebFileHandlers() override;
 
   // The list of entries for the web-accessible resources of the extension.
-  FileHandlersInfoMV3 file_handlers;
+  WebFileHandlersInfo file_handlers;
 
-  static const FileHandlersInfoMV3* GetFileHandlers(const Extension& extension);
+  static const WebFileHandlersInfo* GetFileHandlers(const Extension& extension);
 
   static bool HasFileHandlers(const Extension& extension);
 
-  // Verify that MV3+ file handers are supported.
+  // Support for web file handlers, introduced in MV3 based on the web API named
+  // `File Handling Explainer`.
   // TODO(crbug/1179530): Remove after MV2 deprecation.
   static bool SupportsWebFileHandlers(const int manifest_version);
 };
 
 // Parses the `file_handlers` manifest key.
-class FileHandlersParserMV3 : public ManifestHandler {
+class WebFileHandlersParser : public ManifestHandler {
  public:
-  FileHandlersParserMV3();
-  FileHandlersParserMV3(const FileHandlersParserMV3&) = delete;
-  FileHandlersParserMV3& operator=(const FileHandlersParserMV3&) = delete;
-  ~FileHandlersParserMV3() override;
+  WebFileHandlersParser();
+  WebFileHandlersParser(const WebFileHandlersParser&) = delete;
+  WebFileHandlersParser& operator=(const WebFileHandlersParser&) = delete;
+  ~WebFileHandlersParser() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
@@ -54,4 +55,4 @@ class FileHandlersParserMV3 : public ManifestHandler {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_COMMON_MANIFEST_HANDLERS_FILE_HANDLER_INFO_MV3_H_
+#endif  // EXTENSIONS_COMMON_MANIFEST_HANDLERS_WEB_FILE_HANDLERS_INFO_H_
