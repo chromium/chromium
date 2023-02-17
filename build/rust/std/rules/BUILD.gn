@@ -711,6 +711,8 @@ cargo_crate("test") {
     ":proc_macro",
     ":std",
   ]
+
+  rustenv = [ "CFG_DISABLE_UNSTABLE_FEATURES=0" ]
 }
 cargo_crate("unicode_width") {
   crate_type = "rlib"

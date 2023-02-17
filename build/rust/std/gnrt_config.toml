@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+[libc]
+# Requires:
+# * cfg(libc_align) for new enough rustc, which is normally provided by build.rs
+#   but we don't run build scripts for std crates.
+# * cfg(libc_priv_mod_use) is required for the below to work properly.
+# * cfg(libc_core_cvoid) to use the same ffi c_void definition as libcore.
+#
+# See https://github.com/rust-lang/libc/blob/master/build.rs
+cfg = ['libc_align', 'libc_priv_mod_use', 'libc_core_cvoid']
+
+[std]
+# Requires:
+# * cfg(backtrace_in_libstd) because it directly includes .rs files from the
+#   backtrace code rather than including it as a dependency. backtrace's
+#   implementation has special-purpose code to handle this.
+# * STD_ENV_ARCH is referenced in architecture-dependent code. Note this is the
+#   target arch, and as such `$rust_target_arch` is passed literally to GN. This
+#   variable is set at build time in build/config/rust.gni
+#
+# See https://github.com/rust-lang/rust/blob/master/library/std/build.rs
+cfg = ['backtrace_in_libstd']
+env = ['STD_ENV_ARCH=$rust_target_arch']
+
+[test]
+# Requires:
+# * CFG_DISABLE_UNSTABLE_FEATURES=0 to match how it's built by x.py.
+env = ['CFG_DISABLE_UNSTABLE_FEATURES=0']

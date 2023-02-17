@@ -17,6 +17,7 @@ rust_static_library("gnrt_lib") {
   crate_name = "gnrt_lib"
   crate_root = "lib.rs"
   sources = [
+    "config.rs",
     "crates.rs",
     "deps.rs",
     "download.rs",

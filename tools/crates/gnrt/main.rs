@@ -297,10 +297,25 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
 }
 
 fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> ExitCode {
+    // Load config file, which applies rustenv and cfg flags to some std crates.
+    let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
+    let config: config::ConfigFile = toml::de::from_str(&config_file_contents).unwrap();
+
     // Run `cargo metadata` from the std package in the Rust source tree (which
     // is a workspace).
     let mut command = cargo_metadata::MetadataCommand::new();
     command.current_dir(paths.std_fake_root);
+
+    // Delete the Cargo.lock if it exists.
+    let mut std_fake_root_cargo_lock = paths.std_fake_root.to_path_buf();
+    std_fake_root_cargo_lock.push("Cargo.lock");
+    if let Err(e) = std::fs::remove_file(std_fake_root_cargo_lock) {
+        match e.kind() {
+            // Ignore if it already doesn't exist.
+            std::io::ErrorKind::NotFound => (),
+            _ => panic!("io error while deleting Cargo.lock: {e}"),
+        }
+    }
 
     // Use offline to constrain dependency resolution to those in the Rust src
     // tree and vendored crates. Ideally, we'd use "--locked" and use the
@@ -374,22 +389,36 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> E
         }
     }
 
+    // Load extra cfg flags and environment variables needed while building std
+    // crates.
+    //
     // TODO(crbug.com/1368806):
-    // * Find a more sustainable way to supply these extra args, preferably in a
-    //   config file somewhere.
     // * Supply `-Zforce-unstable-if-unmarked` to all std crates, which ensures deps
     //   of std aren't visible to consumers.
     let mut extra_gn = HashMap::new();
-    // std requires:
-    // * cfg(backtrace_in_libstd) because it directly includes .rs files from the
-    //   backtrace code rather than including it as a dependency. backtrace's
-    //   implementation has special-purpose code to handle this.
-    // * STD_ENV_ARCH is referenced in architecture-dependent code.
-    extra_gn.insert("std".to_string(), "rustflags = [\"--cfg=backtrace_in_libstd\"]\nrustenv = [\"STD_ENV_ARCH=$rust_target_arch\"]".to_string());
-    // libc requires:
-    // * cfg(libc_align) for new enough rustc, which is normally provided by
-    //   build.rs but we don't run build scripts for std crates.
-    extra_gn.insert("libc".to_string(), "rustflags = [\"--cfg=libc_align\"]".to_string());
+    for (lib, config) in config.per_lib_config {
+        let mut rustflags = String::new();
+        let mut rustenv = String::new();
+        if !config.cfg.is_empty() {
+            rustflags = "rustflags = [".to_string();
+            rustflags.extend(config.cfg.into_iter().map(|cfg| format!("\"--cfg={cfg}\",")));
+            rustflags.push(']');
+        }
+        if !config.env.is_empty() {
+            rustenv = "rustenv = [".to_string();
+            rustenv.extend(config.env.into_iter().map(|env| format!("\"{env}\",")));
+            rustenv.push(']');
+        }
+
+        let strs = [rustflags.as_str(), rustenv.as_str()];
+        let extra = strs.join("\n");
+
+        assert!(
+            !extra.is_empty(),
+            "if a config entry was present, we should've generated something..."
+        );
+        extra_gn.insert(lib, extra);
+    }
 
     let build_file = gn::build_file_from_std_deps(dependencies.iter(), paths, &extra_gn);
     write_build_file(&paths.std_build.join("BUILD.gn"), &build_file).unwrap();
