@@ -46,6 +46,7 @@ NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kShieldSymbol = @"shield";
 NSString* const kCloudSlashSymbol = @"cloud_slash";
 NSString* const kCloudAndArrowUpSymbol = @"cloud_and_arrow_up";
+NSString* const kDinoSymbol = @"dino";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";

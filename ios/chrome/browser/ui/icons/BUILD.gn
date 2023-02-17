@@ -62,6 +62,7 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:camera_lens",
     "//ios/chrome/browser/ui/icons/resources:checkerboard_shield",
     "//ios/chrome/browser/ui/icons/resources:checkermark_shield",
+    "//ios/chrome/browser/ui/icons/resources:dino",
     "//ios/chrome/browser/ui/icons/resources:incognito",
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill",
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill_ios14",
@@ -93,6 +94,20 @@ source_set("symbols") {
   if (target_environment != "catalyst") {
     deps += [ "//ios/chrome/browser/ui/icons/resources:multicolor_password" ]
   }
+}
+
+source_set("symbols_views") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "colorful_background_symbol_view.h",
+    "colorful_background_symbol_view.mm",
+  ]
+  deps = [
+    ":symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+  ]
 }
 
 source_set("unit_tests") {

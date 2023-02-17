@@ -13,10 +13,8 @@ import UIKit
   public let subtitle: String
   /// Describes the action performed; can be used for voiceover.
   public let hint: String
-  /// Name of the image in the bundle.
-  public let imageName: String
-  /// Whether the pedal is displayed from an incognito session.
-  public let incognito: Bool
+  /// The image for the Pedal.
+  public let image: UIImage
   /// Action to run when the pedal is executed.
   public let action: () -> Void
   /// Action type for metrics collection. Int-casted OmniboxPedalId
@@ -24,15 +22,14 @@ import UIKit
 
   public init(
     title: String, subtitle: String,
-    accessibilityHint: String, imageName: String, type: Int, incognito: Bool,
+    accessibilityHint: String, image: UIImage, type: Int,
     action: @escaping () -> Void
   ) {
     self.title = title
     self.subtitle = subtitle
     self.hint = accessibilityHint
-    self.imageName = imageName
+    self.image = image
     self.type = type
-    self.incognito = incognito
     self.action = action
   }
 }
@@ -44,12 +41,7 @@ extension OmniboxPedalData: OmniboxIcon {
   }
 
   public var iconImage: UIImage? {
-    // Dark mode is set explicitly if incognito is enabled.
-    let userInterfaceStyle =
-      UITraitCollection(userInterfaceStyle: incognito ? .dark : .unspecified)
-    return UIImage(
-      named: self.imageName, in: nil,
-      compatibleWith: UITraitCollection(traitsFrom: [.current, userInterfaceStyle]))
+    return image
   }
 
   public var imageURL: CrURL? { return nil }

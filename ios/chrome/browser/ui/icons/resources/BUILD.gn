@@ -26,6 +26,13 @@ symbolset("checkermark_shield") {
   ]
 }
 
+symbolset("dino") {
+  sources = [
+    "dino.symbolset/Contents.json",
+    "dino.symbolset/dino.cr.svg",
+  ]
+}
+
 symbolset("incognito") {
   sources = [
     "incognito.symbolset/Contents.json",

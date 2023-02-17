@@ -49,6 +49,7 @@ extern NSString* const kGoogleShieldSymbol;
 extern NSString* const kShieldSymbol;
 extern NSString* const kCloudSlashSymbol;
 extern NSString* const kCloudAndArrowUpSymbol;
+extern NSString* const kDinoSymbol;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.
