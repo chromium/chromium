@@ -324,6 +324,8 @@ NotificationGroupingController::CreateCopyForParentNotification(
     copy->set_accent_color(parent_notification.accent_color().value());
   }
 
+  copy->set_priority(parent_notification.priority());
+
   // After copying, set to be a group parent.
   copy->SetGroupParent();
 
@@ -415,9 +417,18 @@ void NotificationGroupingController::OnNotificationAdded(
       return;
     }
 
+    parent_id = SetupParentNotification(
+        MessageCenter::Get()->FindNotificationById(parent_id), parent_id);
+
+    // Retrieve the parent notification again (since now we are having a new
+    // `parent_id`).
     parent_notification = MessageCenter::Get()->FindNotificationById(parent_id);
-    parent_id = SetupParentNotification(parent_notification, parent_id);
   }
+
+  // The parent notification should have the same priority as the last added
+  // child notification, so that we can display the group popup according to
+  // that notification.
+  parent_notification->set_priority(notification->priority());
 
   grouped_notification_list_->AddGroupedNotification(notification_id,
                                                      parent_id);

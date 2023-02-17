@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/views/animation/slide_out_controller.h"
@@ -304,6 +305,34 @@ TEST_P(NotificationGroupingControllerTest, ParentNotificationMetadata) {
             parent_notification->accent_color_id());
   EXPECT_EQ(SK_ColorRED, parent_notification->accent_color());
   EXPECT_EQ(&icon, &parent_notification->vector_small_image());
+}
+
+// Parent notification's priority should always match the priority of the last
+// added notification to the group.
+TEST_P(NotificationGroupingControllerTest, ParentNotificationPriority) {
+  auto* message_center = MessageCenter::Get();
+  std::string id1, id2, id3;
+  const GURL url(u"http://test-url.com/");
+
+  auto notification = MakeNotification(id1, url);
+  notification->set_priority(message_center::LOW_PRIORITY);
+  message_center->AddNotification(std::move(notification));
+
+  auto notification2 = MakeNotification(id2, url);
+  notification2->set_priority(message_center::LOW_PRIORITY);
+  message_center->AddNotification(std::move(notification2));
+
+  auto* parent_notification = message_center->FindNotificationById(
+      id1 + kIdSuffixForGroupContainerNotification);
+  EXPECT_TRUE(parent_notification->group_parent());
+
+  EXPECT_EQ(message_center::LOW_PRIORITY, parent_notification->priority());
+
+  auto notification3 = MakeNotification(id3, url);
+  notification3->set_priority(message_center::HIGH_PRIORITY);
+  message_center->AddNotification(std::move(notification3));
+
+  EXPECT_EQ(message_center::HIGH_PRIORITY, parent_notification->priority());
 }
 
 TEST_P(NotificationGroupingControllerTest,
