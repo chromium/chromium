@@ -133,7 +133,7 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       .overlay {
         if destination.badge == .blueDot {
           Circle()
-            .background(Circle().foregroundColor(.blue600).padding(0))
+            .foregroundColor(.blue600)
             .frame(width: Dimensions.badgeWidth, height: Dimensions.badgeWidth)
             .offset(
               x: Dimensions.iconWidth - (Dimensions.badgeWidth / 2),
