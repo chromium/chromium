@@ -159,7 +159,7 @@ class MetaParams : public GarbageCollected<MetaParams> {
 };
 
 using ElementMetaParamsMap =
-    HeapHashMap<WeakMember<Element>, Member<const MetaParams>>;
+    HeapHashMap<WeakMember<const Element>, Member<const MetaParams>>;
 
 ElementMetaParamsMap& FullscreenParamsMap() {
   DEFINE_STATIC_LOCAL(Persistent<ElementMetaParamsMap>, map,
@@ -167,22 +167,22 @@ ElementMetaParamsMap& FullscreenParamsMap() {
   return *map;
 }
 
-bool HasFullscreenFlag(Element& element) {
+bool HasFullscreenFlag(const Element& element) {
   return FullscreenParamsMap().Contains(&element);
 }
 
-void SetFullscreenFlag(Element& element,
+void SetFullscreenFlag(const Element& element,
                        FullscreenRequestType request_type,
                        const FullscreenOptions* options) {
   FullscreenParamsMap().insert(
       &element, MakeGarbageCollected<MetaParams>(request_type, options));
 }
 
-void UnsetFullscreenFlag(Element& element) {
+void UnsetFullscreenFlag(const Element& element) {
   FullscreenParamsMap().erase(&element);
 }
 
-FullscreenRequestType GetRequestType(Element& element) {
+FullscreenRequestType GetRequestType(const Element& element) {
   return FullscreenParamsMap().find(&element)->value->request_type();
 }
 
@@ -1151,6 +1151,10 @@ void Fullscreen::ElementRemoved(Element& node) {
 
   // 3.3 If document's top layer contains node, remove node from document's top
   // layer. This is done in Element::RemovedFrom.
+}
+
+bool Fullscreen::IsFullscreenFlagSetFor(const Element& element) {
+  return HasFullscreenFlag(element);
 }
 
 void Fullscreen::Trace(Visitor* visitor) const {
