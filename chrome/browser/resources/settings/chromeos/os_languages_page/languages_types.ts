@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Closure typedefs for dictionaries and interfaces used by
+ * @fileoverview Typedefs for dictionaries and interfaces used by
  * language settings.
  */
 

@@ -33,6 +33,7 @@ import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -47,7 +48,6 @@ import {Route, Router} from '../router.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
 import {getTemplate} from './lock_screen.html.js';
-import {getPluralStringFromProxy} from './plural_string_proxy_wrapper.js';
 
 const SettingsLockScreenElementBase =
     RouteObserverMixin(LockStateMixin(DeepLinkingMixin(PolymerElement)));
@@ -436,8 +436,9 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       this.numFingerprintDescription_ =
           this.i18n('lockScreenEditFingerprintsDescription');
     } else {
-      getPluralStringFromProxy(
-          'lockScreenNumberFingerprints', this.numFingerprints_)
+      PluralStringProxyImpl.getInstance()
+          .getPluralString(
+              'lockScreenNumberFingerprints', this.numFingerprints_)
           .then(string => this.numFingerprintDescription_ = string);
     }
   }

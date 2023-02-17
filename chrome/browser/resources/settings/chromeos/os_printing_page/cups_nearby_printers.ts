@@ -193,17 +193,12 @@ export class SettingsCupsNearbyPrintersElement extends
     this.setActivePrinter_(item);
     this.savingPrinter_ = true;
 
-    // This is a workaround to ensure type safety on the params of the casted
-    // function. We do this because the closure compiler does not work well with
-    // rejected js promises.
-    const queryDiscoveredPrinterFailed: (printer: CupsPrinterInfo) => void =
-        this.onQueryDiscoveredPrinterFailed_.bind(this);
     CupsPrintersBrowserProxyImpl.getInstance()
         .addDiscoveredPrinter(item.printerInfo.printerId)
         .then(
             this.onQueryDiscoveredPrinterSucceeded_.bind(
                 this, item.printerInfo.printerName),
-            queryDiscoveredPrinterFailed);
+            this.onQueryDiscoveredPrinterFailed_.bind(this));
     recordSettingChange();
   }
 
