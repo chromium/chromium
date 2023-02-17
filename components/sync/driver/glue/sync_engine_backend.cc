@@ -134,18 +134,6 @@ void SyncEngineBackend::DoOnInvalidatorStateChange(
                                        invalidation::INVALIDATIONS_ENABLED);
 }
 
-void SyncEngineBackend::RecordRedundantInvalidationsMetric(
-    const invalidation::Invalidation& invalidation,
-    ModelType type) const {
-  auto last_invalidation = last_invalidation_versions_.find(type);
-  if (!invalidation.is_unknown_version() &&
-      last_invalidation != last_invalidation_versions_.end() &&
-      invalidation.version() <= last_invalidation->second) {
-    UMA_HISTOGRAM_ENUMERATION("Sync.RedundantInvalidationPerModelType2",
-                              ModelTypeHistogramValue(type));
-  }
-}
-
 void SyncEngineBackend::DoOnIncomingInvalidation(
     const invalidation::TopicInvalidationMap& invalidation_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -166,18 +154,12 @@ void SyncEngineBackend::DoOnIncomingInvalidation(
         // all incoming messages.
         RecordIncomingInvalidationStatus(IncomingInvalidationStatus::kSuccess);
 
-        RecordRedundantInvalidationsMetric(invalidation, type);
         std::unique_ptr<SyncInvalidation> inv_adapter(
             new InvalidationAdapter(invalidation));
         sync_manager_->OnIncomingInvalidation(type, std::move(inv_adapter));
-        if (!invalidation.is_unknown_version())
-          last_invalidation_versions_[type] = invalidation.version();
       }
     }
   }
-
-  host_.Call(FROM_HERE, &SyncEngineImpl::UpdateInvalidationVersions,
-             last_invalidation_versions_);
 }
 
 void SyncEngineBackend::DoInitialize(
@@ -190,10 +172,6 @@ void SyncEngineBackend::DoInitialize(
   if (!base::CreateDirectory(sync_data_folder_)) {
     DLOG(FATAL) << "Sync Data directory creation failed.";
   }
-
-  // Load the previously persisted set of invalidation versions into memory.
-  last_invalidation_versions_ =
-      restored_local_transport_data.invalidation_versions;
 
   authenticated_account_id_ = params.authenticated_account_info.account_id;
 

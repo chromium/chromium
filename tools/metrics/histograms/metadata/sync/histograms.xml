@@ -1207,18 +1207,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.RedundantInvalidationPerModelType2" enum="SyncModelTypes"
-    expires_after="2023-03-19">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>treib@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Recorded whenever Sync receives an invalidation with a non-fresh version,
-    i.e. a smaller version number than Sync already knew about. The recorded
-    value is the data type of the invalidation.
-  </summary>
-</histogram>
-
 <histogram name="Sync.ResetEngineReason" enum="SyncResetEngineReason"
     expires_after="2023-08-08">
   <owner>rushans@google.com</owner>

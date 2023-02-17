@@ -48,8 +48,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
     RestoredLocalTransportData(const RestoredLocalTransportData&) = delete;
     ~RestoredLocalTransportData();
 
-    std::map<ModelType, int64_t> invalidation_versions;
-
     // Initial authoritative values (usually read from prefs).
     std::string cache_guid;
     std::string birthday;
@@ -197,10 +195,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   ~SyncEngineBackend() override;
 
-  void RecordRedundantInvalidationsMetric(
-      const invalidation::Invalidation& invalidation,
-      ModelType Type) const;
-
   void LoadAndConnectNigoriController();
 
   IncomingInvalidationStatus DoOnStandaloneInvalidationReceivedImpl(
@@ -237,12 +231,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Set when we've been asked to forward sync protocol events to the frontend.
   bool forward_protocol_events_ = false;
-
-  // A map of data type -> invalidation version to track the most recently
-  // received invalidation version for each type.
-  // This allows dropping any invalidations with versions older than those
-  // most recently received for that data type.
-  std::map<ModelType, int64_t> last_invalidation_versions_;
 
   // Checks that we are on the sync thread.
   SEQUENCE_CHECKER(sequence_checker_);

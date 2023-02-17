@@ -58,7 +58,6 @@ RestoreLocalTransportDataFromPrefs(const SyncTransportDataPrefs& prefs) {
   result.cache_guid = prefs.GetCacheGuid();
   result.birthday = prefs.GetBirthday();
   result.bag_of_chips = prefs.GetBagOfChips();
-  result.invalidation_versions = prefs.GetInvalidationVersions();
   result.poll_interval = prefs.GetPollInterval();
   if (result.poll_interval.is_zero()) {
     result.poll_interval = kDefaultPollInterval;
@@ -539,12 +538,6 @@ void SyncEngineImpl::HandleProtocolEventOnFrontendLoop(
     std::unique_ptr<ProtocolEvent> event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   host_->OnProtocolEvent(*event);
-}
-
-void SyncEngineImpl::UpdateInvalidationVersions(
-    const std::map<ModelType, int64_t>& invalidation_versions) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  prefs_->UpdateInvalidationVersions(invalidation_versions);
 }
 
 void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {
