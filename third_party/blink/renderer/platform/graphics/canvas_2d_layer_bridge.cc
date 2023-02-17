@@ -32,6 +32,8 @@
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -52,31 +54,171 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkEncodedImageFormat.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
 
-namespace {
-
-BASE_FEATURE(
-    kCanvas2DHibernation,
-    "Canvas2DHibernation",
-#if BUILDFLAG(IS_MAC)
-    // Canvas hibernation is not always enabled on MacOS X due to a bug that
-    // causes content loss. TODO: Find a better fix for crbug.com/588434
-    base::FeatureState::FEATURE_DISABLED_BY_DEFAULT
-#else
-    base::FeatureState::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-}
-
 // static
 bool Canvas2DLayerBridge::IsHibernationEnabled() {
-  return base::FeatureList::IsEnabled(kCanvas2DHibernation);
+  return base::FeatureList::IsEnabled(features::kCanvas2DHibernation);
+}
+
+void HibernationHandler::TakeHibernationImage(sk_sp<SkImage>&& image) {
+  DCheckInvariant();
+  epoch_++;
+  image_ = image;
+
+  if (!base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
+    return;
+  }
+
+  width_ = image_->width();
+  height_ = image_->height();
+  bytes_per_pixel_ = image_->imageInfo().bytesPerPixel();
+
+  // If we had an encoded version, discard it.
+  encoded_.reset();
+
+  // Don't bother compressing very small canvases.
+  size_t memory_size = image_->height() * static_cast<size_t>(image_->width()) *
+                       static_cast<size_t>(image_->imageInfo().bytesPerPixel());
+  if (memory_size < 16 * 1024) {
+    return;
+  }
+
+  // Don't post the compression task to the thread pool with a delay right away.
+  // The task increases the reference count on the SkImage. In the case of rapid
+  // foreground / background transitions, each transition allocates a new
+  // SkImage. If we post a compression task right away with a sk_sp<SkImage> as
+  // a parameter, this takes a reference on the underlying SkImage, keeping it
+  // alive until the task runs. This means that posting the compression task
+  // right away would increase memory usage by a lot in these cases.
+  //
+  // Rather, post a main thread task later that will check whether we are still
+  // in hibernation mode, and in the same hibernation "epoch" as last time. If
+  // this is the case, then compress.
+  //
+  // This simplifies tracking of background / foreground cycles, at the cost of
+  // running one extra trivial task for each cycle.
+  //
+  // Note: not using a delayed idle tasks, because idle tasks do not run when
+  // the renderer is idle. In other words, a delayed idle task would not execute
+  // as long as the renderer is in background, which completely defeats the
+  // purpose.
+  GetMainThreadTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&HibernationHandler::OnAfterHibernation,
+                     weak_ptr_factory_.GetWeakPtr(), epoch_),
+      kBeforeCompressionDelay);
+}
+
+void HibernationHandler::OnAfterHibernation(uint64_t epoch) {
+  DCheckInvariant();
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
+  // Either we no longer have the image (because we are not hibernating), or we
+  // went through another visible / not visible cycle (in which case it is too
+  // early to compress).
+  if (epoch_ != epoch || !image_) {
+    return;
+  }
+  auto task_runner = GetMainThreadTaskRunner();
+  auto params = std::make_unique<BackgroundTaskParams>(
+      image_, epoch_, weak_ptr_factory_.GetWeakPtr(), task_runner);
+
+  if (background_thread_task_runner_for_testing_) {
+    background_thread_task_runner_for_testing_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HibernationHandler::Encode, std::move(params)));
+  } else {
+    worker_pool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        CrossThreadBindOnce(&HibernationHandler::Encode, std::move(params)));
+  }
+}
+
+void HibernationHandler::OnEncoded(
+    std::unique_ptr<HibernationHandler::BackgroundTaskParams> params,
+    sk_sp<SkData> encoded) {
+  DCheckInvariant();
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
+  // Discard the compressed image, it is no longer current.
+  if (params->epoch != epoch_ || !IsHibernating()) {
+    return;
+  }
+
+  DCHECK_EQ(image_.get(), params->image.get());
+  encoded_ = encoded;
+  image_ = nullptr;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+HibernationHandler::GetMainThreadTaskRunner() const {
+  return main_thread_task_runner_for_testing_
+             ? main_thread_task_runner_for_testing_
+             : Thread::MainThread()->GetTaskRunner(
+                   MainThreadTaskRunnerRestricted());
+}
+
+void HibernationHandler::Encode(
+    std::unique_ptr<HibernationHandler::BackgroundTaskParams> params) {
+  TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
+  sk_sp<SkData> encoded =
+      params->image->encodeToData(SkEncodedImageFormat::kPNG, 100);
+
+  auto* reply_task_runner = params->reply_task_runner.get();
+  reply_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HibernationHandler::OnEncoded, params->weak_instance,
+                     std::move(params), encoded));
+}
+
+sk_sp<SkImage> HibernationHandler::GetImage() {
+  TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
+  DCheckInvariant();
+  if (image_) {
+    return image_;
+  }
+
+  DCHECK(encoded_);
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
+
+  // Note: not discarding the encoded image.
+  return SkImage::MakeFromEncoded(encoded_)->makeRasterImage();
+}
+
+void HibernationHandler::Clear() {
+  DCheckInvariant();
+  encoded_ = nullptr;
+  image_ = nullptr;
+}
+
+size_t HibernationHandler::memory_size() const {
+  DCheckInvariant();
+  DCHECK(IsHibernating());
+  if (is_encoded()) {
+    return encoded_->size();
+  } else {
+    return original_memory_size();
+  }
+}
+
+size_t HibernationHandler::original_memory_size() const {
+  return static_cast<size_t>(width_) * height_ * bytes_per_pixel_;
 }
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
@@ -166,11 +308,13 @@ static void HibernateWrapper(base::WeakPtr<Canvas2DLayerBridge> bridge,
 static void LoseContextInBackgroundWrapper(
     base::WeakPtr<Canvas2DLayerBridge> bridge,
     base::TimeTicks /*idleDeadline*/) {
-  if (bridge)
+  if (bridge) {
     bridge->LoseContext();
+  }
 }
 
 void Canvas2DLayerBridge::Hibernate() {
+  TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
   DCHECK(!IsHibernating());
   DCHECK(hibernation_scheduled_);
 
@@ -215,14 +359,18 @@ void Canvas2DLayerBridge::Hibernate() {
     logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
   }
-  hibernation_image_ = snapshot->PaintImageForCurrentFrame().GetSwSkImage();
+  hibernation_handler_.TakeHibernationImage(
+      snapshot->PaintImageForCurrentFrame().GetSwSkImage());
+
   ResetResourceProvider();
-  if (layer_)
+  if (layer_) {
     layer_->ClearTexture();
+  }
 
   // shouldBeDirectComposited() may have changed.
-  if (resource_host_)
+  if (resource_host_) {
     resource_host_->SetNeedsCompositingUpdate();
+  }
   logger_->DidStartHibernating();
 }
 
@@ -340,10 +488,13 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   }
 
   PaintImageBuilder builder = PaintImageBuilder::WithDefault();
-  builder.set_image(hibernation_image_, PaintImage::GetNextContentId());
+  builder.set_image(hibernation_handler_.GetImage(),
+                    PaintImage::GetNextContentId());
   builder.set_id(PaintImage::GetNextId());
   resource_provider->RestoreBackBuffer(builder.TakePaintImage());
-  hibernation_image_.reset();
+  // The hibernation image is no longer valid, clear it.
+  hibernation_handler_.Clear();
+  DCHECK(!IsHibernating());
 
   if (resource_host_) {
     // shouldBeDirectComposited() may have changed.
@@ -607,19 +758,23 @@ bool Canvas2DLayerBridge::IsValid() {
 }
 
 bool Canvas2DLayerBridge::CheckResourceProviderValid() {
-  if (IsHibernating())
+  if (IsHibernating()) {
     return true;
-  if (!layer_ || raster_mode_ == RasterMode::kCPU)
+  }
+  if (!layer_ || raster_mode_ == RasterMode::kCPU) {
     return true;
-  if (context_lost_)
+  }
+  if (context_lost_) {
     return false;
+  }
   if (ResourceProvider() && IsAccelerated() &&
       ResourceProvider()->IsGpuContextLost()) {
     context_lost_ = true;
     ClearPendingRasterTimers();
     ResetResourceProvider();
-    if (resource_host_)
+    if (resource_host_) {
       resource_host_->NotifyGpuContextLost();
+    }
     return false;
   }
   return !!GetOrCreateResourceProvider();
@@ -772,8 +927,10 @@ void Canvas2DLayerBridge::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
 scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot() {
   if (snapshot_state_ == kInitialSnapshotState)
     snapshot_state_ = kDidAcquireSnapshot;
-  if (IsHibernating())
-    return UnacceleratedStaticBitmapImage::Create(hibernation_image_);
+  if (IsHibernating()) {
+    return UnacceleratedStaticBitmapImage::Create(
+        hibernation_handler_.GetImage());
+  }
   if (!IsValid())
     return nullptr;
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
