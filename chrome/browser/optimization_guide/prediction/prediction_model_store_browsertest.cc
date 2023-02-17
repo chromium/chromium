@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
@@ -155,16 +156,31 @@ class PredictionModelStoreBrowserTest : public InProcessBrowserTest {
       const net::test_server::HttpRequest& request) {
     // Returning nullptr will cause the test server to fallback to serving the
     // file from the test data directory.
-    if (request.GetURL() == model_file_url_)
+    if (request.GetURL() == model_file_url_) {
       return nullptr;
+    }
+    optimization_guide::proto::GetModelsRequest get_models_request;
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+    EXPECT_EQ(request.method, net::test_server::METHOD_POST);
+    EXPECT_TRUE(get_models_request.ParseFromString(request.content));
+    response->set_code(net::HTTP_OK);
+    if (!base::ranges::any_of(
+            get_models_request.requested_models(),
+            [](const proto::ModelInfo& model_info) {
+              return model_info.optimization_target() ==
+                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD;
+            })) {
+      // Return empty response since this request is from the default profile
+      // not setup by the tests.
+      return std::move(response);
+    }
     auto get_models_response = BuildGetModelsResponse();
     get_models_response->mutable_models(0)->mutable_model()->set_download_url(
         model_file_url_.spec());
     std::string serialized_response;
     get_models_response->SerializeToString(&serialized_response);
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_content(serialized_response);
-    response->set_code(net::HTTP_OK);
     return std::move(response);
   }
 
