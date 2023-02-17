@@ -8,9 +8,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <mach/mach_time.h>
 #include <string>
-
-#include <CoreAudio/HostTime.h>
 
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
@@ -19,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 using base::NumberToString;
 using base::SysCFStringRefToUTF8;
@@ -102,12 +102,24 @@ mojom::PortInfo GetPortInfoFromEndpoint(MIDIEndpointRef endpoint) {
 }
 
 base::TimeTicks MIDITimeStampToTimeTicks(MIDITimeStamp timestamp) {
-  UInt64 nanoseconds = AudioConvertHostTimeToNanos(timestamp);
-  return base::TimeTicks() + base::Nanoseconds(nanoseconds);
+  return base::TimeTicks::FromMachAbsoluteTime(timestamp);
 }
 
 MIDITimeStamp TimeTicksToMIDITimeStamp(base::TimeTicks ticks) {
-  return AudioConvertNanosToHostTime(ticks.since_origin().InNanoseconds());
+  // time.h doesn't yet support the opposite function for FromMachAbsoluteTime.
+  // Instead, adapted from CAHostTimeBase.h in the Core Audio Utility Classes.
+  struct mach_timebase_info base_time_info;
+  mach_timebase_info(&base_time_info);
+#if defined(ARCH_CPU_64_BITS)
+  absl::uint128 result = ticks.since_origin().InNanoseconds();
+#else
+  long double result = ticks.since_origin().InNanoseconds();
+#endif
+  if (base_time_info.numer != base_time_info.denom) {
+    result *= base_time_info.denom;
+    result /= base_time_info.numer;
+  }
+  return static_cast<uint64_t>(result);
 }
 
 }  // namespace

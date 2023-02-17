@@ -130,7 +130,7 @@ component("midi") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "midi_manager_mac.cc",
       "midi_manager_mac.h",
@@ -208,7 +208,7 @@ test("midi_unittests") {
     sources += usb_midi_sources
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [ "midi_manager_mac_unittest.cc" ]
     frameworks = [ "CoreMIDI.framework" ]
   }
