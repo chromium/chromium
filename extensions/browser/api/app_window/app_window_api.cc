@@ -138,7 +138,7 @@ void CopyBoundsSpec(const app_window::BoundsSpecification* input_spec,
 
 }  // namespace
 
-AppWindowCreateFunction::AppWindowCreateFunction() {}
+AppWindowCreateFunction::AppWindowCreateFunction() = default;
 
 ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   // Don't create app window if the system is shutting down.
