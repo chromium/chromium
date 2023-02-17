@@ -4,8 +4,10 @@
 
 #include "components/omnibox/browser/document_provider.h"
 
+#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -31,11 +33,11 @@
 
 namespace {
 
-const std::string SAMPLE_ORIGINAL_URL =
+const char kSampleOriginalURL[] =
     "https://www.google.com/url?url=https://drive.google.com/a/domain.tld/"
     "open?id%3D_0123_ID_4567_&_placeholder_";
 
-const std::string SAMPLE_STRIPPED_URL =
+const char kSampleStrippedURL[] =
     "https://drive.google.com/open?id=_0123_ID_4567_";
 
 using testing::Return;
@@ -367,7 +369,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
         }
       ]
      })",
-      SAMPLE_ORIGINAL_URL.c_str());
+      kSampleOriginalURL);
 
   absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponse);
@@ -385,7 +387,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
   EXPECT_EQ(matches[0].destination_url,
             GURL("https://documentprovider.tld/doc?id=1"));
   EXPECT_EQ(matches[0].relevance, 1234);  // Server-specified.
-  EXPECT_EQ(matches[0].stripped_destination_url, GURL(SAMPLE_STRIPPED_URL));
+  EXPECT_EQ(matches[0].stripped_destination_url, GURL(kSampleStrippedURL));
 
   EXPECT_EQ(matches[1].contents, u"Document 2 longer title");
   EXPECT_EQ(matches[1].destination_url,
@@ -440,7 +442,7 @@ TEST_F(DocumentProviderTest, ProductDescriptionStringsAndAccessibleLabels) {
         }
       ]
      })",
-      SAMPLE_ORIGINAL_URL.c_str());
+      kSampleOriginalURL);
 
   absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithMimeTypes);
@@ -533,7 +535,7 @@ TEST_F(DocumentProviderTest, MatchDescriptionString) {
         }
       ]
     })",
-      SAMPLE_ORIGINAL_URL.c_str());
+      kSampleOriginalURL);
 
   absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithMimeTypes);
@@ -591,7 +593,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTies) {
         }
       ]
      })",
-      SAMPLE_ORIGINAL_URL.c_str());
+      kSampleOriginalURL);
 
   absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithTies);
@@ -608,7 +610,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTies) {
   EXPECT_EQ(matches[0].destination_url,
             GURL("https://documentprovider.tld/doc?id=1"));
   EXPECT_EQ(matches[0].relevance, 1234);  // As the server specified.
-  EXPECT_EQ(matches[0].stripped_destination_url, GURL(SAMPLE_STRIPPED_URL));
+  EXPECT_EQ(matches[0].stripped_destination_url, GURL(kSampleStrippedURL));
 
   EXPECT_EQ(matches[1].contents, u"Document 2");
   EXPECT_EQ(matches[1].destination_url,
@@ -652,7 +654,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
         }
       ]
      })",
-      SAMPLE_ORIGINAL_URL.c_str());
+      kSampleOriginalURL);
 
   absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithTies);
@@ -669,7 +671,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
   EXPECT_EQ(matches[0].destination_url,
             GURL("https://documentprovider.tld/doc?id=1"));
   EXPECT_EQ(matches[0].relevance, 1234);  // As the server specified.
-  EXPECT_EQ(matches[0].stripped_destination_url, GURL(SAMPLE_STRIPPED_URL));
+  EXPECT_EQ(matches[0].stripped_destination_url, GURL(kSampleStrippedURL));
 
   EXPECT_EQ(matches[1].contents, u"Document 2");
   EXPECT_EQ(matches[1].destination_url,
@@ -715,7 +717,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
         }
       ]
      })",
-      SAMPLE_ORIGINAL_URL.c_str());
+      kSampleOriginalURL);
 
   absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithTies);
@@ -732,7 +734,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
   EXPECT_EQ(matches[0].destination_url,
             GURL("https://documentprovider.tld/doc?id=1"));
   EXPECT_EQ(matches[0].relevance, 1);  // As the server specified.
-  EXPECT_EQ(matches[0].stripped_destination_url, GURL(SAMPLE_STRIPPED_URL));
+  EXPECT_EQ(matches[0].stripped_destination_url, GURL(kSampleStrippedURL));
 
   EXPECT_EQ(matches[1].contents, u"Document 2");
   EXPECT_EQ(matches[1].destination_url,
@@ -774,9 +776,8 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithBadResponse) {
   EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
-// This test is affected by an iOS 10 simulator bug: https://crbug.com/782033
-// and may get wrong timezone on Win7: https://crbug.com/856119
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_WIN)
+// This test is affected by an iOS 10 simulator bug: https://crbug.com/782033.
+#if !BUILDFLAG(IS_IOS)
 TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
   base::Time::Exploded local_exploded = {0};
   local_exploded.year = 2018;
