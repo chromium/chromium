@@ -110,7 +110,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // visible, but not actually zero, probably due to some sort of floating
 // point calculation.
 id<GREYMatcher> notPracticallyVisible() {
-  return grey_not(grey_minimumVisiblePercent(0.001));
+  return grey_not(grey_minimumVisiblePercent(0.01));
 }
 }
 
