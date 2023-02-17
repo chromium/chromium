@@ -2,3 +2,6 @@ flackr@chromium.org
 kylechar@chromium.org
 smcgruer@chromium.org
 vollick@chromium.org
+
+# Anyone can update the unit test bundle data filelist.
+per-file unit_tests_bundle_data.filelist=*
