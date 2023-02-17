@@ -36,6 +36,10 @@ class SupervisedUserGoogleAuthNavigationThrottle
   ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
+  void set_skip_jni_call_for_testing(bool is_jni_call_skipped) {
+    skip_jni_call_for_testing_ = is_jni_call_skipped;
+  }
+
  private:
   SupervisedUserGoogleAuthNavigationThrottle(
       Profile* profile,
@@ -55,6 +59,9 @@ class SupervisedUserGoogleAuthNavigationThrottle
 #if BUILDFLAG(IS_ANDROID)
   bool has_shown_reauth_;
 #endif
+
+  // Used only for testing to omit the JNI call in ReauthenticateChildAccount().
+  bool skip_jni_call_for_testing_ = false;
 
   base::WeakPtrFactory<SupervisedUserGoogleAuthNavigationThrottle>
       weak_ptr_factory_{this};
