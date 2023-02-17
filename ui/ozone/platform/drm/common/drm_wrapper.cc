@@ -104,7 +104,7 @@ bool DrmWrapper::Initialize() {
  * CRTCs
  *******/
 
-ScopedDrmCrtcPtr DrmWrapper::GetCrtc(uint32_t crtc_id) {
+ScopedDrmCrtcPtr DrmWrapper::GetCrtc(uint32_t crtc_id) const {
   DCHECK(file_.IsValid());
   return ScopedDrmCrtcPtr(drmModeGetCrtc(file_.GetPlatformFile(), crtc_id));
 }
@@ -140,7 +140,7 @@ bool DrmWrapper::DisableCrtc(uint32_t crtc_id) {
  * Capabilities
  **************/
 
-bool DrmWrapper::GetCapability(uint64_t capability, uint64_t* value) {
+bool DrmWrapper::GetCapability(uint64_t capability, uint64_t* value) const {
   DCHECK(file_.IsValid());
   return !drmGetCap(file_.GetPlatformFile(), capability, value);
 }
@@ -156,7 +156,7 @@ bool DrmWrapper::SetCapability(uint64_t capability, uint64_t value) {
  * Connectors
  ************/
 
-ScopedDrmConnectorPtr DrmWrapper::GetConnector(uint32_t connector_id) {
+ScopedDrmConnectorPtr DrmWrapper::GetConnector(uint32_t connector_id) const {
   DCHECK(file_.IsValid());
   TRACE_EVENT1("drm", "DrmWrapper::GetConnector", "connector", connector_id);
   return ScopedDrmConnectorPtr(
@@ -255,7 +255,7 @@ bool DrmWrapper::CloseBufferHandle(uint32_t handle) {
  * Framebuffers
  **************/
 
-ScopedDrmFramebufferPtr DrmWrapper::GetFramebuffer(uint32_t framebuffer) {
+ScopedDrmFramebufferPtr DrmWrapper::GetFramebuffer(uint32_t framebuffer) const {
   DCHECK(file_.IsValid());
   TRACE_EVENT1("drm", "DrmWrapper::GetFramebuffer", "framebuffer", framebuffer);
   return ScopedDrmFramebufferPtr(
@@ -343,13 +343,13 @@ bool DrmWrapper::SetGammaRamp(
  * Planes
  ********/
 
-ScopedDrmPlaneResPtr DrmWrapper::GetPlaneResources() {
+ScopedDrmPlaneResPtr DrmWrapper::GetPlaneResources() const {
   DCHECK(file_.IsValid());
   return ScopedDrmPlaneResPtr(
       drmModeGetPlaneResources(file_.GetPlatformFile()));
 }
 
-ScopedDrmPlanePtr DrmWrapper::GetPlane(uint32_t plane_id) {
+ScopedDrmPlanePtr DrmWrapper::GetPlane(uint32_t plane_id) const {
   DCHECK(file_.IsValid());
   return ScopedDrmPlanePtr(drmModeGetPlane(file_.GetPlatformFile(), plane_id));
 }
@@ -360,7 +360,7 @@ ScopedDrmPlanePtr DrmWrapper::GetPlane(uint32_t plane_id) {
 
 ScopedDrmObjectPropertyPtr DrmWrapper::GetObjectProperties(
     uint32_t object_id,
-    uint32_t object_type) {
+    uint32_t object_type) const {
   DCHECK(file_.IsValid());
   return ScopedDrmObjectPropertyPtr(drmModeObjectGetProperties(
       file_.GetPlatformFile(), object_id, object_type));
@@ -376,7 +376,7 @@ bool DrmWrapper::SetObjectProperty(uint32_t object_id,
 }
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
-                                             const char* name) {
+                                             const char* name) const {
   TRACE_EVENT2("drm", "DrmWrapper::GetProperty", "connector",
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
@@ -394,7 +394,7 @@ ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
   return ScopedDrmPropertyPtr();
 }
 
-ScopedDrmPropertyPtr DrmWrapper::GetProperty(uint32_t id) {
+ScopedDrmPropertyPtr DrmWrapper::GetProperty(uint32_t id) const {
   return ScopedDrmPropertyPtr(drmModeGetProperty(file_.GetPlatformFile(), id));
 }
 
@@ -423,7 +423,8 @@ void DrmWrapper::DestroyPropertyBlob(uint32_t id) {
   drmModeDestroyPropertyBlob(file_.GetPlatformFile(), id);
 }
 
-ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(uint32_t property_id) {
+ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
+    uint32_t property_id) const {
   DCHECK(file_.IsValid());
   return ScopedDrmPropertyBlobPtr(
       drmModeGetPropertyBlob(file_.GetPlatformFile(), property_id));
@@ -431,7 +432,7 @@ ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(uint32_t property_id) {
 
 ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
     drmModeConnector* connector,
-    const char* name) {
+    const char* name) const {
   DCHECK(file_.IsValid());
   TRACE_EVENT2("drm", "DrmWrapper::GetPropertyBlob", "connector",
                connector->connector_id, "name", name);
@@ -456,7 +457,7 @@ ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
  * Resources
  ***********/
 
-ScopedDrmResourcesPtr DrmWrapper::GetResources() {
+ScopedDrmResourcesPtr DrmWrapper::GetResources() const {
   DCHECK(file_.IsValid());
   return ScopedDrmResourcesPtr(drmModeGetResources(file_.GetPlatformFile()));
 }

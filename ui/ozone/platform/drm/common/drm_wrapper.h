@@ -72,7 +72,7 @@ class DrmWrapper {
   // Get the CRTC state. This is generally used to save state before using the
   // CRTC. When the user finishes using the CRTC, the user should restore the
   // CRTC to it's initial state. Use |SetCrtc| to restore the state.
-  virtual ScopedDrmCrtcPtr GetCrtc(uint32_t crtc_id);
+  virtual ScopedDrmCrtcPtr GetCrtc(uint32_t crtc_id) const;
 
   // Used to configure CRTC with ID |crtc_id| to use the connector in
   // |connectors|. The CRTC will be configured with mode |mode| and will display
@@ -91,7 +91,7 @@ class DrmWrapper {
 
   // Queries whether a |capability| is available and stores its value in
   // |value| if found.
-  virtual bool GetCapability(uint64_t capability, uint64_t* value);
+  virtual bool GetCapability(uint64_t capability, uint64_t* value) const;
 
   // Can be used to query device/driver |capability|. Sets the value of
   // |capability| to |value|. Returns true in case of a successful query.
@@ -102,7 +102,7 @@ class DrmWrapper {
    ************/
 
   // Returns the connector properties for |connector_id|.
-  virtual ScopedDrmConnectorPtr GetConnector(uint32_t connector_id);
+  virtual ScopedDrmConnectorPtr GetConnector(uint32_t connector_id) const;
 
   /********
    * Cursor
@@ -142,7 +142,7 @@ class DrmWrapper {
    **************/
 
   // Get the DRM details associated with |framebuffer|.
-  virtual ScopedDrmFramebufferPtr GetFramebuffer(uint32_t framebuffer);
+  virtual ScopedDrmFramebufferPtr GetFramebuffer(uint32_t framebuffer) const;
 
   // Deregister the given |framebuffer|.
   virtual bool RemoveFramebuffer(uint32_t framebuffer);
@@ -171,10 +171,10 @@ class DrmWrapper {
    ********/
 
   // Returns the list of all planes available on this DRM device.
-  virtual ScopedDrmPlaneResPtr GetPlaneResources();
+  virtual ScopedDrmPlaneResPtr GetPlaneResources() const;
 
   // Returns the properties associated with plane with id |plane_id|.
-  virtual ScopedDrmPlanePtr GetPlane(uint32_t plane_id);
+  virtual ScopedDrmPlanePtr GetPlane(uint32_t plane_id) const;
 
   /************
    * Properties
@@ -182,8 +182,9 @@ class DrmWrapper {
 
   // Returns the properties associated with object with id |object_id| and type
   // |object_type|. |object_type| is one of DRM_MODE_OBJECT_*.
-  virtual ScopedDrmObjectPropertyPtr GetObjectProperties(uint32_t object_id,
-                                                         uint32_t object_type);
+  virtual ScopedDrmObjectPropertyPtr GetObjectProperties(
+      uint32_t object_id,
+      uint32_t object_type) const;
 
   // Sets a property (defined by {|property_id|, |property_value|} on an object
   // with ID |object_id| and type |object_type|.
@@ -194,13 +195,13 @@ class DrmWrapper {
                                  uint32_t property_id,
                                  uint32_t property_value);
 
-  virtual ScopedDrmPropertyPtr GetProperty(uint32_t id);
+  virtual ScopedDrmPropertyPtr GetProperty(uint32_t id) const;
 
   // Returns the property with name |name| associated with |connector|. Returns
   // NULL if property not found. If the returned value is valid, it must be
   // released using FreeProperty().
   virtual ScopedDrmPropertyPtr GetProperty(drmModeConnector* connector,
-                                           const char* name);
+                                           const char* name) const;
 
   // Sets the value of property with ID |property_id| to |value|. The property
   // is applied to the connector with ID |connector_id|.
@@ -219,14 +220,14 @@ class DrmWrapper {
 
   // Returns a binary blob associated with |property_id|. May be nullptr if the
   // property couldn't be found.
-  virtual ScopedDrmPropertyBlobPtr GetPropertyBlob(uint32_t property_id);
+  virtual ScopedDrmPropertyBlobPtr GetPropertyBlob(uint32_t property_id) const;
 
   // Returns a binary blob associated with |connector|. The binary blob is
   // associated with the property with name |name|. Return NULL if the property
   // could not be found or if the property does not have a binary blob. If valid
   // the returned object must be freed using FreePropertyBlob().
   virtual ScopedDrmPropertyBlobPtr GetPropertyBlob(drmModeConnector* connector,
-                                                   const char* name);
+                                                   const char* name) const;
 
   /***********
    * Resources
@@ -234,7 +235,7 @@ class DrmWrapper {
 
   // Returns all the DRM resources for this device. This includes CRTC,
   // connectors, and encoders state.
-  virtual ScopedDrmResourcesPtr GetResources();
+  virtual ScopedDrmResourcesPtr GetResources() const;
 
   /*********
    * Utility

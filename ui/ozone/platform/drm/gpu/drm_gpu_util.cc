@@ -8,16 +8,15 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
-#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
-#include "ui/ozone/platform/drm/gpu/drm_device.h"
+#include "ui/ozone/platform/drm/common/drm_wrapper.h"
 
 namespace ui {
 
-bool GetDrmPropertyForName(DrmDevice* drm,
+bool GetDrmPropertyForName(DrmWrapper* drm,
                            drmModeObjectProperties* properties,
                            const std::string& name,
                            DrmDevice::Property* property) {
