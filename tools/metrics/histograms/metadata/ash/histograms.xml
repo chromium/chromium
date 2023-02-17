@@ -4423,13 +4423,14 @@ chromium-metrics-reviews@google.com.
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when an action is done on any FeaturePod in the quick settings
-    view. {FeaturePodBehavior} can be toggled to enable the feature, toggle to
-    disable this feature, or go to the feature's detailed page.
+    view. {FeaturePodBehavior} can be a toggle to enable the feature, toggle to
+    disable this feature, going to the feature's detailed page, or making the
+    button visible.
   </summary>
   <token key="FeaturePodBehavior">
-    <variant name="DiveIn" summary="Go to the feature detailed page"/>
-    <variant name="ToggleOff" summary="Toggle to disable the feature"/>
-    <variant name="ToggleOn" summary="Toggle to enable the feature"/>
+    <variant name="DiveIn" summary="Go to the feature's detailed page"/>
+    <variant name="ToggledOff" summary="Toggle to disable the feature"/>
+    <variant name="ToggledOn" summary="Toggle to enable the feature"/>
     <variant name="Visible" summary="The feature pod is shown"/>
   </token>
 </histogram>
@@ -5483,14 +5484,14 @@ chromium-metrics-reviews@google.com.
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when an action is done on any FeaturePod in the old quick settings
-    view. {FeaturePodBehavior} can be toggled to enable the feature, toggle to
-    disable this feature, go to the feature's detailed page, or the feature pod
-    is shown (visible).
+    view. {FeaturePodBehavior} can be a toggle to enable the feature, toggle to
+    disable this feature, going to the feature's detailed page, or making the
+    button visible.
   </summary>
   <token key="FeaturePodBehavior">
-    <variant name="DiveIn" summary="Go to the feature detailed page"/>
-    <variant name="ToggleOff" summary="Toggle to disable the feature"/>
-    <variant name="ToggleOn" summary="Toggle to enable the feature"/>
+    <variant name="DiveIn" summary="Go to the feature's detailed page"/>
+    <variant name="ToggledOff" summary="Toggle to disable the feature"/>
+    <variant name="ToggledOn" summary="Toggle to enable the feature"/>
     <variant name="Visible" summary="The feature pod is shown"/>
   </token>
 </histogram>
