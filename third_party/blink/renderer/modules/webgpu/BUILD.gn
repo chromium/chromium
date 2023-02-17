@@ -55,6 +55,8 @@ blink_modules_sources("webgpu") {
     "gpu_map_mode.h",
     "gpu_out_of_memory_error.cc",
     "gpu_out_of_memory_error.h",
+    "gpu_pipeline_error.cc",
+    "gpu_pipeline_error.h",
     "gpu_pipeline_layout.cc",
     "gpu_pipeline_layout.h",
     "gpu_programmable_pass_encoder.cc",

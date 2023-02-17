@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_external_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_internal_error.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_out_of_memory_error.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_error.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
@@ -333,14 +334,21 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
       break;
     }
 
+    case WGPUCreatePipelineAsyncStatus_ValidationError: {
+      resolver->Reject(MakeGarbageCollected<GPUPipelineError>(
+          StringFromASCIIAndUTF8(message),
+          V8GPUPipelineErrorReason::Enum::kValidation));
+      break;
+    }
+
     case WGPUCreatePipelineAsyncStatus_Error:
-    case WGPUCreatePipelineAsyncStatus_ValidationError:
     case WGPUCreatePipelineAsyncStatus_InternalError:
     case WGPUCreatePipelineAsyncStatus_DeviceLost:
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, StringFromASCIIAndUTF8(message)));
+      resolver->Reject(MakeGarbageCollected<GPUPipelineError>(
+          StringFromASCIIAndUTF8(message),
+          V8GPUPipelineErrorReason::Enum::kInternal));
       break;
     }
 
@@ -362,7 +370,6 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
       break;
     }
 
-    case WGPUCreatePipelineAsyncStatus_Error:
     case WGPUCreatePipelineAsyncStatus_ValidationError:
     case WGPUCreatePipelineAsyncStatus_InternalError:
     case WGPUCreatePipelineAsyncStatus_DeviceLost:
