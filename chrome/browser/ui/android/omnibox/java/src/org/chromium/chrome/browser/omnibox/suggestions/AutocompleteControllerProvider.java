@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.LifetimeAssert;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
@@ -26,6 +27,7 @@ public class AutocompleteControllerProvider implements ProfileManager.Observer, 
     private static final @NonNull UnownedUserDataKey<AutocompleteControllerProvider> KEY =
             new UnownedUserDataKey<>(AutocompleteControllerProvider.class);
     private static @Nullable AutocompleteController sControllerForTesting;
+    private final @NonNull LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private final @NonNull ArrayMap<Profile, AutocompleteController> mControllers =
             new ArrayMap<>();
 
@@ -82,6 +84,7 @@ public class AutocompleteControllerProvider implements ProfileManager.Observer, 
         }
         ProfileManager.removeObserver(this);
         mControllers.clear();
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
     /**
