@@ -66,7 +66,7 @@ void TextPainter::PaintDecorationsExceptLineThrough(
     const TextDecorationOffsetBase& decoration_offset,
     TextDecorationInfo& decoration_info,
     const PaintInfo& paint_info,
-    const Vector<AppliedTextDecoration>& decorations,
+    const Vector<AppliedTextDecoration, 1>& decorations,
     const TextPaintStyle& text_style) {
   // Updating the graphics context and looping through applied decorations is
   // expensive, so avoid doing it if the only decoration was a ‘line-through’.
@@ -116,7 +116,7 @@ void TextPainter::PaintDecorationsExceptLineThrough(
 void TextPainter::PaintDecorationsOnlyLineThrough(
     TextDecorationInfo& decoration_info,
     const PaintInfo& paint_info,
-    const Vector<AppliedTextDecoration>& decorations,
+    const Vector<AppliedTextDecoration, 1>& decorations,
     const TextPaintStyle& text_style) {
   // Updating the graphics context and looping through applied decorations is
   // expensive, so avoid doing it if there are no ‘line-through’ decorations.

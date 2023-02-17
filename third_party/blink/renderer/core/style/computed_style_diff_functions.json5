@@ -419,7 +419,7 @@
             predicate: "a.TextDecorationVisualOverflowEqual(b)",
             field_dependencies: ["text-decoration-thickness", "text-decoration-style",
                                  "text-decoration-line", "text-underline-offset", "text-underline-position",
-                                 "AppliedTextDecorations"]
+                                 "BaseTextDecorationData"]
           },
         ]
     },
@@ -429,12 +429,8 @@
                 "text-decoration-style", "text-decoration-color",
                 "text-decoration-thickness", "text-underline-offset",
                 "-internal-visited-text-decoration-color", "TextEmphasisFill",
-                "text-underline-position", "text-decoration-skip-ink", "AppliedTextDecorations"],
+                "text-underline-position", "text-decoration-skip-ink", "BaseTextDecorationData"],
         methods_to_diff: [
-          {
-            method: "HasSimpleUnderlineInternal()",
-            field_dependencies: ["HasSimpleUnderline"]
-          },
           {
             method: "TextFillColor()",
             field_dependencies: ["-webkit-text-fill-color"]

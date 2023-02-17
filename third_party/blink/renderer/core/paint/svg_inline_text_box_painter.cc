@@ -196,7 +196,7 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
     // Spec: All text decorations except line-through should be drawn before the
     // text is filled and stroked; thus, the text is rendered on top of these
     // decorations.
-    const Vector<AppliedTextDecoration>& decorations =
+    const Vector<AppliedTextDecoration, 1>& decorations =
         style.AppliedTextDecorations();
     for (const AppliedTextDecoration& decoration : decorations) {
       if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kUnderline))

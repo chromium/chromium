@@ -47,7 +47,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
   // Compare the instance addresses of |AppliedTextDecorations| because it is
   // shared across |ComputedStyle|s when it is propagated without changes.
   const ComputedStyle* style = &item.Style();
-  const Vector<AppliedTextDecoration>* decorations =
+  const Vector<AppliedTextDecoration, 1>* decorations =
       &style->AppliedTextDecorations();
   DCHECK(last_decorations_);
   if (decorations == last_decorations_)
@@ -60,7 +60,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
    public:
     DecorationBoxSynchronizer(NGInlinePaintContext* inline_context,
                               const NGFragmentItem& item,
-                              const Vector<AppliedTextDecoration>* stop_at,
+                              const Vector<AppliedTextDecoration, 1>* stop_at,
                               DecoratingBoxList* saved_decorating_boxes)
         : inline_context_(inline_context),
           stop_at_(stop_at),
@@ -73,7 +73,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
     wtf_size_t Sync(const NGFragmentItem* item,
                     const LayoutObject* layout_object,
                     const ComputedStyle* style,
-                    const Vector<AppliedTextDecoration>* decorations) {
+                    const Vector<AppliedTextDecoration, 1>* decorations) {
       for (;;) {
         DCHECK(!item || item->GetLayoutObject() == layout_object);
         DCHECK_EQ(&layout_object->EffectiveStyle(style_variant_), style);
@@ -83,7 +83,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
         DCHECK(parent);
         const ComputedStyle& parent_style =
             parent->EffectiveStyle(style_variant_);
-        const Vector<AppliedTextDecoration>& parent_decorations =
+        const Vector<AppliedTextDecoration, 1>& parent_decorations =
             parent_style.AppliedTextDecorations();
 
         if (decorations != &parent_decorations) {
@@ -172,10 +172,11 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
       }
     }
 
-    void PushDecoratingBox(const NGFragmentItem* item,
-                           const LayoutObject& layout_object,
-                           const ComputedStyle& style,
-                           const Vector<AppliedTextDecoration>& decorations) {
+    void PushDecoratingBox(
+        const NGFragmentItem* item,
+        const LayoutObject& layout_object,
+        const ComputedStyle& style,
+        const Vector<AppliedTextDecoration, 1>& decorations) {
       DCHECK(!item || item->GetLayoutObject() == &layout_object);
       if (!item) {
         // If the item is not known, it is either a culled inline or it is found
@@ -193,7 +194,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
     }
 
     NGInlinePaintContext* inline_context_;
-    const Vector<AppliedTextDecoration>* stop_at_;
+    const Vector<AppliedTextDecoration, 1>* stop_at_;
     absl::optional<NGInlineCursor> line_cursor_;
     DecoratingBoxList* saved_decorating_boxes_;
     NGStyleVariant style_variant_;
@@ -260,7 +261,7 @@ void NGInlinePaintContext::SetLineBox(const NGInlineCursor& line_cursor) {
 
   const NGFragmentItem& line_item = *line_cursor.Current();
   const ComputedStyle& style = line_item.Style();
-  const Vector<AppliedTextDecoration>& applied_text_decorations =
+  const Vector<AppliedTextDecoration, 1>& applied_text_decorations =
       style.AppliedTextDecorations();
   line_decorations_ = last_decorations_ = &applied_text_decorations;
   if (applied_text_decorations.empty())

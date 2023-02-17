@@ -21,7 +21,7 @@ class CORE_EXPORT NGDecoratingBox {
  public:
   NGDecoratingBox(const PhysicalOffset& content_offset_in_container,
                   const ComputedStyle& style,
-                  const Vector<AppliedTextDecoration>* decorations)
+                  const Vector<AppliedTextDecoration, 1>* decorations)
       : content_offset_in_container_(content_offset_in_container),
         style_(&style),
         decorations_(decorations ? decorations
@@ -30,7 +30,7 @@ class CORE_EXPORT NGDecoratingBox {
   }
   NGDecoratingBox(const NGFragmentItem& item,
                   const ComputedStyle& style,
-                  const Vector<AppliedTextDecoration>* decorations)
+                  const Vector<AppliedTextDecoration, 1>* decorations)
       : NGDecoratingBox(item.ContentOffsetInContainerFragment(),
                         style,
                         decorations) {}
@@ -41,14 +41,14 @@ class CORE_EXPORT NGDecoratingBox {
     return content_offset_in_container_;
   }
   const ComputedStyle& Style() const { return *style_; }
-  const Vector<AppliedTextDecoration>* AppliedTextDecorations() const {
+  const Vector<AppliedTextDecoration, 1>* AppliedTextDecorations() const {
     return decorations_;
   }
 
  private:
   PhysicalOffset content_offset_in_container_;
   const ComputedStyle* style_;
-  const Vector<AppliedTextDecoration>* decorations_;
+  const Vector<AppliedTextDecoration, 1>* decorations_;
 };
 
 }  // namespace blink

@@ -54,7 +54,7 @@ class CORE_EXPORT NGInlinePaintContext {
 
    private:
     NGInlinePaintContext* inline_context_ = nullptr;
-    const Vector<AppliedTextDecoration>* last_decorations_ = nullptr;
+    const Vector<AppliedTextDecoration, 1>* last_decorations_ = nullptr;
     DecoratingBoxList saved_decorating_boxes_;
     wtf_size_t push_count_ = 0;
   };
@@ -105,8 +105,8 @@ class CORE_EXPORT NGInlinePaintContext {
 
   DecoratingBoxList decorating_boxes_;
   // The last |AppliedTextDecorations| |this| was synchronized with.
-  const Vector<AppliedTextDecoration>* last_decorations_ = nullptr;
-  const Vector<AppliedTextDecoration>* line_decorations_ = nullptr;
+  const Vector<AppliedTextDecoration, 1>* last_decorations_ = nullptr;
+  const Vector<AppliedTextDecoration, 1>* line_decorations_ = nullptr;
   absl::optional<NGInlineCursor> line_cursor_;
   PhysicalOffset paint_offset_;
 };

@@ -539,7 +539,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
       nullptr, &scaled_font, kMinimumThicknessIsOne);
   NGTextDecorationOffset decoration_offset(decoration_info.TargetStyle(),
                                            style);
-  const Vector<AppliedTextDecoration>& decorations =
+  const Vector<AppliedTextDecoration, 1>& decorations =
       style.AppliedTextDecorations();
 
   gfx::RectF accumulated_bound;

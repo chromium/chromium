@@ -293,15 +293,6 @@
       computed_style_custom_functions: ["setter", "getter"],
       custom_copy: true,
     },
-    // True if 'underline solid' is the only text decoration on this element.
-    {
-      name: "HasSimpleUnderline",
-      field_template: "primitive",
-      default_value: "false",
-      type_name: "bool",
-      inherited: true,
-      computed_style_custom_functions: ["getter", "setter"],
-    },
     // FIXME: vertical align is actually a CSS property, but since we don't support union fields
     // which can be either a keyword or Length, this is specified in this file for now. Remove this
     // once we can support union fields.
@@ -468,15 +459,14 @@
       field_group: "*",
     },
     {
-      name: "AppliedTextDecorations",
-      inherited: true,
+      name: "BaseTextDecorationData",
       field_template: "external",
-      type_name: "AppliedTextDecorationList",
-      include_paths: ["third_party/blink/renderer/core/style/applied_text_decoration_list.h"],
+      type_name: "base::RefCountedData<Vector<AppliedTextDecoration, 1>>",
+      include_paths: ["third_party/blink/renderer/core/style/applied_text_decoration.h"],
       default_value: "nullptr",
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
+      computed_style_custom_functions: ["getter"],
     },
     {
       name: "InheritedVariables",

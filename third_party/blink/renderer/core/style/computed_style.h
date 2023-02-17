@@ -303,6 +303,9 @@ class ComputedStyle : public ComputedStyleBase,
   PositionFallbackStyleCache& EnsurePositionFallbackStyleCache(
       unsigned ensure_size) const;
 
+  CORE_EXPORT base::RefCountedData<Vector<AppliedTextDecoration, 1>>*
+  EnsureAppliedTextDecorationsCache() const;
+
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
   ALWAYS_INLINE ComputedStyle();
@@ -1836,16 +1839,37 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Text decoration utility functions.
   bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
-  CORE_EXPORT const Vector<AppliedTextDecoration>& AppliedTextDecorations()
-      const;
   CORE_EXPORT TextDecorationLine TextDecorationsInEffect() const;
+  CORE_EXPORT const Vector<AppliedTextDecoration, 1>& AppliedTextDecorations()
+      const;
+  CORE_EXPORT base::RefCountedData<Vector<AppliedTextDecoration, 1>>*
+  AppliedTextDecorationData() const {
+    return IsDecoratingBox() ? EnsureAppliedTextDecorationsCache()
+                             : BaseTextDecorationDataInternal().get();
+  }
+
+  // Returns true if this a "decorating box".
+  // https://drafts.csswg.org/css-text-decor-3/#decorating-box
+  bool IsDecoratingBox() const {
+    if (GetTextDecorationLine() == TextDecorationLine::kNone) {
+      return false;
+    }
+    if (Display() == EDisplay::kContents) {
+      return false;
+    }
+    return true;
+  }
 
   // Returns true if there are any text decorations.
   bool HasAppliedTextDecorations() const {
-    if (HasSimpleUnderlineInternal()) {
+    if (IsDecoratingBox()) {
       return true;
     }
-    return AppliedTextDecorationsInternal().get() != nullptr;
+    if (BaseTextDecorationDataInternal()) {
+      DCHECK(!BaseTextDecorationDataInternal()->data.empty());
+      return true;
+    }
+    return false;
   }
 
   // Returns (by value) the last text decoration, if any.
@@ -2794,6 +2818,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     if (inherit_parent.UserSelect() == EUserSelect::kContain) {
       SetUserSelect(current_user_select);
     }
+
+    SetBaseTextDecorationData(inherit_parent.AppliedTextDecorationData());
   }
 
   void CopyNonInheritedFromCached(const ComputedStyle& other) {
@@ -3444,14 +3470,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
                          static_cast<unsigned>(ViewportUnitFlag::kDynamic));
   }
 
-  // Text decoration
-  void ApplyTextDecorations(const blink::Color& parent_text_decoration_color);
-  void ClearAppliedTextDecorations();
-  void RestoreParentTextDecorations(const ComputedStyle& parent_style);
-
  private:
-  void AddAppliedTextDecoration(const AppliedTextDecoration&);
-
   scoped_refptr<ComputedStyle> style_;
 };
 
