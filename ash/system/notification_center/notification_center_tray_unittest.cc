@@ -13,9 +13,9 @@
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -287,6 +287,26 @@ TEST_F(NotificationCenterTrayTest, PrivacyIndicatorsVisibility) {
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
   EXPECT_FALSE(privacy_indicators_view->GetVisible());
+}
+
+// Tests that the focus ring is visible and has proper size when the
+// notification center tray is focused.
+TEST_F(NotificationCenterTrayTest, FocusRing) {
+  // Add a notification to make the notification center tray visible.
+  test_api()->AddNotification();
+  ASSERT_TRUE(test_api()->IsTrayShown());
+
+  // Verify that the focus ring is not already visible.
+  EXPECT_FALSE(test_api()->GetFocusRing()->GetVisible());
+
+  // Focus the notification center tray.
+  test_api()->FocusTray();
+
+  // Verify that the focus ring is visible and is larger than the notification
+  // center tray by `kTrayBackgroundFocusPadding`.
+  EXPECT_TRUE(test_api()->GetFocusRing()->GetVisible());
+  EXPECT_EQ(test_api()->GetFocusRing()->size(),
+            test_api()->GetTray()->size() + kTrayBackgroundFocusPadding.size());
 }
 
 // TODO(b/252875025):

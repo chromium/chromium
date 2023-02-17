@@ -27,6 +27,7 @@ class ImageModel;
 }  // namespace ui
 
 namespace views {
+class FocusRing;
 class View;
 class Widget;
 }  // namespace views
@@ -148,6 +149,12 @@ class NotificationCenterTestApi {
   // notification id by adding the same suffix added by
   // `NotificationGroupingController` to create a parent notification.
   std::string NotificationIdToParentNotificationId(const std::string& id);
+
+  // Returns the notification center tray's focus ring.
+  views::FocusRing* GetFocusRing() const;
+
+  // Focuses the notification center tray.
+  void FocusTray();
 
  private:
   std::string GenerateNotificationId();

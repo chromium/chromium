@@ -23,7 +23,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
-#include "ui/views/layout/flex_layout.h"
 
 namespace ash {
 
@@ -34,7 +33,6 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
       notification_icons_controller_(
           std::make_unique<NotificationIconsController>(shelf)) {
   SetID(VIEW_ID_SA_NOTIFICATION_TRAY);
-  SetLayoutManager(std::make_unique<views::FlexLayout>());
   set_use_bounce_in_animation(false);
 
   message_center::MessageCenter::Get()->AddObserver(this);

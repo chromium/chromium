@@ -6,12 +6,11 @@
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
+#include "ash/focus_cycler.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/ash_notification_view.h"
-#include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -29,6 +28,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/message_center/views/message_popup_view.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 
@@ -228,6 +228,16 @@ views::View* NotificationCenterTestApi::GetClearAllButton() {
 std::string NotificationCenterTestApi::NotificationIdToParentNotificationId(
     const std::string& id) {
   return id + message_center::kIdSuffixForGroupContainerNotification;
+}
+
+views::FocusRing* NotificationCenterTestApi::GetFocusRing() const {
+  return views::FocusRing::Get(notification_center_tray_);
+}
+
+void NotificationCenterTestApi::FocusTray() {
+  Shell::Get()->focus_cycler()->FocusWidget(
+      notification_center_tray_->GetWidget());
+  notification_center_tray_->RequestFocus();
 }
 
 std::string NotificationCenterTestApi::GenerateNotificationId() {
