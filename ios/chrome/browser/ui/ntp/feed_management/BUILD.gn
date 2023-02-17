@@ -79,6 +79,7 @@ source_set("follow_management_ui") {
     "resources:following_empty",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",

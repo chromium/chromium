@@ -10,6 +10,7 @@ source_set("follow") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/net:crurl",
   ]
 }

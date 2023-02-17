@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/follow/followed_web_site_state.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -38,11 +39,17 @@
 }
 
 - (NSString*)thirdRowText {
-  if (!_followedWebChannel.available) {
-    return l10n_util::GetNSString(
-        IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE);
+  switch (_followedWebChannel.state) {
+    case FollowedWebSiteStateStateInactive:
+      return l10n_util::GetNSString(
+          IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE);
+    case FollowedWebSiteStateStateAwaitingContent:
+      return l10n_util::GetNSString(
+          IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE);
+    case FollowedWebSiteStateStateUnknown:
+    case FollowedWebSiteStateStateActive:
+      return nil;
   }
-  return nil;
 }
 
 - (UIColor*)thirdRowTextColor {

@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/follow/followed_web_site_state.h"
+
 @class CrURL;
 
 // A view model representing a followed web channel.
@@ -28,6 +30,9 @@
 
 // YES if the web channel is available.
 @property(nonatomic, assign) BOOL available;
+
+// State of the website.
+@property(nonatomic, assign) FollowedWebSiteState state;
 
 @end
 

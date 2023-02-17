@@ -1009,8 +1009,11 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FOLLOW_MANAGEMENT_TITLE" desc="The title of the following feed management UI.">
         Following
       </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_AWAITING_CONTENT" desc="An indication that a web channel is waiting for content in the following feed management UI">
+        Waiting for content
+      </message>
       <message name="IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE" desc="An indication that a web channel is unavailable in the following feed management UI">
-        Unavailable
+        Updates Unavailable
       </message>
       <message name="IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION" desc="The 'Unfollow' action for a channel in the following feed management UI">
         Unfollow
