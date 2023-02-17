@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_IBAN_BUBBLE_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_IBAN_BUBBLE_CONTROLLER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
+#include "chrome/browser/ui/autofill/payments/save_iban_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -18,13 +18,13 @@ namespace autofill {
 
 enum class IbanBubbleType;
 
-// Implementation of per-tab class to control the IBAN save bubble, manage saved
-// IBAN bubble, and Omnibox icon.
-class IbanBubbleControllerImpl
+// Implementation of per-tab class to control the IBAN save bubble and
+// Omnibox icon.
+class SaveIbanBubbleControllerImpl
     : public AutofillBubbleControllerBase,
-      public IbanBubbleController,
+      public SaveIbanBubbleController,
       public SavePaymentIconController,
-      public content::WebContentsUserData<IbanBubbleControllerImpl> {
+      public content::WebContentsUserData<SaveIbanBubbleControllerImpl> {
  public:
   // An observer class used by browsertests that gets notified whenever
   // particular actions occur.
@@ -34,9 +34,10 @@ class IbanBubbleControllerImpl
     virtual void OnIconShown() = 0;
   };
 
-  IbanBubbleControllerImpl(const IbanBubbleControllerImpl&) = delete;
-  IbanBubbleControllerImpl& operator=(const IbanBubbleControllerImpl&) = delete;
-  ~IbanBubbleControllerImpl() override;
+  SaveIbanBubbleControllerImpl(const SaveIbanBubbleControllerImpl&) = delete;
+  SaveIbanBubbleControllerImpl& operator=(const SaveIbanBubbleControllerImpl&) =
+      delete;
+  ~SaveIbanBubbleControllerImpl() override;
 
   // Sets up the controller and offers to save the `iban` locally.
   // `save_iban_prompt_callback` will be invoked once the user makes a decision
@@ -49,15 +50,13 @@ class IbanBubbleControllerImpl
   // No-op if the bubble is already shown, otherwise, shows the bubble.
   void ReshowBubble();
 
-  // IbanBubbleController:
+  // SaveIbanBubbleController:
   std::u16string GetWindowTitle() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
   const IBAN& GetIBAN() const override;
-
-  void OnAcceptButton(const std::u16string& nickname) override;
+  void OnSaveButton(const std::u16string& nickname) override;
   void OnCancelButton() override;
-  void OnManageSavedIbanExtraButtonClicked() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   IbanBubbleType GetBubbleType() const override;
 
@@ -76,14 +75,17 @@ class IbanBubbleControllerImpl
   }
 
  protected:
-  explicit IbanBubbleControllerImpl(content::WebContents* web_contents);
+  explicit SaveIbanBubbleControllerImpl(content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 
  private:
-  friend class content::WebContentsUserData<IbanBubbleControllerImpl>;
+  friend class content::WebContentsUserData<SaveIbanBubbleControllerImpl>;
+
+  // Displays both the offer-to-save bubble and its associated omnibox icon.
+  void ShowBubble();
 
   // Displays omnibox icon only.
   void ShowIconOnly();
@@ -118,4 +120,4 @@ class IbanBubbleControllerImpl
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_IBAN_BUBBLE_CONTROLLER_IMPL_H_
