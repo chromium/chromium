@@ -4,15 +4,12 @@
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
-#include "base/check_is_test.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/tablet_state.h"
-#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/frame/frame_header.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -21,9 +18,8 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/frame_caption_button.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace chromeos {
 
@@ -54,6 +50,8 @@ bool g_suppress_nudge_for_testing = false;
 
 // Clock that can be overridden for testing.
 base::Clock* g_clock_override = nullptr;
+
+MultitaskMenuNudgeController::Delegate* g_delegate_instance = nullptr;
 
 base::Time GetTime() {
   return g_clock_override ? g_clock_override->Now() : base::Time::Now();
@@ -100,22 +98,23 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
 
 }  // namespace
 
-MultitaskMenuNudgeController::MultitaskMenuNudgeController(
-    aura::Window* root_window,
-    std::unique_ptr<Delegate> delegate)
-    : root_window_(root_window), delegate_(std::move(delegate)) {
-  display::Screen::GetScreen()->AddObserver(this);
+MultitaskMenuNudgeController::Delegate::~Delegate() {
+  DCHECK_EQ(this, g_delegate_instance);
+  g_delegate_instance = nullptr;
+}
 
-  ::wm::GetActivationClient(root_window_)->AddObserver(this);
-  root_window_observation_.Observe(root_window_);
+MultitaskMenuNudgeController::Delegate::Delegate() {
+  DCHECK_EQ(nullptr, g_delegate_instance);
+  g_delegate_instance = this;
+}
+
+MultitaskMenuNudgeController::MultitaskMenuNudgeController() {
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 MultitaskMenuNudgeController::~MultitaskMenuNudgeController() {
   DismissNudge();
   display::Screen::GetScreen()->RemoveObserver(this);
-  if (root_window_) {
-    ::wm::GetActivationClient(root_window_)->RemoveObserver(this);
-  }
 }
 
 // static
@@ -128,8 +127,18 @@ void MultitaskMenuNudgeController::RegisterProfilePrefs(
 }
 
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
+  MaybeShowNudge(window, /*anchor_view=*/nullptr);
+}
+
+void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
+                                                  views::View* anchor_view) {
   if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
       g_suppress_nudge_for_testing || nudge_widget_) {
+    return;
+  }
+
+  // TODO(sammiequon): Delegate is not available for lacros yet.
+  if (!g_delegate_instance) {
     return;
   }
 
@@ -138,15 +147,13 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
     return;
   }
 
-  // Tracks `window` in case it gets destroyed during the async pref fetching in
-  // lacros.
-  auto window_tracker = std::make_unique<aura::WindowTracker>();
-  window_tracker->Add(window);
-  delegate_->GetNudgePreferences(
+  // `window` and `anchor_view` can be passed safely on clamshell because they
+  // are owned by the frame which also owns `this`. They can be passed safely on
+  // tablet since tablet is controlled by ash which is sync.
+  g_delegate_instance->GetNudgePreferences(
       TabletState::Get()->InTabletMode(),
       base::BindOnce(&MultitaskMenuNudgeController::OnGetPreferences,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(window_tracker)));
+                     weak_ptr_factory_.GetWeakPtr(), window, anchor_view));
 }
 
 void MultitaskMenuNudgeController::DismissNudge() {
@@ -178,28 +185,24 @@ void MultitaskMenuNudgeController::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  if (window == window_) {
-    UpdateWidgetAndPulse();
-  }
+  DCHECK_EQ(window_, window);
+  UpdateWidgetAndPulse();
 }
 
 void MultitaskMenuNudgeController::OnWindowTargetTransformChanging(
     aura::Window* window,
     const gfx::Transform& new_transform) {
-  if (window == window_) {
-    // Prevent unintended behaviour in situations that use transforms such as
-    // overview mode.
-    // TODO(hewer): Decide how the cue behaves when adjusting the split view
-    // bounds in tablet mode.
-    DismissNudge();
-  }
+  DCHECK_EQ(window_, window);
+  // Prevent unintended behaviour in situations that use transforms such as
+  // overview mode.
+  // TODO(hewer): Decide how the cue behaves when adjusting the split view
+  // bounds in tablet mode.
+  DismissNudge();
 }
 
 void MultitaskMenuNudgeController::OnWindowStackingChanged(
     aura::Window* window) {
-  if (window != window_) {
-    return;
-  }
+  DCHECK_EQ(window_, window);
 
   // Stacking may change during the construction of the widget, at which
   // `nudge_widget_` would still be null.
@@ -214,25 +217,8 @@ void MultitaskMenuNudgeController::OnWindowStackingChanged(
 }
 
 void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
-  if (window == root_window_) {
-    ::wm::GetActivationClient(root_window_)->RemoveObserver(this);
-    root_window_ = nullptr;
-    root_window_observation_.Reset();
-    return;
-  }
-
   DCHECK_EQ(window_, window);
   DismissNudge();
-}
-
-void MultitaskMenuNudgeController::OnWindowActivated(
-    ActivationReason reason,
-    aura::Window* gained_active,
-    aura::Window* lost_active) {
-  // Tablet mode window activation is handled by `TabletModeMultitaskCue`.
-  if (gained_active && !TabletState::Get()->InTabletMode()) {
-    MaybeShowNudge(gained_active);
-  }
 }
 
 void MultitaskMenuNudgeController::OnDisplayTabletStateChanged(
@@ -268,18 +254,11 @@ void MultitaskMenuNudgeController::SetOverrideClockForTesting(
 }
 
 void MultitaskMenuNudgeController::OnGetPreferences(
-    std::unique_ptr<aura::WindowTracker> candidate_tracker,
+    aura::Window* window,
+    views::View* anchor_view,
     bool tablet_mode,
     int shown_count,
     base::Time last_shown_time) {
-  // Candidate window was destroyed during the async fetch preferences.
-  if (candidate_tracker->windows().empty()) {
-    return;
-  }
-
-  DCHECK_EQ(1u, candidate_tracker->windows().size());
-  aura::Window* candidate_window = candidate_tracker->windows()[0];
-
   // Tablet state has changed since we fetched preferences.
   if (tablet_mode != TabletState::Get()->InTabletMode()) {
     return;
@@ -300,36 +279,12 @@ void MultitaskMenuNudgeController::OnGetPreferences(
     return;
   }
 
-  // The anchor is the button on the header that serves as the maximize or
-  // restore button (depending on the window state). Not used in tablet
-  // mode.
-  views::FrameCaptionButton* anchor_view = nullptr;
-
-  if (!tablet_mode) {
-    // Some tests create windows without a backing widget
-    // (`CreateTestWindow()`), and some widgets may not have a header, test or
-    // custom header.
-    auto* widget = views::Widget::GetWidgetForNativeWindow(candidate_window);
-    if (!widget) {
-      CHECK_IS_TEST();
-      return;
-    }
-
-    auto* frame_header = chromeos::FrameHeader::Get(widget);
-    if (!frame_header) {
-      return;
-    }
-
-    anchor_view = frame_header->caption_button_container()->size_button();
-    DCHECK(anchor_view);
-
-    // If the anchor is not visible, do not show the nudge.
-    if (!anchor_view->IsDrawn()) {
-      return;
-    }
+  // If the anchor is passed and hidden, we cannot show the nudge.
+  if (anchor_view && !anchor_view->IsDrawn()) {
+    return;
   }
 
-  window_ = candidate_window;
+  window_ = window;
   window_observation_.Observe(window_);
 
   nudge_widget_ = CreateWidget(window_);
@@ -359,7 +314,8 @@ void MultitaskMenuNudgeController::OnGetPreferences(
       .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
 
   // Update the preferences.
-  delegate_->SetNudgePreferences(tablet_mode, shown_count + 1, GetTime());
+  g_delegate_instance->SetNudgePreferences(tablet_mode, shown_count + 1,
+                                           GetTime());
 
   // No need to update pulse or start timer in tablet mode.
   if (!tablet_mode) {
@@ -420,7 +376,8 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
 
   if (tablet_mode) {
     // The nudge is placed in the top center of the window, just below the cue.
-    const int tablet_nudge_y_offset = delegate_->GetTabletNudgeYOffset();
+    const int tablet_nudge_y_offset =
+        g_delegate_instance->GetTabletNudgeYOffset();
     nudge_widget_->SetBounds(gfx::Rect(
         (window_->bounds().width() - size.width()) / 2 + window_->bounds().x(),
         tablet_nudge_y_offset + window_->bounds().y(), size.width(),

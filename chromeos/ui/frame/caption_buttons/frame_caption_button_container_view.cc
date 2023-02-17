@@ -133,7 +133,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
           return false;
         }
 
-        if (!chromeos::TabletState::Get()->InTabletMode()) {
+        if (!TabletState::Get()->InTabletMode()) {
           return true;
         }
 
@@ -234,6 +234,8 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
                  views::kWindowControlCloseIcon);
 
   UpdateCaptionButtonState(/*animate=*/false);
+
+  frame_observer_.Observe(frame_);
 }
 
 FrameCaptionButtonContainerView::~FrameCaptionButtonContainerView() = default;
@@ -460,6 +462,24 @@ void FrameCaptionButtonContainerView::AnimationProgressed(
   }
 }
 
+void FrameCaptionButtonContainerView::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  if (!active) {
+    return;
+  }
+
+  // Tablet nudge is controlled by ash by another class
+  // (`::ash::TabletModeMultitaskCue`).
+  if (TabletState::Get()->InTabletMode()) {
+    return;
+  }
+
+  nudge_controller_.MaybeShowNudge(
+      widget->GetNativeWindow(),
+      /*anchor_view=*/static_cast<views::View*>(size_button_));
+}
+
 void FrameCaptionButtonContainerView::SetButtonIcon(
     views::FrameCaptionButton* button,
     views::CaptionButtonIcon icon,
@@ -571,7 +591,7 @@ void FrameCaptionButtonContainerView::CloseButtonPressed() {
   SetButtonsToNormal(Animate::kNo);
 
   frame_->Close();
-  if (chromeos::TabletState::Get()->InTabletMode()) {
+  if (TabletState::Get()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
   } else {

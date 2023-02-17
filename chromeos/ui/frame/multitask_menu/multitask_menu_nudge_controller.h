@@ -14,16 +14,11 @@
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
-#include "ui/wm/public/activation_change_observer.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
 class MultitaskMenuNudgeControllerTest;
-}
-
-namespace aura {
-class WindowTracker;
 }
 
 namespace ui {
@@ -35,7 +30,6 @@ namespace chromeos {
 // Controller for showing the user education nudge for the multitask menu.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
     : public aura::WindowObserver,
-      public ::wm::ActivationChangeObserver,
       public display::DisplayObserver {
  public:
   // `tablet_mode` refers to the tablet state when the prefs are fetched. If
@@ -49,13 +43,17 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // A delegate to provide platform specific implementation (ash, lacros).
   class Delegate {
    public:
-    virtual ~Delegate() = default;
+    virtual ~Delegate();
+
     virtual int GetTabletNudgeYOffset() const = 0;
     virtual void GetNudgePreferences(bool tablet_mode,
                                      GetPreferencesCallback callback) = 0;
     virtual void SetNudgePreferences(bool tablet_mode,
                                      int count,
                                      base::Time time) = 0;
+
+   protected:
+    Delegate();
   };
 
   // The name of an integer pref that counts the number of times we have shown
@@ -72,8 +70,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   static constexpr char kTabletLastShownPrefName[] =
       "cros.wm_nudge.tablet_multitask_nudge_last_shown";
 
-  MultitaskMenuNudgeController(aura::Window* root_window,
-                               std::unique_ptr<Delegate> delegate);
+  MultitaskMenuNudgeController();
   MultitaskMenuNudgeController(const MultitaskMenuNudgeController&) = delete;
   MultitaskMenuNudgeController& operator=(const MultitaskMenuNudgeController&) =
       delete;
@@ -84,6 +81,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // Attempts to show the nudge. Reads preferences and then calls
   // `OnGetPreferences()`.
   void MaybeShowNudge(aura::Window* window);
+  void MaybeShowNudge(aura::Window* window, views::View* anchor_view);
 
   // Closes the widget and cleans up all pointers in this class.
   void DismissNudge();
@@ -101,11 +99,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  // wm::ActivationChangeObserver:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
-
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
@@ -119,9 +112,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
 
   // Callback function after fetching preferences. Shows the nudge if it can be
   // shown. The nudge can be shown if it hasn't been shown 3 times already, or
-  // shown in the last 24 hours. `candidate_tracker` tracks our candidate
-  // window; it may be destroyed during the async pref fetching in lacros.
-  void OnGetPreferences(std::unique_ptr<aura::WindowTracker> candidate_tracker,
+  // shown in the last 24 hours. `window` and `anchor_view` are the associated
+  // window and the anchor for the nudge. `anchor_view` will be null in tablet
+  // mode as the nudge shows in the top center of the window and is not anchored
+  // to anything.
+  void OnGetPreferences(aura::Window* window,
+                        views::View* anchor_view,
                         bool tablet_mode,
                         int shown_count,
                         base::Time last_shown_time);
@@ -153,14 +149,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // button on `window_`'s frame. Null in tablet mode.
   views::View* anchor_view_ = nullptr;
 
-  aura::Window* root_window_ = nullptr;
-
-  std::unique_ptr<Delegate> delegate_;
-
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-  base::ScopedObservation<aura::Window, aura::WindowObserver>
-      root_window_observation_{this};
 
   base::WeakPtrFactory<MultitaskMenuNudgeController> weak_ptr_factory_{this};
 };

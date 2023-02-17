@@ -11,6 +11,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -60,11 +61,12 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   void OnPostWindowStateTypeChange(WindowState* window_state,
                                    chromeos::WindowStateType old_type) override;
 
+  chromeos::MultitaskMenuNudgeController* nudge_controller_for_testing() {
+    return &nudge_controller_;
+  }
   void FireCueDismissTimerForTesting() { cue_dismiss_timer_.FireNow(); }
 
  private:
-  friend class TabletModeMultitaskCueTest;
-
   // Updates the bounds of the cue relative to the window if the window is
   // still available.
   void UpdateCueBounds();
@@ -75,6 +77,9 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
 
   // The app window that the cue is associated with.
   aura::Window* window_ = nullptr;
+
+  // Handles showing the educational nudge for the tablet multitask menu.
+  chromeos::MultitaskMenuNudgeController nudge_controller_;
 
   // The solid color layer that represents the cue.
   std::unique_ptr<ui::Layer> cue_layer_;

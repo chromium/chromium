@@ -219,7 +219,6 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
-#include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -849,7 +848,7 @@ Shell::~Shell() {
   // destroyed first to remove the tablet mode observer.
   glanceables_controller_.reset();
 
-  multitask_menu_nudge_controller_.reset();
+  multitask_menu_nudge_delegate_.reset();
   tablet_mode_controller_.reset();
   login_screen_controller_.reset();
   system_notification_controller_.reset();
@@ -1524,15 +1523,6 @@ void Shell::Init(
   // since it may need to add observers to root windows.
   window_restore_controller_ = std::make_unique<WindowRestoreController>();
 
-  // Needs to be constructed after `WindowTreeHostManager::InitHosts()` as it
-  // needs to get the activation client from chromeos/.
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    multitask_menu_nudge_controller_ =
-        std::make_unique<chromeos::MultitaskMenuNudgeController>(
-            GetPrimaryRootWindow(),
-            std::make_unique<MultitaskMenuNudgeDelegateAsh>());
-  }
-
   static_cast<CursorManager*>(cursor_manager_.get())->Init();
 
   mojo::PendingRemote<device::mojom::Fingerprint> fingerprint;
@@ -1589,6 +1579,8 @@ void Shell::Init(
 
   if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     float_controller_ = std::make_unique<FloatController>();
+    multitask_menu_nudge_delegate_ =
+        std::make_unique<MultitaskMenuNudgeDelegateAsh>();
   }
 
   if (features::IsFederatedServiceEnabled()) {
