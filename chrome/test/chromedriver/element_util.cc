@@ -54,8 +54,9 @@ const char kFindSubFrameScript[] =
 bool ParseFromValue(base::Value* value, WebPoint* point) {
   if (!value->is_dict())
     return false;
-  auto x = value->FindDoubleKey("x");
-  auto y = value->FindDoubleKey("y");
+  base::Value::Dict& dict = value->GetDict();
+  auto x = dict.FindDouble("x");
+  auto y = dict.FindDouble("y");
   if (!x.has_value() || !y.has_value())
     return false;
   point->x = x.value();
@@ -66,8 +67,9 @@ bool ParseFromValue(base::Value* value, WebPoint* point) {
 bool ParseFromValue(base::Value* value, WebSize* size) {
   if (!value->is_dict())
     return false;
-  auto width = value->FindDoubleKey("width");
-  auto height = value->FindDoubleKey("height");
+  base::Value::Dict& dict = value->GetDict();
+  auto width = dict.FindDouble("width");
+  auto height = dict.FindDouble("height");
   if (!width.has_value() || !height.has_value())
     return false;
   size->width = width.value();
@@ -78,10 +80,11 @@ bool ParseFromValue(base::Value* value, WebSize* size) {
 bool ParseFromValue(base::Value* value, WebRect* rect) {
   if (!value->is_dict())
     return false;
-  auto x = value->FindDoubleKey("left");
-  auto y = value->FindDoubleKey("top");
-  auto width = value->FindDoubleKey("width");
-  auto height = value->FindDoubleKey("height");
+  base::Value::Dict& dict = value->GetDict();
+  auto x = dict.FindDouble("left");
+  auto y = dict.FindDouble("top");
+  auto width = dict.FindDouble("width");
+  auto height = dict.FindDouble("height");
   if (!x.has_value() || !y.has_value() || !width.has_value() ||
       !height.has_value())
     return false;

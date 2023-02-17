@@ -352,8 +352,8 @@ bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
     return false;
   if (!value->is_dict())
     return false;
-  absl::optional<double> x = value->FindDoubleKey("x");
-  absl::optional<double> y = value->FindDoubleKey("y");
+  absl::optional<double> x = value->GetDict().FindDouble("x");
+  absl::optional<double> y = value->GetDict().FindDouble("y");
   if (!x.has_value())
     return false;
   if (!y.has_value())
