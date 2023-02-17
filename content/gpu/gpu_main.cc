@@ -448,16 +448,14 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
       !gpu_prefs.disable_accelerated_video_encode;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Increase the FD limit by 512 on Chrome OS devices in order to avoid running
-  // running out of FDs in cases where many decoders are running concurrently.
-  // See b/215553848 and b/265885078.
-  // TODO(b/195769334): revisit the need for this once out-of-process video
-  // decoding has been fully implemented.
+  // Video decoding of many video streams can use thousands of FDs as well as
+  // Exo clients like Lacros.
+  // See https://crbug.com/1417237
   const auto current_max_fds =
       base::saturated_cast<unsigned int>(base::GetMaxFds());
-  constexpr unsigned int kMaxFDsDelta = 1u << 9;
+  constexpr unsigned int kMaxFDsDelta = 1u << 13;
   const auto new_max_fds =
-      static_cast<unsigned int>(base::ClampAdd(current_max_fds, kMaxFDsDelta));
+      static_cast<unsigned int>(base::ClampMax(current_max_fds, kMaxFDsDelta));
   base::IncreaseFdLimitTo(new_max_fds);
 #endif
 
