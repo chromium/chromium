@@ -28,6 +28,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/prefetch_service_delegate.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -205,13 +206,18 @@ bool CheckAndSetPrefetchHoldbackStatus(
   if (!prefetch_container->HasPreloadingAttempt()) {
     return false;
   }
-  if (!IsContentPrefetchHoldback()) {
-    prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
-    return false;
-  } else {
+  // In addition to the globally-controlled preloading config, check for the
+  // feature-specific holdback. We disable the feature if the user is in either
+  // of those holdbacks.
+  if (IsContentPrefetchHoldback()) {
+    prefetch_container->preloading_attempt()->SetHoldbackStatus(
+        PreloadingHoldbackStatus::kHoldback);
+  }
+  if (prefetch_container->preloading_attempt()->ShouldHoldback()) {
     prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchHeldback);
     return true;
   }
+  return false;
 }
 
 }  // namespace

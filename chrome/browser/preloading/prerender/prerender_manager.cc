@@ -92,13 +92,14 @@ GURL RemoveParameterFromUrl(const GURL& url) {
 
 void CheckAndSetPrerenderHoldbackStatus(
     content::PreloadingAttempt* preloading_attempt) {
+  // In addition to the globally-controlled preloading config, check for the
+  // feature-specific holdback. We disable the feature if the user is in either
+  // of those holdbacks.
   if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
     preloading_attempt->SetHoldbackStatus(
         content::PreloadingHoldbackStatus::kHoldback);
-  } else {
-    preloading_attempt->SetHoldbackStatus(
-        content::PreloadingHoldbackStatus::kAllowed);
   }
+  preloading_attempt->ShouldHoldback();
 }
 
 content::PreloadingFailureReason ToPreloadingFailureReason(

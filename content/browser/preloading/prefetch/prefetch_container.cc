@@ -25,6 +25,7 @@
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -213,21 +214,6 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
   }
 }
 
-void SetHoldbackFromStatus(PreloadingAttempt* attempt, PrefetchStatus status) {
-  if (attempt) {
-    switch (status) {
-      case PrefetchStatus::kPrefetchAllowed:
-        attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
-        break;
-      case PrefetchStatus::kPrefetchHeldback:
-        attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
-        break;
-      default:
-        break;
-    }
-  }
-}
-
 }  // namespace
 
 PrefetchContainer::PrefetchContainer(
@@ -291,7 +277,6 @@ PrefetchContainer::~PrefetchContainer() {
 }
 
 void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
-  SetHoldbackFromStatus(attempt_.get(), prefetch_status);
   FrameTreeNode* ftn = FrameTreeNode::From(
       RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
   SetTriggeringOutcomeAndFailureReasonFromStatus(
@@ -556,6 +541,7 @@ void PrefetchContainer::UpdateServingPageMetrics() {
 void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
   if (attempt_) {
     attempt_->SetEligibility(PreloadingEligibility::kEligible);
+    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
   }
   SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);

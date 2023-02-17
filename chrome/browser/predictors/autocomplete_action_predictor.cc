@@ -239,15 +239,16 @@ void AutocompleteActionPredictor::StartPrerendering(
         preloading_attempt->SetEligibility(
             content::PreloadingEligibility::kEligible);
 
-        // Check and set the PreloadingHoldbackStatus before setting the
-        // TriggeringOutcome.
+        // In addition to the globally-controlled preloading config, check for
+        // the feature-specific holdback. We disable the feature if the user is
+        // in either of those holdbacks.
         if (base::FeatureList::IsEnabled(features::kNoStatePrefetchHoldback)) {
           preloading_attempt->SetHoldbackStatus(
               content::PreloadingHoldbackStatus::kHoldback);
+        }
+        if (preloading_attempt->ShouldHoldback()) {
           return;
         }
-        preloading_attempt->SetHoldbackStatus(
-            content::PreloadingHoldbackStatus::kAllowed);
         preloading_attempt->SetTriggeringOutcome(
             content::PreloadingTriggeringOutcome::kDuplicate);
 

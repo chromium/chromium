@@ -81,6 +81,12 @@ class CONTENT_EXPORT PreloadingDataImpl
   // Stores all the preloading predictions that are happening for the next
   // navigation until the navigation takes place.
   std::vector<std::unique_ptr<PreloadingPrediction>> preloading_predictions_;
+
+  // The random seed used to determine if a preloading attempt should be sampled
+  // in UKM logs. We use a different random seed for each session and then hash
+  // that seed with the UKM source ID so that all attempts for a given source ID
+  // are sampled in or out together.
+  uint32_t sampling_seed_;
 };
 
 }  // namespace content

@@ -645,18 +645,20 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   // NoStatePrefetch is now eligible to be triggered.
   SetPreloadingEligibility(attempt.get(), PreloadingEligibility::kEligible);
 
-  // Check for the holdback status and set it.
+  // In addition to the globally-controlled preloading config, check for the
+  // feature-specific holdback. We disable the feature if the user is in either
+  // of those holdbacks.
   if (base::FeatureList::IsEnabled(features::kNoStatePrefetchHoldback)) {
+    if (attempt) {
+      attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+    }
+  }
+  if (attempt && attempt->ShouldHoldback()) {
     SetPrefetchFinalStatusForUrl(url, FINAL_STATUS_PREFETCH_HOLDBACK);
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url, origin, FINAL_STATUS_PREFETCH_HOLDBACK);
-
-    if (attempt)
-      attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
     return nullptr;
   }
-  if (attempt)
-    attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
 
   if (NoStatePrefetchData* preexisting_prefetch_data =
           FindNoStatePrefetchData(url, session_storage_namespace)) {

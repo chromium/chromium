@@ -125,16 +125,18 @@ bool CheckAndSetPrefetchHoldbackStatus(
   if (!preloading_attempt)
     return true;
 
+  // In addition to the globally-controlled preloading config, check for the
+  // feature-specific holdback. We disable the feature if the user is in either
+  // of those holdbacks.
   if (base::GetFieldTrialParamByFeatureAsBool(kSearchPrefetchServicePrefetching,
                                               "prefetch_holdback", false)) {
     preloading_attempt->SetHoldbackStatus(
         content::PreloadingHoldbackStatus::kHoldback);
-    return false;
-  } else {
-    preloading_attempt->SetHoldbackStatus(
-        content::PreloadingHoldbackStatus::kAllowed);
-    return true;
   }
+  if (preloading_attempt->ShouldHoldback()) {
+    return false;
+  }
+  return true;
 }
 
 void SetTriggeringOutcome(content::PreloadingAttempt* preloading_attempt,

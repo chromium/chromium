@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "content/browser/preloading/preloading_data_impl.h"
+#include <limits>
 
+#include "base/rand_util.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_prediction.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -113,7 +116,7 @@ PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(
 
   auto attempt = std::make_unique<PreloadingAttemptImpl>(
       predictor, preloading_type, triggered_primary_page_source_id,
-      std::move(url_match_predicate));
+      std::move(url_match_predicate), sampling_seed_);
   preloading_attempts_.push_back(std::move(attempt));
 
   return preloading_attempts_.back().get();
@@ -141,7 +144,8 @@ void PreloadingDataImpl::AddPreloadingPrediction(
 
 PreloadingDataImpl::PreloadingDataImpl(WebContents* web_contents)
     : WebContentsUserData<PreloadingDataImpl>(*web_contents),
-      WebContentsObserver(web_contents) {}
+      WebContentsObserver(web_contents),
+      sampling_seed_(static_cast<uint32_t>(base::RandUint64())) {}
 
 PreloadingDataImpl::~PreloadingDataImpl() = default;
 

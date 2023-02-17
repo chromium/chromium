@@ -4,13 +4,17 @@
 
 #include "content/browser/preloading/preloading_attempt_impl.h"
 
+#include "base/metrics/crc32.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/state_transitions.h"
 #include "base/strings/strcat.h"
+#include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_config.h"
 #include "content/public/browser/preloading.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 
@@ -69,24 +73,6 @@ void DCHECKTriggeringOutcomeTransitions(PreloadingTriggeringOutcome old_state,
 #endif  // DCHECK_IS_ON()
 }
 
-static base::StringPiece PreloadingTypeToString(PreloadingType type) {
-  switch (type) {
-    case PreloadingType::kUnspecified:
-      return "Unspecified";
-    case PreloadingType::kPreconnect:
-      return "Preconnect";
-    case PreloadingType::kPrefetch:
-      return "Prefetch";
-    case PreloadingType::kPrerender:
-      return "Prerender";
-    case PreloadingType::kNoStatePrefetch:
-      return "NoStatePrefetch";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
 }  // namespace
 
 void PreloadingAttemptImpl::SetEligibility(PreloadingEligibility eligibility) {
@@ -99,6 +85,9 @@ void PreloadingAttemptImpl::SetEligibility(PreloadingEligibility eligibility) {
   eligibility_ = eligibility;
 }
 
+// TODO(crbug.com/1383267): remove this once we've switched to the
+// PreloadingConfig feature. The holdback status should be determined by the
+// preloading configuration only.
 void PreloadingAttemptImpl::SetHoldbackStatus(
     PreloadingHoldbackStatus holdback_status) {
   // Ensure that the holdback status is only set once and that it's set for
@@ -108,6 +97,23 @@ void PreloadingAttemptImpl::SetHoldbackStatus(
   DCHECK_EQ(triggering_outcome_, PreloadingTriggeringOutcome::kUnspecified);
   DCHECK_NE(holdback_status, PreloadingHoldbackStatus::kUnspecified);
   holdback_status_ = holdback_status;
+}
+
+bool PreloadingAttemptImpl::ShouldHoldback() {
+  DCHECK_EQ(eligibility_, PreloadingEligibility::kEligible);
+  if (holdback_status_ != PreloadingHoldbackStatus::kUnspecified) {
+    // The holdback status has already been determined, just use that value.
+    return holdback_status_ == PreloadingHoldbackStatus::kHoldback;
+  }
+
+  bool should_holdback = PreloadingConfig::GetInstance().ShouldHoldback(
+      preloading_type_, predictor_type_);
+  if (should_holdback) {
+    holdback_status_ = PreloadingHoldbackStatus::kHoldback;
+  } else {
+    holdback_status_ = PreloadingHoldbackStatus::kAllowed;
+  }
+  return should_holdback;
 }
 
 void PreloadingAttemptImpl::SetTriggeringOutcome(
@@ -165,11 +171,13 @@ PreloadingAttemptImpl::PreloadingAttemptImpl(
     PreloadingPredictor predictor,
     PreloadingType preloading_type,
     ukm::SourceId triggered_primary_page_source_id,
-    base::RepeatingCallback<bool(const GURL&)> url_match_predicate)
+    base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
+    uint32_t sampling_seed)
     : predictor_type_(predictor),
       preloading_type_(preloading_type),
       triggered_primary_page_source_id_(triggered_primary_page_source_id),
-      url_match_predicate_(std::move(url_match_predicate)) {}
+      url_match_predicate_(std::move(url_match_predicate)),
+      sampling_seed_(sampling_seed) {}
 
 PreloadingAttemptImpl::~PreloadingAttemptImpl() = default;
 
@@ -184,7 +192,36 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
         << "TriggeringOutcome set to kSuccess without correct prediction\n";
   }
 
-  // Don't log when the source id is invalid.
+  // Always record UMA, regardless of sampling.
+  RecordPreloadingAttemptUMA();
+
+  // Check if the preloading attempt is sampled in.
+  // We prefer to use the UKM source ID of the triggering page for determining
+  // sampling, so that all preloading attempts for the same page are included
+  // (or not) together. If there is no source for the triggering page, fallback
+  // to the navigated-to page.
+  ukm::SourceId sampling_source = triggered_primary_page_source_id_;
+  if (sampling_source == ukm::kInvalidSourceId) {
+    sampling_source = navigated_page_source_id;
+  }
+  if (sampling_source == ukm::kInvalidSourceId) {
+    // There is no valid UKM source, so there is nothing to log.
+    return;
+  }
+
+  PreloadingConfig& config = PreloadingConfig::GetInstance();
+  uint32_t sampled_num = sampling_seed_;
+  sampled_num =
+      base::Crc32(sampled_num, &sampling_source, sizeof(sampling_source));
+
+  double sampling_likelihood =
+      config.SamplingLikelihood(preloading_type_, predictor_type_);
+  if (sampled_num >
+      sampling_likelihood * std::numeric_limits<uint32_t>::max()) {
+    // PreloadingAttempt is sampled out.
+    return;
+  }
+
   if (navigated_page_source_id != ukm::kInvalidSourceId) {
     ukm::builders::Preloading_Attempt builder(navigated_page_source_id);
     builder.SetPreloadingType(static_cast<int64_t>(preloading_type_))
@@ -225,8 +262,6 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
     }
     builder.Record(ukm_recorder);
   }
-
-  RecordPreloadingAttemptUMA();
 }
 
 void PreloadingAttemptImpl::RecordPreloadingAttemptUMA() {

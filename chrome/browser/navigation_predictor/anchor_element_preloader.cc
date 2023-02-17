@@ -78,13 +78,17 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   attempt->SetEligibility(content::PreloadingEligibility::kEligible);
   RecordUmaPreloadedTriggered(AnchorElementPreloaderType::kPreconnect);
 
+  // In addition to the globally-controlled preloading config, check for the
+  // feature-specific holdback. We disable the feature if the user is in either
+  // of those holdbacks.
   if (base::GetFieldTrialParamByFeatureAsBool(
           blink::features::kAnchorElementInteraction, "preconnect_holdback",
           false)) {
     attempt->SetHoldbackStatus(content::PreloadingHoldbackStatus::kHoldback);
+  }
+  if (attempt->ShouldHoldback()) {
     return;
   }
-  attempt->SetHoldbackStatus(content::PreloadingHoldbackStatus::kAllowed);
 
   if (preconnected_targets_.find(scheme_host_port) !=
       preconnected_targets_.end()) {

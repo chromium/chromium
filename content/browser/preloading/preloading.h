@@ -7,6 +7,8 @@
 
 #include "content/public/browser/preloading.h"
 
+namespace content {
+
 // Defines various //content triggering mechanisms which trigger different
 // preloading operations mentioned in content/public/browser/preloading.h.
 
@@ -17,8 +19,7 @@
 // go/preloading-dashboard-updates to update the mapping reflected in
 // dashboard, or if you are not a Googler, please file an FYI bug on
 // https://crbug.new with component Internals>Preload.
-namespace content::content_preloading_predictor {
-
+namespace content_preloading_predictor {
 // Advance numbering by +1 when adding a new element.
 //
 // Please limit content-internal `PreloadingPredictor` between 50 to 99
@@ -34,6 +35,10 @@ static constexpr PreloadingPredictor kSpeculationRules(50, "SpeculationRules");
 
 // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
 // logging.
-}  // namespace content::content_preloading_predictor
+}  // namespace content_preloading_predictor
+
+CONTENT_EXPORT base::StringPiece PreloadingTypeToString(PreloadingType type);
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRELOADING_H_

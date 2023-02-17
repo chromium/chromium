@@ -39,6 +39,17 @@ class CONTENT_EXPORT PreloadingAttempt {
   // called once per preloading attempt.
   virtual void SetEligibility(PreloadingEligibility eligibility) = 0;
 
+  // Whether this preloading attempt should be held back in order to
+  // counterfactually evaluate how well this type of preloading is performing.
+  // This is controlled via field trial configuration. Users of preloading
+  // attempt should always call this before triggering an eligible preloading
+  // attempt. Note that individual features can also use their own field
+  // trial-controlled holdbacks, in which case preloading should be disabled if
+  // either the feature's holdback is enabled or if ShouldHoldback returns true.
+  // Features implementing their own holdback to should record held back
+  // preloading attempts by calling SetHoldbackStatus (declared below).
+  virtual bool ShouldHoldback() = 0;
+
   // Sets the outcome of the holdback check used to implement counterfactual
   // experiments. This is not part of eligibility status to clarify that this
   // check needs to happen after we are done verifying the eligibility of a
