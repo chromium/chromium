@@ -10,10 +10,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
-#include "third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_video_frame.h"
+#include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
 
 using testing::Return;
 using testing::ReturnRef;
+
+using webrtc::MockTransformableVideoFrame;
 
 namespace blink {
 
