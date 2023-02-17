@@ -33,8 +33,14 @@ source_set("cpp") {
   ]
   if (!use_real_chromeos_services) {
     sources += [
+      "fake_ash_event_reporter.cc",
+      "fake_ash_event_reporter.h",
       "fake_cros_healthd.cc",
       "fake_cros_healthd.h",
+    ]
+    public_deps += [
+      "//ash/system/diagnostics/mojom",
+      "//chromeos/ash/services/cros_healthd/public/mojom:event_reporter",
     ]
   }
 }

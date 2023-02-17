@@ -88,6 +88,7 @@ source_set("unit_tests") {
   sources = [
     "common/routine_properties_unittest.cc",
     "connectivity/network_health_provider_unittest.cc",
+    "input/healthd_event_reporter_unittest.cc",
     "input/input_data_event_watcher_unittest.cc",
     "input/input_data_provider_keyboard_unittest.cc",
     "input/input_data_provider_touch_unittest.cc",
