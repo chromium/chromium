@@ -34,69 +34,100 @@ constexpr CK_ATTRIBUTE_TYPE kForceSoftwareAttribute = CKA_VENDOR_DEFINED + 4;
 // Chaps sets this for keys that are software-backed.
 constexpr CK_ATTRIBUTE_TYPE kKeyInSoftware = CKA_VENDOR_DEFINED + 5;
 
-// Holds PKCS#11 attributes passed by the code under test.
-struct ObjectAttributes {
-  ObjectAttributes() = default;
-  ~ObjectAttributes() = default;
+const auto kOptCkTrue = Optional(CK_TRUE);
+const auto kOptCkFalse = Optional(CK_FALSE);
+enum AttrValueType { kNotDefined, kCkBool, kCkUlong, kCkBytes };
 
-  ObjectAttributes(const ObjectAttributes& other) = default;
-  ObjectAttributes& operator=(const ObjectAttributes& other) = default;
+// Class helper to keep relations between all possible attribute's types,
+// attribute's names and attribute's value types.
+class AttributesParsingOptions {
+ public:
+  AttributesParsingOptions() = default;
+  ~AttributesParsingOptions() = default;
 
-  ObjectAttributes(ObjectAttributes&& other) = default;
-  ObjectAttributes& operator=(ObjectAttributes&& other) = default;
-
-  absl::optional<CK_BBOOL> cka_token;
-  absl::optional<CK_BBOOL> cka_private;
-  absl::optional<CK_BBOOL> cka_verify;
-  absl::optional<CK_ULONG> cka_modulus_bits;
-  absl::optional<std::vector<CK_BYTE>> cka_public_exponent;
-  absl::optional<CK_BBOOL> cka_sensitive;
-  absl::optional<CK_BBOOL> cka_extractable;
-  absl::optional<CK_BBOOL> cka_sign;
-  absl::optional<CK_BBOOL> force_software;
-
-  static ObjectAttributes ParseFrom(CK_ATTRIBUTE_PTR attributes,
-                                    CK_ULONG attributes_count) {
-    ObjectAttributes result;
-
-    for (CK_ULONG i = 0; i < attributes_count; ++i) {
-      const CK_ATTRIBUTE& attribute = attributes[i];
-      switch (attribute.type) {
-        case CKA_TOKEN:
-          result.cka_token = GetCkBBool(attribute, "CKA_TOKEN");
-          break;
-        case CKA_PRIVATE:
-          result.cka_private = GetCkBBool(attribute, "CKA_PRIVATE");
-          break;
-        case CKA_VERIFY:
-          result.cka_verify = GetCkBBool(attribute, "CKA_VERIFY");
-          break;
-        case CKA_MODULUS_BITS:
-          result.cka_modulus_bits = GetCkULong(attribute, "CKA_MODULUS_BITS");
-          break;
-        case CKA_PUBLIC_EXPONENT:
-          result.cka_public_exponent = GetBytes(attribute);
-          break;
-        case CKA_SENSITIVE:
-          result.cka_sensitive = GetCkBBool(attribute, "CKA_SENSITIVE");
-          break;
-        case CKA_EXTRACTABLE:
-          result.cka_extractable = GetCkBBool(attribute, "CKA_EXTRACTABLE");
-          break;
-        case CKA_SIGN:
-          result.cka_sign = GetCkBBool(attribute, "CKA_SIGN");
-          break;
-        case kForceSoftwareAttribute:
-          result.force_software =
-              GetCkBBool(attribute, "kForceSoftwareAttribute");
-          break;
-      }
+  static std::string GetName(const CK_ATTRIBUTE& attribute) {
+    if (!GetOptionsMap().contains(attribute.type)) {
+      ADD_FAILURE() << "Attribute name is unknown :" << attribute.type;
+      return "";
     }
-    return result;
+    return std::get<std::string>(GetOptionsMap().at(attribute.type));
   }
 
-  static absl::optional<CK_BBOOL> GetCkBBool(const CK_ATTRIBUTE& attribute,
-                                             const char* attribute_name) {
+  static AttrValueType GetValueType(const CK_ATTRIBUTE& attribute) {
+    if (!GetOptionsMap().contains(attribute.type)) {
+      ADD_FAILURE() << "Attribute value's type is unknown :" << attribute.type;
+      return AttrValueType::kNotDefined;
+    } else {
+      return std::get<AttrValueType>(GetOptionsMap().at(attribute.type));
+    }
+  }
+
+ private:
+  static const std::map<CK_ATTRIBUTE_TYPE,
+                        std::pair<AttrValueType, std::string>>&
+  GetOptionsMap() {
+    // Map which keeps relation between attribute type, attribute name
+    // and attribute value's type.
+    static std::map<CK_ATTRIBUTE_TYPE, std::pair<AttrValueType, std::string>>
+        attr_type_to_options;
+    if (attr_type_to_options.empty()) {
+      attr_type_to_options[CKA_TOKEN] = {kCkBool, "CKA_TOKEN"};
+      attr_type_to_options[CKA_PRIVATE] = {kCkBool, "CKA_PRIVATE"};
+      attr_type_to_options[CKA_VERIFY] = {kCkBool, "CKA_VERIFY"};
+      attr_type_to_options[CKA_MODULUS_BITS] = {kCkUlong, "CKA_MODULUS_BITS"};
+      attr_type_to_options[CKA_PUBLIC_EXPONENT] = {kCkBytes,
+                                                   "CKA_PUBLIC_EXPONENT"};
+      attr_type_to_options[CKA_SENSITIVE] = {kCkBool, "CKA_SENSITIVE"};
+      attr_type_to_options[CKA_EXTRACTABLE] = {kCkBool, "CKA_EXTRACTABLE"};
+      attr_type_to_options[CKA_SIGN] = {kCkBool, "CKA_SIGN"};
+      attr_type_to_options[kForceSoftwareAttribute] = {
+          kCkBool, "kForceSoftwareAttribute"};
+    }
+    return attr_type_to_options;
+  }
+};
+
+// Generic holder for single parsed attribute with all parsing methods.
+class AttributeData {
+ public:
+  AttributeData() = default;
+  explicit AttributeData(const CK_ATTRIBUTE& attribute) {
+    AttrValueType attr_value_type =
+        AttributesParsingOptions::GetValueType(attribute);
+    name_ = AttributesParsingOptions::GetName(attribute);
+    switch (attr_value_type) {
+      case kCkBool:
+        ck_bool_value_ = ParseCkBBool(attribute, name_);
+        break;
+      case kCkUlong:
+        ck_ulong_value_ = ParseCkULong(attribute, name_);
+        break;
+      case kCkBytes:
+        ck_bytes_value_ = ParseCkBytes(attribute);
+        break;
+      case kNotDefined:
+        ADD_FAILURE() << "Parser is not defined for attribute type:"
+                      << attribute.type;
+        break;
+    }
+  }
+  ~AttributeData() = default;
+
+  absl::optional<CK_BBOOL> CkBool() { return ck_bool_value_; }
+
+  absl::optional<CK_ULONG> CkULong() { return ck_ulong_value_; }
+
+  absl::optional<std::vector<CK_BYTE>> CkByte() { return ck_bytes_value_; }
+
+ private:
+  std::string name_;
+  absl::optional<CK_BBOOL> ck_bool_value_;
+  absl::optional<CK_ULONG> ck_ulong_value_;
+  absl::optional<std::vector<CK_BYTE>> ck_bytes_value_;
+
+  static absl::optional<CK_BBOOL> ParseCkBBool(
+      const CK_ATTRIBUTE& attribute,
+      const std::string& attribute_name) {
     if (attribute.ulValueLen < sizeof(CK_BBOOL)) {
       ADD_FAILURE() << "Size to small for CK_BBOOL for attribute "
                     << attribute_name << ": " << attribute.ulValueLen;
@@ -107,8 +138,9 @@ struct ObjectAttributes {
     return value;
   }
 
-  static absl::optional<CK_ULONG> GetCkULong(const CK_ATTRIBUTE& attribute,
-                                             const char* attribute_name) {
+  static absl::optional<CK_ULONG> ParseCkULong(
+      const CK_ATTRIBUTE& attribute,
+      const std::string& attribute_name) {
     if (attribute.ulValueLen < sizeof(CK_ULONG)) {
       ADD_FAILURE() << "Size to small for CK_ULONG for attribute "
                     << attribute_name << ": " << attribute.ulValueLen;
@@ -119,12 +151,48 @@ struct ObjectAttributes {
     return value;
   }
 
-  static absl::optional<std::vector<CK_BYTE>> GetBytes(
+  static absl::optional<std::vector<CK_BYTE>> ParseCkBytes(
       const CK_ATTRIBUTE& attribute) {
     std::vector<CK_BYTE> result(attribute.ulValueLen);
     memcpy(result.data(), attribute.pValue, result.size());
     return result;
   }
+};
+
+// Holds PKCS#11 attributes passed by the code under test.
+struct ObjectAttributes {
+  ObjectAttributes() = default;
+  ~ObjectAttributes() = default;
+
+  static ObjectAttributes ParseFrom(CK_ATTRIBUTE_PTR attributes,
+                                    CK_ULONG attributes_count) {
+    ObjectAttributes result;
+    for (CK_ULONG i = 0; i < attributes_count; ++i) {
+      const CK_ATTRIBUTE& attr = attributes[i];
+      if (result.parsed_attributes_map.contains(attr.type)) {
+        ADD_FAILURE() << "Already stored attribute type:" << attr.type;
+      }
+      result.parsed_attributes_map[attr.type] = AttributeData(attr);
+    }
+    return result;
+  }
+
+  absl::optional<CK_BBOOL> GetCkBool(const CK_ATTRIBUTE_TYPE attribute_type) {
+    return parsed_attributes_map[attribute_type].CkBool();
+  }
+
+  absl::optional<CK_ULONG> GetCkULong(const CK_ATTRIBUTE_TYPE attribute_type) {
+    return parsed_attributes_map[attribute_type].CkULong();
+  }
+
+  absl::optional<std::vector<CK_BYTE>> GetCkByte(
+      const CK_ATTRIBUTE_TYPE attribute_type) {
+    return parsed_attributes_map[attribute_type].CkByte();
+  }
+
+  int Size() { return parsed_attributes_map.size(); }
+
+  std::map<CK_ATTRIBUTE_TYPE, AttributeData> parsed_attributes_map;
 };
 
 // Holds
@@ -212,7 +280,7 @@ class FakeChapsSlotSession : public ChapsSlotSession {
     *phPrivateKey = private_key->pkcs11ID;
     private_key_handle_ = private_key->pkcs11ID;
 
-    // Remember the modulus
+    // Remember the modulus.
     SECItem* modulus = &(public_key->u.rsa.modulus);
     public_key_modulus_.assign(modulus->data, modulus->data + modulus->len);
     return CKR_OK;
@@ -371,7 +439,7 @@ std::vector<uint8_t> GetExpectedCkaId(SECKEYPrivateKey* private_key) {
 
 // Successfully generates a software-backed key pair. Also verifies CKA_ID
 // assignment.
-TEST_F(ChapsUtilImplTest, Success) {
+TEST_F(ChapsUtilImplTest, GenerateSoftwareKeyPairSuccess) {
   crypto::ScopedSECKEYPublicKey public_key;
   crypto::ScopedSECKEYPrivateKey private_key;
   ASSERT_TRUE(chaps_util_impl_->GenerateSoftwareBackedRSAKey(
@@ -380,30 +448,29 @@ TEST_F(ChapsUtilImplTest, Success) {
   // Verify that ChapsUtil passed the correct slot id to the factory.
   EXPECT_EQ(passed_data_.slot_id, PK11_GetSlotID(nss_test_db_.slot()));
 
-  // Verify that ChapsUtil passed the expected attributes
-  EXPECT_THAT(passed_data_.public_key_gen_attributes.cka_token,
-              Optional(CK_TRUE));
-  EXPECT_THAT(passed_data_.public_key_gen_attributes.cka_private,
-              Optional(CK_FALSE));
-  EXPECT_THAT(passed_data_.public_key_gen_attributes.cka_verify,
-              Optional(CK_TRUE));
-  EXPECT_THAT(passed_data_.public_key_gen_attributes.cka_modulus_bits,
+  // Verify that ChapsUtil passed the expected attributes.
+  // Check attributes for public key.
+  ObjectAttributes public_key_data = passed_data_.public_key_gen_attributes;
+  const int expected_public_key_attributes = 5;
+  EXPECT_THAT(public_key_data.Size(), expected_public_key_attributes);
+  EXPECT_THAT(public_key_data.GetCkBool(CKA_TOKEN), kOptCkTrue);
+  EXPECT_THAT(public_key_data.GetCkBool(CKA_PRIVATE), kOptCkFalse);
+  EXPECT_THAT(public_key_data.GetCkBool(CKA_VERIFY), kOptCkTrue);
+  EXPECT_THAT(public_key_data.GetCkULong(CKA_MODULUS_BITS),
               Optional((CK_ULONG)2048));
-  EXPECT_THAT(passed_data_.public_key_gen_attributes.cka_public_exponent,
+  EXPECT_THAT(public_key_data.GetCkByte(CKA_PUBLIC_EXPONENT),
               Optional(std::vector<CK_BYTE>{0x01, 0x00, 0x01}));
 
-  EXPECT_THAT(passed_data_.private_key_gen_attributes.cka_token,
-              Optional(CK_TRUE));
-  EXPECT_THAT(passed_data_.private_key_gen_attributes.cka_private,
-              Optional(CK_TRUE));
-  EXPECT_THAT(passed_data_.private_key_gen_attributes.cka_sensitive,
-              Optional(CK_TRUE));
-  EXPECT_THAT(passed_data_.private_key_gen_attributes.cka_extractable,
-              Optional(CK_FALSE));
-  EXPECT_THAT(passed_data_.private_key_gen_attributes.force_software,
-              Optional(CK_TRUE));
-  EXPECT_THAT(passed_data_.private_key_gen_attributes.cka_sign,
-              Optional(CK_TRUE));
+  // Check attributes for private key.
+  ObjectAttributes private_key_data = passed_data_.private_key_gen_attributes;
+  const int expected_private_key_attributes = 6;
+  EXPECT_THAT(private_key_data.Size(), expected_private_key_attributes);
+  EXPECT_THAT(private_key_data.GetCkBool(CKA_TOKEN), kOptCkTrue);
+  EXPECT_THAT(private_key_data.GetCkBool(CKA_PRIVATE), kOptCkTrue);
+  EXPECT_THAT(private_key_data.GetCkBool(CKA_SENSITIVE), kOptCkTrue);
+  EXPECT_THAT(private_key_data.GetCkBool(CKA_EXTRACTABLE), kOptCkFalse);
+  EXPECT_THAT(private_key_data.GetCkBool(kForceSoftwareAttribute), kOptCkTrue);
+  EXPECT_THAT(private_key_data.GetCkBool(CKA_SIGN), kOptCkTrue);
 
   // Verify that ChapsUtil attempted to assign the correct CKA_ID to the public
   // and private key objects.
