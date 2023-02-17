@@ -276,7 +276,8 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     DCHECK_EQ(static_cast<int>(promise_image_textures_.size()), 1);
     auto alpha_type = representation()->alpha_type();
-    auto color_type = viz::ToClosestSkColorType(true, format);
+    auto color_type =
+        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
     return SkImage::MakeFromTexture(
         context, promise_image_texture()->backendTexture(), surface_origin,
         color_type, alpha_type, sk_color_space, texture_release_proc,
@@ -305,6 +306,23 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
                                          sk_color_space, texture_release_proc,
                                          release_context);
   }
+}
+
+sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImageForPlane(
+    int plane_index,
+    GrDirectContext* context) const {
+  auto format = representation()->format();
+  DCHECK(format.is_multi_plane());
+  DCHECK_EQ(static_cast<int>(promise_image_textures_.size()),
+            format.NumberOfPlanes());
+
+  auto surface_origin = representation()->surface_origin();
+  auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
+  auto color_type =
+      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
+  return SkImage::MakeFromTexture(
+      context, promise_image_texture(plane_index)->backendTexture(),
+      surface_origin, color_type, alpha_type, /*sk_color_space=*/nullptr);
 }
 
 std::unique_ptr<GrBackendSurfaceMutableState>
