@@ -9,14 +9,15 @@
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "components/reading_list/core/reading_list_entry.h"
+#include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "url/gurl.h"
 
 namespace reading_list {
 
 DualReadingListModel::DualReadingListModel(
-    std::unique_ptr<ReadingListModel> local_or_syncable_model,
-    std::unique_ptr<ReadingListModel> account_model)
+    std::unique_ptr<ReadingListModelImpl> local_or_syncable_model,
+    std::unique_ptr<ReadingListModelImpl> account_model)
     : local_or_syncable_model_(std::move(local_or_syncable_model)),
       account_model_(std::move(account_model)) {
   DCHECK(local_or_syncable_model_);
@@ -152,6 +153,17 @@ bool DualReadingListModel::IsUrlSupported(const GURL& url) {
   DCHECK_EQ(local_or_syncable_model_->IsUrlSupported(url),
             account_model_->IsUrlSupported(url));
   return local_or_syncable_model_->IsUrlSupported(url);
+}
+
+bool DualReadingListModel::NeedsExplicitUploadToSyncServer(
+    const GURL& url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!local_or_syncable_model_->IsTrackingSyncMetadata() ||
+         !account_model_->IsTrackingSyncMetadata());
+
+  return account_model_->IsTrackingSyncMetadata() &&
+         local_or_syncable_model_->GetEntryByURL(url) != nullptr &&
+         account_model_->GetEntryByURL(url) == nullptr;
 }
 
 const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(

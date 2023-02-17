@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "url/gurl.h"
 
@@ -38,8 +39,8 @@ class DualReadingListModel : public ReadingListModel,
   };
 
   DualReadingListModel(
-      std::unique_ptr<ReadingListModel> local_or_syncable_model,
-      std::unique_ptr<ReadingListModel> account_model);
+      std::unique_ptr<ReadingListModelImpl> local_or_syncable_model,
+      std::unique_ptr<ReadingListModelImpl> account_model);
   ~DualReadingListModel() override;
 
   // KeyedService implementation.
@@ -62,6 +63,7 @@ class DualReadingListModel : public ReadingListModel,
   scoped_refptr<const ReadingListEntry> GetEntryByURL(
       const GURL& gurl) const override;
   bool IsUrlSupported(const GURL& url) override;
+  bool NeedsExplicitUploadToSyncServer(const GURL& url) const override;
   const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,
@@ -114,8 +116,8 @@ class DualReadingListModel : public ReadingListModel,
   void NotifyObserversWithDidRemoveEntry(const GURL& url);
   void NotifyObserversWithDidApplyChanges();
 
-  const std::unique_ptr<ReadingListModel> local_or_syncable_model_;
-  const std::unique_ptr<ReadingListModel> account_model_;
+  const std::unique_ptr<ReadingListModelImpl> local_or_syncable_model_;
+  const std::unique_ptr<ReadingListModelImpl> account_model_;
 
   // Indicates whether a ReadingListModelImpl::RemoveEntryByURL is currently
   // performing on `local_or_syncable_model_` and `account_model_`.

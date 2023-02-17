@@ -60,6 +60,7 @@ class ReadingListModelImpl : public ReadingListModel {
   scoped_refptr<const ReadingListEntry> GetEntryByURL(
       const GURL& gurl) const override;
   bool IsUrlSupported(const GURL& url) override;
+  bool NeedsExplicitUploadToSyncServer(const GURL& url) const override;
   const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,
@@ -111,6 +112,10 @@ class ReadingListModelImpl : public ReadingListModel {
   // ReadingListModelImpl's ScopedReadingListBatchUpdateImpl.
   std::unique_ptr<ScopedReadingListBatchUpdateImpl>
   BeginBatchUpdatesWithSyncMetadata();
+
+  // Returns true if the model is sync-ing with the server and the initial
+  // download of data and corresponding merge has completed.
+  bool IsTrackingSyncMetadata() const;
 
   // Test-only factory function to inject an arbitrary change processor.
   static std::unique_ptr<ReadingListModelImpl> BuildNewForTest(

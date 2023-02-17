@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
@@ -324,6 +325,15 @@ bool ReadingListModelImpl::IsUrlSupported(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
 
+bool ReadingListModelImpl::NeedsExplicitUploadToSyncServer(
+    const GURL& url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Returning true only makes sense for an implementation that maintains a
+  // separate set of local and account entries (DualReadingListModel).
+  return false;
+}
+
 const ReadingListEntry& ReadingListModelImpl::AddOrReplaceEntry(
     const GURL& url,
     const std::string& title,
@@ -542,6 +552,11 @@ ReadingListModelImpl::BeginBatchUpdatesWithSyncMetadata() {
     }
   }
   return token;
+}
+
+bool ReadingListModelImpl::IsTrackingSyncMetadata() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_bridge_.change_processor()->IsTrackingMetadata();
 }
 
 // static

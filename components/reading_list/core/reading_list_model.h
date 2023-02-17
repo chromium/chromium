@@ -89,6 +89,10 @@ class ReadingListModel : public KeyedService {
   // Returns true if |url| can be added to the reading list.
   virtual bool IsUrlSupported(const GURL& url) = 0;
 
+  // Returns true if the entry with `url` requires explicit user action to
+  // upload to sync servers.
+  virtual bool NeedsExplicitUploadToSyncServer(const GURL& url) const = 0;
+
   // Adds |url| at the top of the unread entries, and removes entries with the
   // same |url| from everywhere else if they exist. The entry title will be a
   // trimmed copy of |title|. |time_to_read_minutes| is the estimated time to

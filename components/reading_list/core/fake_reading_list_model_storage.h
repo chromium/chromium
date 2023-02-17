@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_READING_LIST_CORE_FAKE_READING_LIST_MODEL_STORAGE_H_
 #define COMPONENTS_READING_LIST_CORE_FAKE_READING_LIST_MODEL_STORAGE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -13,6 +14,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/sync/model/dummy_metadata_change_list.h"
+#include "components/sync/model/metadata_batch.h"
 
 // Test-only implementation of ReadingListModelStorage that doesn't do any
 // actual I/O but allows populating the initial list of entries. It also
@@ -59,7 +61,9 @@ class FakeReadingListModelStorage
   // Convenience overload that uses sensible defaults (empty store) for success
   // case.
   bool TriggerLoadCompletion(
-      std::vector<scoped_refptr<ReadingListEntry>> entries = {});
+      std::vector<scoped_refptr<ReadingListEntry>> entries = {},
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch =
+          std::make_unique<syncer::MetadataBatch>());
 
   // ReadingListModelStorage implementation.
   void Load(base::Clock* clock, LoadCallback load_cb) override;

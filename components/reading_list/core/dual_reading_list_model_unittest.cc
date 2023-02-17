@@ -55,7 +55,7 @@ class DualReadingListModelTest : public testing::Test {
         std::make_unique<FakeReadingListModelStorage>();
     account_model_storage_ptr_ = account_model_storage->AsWeakPtr();
     auto account_model = std::make_unique<ReadingListModelImpl>(
-        std::move(account_model_storage), syncer::StorageType::kUnspecified,
+        std::move(account_model_storage), syncer::StorageType::kAccount,
         &clock_);
     account_model_ptr_ = account_model.get();
 
@@ -65,56 +65,60 @@ class DualReadingListModelTest : public testing::Test {
   }
 
   bool ResetStorageAndTriggerLoadCompletion(
-      std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries,
-      std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries) {
+      std::vector<scoped_refptr<ReadingListEntry>>
+          initial_local_or_syncable_entries = {},
+      std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries =
+          {}) {
     ResetStorage();
     return local_or_syncable_model_storage_ptr_->TriggerLoadCompletion(
-               std::move(initial_local_entries)) &&
+               std::move(initial_local_or_syncable_entries)) &&
            account_model_storage_ptr_->TriggerLoadCompletion(
                std::move(initial_account_entries));
   }
 
-  bool ResetStorageAndTriggerLoadCompletion(
-      const std::vector<GURL>& initial_local_urls = {},
-      const std::vector<GURL>& initial_account_urls = {}) {
-    std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries;
-    for (const auto& url : initial_local_urls) {
-      initial_local_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
-          url, "Title for " + url.spec(), clock_.Now()));
-    }
-
-    std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries;
-    for (const auto& url : initial_account_urls) {
-      initial_account_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
-          url, "Title for " + url.spec(), clock_.Now()));
-    }
-
+  bool ResetStorageAndMimicSignedOut(
+      std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries = {}) {
     return ResetStorageAndTriggerLoadCompletion(
-        std::move(initial_local_entries), std::move(initial_account_entries));
+        std::move(initial_local_entries), /*initial_account_entries=*/{});
   }
 
-  size_t UnreadSize() {
-    size_t size = 0;
-    for (const auto& url : dual_model_->GetKeys()) {
-      scoped_refptr<const ReadingListEntry> entry =
-          dual_model_->GetEntryByURL(url);
-      if (!entry->IsRead()) {
-        size++;
-      }
-    }
-    return size;
+  bool ResetStorageAndMimicSignedInSyncDisabled(
+      std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries = {},
+      std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries =
+          {}) {
+    ResetStorage();
+    auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+    sync_pb::ModelTypeState state;
+    state.set_initial_sync_done(true);
+    metadata_batch->SetModelTypeState(state);
+    return local_or_syncable_model_storage_ptr_->TriggerLoadCompletion(
+               std::move(initial_local_entries)) &&
+           account_model_storage_ptr_->TriggerLoadCompletion(
+               std::move(initial_account_entries), std::move(metadata_batch));
   }
 
-  size_t ReadSize() {
-    size_t size = 0;
-    for (const auto& url : dual_model_->GetKeys()) {
-      scoped_refptr<const ReadingListEntry> entry =
-          dual_model_->GetEntryByURL(url);
-      if (entry->IsRead()) {
-        size++;
-      }
+  bool ResetStorageAndMimicSyncEnabled(
+      std::vector<scoped_refptr<ReadingListEntry>> initial_syncable_entries =
+          {}) {
+    ResetStorage();
+    auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+    sync_pb::ModelTypeState state;
+    state.set_initial_sync_done(true);
+    metadata_batch->SetModelTypeState(state);
+    return local_or_syncable_model_storage_ptr_->TriggerLoadCompletion(
+               std::move(initial_syncable_entries),
+               std::move(metadata_batch)) &&
+           account_model_storage_ptr_->TriggerLoadCompletion();
+  }
+
+  std::vector<scoped_refptr<ReadingListEntry>> MakeTestEntriesForURLs(
+      const std::vector<GURL>& urls) {
+    std::vector<scoped_refptr<ReadingListEntry>> entries;
+    for (const auto& url : urls) {
+      entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+          url, "Title for " + url.spec(), clock_.Now()));
     }
-    return size;
+    return entries;
   }
 
  protected:
@@ -140,8 +144,6 @@ TEST_F(DualReadingListModelTest, EmptyLoaded) {
   EXPECT_CALL(observer_, ReadingListModelLoaded(dual_model_.get()));
   ASSERT_TRUE(account_model_storage_ptr_->TriggerLoadCompletion());
   EXPECT_TRUE(dual_model_->loaded());
-  EXPECT_EQ(0ul, UnreadSize());
-  EXPECT_EQ(0ul, ReadSize());
 }
 
 // Tests errors during load model.
@@ -156,7 +158,8 @@ TEST_F(DualReadingListModelTest, ModelLoadFailure) {
 
 TEST_F(DualReadingListModelTest, ReturnAccountModelSize) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
-      /*initial_local_urls=*/{}, {GURL("https://url.com")}));
+      /*initial_local_or_syncable_entries=*/{},
+      MakeTestEntriesForURLs({GURL("https://url.com")})));
   ASSERT_EQ(0ul, local_or_syncable_model_ptr_->size());
   ASSERT_EQ(1ul, account_model_ptr_->size());
   EXPECT_EQ(1ul, dual_model_->size());
@@ -164,15 +167,17 @@ TEST_F(DualReadingListModelTest, ReturnAccountModelSize) {
 
 TEST_F(DualReadingListModelTest, ReturnLocalModelSize) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
-      {GURL("https://url.com")}, /*initial_account_urls=*/{}));
+      MakeTestEntriesForURLs({GURL("https://url.com")}),
+      /*initial_account_entries=*/{}));
   ASSERT_EQ(1ul, local_or_syncable_model_ptr_->size());
   ASSERT_EQ(0ul, account_model_ptr_->size());
   EXPECT_EQ(1ul, dual_model_->size());
 }
 
 TEST_F(DualReadingListModelTest, ReturnKeysSize) {
-  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion({GURL("https://url1.com")},
-                                                   {GURL("https://url2.com")}));
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      MakeTestEntriesForURLs({GURL("https://url1.com")}),
+      MakeTestEntriesForURLs({GURL("https://url2.com")})));
   ASSERT_EQ(1ul, local_or_syncable_model_ptr_->size());
   ASSERT_EQ(1ul, account_model_ptr_->size());
   EXPECT_EQ(2ul, dual_model_->size());
@@ -246,27 +251,75 @@ TEST_F(DualReadingListModelTest, GetEntryByURL) {
             ReadingListEntry::DISTILLATION_ERROR);
 }
 
-TEST_F(DualReadingListModelTest, RemoveNonExistingEntryByUrl) {
-  ResetStorageAndTriggerLoadCompletion();
-  const GURL kUrl = GURL("http://url.com/");
+TEST_F(DualReadingListModelTest, NeedsExplicitUploadToSyncServerWhenSignedOut) {
+  const GURL kLocalUrl("http://local_url.com/");
+  ASSERT_TRUE(
+      ResetStorageAndMimicSignedOut(MakeTestEntriesForURLs({kLocalUrl})));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
 
-  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kLocalUrl));
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(
+      GURL("http://non_existing_url.com/")));
+}
+
+TEST_F(DualReadingListModelTest,
+       NeedsExplicitUploadToSyncServerWhenSignedInSyncDisabled) {
+  const GURL kLocalUrl("http://local_url.com/");
+  const GURL kAccountUrl("http://account_url.com/");
+  const GURL kCommonUrl("http://common_url.com/");
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      MakeTestEntriesForURLs({kLocalUrl, kCommonUrl}),
+      MakeTestEntriesForURLs({kAccountUrl, kCommonUrl})));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  EXPECT_TRUE(dual_model_->NeedsExplicitUploadToSyncServer(kLocalUrl));
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kAccountUrl));
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kCommonUrl));
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(
+      GURL("http://non_existing_url.com/")));
+}
+
+TEST_F(DualReadingListModelTest,
+       NeedsExplicitUploadToSyncServerWhenSyncEnabled) {
+  const GURL kSyncableUrl("http://syncable_url.com/");
+  ASSERT_TRUE(
+      ResetStorageAndMimicSyncEnabled(MakeTestEntriesForURLs({kSyncableUrl})));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kSyncableUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kSyncableUrl));
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(
+      GURL("http://non_existing_url.com/")));
+}
+
+TEST_F(DualReadingListModelTest, RemoveNonExistingEntryByUrl) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
+  const GURL kNonExistingURL("http://non_existing_url.com/");
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kNonExistingURL),
             StorageStateForTesting::kNotFound);
-  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+  ASSERT_THAT(dual_model_->GetEntryByURL(kNonExistingURL), IsNull());
 
   EXPECT_CALL(observer_, ReadingListWillRemoveEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kNonExistingURL);
 
-  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+  EXPECT_THAT(dual_model_->GetEntryByURL(kNonExistingURL), IsNull());
 }
 
 TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrl) {
-  const GURL kLocalUrl = GURL("http://local_url.com/");
-  ResetStorageAndTriggerLoadCompletion({kLocalUrl},
-                                       /*initial_account_urls=*/{});
+  const GURL kLocalUrl("http://local_url.com/");
+  ASSERT_TRUE(
+      ResetStorageAndTriggerLoadCompletion(MakeTestEntriesForURLs({kLocalUrl}),
+                                           /*initial_account_entries=*/{}));
 
   ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
             StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
@@ -285,9 +338,10 @@ TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrl) {
 }
 
 TEST_F(DualReadingListModelTest, RemoveAccountEntryByUrl) {
-  const GURL kAccountUrl = GURL("http://account_url.com/");
-  ResetStorageAndTriggerLoadCompletion(/*initial_local_urls=*/{},
-                                       {kAccountUrl});
+  const GURL kAccountUrl("http://account_url.com/");
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries=*/{},
+      MakeTestEntriesForURLs({kAccountUrl})));
 
   ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
             StorageStateForTesting::kExistsInAccountModelOnly);
@@ -306,8 +360,10 @@ TEST_F(DualReadingListModelTest, RemoveAccountEntryByUrl) {
 }
 
 TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrl) {
-  const GURL kCommonUrl = GURL("http://Common_url.com/");
-  ResetStorageAndTriggerLoadCompletion({kCommonUrl}, {kCommonUrl});
+  const GURL kCommonUrl("http://common_url.com/");
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      MakeTestEntriesForURLs({kCommonUrl}),
+      MakeTestEntriesForURLs({kCommonUrl})));
 
   ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
             StorageStateForTesting::kExistsInBothModels);
@@ -326,9 +382,10 @@ TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrl) {
 }
 
 TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrlFromSync) {
-  const GURL kLocalUrl = GURL("http://local_url.com/");
-  ResetStorageAndTriggerLoadCompletion({kLocalUrl},
-                                       /*initial_account_urls=*/{});
+  const GURL kLocalUrl("http://local_url.com/");
+  ASSERT_TRUE(
+      ResetStorageAndTriggerLoadCompletion(MakeTestEntriesForURLs({kLocalUrl}),
+                                           /*initial_account_entries=*/{}));
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = local_or_syncable_model_ptr_->BeginBatchUpdates();
 
@@ -349,9 +406,10 @@ TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrlFromSync) {
 }
 
 TEST_F(DualReadingListModelTest, RemoveAccountEntryByUrlFromSync) {
-  const GURL kAccountUrl = GURL("http://account_url.com/");
-  ResetStorageAndTriggerLoadCompletion(/*initial_local_urls=*/{},
-                                       {kAccountUrl});
+  const GURL kAccountUrl("http://account_url.com/");
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries=*/{},
+      MakeTestEntriesForURLs({kAccountUrl})));
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = account_model_ptr_->BeginBatchUpdates();
 
@@ -372,8 +430,10 @@ TEST_F(DualReadingListModelTest, RemoveAccountEntryByUrlFromSync) {
 }
 
 TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrlFromSync) {
-  const GURL kCommonUrl = GURL("http://Common_url.com/");
-  ResetStorageAndTriggerLoadCompletion({kCommonUrl}, {kCommonUrl});
+  const GURL kCommonUrl("http://common_url.com/");
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      MakeTestEntriesForURLs({kCommonUrl}),
+      MakeTestEntriesForURLs({kCommonUrl})));
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = account_model_ptr_->BeginBatchUpdates();
 
