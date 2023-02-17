@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 
+#include <memory>
+
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
@@ -17,6 +19,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
@@ -58,12 +63,38 @@ constexpr int kButtonHeightAlpha = 56;
 // Since we only need the dark mode for the kEdit mode, so dark background is
 // passed for setting up the ink drop.
 constexpr SkColor kEditBackgroundColor = SkColorSetA(SK_ColorBLACK, 0x99);
+constexpr SkColor kInkDropBaseColor = SK_ColorWHITE;
+constexpr float kInkDropOpacity = 0.08f;
 
 // About focus ring.
 // Gap between focus ring outer edge to label.
 constexpr float kHaloInset = -6;
 // Thickness of focus ring.
 constexpr float kHaloThickness = 4;
+
+std::unique_ptr<views::InkDrop> CreateInkDrop(views::Button* view) {
+  return views::InkDrop::CreateInkDropForFloodFillRipple(
+      views::InkDrop::Get(view), /*highlight_on_hover=*/true,
+      /*highlight_on_focus=*/true);
+}
+
+std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
+    const views::Button* view) {
+  return std::make_unique<views::FloodFillInkDropRipple>(
+      const_cast<views::InkDropHost*>(views::InkDrop::Get(view)), view->size(),
+      gfx::Insets(),
+      views::InkDrop::Get(view)->GetInkDropCenterBasedOnLastEvent(),
+      kInkDropBaseColor, kInkDropOpacity);
+}
+
+std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
+    views::Button* view) {
+  auto highlight = std::make_unique<views::InkDropHighlight>(
+      gfx::SizeF(view->size()), kInkDropBaseColor);
+  highlight->set_visible_opacity(kInkDropOpacity);
+  return highlight;
+}
+
 }  // namespace
 
 class EditFinishView::ChildButton : public views::LabelButton {
@@ -109,10 +140,14 @@ class EditFinishView::ChildButton : public views::LabelButton {
     focus_ring->SetHaloInset(kHaloInset);
     focus_ring->SetHaloThickness(kHaloThickness);
     focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
-    ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                          /*highlight_on_hover=*/true,
-                                          /*highlight_on_focus=*/true,
-                                          kEditBackgroundColor);
+    if (AllowReposition()) {
+      SetUpInkDropForButton();
+    } else {
+      ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                            /*highlight_on_hover=*/true,
+                                            /*highlight_on_focus=*/true,
+                                            kEditBackgroundColor);
+    }
   }
   ~ChildButton() override = default;
 
@@ -123,11 +158,15 @@ class EditFinishView::ChildButton : public views::LabelButton {
   }
 
   bool OnMouseDragged(const ui::MouseEvent& event) override {
-    if (AllowReposition()) {
-      is_dragging_ = true;
-      on_mouse_dragged_callback_.Run(event);
-    }
-    return LabelButton::OnMouseDragged(event);
+    if (!AllowReposition())
+      return LabelButton::OnMouseDragged(event);
+
+    is_dragging_ = true;
+    on_mouse_dragged_callback_.Run(event);
+    views::InkDrop::Get(this)->GetInkDrop()->SetHovered(false);
+    views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
+                                              /*event=*/nullptr);
+    return true;
   }
 
   void OnMouseReleased(const ui::MouseEvent& event) override {
@@ -135,11 +174,25 @@ class EditFinishView::ChildButton : public views::LabelButton {
       LabelButton::OnMouseReleased(event);
       return;
     }
+    // Don't trigger button pressed event when it is dragged.
     is_dragging_ = false;
     on_mouse_released_callback_.Run(event);
   }
 
  private:
+  // Set inkdrop without theme.
+  void SetUpInkDropForButton() {
+    auto* ink_drop = views::InkDrop::Get(this);
+    ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+    SetHasInkDropActionOnClick(true);
+    ink_drop->SetCreateInkDropCallback(
+        base::BindRepeating(&CreateInkDrop, this));
+    ink_drop->SetCreateRippleCallback(
+        base::BindRepeating(&CreateInkDropRipple, this));
+    ink_drop->SetCreateHighlightCallback(
+        base::BindRepeating(&CreateInkDropHighlight, this));
+  }
+
   bool is_dragging_ = false;
 
   // Callbacks for dragging.
