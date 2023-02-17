@@ -380,9 +380,7 @@ class PrintRenderFrameHelper
                          uint32_t page_count,
                          double scale_factor,
                          blink::WebLocalFrame* frame,
-                         MetafileSkia* metafile,
-                         gfx::Size* page_size_in_dpi,
-                         gfx::Rect* content_area_in_dpi);
+                         MetafileSkia* metafile);
 
   // Renders page contents from |frame| to |content_area| of |canvas|.
   // |page_number| is zero-based.

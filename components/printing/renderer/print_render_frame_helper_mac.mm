@@ -24,9 +24,7 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
                                                uint32_t page_count,
                                                double scale_factor,
                                                blink::WebLocalFrame* frame,
-                                               MetafileSkia* metafile,
-                                               gfx::Size* page_size_in_dpi,
-                                               gfx::Rect* content_rect_in_dpi) {
+                                               MetafileSkia* metafile) {
   double css_scale_factor = scale_factor;
   mojom::PageSizeMarginsPtr page_layout_in_points =
       ComputePageLayoutInPointsForCss(frame, page_number, params,
@@ -36,12 +34,6 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   gfx::Rect content_area;
   GetPageSizeAndContentAreaFromPageLayout(*page_layout_in_points, &page_size,
                                           &content_area);
-
-  if (page_size_in_dpi)
-    *page_size_in_dpi = page_size;
-
-  if (content_rect_in_dpi)
-    *content_rect_in_dpi = content_area;
 
   gfx::Rect canvas_area =
       params.display_header_footer ? gfx::Rect(page_size) : content_area;
