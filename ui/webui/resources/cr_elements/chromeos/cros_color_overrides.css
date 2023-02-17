@@ -82,3 +82,10 @@ To get Chrome OS System Colors, an element must:
 :host-context([cros]) cr-tooltip-icon {
   --cr-link-color: var(--cros-tooltip-link-color);
 }
+
+/** Jelly specific styles */
+:host-context(body.jelly-enabled) cr-icon-button,
+:host-context(body.jelly-enabled) cr-link-row::part(icon),
+:host-context(body.jelly-enabled) cr-expand-button::part(icon) {
+  --cr-icon-button-fill-color: var(--cros-sys-secondary);
+}
