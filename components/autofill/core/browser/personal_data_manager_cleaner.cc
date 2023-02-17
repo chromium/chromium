@@ -65,11 +65,12 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
   if (!personal_data_manager_->IsSyncEnabledFor(syncer::AUTOFILL_WALLET_DATA))
     ApplyCardFixesAndCleanups();
 
-  // Log address, credit card and offer startup metrics.
+  // Log address, credit card, offer, and usage data startup metrics.
   personal_data_manager_->LogStoredProfileMetrics();
   personal_data_manager_->LogStoredCreditCardMetrics();
   personal_data_manager_->LogStoredIbanMetrics();
   personal_data_manager_->LogStoredOfferMetrics();
+  personal_data_manager_->LogStoredVirtualCardUsageMetrics();
 
   personal_data_manager_->NotifyPersonalDataObserver();
 }

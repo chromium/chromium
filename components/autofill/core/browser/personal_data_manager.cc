@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
@@ -2148,6 +2149,16 @@ void PersonalDataManager::LogStoredOfferMetrics() const {
     autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
     // Only log this info once per Chrome user profile load.
     has_logged_stored_offer_metrics_ = true;
+  }
+}
+
+void PersonalDataManager::LogStoredVirtualCardUsageMetrics() const {
+  if (!has_logged_stored_virtual_card_usage_metrics_) {
+    autofill_metrics::LogStoredVirtualCardUsageCount(
+        autofill_virtual_card_usage_data_.size());
+
+    // Only log this info once per chrome user profile load.
+    has_logged_stored_virtual_card_usage_metrics_ = true;
   }
 }
 

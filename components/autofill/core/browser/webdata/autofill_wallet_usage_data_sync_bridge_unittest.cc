@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/geo/country_names.h"
@@ -304,6 +305,33 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest,
   bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
 
   EXPECT_FALSE(GetVirtualCardUsageDataFromTable().empty());
+}
+
+// Test to ensure whether the data being valid is logged correctly.
+TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncData_LogDataValidity) {
+  VirtualCardUsageData virtual_card_usage_data1 =
+      test::GetVirtualCardUsageData1();
+
+  // AutofillWalletUsageSpecifics with missing fields.
+  AutofillWalletUsageSpecifics specifics;
+  specifics.set_guid("guid");
+  specifics.mutable_virtual_card_usage_data()->set_instrument_id(1234);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *virtual_card_usage_data1.usage_data_id(),
+      VirtualCardUsageDataToEntity(virtual_card_usage_data1)));
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      specifics.guid(), SpecificsToEntity(specifics)));
+
+  EXPECT_CALL(backend(), CommitChanges());
+  base::HistogramTester histogram_tester;
+  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                             std::move(entity_change_list));
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardUsageData.SyncedUsageDataBeingValid", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardUsageData.SyncedUsageDataBeingValid", false, 1);
 }
 
 }  // namespace autofill

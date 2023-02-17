@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
@@ -103,6 +104,14 @@ AutofillWalletUsageDataSyncBridge::ApplySyncChanges(
         // TODO(crbug.com/1412207): AddOrUpdate VirtualCardUsageData method for
         // Autofill Table
         DCHECK(IsEntityDataValid(change->data()));
+        bool valid_data = IsVirtualCardUsageDataSpecificsValid(
+            change->data()
+                .specifics.autofill_wallet_usage()
+                .virtual_card_usage_data());
+        autofill_metrics::LogSyncedVirtualCardUsageDataBeingValid(valid_data);
+        if (!valid_data) {
+          continue;
+        }
         VirtualCardUsageData remote = VirtualCardUsageDataFromUsageSpecifics(
             change->data().specifics.autofill_wallet_usage());
         if (table && table->GetVirtualCardUsageData(change->storage_key())) {
@@ -117,7 +126,6 @@ AutofillWalletUsageDataSyncBridge::ApplySyncChanges(
                 FROM_HERE, "Failed to add virtual card usage data in table.");
           }
         }
-        break;
       }
     }
   }
