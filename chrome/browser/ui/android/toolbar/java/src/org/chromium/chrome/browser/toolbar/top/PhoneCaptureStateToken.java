@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.res.ColorStateList;
-import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
@@ -26,9 +24,7 @@ class PhoneCaptureStateToken {
     private final int mTabCount;
     private final ButtonData mOptionalButtonData;
     private final @VisualState int mVisualState;
-    private final String mUrlText;
-    @Nullable
-    private final CharSequence mVisibleTextPrefixHint;
+    private final VisibleUrlText mVisibleUrlText;
     private final @DrawableRes int mSecurityIcon;
     private final ColorStateList mColorStateList;
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
@@ -36,19 +32,15 @@ class PhoneCaptureStateToken {
     private final int mUnfocusedLocationBarLayoutWidth;
 
     public PhoneCaptureStateToken(@ColorInt int tint, int tabCount, ButtonData optionalButtonData,
-            @VisualState int visualState, String urlText,
-            @Nullable CharSequence visibleTextPrefixHint, @DrawableRes int securityIcon,
-            ColorStateList colorStateList, boolean isShowingUpdateBadgeDuringLastCapture,
-            boolean isPaintPreview, float progress, int unfocusedLocationBarLayoutWidth) {
+            @VisualState int visualState, VisibleUrlText visibleUrlText,
+            @DrawableRes int securityIcon, ColorStateList colorStateList,
+            boolean isShowingUpdateBadgeDuringLastCapture, boolean isPaintPreview, float progress,
+            int unfocusedLocationBarLayoutWidth) {
         mTint = tint;
         mTabCount = tabCount;
         mOptionalButtonData = optionalButtonData;
         mVisualState = visualState;
-        mUrlText = urlText;
-        mVisibleTextPrefixHint = visibleTextPrefixHint;
-        if (visibleTextPrefixHint != null) {
-            assert isValidVisibleTextPrefixHint(urlText, visibleTextPrefixHint);
-        }
+        mVisibleUrlText = visibleUrlText;
         mSecurityIcon = securityIcon;
         mColorStateList = colorStateList;
         mIsShowingUpdateBadgeDuringLastCapture = isShowingUpdateBadgeDuringLastCapture;
@@ -84,7 +76,7 @@ class PhoneCaptureStateToken {
             return ToolbarSnapshotDifference.PAINT_PREVIEW;
         } else if (mUnfocusedLocationBarLayoutWidth != that.mUnfocusedLocationBarLayoutWidth) {
             return ToolbarSnapshotDifference.LOCATION_BAR_WIDTH;
-        } else if (!isVisibleUrlTextSame(that)) {
+        } else if (!Objects.equals(mVisibleUrlText, that.mVisibleUrlText)) {
             return ToolbarSnapshotDifference.URL_TEXT;
         } else if (mColorStateList.getDefaultColor() != that.mColorStateList.getDefaultColor()) {
             // While there's more to the ColorStateList than just the default color, there's no
@@ -95,14 +87,6 @@ class PhoneCaptureStateToken {
         return ToolbarSnapshotDifference.NONE;
     }
 
-    private boolean isVisibleUrlTextSame(PhoneCaptureStateToken that) {
-        if (mVisibleTextPrefixHint != null
-                && TextUtils.equals(mVisibleTextPrefixHint, that.mVisibleTextPrefixHint)) {
-            return true;
-        }
-        return TextUtils.equals(mUrlText, that.mUrlText);
-    }
-
     @ColorInt
     int getTint() {
         return mTint;
@@ -110,17 +94,5 @@ class PhoneCaptureStateToken {
 
     int getTabCount() {
         return mTabCount;
-    }
-
-    /**
-     * Determines the validity of the hint text given the passed in full text.
-     * @param fullText The full text that should start with the hint.
-     * @param hintText The hint text to be checked.
-     * @return Whether the full text starts with the specified hint text.
-     */
-    static boolean isValidVisibleTextPrefixHint(CharSequence fullText, CharSequence hintText) {
-        if (fullText == null || TextUtils.isEmpty(hintText)) return false;
-        if (hintText.length() > fullText.length()) return false;
-        return TextUtils.indexOf(fullText, hintText, 0, hintText.length()) == 0;
     }
 }

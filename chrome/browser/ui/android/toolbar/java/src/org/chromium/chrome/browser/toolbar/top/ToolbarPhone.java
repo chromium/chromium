@@ -1617,14 +1617,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             securityIconResource = getToolbarDataProvider().getSecurityIconResource(false);
         }
 
-        String displayedUrlText = urlBarData.displayText.toString();
-        CharSequence prefixHint = mLocationBar.getOmniboxVisibleTextPrefixHint();
-        boolean isValidPrefixHint =
-                PhoneCaptureStateToken.isValidVisibleTextPrefixHint(displayedUrlText, prefixHint);
+        VisibleUrlText visibleUrlText = new VisibleUrlText(
+                urlBarData.displayText, mLocationBar.getOmniboxVisibleTextPrefixHint());
         return new PhoneCaptureStateToken(getTint().getDefaultColor(),
-                mTabCountProvider.getTabCount(), mButtonData, mVisualState, displayedUrlText,
-                isValidPrefixHint ? prefixHint : null, securityIconResource,
-                ImageViewCompat.getImageTintList(mHomeButton),
+                mTabCountProvider.getTabCount(), mButtonData, mVisualState, visibleUrlText,
+                securityIconResource, ImageViewCompat.getImageTintList(mHomeButton),
                 getMenuButtonCoordinator().isShowingUpdateBadge(),
                 getToolbarDataProvider().isPaintPreview(), getProgressBar().getProgress(),
                 mUnfocusedLocationBarLayoutWidth);

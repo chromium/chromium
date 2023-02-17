@@ -112,6 +112,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayProperties.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarSceneLayer.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ViewShiftingActionBarDelegate.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/VisibleUrlText.java",
   ]
 
   deps = [
@@ -316,6 +317,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarTabletUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarInteractabilityManagerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/VisibleUrlTextTest.java",
   ]
 
   deps = [

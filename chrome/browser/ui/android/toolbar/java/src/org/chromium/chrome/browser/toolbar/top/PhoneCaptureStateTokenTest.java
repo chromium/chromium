@@ -229,25 +229,6 @@ public class PhoneCaptureStateTokenTest {
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
-    @Test
-    public void testIsValidVisibleTextPrefixHint() {
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint(null, null));
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint("foo", null));
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint(null, "foo"));
-
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint("", ""));
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint("foo", ""));
-
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint("foo", "fooo"));
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint("foo", "foo/"));
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint("foo", "o/"));
-        Assert.assertFalse(PhoneCaptureStateToken.isValidVisibleTextPrefixHint("foo", "oo"));
-
-        Assert.assertTrue(PhoneCaptureStateToken.isValidVisibleTextPrefixHint("foo.com", "foo"));
-        Assert.assertTrue(
-                PhoneCaptureStateToken.isValidVisibleTextPrefixHint("foo.com", "foo.com"));
-    }
-
     private class PhoneCustomTabCaptureStateTokenBuilder {
         private @ColorInt int mTint = DEFAULT_TINT;
         private int mTabCount = DEFAULT_TAB_COUNT;
@@ -331,8 +312,9 @@ public class PhoneCaptureStateTokenTest {
         }
 
         public PhoneCaptureStateToken build() {
+            VisibleUrlText visibleUrlText = new VisibleUrlText(mUrlText, mVisibleTextPrefixHint);
             return new PhoneCaptureStateToken(mTint, mTabCount, mOptionalButtonData, mVisualState,
-                    mUrlText, mVisibleTextPrefixHint, mSecurityIcon, mColorStateList,
+                    visibleUrlText, mSecurityIcon, mColorStateList,
                     mIsShowingUpdateBadgeDuringLastCapture, mIsPaintPreview, mProgress,
                     mUnfocusedLocationBarLayoutWidth);
         }
