@@ -304,6 +304,9 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     return;
   }
 
+  const chromeos::WindowStateType previous_state_type =
+      window_state->GetStateType();
+
   switch (event->type()) {
     case WM_EVENT_TOGGLE_FULLSCREEN:
       ToggleFullScreen(window_state, window_state->delegate());
@@ -388,15 +391,19 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       if (bounds_in_parent.IsEmpty())
         return;
 
-      if (current_state_type_ == WindowStateType::kFloated ||
-          window_util::IsDraggingTabs(window_state->window()) ||
-          IsTabDraggingSourceWindow(window_state->window()) ||
-          TabDragDropDelegate::IsSourceWindowForDrag(window_state->window()) ||
-          BoundsChangeIsFromVKAndAllowed(window_state->window())) {
+      if (bool to_float = current_state_type_ == WindowStateType::kFloated;
+          to_float || previous_state_type == WindowStateType::kFloated) {
         // Floated windows in tablet mode are freeform, so they can placed
-        // anywhere, not just centered. Also, if the window is the current
-        // tab-dragged window or the current tab- dragged window's source
-        // window, we may need to update its bounds during dragging.
+        // anywhere, not just centered.
+        window_state->SetBoundsDirectCrossFade(bounds_in_parent, to_float);
+      } else if (window_util::IsDraggingTabs(window_state->window()) ||
+                 IsTabDraggingSourceWindow(window_state->window()) ||
+                 TabDragDropDelegate::IsSourceWindowForDrag(
+                     window_state->window()) ||
+                 BoundsChangeIsFromVKAndAllowed(window_state->window())) {
+        // If the window is the current tab-dragged window or the current tab-
+        // dragged window's source window, we may need to update its bounds
+        // during dragging.
         window_state->SetBoundsDirect(bounds_in_parent);
       } else if (current_state_type_ == WindowStateType::kMaximized) {
         // Having a maximized window, it could have been created with an empty

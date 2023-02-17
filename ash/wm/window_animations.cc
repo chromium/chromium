@@ -55,6 +55,10 @@ constexpr base::TimeDelta kCrossFadeDuration = base::Milliseconds(200);
 
 constexpr base::TimeDelta kCrossFadeMaxDuration = base::Milliseconds(400);
 
+// The default duration for an animation to float or unfloat a window.
+static constexpr base::TimeDelta kFloatUnfloatDuration =
+    base::Milliseconds(400);
+
 // Durations for the brightness/grayscale fade animation, in milliseconds.
 const int kBrightnessGrayscaleFadeDurationMs = 1000;
 
@@ -628,9 +632,21 @@ bool AnimateHideWindow(aura::Window* window) {
 void CrossFadeAnimation(aura::Window* window,
                         std::unique_ptr<ui::LayerTreeOwner> old_layer_owner) {
   CrossFadeAnimationInternal(
-      window, std::move(old_layer_owner), /*animate_old_layer=*/true,
+      window, std::move(old_layer_owner), /*animate_old_layer_transform=*/true,
       /*duration=*/absl::nullopt, /*tween_type=*/absl::nullopt,
       /*histogram_name=*/absl::nullopt);
+}
+
+void CrossFadeAnimationForFloatUnfloat(
+    aura::Window* window,
+    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
+    bool to_float) {
+  CrossFadeAnimationInternal(window, std::move(old_layer_owner),
+                             /*animate_old_layer_transform=*/true,
+                             kFloatUnfloatDuration,
+                             to_float ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
+                                      : gfx::Tween::Type::FAST_OUT_SLOW_IN_3,
+                             /*histogram_name=*/absl::nullopt);
 }
 
 void CrossFadeAnimationAnimateNewLayerOnly(aura::Window* window,

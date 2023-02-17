@@ -660,19 +660,18 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
   if (window_state->IsMinimized())
     return;
 
-  if (IsMinimizedWindowStateType(previous_state_type) ||
-      window_state->IsFullscreen() || window_state->IsPinned() ||
-      window_state->bounds_animation_type() ==
-          WindowState::BoundsChangeAnimationType::kNone) {
+  if (bool to_float = state_type_ == WindowStateType::kFloated;
+      to_float || previous_state_type == WindowStateType::kFloated) {
+    // Float and unfloat have their own animation.
+    window_state->SetBoundsDirectCrossFade(bounds_in_parent, to_float);
+  } else if (IsMinimizedWindowStateType(previous_state_type) ||
+             window_state->IsFullscreen() || window_state->IsPinned() ||
+             window_state->bounds_animation_type() ==
+                 WindowState::BoundsChangeAnimationType::kNone) {
     window_state->SetBoundsDirect(bounds_in_parent);
   } else if (window_state->IsMaximized() ||
              IsMaximizedOrFullscreenOrPinnedWindowStateType(
                  previous_state_type)) {
-    window_state->SetBoundsDirectCrossFade(bounds_in_parent);
-  } else if (window_state->IsFloated() &&
-             previous_state_type == WindowStateType::kFloated) {
-    // This can happen during the tablet -> clamshell transition. Use cross fade
-    // animation for better performance.
     window_state->SetBoundsDirectCrossFade(bounds_in_parent);
   } else if (window_state->is_dragged()) {
     // SetBoundsDirectAnimated does not work when the window gets reparented.

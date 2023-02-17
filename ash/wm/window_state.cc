@@ -1037,7 +1037,8 @@ void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
   SetBoundsDirect(bounds);
 }
 
-void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds) {
+void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
+                                           absl::optional<bool> float_state) {
   // Some test results in invoking CrossFadeToBounds when window is not visible.
   // No animation is necessary in that case, thus just change the bounds and
   // quit.
@@ -1064,6 +1065,12 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds) {
 
   // Resize the window to the new size, which will force a layout and paint.
   SetBoundsDirect(new_bounds);
+
+  if (float_state) {
+    CrossFadeAnimationForFloatUnfloat(window_, std::move(old_layer_owner),
+                                      *float_state);
+    return;
+  }
 
   CrossFadeAnimation(window_, std::move(old_layer_owner));
 }

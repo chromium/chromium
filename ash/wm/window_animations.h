@@ -36,11 +36,18 @@ ASH_EXPORT void SetTransformForScaleAnimation(
     LayerScaleAnimationDirection type);
 
 // Implementation of cross fading. Window is the window being cross faded. It
-// should be at the target bounds. |old_layer_owner| contains the previous layer
-// from |window|.
+// should be at the target bounds. `old_layer_owner` contains the previous layer
+// from `window`.
 ASH_EXPORT void CrossFadeAnimation(
     aura::Window* window,
     std::unique_ptr<ui::LayerTreeOwner> old_layer_owner);
+
+// Implementation of cross fading for floating/unfloating a window. If
+// `to_float` is true, animates to floated state, else animates unfloat.
+ASH_EXPORT void CrossFadeAnimationForFloatUnfloat(
+    aura::Window* window,
+    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
+    bool to_float);
 
 // Implementation of cross fading which only animates the new layer. The old
 // layer will be owned by an observer which will update the transform as the new
