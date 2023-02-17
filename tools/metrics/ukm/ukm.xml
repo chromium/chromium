@@ -3254,10 +3254,29 @@ be describing additional metrics about the same event.
 
 <event name="Blink.FedCm">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
   <summary>
     Records performance metrics for FedCM(Federated Credential Management) API.
   </summary>
+  <metric name="AutoReauthn.ReturningAccounts" enum="FedCmReturningAccounts">
+    <summary>
+      Records whether there was zero, one, or multiple returning accounts when a
+      site calls the FedCM API with autoReauthn: true. Records at most one
+      sample per failed API call: some failures could occur before this metric
+      is recorded.
+    </summary>
+  </metric>
+  <metric name="AutoReauthn.Succeeded" enum="Boolean">
+    <summary>
+      Records whether auto re-authn checks succeeded or not. The count would
+      provide roughly the number of FedCM re-authn attempts, the true count
+      would provide the number of times the re-authn UI is shown to the user,
+      and the false count would provide the number of attempts where auto
+      re-authn was blocked for some non-network related reason. Records at most
+      one sample per FedCM API with auto re-authn enabled: some failures could
+      occur before this metric is recorded.
+    </summary>
+  </metric>
   <metric name="FedCmSessionID">
     <summary>
       Records the session ID associated to the FedCM call for which this event
@@ -3312,7 +3331,7 @@ be describing additional metrics about the same event.
 
 <event name="Blink.FedCmIdp">
   <owner>npm@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
   <summary>
     Records performance metrics for FedCM (Federated Credential Management) API.
     Recorded when the web developer calls the FedCM API. Individual metrics are

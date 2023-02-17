@@ -889,19 +889,27 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                                            const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
-    if (entries.empty())
-      FAIL() << "No RequestTokenStatus was recorded";
+    ASSERT_FALSE(entries.empty())
+        << "No " << entry_name << " entry was recorded";
 
     // There are multiple types of metrics under the same FedCM UKM. We need to
     // make sure that the metric only includes the expected one.
+    bool metric_found = false;
     for (const auto* const entry : entries) {
       const int64_t* metric =
-          ukm_recorder()->GetEntryMetric(entry, "Status_RequestToken");
-      if (metric && *metric != static_cast<int>(status))
-        FAIL() << "Unexpected status was recorded";
+          ukm_recorder()->GetEntryMetric(entry, "Status.RequestIdToken");
+      if (!metric) {
+        continue;
+      }
+      EXPECT_FALSE(metric_found)
+          << "Found more than one entry with Status.RequestIdToken in "
+          << entry_name;
+      metric_found = true;
+      EXPECT_EQ(static_cast<int>(status), *metric)
+          << "Unexpected status recorded in " << entry_name;
     }
-
-    SUCCEED();
+    EXPECT_TRUE(metric_found)
+        << "No Status.RequestIdToken entry was found in " << entry_name;
   }
 
   void ExpectTimingUKM(const std::string& metric_name) {
@@ -913,7 +921,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                                const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
-    ASSERT_FALSE(entries.empty());
+    ASSERT_FALSE(entries.empty())
+        << "No " << entry_name << " entry was recorded";
 
     for (const auto* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
@@ -921,7 +930,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         return;
       }
     }
-    FAIL() << "Expected UKM was not recorded";
+    FAIL() << "Expected UKM was not recorded in " << entry_name;
   }
 
   void ExpectNoTimingUKM(const std::string& metric_name) {
@@ -933,11 +942,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                                  const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
-    ASSERT_FALSE(entries.empty());
+    ASSERT_FALSE(entries.empty())
+        << "No " << entry_name << " entry was recorded";
 
     for (const auto* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name))
-        FAIL() << "Unexpected UKM was recorded";
+        FAIL() << "Unexpected UKM was recorded in " << entry_name;
     }
     SUCCEED();
   }
@@ -945,19 +955,53 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   void ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus status) {
     auto entries = ukm_recorder()->GetEntriesByName(FedCmIdpEntry::kEntryName);
 
-    if (entries.empty())
-      FAIL() << "No SignInStateMatchStatus was recorded";
+    ASSERT_FALSE(entries.empty()) << "No FedCm entry was recorded";
 
     // There are multiple types of metrics under the same FedCM UKM. We need to
     // make sure that the metric only includes the expected one.
+    bool metric_found = false;
     for (const auto* const entry : entries) {
       const int64_t* metric =
-          ukm_recorder()->GetEntryMetric(entry, "Status_SignInStateMatch");
-      if (metric && *metric != static_cast<int>(status))
-        FAIL() << "Unexpected status was recorded";
+          ukm_recorder()->GetEntryMetric(entry, "Status.SignInStateMatch");
+      if (!metric) {
+        continue;
+      }
+      EXPECT_FALSE(metric_found)
+          << "Found more than one Status.SignInStateMatch";
+      metric_found = true;
+      EXPECT_EQ(static_cast<int>(status), *metric);
     }
+    EXPECT_TRUE(metric_found) << "No Status.SignInStateMatch was found";
+  }
 
-    SUCCEED();
+  void ExpectAutoReauthnUKM(
+      FedCmMetrics::NumReturningAccounts expected_returning_accounts,
+      bool expected_succeeded) {
+    auto entries = ukm_recorder()->GetEntriesByName(FedCmEntry::kEntryName);
+    ASSERT_FALSE(entries.empty()) << "No FedCM UKM entry was found!";
+
+    bool metric_found = false;
+    for (const auto* entry : entries) {
+      const int64_t* metric =
+          ukm_recorder()->GetEntryMetric(entry, "AutoReauthn.Succeeded");
+      if (!metric) {
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
+            entry, "AutoReauthn.ReturningAccounts"))
+            << "Found an entry with AutoReauthn.ReturningAccounts but without "
+               "AutoReauthn.Succeeded";
+        continue;
+      }
+      EXPECT_FALSE(metric_found) << "Found more than one AutoReauthn entry";
+      metric_found = true;
+      EXPECT_EQ(expected_succeeded, *metric);
+      const int64_t* returning_accounts_metric = ukm_recorder()->GetEntryMetric(
+          entry, "AutoReauthn.ReturningAccounts");
+      ASSERT_TRUE(returning_accounts_metric)
+          << "AutoReauthn.ReturningAccounts was not found";
+      EXPECT_EQ(static_cast<int>(expected_returning_accounts),
+                *returning_accounts_metric);
+    }
+    EXPECT_TRUE(metric_found) << "Did not find AutoReauthn metrics";
   }
 
   void CheckAllFedCmSessionIDs() {
@@ -967,12 +1011,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       for (const auto* const entry : ukm_entries) {
         const auto* const metric =
             ukm_recorder()->GetEntryMetric(entry, "FedCmSessionID");
-        EXPECT_TRUE(metric)
+        ASSERT_TRUE(metric)
             << "All UKM events should have the SessionID metric";
         if (!session_id.has_value()) {
           session_id = *metric;
         } else {
-          ASSERT_EQ(*metric, *session_id)
+          EXPECT_EQ(*metric, *session_id)
               << "All UKM events should have the same SessionID";
         }
       }
@@ -1355,7 +1399,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
                                        true, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
+      static_cast<int>(FedCmMetrics::NumReturningAccounts::kOne), 1);
+  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kOne,
+                       /*expected_succeeded=*/true);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that auto re-authn with a single account where the account is a
@@ -1393,7 +1440,10 @@ TEST_F(FederatedAuthRequestImplTest,
                                        true, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
+      static_cast<int>(FedCmMetrics::NumReturningAccounts::kOne), 1);
+  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kOne,
+                       /*expected_succeeded=*/true);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -1446,7 +1496,10 @@ TEST_F(FederatedAuthRequestImplTest,
                                        true, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
+      static_cast<int>(FedCmMetrics::NumReturningAccounts::kOne), 1);
+  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kOne,
+                       /*expected_succeeded=*/true);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that auto re-authn with multiple accounts and multiple returning users
@@ -1501,9 +1554,10 @@ TEST_F(FederatedAuthRequestImplTest,
                                        false, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(
-          FederatedAuthRequestImpl::NumReturningAccounts::MULTIPLE),
-      1);
+      static_cast<int>(FedCmMetrics::NumReturningAccounts::kMultiple), 1);
+  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kMultiple,
+                       /*expected_succeeded=*/false);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that auto re-authn with single non-returning account sets the sign-in
@@ -1539,8 +1593,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
                                        false, 1);
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ZERO),
-      1);
+      static_cast<int>(FedCmMetrics::NumReturningAccounts::kZero), 1);
+  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kZero,
+                       /*expected_succeeded=*/false);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user

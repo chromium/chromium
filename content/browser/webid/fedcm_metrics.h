@@ -144,6 +144,21 @@ class CONTENT_EXPORT FedCmMetrics {
   // browser is ready to show the accounts dialog.
   void RecordWebContentsVisibilityUponReadyToShowDialog(bool is_visible);
 
+  // This enum is used in histograms. Do not remove or modify existing entries.
+  // You may add entries at the end, and update |kMaxValue|.
+  enum class NumReturningAccounts {
+    kZero = 0,
+    kOne = 1,
+    kMultiple = 2,
+    kMaxValue = kMultiple
+  };
+
+  // Records some auto reauthn metrics.
+  void RecordAutoReauthnMetrics(
+      bool has_single_returning_account,
+      const IdentityRequestAccount* auto_signin_account,
+      bool auto_reauthn_success);
+
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;

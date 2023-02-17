@@ -55,10 +55,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       FederatedIdentityPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
-  // This enum is used in histograms. Do not remove or modify existing entries.
-  // You may add entries at the end, and update COUNT.
-  enum NumReturningAccounts { ZERO = 0, ONE = 1, MULTIPLE = 2, COUNT = 3 };
-
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
   FederatedAuthRequestImpl& operator=(const FederatedAuthRequestImpl&) = delete;
 

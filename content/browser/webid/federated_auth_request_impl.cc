@@ -274,18 +274,6 @@ std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
                                         base::RandInt(1, 1 << 30), is_disabled);
 }
 
-FederatedAuthRequestImpl::NumReturningAccounts GetNumReturningAccounts(
-    bool has_single_returning_account,
-    const IdentityRequestAccount* auto_reauthn_account) {
-  if (has_single_returning_account) {
-    return FederatedAuthRequestImpl::NumReturningAccounts::ONE;
-  }
-  if (auto_reauthn_account) {
-    return FederatedAuthRequestImpl::MULTIPLE;
-  }
-  return FederatedAuthRequestImpl::ZERO;
-}
-
 }  // namespace
 
 FederatedAuthRequestImpl::FetchData::FetchData() = default;
@@ -943,17 +931,13 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   const IdentityProviderData* auto_reauthn_idp = nullptr;
   const IdentityRequestAccount* auto_reauthn_account = nullptr;
+  bool has_single_returning_account = false;
   if (auto_reauthn_enabled) {
     // Auto signs in returning users if they have a single returning account and
     // are signing in.
-    bool has_single_returning_account =
+    has_single_returning_account =
         GetSingleReturningAccount(&auto_reauthn_idp, &auto_reauthn_account);
     auto_reauthn &= has_single_returning_account;
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.FedCm.AutoReauthn.ReturningAccounts",
-        GetNumReturningAccounts(has_single_returning_account,
-                                auto_reauthn_account),
-        NumReturningAccounts::COUNT);
   }
 
   if (auto_reauthn) {
@@ -986,7 +970,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      weak_ptr_factory_.GetWeakPtr()));
 
   if (auto_reauthn_enabled) {
-    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.AutoReauthn.Succeeded", auto_reauthn);
+    fedcm_metrics_->RecordAutoReauthnMetrics(
+        has_single_returning_account, auto_reauthn_account, auto_reauthn);
   }
 }
 
