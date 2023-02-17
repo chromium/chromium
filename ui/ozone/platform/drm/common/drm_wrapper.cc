@@ -77,17 +77,17 @@ DrmPropertyBlobMetadata::~DrmPropertyBlobMetadata() {
 }
 
 DrmWrapper::DrmWrapper(const base::FilePath& device_path,
-                       base::File file,
+                       base::ScopedFD fd,
                        bool is_primary_device)
     : device_path_(device_path),
-      file_(std::move(file)),
+      drm_fd_(std::move(fd)),
       is_primary_device_(is_primary_device) {}
 
 DrmWrapper::~DrmWrapper() = default;
 
 bool DrmWrapper::Initialize() {
   // Ignore devices that cannot perform modesetting.
-  if (!CanQueryForResources(file_.GetPlatformFile())) {
+  if (!CanQueryForResources(drm_fd_.get())) {
     VLOG(2) << "Cannot query for resources for '" << device_path_.value()
             << "'";
     return false;
@@ -105,21 +105,21 @@ bool DrmWrapper::Initialize() {
  *******/
 
 ScopedDrmCrtcPtr DrmWrapper::GetCrtc(uint32_t crtc_id) const {
-  DCHECK(file_.IsValid());
-  return ScopedDrmCrtcPtr(drmModeGetCrtc(file_.GetPlatformFile(), crtc_id));
+  DCHECK(drm_fd_.is_valid());
+  return ScopedDrmCrtcPtr(drmModeGetCrtc(drm_fd_.get(), crtc_id));
 }
 
 bool DrmWrapper::SetCrtc(uint32_t crtc_id,
                          uint32_t framebuffer,
                          std::vector<uint32_t> connectors,
                          const drmModeModeInfo& mode) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   DCHECK(!connectors.empty());
 
   TRACE_EVENT2("drm", "DrmWrapper::SetCrtc", "crtc", crtc_id, "size",
                gfx::Size(mode.hdisplay, mode.vdisplay).ToString());
 
-  if (!drmModeSetCrtc(file_.GetPlatformFile(), crtc_id, framebuffer, 0, 0,
+  if (!drmModeSetCrtc(drm_fd_.get(), crtc_id, framebuffer, 0, 0,
                       connectors.data(), connectors.size(),
                       const_cast<drmModeModeInfo*>(&mode))) {
     ++modeset_sequence_id_;
@@ -130,10 +130,9 @@ bool DrmWrapper::SetCrtc(uint32_t crtc_id,
 }
 
 bool DrmWrapper::DisableCrtc(uint32_t crtc_id) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT1("drm", "DrmWrapper::DisableCrtc", "crtc", crtc_id);
-  return !drmModeSetCrtc(file_.GetPlatformFile(), crtc_id, 0, 0, 0, nullptr, 0,
-                         nullptr);
+  return !drmModeSetCrtc(drm_fd_.get(), crtc_id, 0, 0, 0, nullptr, 0, nullptr);
 }
 
 /**************
@@ -141,15 +140,15 @@ bool DrmWrapper::DisableCrtc(uint32_t crtc_id) {
  **************/
 
 bool DrmWrapper::GetCapability(uint64_t capability, uint64_t* value) const {
-  DCHECK(file_.IsValid());
-  return !drmGetCap(file_.GetPlatformFile(), capability, value);
+  DCHECK(drm_fd_.is_valid());
+  return !drmGetCap(drm_fd_.get(), capability, value);
 }
 
 bool DrmWrapper::SetCapability(uint64_t capability, uint64_t value) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
 
   struct drm_set_client_cap cap = {capability, value};
-  return !drmIoctl(file_.GetPlatformFile(), DRM_IOCTL_SET_CLIENT_CAP, &cap);
+  return !drmIoctl(drm_fd_.get(), DRM_IOCTL_SET_CLIENT_CAP, &cap);
 }
 
 /************
@@ -157,10 +156,10 @@ bool DrmWrapper::SetCapability(uint64_t capability, uint64_t value) {
  ************/
 
 ScopedDrmConnectorPtr DrmWrapper::GetConnector(uint32_t connector_id) const {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT1("drm", "DrmWrapper::GetConnector", "connector", connector_id);
   return ScopedDrmConnectorPtr(
-      drmModeGetConnector(file_.GetPlatformFile(), connector_id));
+      drmModeGetConnector(drm_fd_.get(), connector_id));
 }
 
 /********
@@ -168,20 +167,19 @@ ScopedDrmConnectorPtr DrmWrapper::GetConnector(uint32_t connector_id) const {
  ********/
 
 bool DrmWrapper::MoveCursor(uint32_t crtc_id, const gfx::Point& point) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT1("drm", "DrmWrapper::MoveCursor", "crtc_id", crtc_id);
-  return !drmModeMoveCursor(file_.GetPlatformFile(), crtc_id, point.x(),
-                            point.y());
+  return !drmModeMoveCursor(drm_fd_.get(), crtc_id, point.x(), point.y());
 }
 
 bool DrmWrapper::SetCursor(uint32_t crtc_id,
                            uint32_t handle,
                            const gfx::Size& size) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT2("drm", "DrmWrapper::SetCursor", "crtc_id", crtc_id, "handle",
                handle);
-  return !drmModeSetCursor(file_.GetPlatformFile(), crtc_id, handle,
-                           size.width(), size.height());
+  return !drmModeSetCursor(drm_fd_.get(), crtc_id, handle, size.width(),
+                           size.height());
 }
 
 /************
@@ -190,14 +188,14 @@ bool DrmWrapper::SetCursor(uint32_t crtc_id,
 
 bool DrmWrapper::SetMaster() {
   TRACE_EVENT1("drm", "DrmWrapper::SetMaster", "path", device_path_.value());
-  DCHECK(file_.IsValid());
-  return (drmSetMaster(file_.GetPlatformFile()) == 0);
+  DCHECK(drm_fd_.is_valid());
+  return (drmSetMaster(drm_fd_.get()) == 0);
 }
 
 bool DrmWrapper::DropMaster() {
   TRACE_EVENT1("drm", "DrmWrapper::DropMaster", "path", device_path_.value());
-  DCHECK(file_.IsValid());
-  return (drmDropMaster(file_.GetPlatformFile()) == 0);
+  DCHECK(drm_fd_.is_valid());
+  return (drmDropMaster(drm_fd_.get()) == 0);
 }
 
 /**************
@@ -207,30 +205,29 @@ bool DrmWrapper::DropMaster() {
 bool DrmWrapper::CreateDumbBuffer(const SkImageInfo& info,
                                   uint32_t* handle,
                                   uint32_t* stride) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
 
   TRACE_EVENT0("drm", "DrmWrapper::CreateDumbBuffer");
-  return DrmCreateDumbBuffer(file_.GetPlatformFile(), info, handle, stride);
+  return DrmCreateDumbBuffer(drm_fd_.get(), info, handle, stride);
 }
 
 bool DrmWrapper::DestroyDumbBuffer(uint32_t handle) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT1("drm", "DrmWrapper::DestroyDumbBuffer", "handle", handle);
-  return DrmDestroyDumbBuffer(file_.GetPlatformFile(), handle);
+  return DrmDestroyDumbBuffer(drm_fd_.get(), handle);
 }
 
 bool DrmWrapper::MapDumbBuffer(uint32_t handle, size_t size, void** pixels) {
   struct drm_mode_map_dumb map_request;
   memset(&map_request, 0, sizeof(map_request));
   map_request.handle = handle;
-  if (drmIoctl(file_.GetPlatformFile(), DRM_IOCTL_MODE_MAP_DUMB,
-               &map_request)) {
+  if (drmIoctl(drm_fd_.get(), DRM_IOCTL_MODE_MAP_DUMB, &map_request)) {
     PLOG(ERROR) << "Cannot prepare dumb buffer for mapping";
     return false;
   }
 
   *pixels = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED,
-                 file_.GetPlatformFile(), map_request.offset);
+                 drm_fd_.get(), map_request.offset);
   if (*pixels == MAP_FAILED) {
     PLOG(ERROR) << "Cannot mmap dumb buffer";
     return false;
@@ -247,8 +244,7 @@ bool DrmWrapper::CloseBufferHandle(uint32_t handle) {
   struct drm_gem_close close_request;
   memset(&close_request, 0, sizeof(close_request));
   close_request.handle = handle;
-  return !drmIoctl(file_.GetPlatformFile(), DRM_IOCTL_GEM_CLOSE,
-                   &close_request);
+  return !drmIoctl(drm_fd_.get(), DRM_IOCTL_GEM_CLOSE, &close_request);
 }
 
 /**************
@@ -256,17 +252,16 @@ bool DrmWrapper::CloseBufferHandle(uint32_t handle) {
  **************/
 
 ScopedDrmFramebufferPtr DrmWrapper::GetFramebuffer(uint32_t framebuffer) const {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT1("drm", "DrmWrapper::GetFramebuffer", "framebuffer", framebuffer);
-  return ScopedDrmFramebufferPtr(
-      drmModeGetFB(file_.GetPlatformFile(), framebuffer));
+  return ScopedDrmFramebufferPtr(drmModeGetFB(drm_fd_.get(), framebuffer));
 }
 
 bool DrmWrapper::RemoveFramebuffer(uint32_t framebuffer) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT1("drm", "DrmWrapper::RemoveFramebuffer", "framebuffer",
                framebuffer);
-  return !drmModeRmFB(file_.GetPlatformFile(), framebuffer);
+  return !drmModeRmFB(drm_fd_.get(), framebuffer);
 }
 
 bool DrmWrapper::AddFramebuffer2(uint32_t width,
@@ -278,11 +273,11 @@ bool DrmWrapper::AddFramebuffer2(uint32_t width,
                                  uint64_t modifiers[4],
                                  uint32_t* framebuffer,
                                  uint32_t flags) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT1("drm", "DrmWrapper::AddFramebuffer", "handle", handles[0]);
-  return !drmModeAddFB2WithModifiers(file_.GetPlatformFile(), width, height,
-                                     format, handles, strides, offsets,
-                                     modifiers, framebuffer, flags);
+  return !drmModeAddFB2WithModifiers(drm_fd_.get(), width, height, format,
+                                     handles, strides, offsets, modifiers,
+                                     framebuffer, flags);
 }
 
 /*******
@@ -333,10 +328,10 @@ bool DrmWrapper::SetGammaRamp(
     }
   }
 
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT0("drm", "DrmWrapper::SetGamma");
-  return (drmModeCrtcSetGamma(file_.GetPlatformFile(), crtc_id, r.size(), &r[0],
-                              &g[0], &b[0]) == 0);
+  return (drmModeCrtcSetGamma(drm_fd_.get(), crtc_id, r.size(), &r[0], &g[0],
+                              &b[0]) == 0);
 }
 
 /********
@@ -344,14 +339,13 @@ bool DrmWrapper::SetGammaRamp(
  ********/
 
 ScopedDrmPlaneResPtr DrmWrapper::GetPlaneResources() const {
-  DCHECK(file_.IsValid());
-  return ScopedDrmPlaneResPtr(
-      drmModeGetPlaneResources(file_.GetPlatformFile()));
+  DCHECK(drm_fd_.is_valid());
+  return ScopedDrmPlaneResPtr(drmModeGetPlaneResources(drm_fd_.get()));
 }
 
 ScopedDrmPlanePtr DrmWrapper::GetPlane(uint32_t plane_id) const {
-  DCHECK(file_.IsValid());
-  return ScopedDrmPlanePtr(drmModeGetPlane(file_.GetPlatformFile(), plane_id));
+  DCHECK(drm_fd_.is_valid());
+  return ScopedDrmPlanePtr(drmModeGetPlane(drm_fd_.get(), plane_id));
 }
 
 /************
@@ -361,18 +355,18 @@ ScopedDrmPlanePtr DrmWrapper::GetPlane(uint32_t plane_id) const {
 ScopedDrmObjectPropertyPtr DrmWrapper::GetObjectProperties(
     uint32_t object_id,
     uint32_t object_type) const {
-  DCHECK(file_.IsValid());
-  return ScopedDrmObjectPropertyPtr(drmModeObjectGetProperties(
-      file_.GetPlatformFile(), object_id, object_type));
+  DCHECK(drm_fd_.is_valid());
+  return ScopedDrmObjectPropertyPtr(
+      drmModeObjectGetProperties(drm_fd_.get(), object_id, object_type));
 }
 
 bool DrmWrapper::SetObjectProperty(uint32_t object_id,
                                    uint32_t object_type,
                                    uint32_t property_id,
                                    uint32_t property_value) {
-  DCHECK(file_.IsValid());
-  return !drmModeObjectSetProperty(file_.GetPlatformFile(), object_id,
-                                   object_type, property_id, property_value);
+  DCHECK(drm_fd_.is_valid());
+  return !drmModeObjectSetProperty(drm_fd_.get(), object_id, object_type,
+                                   property_id, property_value);
 }
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
@@ -381,7 +375,7 @@ ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
     ScopedDrmPropertyPtr property(
-        drmModeGetProperty(file_.GetPlatformFile(), connector->props[i]));
+        drmModeGetProperty(drm_fd_.get(), connector->props[i]));
     if (!property) {
       continue;
     }
@@ -395,15 +389,15 @@ ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
 }
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(uint32_t id) const {
-  return ScopedDrmPropertyPtr(drmModeGetProperty(file_.GetPlatformFile(), id));
+  return ScopedDrmPropertyPtr(drmModeGetProperty(drm_fd_.get(), id));
 }
 
 bool DrmWrapper::SetProperty(uint32_t connector_id,
                              uint32_t property_id,
                              uint64_t value) {
-  DCHECK(file_.IsValid());
-  return !drmModeConnectorSetProperty(file_.GetPlatformFile(), connector_id,
-                                      property_id, value);
+  DCHECK(drm_fd_.is_valid());
+  return !drmModeConnectorSetProperty(drm_fd_.get(), connector_id, property_id,
+                                      value);
 }
 
 /****************
@@ -413,40 +407,40 @@ bool DrmWrapper::SetProperty(uint32_t connector_id,
 ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlob(const void* blob,
                                                      size_t size) {
   uint32_t id = 0;
-  int ret = drmModeCreatePropertyBlob(file_.GetPlatformFile(), blob, size, &id);
+  int ret = drmModeCreatePropertyBlob(drm_fd_.get(), blob, size, &id);
   DCHECK(!ret && id);
 
   return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
 
 void DrmWrapper::DestroyPropertyBlob(uint32_t id) {
-  drmModeDestroyPropertyBlob(file_.GetPlatformFile(), id);
+  drmModeDestroyPropertyBlob(drm_fd_.get(), id);
 }
 
 ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
     uint32_t property_id) const {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   return ScopedDrmPropertyBlobPtr(
-      drmModeGetPropertyBlob(file_.GetPlatformFile(), property_id));
+      drmModeGetPropertyBlob(drm_fd_.get(), property_id));
 }
 
 ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
     drmModeConnector* connector,
     const char* name) const {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT2("drm", "DrmWrapper::GetPropertyBlob", "connector",
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
     ScopedDrmPropertyPtr property(
-        drmModeGetProperty(file_.GetPlatformFile(), connector->props[i]));
+        drmModeGetProperty(drm_fd_.get(), connector->props[i]));
     if (!property) {
       continue;
     }
 
     if (strcmp(property->name, name) == 0 &&
         (property->flags & DRM_MODE_PROP_BLOB)) {
-      return ScopedDrmPropertyBlobPtr(drmModeGetPropertyBlob(
-          file_.GetPlatformFile(), connector->prop_values[i]));
+      return ScopedDrmPropertyBlobPtr(
+          drmModeGetPropertyBlob(drm_fd_.get(), connector->prop_values[i]));
     }
   }
 
@@ -458,8 +452,8 @@ ScopedDrmPropertyBlobPtr DrmWrapper::GetPropertyBlob(
  ***********/
 
 ScopedDrmResourcesPtr DrmWrapper::GetResources() const {
-  DCHECK(file_.IsValid());
-  return ScopedDrmResourcesPtr(drmModeGetResources(file_.GetPlatformFile()));
+  DCHECK(drm_fd_.is_valid());
+  return ScopedDrmResourcesPtr(drmModeGetResources(drm_fd_.get()));
 }
 
 /*********
@@ -471,7 +465,7 @@ void DrmWrapper::WriteIntoTrace(perfetto::TracedDictionary dict) const {
 }
 
 absl::optional<std::string> DrmWrapper::GetDriverName() const {
-  return GetDrmDriverNameFromFd(file_.GetPlatformFile());
+  return GetDrmDriverNameFromFd(drm_fd_.get());
 }
 
 }  // namespace ui

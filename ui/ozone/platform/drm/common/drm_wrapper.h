@@ -10,8 +10,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -56,7 +56,7 @@ using ScopedDrmPropertyBlob = std::unique_ptr<DrmPropertyBlobMetadata>;
 class DrmWrapper {
  public:
   DrmWrapper(const base::FilePath& device_path,
-             base::File file,
+             base::ScopedFD fd,
              bool is_primary_device);
   DrmWrapper(const DrmWrapper&) = delete;
   DrmWrapper& operator=(const DrmWrapper&) = delete;
@@ -256,7 +256,7 @@ class DrmWrapper {
   virtual absl::optional<std::string> GetDriverName() const;
 
   base::FilePath device_path() const { return device_path_; }
-  int get_fd() const { return file_.GetPlatformFile(); }
+  int get_fd() const { return drm_fd_.get(); }
   bool allow_addfb2_modifiers() const { return allow_addfb2_modifiers_; }
   int modeset_sequence_id() const { return modeset_sequence_id_; }
   bool is_primary_device() const { return is_primary_device_; }
@@ -264,8 +264,8 @@ class DrmWrapper {
  protected:
   // Path to the DRM device (in sysfs).
   const base::FilePath device_path_;
-  // DRM device.
-  const base::File file_;
+  // DRM device FD.
+  base::ScopedFD drm_fd_;
 
   bool allow_addfb2_modifiers_ = false;
 

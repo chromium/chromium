@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -37,8 +36,8 @@ class VKMSTest : public testing::Test {
         drm_device_.BindNewPipeAndPassReceiver());
     run_loop.Run();
 
-    auto [path, file] = ui::test::FindDrmDriverOrDie("vkms");
-    drm_device_->AddGraphicsDevice(path, std::move(file));
+    auto [path, fd] = ui::test::FindDrmDriverOrDie("vkms");
+    drm_device_->AddGraphicsDevice(path, mojo::PlatformHandle(std::move(fd)));
   }
 
  protected:

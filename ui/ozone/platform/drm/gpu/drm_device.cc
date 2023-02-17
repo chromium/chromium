@@ -181,10 +181,10 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
 };
 
 DrmDevice::DrmDevice(const base::FilePath& device_path,
-                     base::File file,
+                     base::ScopedFD fd,
                      bool is_primary_device,
                      std::unique_ptr<GbmDevice> gbm)
-    : DrmWrapper(device_path, std::move(file), is_primary_device),
+    : DrmWrapper(device_path, std::move(fd), is_primary_device),
       page_flip_manager_(new PageFlipManager()),
       gbm_(std::move(gbm)) {}
 
@@ -210,8 +210,8 @@ bool DrmDevice::Initialize() {
     return false;
   }
 
-  watcher_ = std::make_unique<IOWatcher>(file_.GetPlatformFile(),
-                                         page_flip_manager_.get());
+  watcher_ =
+      std::make_unique<IOWatcher>(drm_fd_.get(), page_flip_manager_.get());
 
   return true;
 }
@@ -219,14 +219,14 @@ bool DrmDevice::Initialize() {
 bool DrmDevice::PageFlip(uint32_t crtc_id,
                          uint32_t framebuffer,
                          scoped_refptr<PageFlipRequest> page_flip_request) {
-  DCHECK(file_.IsValid());
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT2("drm", "DrmDevice::PageFlip", "crtc", crtc_id, "framebuffer",
                framebuffer);
 
   // NOTE: Calling drmModeSetCrtc will immediately update the state, though
   // callbacks to already scheduled page flips will be honored by the kernel.
   uint64_t id = page_flip_manager_->GetNextId();
-  if (!drmModePageFlip(file_.GetPlatformFile(), crtc_id, framebuffer,
+  if (!drmModePageFlip(drm_fd_.get(), crtc_id, framebuffer,
                        DRM_MODE_PAGE_FLIP_EVENT, reinterpret_cast<void*>(id))) {
     // If successful the payload will be removed by a PageFlip event.
     page_flip_manager_->RegisterCallback(id, 1,
@@ -263,7 +263,7 @@ bool DrmDevice::CommitPropertiesInternal(
     id = page_flip_manager_->GetNextId();
   }
 
-  int result = drmModeAtomicCommit(file_.GetPlatformFile(), properties, flags,
+  int result = drmModeAtomicCommit(drm_fd_.get(), properties, flags,
                                    reinterpret_cast<void*>(id));
   if (result && errno == EBUSY && (flags & DRM_MODE_ATOMIC_NONBLOCK)) {
     VLOG(1) << "Nonblocking atomic commit failed with EBUSY, retry without "
@@ -277,7 +277,7 @@ bool DrmDevice::CommitPropertiesInternal(
     // crashing. We still do want the underlying driver bugs fixed, but this
     // provide a better user experience.
     flags &= ~DRM_MODE_ATOMIC_NONBLOCK;
-    result = drmModeAtomicCommit(file_.GetPlatformFile(), properties, flags,
+    result = drmModeAtomicCommit(drm_fd_.get(), properties, flags,
                                  reinterpret_cast<void*>(id));
   }
   if (!result) {

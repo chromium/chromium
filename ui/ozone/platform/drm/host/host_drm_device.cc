@@ -173,8 +173,7 @@ void HostDrmDevice::GpuAddGraphicsDevice(const base::FilePath& path,
   if (!drm_device_.is_bound())
     return;
 
-  base::File file(std::move(fd));
-  drm_device_->AddGraphicsDevice(path, std::move(file));
+  drm_device_->AddGraphicsDevice(path, mojo::PlatformHandle(std::move(fd)));
 }
 
 bool HostDrmDevice::GpuRemoveGraphicsDevice(const base::FilePath& path) {

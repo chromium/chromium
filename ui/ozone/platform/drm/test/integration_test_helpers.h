@@ -8,16 +8,17 @@
 #include <string>
 #include <utility>
 
+#include "base/files/scoped_file.h"
+
 namespace base {
-class File;
 class FilePath;
 }  // namespace base
 
 namespace ui::test {
 
-using PathAndFile = std::pair<base::FilePath, base::File>;
+using PathAndFd = std::pair<base::FilePath, base::ScopedFD>;
 
-PathAndFile FindDrmDriverOrDie(std::string name);
+PathAndFd FindDrmDriverOrDie(std::string name);
 
 }  // namespace ui::test
 

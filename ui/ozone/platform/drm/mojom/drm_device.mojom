@@ -46,7 +46,7 @@ interface DrmDevice {
 
   // Transfers ownership of a DRM device to the GPU process.
   AddGraphicsDevice(mojo_base.mojom.FilePath path,
-                    mojo_base.mojom.File file);
+                    handle<platform> fd_mojo_handle);
 
   // Instructs the GPU to abandon a DRM device.
   RemoveGraphicsDevice(mojo_base.mojom.FilePath path);

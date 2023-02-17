@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -32,7 +31,7 @@ class DrmDevice : public DrmWrapper,
                               base::TimeTicks /* timestamp */)>;
 
   DrmDevice(const base::FilePath& device_path,
-            base::File file,
+            base::ScopedFD fd,
             bool is_primary_device,
             std::unique_ptr<GbmDevice> gbm_device);
 

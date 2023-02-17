@@ -420,9 +420,10 @@ void DrmThread::ShouldDisplayEventTriggerConfiguration(
   std::move(callback).Run(should_trigger);
 }
 
-void DrmThread::AddGraphicsDevice(const base::FilePath& path, base::File file) {
+void DrmThread::AddGraphicsDevice(const base::FilePath& path,
+                                  mojo::PlatformHandle fd_mojo_handle) {
   TRACE_EVENT0("drm", "DrmThread::AddGraphicsDevice");
-  device_manager_->AddDrmDevice(path, std::move(file));
+  device_manager_->AddDrmDevice(path, fd_mojo_handle.TakeFD());
 
   // There might be tasks that were blocked on a DrmDevice becoming available.
   ProcessPendingTasks();

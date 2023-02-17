@@ -306,7 +306,7 @@ MockDrmDevice::PlaneProperties& MockDrmDevice::MockDrmState::AddPlane(
 
 MockDrmDevice::MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
     : DrmDevice(base::FilePath(),
-                base::File(),
+                base::ScopedFD(),
                 true /* is_primary_device */,
                 std::move(gbm_device)),
       set_crtc_call_count_(0),

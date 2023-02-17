@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/file.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -37,7 +37,7 @@ class DrmDeviceManager {
   ~DrmDeviceManager();
 
   // The first device registered is assumed to be the primary device.
-  bool AddDrmDevice(const base::FilePath& path, base::File file);
+  bool AddDrmDevice(const base::FilePath& path, base::ScopedFD fd);
   void RemoveDrmDevice(const base::FilePath& path);
 
   // Updates the device associated with |widget|.

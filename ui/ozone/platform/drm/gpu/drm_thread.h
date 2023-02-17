@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -20,7 +19,6 @@
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
@@ -156,7 +154,8 @@ class DrmThread : public base::Thread,
       base::OnceCallback<void(bool)> callback) override;
   void RefreshNativeDisplays(
       base::OnceCallback<void(MovableDisplaySnapshots)> callback) override;
-  void AddGraphicsDevice(const base::FilePath& path, base::File file) override;
+  void AddGraphicsDevice(const base::FilePath& path,
+                         mojo::PlatformHandle fd_mojo_handle) override;
   void RemoveGraphicsDevice(const base::FilePath& path) override;
   void ConfigureNativeDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
