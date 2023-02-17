@@ -80,9 +80,6 @@ class OobeUI : public ui::MojoWebUIController {
 
   bool IsJSReady(base::OnceClosure display_is_ready_callback);
 
-  // Shows or hides OOBE UI elements.
-  void ShowOobeUI(bool show);
-
   gfx::NativeView GetNativeView();
 
   gfx::NativeWindow GetTopLevelNativeWindow();

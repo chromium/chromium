@@ -78,9 +78,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // ui::EventSource implementation:
   ui::EventSink* GetEventSink() override;
 
-  // Show or hide OOBE UI.
-  void ShowOobeUI(bool show);
-
  private:
   // CoreOobeView implementation:
   void ShowScreenWithData(const OobeScreenId& screen,

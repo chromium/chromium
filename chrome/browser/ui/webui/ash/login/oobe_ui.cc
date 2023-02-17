@@ -690,13 +690,6 @@ bool OobeUI::IsJSReady(base::OnceClosure display_is_ready_callback) {
   return ready_;
 }
 
-void OobeUI::ShowOobeUI(bool show) {
-  core_handler_->ShowOobeUI(show);
-
-  if (show && oobe_display_chooser_)
-    oobe_display_chooser_->TryToPlaceUiOnTouchDisplay();
-}
-
 gfx::NativeView OobeUI::GetNativeView() {
   return web_ui()->GetWebContents()->GetNativeView();
 }

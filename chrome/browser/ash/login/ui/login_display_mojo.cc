@@ -127,12 +127,7 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
   }
 }
 
-void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {
-  // OOBE UI is null iff we display the user adding screen.
-  if (is_enabled && host_->GetOobeUI() != nullptr) {
-    host_->GetOobeUI()->ShowOobeUI(false);
-  }
-}
+void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {}
 
 void LoginDisplayMojo::OnUserImageChanged(const user_manager::User& user) {
   LoginScreen::Get()->GetModel()->SetAvatarForUser(

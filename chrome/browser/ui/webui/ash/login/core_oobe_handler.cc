@@ -173,10 +173,6 @@ void CoreOobeHandler::HandleEnableShelfButtons(bool enable) {
     LoginDisplayHost::default_host()->SetShelfButtonsEnabled(enable);
 }
 
-void CoreOobeHandler::ShowOobeUI(bool show) {
-  CallJS("cr.ui.Oobe.showOobeUI", show);
-}
-
 void CoreOobeHandler::ForwardCancel() {
   CallJS("cr.ui.Oobe.handleCancel");
 }
