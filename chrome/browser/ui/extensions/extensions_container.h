@@ -45,7 +45,7 @@ class ExtensionsContainer {
 
   // Returns the action's toolbar button visibility.
   virtual extensions::ExtensionContextMenuModel::ButtonVisibility
-  GetActionVisibility(const ToolbarActionViewController* action) const = 0;
+  GetActionVisibility(const std::string& action_id) const = 0;
 
   // Undoes the current "pop out"; i.e., moves the popped out action back into
   // overflow.

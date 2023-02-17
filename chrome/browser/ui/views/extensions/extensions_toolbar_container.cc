@@ -396,22 +396,22 @@ bool ExtensionsToolbarContainer::CanShowActionsInToolbar() const {
   return !browser_->app_controller();
 }
 
-// TODO(crbug.com/1416359): Use `action_id` instead of action here and in the
-// next method as there is no need to have access to the view controller.
+// TODO(crbug.com/1416359): Use `action_id` instead of action as there is no
+// need to have access to the view controller.
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
     const ToolbarActionViewController* action) const {
-  return GetActionVisibility(action) !=
+  return GetActionVisibility(action->GetId()) !=
          extensions::ExtensionContextMenuModel::UNPINNED;
 }
 
 extensions::ExtensionContextMenuModel::ButtonVisibility
 ExtensionsToolbarContainer::GetActionVisibility(
-    const ToolbarActionViewController* action) const {
-  if (model_->IsActionPinned(action->GetId())) {
+    const std::string& action_id) const {
+  if (model_->IsActionPinned(action_id)) {
     return extensions::ExtensionContextMenuModel::PINNED;
   }
 
-  if (ShouldForceVisibility(action->GetId())) {
+  if (ShouldForceVisibility(action_id)) {
     return extensions::ExtensionContextMenuModel::TRANSITIVELY_VISIBLE;
   }
 
