@@ -14,7 +14,6 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_package/mock_signed_exchange_handler.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
-#include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
@@ -142,7 +141,7 @@ TEST_F(SignedExchangeLoaderTest, Simple) {
           nullptr /* reporter */, nullptr /* url_loader_factory */,
           SignedExchangeLoader::URLLoaderThrottlesGetter(),
           net::NetworkAnonymizationKey(),
-          FrameTreeNode::kFrameTreeNodeInvalidId, nullptr /* metric_recorder */,
+          FrameTreeNode::kFrameTreeNodeInvalidId,
           std::string() /* accept_langs */,
           false /* keep_entry_for_prefetch_cache */);
 

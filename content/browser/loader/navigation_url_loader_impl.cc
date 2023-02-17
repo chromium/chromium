@@ -427,8 +427,6 @@ NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
 void NavigationURLLoaderImpl::StartImpl(
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
-    scoped_refptr<SignedExchangePrefetchMetricRecorder>
-        signed_exchange_prefetch_metric_recorder,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui,
     std::string accept_langs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -476,16 +474,13 @@ void NavigationURLLoaderImpl::StartImpl(
     }
   }
 
-  CreateInterceptors(prefetched_signed_exchange_cache,
-                     signed_exchange_prefetch_metric_recorder, accept_langs);
+  CreateInterceptors(prefetched_signed_exchange_cache, accept_langs);
   Restart();
 }
 
 void NavigationURLLoaderImpl::CreateInterceptors(
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
-    scoped_refptr<SignedExchangePrefetchMetricRecorder>
-        signed_exchange_prefetch_metric_recorder,
     const std::string& accept_langs) {
   if (prefetched_signed_exchange_cache) {
     std::unique_ptr<NavigationLoaderInterceptor>
@@ -515,9 +510,7 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   if (signed_exchange_utils::IsSignedExchangeHandlingEnabled(
           browser_context_)) {
     interceptors_.push_back(CreateSignedExchangeRequestHandler(
-        *request_info_, network_loader_factory_,
-        std::move(signed_exchange_prefetch_metric_recorder),
-        std::move(accept_langs)));
+        *request_info_, network_loader_factory_, std::move(accept_langs)));
   }
 
   // Set up an interceptor for prefetch.
@@ -1210,8 +1203,6 @@ std::unique_ptr<SignedExchangeRequestHandler>
 NavigationURLLoaderImpl::CreateSignedExchangeRequestHandler(
     const NavigationRequestInfo& request_info,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    scoped_refptr<SignedExchangePrefetchMetricRecorder>
-        signed_exchange_prefetch_metric_recorder,
     std::string accept_langs) {
   // It is safe to pass the callback of CreateURLLoaderThrottles with the
   // unretained `this`, because the passed callback will be used by a
@@ -1223,7 +1214,6 @@ NavigationURLLoaderImpl::CreateSignedExchangeRequestHandler(
       std::move(url_loader_factory),
       base::BindRepeating(&NavigationURLLoaderImpl::CreateURLLoaderThrottles,
                           base::Unretained(this)),
-      std::move(signed_exchange_prefetch_metric_recorder),
       std::move(accept_langs));
 }
 
@@ -1320,11 +1310,6 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
       request_info_->common_params->navigation_start, "FrameTreeNode id",
       frame_tree_node_id_);
-
-  scoped_refptr<SignedExchangePrefetchMetricRecorder>
-      signed_exchange_prefetch_metric_recorder =
-          storage_partition_->GetPrefetchURLLoaderService()
-              ->signed_exchange_prefetch_metric_recorder();
 
   mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
       accept_ch_frame_observer;
@@ -1468,9 +1453,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
 
   start_closure_ = base::BindOnce(
       &NavigationURLLoaderImpl::StartImpl, base::Unretained(this),
-      std::move(prefetched_signed_exchange_cache),
-      std::move(signed_exchange_prefetch_metric_recorder),
-      std::move(factory_for_webui), std::move(accept_langs));
+      std::move(prefetched_signed_exchange_cache), std::move(factory_for_webui),
+      std::move(accept_langs));
 }
 
 void NavigationURLLoaderImpl::Start() {

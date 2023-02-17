@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -58,10 +57,6 @@ class PrefetchURLLoaderService final
     prefetch_load_callback_for_testing_ = prefetch_load_callback;
   }
 
-  scoped_refptr<SignedExchangePrefetchMetricRecorder>
-  signed_exchange_prefetch_metric_recorder() {
-    return signed_exchange_prefetch_metric_recorder_;
-  }
   void SetAcceptLanguages(const std::string& accept_langs) {
     accept_langs_ = accept_langs;
   }
@@ -118,9 +113,6 @@ class PrefetchURLLoaderService final
       preference_watcher_receiver_{this};
 
   base::RepeatingClosure prefetch_load_callback_for_testing_;
-
-  scoped_refptr<SignedExchangePrefetchMetricRecorder>
-      signed_exchange_prefetch_metric_recorder_;
 
   std::string accept_langs_;
 };

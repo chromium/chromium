@@ -46,7 +46,6 @@ class PrefetchedSignedExchangeCacheEntry;
 class SignedExchangeDevToolsProxy;
 class SignedExchangeHandler;
 class SignedExchangeHandlerFactory;
-class SignedExchangePrefetchMetricRecorder;
 class SignedExchangeReporter;
 
 // SignedExchangeLoader handles an origin-signed HTTP exchange response. It is
@@ -77,7 +76,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
       URLLoaderThrottlesGetter url_loader_throttles_getter,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       int frame_tree_node_id,
-      scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
       const std::string& accept_langs,
       bool keep_entry_for_prefetch_cache);
 
@@ -175,7 +173,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
 
   const uint32_t url_loader_options_;
   const bool should_redirect_on_failure_;
-  scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder_;
 
   absl::optional<net::SSLInfo> ssl_info_;
 

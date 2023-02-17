@@ -12470,29 +12470,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SignedExchange.Prefetch.Precision.30Seconds"
-    enum="BooleanUsage" expires_after="2023-03-29">
-  <owner>ksakamoto@chromium.org</owner>
-  <owner>webpackage-dev@chromium.org</owner>
-  <summary>
-    Records if the prefetched Signed Exchange was actually the target of a
-    navigation which happened within 30 seconds. Reported when a corresponding
-    navigation is observed, or from an periodic timer event which cleans up the
-    unmatched prefetch entries.
-  </summary>
-</histogram>
-
-<histogram name="SignedExchange.Prefetch.Recall.30Seconds" enum="BooleanUsage"
-    expires_after="2023-07-09">
-  <owner>ksakamoto@chromium.org</owner>
-  <owner>webpackage-dev@chromium.org</owner>
-  <summary>
-    Records how much Signed Exchange navigations were prefetched and not
-    prefetched. Matched against 30 seconds window. Reported for each Signed
-    Exchange navigations.
-  </summary>
-</histogram>
-
 <histogram name="SignedExchange.SignatureVerificationError.Expired"
     units="seconds" expires_after="2023-03-29">
   <owner>ksakamoto@chromium.org</owner>

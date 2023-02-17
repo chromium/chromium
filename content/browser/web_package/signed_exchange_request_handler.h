@@ -26,7 +26,6 @@ class URLLoaderThrottle;
 namespace content {
 
 class SignedExchangeLoader;
-class SignedExchangePrefetchMetricRecorder;
 
 class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
  public:
@@ -41,7 +40,6 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
       const base::UnguessableToken& devtools_navigation_token,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
-      scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
       std::string accept_langs);
 
   SignedExchangeRequestHandler(const SignedExchangeRequestHandler&) = delete;
@@ -84,7 +82,6 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   URLLoaderThrottlesGetter url_loader_throttles_getter_;
-  scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder_;
   const std::string accept_langs_;
 
   base::WeakPtrFactory<SignedExchangeRequestHandler> weak_factory_{this};

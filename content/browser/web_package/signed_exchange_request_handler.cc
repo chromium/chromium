@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_loader.h"
-#include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/common/content_features.h"
@@ -37,14 +36,12 @@ SignedExchangeRequestHandler::SignedExchangeRequestHandler(
     const base::UnguessableToken& devtools_navigation_token,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     URLLoaderThrottlesGetter url_loader_throttles_getter,
-    scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
     std::string accept_langs)
     : url_loader_options_(url_loader_options),
       frame_tree_node_id_(frame_tree_node_id),
       devtools_navigation_token_(devtools_navigation_token),
       url_loader_factory_(url_loader_factory),
       url_loader_throttles_getter_(std::move(url_loader_throttles_getter)),
-      metric_recorder_(std::move(metric_recorder)),
       accept_langs_(std::move(accept_langs)) {}
 
 SignedExchangeRequestHandler::~SignedExchangeRequestHandler() = default;
@@ -117,8 +114,8 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
       std::move(client), url_loader->Unbind(), url_loader_options_,
       true /* should_redirect_to_fallback */, std::move(devtools_proxy),
       std::move(reporter), url_loader_factory_, url_loader_throttles_getter_,
-      network_anonymization_key, frame_tree_node_id_, metric_recorder_,
-      accept_langs_, false /* keep_entry_for_prefetch_cache */);
+      network_anonymization_key, frame_tree_node_id_, accept_langs_,
+      false /* keep_entry_for_prefetch_cache */);
 
   *skip_other_interceptors = true;
   return true;

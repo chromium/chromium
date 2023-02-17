@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/time/default_tick_clock.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/loader/prefetch_url_loader.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -89,10 +88,7 @@ struct PrefetchURLLoaderService::BindContext {
 
 PrefetchURLLoaderService::PrefetchURLLoaderService(
     BrowserContext* browser_context)
-    : browser_context_(browser_context),
-      signed_exchange_prefetch_metric_recorder_(
-          base::MakeRefCounted<SignedExchangePrefetchMetricRecorder>(
-              base::DefaultTickClock::GetInstance())) {
+    : browser_context_(browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   accept_langs_ =
       GetContentClient()->browser()->GetAcceptLangs(browser_context);
@@ -231,8 +227,8 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
       base::BindRepeating(&PrefetchURLLoaderService::CreateURLLoaderThrottles,
                           base::Unretained(this), resource_request,
                           current_context.frame_tree_node_id),
-      browser_context_, signed_exchange_prefetch_metric_recorder_,
-      std::move(prefetched_signed_exchange_cache), accept_langs_,
+      browser_context_, std::move(prefetched_signed_exchange_cache),
+      accept_langs_,
       base::BindOnce(&PrefetchURLLoaderService::GenerateRecursivePrefetchToken,
                      base::Unretained(this),
                      current_context.weak_ptr_factory.GetWeakPtr()));

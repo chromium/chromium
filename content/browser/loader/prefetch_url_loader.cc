@@ -10,7 +10,6 @@
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache_adapter.h"
 #include "content/browser/web_package/signed_exchange_prefetch_handler.h"
-#include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
@@ -45,8 +44,6 @@ PrefetchURLLoader::PrefetchURLLoader(
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
     URLLoaderThrottlesGetter url_loader_throttles_getter,
     BrowserContext* browser_context,
-    scoped_refptr<SignedExchangePrefetchMetricRecorder>
-        signed_exchange_prefetch_metric_recorder,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     const std::string& accept_langs,
@@ -57,8 +54,6 @@ PrefetchURLLoader::PrefetchURLLoader(
       network_loader_factory_(std::move(network_loader_factory)),
       forwarding_client_(std::move(client)),
       url_loader_throttles_getter_(url_loader_throttles_getter),
-      signed_exchange_prefetch_metric_recorder_(
-          std::move(signed_exchange_prefetch_metric_recorder)),
       accept_langs_(accept_langs),
       recursive_prefetch_token_generator_(
           std::move(recursive_prefetch_token_generator)),
@@ -172,8 +167,7 @@ void PrefetchURLLoader::OnReceiveResponse(
             frame_tree_node_id_, resource_request_, std::move(response),
             std::move(body), loader_.Unbind(), client_receiver_.Unbind(),
             network_loader_factory_, url_loader_throttles_getter_, this,
-            network_anonymization_key_,
-            signed_exchange_prefetch_metric_recorder_, accept_langs_,
+            network_anonymization_key_, accept_langs_,
             keep_entry_for_prefetch_cache);
     return;
   }

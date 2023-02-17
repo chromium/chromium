@@ -390,9 +390,6 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
                                          SignedExchangeLoadResult::kSuccess, 1);
     histogram_tester_.ExpectTotalCount("PrefetchedSignedExchangeCache.Count",
                                        1);
-  } else {
-    histogram_tester_.ExpectUniqueSample(
-        "SignedExchange.Prefetch.Recall.30Seconds", false, 1);
   }
 }
 

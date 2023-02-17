@@ -35,7 +35,6 @@ namespace content {
 class BrowserContext;
 class PrefetchedSignedExchangeCacheAdapter;
 class SignedExchangePrefetchHandler;
-class SignedExchangePrefetchMetricRecorder;
 
 // A URLLoader for loading a prefetch request, including <link rel="prefetch">.
 // It basically just keeps draining the data.
@@ -68,8 +67,6 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
       BrowserContext* browser_context,
-      scoped_refptr<SignedExchangePrefetchMetricRecorder>
-          signed_exchange_prefetch_metric_recorder,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       const std::string& accept_langs,
@@ -145,9 +142,6 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
 
   std::unique_ptr<SignedExchangePrefetchHandler>
       signed_exchange_prefetch_handler_;
-
-  scoped_refptr<SignedExchangePrefetchMetricRecorder>
-      signed_exchange_prefetch_metric_recorder_;
 
   // Used to store the prefetched signed exchanges to a
   // PrefetchedSignedExchangeCache.

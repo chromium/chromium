@@ -9,7 +9,6 @@
 #include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_loader.h"
-#include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -35,7 +34,6 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
     URLLoaderThrottlesGetter loader_throttles_getter,
     network::mojom::URLLoaderClient* forwarding_client,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
     const std::string& accept_langs,
     bool keep_entry_for_prefetch_cache)
     : forwarding_client_(forwarding_client) {
@@ -59,7 +57,7 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
       false /* should_redirect_to_fallback */, std::move(devtools_proxy),
       std::move(reporter), std::move(url_loader_factory),
       loader_throttles_getter, network_anonymization_key, frame_tree_node_id,
-      std::move(metric_recorder), accept_langs, keep_entry_for_prefetch_cache);
+      accept_langs, keep_entry_for_prefetch_cache);
 }
 
 SignedExchangePrefetchHandler::~SignedExchangePrefetchHandler() = default;

@@ -39,7 +39,6 @@ class BrowserContext;
 class NavigationEarlyHintsManager;
 class NavigationLoaderInterceptor;
 class PrefetchedSignedExchangeCache;
-class SignedExchangePrefetchMetricRecorder;
 class SignedExchangeRequestHandler;
 class StoragePartition;
 class StoragePartitionImpl;
@@ -103,8 +102,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void StartImpl(
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
-      scoped_refptr<SignedExchangePrefetchMetricRecorder>
-          signed_exchange_prefetch_metric_recorder,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui,
       std::string accept_langs);
 
@@ -117,8 +114,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   void CreateInterceptors(scoped_refptr<PrefetchedSignedExchangeCache>
                               prefetched_signed_exchange_cache,
-                          scoped_refptr<SignedExchangePrefetchMetricRecorder>
-                              signed_exchange_prefetch_metric_recorder,
                           const std::string& accept_langs);
 
   // This could be called multiple times to follow a chain of redirects.
@@ -168,8 +163,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   CreateSignedExchangeRequestHandler(
       const NavigationRequestInfo& request_info,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      scoped_refptr<SignedExchangePrefetchMetricRecorder>
-          signed_exchange_prefetch_metric_recorder,
       std::string accept_langs);
 
   void ParseHeaders(const GURL& url,
