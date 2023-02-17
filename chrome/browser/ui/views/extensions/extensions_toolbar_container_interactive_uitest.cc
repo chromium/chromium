@@ -369,9 +369,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
   views::test::WaitForAnimatingLayoutManager(container);
 
-  ToolbarActionViewController* const view_controller =
-      container->GetActionForId(extension->id());
-  EXPECT_TRUE(container->IsActionVisibleOnToolbar(view_controller));
+  EXPECT_TRUE(container->IsActionVisibleOnToolbar(extension->id()));
   ToolbarActionView* const action_view =
       container->GetViewForId(extension->id());
   EXPECT_TRUE(action_view->GetVisible());
@@ -381,6 +379,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
       ui_test_utils::GetCenterInScreenCoordinates(action_view)));
   EXPECT_TRUE(ui_controls::SendMouseClick(ui_controls::LEFT));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
+  ToolbarActionViewController* const view_controller =
+      container->GetActionForId(extension->id());
   EXPECT_TRUE(view_controller->IsShowingPopup());
   EXPECT_EQ(view_controller, container->popup_owner_for_testing());
 
@@ -407,8 +407,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   ASSERT_TRUE(extension);
 
   ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
-  ToolbarActionViewController* const action =
-      container->GetActionForId(extension->id());
 
   ToolbarActionsModel* const model = ToolbarActionsModel::Get(profile());
   model->SetActionVisibility(extension->id(), true);
@@ -431,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
       views::Widget::ClosedReason::kCloseButtonClicked);
   destroyed_waiter.Wait();
 
-  EXPECT_TRUE(container->IsActionVisibleOnToolbar(action));
+  EXPECT_TRUE(container->IsActionVisibleOnToolbar(extension->id()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
@@ -441,8 +439,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   ASSERT_TRUE(extension);
 
   ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
-  ToolbarActionViewController* const action =
-      container->GetActionForId(extension->id());
 
   EXPECT_EQ(0u, GetVisibleToolbarActionViews().size());
 
@@ -454,14 +450,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   ASSERT_TRUE(bubble_widget);
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
 
-  EXPECT_TRUE(container->IsActionVisibleOnToolbar(action));
+  EXPECT_TRUE(container->IsActionVisibleOnToolbar(extension->id()));
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
   bubble_widget->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
   destroyed_waiter.Wait();
 
-  EXPECT_FALSE(container->IsActionVisibleOnToolbar(action));
+  EXPECT_FALSE(container->IsActionVisibleOnToolbar(extension->id()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
@@ -603,12 +599,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
 
   // It should be unpinned.
   ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
-  ToolbarActionViewController* const view_controller =
-      container->GetActionForId(extension->id());
-  EXPECT_FALSE(container->IsActionVisibleOnToolbar(view_controller));
+  EXPECT_FALSE(container->IsActionVisibleOnToolbar(extension->id()));
 
   // Execute the action, which results in the extension sliding out while we
   // get ready to show the popup.
+  ToolbarActionViewController* const view_controller =
+      container->GetActionForId(extension->id());
   view_controller->ExecuteUserAction(
       ToolbarActionViewController::InvocationSource::kMenuEntry);
 

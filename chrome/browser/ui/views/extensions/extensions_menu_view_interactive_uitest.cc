@@ -81,8 +81,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
       LoadTestExtension("extensions/uitest/window_open");
 
       // Without the uninstall dialog the icon should now be invisible.
-      EXPECT_FALSE(container->IsActionVisibleOnToolbar(
-          container->GetActionForId(extensions()[0]->id())));
+      EXPECT_FALSE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
       EXPECT_FALSE(
           container->GetViewForId(extensions()[0]->id())->GetVisible());
 
@@ -131,8 +130,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
                ui_test_name_ == "InstallDialog") {
       ExtensionsToolbarContainer* const container =
           GetExtensionsToolbarContainer();
-      EXPECT_TRUE(container->IsActionVisibleOnToolbar(
-          container->GetActionForId(extensions()[0]->id())));
+      EXPECT_TRUE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
       EXPECT_TRUE(container->GetViewForId(extensions()[0]->id())->GetVisible());
     }
 
@@ -196,8 +194,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
                              ->GetInstalledExtension(extensions()[0]->id()));
       // Without the uninstall dialog present the icon should now be
       // invisible.
-      EXPECT_FALSE(container->IsActionVisibleOnToolbar(
-          container->GetActionForId(extensions()[0]->id())));
+      EXPECT_FALSE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
       EXPECT_FALSE(
           container->GetViewForId(extensions()[0]->id())->GetVisible());
     }

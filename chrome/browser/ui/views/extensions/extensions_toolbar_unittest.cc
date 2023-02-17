@@ -159,7 +159,7 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
       const bool is_visible = extensions_container()->IsActionVisibleOnToolbar(
-          action->view_controller());
+          action->view_controller()->GetId());
 #else
       const bool is_visible = action->GetVisible();
 #endif

@@ -39,9 +39,9 @@ class ExtensionsContainer {
   // Whether the container supports showing extensions on the toolbar.
   virtual bool CanShowActionsInToolbar() const = 0;
 
-  // Returns true if the given |action| is visible on the toolbar.
-  virtual bool IsActionVisibleOnToolbar(
-      const ToolbarActionViewController* action) const = 0;
+  // Returns true if the action pointed by `action_id` is visible on the
+  // toolbar.
+  virtual bool IsActionVisibleOnToolbar(const std::string& action_id) const = 0;
 
   // Returns the action's toolbar button visibility.
   virtual extensions::ExtensionContextMenuModel::ButtonVisibility

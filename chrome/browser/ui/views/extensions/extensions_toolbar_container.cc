@@ -396,11 +396,9 @@ bool ExtensionsToolbarContainer::CanShowActionsInToolbar() const {
   return !browser_->app_controller();
 }
 
-// TODO(crbug.com/1416359): Use `action_id` instead of action as there is no
-// need to have access to the view controller.
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
-    const ToolbarActionViewController* action) const {
-  return GetActionVisibility(action->GetId()) !=
+    const std::string& action_id) const {
+  return GetActionVisibility(action_id) !=
          extensions::ExtensionContextMenuModel::UNPINNED;
 }
 

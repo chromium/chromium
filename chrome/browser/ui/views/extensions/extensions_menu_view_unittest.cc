@@ -158,7 +158,7 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
       const bool is_visible = extensions_container()->IsActionVisibleOnToolbar(
-          action->view_controller());
+          action->view_controller()->GetId());
 #else
       const bool is_visible = action->GetVisible();
 #endif
@@ -245,30 +245,29 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreSortedInTheMenu) {
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInToolbar) {
   constexpr char kName[] = "Test Name";
-  InstallExtensionAndLayout(kName);
+  const std::string& extension_id = InstallExtensionAndLayout(kName)->id();
 
   InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
-  ToolbarActionViewController* controller = menu_item->view_controller();
-  EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(controller));
+  EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(extension_id));
   EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
 
   ClickPinButton(menu_item);
   WaitForAnimation();
 
-  EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(controller));
+  EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(extension_id));
   EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName));
 
   ClickPinButton(menu_item);  // Unpin.
   WaitForAnimation();
 
-  EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(
-      menu_item->view_controller()));
+  EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(extension_id));
   EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
-  InstallExtensionAndLayout("Test Name");
+  const std::string& extension_id =
+      InstallExtensionAndLayout("Test Name")->id();
 
   AdditionalBrowser browser2(
       CreateBrowser(browser()->profile(), browser()->type(),
@@ -279,16 +278,16 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
   ClickPinButton(menu_item);
 
   // Window that was already open gets the pinned extension.
-  EXPECT_TRUE(browser2.extensions_container()->IsActionVisibleOnToolbar(
-      menu_item->view_controller()));
+  EXPECT_TRUE(
+      browser2.extensions_container()->IsActionVisibleOnToolbar(extension_id));
 
   AdditionalBrowser browser3(
       CreateBrowser(browser()->profile(), browser()->type(),
                     /* hosted_app */ false, /* browser_window */ nullptr));
 
   // Brand-new window also gets the pinned extension.
-  EXPECT_TRUE(browser3.extensions_container()->IsActionVisibleOnToolbar(
-      menu_item->view_controller()));
+  EXPECT_TRUE(
+      browser3.extensions_container()->IsActionVisibleOnToolbar(extension_id));
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
@@ -362,8 +361,8 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtension) {
   {
     InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
     ClickPinButton(menu_item);
-    EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(
-        menu_item->view_controller()));
+    EXPECT_TRUE(
+        extensions_container()->IsActionVisibleOnToolbar(extension->id()));
     // |menu_item| will not be valid after the extension reloads.
   }
 
@@ -374,8 +373,8 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtension) {
   LayoutMenuIfNecessary();
 
   ASSERT_EQ(1u, extensions_menu()->extensions_menu_items_for_testing().size());
-  EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(
-      GetOnlyMenuItem()->view_controller()));
+  EXPECT_TRUE(
+      extensions_container()->IsActionVisibleOnToolbar(extension->id()));
 }
 
 // Tests that a when an extension is reloaded with manifest errors, and

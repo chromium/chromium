@@ -151,8 +151,7 @@ class ExtensionsToolbarContainer
   void OnContextMenuShown(const std::string& action_id) override;
   void OnContextMenuClosed() override;
   bool CanShowActionsInToolbar() const override;
-  bool IsActionVisibleOnToolbar(
-      const ToolbarActionViewController* action) const override;
+  bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
   extensions::ExtensionContextMenuModel::ButtonVisibility GetActionVisibility(
       const std::string& action_id) const override;
   void UndoPopOut() override;

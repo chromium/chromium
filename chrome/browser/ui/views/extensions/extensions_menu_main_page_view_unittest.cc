@@ -183,27 +183,23 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ExtensionsAreSorted) {
 
 TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensionAppearsInToolbar) {
   constexpr char kName[] = "Extension";
-  InstallExtension(kName);
+  const std::string& extension_id = InstallExtension(kName)->id();
 
   ShowMenu();
 
   InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
-  ToolbarActionViewController* action_controller = menu_item->view_controller();
-  EXPECT_FALSE(
-      extensions_container()->IsActionVisibleOnToolbar(action_controller));
+  EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(extension_id));
   EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
 
   // Pin.
   ClickPinButton(menu_item);
-  EXPECT_TRUE(
-      extensions_container()->IsActionVisibleOnToolbar(action_controller));
+  EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(extension_id));
   EXPECT_EQ(GetPinnedExtensionNames(), std::vector<std::string>{kName});
 
   // Unpin.
   ClickPinButton(menu_item);
-  EXPECT_FALSE(
-      extensions_container()->IsActionVisibleOnToolbar(action_controller));
+  EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(extension_id));
   EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
 }
 
@@ -272,7 +268,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 TEST_F(ExtensionsMenuMainPageViewUnitTest,
        PinnedExtensionAppearsInAnotherWindow) {
-  InstallExtension("Extension");
+  const std::string& extension_id = InstallExtension("Extension")->id();
 
   ShowMenu();
 
@@ -285,17 +281,16 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ClickPinButton(menu_item);
 
   // Window that was already open gets the pinned extension.
-  ToolbarActionViewController* action_controller = menu_item->view_controller();
-  EXPECT_TRUE(browser2.extensions_container()->IsActionVisibleOnToolbar(
-      action_controller));
+  EXPECT_TRUE(
+      browser2.extensions_container()->IsActionVisibleOnToolbar(extension_id));
 
   AdditionalBrowser browser3(
       CreateBrowser(browser()->profile(), browser()->type(),
                     /* hosted_app */ false, /* browser_window */ nullptr));
 
   // Brand-new window also gets the pinned extension.
-  EXPECT_TRUE(browser3.extensions_container()->IsActionVisibleOnToolbar(
-      action_controller));
+  EXPECT_TRUE(
+      browser3.extensions_container()->IsActionVisibleOnToolbar(extension_id));
 }
 
 // Verifies the extension site permissions button opens the site permissions
