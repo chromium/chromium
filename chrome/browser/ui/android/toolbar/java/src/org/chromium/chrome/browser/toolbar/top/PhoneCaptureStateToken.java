@@ -9,14 +9,11 @@ import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 /**
@@ -24,40 +21,7 @@ import java.util.Objects;
  * against new states, to infer if anything important has changed. Especially useful when deciding
  * if a new bitmap capture is warranted.
  */
-public class ToolbarSnapshotState {
-    /**
-     * Reasons that two snapshots are different. Treat this list as append only and keep it in sync
-     * with ToolbarSnapshotDifference in enums.xml, as well as the proto in
-     * chrome_track_event.proto.
-     **/
-    @IntDef({ToolbarSnapshotDifference.NONE, ToolbarSnapshotDifference.NULL,
-            ToolbarSnapshotDifference.TINT, ToolbarSnapshotDifference.TAB_COUNT,
-            ToolbarSnapshotDifference.OPTIONAL_BUTTON_DATA, ToolbarSnapshotDifference.VISUAL_STATE,
-            ToolbarSnapshotDifference.SECURITY_ICON, ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE,
-            ToolbarSnapshotDifference.PAINT_PREVIEW, ToolbarSnapshotDifference.PROGRESS,
-            ToolbarSnapshotDifference.LOCATION_BAR_WIDTH, ToolbarSnapshotDifference.URL_TEXT,
-            ToolbarSnapshotDifference.HOME_BUTTON_COLOR, ToolbarSnapshotDifference.TITLE_TEXT,
-            ToolbarSnapshotDifference.CCT_ANIMATION, ToolbarSnapshotDifference.NUM_ENTRIES})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ToolbarSnapshotDifference {
-        int NONE = 0;
-        int NULL = 1;
-        int TINT = 2;
-        int TAB_COUNT = 3;
-        int OPTIONAL_BUTTON_DATA = 4;
-        int VISUAL_STATE = 5;
-        int SECURITY_ICON = 6;
-        int SHOWING_UPDATE_BADGE = 7;
-        int PAINT_PREVIEW = 8;
-        int PROGRESS = 9;
-        int LOCATION_BAR_WIDTH = 10;
-        int URL_TEXT = 11;
-        int HOME_BUTTON_COLOR = 12;
-        int TITLE_TEXT = 13;
-        int CCT_ANIMATION = 14;
-        int NUM_ENTRIES = 15;
-    }
-
+class PhoneCaptureStateToken {
     private final @ColorInt int mTint;
     private final int mTabCount;
     private final ButtonData mOptionalButtonData;
@@ -71,7 +35,7 @@ public class ToolbarSnapshotState {
     private final boolean mIsPaintPreview;
     private final int mUnfocusedLocationBarLayoutWidth;
 
-    public ToolbarSnapshotState(@ColorInt int tint, int tabCount, ButtonData optionalButtonData,
+    public PhoneCaptureStateToken(@ColorInt int tint, int tabCount, ButtonData optionalButtonData,
             @VisualState int visualState, String urlText,
             @Nullable CharSequence visibleTextPrefixHint, @DrawableRes int securityIcon,
             ColorStateList colorStateList, boolean isShowingUpdateBadgeDuringLastCapture,
@@ -100,7 +64,7 @@ public class ToolbarSnapshotState {
      * @param that The other snapshot to compare against.
      * @return The difference.
      */
-    public @ToolbarSnapshotDifference int getAnyDifference(ToolbarSnapshotState that) {
+    public @ToolbarSnapshotDifference int getAnyDifference(PhoneCaptureStateToken that) {
         if (that == null) {
             return ToolbarSnapshotDifference.NULL;
         } else if (mTint != that.mTint) {
@@ -131,7 +95,7 @@ public class ToolbarSnapshotState {
         return ToolbarSnapshotDifference.NONE;
     }
 
-    private boolean isVisibleUrlTextSame(ToolbarSnapshotState that) {
+    private boolean isVisibleUrlTextSame(PhoneCaptureStateToken that) {
         if (mVisibleTextPrefixHint != null
                 && TextUtils.equals(mVisibleTextPrefixHint, that.mVisibleTextPrefixHint)) {
             return true;

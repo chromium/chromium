@@ -9,7 +9,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
-import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnapshotDifference;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

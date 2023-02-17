@@ -80,7 +80,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
-import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnapshotDifference;
+import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -100,8 +100,6 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
-
-import java.util.Objects;
 
 /**
  * The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs.
@@ -128,7 +126,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private final CustomTabLocationBar mLocationBar = new CustomTabLocationBar();
     private LocationBarModel mLocationBarModel;
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
-    private @Nullable CaptureStateToken mLastCaptureStateToken;
+    private @Nullable CustomTabCaptureStateToken mLastCustomTabCaptureStateToken;
 
     /**
      * Whether to use the toolbar as handle to resize the Window height.
@@ -724,9 +722,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
         } else if (ToolbarFeatures.shouldSuppressCaptures()) {
-            CaptureStateToken currentToken = generateCaptureStateToken();
+            CustomTabCaptureStateToken currentToken = generateCaptureStateToken();
             final @ToolbarSnapshotDifference int difference =
-                    currentToken.getAnyDifference(mLastCaptureStateToken);
+                    currentToken.getAnyDifference(mLastCustomTabCaptureStateToken);
             if (difference == ToolbarSnapshotDifference.NONE) {
                 return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SNAPSHOT_SAME);
             } else {
@@ -740,61 +738,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     public void setTextureCaptureMode(boolean textureMode) {
         if (textureMode) {
-            mLastCaptureStateToken = generateCaptureStateToken();
+            mLastCustomTabCaptureStateToken = generateCaptureStateToken();
         }
     }
 
-    /**
-     * The idea of this class is to hold all of the properties that materially change the way the
-     * toolbar looks. If two tokens are identical (no difference is found), then there should be
-     * no reason to perform a bitmap capture.
-     */
-    private static class CaptureStateToken {
-        private final String mUrl;
-        private final String mTitle;
-        private final @ColorInt int mBackgroundColor;
-        private final @DrawableRes int mSecurityIconRes;
-        private @Nullable final Object mAnimationToken;
-        public CaptureStateToken(String url, String title, @ColorInt int backgroundColor,
-                @DrawableRes int securityIconRes, boolean isInAnimation) {
-            mUrl = url;
-            mTitle = title;
-            mBackgroundColor = backgroundColor;
-            mSecurityIconRes = securityIconRes;
-            // When animations are in progress, tokens should never be equal. Object should use
-            // reference equality, resulting in a difference unless both are null or the objects
-            // are actually the same object.
-            mAnimationToken = isInAnimation ? new Object() : null;
-        }
-
-        /**
-         * Compares two tokens and looks for any difference. If multiple are present only one will
-         * be returned. ToolbarSnapshotDifference.NONE indicates the two tokens are the same.
-         */
-        public @ToolbarSnapshotDifference int getAnyDifference(CaptureStateToken that) {
-            if (that == null) {
-                return ToolbarSnapshotDifference.NULL;
-            } else if (!Objects.equals(mUrl, that.mUrl)) {
-                return ToolbarSnapshotDifference.URL_TEXT;
-            } else if (!Objects.equals(mTitle, that.mTitle)) {
-                return ToolbarSnapshotDifference.TITLE_TEXT;
-            } else if (mBackgroundColor != that.mBackgroundColor) {
-                return ToolbarSnapshotDifference.TINT;
-            } else if (mSecurityIconRes != that.mSecurityIconRes) {
-                return ToolbarSnapshotDifference.SECURITY_ICON;
-            } else if (!Objects.equals(mAnimationToken, that.mAnimationToken)) {
-                return ToolbarSnapshotDifference.CCT_ANIMATION;
-            } else {
-                return ToolbarSnapshotDifference.NONE;
-            }
-        }
-    }
-
-    private CaptureStateToken generateCaptureStateToken() {
+    private CustomTabCaptureStateToken generateCaptureStateToken() {
         // Must convert CharSequence to String in order for equality to be clearly defined.
         String url = mLocationBar.mUrlBar.getText().toString();
         String title = mLocationBar.mTitleBar.getText().toString();
-        return new CaptureStateToken(url, title, getBackground().getColor(),
+        return new CustomTabCaptureStateToken(url, title, getBackground().getColor(),
                 mLocationBar.mAnimDelegate.getSecurityIconRes(),
                 mLocationBar.mAnimDelegate.isInAnimation());
     }

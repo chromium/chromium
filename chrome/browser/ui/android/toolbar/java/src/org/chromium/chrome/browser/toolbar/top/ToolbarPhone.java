@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
-import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -238,7 +237,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     /** Whether the toolbar has a pending request to call {@link triggerUrlFocusAnimation()}. */
     private boolean mPendingTriggerUrlFocusRequest;
-    private ToolbarSnapshotState mToolbarSnapshotState;
+    private PhoneCaptureStateToken mPhoneCaptureStateToken;
     private ButtonData mButtonData;
     /**
      * Whether the tab switcher is currently showing and controlled by the start surface. For
@@ -1568,9 +1567,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         } else if (isInTabSwitcherMode() || mIsShowingStartSurfaceTabSwitcher) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
         } else {
-            ToolbarSnapshotState newSnapshotState = generateToolbarSnapshotState();
+            PhoneCaptureStateToken newSnapshotState = generateToolbarSnapshotState();
             @ToolbarSnapshotDifference
-            int snapshotDifference = newSnapshotState.getAnyDifference(mToolbarSnapshotState);
+            int snapshotDifference = newSnapshotState.getAnyDifference(mPhoneCaptureStateToken);
             if (snapshotDifference == ToolbarSnapshotDifference.NONE) {
                 return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SNAPSHOT_SAME);
             } else {
@@ -1584,15 +1583,15 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (forceTextureCapture) {
             // Only force a texture capture if the tint for the toolbar drawables is changing or
             // if the tab count has changed since the last texture capture.
-            if (mToolbarSnapshotState == null) {
-                mToolbarSnapshotState = generateToolbarSnapshotState();
+            if (mPhoneCaptureStateToken == null) {
+                mPhoneCaptureStateToken = generateToolbarSnapshotState();
             }
 
-            mForceTextureCapture = mToolbarSnapshotState.getTint() != getTint().getDefaultColor();
+            mForceTextureCapture = mPhoneCaptureStateToken.getTint() != getTint().getDefaultColor();
 
             if (mTabSwitcherAnimationTabStackDrawable != null && mToggleTabStackButton != null) {
                 mForceTextureCapture = mForceTextureCapture
-                        || mToolbarSnapshotState.getTabCount()
+                        || mPhoneCaptureStateToken.getTabCount()
                                 != mTabSwitcherAnimationTabStackDrawable.getTabCount();
             }
 
@@ -1603,7 +1602,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         return false;
     }
 
-    private ToolbarSnapshotState generateToolbarSnapshotState() {
+    private PhoneCaptureStateToken generateToolbarSnapshotState() {
         UrlBarData urlBarData;
         int securityIconResource;
         if (ToolbarFeatures.shouldSuppressCaptures()) {
@@ -1621,8 +1620,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         String displayedUrlText = urlBarData.displayText.toString();
         CharSequence prefixHint = mLocationBar.getOmniboxVisibleTextPrefixHint();
         boolean isValidPrefixHint =
-                ToolbarSnapshotState.isValidVisibleTextPrefixHint(displayedUrlText, prefixHint);
-        return new ToolbarSnapshotState(getTint().getDefaultColor(),
+                PhoneCaptureStateToken.isValidVisibleTextPrefixHint(displayedUrlText, prefixHint);
+        return new PhoneCaptureStateToken(getTint().getDefaultColor(),
                 mTabCountProvider.getTabCount(), mButtonData, mVisualState, displayedUrlText,
                 isValidPrefixHint ? prefixHint : null, securityIconResource,
                 ImageViewCompat.getImageTintList(mHomeButton),
@@ -1737,7 +1736,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             // When texture mode is turned off, we know a capture has just been completed. Update
             // our snapshot so that we can suppress correctly on the next
             // #isReadyForTextureCapture() call.
-            mToolbarSnapshotState = generateToolbarSnapshotState();
+            mPhoneCaptureStateToken = generateToolbarSnapshotState();
         }
     }
 
