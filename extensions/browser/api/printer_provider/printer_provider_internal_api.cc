@@ -50,7 +50,7 @@ PrinterProviderInternalAPI::GetFactoryInstance() {
 PrinterProviderInternalAPI::PrinterProviderInternalAPI(
     content::BrowserContext* browser_context) {}
 
-PrinterProviderInternalAPI::~PrinterProviderInternalAPI() {}
+PrinterProviderInternalAPI::~PrinterProviderInternalAPI() = default;
 
 void PrinterProviderInternalAPI::AddObserver(
     PrinterProviderInternalAPIObserver* observer) {
