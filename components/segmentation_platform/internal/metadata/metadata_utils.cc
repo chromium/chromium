@@ -416,10 +416,22 @@ proto::PredictionResult CreatePredictionResult(
     base::Time timestamp) {
   proto::PredictionResult result;
   result.mutable_result()->Add(model_scores.begin(), model_scores.end());
-  result.mutable_output_config()->CopyFrom(output_config);
+  if (output_config.has_predictor()) {
+    result.mutable_output_config()->CopyFrom(output_config);
+  }
   result.set_timestamp_us(
       timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
   return result;
+}
+
+proto::ClientResult CreateClientResultFromPredResult(
+    proto::PredictionResult pred_result,
+    base::Time timestamp) {
+  proto::ClientResult client_result;
+  client_result.mutable_client_result()->CopyFrom(pred_result);
+  client_result.set_timestamp_us(
+      timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return client_result;
 }
 
 }  // namespace metadata_utils

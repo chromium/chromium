@@ -27,7 +27,8 @@ CachedResultProvider::CachedResultProvider(
     absl::optional<proto::ClientResult> client_result =
         result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
     bool has_valid_result = client_result.has_value() &&
-                            client_result->client_result().result_size() > 0;
+                            client_result->client_result().result_size() > 0 &&
+                            client_result->client_result().has_output_config();
     proto::PredictionResult pred_result = has_valid_result
                                               ? client_result->client_result()
                                               : proto::PredictionResult();

@@ -18,6 +18,8 @@
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/cached_result_provider.h"
+#include "components/segmentation_platform/internal/selection/cached_result_writer.h"
+#include "components/segmentation_platform/internal/selection/result_refresh_manager.h"
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -137,6 +139,10 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Task that runs every day or at startup to keep the platform data updated.
   void RunDailyTasks(bool is_startup);
 
+  // Creates SegmentResultProvider for all configs.
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+  CreateSegmentResultProviders();
+
   std::unique_ptr<ModelProviderFactory> model_provider_factory_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -169,8 +175,14 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Result cache.
   std::unique_ptr<CachedResultProvider> cached_result_provider_;
 
+  // Writes to result cache.
+  std::unique_ptr<CachedResultWriter> cached_result_writer_;
+
   // For routing requests to the right handler.
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
+
+  // Refreshes model results.
+  std::unique_ptr<ResultRefreshManager> result_refresh_manager_;
 
   // Segment results.
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;

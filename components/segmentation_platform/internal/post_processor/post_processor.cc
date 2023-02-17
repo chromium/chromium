@@ -11,6 +11,13 @@
 
 namespace segmentation_platform {
 
+namespace {
+bool IsValidResult(proto::PredictionResult prediction_result) {
+  return (prediction_result.result_size() > 0 &&
+          prediction_result.has_output_config());
+}
+}  // namespace
+
 std::vector<std::string> PostProcessor::GetClassifierResults(
     const proto::PredictionResult& prediction_result) {
   const std::vector<float> model_scores(prediction_result.result().begin(),
@@ -95,10 +102,11 @@ std::vector<std::string> PostProcessor::GetBinnedClassifierResults(
 ClassificationResult PostProcessor::GetPostProcessedClassificationResult(
     const proto::PredictionResult& prediction_result,
     PredictionStatus status) {
-  std::vector<std::string> ordered_labels;
-  if (prediction_result.result_size() > 0) {
-    ordered_labels = GetClassifierResults(prediction_result);
+  if (!IsValidResult(prediction_result)) {
+    return ClassificationResult(status);
   }
+  std::vector<std::string> ordered_labels =
+      GetClassifierResults(prediction_result);
   ClassificationResult classification_result = ClassificationResult(status);
   classification_result.ordered_labels = ordered_labels;
   return classification_result;
@@ -107,7 +115,8 @@ ClassificationResult PostProcessor::GetPostProcessedClassificationResult(
 base::TimeDelta PostProcessor::GetTTLForPredictedResult(
     const proto::PredictionResult& prediction_result) {
   std::vector<std::string> ordered_labels;
-  if (prediction_result.result_size() > 0) {
+  if (prediction_result.result_size() > 0 &&
+      prediction_result.has_output_config()) {
     ordered_labels = GetClassifierResults(prediction_result);
     auto predicted_result_ttl =
         prediction_result.output_config().predicted_result_ttl();

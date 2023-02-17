@@ -22,8 +22,8 @@ void CachedResultWriter::UpdatePrefsIfExpired(
     Config* config,
     proto::ClientResult client_result,
     const PlatformOptions& platform_options) {
-  DCHECK(!config->on_demand_execution);
-  if (!IsPrefUpdateRequiredForClient(config, platform_options)) {
+  if (!IsPrefUpdateRequiredForClient(config, platform_options) ||
+      config->on_demand_execution) {
     return;
   }
   UpdateNewClientResultToPrefs(config, client_result);

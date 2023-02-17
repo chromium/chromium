@@ -111,4 +111,13 @@ TEST_F(CachedResultProviderTest, CachedResultProviderWithEmptyPredResult) {
   EXPECT_TRUE(classification_result.ordered_labels.empty());
 }
 
+TEST_F(CachedResultProviderTest, CachedResultProviderWithEmptyPrefs) {
+  cached_result_provider_ = std::make_unique<CachedResultProvider>(
+      std::move(result_prefs_), configs_);
+  ClassificationResult classification_result =
+      cached_result_provider_->GetCachedResultForClient(kClientKey);
+  EXPECT_THAT(classification_result.status, PredictionStatus::kFailed);
+  EXPECT_TRUE(classification_result.ordered_labels.empty());
+}
+
 }  // namespace segmentation_platform
