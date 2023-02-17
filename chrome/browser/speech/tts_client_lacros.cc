@@ -265,8 +265,15 @@ void TtsClientLacros::SpeakWithLacrosVoice(
 }
 
 void TtsClientLacros::Stop(const std::string& engine_id) {
-  content::TtsController::GetInstance()->GetTtsEngineDelegate()->Stop(
-      browser_context_, engine_id);
+  TtsExtensionEngine::GetInstance()->Stop(browser_context_, engine_id);
+}
+
+void TtsClientLacros::Pause(const std::string& engine_id) {
+  TtsExtensionEngine::GetInstance()->Pause(browser_context_, engine_id);
+}
+
+void TtsClientLacros::Resume(const std::string& engine_id) {
+  TtsExtensionEngine::GetInstance()->Resume(browser_context_, engine_id);
 }
 
 void TtsClientLacros::GetAllVoices(
@@ -399,6 +406,30 @@ void TtsClientLacros::RequestStop(const GURL& source_url) {
     return;
   }
   lacros_service->GetRemote<crosapi::mojom::Tts>()->Stop(source_url);
+}
+
+void TtsClientLacros::RequestPause() {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
+      static_cast<uint32_t>(
+          lacros_service->GetInterfaceVersion(crosapi::mojom::Tts::Uuid_)) <
+          crosapi::mojom::Tts::kPauseMinVersion) {
+    LOG(WARNING) << kErrorUnsupportedVersion;
+    return;
+  }
+  lacros_service->GetRemote<crosapi::mojom::Tts>()->Pause();
+}
+
+void TtsClientLacros::RequestResume() {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
+      static_cast<uint32_t>(
+          lacros_service->GetInterfaceVersion(crosapi::mojom::Tts::Uuid_)) <
+          crosapi::mojom::Tts::kResumeMinVersion) {
+    LOG(WARNING) << kErrorUnsupportedVersion;
+    return;
+  }
+  lacros_service->GetRemote<crosapi::mojom::Tts>()->Resume();
 }
 
 void TtsClientLacros::OnLacrosSpeechEngineTtsEvent(

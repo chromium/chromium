@@ -51,3 +51,13 @@ void CrosapiTtsEngineDelegateAsh::Stop(content::TtsUtterance* utterance) {
   crosapi::CrosapiManager::Get()->crosapi_ash()->tts_ash()->StopRemoteEngine(
       utterance);
 }
+
+void CrosapiTtsEngineDelegateAsh::Pause(content::TtsUtterance* utterance) {
+  crosapi::CrosapiManager::Get()->crosapi_ash()->tts_ash()->PauseRemoteEngine(
+      utterance);
+}
+
+void CrosapiTtsEngineDelegateAsh::Resume(content::TtsUtterance* utterance) {
+  crosapi::CrosapiManager::Get()->crosapi_ash()->tts_ash()->ResumeRemoteEngine(
+      utterance);
+}

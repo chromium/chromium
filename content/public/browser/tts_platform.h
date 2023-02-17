@@ -58,6 +58,12 @@ class CONTENT_EXPORT ExternalPlatformDelegate {
   // Requests external TtsController to stop the current utterance if it matches
   // the given |source_url|.
   virtual void Stop(const GURL& source_url) = 0;
+
+  // Requests external TtsController to pause speech synthesis.
+  virtual void Pause() = 0;
+
+  // Requests external TtsController to resume speech synthesis.
+  virtual void Resume() = 0;
 };
 
 // Abstract class that defines the native platform TTS interface,

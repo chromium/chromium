@@ -61,3 +61,15 @@ void ExternalPlatformDelegateImplLacros::Stop(const GURL& source_url) {
   TtsClientLacros::GetForBrowserContext(browser_context)
       ->RequestStop(source_url);
 }
+
+void ExternalPlatformDelegateImplLacros::Pause() {
+  content::BrowserContext* browser_context =
+      ProfileManager::GetPrimaryUserProfile();
+  TtsClientLacros::GetForBrowserContext(browser_context)->RequestPause();
+}
+
+void ExternalPlatformDelegateImplLacros::Resume() {
+  content::BrowserContext* browser_context =
+      ProfileManager::GetPrimaryUserProfile();
+  TtsClientLacros::GetForBrowserContext(browser_context)->RequestResume();
+}

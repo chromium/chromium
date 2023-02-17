@@ -114,8 +114,8 @@ struct TtsUtterance {
 // Interface for Tts, implemented in ash-chrome. Used by lacros-chrome to
 // communicate with ash TtsController to send the voice data and
 // speech requests to ash.
-// Next version: 3
-// Next method id: 4
+// Next version: 4
+// Next method id: 6
 [Stable, Uuid="8550e8d0-a818-49a3-93c1-d8053a33b2e6"]
 interface Tts {
   // A TtsClient can register itself with Tts, so that Tts can communicate with
@@ -140,11 +140,22 @@ interface Tts {
   // the given |source_url|.
   [MinVersion=2]
   Stop@3(url.mojom.Url source_url);
+
+  // Requests Ash TtsController to pause speeach synthesis.
+  [MinVersion=3]
+  Pause@4();
+
+  // Requests Ash TtsController to resume speeach synthesis.
+  [MinVersion=3]
+  Resume@5();
+
 };
 
 // Interface for tts client. Implemented in lacros-chrome.
 // Each Tts client is associated with a browser context object in Lacros.
 // Used by ash-chrome to send voices to Lacros.
+// Next version: 3
+// Next method id: 5
 [Stable, Uuid="60ce0365-451e-402d-9a1c-e57350f9a202"]
 interface TtsClient {
   // Called when voices changed in ash TtsController .
@@ -163,6 +174,16 @@ interface TtsClient {
   // speaking.
   [MinVersion=1]
   Stop@2(string engine_id);
+
+  // Called from Ash to request the specified Lacros speech engine to pause
+  // speaking.
+  [MinVersion=2]
+  Pause@3(string engine_id);
+
+  // Called from Ash to request the specified Lacros speech engine to resume
+  // speaking.
+  [MinVersion=2]
+  Resume@4(string engine_id);
 };
 
 // This interface receives events from an utterance which is being spoken by

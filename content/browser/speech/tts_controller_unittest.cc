@@ -148,10 +148,6 @@ class MockTtsEngineDelegate : public TtsEngineDelegate {
 
   // Count API calls (TtsEngineDelegate:)
   void Stop(TtsUtterance* utterance) override { ++stop_called_; }
-  void Stop(BrowserContext* browser_context,
-            const std::string& engine_id) override {
-    ++stop_called_;
-  }
   void Pause(TtsUtterance* utterance) override { ++pause_called_; }
   void Resume(TtsUtterance* utterance) override { ++resume_called_; }
 

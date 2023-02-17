@@ -61,6 +61,14 @@ TtsUtteranceImpl* AsUtteranceImpl(TtsUtterance* utterance) {
   return static_cast<TtsUtteranceImpl*>(utterance);
 }
 
+bool IsUtteranceSpokenByRemoteEngine(TtsUtterance* utterance) {
+  if (utterance && !utterance->GetEngineId().empty()) {
+    TtsUtteranceImpl* utterance_impl = AsUtteranceImpl(utterance);
+    return utterance_impl->spoken_by_remote_engine();
+  }
+  return false;
+}
+
 }  // namespace
 
 //
@@ -233,13 +241,8 @@ bool TtsControllerImpl::StopCurrentUtteranceIfMatches(const GURL& source_url) {
 }
 
 void TtsControllerImpl::StopCurrentUtterance() {
-  bool spoken_by_remote_engine = false;
-  if (current_utterance_ && !current_utterance_->GetEngineId().empty()) {
-    TtsUtteranceImpl* utterance_impl =
-        AsUtteranceImpl(current_utterance_.get());
-    spoken_by_remote_engine = utterance_impl->spoken_by_remote_engine();
-  }
-
+  bool spoken_by_remote_engine =
+      IsUtteranceSpokenByRemoteEngine(current_utterance_.get());
   if (engine_delegate_ && current_utterance_ &&
       !current_utterance_->GetEngineId().empty() && !spoken_by_remote_engine) {
     engine_delegate_->Stop(current_utterance_.get());
@@ -261,13 +264,25 @@ void TtsControllerImpl::StopCurrentUtterance() {
 
 void TtsControllerImpl::Pause() {
   base::RecordAction(base::UserMetricsAction("TextToSpeech.Pause"));
+
+  auto* external_delegate = GetTtsPlatform()->GetExternalPlatformDelegate();
+  if (external_delegate) {
+    external_delegate->Pause();
+    return;
+  }
+
   if (paused_)
     return;
 
   paused_ = true;
+  bool spoken_by_remote_engine =
+      IsUtteranceSpokenByRemoteEngine(current_utterance_.get());
   if (engine_delegate_ && current_utterance_ &&
-      !current_utterance_->GetEngineId().empty()) {
+      !current_utterance_->GetEngineId().empty() && !spoken_by_remote_engine) {
     engine_delegate_->Pause(current_utterance_.get());
+  } else if (current_utterance_ && !current_utterance_->GetEngineId().empty() &&
+             spoken_by_remote_engine && remote_engine_delegate_) {
+    remote_engine_delegate_->Pause(current_utterance_.get());
   } else if (current_utterance_) {
     DCHECK(TtsPlatformReady());
     GetTtsPlatform()->ClearError();
@@ -277,13 +292,24 @@ void TtsControllerImpl::Pause() {
 
 void TtsControllerImpl::Resume() {
   base::RecordAction(base::UserMetricsAction("TextToSpeech.Resume"));
+  auto* external_delegate = GetTtsPlatform()->GetExternalPlatformDelegate();
+  if (external_delegate) {
+    external_delegate->Resume();
+    return;
+  }
+
   if (!paused_)
     return;
 
   paused_ = false;
+  bool spoken_by_remote_engine =
+      IsUtteranceSpokenByRemoteEngine(current_utterance_.get());
   if (engine_delegate_ && current_utterance_ &&
-      !current_utterance_->GetEngineId().empty()) {
+      !current_utterance_->GetEngineId().empty() && !spoken_by_remote_engine) {
     engine_delegate_->Resume(current_utterance_.get());
+  } else if (current_utterance_ && !current_utterance_->GetEngineId().empty() &&
+             spoken_by_remote_engine && remote_engine_delegate_) {
+    remote_engine_delegate_->Resume(current_utterance_.get());
   } else if (current_utterance_) {
     DCHECK(TtsPlatformReady());
     GetTtsPlatform()->ClearError();

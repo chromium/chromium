@@ -339,27 +339,33 @@ void TtsExtensionEngine::Stop(content::BrowserContext* browser_context,
 }
 
 void TtsExtensionEngine::Pause(content::TtsUtterance* utterance) {
-  Profile* profile =
-      Profile::FromBrowserContext(utterance->GetBrowserContext());
+  Pause(utterance->GetBrowserContext(), utterance->GetEngineId());
+}
+
+void TtsExtensionEngine::Pause(content::BrowserContext* browser_context,
+                               const std::string& engine_id) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_PAUSE, tts_engine_events::kOnPause,
       base::Value::List(), profile);
   EventRouter* event_router = EventRouter::Get(profile);
-  std::string id = utterance->GetEngineId();
-  event_router->DispatchEventToExtension(id, std::move(event));
-  WarnIfMissingPauseOrResumeListener(profile, event_router, id);
+  event_router->DispatchEventToExtension(engine_id, std::move(event));
+  WarnIfMissingPauseOrResumeListener(profile, event_router, engine_id);
 }
 
 void TtsExtensionEngine::Resume(content::TtsUtterance* utterance) {
-  Profile* profile =
-      Profile::FromBrowserContext(utterance->GetBrowserContext());
+  Resume(utterance->GetBrowserContext(), utterance->GetEngineId());
+}
+
+void TtsExtensionEngine::Resume(content::BrowserContext* browser_context,
+                                const std::string& engine_id) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_RESUME, tts_engine_events::kOnResume,
       base::Value::List(), profile);
   EventRouter* event_router = EventRouter::Get(profile);
-  std::string id = utterance->GetEngineId();
-  event_router->DispatchEventToExtension(id, std::move(event));
-  WarnIfMissingPauseOrResumeListener(profile, event_router, id);
+  event_router->DispatchEventToExtension(engine_id, std::move(event));
+  WarnIfMissingPauseOrResumeListener(profile, event_router, engine_id);
 }
 
 void TtsExtensionEngine::LoadBuiltInTtsEngine(

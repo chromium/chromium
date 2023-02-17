@@ -55,6 +55,14 @@ class TtsAsh : public mojom::Tts,
   // |utterance|.
   void StopRemoteEngine(content::TtsUtterance* utterance);
 
+  // Requests the associated Lacros speech engine to pause speaking the
+  // |utterance|.
+  void PauseRemoteEngine(content::TtsUtterance* utterance);
+
+  // Requests the associated Lacros speech engine to resume speaking the
+  // |utterance|.
+  void ResumeRemoteEngine(content::TtsUtterance* utterance);
+
   void DeletePendingAshUtteranceClient(int utterance_id);
 
   // crosapi::mojom::Tts:
@@ -67,6 +75,8 @@ class TtsAsh : public mojom::Tts,
       mojom::TtsUtterancePtr utterance,
       mojo::PendingRemote<mojom::TtsUtteranceClient> utterance_client) override;
   void Stop(const GURL& source_url) override;
+  void Pause() override;
+  void Resume() override;
 
  private:
   class TtsUtteranceClient;

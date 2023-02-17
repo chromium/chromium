@@ -333,4 +333,36 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
   ASSERT_TRUE(IsUtteranceQueueEmpty());
 }
 
+IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, PauseBeforeSpeakWithLacrosTtsEngine) {
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::Tts::Uuid_) <
+      static_cast<int>(crosapi::mojom::Tts::kPauseMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  // Load Lacros tts engine extension, register the tts engine events, and
+  // call tts.pause, then tts.speak, tts.resume from the testing extension.
+  ASSERT_TRUE(
+      RunExtensionTest("tts_engine/lacros_tts_support/"
+                       "tts_pause_before_speak_lacros_engine",
+                       {}, {.ignore_manifest_warnings = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, PauseDuringSpeakWithLacrosTtsEngine) {
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::Tts::Uuid_) <
+      static_cast<int>(crosapi::mojom::Tts::kPauseMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  // Load Lacros tts engine extension, register the tts engine events, and
+  // call tts.speak, then tts.pause, tts.resume from the testing extension.
+  ASSERT_TRUE(
+      RunExtensionTest("tts_engine/lacros_tts_support/"
+                       "tts_pause_during_speak_lacros_engine",
+                       {}, {.ignore_manifest_warnings = true}))
+      << message_;
+}
+
 }  // namespace extensions

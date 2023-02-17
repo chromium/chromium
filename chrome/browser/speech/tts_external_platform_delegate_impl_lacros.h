@@ -32,6 +32,8 @@ class ExternalPlatformDelegateImplLacros
                   int length,
                   const std::string& error_message) override;
   void Stop(const GURL& source_url) override;
+  void Pause() override;
+  void Resume() override;
 
  private:
   friend class base::NoDestructor<ExternalPlatformDelegateImplLacros>;

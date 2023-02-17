@@ -45,6 +45,8 @@ class TtsClientLacros
       mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
           ash_utterance_client) override;
   void Stop(const std::string& engine_id) override;
+  void Pause(const std::string& engine_id) override;
+  void Resume(const std::string& engine_id) override;
 
   const base::UnguessableToken& browser_context_id() const {
     return browser_context_id_;
@@ -60,6 +62,16 @@ class TtsClientLacros
   // Forwards the Stop request (for stopping the current utterance if it matches
   // the given |source_url|) to Ash.
   void RequestStop(const GURL& source_url);
+
+  // Forwards the Pause request from Lacros Tts client (Tts extension api or
+  // speechSynthesis web api) to Ash, so that the request will be processed by
+  // Ash's TtsController.
+  void RequestPause();
+
+  // Forwards the Resume request from Lacros Tts client (Tts extension api or
+  // speechSynthesis web api) to Ash, so that the request will be processed by
+  // Ash's TtsController.
+  void RequestResume();
 
   // Handle events received from the Lacros speech engine.
   void OnLacrosSpeechEngineTtsEvent(int utterance_id,

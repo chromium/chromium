@@ -45,13 +45,21 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
   void Speak(content::TtsUtterance* utterance,
              const content::VoiceData& voice) override;
   void Stop(content::TtsUtterance* utterance) override;
-  void Stop(content::BrowserContext* browser_context,
-            const std::string& engine_id) override;
   void Pause(content::TtsUtterance* utterance) override;
   void Resume(content::TtsUtterance* utterance) override;
   void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override;
   bool IsBuiltInTtsEngineInitialized(
       content::BrowserContext* browser_context) override;
+
+  // Stops the given speech engine loaded in |browser_context|.
+  void Stop(content::BrowserContext* browser_context,
+            const std::string& engine_id);
+  // Pauses the given speech engine loaded in |browser_context|.
+  void Pause(content::BrowserContext* browser_context,
+             const std::string& engine_id);
+  // Resumes the given speech engine loaded in |browser_context|.
+  void Resume(content::BrowserContext* browser_context,
+              const std::string& engine_id);
 
   void DisableBuiltInTTSEngineForTesting() {
     disable_built_in_tts_engine_for_testing_ = true;

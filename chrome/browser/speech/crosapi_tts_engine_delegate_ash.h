@@ -24,6 +24,8 @@ class CrosapiTtsEngineDelegateAsh : public content::RemoteTtsEngineDelegate {
   void Speak(content::TtsUtterance* utterance,
              const content::VoiceData& voice) override;
   void Stop(content::TtsUtterance* utterance) override;
+  void Pause(content::TtsUtterance* utterance) override;
+  void Resume(content::TtsUtterance* utterance) override;
 };
 
 #endif  // CHROME_BROWSER_SPEECH_CROSAPI_TTS_ENGINE_DELEGATE_ASH_H_

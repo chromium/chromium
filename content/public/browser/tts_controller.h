@@ -65,17 +65,10 @@ class CONTENT_EXPORT TtsEngineDelegate {
   // Stop speaking the given utterance by sending an event to the target
   // associated with this utterance.
   virtual void Stop(TtsUtterance* utterance) = 0;
-
-  // Stop the given speech engine loaded in |browser_context|.
-  virtual void Stop(BrowserContext* browser_context,
-                    const std::string& engine_id) = 0;
-
   // Pause in the middle of speaking this utterance.
   virtual void Pause(TtsUtterance* utterance) = 0;
-
   // Resume speaking this utterance.
   virtual void Resume(TtsUtterance* utterance) = 0;
-
   // Load the built-in TTS engine.
   virtual void LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
 
@@ -100,6 +93,14 @@ class CONTENT_EXPORT RemoteTtsEngineDelegate {
   // Requests the remote TTS engine associated with |utterance| to stop
   // speaking the |utterance|.
   virtual void Stop(TtsUtterance* utterance) = 0;
+
+  // Requests the remote TTS engine associated with |utterance| to pause
+  // speaking the |utterance|.
+  virtual void Pause(TtsUtterance* utterance) = 0;
+
+  // Requests the remote TTS engine associated with |utterance| to resume
+  // speaking the |utterance|.
+  virtual void Resume(TtsUtterance* utterance) = 0;
 };
 
 // Class that wants to be notified when the set of
