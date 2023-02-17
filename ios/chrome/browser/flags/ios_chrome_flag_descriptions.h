@@ -297,6 +297,10 @@ extern const char kEnablePasswordsAccountStorageDescription[];
 extern const char kEnablePinnedTabsName[];
 extern const char kEnablePinnedTabsDescription[];
 
+// Title and description for the flag to enable pinned tabs on iPad.
+extern const char kEnablePinnedTabsIpadName[];
+extern const char kEnablePinnedTabsIpadDescription[];
+
 // Title and description for the flag to enable refining data source reload
 // reporting when having a very short attention log.
 extern const char kEnableRefineDataSourceReloadReportingName[];
@@ -787,10 +791,6 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 // Title and description for the flag to sort the tab by recency in the TabGrid.
 extern const char kTabGridRecencySortName[];
 extern const char kTabGridRecencySortDescription[];
-
-// Title and description for the flag that enable tab strip context menu.
-extern const char kTabStripContextMenuName[];
-extern const char kTabStripContextMenuDescription[];
 
 // Title and description for the flag to determine tab inactivity in the
 // TabGrid.

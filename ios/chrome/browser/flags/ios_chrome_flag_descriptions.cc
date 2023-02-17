@@ -339,6 +339,11 @@ const char kEnablePasswordsAccountStorageDescription[] =
 const char kEnablePinnedTabsName[] = "Enable Pinned Tabs";
 const char kEnablePinnedTabsDescription[] = "Allows users to pin tabs.";
 
+const char kEnablePinnedTabsIpadName[] = "Enable Pinned Tabs on iPad";
+const char kEnablePinnedTabsIpadDescription[] =
+    "Allows users to pin tabs."
+    "#enable-pinned-tabs should also be enabled.";
+
 const char kEnableRefineDataSourceReloadReportingName[] =
     "Enable Refine Data Source Reload Reporting";
 const char kEnableRefineDataSourceReloadReportingDescription[] =
@@ -906,10 +911,6 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
 const char kTabGridRecencySortName[] = "Change TabGrid sorting";
 const char kTabGridRecencySortDescription[] =
     "When enabled, the tabs in the Tab Grid are sorted differently.";
-
-const char kTabStripContextMenuName[] = "Tab Strip Context Menu";
-const char kTabStripContextMenuDescription[] =
-    "Add context menu to tab strip items.";
 
 const char kTabInactivityThresholdName[] = "Change Tab inactivity threshold";
 const char kTabInactivityThresholdDescription[] =

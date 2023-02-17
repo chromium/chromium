@@ -124,7 +124,4 @@ bool IsTabGridSortedByRecency();
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 
-// Flag to enable tab strip context menu.
-BASE_DECLARE_FEATURE(kTabStripContextMenu);
-
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

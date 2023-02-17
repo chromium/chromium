@@ -7,8 +7,9 @@
 
 #import "base/feature_list.h"
 
-// Feature flag that enables Pinned Tabs.
+// Feature flags that enables Pinned Tabs.
 BASE_DECLARE_FEATURE(kEnablePinnedTabs);
+BASE_DECLARE_FEATURE(kEnablePinnedTabsIpad);
 
 // Feature parameter for Pinned Tabs.
 extern const char kEnablePinnedTabsOverflowParam[];

@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
@@ -153,12 +154,6 @@ UIColor* BackgroundColor() {
                : UIColor.clearColor;
   }
   return UIColor.blackColor;
-}
-
-// Convenience method for determining if the TabStripContextMenu feature is
-// enabled.
-bool IsTabStripContextMenuEnabled() {
-  return base::FeatureList::IsEnabled(kTabStripContextMenu);
 }
 
 const CGFloat kSymbolSize = 18;
@@ -523,7 +518,7 @@ const CGFloat kSymbolSize = 18;
     [_view addSubview:_tabStripView];
     _view.tabStripView = _tabStripView;
 
-    if (IsTabStripContextMenuEnabled()) {
+    if (IsPinnedTabsEnabled()) {
       _contextMenuProvider =
           [[TabStripContextMenuHelper alloc] initWithBrowser:_browser
                                  tabStripContextMenuDelegate:self];
@@ -690,7 +685,7 @@ const CGFloat kSymbolSize = 18;
           initWithTarget:self
                   action:@selector(handleLongPress:)];
 
-  if (IsTabStripContextMenuEnabled()) {
+  if (IsPinnedTabsEnabled()) {
     // Adds an empty menu so the event triggers the first time.
     view.menu = [UIMenu menuWithChildren:@[]];
     [view removeActionForIdentifier:kMenuActionIdentifier
@@ -740,7 +735,7 @@ const CGFloat kSymbolSize = 18;
 }
 
 - (void)setHighlightsSelectedTab:(BOOL)highlightsSelectedTab {
-  if (IsTabStripContextMenuEnabled()) {
+  if (IsPinnedTabsEnabled()) {
     return;
   }
 
