@@ -31,9 +31,11 @@ class DTSUtilTest : public testing::Test {
 TEST_F(DTSUtilTest, NoInputTest) {
   constexpr uint8_t* data = nullptr;
   EXPECT_EQ(0, media::dts::ParseTotalSampleCount(data, 0, AudioCodec::kDTS));
+  EXPECT_EQ(0, media::dts::ParseTotalSampleCount(data, 0, AudioCodec::kDTSE));
+  EXPECT_EQ(0, media::dts::ParseTotalSampleCount(data, 0, AudioCodec::kDTSXP2));
 }
 
-TEST_F(DTSUtilTest, IncompleteInputTest) {
+TEST_F(DTSUtilTest, IncompleteInputTestDTS) {
   base::FilePath file_path = GetTestDataFilePath("dts.bin");
   base::MemoryMappedFile stream;
   ASSERT_TRUE(stream.Initialize(file_path))
@@ -44,7 +46,18 @@ TEST_F(DTSUtilTest, IncompleteInputTest) {
                                                  AudioCodec::kDTS));
 }
 
-TEST_F(DTSUtilTest, NormalInputTest) {
+TEST_F(DTSUtilTest, IncompleteInputTestDTSXP2) {
+  base::FilePath file_path = GetTestDataFilePath("dtsx.bin");
+  base::MemoryMappedFile stream;
+  ASSERT_TRUE(stream.Initialize(file_path))
+      << "Couldn't open stream file: " << file_path.MaybeAsASCII();
+
+  const uint8_t* data = stream.data();
+  EXPECT_EQ(0, media::dts::ParseTotalSampleCount(data, stream.length() - 1,
+                                                 AudioCodec::kDTSXP2));
+}
+
+TEST_F(DTSUtilTest, NormalInputTestDTS) {
   base::FilePath file_path = GetTestDataFilePath("dts.bin");
   base::MemoryMappedFile stream;
   ASSERT_TRUE(stream.Initialize(file_path))
@@ -63,14 +76,16 @@ TEST_F(DTSUtilTest, GetDTSSamplesPerFrameTest) {
 TEST_F(DTSUtilTest, WrapDTSWithIEC61937IncorrectInputTest) {
   constexpr uint8_t short_input[2048 - 7] = {0};
   constexpr uint8_t long_input[2048 + 3] = {0};
-  base::span<const uint8_t> input_data;
+  std::vector<const uint8_t> input_data;
   std::vector<uint8_t> output_data(2048);
 
-  input_data = base::span<const uint8_t>(short_input, 2048 - 7);
+  input_data = std::vector<const uint8_t>(short_input,
+                                          short_input + sizeof(short_input));
   EXPECT_EQ(0, media::dts::WrapDTSWithIEC61937(input_data, output_data,
                                                AudioCodec::kDTS));
 
-  input_data = base::span<const uint8_t>(long_input, 2048 + 3);
+  input_data =
+      std::vector<const uint8_t>(long_input, long_input + sizeof(long_input));
   EXPECT_EQ(0, media::dts::WrapDTSWithIEC61937(input_data, output_data,
                                                AudioCodec::kDTS));
 }
@@ -82,11 +97,10 @@ TEST_F(DTSUtilTest, WrapDTSWithIEC61937NormalInputTest) {
   constexpr uint8_t swapped_payload[4] = {2, 1, 4, 3};
   uint8_t input[512] = {0};
   uint8_t output[2048] = {0};
-  base::span<const uint8_t> input_data;
   std::vector<uint8_t> output_data(2048);
 
   memcpy(input, payload, 4);
-  input_data = base::span<const uint8_t>(input, 512);
+  std::vector<uint8_t> input_data(input, input + sizeof(input));
   EXPECT_EQ(2048, media::dts::WrapDTSWithIEC61937(input_data, output_data,
                                                   AudioCodec::kDTS));
   memcpy(output, header, 8);

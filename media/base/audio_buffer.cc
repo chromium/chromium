@@ -123,7 +123,7 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
       // Aligned buffer ensures compatibility with AudioBus
       // and audio sink which have been optimized for SSE
       data_.reset(static_cast<uint8_t*>(
-          base::AlignedAlloc(data_size, kChannelAlignment)));
+          base::AlignedAlloc(data_size_, kChannelAlignment)));
     }
     channel_data_.reserve(1);
     channel_data_.push_back(data_.get());

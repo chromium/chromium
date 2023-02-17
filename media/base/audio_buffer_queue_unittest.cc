@@ -176,6 +176,30 @@ TEST(AudioBufferQueueTest, ReadBitstream) {
   VerifyBitstreamAudioBus(bus.get(), 10, 9, 1);
 }
 
+TEST(AudioBufferQueueTest, ReadBitstreamIECDts) {
+  const ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  const int channels = ChannelLayoutToChannelCount(channel_layout);
+  AudioBufferQueue buffer;
+
+  // Add 4 frames of data.
+  buffer.Append(MakeBitstreamAudioBuffer(kSampleFormatIECDts, channel_layout,
+                                         channels, kSampleRate, 1, 1, 4, 2,
+                                         kNoTimestamp));
+  buffer.Append(MakeBitstreamAudioBuffer(kSampleFormatIECDts, channel_layout,
+                                         channels, kSampleRate, 9, 1, 20, 10,
+                                         kNoTimestamp));
+  EXPECT_EQ(24, buffer.frames());
+
+  // The first audio buffer contains 4 frames.
+  std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, buffer.frames());
+  EXPECT_EQ(4, buffer.ReadFrames(buffer.frames(), 0, bus.get()));
+  VerifyBitstreamAudioBus(bus.get(), 2, 1, 1);
+
+  // The second audio buffer contains 20 frames.
+  EXPECT_EQ(20, buffer.ReadFrames(buffer.frames(), 0, bus.get()));
+  VerifyBitstreamAudioBus(bus.get(), 10, 9, 1);
+}
+
 TEST(AudioBufferQueueTest, ReadF32) {
   const ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
   const int channels = ChannelLayoutToChannelCount(channel_layout);

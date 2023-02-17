@@ -813,6 +813,15 @@ function testMp4Variants(has_proprietary_codecs, platform_guarantees_hevc) {
       'video/mp4; codecs="avc1.640028,ec-3"',
       'video/mp4; codecs="avc1.640028,mp4a.a6"',
       'video/mp4; codecs="avc1.640028,mp4a.A6"',
+      'video/mp4; codecs="dtsc"',
+      'video/mp4; codecs="mp4a.a9"',
+      'video/mp4; codecs="mp4a.A9"',
+      'video/mp4; codecs="dtse"',
+      'video/mp4; codecs="mp4a.ac"',
+      'video/mp4; codecs="mp4a.AC"',
+      'video/mp4; codecs="dtsx"',
+      'video/mp4; codecs="mp4a.b2"',
+      'video/mp4; codecs="mp4a.B2"',
     ],
   };
 

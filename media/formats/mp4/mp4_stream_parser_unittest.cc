@@ -670,6 +670,75 @@ TEST_F(MP4StreamParserTest, DemuxingEAC3) {
                                 buffer->data(), buffer->data_size(), 512));
 }
 
+TEST_F(MP4StreamParserTest, DemuxingDTS) {
+  std::set<int> audio_object_types;
+  audio_object_types.insert(kDTS);
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  bool expect_success = true;
+#else
+  bool expect_success = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported audio format 0x64747363 in stsd box"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(3222000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_video_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear_dtsc.mp4");
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+}
+
+TEST_F(MP4StreamParserTest, DemuxingDTSE) {
+  std::set<int> audio_object_types;
+  audio_object_types.insert(kDTSE);
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  bool expect_success = true;
+#else
+  bool expect_success = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported audio format 0x64747365 in stsd box"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(3243000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_video_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear_dtse.mp4");
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+}
+
+TEST_F(MP4StreamParserTest, DemuxingDTSX) {
+  std::set<int> audio_object_types;
+  audio_object_types.insert(kDTSX);
+  parser_.reset(new MP4StreamParser(audio_object_types, false, false));
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  bool expect_success = true;
+#else
+  bool expect_success = false;
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported audio format 0x64747378 in stsd box"));
+#endif
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Microseconds(3222000);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_video_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear_dtsx.mp4");
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
+}
+
 TEST_F(MP4StreamParserTest, Flac) {
   parser_.reset(new MP4StreamParser(std::set<int>(), false, true));
 
