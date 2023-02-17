@@ -522,8 +522,6 @@ IN_PROC_BROWSER_TEST_F(
                                             /*cors_enabled=*/true),
             "");
 
-  content::FetchHistogramsFromChildProcesses();
-
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
                   0 /*RequestOutcome::kGrantedByFirstPartySet*/),
@@ -561,7 +559,6 @@ IN_PROC_BROWSER_TEST_F(
                                             /*cors_enabled=*/true),
             "");
 
-  content::FetchHistogramsFromChildProcesses();
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
                   5 /*RequestOutcome::kDeniedByPrerequisites*/),
@@ -638,7 +635,6 @@ IN_PROC_BROWSER_TEST_F(
                                             /*cors_enabled=*/true),
             "");
 
-  content::FetchHistogramsFromChildProcesses();
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
                   3 /*RequestOutcome::kDeniedByFirstPartySet*/),
@@ -792,7 +788,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
 
-  content::FetchHistogramsFromChildProcesses();
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
                   5 /*RequestOutcome::kDeniedByPrerequisites*/),
