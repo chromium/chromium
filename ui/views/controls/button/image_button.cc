@@ -141,6 +141,14 @@ views::PaintInfo::ScaleType ImageButton::GetPaintScaleType() const {
   return views::PaintInfo::ScaleType::kUniformScaling;
 }
 
+void ImageButton::OnThemeChanged() {
+  Button::OnThemeChanged();
+
+  // If we have any `ImageModel`s, they may need repaint upon a `ColorProvider`
+  // change.
+  SchedulePaint();
+}
+
 void ImageButton::PaintButtonContents(gfx::Canvas* canvas) {
   // TODO(estade|tdanderson|bruthig): The ink drop layer should be positioned
   // behind the button's image which means the image needs to be painted to its

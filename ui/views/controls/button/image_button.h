@@ -73,6 +73,7 @@ class VIEWS_EXPORT ImageButton : public Button {
   // Overridden from View:
   gfx::Size CalculatePreferredSize() const override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
+  void OnThemeChanged() override;
 
  protected:
   // Overridden from Button:
