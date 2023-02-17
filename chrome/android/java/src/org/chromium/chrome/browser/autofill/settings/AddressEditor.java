@@ -25,11 +25,13 @@ import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.UserSelectableType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -174,8 +176,14 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
                                 .replace("$1", email);
             }
         } else {
-            deleteConfirmationText =
-                    mContext.getString(R.string.autofill_delete_sync_address_source_notice);
+            if (SyncService.get().isSyncFeatureEnabled()
+                    && SyncService.get().getSelectedTypes().contains(UserSelectableType.AUTOFILL)) {
+                deleteConfirmationText =
+                        mContext.getString(R.string.autofill_delete_sync_address_source_notice);
+            } else {
+                deleteConfirmationText =
+                        mContext.getString(R.string.autofill_delete_local_address_source_notice);
+            }
         }
 
         mEditor = new EditorModel(editTitle, mCustomDoneButtonText, footerMessageText,

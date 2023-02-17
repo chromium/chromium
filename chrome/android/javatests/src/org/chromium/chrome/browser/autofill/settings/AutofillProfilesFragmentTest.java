@@ -44,15 +44,20 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -77,6 +82,8 @@ public class AutofillProfilesFragmentTest {
     private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
     private IdentityManager mIdentityManagerMock;
+    @Mock
+    private SyncService mSyncService;
 
     private final AutofillTestHelper mHelper = new AutofillTestHelper();
 
@@ -185,7 +192,22 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testDeleteProfile() throws Exception {
+    public void testDeleteLocalProfile() throws Exception {
+        Context context = sSettingsActivityTestRule.getFragment().getContext();
+        setUpMockSyncService(false, new HashSet());
+        testDeleteProfile(context.getString(R.string.autofill_delete_local_address_source_notice));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testDeleteSyncableProfile() throws Exception {
+        Context context = sSettingsActivityTestRule.getFragment().getContext();
+        setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
+        testDeleteProfile(context.getString(R.string.autofill_delete_sync_address_source_notice));
+    }
+
+    public void testDeleteProfile(String expectedConfirmationMessage) throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
         Context context = autofillProfileFragment.getContext();
 
@@ -207,9 +229,7 @@ public class AutofillProfilesFragmentTest {
         AlertDialog confirmationDialog = editorDialog.getConfirmationDialogForTest();
         Assert.assertNotNull(confirmationDialog);
         TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
-        String expectedMessage =
-                context.getString(R.string.autofill_delete_sync_address_source_notice);
-        Assert.assertEquals(expectedMessage, messageView.getText());
+        Assert.assertEquals(expectedConfirmationMessage, messageView.getText());
 
         // Get back to the profile list.
         rule.clickInConfirmationDialogAndWait(DialogInterface.BUTTON_NEGATIVE);
@@ -530,5 +550,11 @@ public class AutofillProfilesFragmentTest {
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
                 .thenReturn(coreAccountInfo);
+    }
+
+    private void setUpMockSyncService(boolean enabled, Set<Integer> selectedTypes) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncService));
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(enabled);
+        when(mSyncService.getSelectedTypes()).thenReturn(selectedTypes);
     }
 }

@@ -208,7 +208,7 @@
   <message name="IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before the address deletion (with syncing enabled)." formatter_data="android_java">
     This address will be deleted from this and your other signed-in devices
   </message>
-  <message name="IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before a local (syncing is disabled) address deletion.">
+  <message name="IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before a local (syncing is disabled) address deletion." formatter_data="android_java">
     This address will be deleted from this device
   </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
