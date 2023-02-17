@@ -54,6 +54,7 @@
         ],
       },
       'android-nougat-x86-rel': {
+        'ci_only': True,
         'swarming': {
           'shards': 9,
         },
