@@ -2199,10 +2199,11 @@
       },
       'linux-lacros-code-coverage': {
         'additional_compile_targets': [
-          'chrome',
+          'chrome'
         ],
         'mixins': [
           'isolate_profile_data',
+          'linux-bionic'
         ],
         'test_suites': {
           'gtest_tests': 'linux_lacros_gtests',
