@@ -23,6 +23,7 @@ public class PolicyCacheUpdater {
     static List<Pair<String, PolicyCache.Type>> sPolicies =
             Arrays.asList(Pair.create("BrowserSignin", PolicyCache.Type.Integer),
                     Pair.create("CloudManagementEnrollmentToken", PolicyCache.Type.String),
+                    Pair.create("ChromeVariations", PolicyCache.Type.Integer),
                     Pair.create("URLAllowlist", PolicyCache.Type.List),
                     Pair.create("URLBlocklist", PolicyCache.Type.List),
                     Pair.create("FirstPartySetsEnabled", PolicyCache.Type.Boolean),
