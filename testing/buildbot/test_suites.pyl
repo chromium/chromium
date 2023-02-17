@@ -3902,6 +3902,11 @@
       'headless_unittests': {},
     },
 
+    'ios_blink_tests': {
+      'blink_unittests': {},
+      'content_unittests': {},
+    },
+
     'ios_clang_tests': {
       'absl_hardening_tests': {},
       'base_unittests': {},
@@ -6930,6 +6935,15 @@
           'SIM_IPAD_AIR_2_15_5',
         ]
       }
+    },
+
+    'ios_blink_dbg_tests': {
+      'ios_blink_tests': {
+        'variants': [
+          'SIM_IPAD_PRO_3RD_GEN_16_2',
+          'SIM_IPHONE_X_16_2',
+        ]
+      },
     },
 
     'ios_clang_tot_device_tests': {

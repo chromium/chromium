@@ -3207,6 +3207,21 @@
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
+      'ios-blink-dbg-fyi': {
+        'additional_compile_targets': [
+          'all'
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_14_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_blink_dbg_tests'
+        },
+      },
       'ios-fieldtrial-rel': {
         'mixins': [
           'finch-chromium-swarming-pool',

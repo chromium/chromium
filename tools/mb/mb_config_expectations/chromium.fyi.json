@@ -511,6 +511,15 @@
       "use_remoteexec": true
     }
   },
+  "ios-blink-dbg-fyi": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "is_debug": true,
+      "target_environment": "simulator",
+      "target_os": "ios",
+      "use_blink": true
+    }
+  },
   "ios-fieldtrial-rel": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,

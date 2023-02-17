@@ -347,6 +347,13 @@ ios_builder(
 )
 
 ios_builder(
+    name = "ios-blink-dbg-fyi",
+    mirrors = [
+        "ci/ios-blink-dbg-fyi",
+    ],
+)
+
+ios_builder(
     name = "ios-catalyst",
     mirrors = [
         "ci/ios-catalyst",

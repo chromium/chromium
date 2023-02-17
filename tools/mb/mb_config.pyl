@@ -406,6 +406,7 @@
       # TODO(crbug.com/1235218): remove after the migration.
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
+      'ios-blink-dbg-fyi': 'ios_simulator_blink_xctest',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64_reclient',
@@ -2884,6 +2885,10 @@
         'ios', 'ios_device', 'ios_cpu_arm64', 'ios_disable_code_signing', 'release_bot_reclient', 'xctest',
     ],
 
+    'ios_simulator_blink_xctest': [
+      'ios', 'ios_simulator', 'debug', 'use_blink', 'xctest'
+    ],
+
     'ios_simulator_code_coverage_partial_instrumentation_xctest': [
       'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
     ],
@@ -4693,6 +4698,10 @@
 
     'use_android_rust_toolchain': {
       'gn_args': 'use_chromium_rust_toolchain=false',
+    },
+
+    'use_blink': {
+      'gn_args': 'use_blink=true'
     },
 
     'use_clang_coverage': {
