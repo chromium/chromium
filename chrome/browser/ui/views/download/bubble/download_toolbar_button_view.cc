@@ -259,7 +259,13 @@ void DownloadToolbarButtonView::Disable() {
   SetEnabled(false);
 }
 
-void DownloadToolbarButtonView::UpdateDownloadIcon() {
+void DownloadToolbarButtonView::UpdateDownloadIcon(bool show_animation) {
+  if (show_animation && gfx::Animation::ShouldRenderRichAnimation()) {
+    has_pending_download_started_animation_ = true;
+    if (!needs_layout()) {
+      ShowPendingDownloadStartedAnimation();
+    }
+  }
   UpdateIcon();
 }
 
@@ -271,16 +277,10 @@ bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() {
 // This function shows the partial view. If the main view is already showing,
 // we do not show the partial view. If the partial view is already showing,
 // there is nothing to do here, the controller should update the partial view.
-void DownloadToolbarButtonView::ShowDetails(bool show_animation) {
+void DownloadToolbarButtonView::ShowDetails() {
   if (!bubble_delegate_) {
     is_primary_partial_view_ = true;
     CreateBubbleDialogDelegate(GetPrimaryView());
-  }
-  if (show_animation && gfx::Animation::ShouldRenderRichAnimation()) {
-    has_pending_download_started_animation_ = true;
-    if (!needs_layout()) {
-      ShowPendingDownloadStartedAnimation();
-    }
   }
 }
 

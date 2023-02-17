@@ -52,8 +52,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   bool IsShowing() override;
   void Enable() override;
   void Disable() override;
-  void UpdateDownloadIcon() override;
-  void ShowDetails(bool show_animation) override;
+  void UpdateDownloadIcon(bool show_animation) override;
+  void ShowDetails() override;
   void HideDetails() override;
   bool IsShowingDetails() override;
   bool IsFullscreenWithParentViewHidden() override;

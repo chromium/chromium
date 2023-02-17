@@ -143,7 +143,8 @@ void DownloadDisplayController::OnNewItem(bool show_details,
           /*force_update=*/true);
     }
   } else {
-    display_->ShowDetails(show_animation);
+    display_->ShowDetails();
+    display_->UpdateDownloadIcon(show_animation);
   }
 }
 
@@ -203,7 +204,7 @@ void DownloadDisplayController::HandleButtonPressed() {
   if (icon_info_.icon_state == DownloadIconState::kComplete) {
     icon_info_.is_active = false;
   }
-  display_->UpdateDownloadIcon();
+  display_->UpdateDownloadIcon(/*show_animation=*/false);
 }
 
 void DownloadDisplayController::ShowToolbarButton() {
@@ -243,7 +244,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
   int in_progress_count = InProgressDownloadCount(all_models);
   if (in_progress_count > 0 &&
       download::ShouldShowDownloadBubble(browser_->profile())) {
-    display_->ShowDetails(/*show_animation=*/false);
+    display_->ShowDetails();
   }
 }
 
@@ -294,12 +295,12 @@ void DownloadDisplayController::UpdateToolbarButtonState(
                                 last_complete_time)) {
     ShowToolbarButton();
   }
-  display_->UpdateDownloadIcon();
+  display_->UpdateDownloadIcon(/*show_animation=*/false);
 }
 
 void DownloadDisplayController::UpdateDownloadIconToInactive() {
   icon_info_.is_active = false;
-  display_->UpdateDownloadIcon();
+  display_->UpdateDownloadIcon(/*show_animation=*/false);
 }
 
 void DownloadDisplayController::ScheduleToolbarDisappearance(
