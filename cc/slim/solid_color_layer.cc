@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "cc/layers/solid_color_layer.h"
-#include "cc/slim/features.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 
@@ -16,9 +15,7 @@ namespace cc::slim {
 // static
 scoped_refptr<SolidColorLayer> SolidColorLayer::Create() {
   scoped_refptr<cc::SolidColorLayer> cc_layer;
-  if (!features::IsSlimCompositorEnabled()) {
-    cc_layer = cc::SolidColorLayer::Create();
-  }
+  cc_layer = cc::SolidColorLayer::Create();
   return base::AdoptRef(new SolidColorLayer(std::move(cc_layer)));
 }
 
@@ -32,24 +29,7 @@ cc::SolidColorLayer* SolidColorLayer::cc_layer() const {
 }
 
 void SolidColorLayer::SetBackgroundColor(SkColor4f color) {
-  if (cc_layer()) {
-    cc_layer()->SetBackgroundColor(color);
-    return;
-  }
-  SetContentsOpaque(color.isOpaque());
-  Layer::SetBackgroundColor(color);
-}
-
-void SolidColorLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
-                                  const gfx::Transform& transform,
-                                  const gfx::Rect* clip) {
-  viz::SharedQuadState* quad_state =
-      CreateAndAppendSharedQuadState(render_pass, transform, clip);
-  viz::SolidColorDrawQuad* quad =
-      render_pass.CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  quad->SetNew(quad_state, quad_state->quad_layer_rect,
-               quad_state->visible_quad_layer_rect, background_color(),
-               /*anti_aliasing_off=*/true);
+  cc_layer()->SetBackgroundColor(color);
 }
 
 }  // namespace cc::slim

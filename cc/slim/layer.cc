@@ -11,6 +11,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/filter_operation.h"
@@ -19,6 +20,7 @@
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 
 namespace cc::slim {
 
@@ -56,7 +58,7 @@ scoped_refptr<Layer> Layer::Create() {
 
 Layer::Layer(scoped_refptr<cc::Layer> cc_layer)
     : cc_layer_(std::move(cc_layer)),
-      id_(g_next_id.GetNext() + 1),
+      id_(g_next_id.GetNext()),
       is_drawable_(false),
       contents_opaque_(false),
       draws_content_(false),
@@ -373,23 +375,6 @@ bool Layer::HasDrawableContent() const {
   return is_drawable_;
 }
 
-gfx::Transform Layer::ComputeTransformToParent() {
-  // Layer transform is:
-  // position x transform_origin x transform x -transform_origin
-  gfx::Transform transform =
-      gfx::Transform::MakeTranslation(position_.x(), position_.y());
-  transform.Translate3d(transform_origin_.x(), transform_origin_.y(),
-                        transform_origin_.z());
-  transform.PreConcat(transform_);
-  transform.Translate3d(-transform_origin_.x(), -transform_origin_.y(),
-                        -transform_origin_.z());
-  return transform;
-}
-
-void Layer::AppendQuads(viz::CompositorRenderPass& render_pass,
-                        const gfx::Transform& transform,
-                        const gfx::Rect* clip) {}
-
 void Layer::NotifyTreeChanged() {
   if (cc_layer()) {
     return;
@@ -404,25 +389,6 @@ void Layer::NotifyPropertyChanged() {
   if (layer_tree_) {
     static_cast<LayerTreeImpl*>(layer_tree_)->NotifyPropertyChanged();
   }
-}
-
-viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
-    viz::CompositorRenderPass& render_pass,
-    const gfx::Transform& transform,
-    const gfx::Rect* clip) {
-  viz::SharedQuadState* quad_state =
-      render_pass.CreateAndAppendSharedQuadState();
-  const gfx::Rect rect{bounds()};
-  absl::optional<gfx::Rect> clip_opt;
-  if (clip) {
-    clip_opt = *clip;
-  }
-  // TODO(crbug.com/1408128): Set visible_layer_rect properly.
-  quad_state->SetAll(transform, /*layer_rect=*/rect,
-                     /*visible_layer_rect=*/rect, gfx::MaskFilterInfo(),
-                     std::move(clip_opt), contents_opaque(), opacity(),
-                     SkBlendMode::kSrcOver, 0);
-  return quad_state;
 }
 
 }  // namespace cc::slim
