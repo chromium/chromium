@@ -37,8 +37,9 @@ def main():
                       help="Expected list of standard library libraries")
   parser.add_argument("--extra-libs",
                       help="List of extra non-libstd sysroot libraries")
-  parser.add_argument("--expected-rustc-version",
-                      help="The string we expect to be reported by 'rustc -V'")
+  parser.add_argument("--rustc-revision",
+                      help="Not used, just passed from GN to add a dependency"
+                      " on the rustc version.")
   args = parser.parse_args()
 
   # Expected rlibs by concise name (the crate name, plus a disambiguating suffix
@@ -61,19 +62,8 @@ def main():
     for lib in args.extra_libs.split(','):
       extra_libs.add(lib)
 
-  # First, ask rustc to confirm it's the version expected.
-  rustc = os.path.join(args.rust_bin_dir, "rustc")
-  if args.expected_rustc_version:
-    proc = subprocess.run([rustc, "-V"], capture_output=True, text=True)
-    proc.check_returncode()
-    rustc_version = proc.stdout.rstrip()
-    if rustc_version != args.expected_rustc_version:
-      raise Exception("gn arguments state that the rustc_version is %s "
-                      "but it was actually %s. Please adjust your "
-                      "gn arguments to match." %
-                      (args.expected_rustc_version, rustc_version))
-
   # Ask rustc where to find the stdlib for this target.
+  rustc = os.path.join(args.rust_bin_dir, "rustc")
   rustc_args = [rustc, "--print", "target-libdir"]
   if args.target:
     rustc_args.extend(["--target", args.target])

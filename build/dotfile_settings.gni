@@ -23,6 +23,7 @@ build_dotfile_settings = {
     "//build/config/mac/mac_sdk.gni",
     "//build/config/mac/rules.gni",
     "//build/config/posix/BUILD.gn",
+    "//build/config/rust.gni",
     "//build/config/sysroot.gni",
     "//build/config/win/BUILD.gn",
     "//build/config/win/visual_studio_version.gni",

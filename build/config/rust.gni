@@ -94,6 +94,22 @@ toolchain_has_rust =
      (!use_chromium_rust_toolchain && android_toolchain_supports_platform) ||
      (rust_sysroot_absolute != "" && custom_toolchain_supports_platform))
 
+# The rustc_revision is used to introduce a dependency on the toolchain version
+# (so e.g. rust targets are rebuilt, and the standard library is re-copied when
+# the toolchain changes). It is left empty for custom toolchains.
+rustc_revision = ""
+if (toolchain_has_rust && rust_sysroot_absolute == "") {
+  if (use_chromium_rust_toolchain) {
+    update_rust_args = [ "--print-package-version" ]
+    rustc_revision = exec_script("//tools/rust/update_rust.py",
+                                 update_rust_args,
+                                 "trim string")
+  } else {
+    # Android toolchain version.
+    rustc_revision = "rustc 1.64.0-dev (Android Rust Toolchain version 9099361)"
+  }
+}
+
 # TODO(crbug.com/1278030): To build unit tests for Android we need to build
 # them as a dylib and put them into an APK. We should reuse all the same logic
 # for gtests from the `//testing/test:test` template.
