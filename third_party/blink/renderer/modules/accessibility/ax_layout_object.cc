@@ -748,18 +748,32 @@ static AXObject* GetDeepestAXChildInLayoutTree(AXObject* start_object,
                : result->DeepestLastChildIncludingIgnored();
 }
 
-// Note: |NextOnLineInternalNG()| returns null when fragment for |layout_object|
-// is culled as legacy layout version since |LayoutInline::LastLineBox()|
-// returns null when it is culled.
-// See also |PreviousOnLineInternalNG()| which is identical except for using
-// "next" and |back()| instead of "previous" and |front()|.
-static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
-  DCHECK(!ax_object.IsDetached());
-  const LayoutObject* layout_object = ax_object.GetLayoutObject();
+AXObject* AXLayoutObject::NextOnLine() const {
+  // If this is the last object on the line, nullptr is returned. Otherwise, all
+  // AXLayoutObjects, regardless of role and tree depth, are connected to the
+  // next inline text box on the same line. If there is no inline text box, they
+  // are connected to the next leaf AXObject.
+  DCHECK(!IsDetached());
+
+  const LayoutObject* layout_object = GetLayoutObject();
   DCHECK(layout_object);
-  DCHECK(ShouldUseLayoutNG(*layout_object)) << layout_object;
-  if (layout_object->IsBoxListMarkerIncludingNG() ||
-      !layout_object->IsInLayoutNGInlineFormattingContext()) {
+
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
+    return nullptr;
+  }
+
+  if (layout_object->IsBoxListMarkerIncludingNG()) {
+    // A list marker should be followed by a list item on the same line.
+    // Note that pseudo content is always included in the tree, so
+    // NextSiblingIncludingIgnored() will succeed.
+    return GetDeepestAXChildInLayoutTree(NextSiblingIncludingIgnored(), true);
+  }
+
+  if (!ShouldUseLayoutNG(*layout_object)) {
+    return nullptr;
+  }
+
+  if (!layout_object->IsInLayoutNGInlineFormattingContext()) {
     return nullptr;
   }
 
@@ -785,8 +799,7 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
     if (cursor) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
       DCHECK(runner_layout_object);
-      AXObject* result =
-          ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
+      AXObject* result = AXObjectCache().GetOrCreate(runner_layout_object);
       result = GetDeepestAXChildInLayoutTree(result, true);
       if (result)
         return result;
@@ -798,19 +811,14 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
   // line as its first line.
   if (layout_object->NextSibling())
     return nullptr;  // Not at end of parent layout object.
-  if (!ax_object.ParentObject()) {
-    NOTREACHED();
-    return nullptr;
-  }
-
   // Fallback: Use AX parent's next on line.
-  AXObject* ax_parent = ax_object.ParentObject();
+  AXObject* ax_parent = ParentObject();
+  DCHECK(ax_parent);
   AXObject* ax_result = ax_parent->NextOnLine();
   if (!ax_result)
     return nullptr;
 
-  if (!ax_object.AXObjectCache().IsAriaOwned(&ax_object) &&
-      ax_result->ParentObject() == &ax_object) {
+  if (!AXObjectCache().IsAriaOwned(this) && ax_result->ParentObject() == this) {
     // NextOnLine() must not point to a child of the current object.
     // Because inline objects try to return a result from their
     // parents, using a descendant can cause a previous position to be
@@ -822,96 +830,31 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
   return ax_result;
 }
 
-AXObject* AXLayoutObject::NextOnLine() const {
-  // If this is the last object on the line, nullptr is returned. Otherwise, all
-  // AXLayoutObjects, regardless of role and tree depth, are connected to the
-  // next inline text box on the same line. If there is no inline text box, they
-  // are connected to the next leaf AXObject.
-  if (IsDetached()) {
-    NOTREACHED();
-    return nullptr;
-  }
+AXObject* AXLayoutObject::PreviousOnLine() const {
+  // If this is the first object on the line, nullptr is returned. Otherwise,
+  // all AXLayoutObjects, regardless of role and tree depth, are connected to
+  // the previous inline text box on the same line. If there is no inline text
+  // box, they are connected to the previous leaf AXObject.
+  DCHECK(!IsDetached());
 
-  DCHECK(GetLayoutObject());
-
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*GetLayoutObject())) {
-    return nullptr;
-  }
-
-  if (GetLayoutObject()->IsBoxListMarkerIncludingNG()) {
-    // A list marker should be followed by a list item on the same line.
-    // Note that pseudo content is always included in the tree, so
-    // NextSiblingIncludingIgnored() will succeed.
-    return GetDeepestAXChildInLayoutTree(NextSiblingIncludingIgnored(), true);
-  }
-
-  if (ShouldUseLayoutNG(*GetLayoutObject())) {
-    return NextOnLineInternalNG(*this);
-  }
-
-  InlineBox* inline_box = nullptr;
-  if (GetLayoutObject()->IsBox()) {
-    inline_box = To<LayoutBox>(GetLayoutObject())->InlineBoxWrapper();
-  } else if (GetLayoutObject()->IsLayoutInline()) {
-    // For performance and memory consumption, LayoutInline may ignore some
-    // inline-boxes during line layout because they don't actually impact
-    // layout. This is known as "culled inline". We have to recursively look
-    // to the LayoutInline's children via "LastLineBoxIncludingCulling".
-    inline_box =
-        To<LayoutInline>(GetLayoutObject())->LastLineBoxIncludingCulling();
-  } else if (GetLayoutObject()->IsText()) {
-    inline_box = To<LayoutText>(GetLayoutObject())->LastTextBox();
-  }
-
-  if (!inline_box)
-    return nullptr;
-
-  for (InlineBox* next = inline_box->NextOnLine(); next;
-       next = next->NextOnLine()) {
-    LayoutObject* layout_object =
-        LineLayoutAPIShim::LayoutObjectFrom(next->GetLineLayoutItem());
-    AXObject* result = AXObjectCache().GetOrCreate(layout_object);
-    result = GetDeepestAXChildInLayoutTree(result, true);
-    if (result)
-      return result;
-  }
-
-  // Our parent object could have been created based on an ignored inline or
-  // inline block spanning multiple lines. We need to ensure that we are
-  // really at the end of our parent before attempting to connect to the
-  // next AXObject that is on the same line as its last line.
-  //
-  // For example, look at the following layout tree:
-  // LayoutBlockFlow
-  // ++LayoutInline
-  // ++++LayoutText "Beginning of line one "
-  // ++++AnonymousLayoutInline
-  // ++++++LayoutText "end of line one"
-  // ++++++LayoutBR
-  // ++++++LayoutText "Beginning of line two "
-  // ++++LayoutText "End of line two"
-  //
-  // If we are on kStaticText "End of line one", and retrieve the parent
-  // AXObject, it will be the anonymous layout inline which actually ends
-  // somewhere in the second line, not the first line. Its "NextOnLine"
-  // AXObject will be kStaticText "End of line two", which is obviously
-  // wrong.
-  if (!GetLayoutObject()->NextSibling())
-    return ParentObject()->NextOnLine();
-
-  return nullptr;
-}
-
-// Note: |PreviousOnLineInlineNG()| returns null when fragment for
-// |layout_object| is culled as legacy layout version since
-// |LayoutInline::FirstLineBox()| returns null when it is culled. See also
-// |NextOnLineNG()| which is identical except for using "previous" and |front()|
-// instead of "next" and |back()|.
-static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
-  DCHECK(!ax_object.IsDetached());
-  const LayoutObject* layout_object = ax_object.GetLayoutObject();
+  const LayoutObject* layout_object = GetLayoutObject();
   DCHECK(layout_object);
-  DCHECK(ShouldUseLayoutNG(*layout_object)) << layout_object;
+  if (!ShouldUseLayoutNG(*layout_object)) {
+    return nullptr;
+  }
+
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
+    return nullptr;
+  }
+
+  AXObject* previous_sibling = AccessibilityIsIncludedInTree()
+                                   ? PreviousSiblingIncludingIgnored()
+                                   : nullptr;
+  if (previous_sibling && previous_sibling->GetLayoutObject() &&
+      previous_sibling->GetLayoutObject()->IsLayoutNGOutsideListMarker()) {
+    // A list item should be preceded by a list marker on the same line.
+    return GetDeepestAXChildInLayoutTree(previous_sibling, false);
+  }
 
   if (layout_object->IsBoxListMarkerIncludingNG() ||
       !layout_object->IsInLayoutNGInlineFormattingContext()) {
@@ -940,8 +883,7 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
     if (cursor) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
       DCHECK(runner_layout_object);
-      AXObject* result =
-          ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
+      AXObject* result = AXObjectCache().GetOrCreate(runner_layout_object);
       result = GetDeepestAXChildInLayoutTree(result, false);
       if (result)
         return result;
@@ -954,19 +896,14 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
   if (layout_object->PreviousSibling())
     return nullptr;  // Not at start of parent layout object.
 
-  if (!ax_object.ParentObject()) {
-    NOTREACHED();
-    return nullptr;
-  }
-
   // Fallback: Use AX parent's previous on line.
-  AXObject* ax_parent = ax_object.ParentObject();
+  AXObject* ax_parent = ParentObject();
+  DCHECK(ax_parent);
   AXObject* ax_result = ax_parent->PreviousOnLine();
   if (!ax_result)
     return nullptr;
 
-  if (!ax_object.AXObjectCache().IsAriaOwned(&ax_object) &&
-      ax_result->ParentObject() == &ax_object) {
+  if (!AXObjectCache().IsAriaOwned(this) && ax_result->ParentObject() == this) {
     // PreviousOnLine() must not point to a child of the current object.
     // Because inline objects without try to return a result from their
     // parents, using a descendant can cause a previous position to be
@@ -976,85 +913,6 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
   }
 
   return ax_result;
-}
-
-AXObject* AXLayoutObject::PreviousOnLine() const {
-  // If this is the first object on the line, nullptr is returned. Otherwise,
-  // all AXLayoutObjects, regardless of role and tree depth, are connected to
-  // the previous inline text box on the same line. If there is no inline text
-  // box, they are connected to the previous leaf AXObject.
-  if (IsDetached()) {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  DCHECK(GetLayoutObject());
-
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*GetLayoutObject())) {
-    return nullptr;
-  }
-
-  AXObject* previous_sibling = AccessibilityIsIncludedInTree()
-                                   ? PreviousSiblingIncludingIgnored()
-                                   : nullptr;
-  if (previous_sibling && previous_sibling->GetLayoutObject() &&
-      previous_sibling->GetLayoutObject()->IsLayoutNGOutsideListMarker()) {
-    // A list item should be preceded by a list marker on the same line.
-    return GetDeepestAXChildInLayoutTree(previous_sibling, false);
-  }
-
-  if (ShouldUseLayoutNG(*GetLayoutObject()))
-    return PreviousOnLineInlineNG(*this);
-
-  InlineBox* inline_box = nullptr;
-  if (GetLayoutObject()->IsBox()) {
-    inline_box = To<LayoutBox>(GetLayoutObject())->InlineBoxWrapper();
-  } else if (GetLayoutObject()->IsLayoutInline()) {
-    // For performance and memory consumption, LayoutInline may ignore some
-    // inline-boxes during line layout because they don't actually impact
-    // layout. This is known as "culled inline". We have to recursively look
-    // to the LayoutInline's children via "FirstLineBoxIncludingCulling".
-    inline_box =
-        To<LayoutInline>(GetLayoutObject())->FirstLineBoxIncludingCulling();
-  } else if (GetLayoutObject()->IsText()) {
-    inline_box = To<LayoutText>(GetLayoutObject())->FirstTextBox();
-  }
-
-  if (!inline_box)
-    return nullptr;
-
-  for (InlineBox* prev = inline_box->PrevOnLine(); prev;
-       prev = prev->PrevOnLine()) {
-    LayoutObject* layout_object =
-        LineLayoutAPIShim::LayoutObjectFrom(prev->GetLineLayoutItem());
-    AXObject* result = AXObjectCache().GetOrCreate(layout_object);
-    result = GetDeepestAXChildInLayoutTree(result, false);
-    if (result)
-      return result;
-  }
-
-  // Our parent object could have been created based on an ignored inline or
-  // inline block spanning multiple lines. We need to ensure that we are
-  // at the start of our parent layout object before attempting to connect
-  // to the previous AXObject that is on the same line as its first line.
-  //
-  // For example, fook at the following layout tree:
-  // LayoutBlockFlow
-  // ++LayoutInline
-  // ++++LayoutText "Beginning of line one "
-  // ++++AnonymousLayoutInline
-  // ++++++LayoutText "end of line one"
-  // ++++++LayoutBR
-  // ++++++LayoutText "Line two"
-  //
-  // If we are on kStaticText "Line two", and retrieve the parent AXObject,
-  // it will be the anonymous layout inline which actually started somewhere
-  // in the first line, not the second line. Its "PreviousOnLine" AXObject
-  // will be kStaticText "Start of line one", which is obviously wrong.
-  if (!GetLayoutObject()->PreviousSibling())
-    return ParentObject()->PreviousOnLine();
-
-  return nullptr;
 }
 
 //

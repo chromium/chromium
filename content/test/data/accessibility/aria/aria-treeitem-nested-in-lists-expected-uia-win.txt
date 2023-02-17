@@ -1,0 +1,31 @@
+Document
+++Tree Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++TreeItem Name='treeitem 2 of 5, level 1' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++Text Name='treeitem 2 of 5, level 1' IsControlElement=false
+++++TreeItem Name='treeitem 3 of 5, level 1' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++Text Name='treeitem 3 of 5, level 1' IsControlElement=false
+++++TreeItem Name='treeitem 1 of 2, level 2' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++Text Name='treeitem 1 of 2, level 2' IsControlElement=false
+++++TreeItem Name='treeitem 1 of 1, level 3' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++Text Name='treeitem 1 of 1, level 3' IsControlElement=false
+++++TreeItem Name='treeitem 2 of 2, level 2' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++Text Name='treeitem 2 of 2, level 2' IsControlElement=false
+++Tree Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++Text Name='schedule'
+++++TreeItem Name='wake up' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Text Name='wake up' IsControlElement=false
+++++TreeItem Name='drink coffee' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Text Name='drink coffee' IsControlElement=false
+++++++Tree Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++Text Name='tasks' IsControlElement=false
+++++++++TreeItem Name='meeting' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++++++Text Name='%E2%97%A6 ' IsControlElement=false
+++++++++++Text Name='meeting' IsControlElement=false
+++++++++TreeItem Name='lunch' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++++++Text Name='%E2%97%A6 ' IsControlElement=false
+++++++++++Text Name='lunch' IsControlElement=false
+++++TreeItem Name='cook dinner' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Text Name='cook dinner' IsControlElement=false

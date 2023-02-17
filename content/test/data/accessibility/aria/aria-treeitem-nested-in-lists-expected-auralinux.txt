@@ -10,3 +10,22 @@
 ++++++[static] name='treeitem 1 of 1, level 3'
 ++++[tree item] name='treeitem 2 of 2, level 2' selectable posinset:2 setsize:2
 ++++++[static] name='treeitem 2 of 2, level 2'
+++[tree] setsize:3
+++++[static] name='schedule'
+++++[tree item] name='wake up' selectable posinset:1 setsize:3
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='wake up'
+++++[tree item] name='drink coffee' selectable posinset:2 setsize:3
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='drink coffee'
+++++++[tree] setsize:2
+++++++++[static] name='tasks'
+++++++++[tree item] name='meeting' selectable posinset:1 setsize:2
+++++++++++[static] name='%E2%97%A6 '
+++++++++++[static] name='meeting'
+++++++++[tree item] name='lunch' selectable posinset:2 setsize:2
+++++++++++[static] name='%E2%97%A6 '
+++++++++++[static] name='lunch'
+++++[tree item] name='cook dinner' selectable posinset:3 setsize:3
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='cook dinner'
