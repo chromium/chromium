@@ -7,7 +7,7 @@ import {addEntries, ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPat
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
+import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
  * Expected files shown in the search results for 'hello'
@@ -483,4 +483,34 @@ testcase.searchDriveWithTypeOptions = async () => {
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
     ENTRIES.beautiful,
   ]));
+};
+
+/**
+ * Checks that the new search correctly finds files on a USB drive.
+ */
+testcase.searchRemovableDevice = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsb'});
+
+  // Wait for the USB volume to mount.
+  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
+
+  // Click to open the USB volume.
+  await navigateWithDirectoryTree(appId, '/fake-usb');
+
+  // Check: the USB files should appear in the file list.
+  const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Search the USB for all files with "hello" in their name.
+  await remoteCall.typeSearchText(appId, 'hello');
+
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([
+        ENTRIES.hello,
+      ]),
+      {ignoreLastModifiedTime: true});
 };

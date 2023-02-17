@@ -273,18 +273,23 @@ export class SearchV2ContentScanner extends ContentScanner {
     }
   }
 
+  isSearchingRoot_() {
+    if (this.options_.location === SearchLocation.EVERYWHERE ||
+        this.options_.location === SearchLocation.THIS_CHROMEBOOK) {
+      return true;
+    }
+  }
+
   /**
    * @returns Whether or not the local (MY_FILES) search should be performed.
    * @private
    */
   isSearchingLocal_() {
-    if (this.options_.location === SearchLocation.EVERYWHERE ||
-        this.options_.location === SearchLocation.THIS_CHROMEBOOK) {
+    if (this.isSearchingRoot_()) {
       return true;
     }
     if (this.options_.location === SearchLocation.THIS_FOLDER) {
-      return this.rootType_ === VolumeManagerCommon.RootType.MY_FILES ||
-          this.rootType_ == VolumeManagerCommon.RootType.DOWNLOADS;
+      return (this.rootType_ !== VolumeManagerCommon.RootType.DRIVE);
     }
     return false;
   }
@@ -345,9 +350,8 @@ export class SearchV2ContentScanner extends ContentScanner {
     const category = this.getDesiredCategory_();
     if (this.isSearchingLocal_()) {
       searchPromises.push(new Promise((resolve, reject) => {
-        const rootDir = this.options_.location === SearchLocation.THIS_FOLDER ?
-            this.entry_ :
-            undefined;
+        const rootDir =
+            this.isSearchingRoot_() ? this.entry_.filesystem.root : this.entry_;
         const timestamp = this.getEarliestTimestamp_();
         chrome.fileManagerPrivate.searchFiles(
             {

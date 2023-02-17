@@ -1439,19 +1439,19 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
     return RespondNow(Error("maxResults must be non-negative"));
   }
 
-  base::FilePath root;
+  base::FilePath root_path;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string root_url = search_params.root_url.value_or("");
   if (root_url.empty()) {
-    root = file_manager::util::GetMyFilesFolderForProfile(profile);
+    root_path = file_manager::util::GetMyFilesFolderForProfile(profile);
   } else {
     const scoped_refptr<storage::FileSystemContext> file_system_context =
         file_manager::util::GetFileSystemContextForRenderFrameHost(
             profile, render_frame_host());
     const storage::FileSystemURL url =
         file_system_context->CrackURLInFirstPartyContext(GURL(root_url));
-    root = url.path();
+    root_path = url.path();
   }
 
   ash::RecentSource::FileType file_type;
@@ -1463,43 +1463,36 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
-          &SearchByPattern, root, search_params.query,
+          &SearchByPattern, root_path, search_params.query,
           base::internal::checked_cast<size_t>(search_params.max_results),
           base::Time::FromJsTime(search_params.timestamp), file_type),
       base::BindOnce(
-          &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPattern,
+          &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone,
           this));
 
   return RespondLater();
 }
 
-void FileManagerPrivateInternalSearchFilesFunction::OnSearchByPattern(
+void FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone(
     const std::vector<std::pair<base::FilePath, bool>>& results) {
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
-  auto my_files_path = file_manager::util::GetMyFilesFolderForProfile(profile);
-
-  GURL url;
-  base::FilePath my_files_virtual_path;
-  if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile, my_files_path, source_url(), &url) ||
-      !storage::ExternalMountPoints::GetSystemInstance()->GetVirtualPath(
-          my_files_path, &my_files_virtual_path)) {
-    Respond(Error("My files is not mounted"));
-    return;
-  }
-  const std::string fs_name = my_files_virtual_path.value();
-  const std::string fs_root = base::StrCat({url.spec(), "/"});
-
   base::Value::List entries;
   for (const auto& result : results) {
-    base::FilePath fs_path("/");
-    if (!my_files_path.AppendRelativePath(result.first, &fs_path)) {
+    std::string mount_name;
+    std::string file_system_name;
+    std::string full_path;
+    if (!file_manager::util::ExtractMountNameFileSystemNameFullPath(
+            result.first, &mount_name, &file_system_name, &full_path)) {
+      DLOG(WARNING) << "Unable to extract details from "
+                    << result.first.value();
       continue;
     }
+    std::string fs_root =
+        storage::GetExternalFileSystemRootURIString(source_url(), mount_name);
+
     base::Value::Dict entry;
-    entry.Set("fileSystemName", fs_name);
+    entry.Set("fileSystemName", file_system_name);
     entry.Set("fileSystemRoot", fs_root);
-    entry.Set("fileFullPath", fs_path.AsUTF8Unsafe());
+    entry.Set("fileFullPath", full_path);
     entry.Set("fileIsDirectory", result.second);
     entries.Append(std::move(entry));
   }

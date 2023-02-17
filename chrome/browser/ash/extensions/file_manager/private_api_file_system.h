@@ -485,7 +485,7 @@ class FileManagerPrivateInternalSearchFilesFunction
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
-  void OnSearchByPattern(
+  void OnSearchByPatternDone(
       const std::vector<std::pair<base::FilePath, bool>>& results);
 };
 
