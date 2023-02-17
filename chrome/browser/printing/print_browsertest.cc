@@ -2419,11 +2419,13 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
       PrintJob* print_job,
+      mojom::PrintTargetType print_target_type,
       bool simulate_spooling_memory_errors,
       TestPrintJobWorkerOop::PrintCallbacks* callbacks)
       : PrintJobWorkerOop(std::move(printing_context_delegate),
                           std::move(printing_context),
                           print_job,
+                          print_target_type,
                           simulate_spooling_memory_errors),
         callbacks_(callbacks) {}
   TestPrintJobWorkerOop(const TestPrintJobWorkerOop&) = delete;
@@ -2515,7 +2517,8 @@ class TestPrinterQueryOop : public PrinterQueryOop {
       PrintJob* print_job) override {
     return std::make_unique<TestPrintJobWorkerOop>(
         std::move(printing_context_delegate_), std::move(printing_context_),
-        print_job, simulate_spooling_memory_errors_, callbacks_);
+        print_job, print_target_type(), simulate_spooling_memory_errors_,
+        callbacks_);
   }
 
   bool simulate_spooling_memory_errors_;

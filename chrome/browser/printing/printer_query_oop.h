@@ -59,6 +59,10 @@ class PrinterQueryOop : public PrinterQuery {
                               SettingsCallback callback);
 #endif
 
+  mojom::PrintTargetType print_target_type() const {
+    return print_target_type_;
+  }
+
  private:
   mojom::PrintTargetType print_target_type_ =
       mojom::PrintTargetType::kDirectToDevice;

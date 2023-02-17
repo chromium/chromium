@@ -53,6 +53,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
       PrintJob* print_job,
+      mojom::PrintTargetType print_target_type,
       bool simulate_spooling_memory_errors);
 
   virtual void OnDidStartPrinting(mojom::ResultCode result);
@@ -99,7 +100,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
   void SendCancel(scoped_refptr<PrintJob> job);
 
   // Used to test spooling memory error handling.
-  bool simulate_spooling_memory_errors_ = false;
+  const bool simulate_spooling_memory_errors_;
 
   // Client ID with the print backend service manager for this print job.
   // Used only from UI thread.

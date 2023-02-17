@@ -50,20 +50,23 @@ PrintJobWorkerOop::PrintJobWorkerOop(
     std::unique_ptr<PrintingContext> printing_context,
     PrintJob* print_job,
     mojom::PrintTargetType print_target_type)
-    : PrintJobWorker(std::move(printing_context_delegate),
-                     std::move(printing_context),
-                     print_job),
-      print_target_type_(print_target_type) {}
+    : PrintJobWorkerOop(std::move(printing_context_delegate),
+                        std::move(printing_context),
+                        print_job,
+                        print_target_type,
+                        /*simulate_spooling_memory_errors=*/false) {}
 
 PrintJobWorkerOop::PrintJobWorkerOop(
     std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
     std::unique_ptr<PrintingContext> printing_context,
     PrintJob* print_job,
+    mojom::PrintTargetType print_target_type,
     bool simulate_spooling_memory_errors)
     : PrintJobWorker(std::move(printing_context_delegate),
                      std::move(printing_context),
                      print_job),
-      simulate_spooling_memory_errors_(simulate_spooling_memory_errors) {}
+      simulate_spooling_memory_errors_(simulate_spooling_memory_errors),
+      print_target_type_(print_target_type) {}
 
 PrintJobWorkerOop::~PrintJobWorkerOop() {
   DCHECK(!service_manager_client_id_.has_value());
