@@ -246,8 +246,8 @@ TEST(ProtoTableTest, LoadingUnexpectedlyLargeVersionClearsTables) {
     // The SetVersionNumber is what actually overwrites the version.
     sql::MetaTable meta_helper;
     ASSERT_TRUE(meta_helper.Init(&db, 1, 1));
-    meta_helper.SetVersionNumber(kInitialVersion + 1);
-    meta_helper.SetCompatibleVersionNumber(kInitialVersion + 1);
+    ASSERT_TRUE(meta_helper.SetVersionNumber(kInitialVersion + 1));
+    ASSERT_TRUE(meta_helper.SetCompatibleVersionNumber(kInitialVersion + 1));
     env.RunUntilIdle();
   }
 
