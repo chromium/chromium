@@ -354,7 +354,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   [NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => document.querySelector<HTMLSpanElement>(
         '.tree-item[one-drive] .file-row .item-icon'),
-    content: () => 'Some files have been moved to OneDrive',
+    content: () => str('ONE_DRIVE_MOVED_FILE_NUDGE'),
     direction: NudgeDirection.BOTTOM_ENDWARD,
     // Expire after 4 releases (expires when M120 hits Stable).
     expiryDate: new Date(2023, 12, 5),
@@ -362,7 +362,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   [NudgeType['DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => document.querySelector<HTMLSpanElement>(
         '.tree-item .item-icon[volume-type-icon="drive"]'),
-    content: () => 'Some files have been moved to Google Drive',
+    content: () => str('DRIVE_MOVED_FILE_NUDGE'),
     direction: NudgeDirection.BOTTOM_ENDWARD,
     // Expire after 4 releases (expires when M120 hits Stable).
     expiryDate: new Date(2023, 12, 5),
