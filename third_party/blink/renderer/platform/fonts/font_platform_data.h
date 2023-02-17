@@ -185,7 +185,7 @@ class PLATFORM_EXPORT FontPlatformData {
   WebFontRenderStyle style_;
 #endif
 
-  mutable std::unique_ptr<HarfBuzzFace> harfbuzz_face_;
+  mutable scoped_refptr<HarfBuzzFace> harfbuzz_face_;
   bool is_hash_table_deleted_value_ = false;
 };
 

@@ -19,16 +19,14 @@ namespace blink {
 
 const unsigned kInvalidFallbackMetricsValue = static_cast<unsigned>(-1);
 
-// The HarfBuzzFontData struct carries thread specific user-pointer data for
+// The HarfBuzzFontData struct carries user-pointer data for
 // |hb_font_t| callback functions/operations. It contains metrics and OpenType
 // layout information related to a font scaled to a particular size.
-struct HarfBuzzFontData final : public RefCounted<HarfBuzzFontData> {
+struct HarfBuzzFontData final {
   USING_FAST_MALLOC(HarfBuzzFontData);
 
  public:
-  static scoped_refptr<HarfBuzzFontData> Create(hb_font_t* hb_font) {
-    return base::AdoptRef(new HarfBuzzFontData(hb_font));
-  }
+  HarfBuzzFontData() : vertical_data_(nullptr), range_set_(nullptr) {}
 
   HarfBuzzFontData(const HarfBuzzFontData&) = delete;
   HarfBuzzFontData& operator=(const HarfBuzzFontData&) = delete;
@@ -101,9 +99,6 @@ struct HarfBuzzFontData final : public RefCounted<HarfBuzzFontData> {
 
   scoped_refptr<OpenTypeVerticalData> vertical_data_;
   scoped_refptr<UnicodeRangeSet> range_set_;
-
- private:
-  explicit HarfBuzzFontData(hb_font_t* hb_font) : unscaled_font_(hb_font) {}
 };
 
 }  // namespace blink

@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
@@ -45,16 +44,18 @@
 namespace blink {
 
 class FontPlatformData;
-class HarfBuzzFontCache;
 struct HarfBuzzFontData;
 
 // |HarfBuzzFace| is a thread specific data associated to |FontPlatformData|,
 // hold by |HarfBuzzFontCache|.
-class HarfBuzzFace final {
+class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
   USING_FAST_MALLOC(HarfBuzzFace);
 
  public:
-  static std::unique_ptr<HarfBuzzFace> Create(FontPlatformData* platform_data);
+  static scoped_refptr<HarfBuzzFace> Create(FontPlatformData* platform_data,
+                                            uint64_t unique_id) {
+    return base::AdoptRef(new HarfBuzzFace(platform_data, unique_id));
+  }
 
   HarfBuzzFace(const HarfBuzzFace&) = delete;
   HarfBuzzFace& operator=(const HarfBuzzFace&) = delete;
@@ -86,15 +87,14 @@ class HarfBuzzFace final {
   static void Init();
 
  private:
-  HarfBuzzFace(FontPlatformData* platform_data,
-               scoped_refptr<HarfBuzzFontData> harf_buzz_font_data);
+  HarfBuzzFace(FontPlatformData* platform_data, uint64_t);
 
   void PrepareHarfBuzzFontData();
 
   FontPlatformData* const platform_data_;
   const uint64_t unique_id_;
-  const scoped_refptr<HarfBuzzFontData> harfbuzz_font_data_;
-  hb_font_t* const unscaled_font_;
+  hb_font_t* unscaled_font_;
+  HarfBuzzFontData* harfbuzz_font_data_;
 };
 
 }  // namespace blink

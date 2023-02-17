@@ -8,6 +8,11 @@
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 
+#include <hb.h>
+#include <hb-cplusplus.hh>
+
+#include <memory>
+
 namespace blink {
 
 struct HarfBuzzFontData;
@@ -20,34 +25,39 @@ struct HarfBuzzFontData;
 // FIXME, crbug.com/609099: We should fix the FontCache to only keep one
 // FontPlatformData object independent of size, then consider using this here.
 
-// The HarfBuzzFontCache is thread specific cache for mapping
-//  from |FontPlatformData| to |HarfBuzzFace|, and
-//  from |FontPlatformData::UniqueID()| to |HarfBuzzFontData|.
-//
-//  |HarfBuzzFace| holds shared |HarfBuzzData| per unique id.
-//
-//  |FontPlatformData-1| |FontPlatformData-2|
-//         |                    |
-//    |HarfBuzzFace-1|     |HarfBuzzFace-2|
-//         |                    |
-//         +----------+---------+
-//                    |
-//               |HarfBuzzFontData|
-//
+class HbFontCacheEntry : public RefCounted<HbFontCacheEntry> {
+  USING_FAST_MALLOC(HbFontCacheEntry);
+
+ public:
+  static scoped_refptr<HbFontCacheEntry> Create(hb_font_t* hb_font);
+
+  hb_font_t* HbFont() { return hb_font_.get(); }
+  HarfBuzzFontData* HbFontData() { return hb_font_data_.get(); }
+
+  ~HbFontCacheEntry();
+
+ private:
+  explicit HbFontCacheEntry(hb_font_t* font);
+
+  hb::unique_ptr<hb_font_t> hb_font_;
+  std::unique_ptr<HarfBuzzFontData> hb_font_data_;
+};
+
 class HarfBuzzFontCache final {
  public:
   HarfBuzzFontCache();
   ~HarfBuzzFontCache();
 
-  scoped_refptr<HarfBuzzFontData> GetOrCreateFontData(
-      FontPlatformData* platform_data);
+  HbFontCacheEntry* RefOrNew(uint64_t unique_id,
+                             FontPlatformData* platform_data);
+  void Remove(uint64_t unique_id);
 
  private:
-  using FontDataMap = HashMap<uint64_t,
-                              scoped_refptr<HarfBuzzFontData>,
-                              IntWithZeroKeyHashTraits<uint64_t>>;
+  using HbFontDataMap = HashMap<uint64_t,
+                                scoped_refptr<HbFontCacheEntry>,
+                                IntWithZeroKeyHashTraits<uint64_t>>;
 
-  FontDataMap font_map_;
+  HbFontDataMap font_map_;
 };
 
 }  // namespace blink
