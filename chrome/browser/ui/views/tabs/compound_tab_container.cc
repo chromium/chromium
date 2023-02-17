@@ -249,7 +249,14 @@ CompoundTabContainer::CompoundTabContainer(
     bounds_animator_.SetAnimationDuration(base::TimeDelta());
 }
 
-CompoundTabContainer::~CompoundTabContainer() = default;
+CompoundTabContainer::~CompoundTabContainer() {
+  // Tabs call back up to the TabStrip during animation end and destruction.
+  // Ensure that happens now so we aren't in a half-destructed state when they
+  // do so.
+  CancelAnimation();
+  RemoveChildViewT(base::to_address(pinned_tab_container_));
+  RemoveChildViewT(base::to_address(unpinned_tab_container_));
+}
 
 void CompoundTabContainer::SetAvailableWidthCallback(
     base::RepeatingCallback<int()> available_width_callback) {
@@ -547,12 +554,21 @@ void CompoundTabContainer::AnimateToIdealBounds() {
   pinned_tab_container_->AnimateToIdealBounds();
   unpinned_tab_container_->AnimateToIdealBounds();
 
+  // Animate the pinning or unpinning tabs too.
   for (views::View* child : children()) {
     Tab* tab = views::AsViewClass<Tab>(child);
     if (!tab)
       continue;
 
-    AnimateTabTo(tab, GetIdealBounds(GetModelIndexOf(tab).value()));
+    const absl::optional<int> model_index = GetModelIndexOf(tab);
+    // The tab may have been closed during a pin/unpin animation, in which case
+    // it a) has no model index and b) is already animating to its correct
+    // bounds because that will have been updated in `UpdateAnimationTarget()`.
+    if (!model_index.has_value()) {
+      continue;
+    }
+
+    AnimateTabTo(tab, GetIdealBounds(model_index.value()));
   }
 }
 
@@ -874,8 +890,14 @@ void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
                                                         int to_model_index) {
   // If the tab at `from_model_index` is already being transferred, complete
   // all pending transfers before we embark upon this one to avoid conflicts.
-  if (bounds_animator_.IsAnimating(GetTabAtModelIndex(from_model_index)))
-    CompleteAnimationAndLayout();
+  if (bounds_animator_.IsAnimating(GetTabAtModelIndex(from_model_index))) {
+    // We are out of sync with the model right now (because we're handling a
+    // model update), so we need to be careful here. We can complete our
+    // directly managed animations, but we can't ask the sub-containers to do
+    // the same, as their ideal bounds calculations assume the model and
+    // viewmodel are in sync.
+    bounds_animator_.Complete();
+  }
 
   const bool prev_pinned = from_model_index < NumPinnedTabs();
   const bool next_pinned = !prev_pinned;

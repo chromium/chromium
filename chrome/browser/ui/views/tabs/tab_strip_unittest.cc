@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
@@ -184,12 +185,21 @@ class TabStripTestBase : public ChromeViewsTestBase {
     tab_strip_->GetDragContext()->StoppedDragging(views);
   }
 
-  std::vector<views::View*> GetChildViews() {
-    // The first (and only) View child of TabStrip is its TabContainer, which
-    // contains the tabs and group views.
-    // TODO(1116121): Move tests that test view/focus order to test
-    // TabContainer directly, once that functionality has been moved there.
-    return tab_strip_->children()[0]->children();
+  size_t NumTabSlotViews() {
+    base::RepeatingCallback<size_t(views::View*)> num_tab_slot_views =
+        base::BindLambdaForTesting([&num_tab_slot_views](views::View* parent) {
+          if (views::IsViewClass<TabSlotView>(parent)) {
+            return size_t(1);
+          } else {
+            size_t sum = 0;
+            for (views::View* child : parent->children()) {
+              sum += num_tab_slot_views.Run(child);
+            }
+            return sum;
+          }
+        });
+
+    return num_tab_slot_views.Run(tab_strip_);
   }
 
   std::vector<TabGroupViews*> ListGroupViews() const {
@@ -294,18 +304,18 @@ TEST_P(TabStripTest, RemoveTab) {
   TestTabStripObserver observer(tab_strip_);
   controller_->AddTab(0, TabActive::kInactive);
   controller_->AddTab(1, TabActive::kInactive);
-  const size_t num_children = GetChildViews().size();
+  const size_t num_children = NumTabSlotViews();
   EXPECT_EQ(2, tab_strip_->GetTabCount());
   controller_->RemoveTab(0);
   EXPECT_EQ(0, observer.last_tab_removed());
   // When removing a tab the tabcount should immediately decrement.
   EXPECT_EQ(1, tab_strip_->GetTabCount());
   // But the number of views should remain the same (it's animatining closed).
-  EXPECT_EQ(num_children, GetChildViews().size());
+  EXPECT_EQ(num_children, NumTabSlotViews());
 
   CompleteAnimationAndLayout();
 
-  EXPECT_EQ(num_children - 1, GetChildViews().size());
+  EXPECT_EQ(num_children - 1, NumTabSlotViews());
 
   // Remove the last tab to make sure things are cleaned up correctly when
   // the TabStrip is destroyed and an animation is ongoing.
