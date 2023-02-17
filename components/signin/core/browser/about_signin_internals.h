@@ -232,9 +232,8 @@ class AboutSigninInternals : public KeyedService,
 
   // AccountReconcilor::Observer implementation.
   void OnBlockReconcile() override;
-
-  // AccountReconcilor::Observer implementation.
   void OnUnblockReconcile() override;
+  void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
 
   // Weak pointer to the identity manager.
   raw_ptr<signin::IdentityManager> identity_manager_;

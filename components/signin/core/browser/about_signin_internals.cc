@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <string>
 #include <tuple>
 
 #include "base/command_line.h"
@@ -22,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
@@ -40,6 +42,12 @@ enum class GaiaCookiesState {
   kClearOnExit,
   kBlocked,
 };
+
+constexpr char kOk[] = "OK";
+constexpr char kRunning[] = "Running";
+constexpr char kError[] = "Error";
+constexpr char kScheduled[] = "Scheduled";
+constexpr char kInactive[] = "Inactive";
 
 GaiaCookiesState GetGaiaCookiesState(SigninClient* signin_client) {
   bool signin_cookies_allowed = signin_client->AreSigninCookiesAllowed();
@@ -210,6 +218,21 @@ std::string GetSigninStatusDescription(
     return "Signed In, Consented for Sync";
   } else {
     return "Signed In, Not Consented for Sync";
+  }
+}
+
+std::string ToString(const signin_metrics::AccountReconcilorState& state) {
+  switch (state) {
+    case signin_metrics::AccountReconcilorState::kOk:
+      return kOk;
+    case signin_metrics::AccountReconcilorState::kRunning:
+      return kRunning;
+    case signin_metrics::AccountReconcilorState::kError:
+      return kError;
+    case signin_metrics::AccountReconcilorState::kScheduled:
+      return kScheduled;
+    case signin_metrics::AccountReconcilorState::kInactive:
+      return kInactive;
   }
 }
 
@@ -471,6 +494,11 @@ void AboutSigninInternals::OnUnblockReconcile() {
   NotifyObservers();
 }
 
+void AboutSigninInternals::OnStateChanged(
+    signin_metrics::AccountReconcilorState state) {
+  NotifyObservers();
+}
+
 void AboutSigninInternals::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   NotifyObservers();
@@ -662,6 +690,9 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
     AddSectionEntry(
         basic_info, "Account Reconcilor blocked",
         account_reconcilor->IsReconcileBlocked() ? "True" : "False");
+
+    AddSectionEntry(basic_info, "Account Reconcilor State",
+                    ToString(account_reconcilor->GetState()));
 
     AddSection(signin_info, std::move(basic_info), "Basic Information");
   }
