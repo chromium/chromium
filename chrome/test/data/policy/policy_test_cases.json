@@ -3965,12 +3965,10 @@
         }
       },
       {
-        "policies": {
-          "ExtensionUnpublishedAvailability": 2
-        },
+        "policies": {},
         "prefs": {
           "extensions.unpublished_availability": {
-            "value": 2
+            "default_value": 0
           }
         }
       }

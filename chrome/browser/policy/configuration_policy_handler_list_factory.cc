@@ -2536,7 +2536,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kExtensionUnpublishedAvailability,
       extensions::pref_names::kExtensionUnpublishedAvailability,
-      /*min=*/0, /*max=*/2, /*clamp=*/false));
+      /*min=*/0, /*max=*/1, /*clamp=*/false));
 #endif  // !BUILDFLAG(IS_FUCHSIA)
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kExtensionManifestV2Availability,
