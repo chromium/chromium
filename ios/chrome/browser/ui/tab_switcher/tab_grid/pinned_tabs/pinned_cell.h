@@ -26,6 +26,11 @@
 @property(nonatomic, strong) UIImage* snapshot;
 @property(nonatomic, copy) NSString* title;
 
+// Starts the activity indicator animation.
+- (void)showActivityIndicator;
+// Stops the activity indicator animation.
+- (void)hideActivityIndicator;
+
 @end
 
 // A "copy" of a PinnedCell to be used in the animated transitions. Some

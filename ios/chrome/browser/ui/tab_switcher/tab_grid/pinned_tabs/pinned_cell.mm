@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_cell.h"
 
+#import <MaterialComponents/MaterialActivityIndicator.h>
 #import <ostream>
 
 #import "base/check.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -94,6 +96,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   UIView* _faviconContainerView;
   // View for displaying the favicon.
   UIImageView* _faviconView;
+  // Activity Indicator view that animates while WebState is loading.
+  MDCActivityIndicator* _activityIndicator;
   // Title label's fader leading constraint.
   NSLayoutConstraint* _titleLabelFaderLeadingConstraint;
   // Title label's fader trailing constraint.
@@ -125,6 +129,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
     [self setupHeaderView];
     [self setupFaviconContainerView];
     [self setupFaviconView];
+    [self setupActivityIndicator];
     [self setupTitleLabel];
     [self setupTitleLabelFader];
   }
@@ -180,6 +185,18 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
   params.visiblePath = visiblePath;
   return params;
+}
+
+- (void)showActivityIndicator {
+  [_activityIndicator startAnimating];
+  [_activityIndicator setHidden:NO];
+  [_faviconContainerView setHidden:YES];
+}
+
+- (void)hideActivityIndicator {
+  [_activityIndicator stopAnimating];
+  [_activityIndicator setHidden:YES];
+  [_faviconContainerView setHidden:NO];
 }
 
 #pragma mark - Private
@@ -319,6 +336,27 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   ]];
 
   _faviconView = faviconView;
+}
+
+- (void)setupActivityIndicator {
+  CGRect indicatorFrame =
+      CGRectMake(0, 0, kPinnedCellFaviconWidth, kPinnedCellFaviconWidth);
+  MDCActivityIndicator* activityIndicator =
+      [[MDCActivityIndicator alloc] initWithFrame:indicatorFrame];
+  activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
+  activityIndicator.radius =
+      ui::AlignValueToUpperPixel(kPinnedCellFaviconWidth / 2);
+  [_headerView addSubview:activityIndicator];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [activityIndicator.centerYAnchor
+        constraintEqualToAnchor:_faviconView.centerYAnchor],
+    [activityIndicator.centerXAnchor
+        constraintEqualToAnchor:_faviconView.centerXAnchor],
+  ]];
+
+  _activityIndicator = activityIndicator;
 }
 
 // Sets up the title label.
