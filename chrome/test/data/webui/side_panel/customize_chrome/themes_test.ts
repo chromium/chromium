@@ -215,6 +215,7 @@ suite('ThemesTest', () => {
     assertEquals(1, checkedThemes.length);
     const checkedTile = checkedThemes[0]!.parentElement as HTMLElement;
     assertEquals(checkedTile!.title, 'attribution1_1');
+    assertEquals(checkedTile!.getAttribute('aria-current'), 'true');
 
     // Set daily refresh.
     theme.backgroundImage.collectionId = 'test_collection_id';

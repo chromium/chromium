@@ -172,6 +172,10 @@ export class ThemesElement extends ThemesElementBase {
         this.theme_.backgroundImage.url.url === url &&
         !this.isRefreshToggleChecked_;
   }
+
+  private getThemeCheckedStatus_(url: string): string {
+    return this.isThemeSelected_(url) ? 'true' : 'false';
+  }
 }
 
 declare global {

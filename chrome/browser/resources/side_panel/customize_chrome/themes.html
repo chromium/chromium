@@ -113,7 +113,7 @@
       on-rendered-item-count-changed="onThemesRendered_">
     <div class="tile theme" tabindex="0" role="button"
         on-click="onSelectTheme_" title$="[[item.attribution1]]"
-        aria-checked$="[[isThemeSelected_(item.attribution1, theme_)]]">
+        aria-current$="[[getThemeCheckedStatus_(item.imageUrl.url, theme_)]]">
       <customize-chrome-check-mark-wrapper
           checked="[[isThemeSelected_(item.imageUrl.url, theme_)]]">
         <div class="image-container">

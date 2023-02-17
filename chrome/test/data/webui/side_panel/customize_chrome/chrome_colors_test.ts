@@ -122,6 +122,7 @@ suite('ChromeColorsTest', () => {
         chromeColorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(defaultColorElement, checkedColors[0]);
+    assertEquals('true', checkedColors[0]!.getAttribute('aria-current'));
 
     // Set Chrome color.
     theme.seedColor = {value: 1};
@@ -136,6 +137,7 @@ suite('ChromeColorsTest', () => {
     assertEquals(1, checkedColors.length);
     assertEquals('chrome-color tile', checkedColors[0]!.className);
     assertEquals(3, (checkedColors[0]! as ColorElement).foregroundColor.value);
+    assertEquals('true', checkedColors[0]!.getAttribute('aria-current'));
 
     // Set custom color.
     theme.seedColor = {value: 10};
@@ -149,6 +151,8 @@ suite('ChromeColorsTest', () => {
         chromeColorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(chromeColorsElement.$.customColor, checkedColors[0]);
+    assertEquals(
+        'true', checkedColors[0]!.parentElement!.getAttribute('aria-current'));
 
     // Set a CWS theme.
     theme.thirdPartyThemeInfo = {

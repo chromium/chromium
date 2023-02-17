@@ -90,7 +90,8 @@
       class="tile"
       title="$i18n{colorPickerLabel}"
       aria-label$="$i18n{colorPickerLabel}"
-      aria-checked$="[[isCustomColorSelected_]]"
+      role="button"
+      aria-current$="[[boolToString_(isCustomColorSelected_)]]"
       tabindex="0"
       on-click="onCustomColorClick_">
     <customize-chrome-color
@@ -108,7 +109,8 @@
       class="tile"
       title="$i18n{defaultColorName}"
       aria-label$="$i18n{defaultColorName}"
-      aria-checked$="[[isDefaultColorSelected_]]"
+      role="button"
+      aria-current$="[[boolToString_(isDefaultColorSelected_)]]"
       tabindex="0"
       on-click="onDefaultColorClick_"
       background-color="[[defaultColor_.background]]"
@@ -120,7 +122,9 @@
         class="chrome-color tile"
         title="[[item.name]]"
         aria-label$="[[item.name]]"
-        aria-checked$="[[isChromeColorSelected_(item.seed, selectedColor_)]]"
+        role="button"
+        aria-current$=
+            "[[getChromeColorCheckedStatus_(item.seed, selectedColor_)]]"
         tabindex="0"
         on-click="onChromeColorClick_"
         background-color="[[item.background]]"

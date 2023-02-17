@@ -143,6 +143,9 @@ suite('CategoriesTest', () => {
         categoriesElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedCategories.length);
     assertEquals(checkedCategories[0]!.parentElement!.id, 'classicChromeTile');
+    assertEquals(
+        checkedCategories[0]!.parentElement!.getAttribute('aria-current'),
+        'true');
 
     // Set a theme with a color.
     theme.foregroundColor = {value: 0xffff0000};
@@ -155,6 +158,9 @@ suite('CategoriesTest', () => {
         categoriesElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedCategories.length);
     assertEquals(checkedCategories[0]!.parentElement!.id, 'chromeColorsTile');
+    assertEquals(
+        checkedCategories[0]!.parentElement!.getAttribute('aria-current'),
+        'true');
 
     // Set a theme with local background.
     const backgroundImage = createBackgroundImage('https://test.jpg');
@@ -169,6 +175,9 @@ suite('CategoriesTest', () => {
         categoriesElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedCategories.length);
     assertEquals(checkedCategories[0]!.parentElement!.id, 'uploadImageTile');
+    assertEquals(
+        checkedCategories[0]!.parentElement!.getAttribute('aria-current'),
+        'true');
 
     // Set a theme with collection background.
     backgroundImage.isUploadedImage = false;
@@ -184,6 +193,9 @@ suite('CategoriesTest', () => {
     assertEquals(1, checkedCategories.length);
     assertEquals(
         checkedCategories[0]!.parentElement!.className, 'tile collection');
+    assertEquals(
+        checkedCategories[0]!.parentElement!.getAttribute('aria-current'),
+        'true');
 
     // Set a CWS theme.
     theme.thirdPartyThemeInfo = {

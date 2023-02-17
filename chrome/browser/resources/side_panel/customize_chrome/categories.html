@@ -187,7 +187,7 @@
 <cr-grid columns="6" disable-arrow-navigation>
   <div class="tile" tabindex="0" id="classicChromeTile"
       role="button" on-click="onClassicChromeClick_"
-      aria-checked$="[[isClassicChromeSelected_]]">
+      aria-current$="[[boolToString_(isClassicChromeSelected_)]]">
     <customize-chrome-check-mark-wrapper
         checked="[[isClassicChromeSelected_]]">
       <div class="image-container">
@@ -198,7 +198,7 @@
   </div>
   <div class="tile" tabindex="0" id="uploadImageTile"
       role="button" on-click="onUploadImageClick_"
-      aria-checked$="[[isLocalImageSelected_]]">
+      aria-current$="[[boolToString_(isLocalImageSelected_)]]">
     <customize-chrome-check-mark-wrapper
         checked="[[isLocalImageSelected_]]">
       <div class="image-container">
@@ -209,7 +209,7 @@
   </div>
   <div class="tile" tabindex="0" id="chromeColorsTile"
       role="button" on-click="onChromeColorsClick_"
-      aria-checked$="[[isChromeColorsSelected_]]">
+      aria-current$="[[boolToString_(isChromeColorsSelected_)]]">
     <customize-chrome-check-mark-wrapper
         checked="[[isChromeColorsSelected_]]">
       <div class="image-container">
@@ -228,7 +228,8 @@
       on-rendered-item-count-changed="onCollectionsRendered_">
     <div class="tile collection" tabindex="0" role="button"
         on-click="onCollectionClick_"
-        aria-checked$="[[isCollectionSelected_(item.id, selectedCategory_)]]">
+        aria-current$=
+            "[[getCollectionCheckedStatus_(item.id, selectedCategory_)]]">
       <customize-chrome-check-mark-wrapper
           checked="[[isCollectionSelected_(item.id, selectedCategory_)]]">
         <div class="image-container">
