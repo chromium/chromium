@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/time/default_tick_clock.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/loader/prefetch_url_loader.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
@@ -36,17 +37,20 @@ struct PrefetchURLLoaderService::BindContext {
               base::WeakPtr<RenderFrameHostImpl> render_frame_host,
               scoped_refptr<PrefetchedSignedExchangeCache>
                   prefetched_signed_exchange_cache)
-      : frame_tree_node_id(frame_tree_node_id),
+      : process_id(render_frame_host->GetProcess()->GetID()),
+        frame_tree_node_id(frame_tree_node_id),
         factory(factory),
-        render_frame_host(std::move(render_frame_host)),
+        possibly_incorrect_render_frame_host(std::move(render_frame_host)),
         cross_origin_factory(nullptr),
         prefetched_signed_exchange_cache(
             std::move(prefetched_signed_exchange_cache)) {}
 
   explicit BindContext(const std::unique_ptr<BindContext>& other)
-      : frame_tree_node_id(other->frame_tree_node_id),
+      : process_id(other->process_id),
+        frame_tree_node_id(other->frame_tree_node_id),
         factory(other->factory),
-        render_frame_host(other->render_frame_host),
+        possibly_incorrect_render_frame_host(
+            other->possibly_incorrect_render_frame_host),
         cross_origin_factory(other->cross_origin_factory),
         prefetched_signed_exchange_cache(
             other->prefetched_signed_exchange_cache),
@@ -54,9 +58,20 @@ struct PrefetchURLLoaderService::BindContext {
 
   ~BindContext() = default;
 
+  const int process_id;
   const int frame_tree_node_id;
   scoped_refptr<network::SharedURLLoaderFactory> factory;
-  base::WeakPtr<RenderFrameHostImpl> render_frame_host;
+
+  // Mojo IPCs for URLLoaderFactory and URLLoader may be reordered wrt
+  // DidCommitProvisionalLoadCommit IPC.  This means that before
+  // RenderDocumentHost project (https://crbug.com/729021) one cannot rely on
+  // the correctness of
+  // `possibly_incorrect_render_frame_host->GetLastCommittedOrigin()` - see
+  // https://crbug.com/1414382#c15.
+  //
+  // TODO(https://crbug.com/1417039): Stop depending on this field and then
+  // remove it.
+  base::WeakPtr<RenderFrameHostImpl> possibly_incorrect_render_frame_host;
 
   // This member is lazily initialized by EnsureCrossOriginFactory().
   scoped_refptr<network::SharedURLLoaderFactory> cross_origin_factory;
@@ -119,7 +134,7 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
 
   BindContext& current_context = *current_bind_context();
 
-  if (!current_context.render_frame_host) {
+  if (!current_context.possibly_incorrect_render_frame_host) {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
@@ -208,7 +223,8 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
       resource_request.trusted_params
           ? resource_request.trusted_params->isolation_info
                 .network_anonymization_key()
-          : current_context.render_frame_host->GetIsolationInfoForSubresources()
+          : current_context.possibly_incorrect_render_frame_host
+                ->GetIsolationInfoForSubresources()
                 .network_anonymization_key(),
       std::move(client), traffic_annotation,
       std::move(network_loader_factory_to_use),
@@ -237,29 +253,27 @@ bool PrefetchURLLoaderService::IsValidCrossOriginPrefetch(
         "Prefetch/IsValidCrossOrigin: no request_initiator");
     return false;
   }
+  const url::Origin& request_initiator =
+      resource_request.request_initiator.value();
 
   // The request is expected to be cross-origin. Same-origin prefetches do not
   // need a special NetworkAnonymizationKey, and therefore must not be marked
   // for restricted use.
-  DCHECK(resource_request.request_initiator.has_value());  // Checked above.
-  if (resource_request.request_initiator->IsSameOriginWith(
-          resource_request.url)) {
+  if (request_initiator.IsSameOriginWith(resource_request.url)) {
     loader_factory_receivers_.ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: same-origin");
     return false;
   }
 
-  // The request initiator has to match the request_initiator_origin_lock - it
-  // has to be the same origin as the last committed origin in the frame.
-  const BindContext& current_context = *current_bind_context();
-  // Presence of |render_frame_host| is guaranteed by the caller - the caller
-  // calls earlier EnsureCrossOriginFactory which has the same DCHECK.
-  DCHECK(current_context.render_frame_host);
-  if (!resource_request.request_initiator->opaque() &&
-      resource_request.request_initiator.value() !=
-          current_context.render_frame_host->GetLastCommittedOrigin()) {
+  // The request initiator must be valid for the process making the request.
+  // (See the doc comment of `possibly_incorrect_render_frame_host` for
+  // explanation why we don't compare with the origin of that frame.)
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  BindContext& current_context = *current_bind_context();
+  if (!policy->CanAccessDataForOrigin(current_context.process_id,
+                                      request_initiator)) {
     loader_factory_receivers_.ReportBadMessage(
-        "Prefetch/IsValidCrossOrigin: frame origin mismatch");
+        "Prefetch/IsValidCrossOrigin: CanAccessDataForOrigin failure");
     return false;
   }
 
@@ -298,9 +312,9 @@ void PrefetchURLLoaderService::EnsureCrossOriginFactory() {
   if (current_context.cross_origin_factory)
     return;
 
-  DCHECK(current_context.render_frame_host);
+  DCHECK(current_context.possibly_incorrect_render_frame_host);
   std::unique_ptr<network::PendingSharedURLLoaderFactory> factories =
-      current_context.render_frame_host
+      current_context.possibly_incorrect_render_frame_host
           ->CreateCrossOriginPrefetchLoaderFactoryBundle();
   current_context.cross_origin_factory =
       network::SharedURLLoaderFactory::Create(std::move(factories));
