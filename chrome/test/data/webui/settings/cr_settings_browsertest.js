@@ -785,6 +785,8 @@ TEST_F(
     function() {
       runMochaSuite('PrivacySandboxSettings4Disabled');
     });
+// #undef due to name collision with CrSettingsSiteSettingsPageTest.
+GEN('#undef MAYBE_PrivacySandboxSettings4Disabled')
 
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   /** @override */
@@ -895,11 +897,19 @@ TEST_F('CrSettingsSiteSettingsPageTest', 'SiteSettingsPage', function() {
   mocha.run();
 });
 
+// TODO(crbug.com/1401833): Flaky.
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_PrivacySandboxSettings4Disabled DISABLED_PrivacySandboxSettings4Disabled');
+GEN('#else');
+GEN('#define MAYBE_PrivacySandboxSettings4Disabled PrivacySandboxSettings4Disabled');
+GEN('#endif');
 TEST_F(
-    'CrSettingsSiteSettingsPageTest', 'PrivacySandboxSettings4Disabled',
+    'CrSettingsSiteSettingsPageTest', 'MAYBE_PrivacySandboxSettings4Disabled',
     function() {
       mocha.run();
     });
+// #undef due to name collision with CrSettingsCookiesPageTest.
+GEN('#undef MAYBE_PrivacySandboxSettings4Disabled')
 
 TEST_F(
     'CrSettingsSiteSettingsPageTest', 'UnusedSitePermissionsReview',
