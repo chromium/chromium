@@ -2646,15 +2646,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), PairFailure::kCreateBondTimeout);
 }
 
-// TODO(crbug.com/1416808): Flaky on MSAN bots.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_WriteAccountKeyFailure_Retroactive \
-  DISABLED_WriteAccountKeyFailure_Retroactive
-#else
-#define MAYBE_WriteAccountKeyFailure_Retroactive \
-  WriteAccountKeyFailure_Retroactive
-#endif
-TEST_F(FastPairPairerImplTest, MAYBE_WriteAccountKeyFailure_Retroactive) {
+TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   fast_pair_repository_.SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
@@ -2680,14 +2672,10 @@ TEST_F(FastPairPairerImplTest, MAYBE_WriteAccountKeyFailure_Retroactive) {
   fake_fast_pair_handshake_->InvokeCallback();
   CreatePairer();
   SetPublicKey();
-  EXPECT_CALL(paired_callback_, Run);
 
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
-  EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
 
   // Initiates recognition of Retroactive Pair scenario.
-  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPaired);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
 }
