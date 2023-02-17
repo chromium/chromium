@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
 
@@ -71,25 +70,6 @@ TEST_P(CompositingReasonFinderTest, PromoteNonTrivial3D) {
 
   EXPECT_REASONS(
       CompositingReason::k3DTransform,
-      DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
-}
-
-class CompositingReasonFinderTestLowEndPlatform
-    : public TestingPlatformSupport {
- public:
-  bool IsLowEndDevice() override { return true; }
-};
-
-TEST_P(CompositingReasonFinderTest, DontPromoteTrivial3DWithLowEndDevice) {
-  ScopedTestingPlatformSupport<CompositingReasonFinderTestLowEndPlatform>
-      platform;
-  SetBodyInnerHTML(R"HTML(
-    <div id='target'
-      style='width: 100px; height: 100px; transform: translateZ(0)'></div>
-  )HTML");
-
-  EXPECT_REASONS(
-      CompositingReason::kNone,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
 }
 

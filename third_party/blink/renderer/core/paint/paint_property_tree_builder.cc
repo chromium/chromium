@@ -12,6 +12,7 @@
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -4016,6 +4017,14 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
               object_, context_.direct_compositing_reasons);
     }
   }
+
+  if (Platform::Current()->IsLowEndDevice()) {
+    // Don't composite "trivial" 3D transforms such as translateZ(0).
+    // These transforms still force comosited scrolling (see above).
+    context_.direct_compositing_reasons &=
+        ~CompositingReason::kTrivial3DTransform;
+  }
+
   context_.was_layout_shift_root =
       IsLayoutShiftRoot(object_, object_.FirstFragment());
 

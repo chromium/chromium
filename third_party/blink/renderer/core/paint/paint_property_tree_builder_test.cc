@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -7019,6 +7020,65 @@ TEST_P(PaintPropertyTreeBuilderTest,
   auto* composited_properties = composited->FirstFragment().PaintProperties();
   EXPECT_EQ(target_properties->Transform()->NearestDirectlyCompositedAncestor(),
             composited_properties->Transform());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, PromoteTrivial3DWithHighEndDevice) {
+  SetBodyInnerHTML(R"HTML(
+    <style>div {width: 100px; height: 100px; transform: translateZ(0)}</style>
+    <div id='non-scroll'></div>
+    <div id='scroll' style='overflow: scroll'>
+      <div style='height: 2000px'></div>
+    </div>
+    <div id='effect' style="opacity: 0.5"></div>
+  )HTML");
+
+  const auto* non_scroll_properties = PaintPropertiesForElement("non-scroll");
+  EXPECT_TRUE(
+      non_scroll_properties->Transform()->HasDirectCompositingReasons());
+  EXPECT_FALSE(non_scroll_properties->Effect());
+
+  const auto* scroll_properties = PaintPropertiesForElement("scroll");
+  EXPECT_TRUE(scroll_properties->Transform()->HasDirectCompositingReasons());
+  EXPECT_TRUE(
+      scroll_properties->ScrollTranslation()->HasDirectCompositingReasons());
+  EXPECT_FALSE(scroll_properties->Effect());
+
+  // Trivial 3d transform also triggers composited effect if effect exist.
+  const auto* effect_properties = PaintPropertiesForElement("effect");
+  EXPECT_TRUE(effect_properties->Transform()->HasDirectCompositingReasons());
+  EXPECT_TRUE(effect_properties->Effect()->HasDirectCompositingReasons());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, DontPromoteTrivial3DWithLowEndDevice) {
+  class LowEndPlatform : public TestingPlatformSupport {
+    bool IsLowEndDevice() override { return true; }
+  };
+
+  ScopedTestingPlatformSupport<LowEndPlatform> platform;
+  SetBodyInnerHTML(R"HTML(
+    <style>div {width: 100px; height: 100px; transform: translateZ(0)}</style>
+    <div id='non-scroll'></div>
+    <div id='scroll' style='overflow: scroll'>
+      <div style='height: 2000px'></div>
+    </div>
+    <div id='effect' style="opacity: 0.5"></div>
+  )HTML");
+
+  const auto* non_scroll_properties = PaintPropertiesForElement("non-scroll");
+  EXPECT_FALSE(
+      non_scroll_properties->Transform()->HasDirectCompositingReasons());
+  EXPECT_FALSE(non_scroll_properties->Effect());
+
+  const auto* scroll_properties = PaintPropertiesForElement("scroll");
+  EXPECT_FALSE(scroll_properties->Transform()->HasDirectCompositingReasons());
+  // Trivial 3d transform still triggers composited scrolling.
+  EXPECT_TRUE(
+      scroll_properties->ScrollTranslation()->HasDirectCompositingReasons());
+  EXPECT_FALSE(scroll_properties->Effect());
+
+  const auto* effect_properties = PaintPropertiesForElement("effect");
+  EXPECT_FALSE(effect_properties->Transform()->HasDirectCompositingReasons());
+  EXPECT_FALSE(effect_properties->Effect()->HasDirectCompositingReasons());
 }
 
 }  // namespace blink
