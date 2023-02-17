@@ -10,9 +10,10 @@
 <script>
     function getString(fragment) {
       d = document.createElement("div");
-      d.appendChild(fragment);
+      d.replaceChildren(...fragment.cloneNode(true).childNodes);
       return d.innerHTML;
     }
+
     function getFragment(markup) {
       const d = document.createElement("div");
       d.innerHTML = markup;
@@ -28,38 +29,48 @@
                   `Node[${getString(node1)}] == Node[${getString(node2)}]`);
     }
 
-    // We'll test .sanitize with Document and DocumentFragment, if the current
-    // implementation supports it.
-    if ("sanitize" in Sanitizer) {
-      testcases.forEach(c => test(t => {
-          let s = new Sanitizer(c.config_input);
-          var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");
-          fragment = s.sanitize(dom);
-          assert_true(fragment instanceof DocumentFragment);
+    test(t => {
+      let s = new Sanitizer();
+      assert_throws_js(TypeError, _ => s.sanitize());
+    }, "Sanitizer.sanitize() should throw an error.");
 
-          let result = getString(fragment);
-          assert_equals(result, c.result);
-      }, "SanitizerAPI with config with Document: " + c.message));
+    test(t => {
+      let s = new Sanitizer();
+      assert_throws_js(TypeError, _ => s.sanitize(null));
+    }, "Sanitizer.sanitize(null).");
 
-      testcases.forEach(c => test(t => {
-          let s = new Sanitizer(c.config_input);
-          let tpl = document.createElement("template");
-          tpl.innerHTML = c.value;
-          fragment = s.sanitize(tpl.content);
-          assert_true(fragment instanceof DocumentFragment);
-          assert_equals(getString(fragment), c.result);
-      }, "SanitizerAPI with config with DocumentFragment: " + c.message));
-    }
+    const probe_string = `<a href="about:blank">hello</a><script>cons` +
+        `ole.log("world!");<` + `/script>`;
+    test(t => {
+      const sanitized = new Sanitizer().sanitize(getFragment(probe_string));
+      const expected = getFragment(probe_string.substr(0, 31));
+      assert_node_equals(expected, sanitized);
+    }, "Sanitizer.sanitze(DocumentFragment)");
 
-    // Let's also test .setHTML. The main test suite factors this out
-    // into a seperate file.
+    test(t => {
+      const sanitized = new Sanitizer().sanitize(getDoc(probe_string));
+      const expected = getFragment(probe_string.substr(0, 31));
+      assert_node_equals(expected, sanitized);
+    }, "Sanitizer.sanitze(Document)");
+
     testcases.forEach(c => test(t => {
-        let result = document.createElement("div");
-        let probe = document.createElement("div");
-        result.innerHTML = c.result;
-        probe.setHTML(c.value, new Sanitizer(c.config_input));
-        assert_equals(result.innerHTML, probe.innerHTML);
-    }, "SanitizerAPI with config with Element.setHTML: " + c.message));
+        let s = new Sanitizer(c.config_input);
+        var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");
+        fragment = s.sanitize(dom);
+        assert_true(fragment instanceof DocumentFragment);
+
+        let result = getString(fragment);
+        assert_equals(result, c.result);
+    }, "SanitizerAPI with config: " + c.message + ", sanitize from document function for <body>"));
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        let tpl = document.createElement("template");
+        tpl.innerHTML = c.value;
+        fragment = s.sanitize(tpl.content);
+        assert_true(fragment instanceof DocumentFragment);
+        assert_equals(getString(fragment), c.result);
+    }, "SanitizerAPI with config: " + c.message + ", sanitize from document fragment function for <template>"));
 </script>
 </body>
 </html>
