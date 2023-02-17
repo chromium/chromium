@@ -7,6 +7,8 @@
 
   const securityOrigin = (await dp.Page.getResourceTree()).result.frameTree.frame.securityOrigin;
   const storageId = {securityOrigin, isLocalStorage: true};
+  // clear storage to avoid leakage from other tests
+  await dp.DOMStorage.clear({storageId});
 
   const items = (await dp.DOMStorage.getDOMStorageItems({storageId})).result;
 
