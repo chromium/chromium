@@ -244,12 +244,7 @@ class QuicChromiumClientSessionTest
   }
 
   size_t GetMaxAllowedOutgoingBidirectionalStreams() {
-    quic::QuicSession* quic_session =
-        static_cast<quic::QuicSession*>(&*session_);
-    // For version99, the count will include both static and dynamic streams.
-    // These tests are only concerned with dynamic streams (that is, the number
-    // of streams that they can create), so back out the static header stream.
-    return quic::test::QuicSessionPeer::ietf_streamid_manager(quic_session)
+    return quic::test::QuicSessionPeer::ietf_streamid_manager(session_.get())
         ->max_outgoing_bidirectional_streams();
   }
 
