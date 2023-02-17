@@ -414,6 +414,7 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   CHECK(!init_cb_);
   CHECK(!reset_cb_);
+  CHECK(!is_flushing_);
 
   if (has_error_ || remote_decoder_type_ == VideoDecoderType::kUnknown) {
     decoder_task_runner_->PostTask(
@@ -453,8 +454,6 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   const uint64_t decode_id = decode_counter_++;
   pending_decodes_.insert({decode_id, std::move(decode_cb)});
 
-  const bool is_flushing = buffer->end_of_stream();
-
   mojom::DecoderBufferPtr mojo_buffer =
       mojo_decoder_buffer_writer_->WriteDecoderBuffer(buffer);
   if (!mojo_buffer) {
@@ -462,14 +461,15 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  is_flushing_ = buffer->end_of_stream();
   remote_decoder_->Decode(
       std::move(buffer),
       base::BindOnce(&OOPVideoDecoder::OnDecodeDone,
-                     weak_this_factory_.GetWeakPtr(), decode_id, is_flushing));
+                     weak_this_factory_.GetWeakPtr(), decode_id, is_flushing_));
 }
 
 void OOPVideoDecoder::OnDecodeDone(uint64_t decode_id,
-                                   bool is_flushing,
+                                   bool is_flush_cb,
                                    const DecoderStatus& status) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -484,7 +484,9 @@ void OOPVideoDecoder::OnDecodeDone(uint64_t decode_id,
     return;
   }
 
-  if (is_flushing) {
+  if (is_flush_cb) {
+    CHECK(is_flushing_);
+
     // Check that the |decode_cb| corresponding to the flush is not called until
     // the decode callback has been called for each pending decode.
     if (pending_decodes_.size() != 1) {
@@ -498,6 +500,8 @@ void OOPVideoDecoder::OnDecodeDone(uint64_t decode_id,
     // clearing of the cache together with the validation in
     // OnVideoFrameDecoded() should guarantee this.
     fake_timestamp_to_real_timestamp_cache_.Clear();
+
+    is_flushing_ = false;
   }
 
   auto it = pending_decodes_.begin();
@@ -572,11 +576,16 @@ void OOPVideoDecoder::Stop() {
     return;
 
   for (auto& pending_decode : pending_decodes_) {
-    std::move(pending_decode.second).Run(DecoderStatus::Codes::kFailed);
-    if (!weak_this)
-      return;
+    // Note that Stop() may be called from within Decode(), and according to the
+    // media::VideoDecoder interface, the decode callback should not be called
+    // from within Decode(). Therefore, we should not call the decode callbacks
+    // here, and instead, we should post them as tasks.
+    decoder_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(pending_decode.second),
+                                  DecoderStatus::Codes::kFailed));
   }
   pending_decodes_.clear();
+  is_flushing_ = false;
 
   if (reset_cb_)
     std::move(reset_cb_).Run();

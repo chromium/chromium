@@ -107,7 +107,7 @@ class OOPVideoDecoder : public VideoDecoderMixin,
                         int32_t max_decode_requests,
                         VideoDecoderType decoder_type);
   void OnDecodeDone(uint64_t decode_id,
-                    bool is_flushing,
+                    bool is_flush_cb,
                     const DecoderStatus& status);
   void OnResetDone();
 
@@ -124,6 +124,8 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   // done in the order in which Decode() is called.
   std::map<uint64_t, DecodeCB> pending_decodes_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  bool is_flushing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // |fake_timestamp_to_real_timestamp_cache_| allows us to associate Decode()
   // calls with decoded frames. On each non-flush Decode() call, we generate a
