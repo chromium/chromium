@@ -15,18 +15,17 @@ class ToggleEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ToggleEvent* Create() { return MakeGarbageCollected<ToggleEvent>(); }
   static ToggleEvent* Create(const AtomicString& type,
                              const ToggleEventInit* initializer) {
     return MakeGarbageCollected<ToggleEvent>(type, initializer);
   }
-  static ToggleEvent* CreateBubble(const AtomicString& type,
-                                   Event::Cancelable cancelable,
-                                   const String& old_state,
-                                   const String& new_state) {
+  static ToggleEvent* Create(const AtomicString& type,
+                             Event::Cancelable cancelable,
+                             const String& old_state,
+                             const String& new_state) {
     auto* event = MakeGarbageCollected<ToggleEvent>(type, cancelable, old_state,
                                                     new_state);
-    event->SetBubbles(true);
+    DCHECK(!event->bubbles());
     return event;
   }
 

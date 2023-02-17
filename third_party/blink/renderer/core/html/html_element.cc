@@ -1376,10 +1376,10 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
   }
 
   // Fire the "opening" beforetoggle event.
-  auto* event = ToggleEvent::CreateBubble(
+  auto* event = ToggleEvent::Create(
       event_type_names::kBeforetoggle, Event::Cancelable::kYes,
       /*old_state*/ "closed", /*new_state*/ "open");
-  DCHECK(event->bubbles());
+  DCHECK(!event->bubbles());
   DCHECK(event->cancelable());
   DCHECK_EQ(event->oldState(), "closed");
   DCHECK_EQ(event->newState(), "open");
@@ -1467,12 +1467,12 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
   } else {
     GetPopoverData()->setPendingToggleEventStartedClosed(true);
   }
-  after_event = ToggleEvent::CreateBubble(event_type_names::kToggle,
-                                          Event::Cancelable::kNo, old_state,
-                                          /*new_state*/ "open");
+  after_event = ToggleEvent::Create(event_type_names::kToggle,
+                                    Event::Cancelable::kNo, old_state,
+                                    /*new_state*/ "open");
   DCHECK_EQ(after_event->newState(), "open");
   DCHECK_EQ(after_event->oldState(), old_state);
-  DCHECK(after_event->bubbles());
+  DCHECK(!after_event->bubbles());
   DCHECK(!after_event->cancelable());
   after_event->SetTarget(this);
   GetPopoverData()->setPendingToggleEventTask(PostCancellableTask(
@@ -1624,10 +1624,10 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   }
 
   // Fire the "closing" beforetoggle event.
-  auto* event = ToggleEvent::CreateBubble(
+  auto* event = ToggleEvent::Create(
       event_type_names::kBeforetoggle, Event::Cancelable::kNo,
       /*old_state*/ "open", /*new_state*/ "closed");
-  DCHECK(event->bubbles());
+  DCHECK(!event->bubbles());
   DCHECK(!event->cancelable());
   DCHECK_EQ(event->oldState(), "open");
   DCHECK_EQ(event->newState(), "closed");
@@ -1677,12 +1677,12 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   } else {
     GetPopoverData()->setPendingToggleEventStartedClosed(false);
   }
-  after_event = ToggleEvent::CreateBubble(event_type_names::kToggle,
-                                          Event::Cancelable::kNo, old_state,
-                                          /*new_state*/ "closed");
+  after_event = ToggleEvent::Create(event_type_names::kToggle,
+                                    Event::Cancelable::kNo, old_state,
+                                    /*new_state*/ "closed");
   DCHECK_EQ(after_event->newState(), "closed");
   DCHECK_EQ(after_event->oldState(), old_state);
-  DCHECK(after_event->bubbles());
+  DCHECK(!after_event->bubbles());
   DCHECK(!after_event->cancelable());
   after_event->SetTarget(this);
   GetPopoverData()->setPendingToggleEventTask(PostCancellableTask(
