@@ -41,6 +41,7 @@ class ToolbarColorObserverManager implements ToolbarAlphaInOverviewObserver, Too
      */
     void setIncognitoStateProvider(IncognitoStateProvider provider) {
         mIncognitoStateProvider = provider;
+        notifyToolbarColorChanged();
     }
 
     /**
@@ -49,6 +50,7 @@ class ToolbarColorObserverManager implements ToolbarAlphaInOverviewObserver, Too
      */
     void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
         mToolbarColorObserver = toolbarColorObserver;
+        notifyToolbarColorChanged();
     }
 
     // TopToolbarCoordinator.ToolbarColorObserver implementation.
