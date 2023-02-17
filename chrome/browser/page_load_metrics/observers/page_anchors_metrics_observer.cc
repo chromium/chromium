@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 PageAnchorsMetricsObserver::AnchorsData::AnchorsData(
@@ -37,7 +38,82 @@ void PageAnchorsMetricsObserver::AnchorsData::Clear() {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::AnchorsData);
 
-void PageAnchorsMetricsObserver::RecordUkm() {
+PageAnchorsMetricsObserver::UserInteractionsData::UserInteractionsData(
+    content::WebContents* contents)
+    : content::WebContentsUserData<UserInteractionsData>(*contents) {}
+
+PageAnchorsMetricsObserver::UserInteractionsData::~UserInteractionsData() =
+    default;
+
+void PageAnchorsMetricsObserver::UserInteractionsData::
+    RecordUserInteractionMetrics(
+        ukm::SourceId ukm_source_id,
+        absl::optional<base::TimeDelta> navigation_start_to_now) {
+  // In case we don't have a valid |navigation_start_to_click_|, the best we
+  // could do is to use |navigation_start_to_now|. It may cause some
+  // inconsistency in the measurements but it is better than not recording it.
+  if (!navigation_start_to_click_.has_value()) {
+    navigation_start_to_click_ = navigation_start_to_now;
+  }
+
+  auto get_max_time_ms = [this](auto const& max_time,
+                                auto const last_navigation_start_to) {
+    int64_t max_time_ms = -1;
+    if (last_navigation_start_to.has_value() &&
+        navigation_start_to_click_.has_value()) {
+      max_time_ms = std::max(max_time_ms, (navigation_start_to_click_.value() -
+                                           last_navigation_start_to.value())
+                                              .InMilliseconds());
+    }
+    if (max_time.has_value()) {
+      max_time_ms = std::max(max_time_ms, max_time.value().InMilliseconds());
+    }
+    return max_time_ms;
+  };
+
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+
+  for (const auto& [anchor_index, user_interaction] : user_interactions_) {
+    ukm::builders::NavigationPredictorUserInteractions builder(ukm_source_id);
+    builder.SetAnchorIndex(anchor_index);
+    builder.SetIsInViewport(user_interaction.is_in_viewport);
+    builder.SetPointerHoveringOverCount(ukm::GetExponentialBucketMin(
+        user_interaction.pointer_hovering_over_count, 1.3));
+    builder.SetIsPointerHoveringOver(user_interaction.is_hovered);
+    builder.SetMaxEnteredViewportToLeftViewportMs(ukm::GetExponentialBucketMin(
+        get_max_time_ms(
+            user_interaction.max_time_in_viewport,
+            user_interaction.last_navigation_start_to_entered_viewport),
+        1.3));
+    builder.SetMaxHoverDwellTimeMs(ukm::GetExponentialBucketMin(
+        get_max_time_ms(user_interaction.max_hover_dwell_time,
+                        user_interaction.last_navigation_start_to_pointer_over),
+        1.3));
+    builder.Record(ukm_recorder);
+  }
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(
+    PageAnchorsMetricsObserver::UserInteractionsData);
+
+void PageAnchorsMetricsObserver::RecordUserInteractionDataToUkm() {
+  PageAnchorsMetricsObserver::UserInteractionsData* data =
+      PageAnchorsMetricsObserver::UserInteractionsData::FromWebContents(
+          web_contents_);
+  if (!data) {
+    return;
+  }
+  auto ukm_source_id = GetDelegate().GetPageUkmSourceId();
+  absl::optional<base::TimeDelta> navigation_start_to_now;
+  const base::TimeTicks navigation_start_time =
+      GetDelegate().GetNavigationStart();
+  if (!navigation_start_time.is_null()) {
+    navigation_start_to_now = base::TimeTicks::Now() - navigation_start_time;
+  }
+  data->RecordUserInteractionMetrics(ukm_source_id, navigation_start_to_now);
+}
+
+void PageAnchorsMetricsObserver::RecordAnchorDataToUkm() {
   PageAnchorsMetricsObserver::AnchorsData* data =
       PageAnchorsMetricsObserver::AnchorsData::FromWebContents(web_contents_);
   if (!data || data->number_of_anchors_ == 0) {
@@ -85,7 +161,8 @@ void PageAnchorsMetricsObserver::OnComplete(
   if (is_in_prerendered_page_)
     return;
 
-  RecordUkm();
+  RecordAnchorDataToUkm();
+  RecordUserInteractionDataToUkm();
 }
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PageAnchorsMetricsObserver::FlushMetricsOnAppEnterBackground(
@@ -94,7 +171,8 @@ PageAnchorsMetricsObserver::FlushMetricsOnAppEnterBackground(
   if (is_in_prerendered_page_)
     return CONTINUE_OBSERVING;
 
-  RecordUkm();
+  RecordAnchorDataToUkm();
+  RecordUserInteractionDataToUkm();
   return STOP_OBSERVING;
 }
 

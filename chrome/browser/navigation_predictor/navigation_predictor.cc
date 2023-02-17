@@ -15,7 +15,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -101,6 +100,21 @@ int NavigationPredictor::GetLinearBucketForLinkLocation(int value) const {
 
 int NavigationPredictor::GetLinearBucketForRatioArea(int value) const {
   return ukm::GetLinearBucketMin(static_cast<int64_t>(value), 5);
+}
+
+PageAnchorsMetricsObserver::UserInteractionsData&
+NavigationPredictor::GetUserInteractionsData() const {
+  // Create the UserInteractionsData object for this WebContents if it doesn't
+  // already exist.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  PageAnchorsMetricsObserver::UserInteractionsData::CreateForWebContents(
+      web_contents);
+  PageAnchorsMetricsObserver::UserInteractionsData* data =
+      PageAnchorsMetricsObserver::UserInteractionsData::FromWebContents(
+          web_contents);
+  DCHECK(data);
+  return *data;
 }
 
 void NavigationPredictor::ReportNewAnchorElements(
@@ -204,13 +218,26 @@ void NavigationPredictor::ReportAnchorElementClick(
   if (it != anchors_.end()) {
     builder.SetHrefUnchanged(it->second->target_url == click->target_url);
   }
+  navigation_start_to_click_ = click->navigation_start_to_click;
+  GetUserInteractionsData().navigation_start_to_click_ =
+      navigation_start_to_click_;
+
+  builder.SetNavigationStartToLinkClickedMs(ukm::GetExponentialBucketMin(
+      navigation_start_to_click_.value().InMilliseconds(), 1.3));
   builder.Record(ukm_recorder_);
 }
 
 void NavigationPredictor::ReportAnchorElementsLeftViewport(
     std::vector<blink::mojom::AnchorElementLeftViewportPtr> elements) {
+  auto& user_interactions_data = GetUserInteractionsData();
+  auto& user_interactions = user_interactions_data.user_interactions_;
   for (const auto& element : elements) {
-    auto& user_interaction = user_interactions_[AnchorId(element->anchor_id)];
+    auto index_it =
+        tracked_anchor_id_to_index_.find(AnchorId(element->anchor_id));
+    if (index_it == tracked_anchor_id_to_index_.end()) {
+      continue;
+    }
+    auto& user_interaction = user_interactions[index_it->second];
     user_interaction.is_in_viewport = false;
     user_interaction.last_navigation_start_to_entered_viewport.reset();
     user_interaction.max_time_in_viewport = std::max(
@@ -221,8 +248,18 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
 
 void NavigationPredictor::ReportAnchorElementPointerOver(
     blink::mojom::AnchorElementPointerOverPtr pointer_over_event) {
-  auto& user_interaction =
-      user_interactions_[AnchorId(pointer_over_event->anchor_id)];
+  auto& user_interactions_data = GetUserInteractionsData();
+  auto& user_interactions = user_interactions_data.user_interactions_;
+  auto index_it =
+      tracked_anchor_id_to_index_.find(AnchorId(pointer_over_event->anchor_id));
+  if (index_it == tracked_anchor_id_to_index_.end()) {
+    return;
+  }
+
+  auto& user_interaction = user_interactions[index_it->second];
+  if (!user_interaction.is_hovered) {
+    user_interaction.pointer_hovering_over_count++;
+  }
   user_interaction.is_hovered = true;
   user_interaction.last_navigation_start_to_pointer_over =
       pointer_over_event->navigation_start_to_pointer_over;
@@ -230,7 +267,15 @@ void NavigationPredictor::ReportAnchorElementPointerOver(
 
 void NavigationPredictor::ReportAnchorElementPointerOut(
     blink::mojom::AnchorElementPointerOutPtr hover_event) {
-  auto& user_interaction = user_interactions_[AnchorId(hover_event->anchor_id)];
+  auto& user_interactions_data = GetUserInteractionsData();
+  auto& user_interactions = user_interactions_data.user_interactions_;
+  auto index_it =
+      tracked_anchor_id_to_index_.find(AnchorId(hover_event->anchor_id));
+  if (index_it == tracked_anchor_id_to_index_.end()) {
+    return;
+  }
+
+  auto& user_interaction = user_interactions[index_it->second];
   user_interaction.is_hovered = false;
   user_interaction.last_navigation_start_to_pointer_over.reset();
   user_interaction.max_hover_dwell_time = std::max(
@@ -248,9 +293,17 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     return;
   }
 
+  auto& user_interactions_data = GetUserInteractionsData();
+  auto& user_interactions = user_interactions_data.user_interactions_;
   for (const auto& element : elements) {
     AnchorId anchor_id(element->anchor_id);
-    auto& user_interaction = user_interactions_[anchor_id];
+    auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
+    if (index_it == tracked_anchor_id_to_index_.end()) {
+      // We're not tracking this element, no need to generate a
+      // NavigationPredictorAnchorElementMetrics record.
+      continue;
+    }
+    auto& user_interaction = user_interactions[index_it->second];
     user_interaction.is_in_viewport = true;
     user_interaction.last_navigation_start_to_entered_viewport =
         element->navigation_start_to_entered_viewport;
@@ -278,12 +331,6 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
       continue;
     }
 
-    auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
-    if (index_it == tracked_anchor_id_to_index_.end()) {
-      // We're not tracking this element, no need to generate a
-      // NavigationPredictorAnchorElementMetrics record.
-      continue;
-    }
     ukm::builders::NavigationPredictorAnchorElementMetrics
         anchor_element_builder(ukm_source_id_);
 

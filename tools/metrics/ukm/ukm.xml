@@ -13410,8 +13410,7 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="AnchorIndex">
     <summary>
-      The index of the clicked-on anchor element in NavigationPredictor's
-      |top_urls_|.
+      The index of the clicked-on anchor element in the tracked list.
     </summary>
   </metric>
   <metric name="BucketedPathHash">
@@ -13513,6 +13512,13 @@ be describing additional metrics about the same event.
     <summary>
       1 if the href of the anchor element at the time the click is handled is
       the same as the href when the element was created. 0 if the href changed.
+    </summary>
+  </metric>
+  <metric name="NavigationStartToLinkClickedMs">
+    <summary>
+      The time in milliseconds between the moment an entry for the anchor
+      element was logged to UKM and the moment the user clicked on it.
+      Exponentially bucketed, 1.3 factor.
     </summary>
   </metric>
 </event>
@@ -13617,6 +13623,50 @@ be describing additional metrics about the same event.
     <summary>
       A bool that is set if the page is a search result page for the browser's
       default search engine
+    </summary>
+  </metric>
+</event>
+
+<event name="NavigationPredictorUserInteractions">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>isaboori@google.com</owner>
+  <summary>
+    Metrics that describe user interaction with an anchor element. This event is
+    emitted once per randomly selected anchor elements.
+  </summary>
+  <metric name="AnchorIndex">
+    <summary>
+      The index of the anchor element in NavigationPredictor's |top_urls_|.
+    </summary>
+  </metric>
+  <metric name="IsInViewport">
+    <summary>
+      1 if anchor element is in viewport, otherwise 0.
+    </summary>
+  </metric>
+  <metric name="IsPointerHoveringOver">
+    <summary>
+      1 if the pointer is hovering over the anchor element, otherwise 0.
+    </summary>
+  </metric>
+  <metric name="MaxEnteredViewportToLeftViewportMs">
+    <summary>
+      Maximum time between the moment the anchor element entered the viewport
+      and the moment it left the viewport in milliseconds. Exponentially
+      bucketed using GetExponentialBucketMin a value of 1.3.
+    </summary>
+  </metric>
+  <metric name="MaxHoverDwellTimeMs">
+    <summary>
+      Maximum dwelltime of pointer hovering over the anchor element in
+      milliseconds. Exponentially bucketed using GetExponentialBucketMin a value
+      of 1.3.
+    </summary>
+  </metric>
+  <metric name="PointerHoveringOverCount">
+    <summary>
+      How many times the pointer was hovering over the anchor element.
+      Exponentially bucketed using GetExponentialBucketMin a value of 1.3.
     </summary>
   </metric>
 </event>

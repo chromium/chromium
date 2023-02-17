@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -398,8 +399,11 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClick) {
   predictor_service()->ReportNewAnchorElements(std::move(metrics));
 
   auto click = blink::mojom::AnchorElementClick::New();
+  const long navigation_start_to_click_ms = 333;
   click->anchor_id = anchor_id_0;
   click->target_url = target_url;
+  click->navigation_start_to_click =
+      base::Milliseconds(navigation_start_to_click_ms);
   predictor_service()->ReportAnchorElementClick(std::move(click));
   base::RunLoop().RunUntilIdle();
 
@@ -412,6 +416,8 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClick) {
   };
   EXPECT_EQ(0, get_metric(UkmEntry::kAnchorElementIndexName));
   EXPECT_EQ(1, get_metric(UkmEntry::kHrefUnchangedName));
+  EXPECT_EQ(ukm::GetExponentialBucketMin(navigation_start_to_click_ms, 1.3),
+            get_metric(UkmEntry::kNavigationStartToLinkClickedMsName));
 
   click = blink::mojom::AnchorElementClick::New();
   click->anchor_id = anchor_id_1;
@@ -466,10 +472,20 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
     return new MockNavigationPredictorForTesting(*render_frame_host,
                                                  std::move(receiver));
   }
-  const std::
-      unordered_map<AnchorId, UserInteractions, typename AnchorId::Hasher>&
-      user_interactions() const {
-    return user_interactions_;
+  void RecordUserInteractionMetrics() {
+    auto& user_interactions = GetUserInteractionsData();
+    user_interactions.RecordUserInteractionMetrics(ukm_source_id_, {});
+  }
+  const std::unordered_map<
+      int,
+      PageAnchorsMetricsObserver::UserInteractionsData::UserInteractions>&
+  user_interactions() const {
+    return GetUserInteractionsData().user_interactions_;
+  }
+  const PageAnchorsMetricsObserver::UserInteractionsData::UserInteractions&
+  user_interaction(AnchorId anchor_id) {
+    auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
+    return GetUserInteractionsData().user_interactions_[index_it->second];
   }
   absl::optional<base::TimeDelta> navigation_start_to_click() {
     return navigation_start_to_click_;
@@ -511,15 +527,26 @@ TEST_F(NavigationPredictorTest, AnchorElementEnteredAndLeftViewport) {
         base::RunLoop().RunUntilIdle();
       };
 
-  MockNavigationPredictorForTesting::AnchorId anchor_id{1};
+  auto report_new_anchor_element = [&predictor_service, this]() {
+    std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
+    metrics.push_back(CreateMetricsPtr());
+
+    MockNavigationPredictorForTesting::AnchorId anchor_id(
+        metrics[0]->anchor_id);
+    predictor_service->ReportNewAnchorElements(std::move(metrics));
+    return anchor_id;
+  };
+
+  auto const anchor_id = report_new_anchor_element();
+
   // Anchor element entered the viewport for the first time. Check user
   // interaction data to see if it is registered.
   const auto navigation_start_to_entered_viewport_1 = base::Milliseconds(150);
   report_anchor_element_entered_viewport(
       anchor_id, navigation_start_to_entered_viewport_1);
-  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  ASSERT_EQ(1u, predictor_service_host->user_interactions().size());
   const auto& user_interactions =
-      predictor_service_host->user_interactions().at(anchor_id);
+      predictor_service_host->user_interaction(anchor_id);
   EXPECT_TRUE(user_interactions.is_in_viewport);
   EXPECT_TRUE(
       user_interactions.last_navigation_start_to_entered_viewport.has_value());
@@ -592,14 +619,25 @@ TEST_F(NavigationPredictorTest, AnchorElementPointerOverAndHover) {
         base::RunLoop().RunUntilIdle();
       };
 
-  MockNavigationPredictorForTesting::AnchorId anchor_id{1};
+  auto report_new_anchor_element = [&predictor_service, this]() {
+    std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
+    metrics.push_back(CreateMetricsPtr());
+
+    MockNavigationPredictorForTesting::AnchorId anchor_id(
+        metrics[0]->anchor_id);
+    predictor_service->ReportNewAnchorElements(std::move(metrics));
+    return anchor_id;
+  };
+
+  auto const anchor_id = report_new_anchor_element();
+
   // Pointer started hovering over the anchor element for the first time. Check
   // user interaction data to see if it is registered.
   const auto navigation_start_to_pointer_over_1 = base::Milliseconds(150);
   report_pointer_over(anchor_id, navigation_start_to_pointer_over_1);
-  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  ASSERT_EQ(1u, predictor_service_host->user_interactions().size());
   const auto& user_interactions =
-      predictor_service_host->user_interactions().at(anchor_id);
+      predictor_service_host->user_interaction(anchor_id);
   EXPECT_TRUE(user_interactions.is_hovered);
   EXPECT_TRUE(
       user_interactions.last_navigation_start_to_pointer_over.has_value());
@@ -675,4 +713,147 @@ TEST_F(NavigationPredictorTest, NavigationStartToClick) {
 
   EXPECT_EQ(navigation_start_to_click,
             predictor_service_host->navigation_start_to_click());
+}
+
+TEST_F(NavigationPredictorTest, RecordUserInteractionMetrics) {
+  using AnchorId = uint32_t;
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
+  auto report_anchor_element_left_viewport =
+      [&predictor_service](AnchorId anchor_id,
+                           const base::TimeDelta& time_in_viewport) {
+        std::vector<blink::mojom::AnchorElementLeftViewportPtr> metrics;
+        metrics.push_back(blink::mojom::AnchorElementLeftViewport::New(
+            anchor_id, time_in_viewport));
+        predictor_service->ReportAnchorElementsLeftViewport(std::move(metrics));
+        base::RunLoop().RunUntilIdle();
+      };
+
+  auto report_anchor_element_entered_viewport =
+      [&predictor_service](
+          AnchorId anchor_id,
+          const base::TimeDelta& navigation_start_to_entered_viewport) {
+        std::vector<blink::mojom::AnchorElementEnteredViewportPtr> metrics;
+        metrics.push_back(blink::mojom::AnchorElementEnteredViewport::New(
+            anchor_id, navigation_start_to_entered_viewport));
+        predictor_service->ReportAnchorElementsEnteredViewport(
+            std::move(metrics));
+        base::RunLoop().RunUntilIdle();
+      };
+  auto report_anchor_element_pointer_over =
+      [&predictor_service](
+          AnchorId anchor_id,
+          const base::TimeDelta& navigation_start_to_pinter_over) {
+        blink::mojom::AnchorElementPointerOverPtr metrics =
+            blink::mojom::AnchorElementPointerOver::New(
+                anchor_id, navigation_start_to_pinter_over);
+        predictor_service->ReportAnchorElementPointerOver(std::move(metrics));
+        base::RunLoop().RunUntilIdle();
+      };
+
+  auto report_anchor_element_pointer_hover_dwell_time =
+      [&predictor_service](AnchorId anchor_id,
+                           const base::TimeDelta& hover_dwell_time) {
+        blink::mojom::AnchorElementPointerOutPtr metrics =
+            blink::mojom::AnchorElementPointerOut::New(anchor_id,
+                                                       hover_dwell_time);
+        predictor_service->ReportAnchorElementPointerOut(std::move(metrics));
+        base::RunLoop().RunUntilIdle();
+      };
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
+  metrics.push_back(CreateMetricsPtr());
+  metrics.push_back(CreateMetricsPtr());
+
+  int anchor_id_0 = metrics[0]->anchor_id;
+  int anchor_id_1 = metrics[1]->anchor_id;
+  GURL target_url_1 = metrics[1]->target_url;
+  predictor_service->ReportNewAnchorElements(std::move(metrics));
+
+  // Both anchors enter the viewport.
+  const int navigation_start_to_entered_viewport = 30;
+  report_anchor_element_entered_viewport(
+      anchor_id_0, base::Milliseconds(navigation_start_to_entered_viewport));
+  report_anchor_element_entered_viewport(
+      anchor_id_1, base::Milliseconds(navigation_start_to_entered_viewport));
+
+  // Mouse hover over anchor element 0 and moves away.
+  const int navigation_start_to_pinter_over_0 = 140;
+  const int hover_dwell_time_0 = 60;
+  report_anchor_element_pointer_over(
+      anchor_id_0, base::Milliseconds(navigation_start_to_pinter_over_0));
+  report_anchor_element_pointer_hover_dwell_time(
+      anchor_id_0, base::Milliseconds(hover_dwell_time_0));
+
+  // Anchor element 0 leaves the viewport.
+  const int time_in_viewport_0 = 250;
+  report_anchor_element_left_viewport(anchor_id_0,
+                                      base::Milliseconds(time_in_viewport_0));
+
+  // Mouse hover over anchor element 1 and stays there.
+  const int navigation_start_to_pinter_over_1 = 280;
+  report_anchor_element_pointer_over(
+      anchor_id_1, base::Milliseconds(navigation_start_to_pinter_over_1));
+
+  // Mouse clicks on anchor element 1.
+  const int navigation_start_to_click_ms = 430;
+  auto click = blink::mojom::AnchorElementClick::New();
+  click->anchor_id = anchor_id_1;
+  click->target_url = target_url_1;
+  click->navigation_start_to_click =
+      base::Milliseconds(navigation_start_to_click_ms);
+  predictor_service->ReportAnchorElementClick(std::move(click));
+  base::RunLoop().RunUntilIdle();
+
+  predictor_service_host->RecordUserInteractionMetrics();
+  base::RunLoop().RunUntilIdle();
+
+  // Now check the UKM records.
+  using UkmEntry = ukm::builders::NavigationPredictorUserInteractions;
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(2u, entries.size());
+  auto get_metric = [&](auto anchor_id, auto name) {
+    return *ukm_recorder.GetEntryMetric(entries[anchor_id], name);
+  };
+  for (size_t i = 0; i < entries.size(); i++) {
+    int anchor_id = get_metric(i, UkmEntry::kAnchorIndexName);
+    EXPECT_TRUE(anchor_id == 0 || anchor_id == 1);
+    switch (anchor_id) {
+      // Anchor element 0.
+      case 0:
+        EXPECT_EQ(0, get_metric(i, UkmEntry::kIsInViewportName));
+        EXPECT_EQ(0, get_metric(i, UkmEntry::kIsPointerHoveringOverName));
+        EXPECT_EQ(
+            ukm::GetExponentialBucketMin(time_in_viewport_0, 1.3),
+            get_metric(i, UkmEntry::kMaxEnteredViewportToLeftViewportMsName));
+        EXPECT_EQ(ukm::GetExponentialBucketMin(hover_dwell_time_0, 1.3),
+                  get_metric(i, UkmEntry::kMaxHoverDwellTimeMsName));
+        EXPECT_EQ(ukm::GetExponentialBucketMin(1, 1.3),
+                  get_metric(i, UkmEntry::kPointerHoveringOverCountName));
+        break;
+
+      // Anchor element 1.
+      case 1:
+        EXPECT_EQ(1, get_metric(i, UkmEntry::kAnchorIndexName));
+        EXPECT_EQ(1, get_metric(i, UkmEntry::kIsInViewportName));
+        EXPECT_EQ(1, get_metric(i, UkmEntry::kIsPointerHoveringOverName));
+        EXPECT_EQ(
+            ukm::GetExponentialBucketMin(
+                navigation_start_to_click_ms -
+                    navigation_start_to_entered_viewport,
+                1.3),
+            get_metric(i, UkmEntry::kMaxEnteredViewportToLeftViewportMsName));
+        EXPECT_EQ(
+            ukm::GetExponentialBucketMin(navigation_start_to_click_ms -
+                                             navigation_start_to_pinter_over_1,
+                                         1.3),
+            get_metric(i, UkmEntry::kMaxHoverDwellTimeMsName));
+        EXPECT_EQ(ukm::GetExponentialBucketMin(1, 1.3),
+                  get_metric(i, UkmEntry::kPointerHoveringOverCountName));
+        break;
+    }
+  }
 }

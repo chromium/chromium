@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -45,35 +46,6 @@ class NavigationPredictor
  private:
   friend class MockNavigationPredictorForTesting;
   using AnchorId = base::StrongAlias<class AnchorId, uint32_t>;
-  // This structure holds the user interactions with a given anchor element.
-  // Whenever, the user clicks on a link, we iterate over all |UserInteractions|
-  // data and check if the anchor element is still in viewport or not. If it is
-  // still in viewport, we use |last_navigation_start_to_entered_viewport| and
-  // |navigation_start_to_click_| to update |max_time_in_viewport|.  Similarly,
-  // we also check if the pointer is still hovering over the anchor element, and
-  // use |last_navigation_start_to_pointer_over| and
-  // |navigation_start_to_click_| to update |max_hover_dwell_time|. We then
-  // record |max_time_in_viewport|, and |max_hover_dwell_time| to UKM.
-  struct UserInteractions {
-    // True if the anchor element is still in viewport, otherwise false.
-    bool is_in_viewport = false;
-    // True if the pointer is still hovering over the anchor element, otherwise
-    // false;
-    bool is_hovered = false;
-    // If the anchor element is still in viewport, it is the TimeDelta between
-    // the navigation start of the anchor element's root document and the last
-    // time the anchor element entered the viewport, otherwise empty.
-    absl::optional<base::TimeDelta> last_navigation_start_to_entered_viewport;
-    // The maximum duration that the anchor element was in the viewport.
-    absl::optional<base::TimeDelta> max_time_in_viewport;
-    // If the anchor element is still in viewport, it is the TimeDelta between
-    // the navigation start of the anchor element's root document and the last
-    // time the pointer started to hover over the anchor element, otherwise
-    // empty.
-    absl::optional<base::TimeDelta> last_navigation_start_to_pointer_over;
-    // The maximum the pointer hover dwell time over the anchor element.
-    absl::optional<base::TimeDelta> max_hover_dwell_time;
-  };
 
   NavigationPredictor(content::RenderFrameHost& render_frame_host,
                       mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
@@ -116,6 +88,10 @@ class NavigationPredictor
   // |ratio_area|.
   int GetLinearBucketForRatioArea(int value) const;
 
+  // Returns UserInteractionsData for the current page.
+  PageAnchorsMetricsObserver::UserInteractionsData& GetUserInteractionsData()
+      const;
+
   // A count of clicks to prevent reporting more than 10 clicks to UKM.
   size_t clicked_count_ = 0;
 
@@ -124,10 +100,6 @@ class NavigationPredictor
                      blink::mojom::AnchorElementMetricsPtr,
                      typename AnchorId::Hasher>
       anchors_;
-
-  // User interaction data for anchor ID that we track.
-  std::unordered_map<AnchorId, UserInteractions, typename AnchorId::Hasher>
-      user_interactions_;
 
   // The time between navigation start and the last time user clicked on a link.
   absl::optional<base::TimeDelta> navigation_start_to_click_;
