@@ -56,7 +56,7 @@ class ExtensionPrefsObserver {
   // Called when the ExtensionPrefs object (the thing that this observer
   // observes) will be destroyed. In response, the observer, |this|, should
   // call "prefs->RemoveObserver(this)", whether directly or indirectly (e.g.
-  // via ScopedObserver::Remove).
+  // via ScopedObservation::Reset).
   virtual void OnExtensionPrefsWillBeDestroyed(ExtensionPrefs* prefs) {}
 };
 
@@ -85,7 +85,7 @@ class EarlyExtensionPrefsObserver {
   // calling AddObserver.
   //
   // The recommended technique for ensuring matching AddObserver and
-  // RemoveObserver calls is to used a ScopedObserver.
+  // RemoveObserver calls is to used a ScopedObservation.
   //
   // Unlike other ExtensionPrefsObserver methods, this method does not have an
   // "const std::string& extension_id" argument. It is not about any one

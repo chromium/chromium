@@ -225,9 +225,9 @@ class TestSourceWithNonDefaultNamesFwd : public TestSourceWithNonDefaultNames {
 
 }  // namespace
 
-// Now we define the corresponding traits. ScopedObserverTraits specializations
-// must be defined in base::, since that is where the primary template
-// definition lives.
+// Now we define the corresponding traits. ScopedObservationTraits
+// specializations must be defined in base::, since that is where the primary
+// template definition lives.
 template <>
 struct ScopedObservationTraits<TestSourceWithNonDefaultNamesFwd,
                                TestSourceObserver> {
