@@ -763,9 +763,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.BlockingReason"
-    enum="OrbBlockingDecisionReason" expires_after="2023-03-26">
+    enum="OrbBlockingDecisionReason" expires_after="2023-08-08">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
+  <owner>vogelheim@chromium.org</owner>
   <summary>
     Logs why ORB has reached a blocking decision.
 
@@ -777,6 +778,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-08-08">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
+  <owner>vogelheim@chromium.org</owner>
   <summary>
     Logs whether ORB and CORB would take the same allow-vs-block decision. This
     should help assess the backcompatibility risk of shipping ORB.
@@ -791,6 +793,7 @@ chromium-metrics-reviews@google.com.
     enum="OrbBlockingDecisionReason" expires_after="2023-08-08">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
+  <owner>vogelheim@chromium.org</owner>
   <summary>
     Logs why ORB has reached a blocking decision.
 
