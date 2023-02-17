@@ -632,6 +632,8 @@ extern const char kDefaultTasksBySuffix[];
 extern const char kDefaultHandlersForFileExtensions[];
 extern const char kOfficeSetupComplete[];
 extern const char kOfficeFilesAlwaysMove[];
+extern const char kOfficeFileMovedToOneDrive[];
+extern const char kOfficeFileMovedToGoogleDrive[];
 #endif
 
 extern const char kSharedClipboardEnabled[];

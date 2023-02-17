@@ -1912,6 +1912,14 @@ const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
 
 // Whether we should always move office files without prompting the user first.
 const char kOfficeFilesAlwaysMove[] = "filebrowser.office.always_move";
+
+// Whether at least one file has been moved to OneDrive.
+const char kOfficeFileMovedToOneDrive[] =
+    "filebrowser.office.file_moved_one_drive";
+
+// Whether at least one office file has been moved to Google Drive.
+const char kOfficeFileMovedToGoogleDrive[] =
+    "filebrowser.office.file_moved_google_drive";
 #endif
 
 // A flag to enable/disable the Shared Clipboard feature which enables users to

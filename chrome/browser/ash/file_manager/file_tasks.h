@@ -431,6 +431,11 @@ void SetAlwaysMoveOfficeFiles(Profile* profile, bool complete = true);
 // Whether we should always move office files without first asking the user.
 bool AlwaysMoveOfficeFiles(Profile* profile);
 
+// Sets the preference `office.file_moved_one_drive`.
+void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved);
+// Sets the preference `office.file_moved_google_drive`.
+void SetOfficeFileMovedToGoogleDrive(Profile* profile, base::Time moved);
+
 }  // namespace file_manager::file_tasks
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_H_

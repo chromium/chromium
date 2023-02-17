@@ -675,6 +675,10 @@ void EventRouter::ObserveEvents() {
                               file_manager_prefs_callback);
   pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts,
                               file_manager_prefs_callback);
+  pref_change_registrar_->Add(prefs::kOfficeFileMovedToOneDrive,
+                              file_manager_prefs_callback);
+  pref_change_registrar_->Add(prefs::kOfficeFileMovedToGoogleDrive,
+                              file_manager_prefs_callback);
 
   auto on_apps_update_callback = base::BindRepeating(
       &EventRouter::BroadcastOnAppsUpdatedEvent, weak_factory_.GetWeakPtr());

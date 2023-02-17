@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -66,5 +67,10 @@ void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFiles(
   Profile* profile = Profile::FromWebUI(web_ui_);
   if (profile) {
     file_manager::file_tasks::SetAlwaysMoveOfficeFiles(profile, always_move);
+    // Also clear up the timestamp for when files are moved to the Cloud.
+    file_manager::file_tasks::SetOfficeFileMovedToOneDrive(profile,
+                                                           base::Time());
+    file_manager::file_tasks::SetOfficeFileMovedToGoogleDrive(profile,
+                                                              base::Time());
   }
 }

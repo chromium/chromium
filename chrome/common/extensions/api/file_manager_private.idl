@@ -777,6 +777,8 @@ dictionary Preferences {
   boolean arcRemovableMediaAccessEnabled;
   DOMString[] folderShortcuts;
   boolean trashEnabled;
+  double officeFileMovedOneDrive;
+  double officeFileMovedGoogleDrive;
 };
 
 dictionary PreferencesChange {
