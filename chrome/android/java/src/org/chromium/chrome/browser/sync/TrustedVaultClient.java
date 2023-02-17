@@ -350,19 +350,21 @@ public class TrustedVaultClient {
             int requestId, CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
-        Consumer<Void> responseCallback = completion -> {
+        Consumer<Boolean> responseCallback = success -> {
             if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
                 // Native already unregistered, no response needed.
                 return;
             }
             RecordHistogram.recordBooleanHistogram(
-                    "Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded", completion != null);
+                    "Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded", success);
             TrustedVaultClientJni.get().addTrustedRecoveryMethodCompleted(
                     nativeTrustedVaultClientAndroid, requestId);
         };
 
         get().mBackend.addTrustedRecoveryMethod(accountInfo, publicKey, methodTypeHint)
-                .then(responseCallback::accept, exception -> responseCallback.accept(null));
+                .then(unused
+                        -> responseCallback.accept(true),
+                        exception -> responseCallback.accept(false));
     }
 
     @NativeMethods
