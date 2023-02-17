@@ -15,7 +15,7 @@ const int32 kFailedToStartId = 0;
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// NextMinVersion: 8, NextIndex: 40
+// NextMinVersion: 9, NextIndex: 44
 [Stable, Extensible]
 enum DiagnosticRoutineEnum {
   [Default] kUnknown = 30,
@@ -58,6 +58,10 @@ enum DiagnosticRoutineEnum {
   [MinVersion=6] kEmmcLifetime = 37,
   [MinVersion=7] kAudioSetVolume = 38,
   [MinVersion=7] kAudioSetGain = 39,
+  [MinVersion=8] kBluetoothPower = 40,
+  [MinVersion=8] kBluetoothDiscovery = 41,
+  [MinVersion=8] kBluetoothScanning = 42,
+  [MinVersion=8] kBluetoothPairing = 43,
 };
 
 // Enumeration of the possible DiskRead routine's command type

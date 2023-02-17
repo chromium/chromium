@@ -830,6 +830,29 @@ void FakeCrosHealthd::RunAudioSetGainRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
+void FakeCrosHealthd::RunBluetoothPowerRoutine(
+    RunBluetoothPowerRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kBluetoothPower;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+void FakeCrosHealthd::RunBluetoothDiscoveryRoutine(
+    RunBluetoothDiscoveryRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kBluetoothDiscovery;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+void FakeCrosHealthd::RunBluetoothScanningRoutine(
+    ash::cros_healthd::mojom::NullableUint32Ptr length_seconds,
+    RunBluetoothScanningRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kBluetoothScanning;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+void FakeCrosHealthd::RunBluetoothPairingRoutine(
+    const std::string& peripheral_id,
+    RunBluetoothPairingRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kBluetoothPairing;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
 void FakeCrosHealthd::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   bluetooth_observers_.Add(std::move(observer));

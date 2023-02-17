@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 9, NextIndex: 41
+// NextMinVersion: 10, NextIndex: 45
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -661,6 +661,65 @@ interface CrosHealthdDiagnosticsService {
   //                routine.
   [MinVersion=8] RunAudioSetGainRoutine@40(uint64 node_id, uint8 gain,
                                            bool mute_on)
+      => (RunRoutineResponse response);
+
+  // Requests that the BluetoothPower routine is created and started on the
+  // platform. This routine checks whether the Bluetooth adapter can be powered
+  // off/on and the powered status is consistent in both HCI and D-Bus levels.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothPower is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=9] RunBluetoothPowerRoutine@41()
+      => (RunRoutineResponse response);
+
+  // Requests that the BluetoothDiscovery routine is created and started on the
+  // platform. This routine checks whether the Bluetooth adapter can start/stop
+  // discovery mode and the discovering status is consistent in both HCI and
+  // D-Bus levels.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothDiscovery is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=9] RunBluetoothDiscoveryRoutine@42()
+      => (RunRoutineResponse response);
+
+  // Requests that the BluetoothScanning routine is created and started on the
+  // platform. This routine checks whether the Bluetooth adapter can scan nearby
+  // Bluetooth peripherals and collect peripherals' information.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothScanning is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |length_seconds| - length of time, in seconds, to run the Bluetooth
+  //                      scanning routine for. This parameter needs to be
+  //                      strictly greater than zero. If not specified, the
+  //                      routine will default to 5 seconds.
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=9] RunBluetoothScanningRoutine@43(NullableUint32? length_seconds)
+      => (RunRoutineResponse response);
+
+  // Requests that the BluetoothPairing routine is created and started on the
+  // platform. This routine checks whether the adapter can find and pair with a
+  // device with a specific peripheral id.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothPairing is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |peripheral_id| - the unique id of the target peripheral device to test.
+  //                     This id can be obtained from the output of the
+  //                     Bluetooth scanning routine.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=9] RunBluetoothPairingRoutine@44(string peripheral_id)
       => (RunRoutineResponse response);
 };
 

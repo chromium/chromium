@@ -541,6 +541,22 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       NOTIMPLEMENTED();
       break;
     }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPower: {
+      NOTIMPLEMENTED();
+      break;
+    }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothDiscovery: {
+      NOTIMPLEMENTED();
+      break;
+    }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothScanning: {
+      NOTIMPLEMENTED();
+      break;
+    }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPairing: {
+      NOTIMPLEMENTED();
+      break;
+    }
   }
 }
 
