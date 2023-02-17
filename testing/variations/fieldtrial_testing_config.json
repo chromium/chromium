@@ -4658,7 +4658,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ShoppingList"
+                        "IPH_PriceNotificationsWhileBrowsing",
+                        "ShoppingList",
+                        "kSmartSortingPriceTrackingDestination"
                     ]
                 }
             ]
