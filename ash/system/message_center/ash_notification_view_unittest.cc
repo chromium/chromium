@@ -148,12 +148,21 @@ class MockAshNotificationDragDropDelegate
   // A mocked function to handle the html data in the drag-and-drop data.
   MOCK_METHOD(void, HandleHtmlData, (), (const));
 
+  // A mocked function to handle the file path data in the drag-and-drop data.
+  MOCK_METHOD(void, HandleFilePathData, (const base::FilePath&), (const));
+
  private:
   void PerformDrop(std::unique_ptr<ui::OSExchangeData> data,
                    ui::mojom::DragOperation& output_drag_op) {
-    if (data->HasHtml()) {
+    if (data->HasHtml() || data->HasFile()) {
       output_drag_op = ui::mojom::DragOperation::kCopy;
-      HandleHtmlData();
+      if (data->HasHtml()) {
+        HandleHtmlData();
+      } else {
+        base::FilePath file_path;
+        data->GetFilename(&file_path);
+        HandleFilePathData(file_path);
+      }
     }
   }
 
@@ -190,11 +199,15 @@ class AshNotificationViewTestBase : public AshTestBase,
       bool show_snooze_button = false,
       bool has_message = true,
       message_center::NotificationType notification_type =
-          message_center::NOTIFICATION_TYPE_SIMPLE) {
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+      const absl::optional<base::FilePath>& image_path = absl::nullopt) {
     message_center::RichNotificationData data;
     data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
     data.should_show_snooze_button = show_snooze_button;
+    if (image_path) {
+      data.image_path = *image_path;
+    }
 
     std::u16string message = has_message ? u"message" : u"";
 
@@ -220,17 +233,23 @@ class AshNotificationViewTestBase : public AshTestBase,
   // Create a test notification. All the notifications created by this function
   // will belong to the same group.
   std::unique_ptr<Notification> CreateTestNotificationInAGroup(
-      bool has_image = false) {
+      bool has_image = false,
+      const absl::optional<base::FilePath>& image_path = absl::nullopt) {
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "abc@gmail.com";
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
+
+    message_center::RichNotificationData rich_notification_data;
+    if (image_path) {
+      rich_notification_data.image_path = *image_path;
+    }
 
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         base::NumberToString(current_id_++), u"title", u"message",
         ui::ImageModel::FromImage(CreateTestImage(80, 80)), u"display source",
-        GURL(u"http://test-url.com"), notifier_id,
-        message_center::RichNotificationData(), delegate_);
+        GURL(u"http://test-url.com"), notifier_id, rich_notification_data,
+        delegate_);
     notification->set_small_image(CreateTestImage(16, 16));
 
     if (has_image) {
@@ -1284,7 +1303,8 @@ class AshNotificationViewDragTest
       public testing::WithParamInterface<std::tuple<
           /*use_gesture=*/bool,
           /*is_popup=*/bool,
-          /*use_revamp_feature=*/bool>> {
+          /*use_revamp_feature=*/bool,
+          /*is_image_file_backed=*/bool>> {
  public:
   AshNotificationViewDragTest() {
     std::vector<base::test::FeatureRef> enabled_features{
@@ -1370,6 +1390,9 @@ class AshNotificationViewDragTest
   // Returns true if the quick setting revamp feature is enabled.
   bool DoesUseQsRevamp() const { return std::get<2>(GetParam()); }
 
+  // Returns true if the notification image is backed by a file.
+  bool IsImageFileBacked() const { return std::get<3>(GetParam()); }
+
   const MockAshNotificationDragDropDelegate& drag_drop_delegate() const {
     return drag_drop_delegate_;
   }
@@ -1389,7 +1412,6 @@ class AshNotificationViewDragTest
     drop_handling_widget_ = CreateTestWidget(
         /*delegate=*/nullptr, desks_util::GetActiveDeskContainerId(),
         /*bounds=*/gfx::Rect(100, 100, 300, 300), /*show=*/true);
-    drop_handling_widget_->Show();
     aura::client::SetDragDropDelegate(drop_handling_widget_->GetNativeView(),
                                       &drag_drop_delegate_);
   }
@@ -1420,13 +1442,20 @@ INSTANTIATE_TEST_SUITE_P(
     AshNotificationViewDragTest,
     testing::Combine(/*use_gesture=*/testing::Bool(),
                      /*is_popup=*/testing::Bool(),
-                     /*use_revamp_feature=*/testing::Bool()));
+                     /*use_revamp_feature=*/testing::Bool(),
+                     /*is_image_file_backed=*/testing::Bool()));
 
 // Verifies the drag-and-drop of an orindary notification view.
 TEST_P(AshNotificationViewDragTest, Basics) {
   // Add an image notification.
+  absl::optional<base::FilePath> image_file_path;
+  if (IsImageFileBacked()) {
+    // Use a dummy file path for the file-backed image notification.
+    image_file_path.emplace("dummy_path.png");
+  }
   std::unique_ptr<Notification> notification = CreateTestNotification(
-      /*has_image=*/true);
+      /*has_image=*/true, /*show_snooze_button=*/false, /*has_message=*/false,
+      message_center::NOTIFICATION_TYPE_SIMPLE, image_file_path);
 
   if (IsPopupNotification()) {
     // Wait until the notification popup shows.
@@ -1441,7 +1470,11 @@ TEST_P(AshNotificationViewDragTest, Basics) {
   }
 
   // Drag the notification view to the widget. Verify the image drop is handled.
-  EXPECT_CALL(drag_drop_delegate(), HandleHtmlData);
+  if (IsImageFileBacked()) {
+    EXPECT_CALL(drag_drop_delegate(), HandleFilePathData(*image_file_path));
+  } else {
+    EXPECT_CALL(drag_drop_delegate(), HandleHtmlData);
+  }
   DragNotificationToWidget(*GetViewForNotificationId(notification->id()));
 
   // The the message center bubble is closed and the popup notification is
@@ -1454,9 +1487,14 @@ TEST_P(AshNotificationViewDragTest, Basics) {
 // Verifies the drag-and-drop of a grouped notification view.
 TEST_P(AshNotificationViewDragTest, GroupedNotification) {
   // Add two image notification views belonging to the same group.
+  absl::optional<base::FilePath> image_file_path;
+  if (IsImageFileBacked()) {
+    // Use a dummy file path for the file-backed image notification.
+    image_file_path.emplace("dummy_path.png");
+  }
   std::unique_ptr<Notification> notification = CreateTestNotificationInAGroup(
-      /*has_image=*/true);
-  CreateTestNotificationInAGroup(/*has_image=*/true);
+      /*has_image=*/true, image_file_path);
+  CreateTestNotificationInAGroup(/*has_image=*/true, image_file_path);
 
   // Get the id of the group parent notification.
   const std::string parent_notification_id =
@@ -1492,7 +1530,11 @@ TEST_P(AshNotificationViewDragTest, GroupedNotification) {
   }
 
   // Drag `child_view` to the widget. Verify the image drop is handled.
-  EXPECT_CALL(drag_drop_delegate(), HandleHtmlData);
+  if (IsImageFileBacked()) {
+    EXPECT_CALL(drag_drop_delegate(), HandleFilePathData(*image_file_path));
+  } else {
+    EXPECT_CALL(drag_drop_delegate(), HandleHtmlData);
+  }
   DragNotificationToWidget(*child_view);
 
   // The the message center bubble is closed and the popup notification is

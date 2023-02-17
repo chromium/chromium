@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -124,6 +125,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
 
   // Large image to display on the notification. Optional.
   gfx::Image image;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The path to the file that backs `image`. Set if `image` is file backed.
+  absl::optional<base::FilePath> image_path;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Small badge to display on the notification to illustrate the source of the
   // notification. Optional.

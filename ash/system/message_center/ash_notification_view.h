@@ -291,6 +291,10 @@ class ASH_EXPORT AshNotificationView
   // been laid out yet.
   bool IsMessageLabelTruncated();
 
+  // Attaches the large image's binary data as drop data. This method should be
+  // called only if this notification view is draggable.
+  void AttachBinaryImageAsDropData(ui::OSExchangeData* data);
+
   // Owned by views hierarchy.
   views::View* main_view_ = nullptr;
   views::View* main_right_view_ = nullptr;

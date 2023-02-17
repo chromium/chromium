@@ -870,31 +870,16 @@ absl::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
 void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
   DCHECK(IsDraggable());
 
-  // Fetch the original image used by the large image view.
-  const gfx::ImageSkia& image =
-      static_cast<message_center::LargeImageView*>(
-          GetViewByID(message_center::NotificationViewBase::kLargeImageView))
-          ->original_image();
-  DCHECK(!image.size().IsEmpty());
-
-  // Resize `image` if either the length or the width exceeds the threshold.
-  // TODO(b/268347953): come up with a better way to restrict the image size.
-  const float ratio = static_cast<float>(kMaxDragImageSizeInDIP) /
-                      std::max(image.size().width(), image.size().height());
-  absl::optional<gfx::ImageSkia> resized_image;
-  if (!cc::MathUtil::IsWithinEpsilon(ratio, 1.f) && ratio < 1.f) {
-    gfx::SizeF resized_size(image.size());
-    resized_size.Scale(ratio);
-    resized_image.emplace(gfx::ImageSkiaOperations::CreateResizedImage(
-        image, skia::ImageOperations::RESIZE_BEST,
-        gfx::ToFlooredSize(resized_size)));
-  }
-
-  // Get the HTML snippet that contains the image binary data. Attach the HTML
-  // snippet to `data`.
-  if (const absl::optional<std::u16string> html_snippet = GetHtmlForBitmap(
-          resized_image ? *resized_image->bitmap() : *image.bitmap())) {
-    data->SetHtml(*html_snippet, /*base_url=*/GURL());
+  // If the notification large image is file-backed, attach the image file path
+  // to `data`; otherwise, attach the large image's binary data.
+  if (const absl::optional<base::FilePath>& image_path =
+          message_center::MessageCenter::Get()
+              ->FindNotificationById(notification_id())
+              ->rich_notification_data()
+              .image_path) {
+    data->SetFilename(*image_path);
+  } else {
+    AttachBinaryImageAsDropData(data);
   }
 }
 
@@ -2078,6 +2063,36 @@ bool AshNotificationView::IsMessageLabelTruncated() {
           .front()
           .width();
   return text_width > left_content()->width();
+}
+
+void AshNotificationView::AttachBinaryImageAsDropData(
+    ui::OSExchangeData* data) {
+  DCHECK(IsDraggable());
+
+  // Fetch the original image from the large image view.
+  const gfx::ImageSkia& image =
+      static_cast<message_center::LargeImageView*>(
+          GetViewByID(message_center::NotificationViewBase::kLargeImageView))
+          ->original_image();
+  DCHECK(!image.size().IsEmpty());
+
+  // Shrink `image` if it is too big.
+  const float ratio = static_cast<float>(kMaxDragImageSizeInDIP) /
+                      std::max(image.size().width(), image.size().height());
+  absl::optional<gfx::ImageSkia> resized_image;
+  if (!cc::MathUtil::IsWithinEpsilon(ratio, 1.f) && ratio < 1.f) {
+    gfx::SizeF resized_size(image.size());
+    resized_size.Scale(ratio);
+    resized_image.emplace(gfx::ImageSkiaOperations::CreateResizedImage(
+        image, skia::ImageOperations::RESIZE_BEST,
+        gfx::ToFlooredSize(resized_size)));
+  }
+
+  // Add the drop data in the format of HTML.
+  if (const absl::optional<std::u16string> html_snippet = GetHtmlForBitmap(
+          resized_image ? *resized_image->bitmap() : *image.bitmap())) {
+    data->SetHtml(*html_snippet, /*base_url=*/GURL());
+  }
 }
 
 }  // namespace ash
