@@ -705,6 +705,9 @@ bool PermissionControllerImpl::IsSubscribedToPermissionChangeEvent(
     RenderFrameHost* render_frame_host) {
   PermissionServiceContext* permission_service_context =
       PermissionServiceContext::GetForCurrentDocument(render_frame_host);
+  if (!permission_service_context) {
+    return false;
+  }
 
   return permission_service_context->GetOnchangeEventListeners().find(
              permission) !=

@@ -173,7 +173,6 @@
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/render_frame_host_observer.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
@@ -1875,8 +1874,9 @@ void RenderFrameHostImpl::DidEnterBackForwardCacheInternal() {
   GetProcess()->PauseSocketManagerForRenderFrameHost(GetGlobalId());
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
-  for (auto& observer : observers_) {
-    observer.DidEnterBackForwardCache();
+  if (auto* permission_service_context =
+          PermissionServiceContext::GetForCurrentDocument(this)) {
+    permission_service_context->StoreStatusAtBFCacheEntry();
   }
 }
 
@@ -3623,14 +3623,6 @@ void RenderFrameHostImpl::SetCrossOriginOpenerPolicyReporter(
 
 bool RenderFrameHostImpl::IsCredentialless() const {
   return policy_container_host_->policies().is_credentialless;
-}
-
-void RenderFrameHostImpl::AddObserver(RenderFrameHostObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void RenderFrameHostImpl::RemoveObserver(RenderFrameHostObserver* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 void RenderFrameHostImpl::OnCreateChildFrame(
@@ -11035,7 +11027,7 @@ void RenderFrameHostImpl::CreateBucketManagerHost(
 
 void RenderFrameHostImpl::CreatePermissionService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
-  PermissionServiceContext::GetForCurrentDocument(this)->CreateService(
+  PermissionServiceContext::GetOrCreateForCurrentDocument(this)->CreateService(
       std::move(receiver));
 }
 
@@ -14050,12 +14042,6 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
         }
       }
     }
-
-    if (lifecycle_state_ == LifecycleStateImpl::kInBackForwardCache) {
-      for (auto& observer : observers_) {
-        observer.DidRestoreFromBackForwardCache();
-      }
-    }
   }
 
   if (lifecycle_state() == LifecycleStateImpl::kInBackForwardCache)
@@ -14092,6 +14078,14 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
     if (old_lifecycle_state != new_lifecycle_state) {
       delegate_->RenderFrameHostStateChanged(this, old_lifecycle_state,
                                              new_lifecycle_state);
+    }
+  }
+
+  if (new_state == LifecycleStateImpl::kActive &&
+      old_state == LifecycleStateImpl::kInBackForwardCache) {
+    if (auto* permission_service_context =
+            PermissionServiceContext::GetForCurrentDocument(this)) {
+      permission_service_context->NotifyPermissionStatusChangedIfNeeded();
     }
   }
 }

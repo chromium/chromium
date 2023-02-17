@@ -2066,9 +2066,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool IsCredentialless() const override;
 
-  void AddObserver(RenderFrameHostObserver* observer) override;
-  void RemoveObserver(RenderFrameHostObserver* observer) override;
-
   bool is_fenced_frame_root_originating_from_opaque_url() const {
     return is_fenced_frame_root_originating_from_opaque_url_;
   }
@@ -4781,9 +4778,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // and it's meant to generally be stable for the FTN lifetime, but is allowed
   // to change across MPArch activations like prerendering.
   const base::UnguessableToken devtools_frame_token_;
-
-  // The observers watching our state changed event.
-  base::ObserverList<RenderFrameHostObserver> observers_;
 
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently

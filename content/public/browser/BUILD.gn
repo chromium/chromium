@@ -320,8 +320,6 @@ source_set("browser_sources") {
     "reduce_accept_language_controller_delegate.h",
     "reload_type.h",
     "render_frame_host.h",
-    "render_frame_host_observer.cc",
-    "render_frame_host_observer.h",
     "render_frame_host_receiver_set.h",
     "render_frame_metadata_provider.h",
     "render_process_host.h",

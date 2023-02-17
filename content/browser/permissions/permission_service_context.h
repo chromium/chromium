@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/render_frame_host_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,8 +43,7 @@ class RenderProcessHost;
 // created via the DocumentUserData static factories, as these
 // instances are deleted when a new document is committed.
 class CONTENT_EXPORT PermissionServiceContext
-    : public RenderProcessHostObserver,
-      public RenderFrameHostObserver {
+    : public RenderProcessHostObserver {
  public:
   explicit PermissionServiceContext(RenderProcessHost* render_process_host);
   PermissionServiceContext(const PermissionServiceContext&) = delete;
@@ -53,7 +51,12 @@ class CONTENT_EXPORT PermissionServiceContext
   ~PermissionServiceContext() override;
 
   // Return PermissionServiceContext associated with the current document in the
-  // given RenderFrameHost, lazily creatin gone, if needed.
+  // given RenderFrameHost, lazily creating one, if needed.
+  static PermissionServiceContext* GetOrCreateForCurrentDocument(
+      RenderFrameHost* render_frame_host);
+
+  // Return PermissionServiceContext associated with the current document.
+  // Return null if there's no associated one.
   static PermissionServiceContext* GetForCurrentDocument(
       RenderFrameHost* render_frame_host);
 
@@ -87,9 +90,8 @@ class CONTENT_EXPORT PermissionServiceContext
   // RenderProcessHostObserver:
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  // RenderFrameHostObserver:
-  void DidEnterBackForwardCache() override;
-  void DidRestoreFromBackForwardCache() override;
+  void StoreStatusAtBFCacheEntry();
+  void NotifyPermissionStatusChangedIfNeeded();
 
   std::set<blink::PermissionType>& GetOnchangeEventListeners() {
     return onchange_event_listeners_;
