@@ -5027,6 +5027,9 @@
   <message name="IDS_BRUSCHETTA_UNINSTALLER_ERROR" desc="Text shown in the Bruschetta (codename) uninstaller dialog when uninstallation fails.">
     Error removing Bruschetta. Please try again.
   </message>
+  <message name="IDS_BRUSCHETTA_INSTALLER_RETRY_BUTTON" desc="Button for Bruschetta (Codename) installer to retry after failing.">
+    Retry
+  </message>
 
   <!-- Time limit notification -->
   <message name="IDS_SCREEN_TIME_NOTIFICATION_TITLE" desc="The title of the notification when screen usage limit reaches before locking the device.">

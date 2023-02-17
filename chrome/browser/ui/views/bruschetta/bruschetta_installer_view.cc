@@ -8,10 +8,8 @@
 
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer_impl.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -153,6 +151,12 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   if (dark_light_controller) {
     dark_light_controller->AddObserver(this);
   }
+  installer_factory_ =
+      base::BindRepeating([](Profile* profile, base::OnceClosure closure) {
+        return static_cast<std::unique_ptr<bruschetta::BruschettaInstaller>>(
+            std::make_unique<bruschetta::BruschettaInstallerImpl>(
+                profile, std::move(closure)));
+      });
 }
 
 BruschettaInstallerView::~BruschettaInstallerView() {
@@ -162,24 +166,21 @@ BruschettaInstallerView::~BruschettaInstallerView() {
   if (installer_) {
     installer_->Cancel();
   }
+  observation_.Reset();
   g_bruschetta_installer_view = nullptr;
 }
 
 bool BruschettaInstallerView::Accept() {
-  if (state_ == State::kConfirmInstall) {
-    StartInstallation();
-    return false;
-  }
-
-  // If we're not on the confirmation page then we're on the end page.
-  return true;
+  DCHECK(state_ == State::kConfirmInstall || state_ == State::kFailed);
+  observation_.Reset();
+  installer_.reset();
+  StartInstallation();
+  return false;
 }
 
 bool BruschettaInstallerView::Cancel() {
-  observation_.Reset();
-  if (state_ == State::kInstalling) {
-    installer_->Cancel();
-  }
+  // We're about to get destroyed, and since all the cleanup happens in our
+  // destructor there's nothing special to do here.
   return true;
 }
 
@@ -187,16 +188,11 @@ void BruschettaInstallerView::StartInstallation() {
   state_ = State::kInstalling;
   progress_bar_->SetValue(-1);
 
-  if (!installer_) {
-    installer_ = std::make_unique<bruschetta::BruschettaInstallerImpl>(
-        profile_, base::BindOnce(&BruschettaInstallerView::OnInstallationEnded,
-                                 weak_factory_.GetWeakPtr()));
-  } else {
-    // Only test code should have an existing installer, non-test-code should
-    // always be hitting the above branch to create an instance since we have a
-    // singleton view and no way of going back to a previous page.
-    CHECK_IS_TEST();
-  }
+  DCHECK(!installer_)
+      << "Expect to create a new installer every run, but already had one";
+  installer_ = installer_factory_.Run(
+      profile_, base::BindOnce(&BruschettaInstallerView::OnInstallationEnded,
+                               weak_factory_.GetWeakPtr()));
   observation_.Observe(installer_.get());
   installer_->Install(guest_id_.vm_name, bruschetta::kBruschettaPolicyId);
 
@@ -287,7 +283,7 @@ int BruschettaInstallerView::GetCurrentDialogButtons() const {
     case State::kConfirmInstall:
       return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
     case State::kFailed:
-      return ui::DIALOG_BUTTON_CANCEL;
+      return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
   }
 }
 
@@ -303,7 +299,9 @@ std::u16string BruschettaInstallerView::GetCurrentDialogButtonLabel(
       DCHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
       return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
     case State::kFailed:
-      return l10n_util::GetStringUTF16(IDS_APP_CLOSE);
+      return l10n_util::GetStringUTF16(
+          button == ui::DIALOG_BUTTON_OK ? IDS_BRUSCHETTA_INSTALLER_RETRY_BUTTON
+                                         : IDS_APP_CLOSE);
   }
 }
 

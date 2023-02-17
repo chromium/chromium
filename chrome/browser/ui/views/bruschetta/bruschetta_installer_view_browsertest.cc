@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/bind.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,14 +61,26 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
 
     ASSERT_NE(nullptr, view_);
     ASSERT_FALSE(view_->GetWidget()->IsClosed());
-    auto mock_installer = std::make_unique<BruschettaInstallerMock>();
-    installer_ = mock_installer.get();
-    view_->set_installer_for_testing(std::move(mock_installer));
-    EXPECT_CALL(*installer_, AddObserver).Times(AnyNumber());
+
+    // Since expectations need to be set ahead of time, but the installer itself
+    // expects to create and recreate installers as needed, we create our mocks
+    // ahead of time, then each time we're called we transfer our pending mock
+    // to the installer and pre-create another for the next call.
+    // Note: This means all expectations need to be set before calling install,
+    // you can't start installing, set expectation, then cancel/err/etc.
+    installer_ = std::make_unique<BruschettaInstallerMock>();
+    view_->set_installer_factory_for_testing(base::BindLambdaForTesting(
+        [this](Profile* p, base::OnceClosure closure) {
+          auto mock_installer = std::move(installer_);
+          installer_ = std::make_unique<BruschettaInstallerMock>();
+          EXPECT_CALL(*installer_, AddObserver).Times(AnyNumber());
+          return static_cast<std::unique_ptr<BruschettaInstaller>>(
+              std::move(mock_installer));
+        }));
   }
 
   BruschettaInstallerView* view_;
-  BruschettaInstallerMock* installer_;
+  std::unique_ptr<bruschetta::BruschettaInstallerMock> installer_;
 };
 
 IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, Show) {
@@ -104,6 +117,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, InstallThenCancel) {
 IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, InstallThenError) {
   ShowUi("default");
   EXPECT_CALL(*installer_, Install);
+  EXPECT_CALL(*installer_, Cancel).Times(AtLeast(1));
 
   view_->AcceptDialog();
   EXPECT_EQ(nullptr, view_->GetOkButton());
@@ -112,12 +126,11 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, InstallThenError) {
             l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE));
 
   view_->Error(BruschettaInstallResult::kStartVmFailed);
-  EXPECT_EQ(nullptr, view_->GetOkButton());
+  EXPECT_NE(nullptr, view_->GetOkButton());
   EXPECT_NE(nullptr, view_->GetCancelButton());
   EXPECT_EQ(view_->GetPrimaryMessage(),
             l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_ERROR_TITLE));
 
-  EXPECT_CALL(*installer_, Cancel).Times(AtLeast(1));
   view_->CancelDialog();
   ASSERT_TRUE(view_->GetWidget()->IsClosed());
 }
@@ -147,6 +160,36 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, InstallThenSuccess) {
   // We close the installer upon completion since we switch to a terminal
   // window to complete the install.
   ASSERT_TRUE(view_->GetWidget()->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, InstallWithRetry) {
+  ShowUi("default");
+  EXPECT_CALL(*installer_, Install);
+  EXPECT_CALL(*installer_, Cancel).Times(0);
+
+  // Start installing
+  view_->AcceptDialog();
+  EXPECT_EQ(nullptr, view_->GetOkButton());
+  EXPECT_NE(nullptr, view_->GetCancelButton());
+  EXPECT_EQ(view_->GetPrimaryMessage(),
+            l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE));
+
+  // An error happened
+  view_->Error(BruschettaInstallResult::kStartVmFailed);
+  EXPECT_NE(nullptr, view_->GetOkButton());
+  EXPECT_NE(nullptr, view_->GetCancelButton());
+  EXPECT_EQ(view_->GetPrimaryMessage(),
+            l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_ERROR_TITLE));
+
+  // Retry to start installing again, since the installer gets recreated we need
+  // to set expectations again.
+  EXPECT_CALL(*installer_, Install);
+
+  view_->AcceptDialog();
+  EXPECT_EQ(nullptr, view_->GetOkButton());
+  EXPECT_NE(nullptr, view_->GetCancelButton());
+  EXPECT_EQ(view_->GetPrimaryMessage(),
+            l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE));
 }
 
 }  // namespace

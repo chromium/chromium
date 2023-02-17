@@ -31,6 +31,10 @@ class BruschettaInstallerView
   METADATA_HEADER(BruschettaInstallerView);
 
   using InstallerState = bruschetta::BruschettaInstaller::State;
+  using InstallerFactory =
+      base::RepeatingCallback<std::unique_ptr<bruschetta::BruschettaInstaller>(
+          Profile* profile,
+          base::OnceClosure close_callback)>;
 
   static void Show(Profile* profile, const guest_os::GuestId& guest_id);
 
@@ -59,11 +63,9 @@ class BruschettaInstallerView
   std::u16string GetSecondaryMessage() const;
   void OnInstallationEnded();
 
-  // Instead of creating a real one the view will use this one, letting tests
-  // inject an installer.
-  void set_installer_for_testing(
-      std::unique_ptr<bruschetta::BruschettaInstaller> installer) {
-    installer_ = std::move(installer);
+  // Let tests inject mock installers.
+  void set_installer_factory_for_testing(InstallerFactory factory) {
+    installer_factory_ = std::move(factory);
   }
 
  private:
@@ -110,6 +112,7 @@ class BruschettaInstallerView
       observation_;
 
   std::unique_ptr<bruschetta::BruschettaInstaller> installer_;
+  InstallerFactory installer_factory_;
   guest_os::GuestId guest_id_;
   bruschetta::BruschettaInstallResult error_ =
       bruschetta::BruschettaInstallResult::kUnknown;
