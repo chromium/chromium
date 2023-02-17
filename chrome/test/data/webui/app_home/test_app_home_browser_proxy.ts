@@ -22,13 +22,28 @@ export class FakePageHandler extends TestBrowserProxy implements
       'createAppShortcut',
       'installAppLocally',
       'launchApp',
+      'launchDeprecatedAppDialog',
     ]);
     this.apps_ = apps;
     this.callbackRouterRemote_ = callbackRouterRemote;
   }
 
+  addAppToList(app: AppInfo) {
+    this.apps_.appList.push(app);
+  }
+
   getApps() {
     return Promise.resolve(this.apps_);
+  }
+
+  getDeprecationLinkString() {
+    let deprecated: string = '';
+    for (const app of this.apps_.appList) {
+      if (app.isDeprecatedApp) {
+        deprecated = 'Remove X deprecated apps.';
+      }
+    }
+    return Promise.resolve({linkString: deprecated});
   }
 
   uninstallApp(appId: string) {
@@ -59,7 +74,9 @@ export class FakePageHandler extends TestBrowserProxy implements
     }
   }
 
-  launchDeprecatedAppDialog() {}
+  launchDeprecatedAppDialog() {
+    this.methodCalled('launchDeprecatedAppDialog');
+  }
 
   installAppLocally(appId: string) {
     this.methodCalled('installAppLocally', appId);

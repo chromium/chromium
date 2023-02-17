@@ -101,20 +101,52 @@ export class AppItemElement extends PolymerElement {
     this.closeContextMenu();
   }
 
+  // Methods to hide menu items:
+  private isWebStoreLinkHidden_() {
+    return !this.appInfo.storePageUrl;
+  }
+  private isOpenInWindowHidden_() {
+    return this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
+  }
+  private isLaunchOnStartupDisabled_() {
+    return !this.appInfo.mayToggleRunOnOsLoginMode;
+  }
+  private isLaunchOnStartupHidden_() {
+    return !this.appInfo.mayShowRunOnOsLoginMode ||
+        this.appInfo.isDeprecatedApp;
+  }
+  private isCreateShortcutHidden_() {
+    return !this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
+  }
+  private isInstallLocallyHidden_() {
+    return this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
+  }
+  private isAppSettingsHidden_() {
+    return !this.appInfo.isLocallyInstalled;
+  }
+
   private isLocallyInstalled_() {
     return this.appInfo.isLocallyInstalled;
   }
 
-  private isLaunchOnStartupHidden_() {
-    return !this.appInfo.mayShowRunOnOsLoginMode;
-  }
-
-  private isLaunchOnStartupDisabled_() {
-    return !this.appInfo.mayToggleRunOnOsLoginMode;
-  }
-
   private isLaunchOnStartUp_() {
     return (this.appInfo.runOnOsLoginMode !== RunOnOsLoginMode.kNotRun);
+  }
+
+  private onMenuClick_(event: Event) {
+    // The way the menu works, it's inside of a dialog which covers the whole
+    // screen. Because our element uses a click listener on the entire element,
+    // any clicks anywhere while the context menu is open will then bubble up to
+    // our launch listener. So this makes sure that we stop those clicks here.
+    event.stopPropagation();
+  }
+
+  private openStorePage_() {
+    if (!this.appInfo.storePageUrl) {
+      return;
+    }
+    window.open(new URL(this.appInfo.storePageUrl.url), '_blank');
+    this.closeContextMenu();
   }
 
   private onOpenInWindowItemClick_() {

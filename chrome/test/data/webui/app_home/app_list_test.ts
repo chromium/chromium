@@ -5,11 +5,13 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://apps/app_list.js';
 import 'chrome://apps/app_item.js';
+import 'chrome://apps/deprecated_apps_link.js';
 
 import {AppInfo, PageRemote, RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
 import {AppHomeUserAction} from 'chrome://apps/app_home_utils.js';
 import {AppListElement} from 'chrome://apps/app_list.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
+import {DeprecatedAppsLinkElement} from 'chrome://apps/deprecated_apps_link.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -42,6 +44,7 @@ suite('AppListTest', () => {
   let testBrowserProxy: TestAppHomeBrowserProxy;
   let callbackRouterRemote: PageRemote;
   let testAppInfo: AppInfo;
+  let deprecatedAppInfo: AppInfo;
   let metricsPrivateMock: MetricsPrivateMock;
 
   setup(async () => {
@@ -52,8 +55,7 @@ suite('AppListTest', () => {
           startUrl: {url: 'https://test.google.com/testapp1'},
           name: 'Test App 1',
           iconUrl: {
-            url:
-                'chrome://extension-icon/ahfgeienlihckogmohjhadlkjgocpleb/128/1',
+            url: 'chrome://app-icon/ahfgeienlihckogmohjhadlkjgocpleb/128/1',
           },
           mayShowRunOnOsLoginMode: true,
           mayToggleRunOnOsLoginMode: true,
@@ -61,14 +63,14 @@ suite('AppListTest', () => {
           isLocallyInstalled: true,
           mayUninstall: true,
           openInWindow: false,
+          isDeprecatedApp: false,
         },
         {
           id: 'ahfgeienlihckogmotestdlkjgocpleb',
           startUrl: {url: 'https://test.google.com/testapp2'},
           name: 'Test App 2',
           iconUrl: {
-            url:
-                'chrome://extension-icon/ahfgeienlihckogmotestdlkjgocpleb/128/1',
+            url: 'chrome://app-icon/ahfgeienlihckogmotestdlkjgocpleb/128/1',
           },
           mayShowRunOnOsLoginMode: false,
           mayToggleRunOnOsLoginMode: false,
@@ -76,6 +78,7 @@ suite('AppListTest', () => {
           isLocallyInstalled: false,
           mayUninstall: false,
           openInWindow: false,
+          isDeprecatedApp: false,
         },
       ],
     };
@@ -85,7 +88,7 @@ suite('AppListTest', () => {
       startUrl: {url: 'https://test.google.com/testapp3'},
       name: 'Test App 3',
       iconUrl: {
-        url: 'chrome://extension-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/128/1',
+        url: 'chrome://app-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/128/1',
       },
       mayShowRunOnOsLoginMode: false,
       mayToggleRunOnOsLoginMode: false,
@@ -93,6 +96,25 @@ suite('AppListTest', () => {
       isLocallyInstalled: true,
       openInWindow: false,
       mayUninstall: true,
+      isDeprecatedApp: false,
+    };
+    deprecatedAppInfo = {
+      id: 'mplpmdejoamenolpcojgegminhcnmibo',
+      startUrl: {url: 'https://test.google.com/deprecated_app'},
+      name: 'Deprecated App',
+      iconUrl: {
+        url: 'chrome://extension-icon/mplpmdejoamenolpcojgegminhcnmibo/128/1',
+      },
+      mayShowRunOnOsLoginMode: false,
+      mayToggleRunOnOsLoginMode: false,
+      runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
+      isLocallyInstalled: true,
+      openInWindow: true,
+      mayUninstall: true,
+      isDeprecatedApp: true,
+      storePageUrl: {
+        url: '',
+      },
     };
     metricsPrivateMock = new MetricsPrivateMock();
     chrome.metricsPrivate =
@@ -120,16 +142,16 @@ suite('AppListTest', () => {
         appItems[0]!.shadowRoot!.querySelector('#textContainer')!.textContent,
         apps.appList[0]!.name);
     assertEquals(
-        appItems[0]!.shadowRoot!
-            .querySelector<HTMLImageElement>('#iconContainer img')!.src,
+        appItems[0]!.shadowRoot!.querySelector<HTMLImageElement>(
+                                    '#iconImage')!.src,
         apps.appList[0]!.iconUrl.url);
 
     assertEquals(
         appItems[1]!.shadowRoot!.querySelector('#textContainer')!.textContent,
         apps.appList[1]!.name);
     assertEquals(
-        appItems[1]!.shadowRoot!
-            .querySelector<HTMLImageElement>('#iconContainer img')!.src,
+        appItems[1]!.shadowRoot!.querySelector<HTMLImageElement>(
+                                    '#iconImage')!.src,
         apps.appList[1]!.iconUrl.url + '?grayscale=true');
   });
 
@@ -628,5 +650,88 @@ suite('AppListTest', () => {
         await testBrowserProxy.fakeHandler.whenCalled('launchApp');
     assertEquals(appId, apps.appList[0]!.id);
     assertEquals(clickEvent, null);
+  });
+
+  test('No deprecated apps means no deprecated app ux', async () => {
+    const deprecatedAppsLink: DeprecatedAppsLinkElement =
+        document.createElement('deprecated-apps-link');
+    document.body.appendChild(deprecatedAppsLink);
+    await waitAfterNextRender(deprecatedAppsLink);
+
+    assertTrue(!!deprecatedAppsLink);
+    const linkContainer: HTMLElement =
+        deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
+            '#container')!;
+    assertTrue(linkContainer!.hidden, 'Deprecation link is not hidden');
+
+    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    assertTrue(!!appItems, 'No apps.');
+
+    appItems.forEach((item) => {
+      const deprecatedIcon: HTMLElement =
+          item!.shadowRoot!.querySelector<HTMLImageElement>('#deprecatedIcon')!;
+      assertTrue(
+          deprecatedIcon.hidden,
+          'Non-deprecated app should not have deprecation icon');
+    });
+  });
+
+  test('Deprecated app means deprecation ux', async () => {
+    // Test adding an app.
+    callbackRouterRemote.addApp(deprecatedAppInfo);
+    testBrowserProxy.fakeHandler.addAppToList(deprecatedAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+
+    const deprecatedAppsLink: DeprecatedAppsLinkElement =
+        document.createElement('deprecated-apps-link');
+    document.body.appendChild(deprecatedAppsLink);
+    await waitAfterNextRender(deprecatedAppsLink);
+
+    assertTrue(!!deprecatedAppsLink);
+    const linkContainer: HTMLElement =
+        deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
+            '#container')!;
+    assertFalse(
+        linkContainer.hidden, 'Removal link is hidden when it shouldn\'t be.');
+
+    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    assertTrue(!!appItems, 'No apps.');
+
+    appItems.forEach((item) => {
+      const deprecatedIcon: HTMLElement =
+          item!.shadowRoot!.querySelector<HTMLImageElement>('#deprecatedIcon')!;
+      if (item.id === deprecatedAppInfo.id) {
+        assertFalse(
+            deprecatedIcon.hidden,
+            'Deprecated app should have deprecated icon visible');
+      } else {
+        assertTrue(
+            deprecatedIcon.hidden,
+            'Non-deprecated app should not have deprecation icon');
+      }
+    });
+  });
+
+  test('Clicking deprecation link calls handler', async () => {
+    // Test adding an app.
+    callbackRouterRemote.addApp(deprecatedAppInfo);
+    testBrowserProxy.fakeHandler.addAppToList(deprecatedAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+
+    const deprecatedAppsLink: DeprecatedAppsLinkElement =
+        document.createElement('deprecated-apps-link');
+    document.body.appendChild(deprecatedAppsLink);
+    await waitAfterNextRender(deprecatedAppsLink);
+
+    assertTrue(!!deprecatedAppsLink);
+    const link: HTMLElement =
+        deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
+            '#deprecated-apps-link')!;
+
+    link.click();
+
+    await testBrowserProxy.fakeHandler.whenCalled('launchDeprecatedAppDialog');
   });
 });

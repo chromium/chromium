@@ -49,6 +49,7 @@ namespace {
 constexpr char kTestAppUrl[] = "https://www.example.com/";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
 constexpr char kTestAppName[] = "Test App";
+constexpr char kTestAppNameWithUnsupportedText[] = "Test App (unsupported app)";
 
 #if !BUILDFLAG(IS_MAC)
 void FlushShortcutTasks() {
@@ -315,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnWebAppInstalled) {
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnExtensionLoaded) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
   ASSERT_NE(extension, nullptr);
@@ -343,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnExtensionUninstall) {
       GetAppHomePageHandler();
 
   // First, install a test extension app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
   page_handler->Wait();
@@ -379,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, UninstallExtensionApp) {
       GetAppHomePageHandler();
 
   // First, install a test extension app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
   page_handler->Wait();
@@ -440,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
       GetAppHomePageHandler();
 
   // First, install a test extension app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
   page_handler->Wait();
@@ -483,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, SetRunOnOsLoginMode) {
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, HandleLaunchDeprecatedApp) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)))
       .Times(testing::AtLeast(1));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();

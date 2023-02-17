@@ -43,7 +43,10 @@ struct AppInfo {
   bool open_in_window;
   // Whether this app can be uninstalled by user.
   bool may_uninstall;
-
+  // If this app is a deprecated chrome app.
+  bool is_deprecated_app;
+  // If this is an extension that came from the web store.
+  url.mojom.Url? store_page_url;
 };
 
 struct ClickEvent {
@@ -60,10 +63,12 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
-// Following APIs are only called from `chrome://apps` page.
+// Renderer to browser interface to support chrome://apps WebUI.
 interface PageHandler {
   // Get all apps' information that defined in `AppInfo`.
   GetApps() => (array<AppInfo> app_list);
+  // Gets the i18n'ed string for the label for removing deprecated apps.
+  GetDeprecationLinkString() => (string link_string);
   // Uninstall app for specific `app_id`.
   UninstallApp(string app_id);
   // Open app’s site setting page.

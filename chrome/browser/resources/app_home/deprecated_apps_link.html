@@ -1,0 +1,32 @@
+<style>
+#container {
+  align-items: center;
+  display: inline-flex;
+  margin-top: 10px;
+  padding-inline-end: 20px;
+  position: fixed;
+  right: 0;
+}
+
+html[dir='rtl'] #container {
+  left: 0;
+  right: auto;
+}
+
+#container img {
+  height: 16px;
+  margin-inline-end: 5px;
+  width: 16px;
+}
+
+</style>
+
+<div id="container" hidden$="[[isHidden_(deprecationLinkString)]]">
+  <img src="chrome://resources/images/error_yellow900.svg">
+  <a is="action-link"
+     id="deprecated-apps-link"
+     onclick="[[linkClicked_]]"
+     href="#">
+    [[deprecationLinkString]]
+  </a>
+</div>

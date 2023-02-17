@@ -17,8 +17,17 @@
   margin-inline-end: auto;
   margin-inline-start: auto;
   margin-top: 14px;
+  position: relative;
   transition: all 250ms;
   width: 64px;
+}
+
+#deprecatedIcon {
+  bottom: 0;
+  height: 18px;
+  position: absolute;
+  right: 0;
+  width: 18px;
 }
 
 #iconContainer:active {
@@ -61,14 +70,22 @@ cr-checkbox::part(label-container) {
 
 <div id="iconContainer">
   <img src="[[getIconUrl_(appInfo)]]" id="iconImage"
-  alt="[[appInfo.name]]" aria-hidden="true" draggable="false"></img>
+    alt="[[appInfo.name]]" aria-hidden="true" draggable="false"></img>
+  <img id="deprecatedIcon"
+    src="chrome://resources/images/error_yellow900.svg"
+    hidden$="[[!appInfo.isDeprecatedApp]]"></img>
 </div>
 <div id="textContainer" aria-hidden="true">[[appInfo.name]]</div>
 
-<cr-action-menu id="menu" on-mousedown="onMenuMousedown_">
+<cr-action-menu
+    id="menu" on-mousedown="onMenuMousedown_" on-click="onMenuClick_">
+  <button id="showStorePage" class="dropdown-item"
+    on-click="openStorePage_" hidden="[[isWebStoreLinkHidden_(appInfo)]]">
+    $i18n{viewInWebStore}
+  </button>
   <div id="openInWindow" tabindex="0" class="dropdown-item"
       on-click="onOpenInWindowItemClick_" role="button"
-      hidden="[[!isLocallyInstalled_(appInfo)]]">
+      hidden="[[!isOpenInWindowHidden_(appInfo)]]">
     <div class="dropdown-item-label">
       $i18n{appWindowOpenLabel}
     </div>
@@ -93,14 +110,14 @@ cr-checkbox::part(label-container) {
   </div>
   <button id="createShortcut" class="dropdown-item"
       on-click="onCreateShortcutItemClick_"
-      hidden="[[!isLocallyInstalled_(appInfo)]]">
+      hidden="[[isCreateShortcutHidden_(appInfo)]]">
     $i18n{createShortcutForAppLabel}
   </button>
   <button id="installLocally" class="dropdown-item"
     on-click="onInstallLocallyItemClick_"
-    hidden="[[isLocallyInstalled_(appInfo)]]">
+    hidden="[[isInstallLocallyHidden_(appInfo)]]">
   $i18n{installLocallyLabel}
-</button>
+  </button>
   <hr>
   <button id="uninstall" class="dropdown-item"
     disabled="[[!appInfo.mayUninstall]]"
@@ -109,7 +126,7 @@ cr-checkbox::part(label-container) {
   </button>
   <button id="appSettings" class="dropdown-item"
       on-click="onAppSettingsItemClick_"
-      hidden="[[!isLocallyInstalled_(appInfo)]]">
+      hidden="[[isAppSettingsHidden_(appInfo)]]">
     $i18n{appSettingsLabel}
   </button>
 </cr-action-menu>

@@ -22,6 +22,7 @@ generate_grd("build_grdp") {
     "drop_down_arrow_gray.svg",
     "drop_down_arrow_white.svg",
     "error.svg",
+    "error_yellow900.svg",
     "icon_cancel.svg",
     "icon_copy_content.svg",
     "icon_file.png",

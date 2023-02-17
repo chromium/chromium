@@ -15,6 +15,7 @@ build_webui("build") {
   web_component_files = [
     "app_list.ts",
     "app_item.ts",
+    "deprecated_apps_link.ts",
   ]
 
   non_web_component_files = [

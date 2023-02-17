@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 
+#include "base/check_deref.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -46,12 +50,14 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/gurl.h"
 
@@ -97,8 +103,8 @@ AppHomePageHandler::AppHomePageHandler(
       receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_app_provider_(web_app::WebAppProvider::GetForWebApps(profile)),
-      extension_service_(
-          extensions::ExtensionSystem::Get(profile)->extension_service()) {
+      extension_system_(
+          CHECK_DEREF(extensions::ExtensionSystem::Get(profile))) {
   web_app_registrar_observation_.Observe(
       &web_app_provider_->registrar_unsafe());
   install_manager_observation_.Observe(&web_app_provider_->install_manager());
@@ -329,8 +335,10 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   app_info->open_in_window = registrar.GetAppEffectiveDisplayMode(app_id) !=
                              blink::mojom::DisplayMode::kBrowser;
 
+  app_info->store_page_url = absl::nullopt;
   app_info->may_uninstall =
       web_app_provider_->install_finalizer().CanUserUninstallWebApp(app_id);
+  app_info->is_deprecated_app = false;
   return app_info;
 }
 
@@ -343,7 +351,21 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
   GURL start_url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
   app_info->start_url = start_url;
 
-  app_info->name = extension->name();
+  bool deprecated_app = false;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+  auto* context = extension_system_->extension_service()->GetBrowserContext();
+  deprecated_app =
+      extensions::IsExtensionUnsupportedDeprecatedApp(context, extension->id());
+#endif
+
+  if (deprecated_app) {
+    app_info->name =
+        l10n_util::GetStringFUTF8(IDS_APPS_PAGE_DEPRECATED_APP_TITLE,
+                                  base::UTF8ToUTF16(extension->name()));
+  } else {
+    app_info->name = extension->name();
+  }
 
   app_info->icon_url = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_LARGE,
@@ -354,8 +376,18 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
 
   app_info->is_locally_installed =
       !extension->is_hosted_app() ||
-      extensions::BookmarkAppIsLocallyInstalled(extension_service_->profile(),
-                                                extension);
+      extensions::BookmarkAppIsLocallyInstalled(profile_, extension);
+  app_info->store_page_url = absl::nullopt;
+  if (extension->from_webstore()) {
+    GURL store_url = GURL(base::StrCat(
+        {"https://chrome.google.com/webstore/detail/", extension->id()}));
+    DCHECK(store_url.is_valid());
+    app_info->store_page_url = store_url;
+  }
+  app_info->is_deprecated_app = deprecated_app;
+  app_info->may_uninstall =
+      extension_system_->management_policy()->UserMayModifySettings(extension,
+                                                                    nullptr);
   return app_info;
 }
 
@@ -385,7 +417,7 @@ void AppHomePageHandler::FillExtensionInfoList(
     }
 
     bool is_deprecated_app = false;
-    auto* context = extension_service_->GetBrowserContext();
+    auto* context = extension_system_->extension_service()->GetBrowserContext();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
     is_deprecated_app = extensions::IsExtensionUnsupportedDeprecatedApp(
@@ -442,15 +474,13 @@ extensions::ExtensionUninstallDialog*
 AppHomePageHandler::CreateExtensionUninstallDialog() {
   Browser* browser = GetCurrentBrowser();
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
-      extension_service_->profile(), browser->window()->GetNativeWindow(),
-      this);
+      profile_, browser->window()->GetNativeWindow(), this);
   return extension_uninstall_dialog_.get();
 }
 
 void AppHomePageHandler::UninstallExtensionApp(const Extension* extension) {
-  if (!extensions::ExtensionSystem::Get(extension_service_->profile())
-           ->management_policy()
-           ->UserMayModifySettings(extension, nullptr)) {
+  if (!extension_system_->management_policy()->UserMayModifySettings(extension,
+                                                                     nullptr)) {
     LOG(ERROR) << "Attempt to uninstall an extension that is non-usermanagable "
                   "was made. Extension id : "
                << extension->id();
@@ -461,8 +491,7 @@ void AppHomePageHandler::UninstallExtensionApp(const Extension* extension) {
 
   Browser* browser = GetCurrentBrowser();
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
-      extension_service_->profile(), browser->window()->GetNativeWindow(),
-      this);
+      profile_, browser->window()->GetNativeWindow(), this);
 
   extension_uninstall_dialog_->ConfirmUninstall(
       extension, extensions::UNINSTALL_REASON_USER_INITIATED,
@@ -551,6 +580,18 @@ void AppHomePageHandler::GetApps(GetAppsCallback callback) {
   std::move(callback).Run(std::move(result));
 }
 
+void AppHomePageHandler::GetDeprecationLinkString(
+    GetDeprecationLinkStringCallback callback) {
+  std::string message;
+  if (deprecated_app_ids_.size() == 0) {
+    message = "";
+  } else {
+    message = l10n_util::GetPluralStringFUTF8(IDS_DEPRECATED_APPS_DELETION_LINK,
+                                              deprecated_app_ids_.size());
+  }
+  std::move(callback).Run(message);
+}
+
 void AppHomePageHandler::OnWebAppRunOnOsLoginModeChanged(
     const web_app::AppId& app_id,
     web_app::RunOnOsLoginMode run_on_os_login_mode) {
@@ -583,8 +624,7 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
   }
 
   const Extension* extension =
-      ExtensionRegistry::Get(extension_service_->profile())
-          ->GetInstalledExtension(app_id);
+      ExtensionRegistry::Get(profile_)->GetInstalledExtension(app_id);
   if (extension) {
     UninstallExtensionApp(extension);
   }
@@ -598,7 +638,8 @@ void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
   }
 
   const Extension* extension =
-      extensions::ExtensionRegistry::Get(extension_service_->profile())
+      extensions::ExtensionRegistry::Get(
+          extension_system_->extension_service()->GetBrowserContext())
           ->GetExtensionById(app_id,
                              extensions::ExtensionRegistry::ENABLED |
                                  extensions::ExtensionRegistry::DISABLED |
@@ -617,11 +658,10 @@ void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
   }
 
   const Extension* extension =
-      extensions::ExtensionRegistry::Get(extension_service_->profile())
-          ->GetExtensionById(app_id,
-                             extensions::ExtensionRegistry::ENABLED |
-                                 extensions::ExtensionRegistry::DISABLED |
-                                 extensions::ExtensionRegistry::TERMINATED);
+      extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
+          app_id, extensions::ExtensionRegistry::ENABLED |
+                      extensions::ExtensionRegistry::DISABLED |
+                      extensions::ExtensionRegistry::TERMINATED);
   if (extension)
     CreateExtensionAppShortcut(extension, std::move(callback));
 }
