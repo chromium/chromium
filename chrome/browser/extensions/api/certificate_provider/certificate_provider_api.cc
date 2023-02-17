@@ -190,7 +190,8 @@ bool ParseCertificateInfo(
   for (const api_cp::Hash hash : info.supported_hashes) {
     switch (hash) {
       case api_cp::HASH_MD5_SHA1:
-        out_info->supported_algorithms.push_back(SSL_SIGN_RSA_PKCS1_MD5_SHA1);
+        // Ignore `HASH_MD5_SHA1`. This is only used in TLS 1.0 and 1.1, which
+        // we no longer support.
         break;
       case api_cp::HASH_SHA1:
         out_info->supported_algorithms.push_back(SSL_SIGN_RSA_PKCS1_SHA1);
@@ -238,7 +239,8 @@ bool ParseClientCertificateInfo(
   for (const api_cp::Algorithm algorithm : info.supported_algorithms) {
     switch (algorithm) {
       case api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_MD5_SHA1:
-        out_info->supported_algorithms.push_back(SSL_SIGN_RSA_PKCS1_MD5_SHA1);
+        // Ignore `ALGORITHM_RSASSA_PKCS1_V1_5_MD5_SHA1`. This is only used in
+        // TLS 1.0 and 1.1, which we no longer support.
         break;
       case api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_SHA1:
         out_info->supported_algorithms.push_back(SSL_SIGN_RSA_PKCS1_SHA1);

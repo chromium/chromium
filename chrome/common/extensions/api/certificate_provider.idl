@@ -10,7 +10,8 @@ namespace certificateProvider {
   enum Algorithm {
     // RSASSA PKCS#1 v1.5 signature algorithm with the MD5-SHA-1 hashing. The
     // extension must not prepend a DigestInfo prefix but only add PKCS#1
-    // padding.
+    // padding. This algorithm is deprecated and will never be requested by
+    // Chrome as of version 109.
     RSASSA_PKCS1_v1_5_MD5_SHA1,
     // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-1 hash function.
     RSASSA_PKCS1_v1_5_SHA1,
@@ -195,9 +196,8 @@ namespace certificateProvider {
   // the digest using the private key of the requested certificate.
   // For an RSA key, the signature must be a PKCS#1 signature. The extension
   // is responsible for prepending the DigestInfo prefix and adding PKCS#1
-  // padding. If an <code>MD5_SHA1</code> hash is to be signed, the extension
-  // must not prepend a DigestInfo prefix but only add PKCS#1 padding.
-  // If an error occurred, this callback should be called without signature.
+  // padding. If an error occurred, this callback should be called without
+  // signature.
   callback SignCallback = void (optional ArrayBuffer signature);
 
   // Call this exactly once with the list of certificates that this extension is

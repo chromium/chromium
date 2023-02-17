@@ -111,9 +111,6 @@ std::unique_ptr<extensions::Event> BuildOnSignatureRequestedEvent(
   api_cp::SignatureRequest request;
   request.sign_request_id = request_id;
   switch (algorithm) {
-    case SSL_SIGN_RSA_PKCS1_MD5_SHA1:
-      request.algorithm = api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_MD5_SHA1;
-      break;
     case SSL_SIGN_RSA_PKCS1_SHA1:
       request.algorithm = api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_SHA1;
       break;
@@ -162,9 +159,6 @@ std::unique_ptr<extensions::Event> BuildOnSignDigestRequestedEvent(
 
   request.sign_request_id = request_id;
   switch (algorithm) {
-    case SSL_SIGN_RSA_PKCS1_MD5_SHA1:
-      request.hash = api_cp::HASH_MD5_SHA1;
-      break;
     case SSL_SIGN_RSA_PKCS1_SHA1:
       request.hash = api_cp::HASH_SHA1;
       break;

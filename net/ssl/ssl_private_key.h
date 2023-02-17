@@ -43,8 +43,7 @@ class NET_EXPORT SSLPrivateKey
   virtual std::string GetProviderName() = 0;
 
   // Returns the algorithms that are supported by the key in decreasing
-  // preference for TLS 1.2 and later. Note that |SSL_SIGN_RSA_PKCS1_MD5_SHA1|
-  // is only used by TLS 1.1 and earlier and should not be in this list.
+  // preference for TLS 1.2 and later.
   virtual std::vector<uint16_t> GetAlgorithmPreferences() = 0;
 
   // Asynchronously signs an |input| with the specified TLS signing algorithm.

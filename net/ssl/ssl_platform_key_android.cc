@@ -108,12 +108,6 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
   Error Sign(uint16_t algorithm,
              base::span<const uint8_t> input,
              std::vector<uint8_t>* signature) override {
-    if (algorithm == SSL_SIGN_RSA_PKCS1_MD5_SHA1) {
-      // SSL_SIGN_RSA_PKCS1_MD5_SHA1 cannot be implemented with the Java
-      // signature API directly.
-      return SignRSAWithMD5SHA1(input, signature);
-    }
-
     if (use_pss_fallback_.contains(algorithm)) {
       return SignPSSFallback(algorithm, input, signature);
     }
@@ -131,25 +125,6 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
   }
 
  private:
-  Error SignRSAWithMD5SHA1(base::span<const uint8_t> input,
-                           std::vector<uint8_t>* signature) {
-    uint8_t digest[EVP_MAX_MD_SIZE];
-    unsigned digest_len;
-    if (!EVP_Digest(input.data(), input.size(), digest, &digest_len,
-                    EVP_md5_sha1(), nullptr)) {
-      LOG(ERROR) << "Could not take digest.";
-      return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
-    }
-
-    if (!android::SignWithPrivateKey(key_, "NONEwithRSA",
-                                     base::make_span(digest, digest_len),
-                                     signature)) {
-      LOG(ERROR) << "Could not sign message with private key!";
-      return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
-    }
-    return OK;
-  }
-
   Error SignPSSFallback(uint16_t algorithm,
                         base::span<const uint8_t> input,
                         std::vector<uint8_t>* signature) {

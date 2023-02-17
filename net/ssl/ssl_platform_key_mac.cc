@@ -51,8 +51,6 @@ SecKeyAlgorithm GetSecKeyAlgorithm(uint16_t algorithm) {
       return kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256;
     case SSL_SIGN_RSA_PKCS1_SHA1:
       return kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1;
-    case SSL_SIGN_RSA_PKCS1_MD5_SHA1:
-      return kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw;
     case SSL_SIGN_ECDSA_SECP521R1_SHA512:
       return kSecKeyAlgorithmECDSASignatureDigestX962SHA512;
     case SSL_SIGN_ECDSA_SECP384R1_SHA384:
