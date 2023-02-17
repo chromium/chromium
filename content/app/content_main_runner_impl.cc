@@ -664,6 +664,7 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
 
   MainFunctionParams main_params(command_line);
   main_params.zygote_child = true;
+  main_params.needs_startup_tracing_after_mojo_init = true;
 
   if (delegate->ShouldCreateFeatureList(
           ContentMainDelegate::InvokedInChildProcess())) {
@@ -905,6 +906,16 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   if (process_type.empty())
     enable_startup_tracing = false;
 #endif  // BUILDFLAG(USE_ZYGOTE)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+  // A sandboxed process won't be able to allocate the SMB needed for startup
+  // tracing until Mojo IPC support is brought up, at which point the Mojo
+  // broker will transparently broker the SMB creation.
+  if (!sandbox::policy::IsUnsandboxedSandboxType(
+          sandbox::policy::SandboxTypeFromCommandLine(command_line))) {
+    enable_startup_tracing = false;
+    needs_startup_tracing_after_mojo_init_ = true;
+  }
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   if (enable_startup_tracing)
     tracing::EnableStartupTracingIfNeeded();
 
@@ -1096,6 +1107,8 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
   main_params.ui_task = std::move(content_main_params_->ui_task);
   main_params.created_main_parts_closure =
       std::move(content_main_params_->created_main_parts_closure);
+  main_params.needs_startup_tracing_after_mojo_init =
+      needs_startup_tracing_after_mojo_init_;
 #if BUILDFLAG(IS_WIN)
   main_params.sandbox_info = content_main_params_->sandbox_info;
 #elif BUILDFLAG(IS_MAC)

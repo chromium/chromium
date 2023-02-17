@@ -357,14 +357,12 @@ int GpuMain(MainFunctionParams parameters) {
 
   gpu_process.set_main_thread(child_thread);
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-  // Startup tracing is usually enabled earlier, but if we forked from a zygote,
-  // we can only enable it after mojo IPC support is brought up initialized by
-  // GpuChildThread, because the mojo broker has to create the tracing SMB on
-  // our behalf due to the zygote sandbox.
-  if (parameters.zygote_child)
+  // Mojo IPC support is brought up by GpuChildThread, so startup tracing is
+  // enabled here if it needs to start after mojo init (normally so the mojo
+  // broker can bypass the sandbox to allocate startup tracing's SMB).
+  if (parameters.needs_startup_tracing_after_mojo_init) {
     tracing::EnableStartupTracingIfNeeded();
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+  }
 
 #if BUILDFLAG(IS_MAC)
   // A GPUEjectPolicy of 'wait' is set in the Info.plist of the browser
