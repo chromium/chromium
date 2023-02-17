@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -360,15 +361,15 @@ TEST_P(PostMessageCounterTest,
   // Check storage key counter state
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://qux.com/")),
-          url::Origin::Create(GURL("https://bar.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://qux.com/")),
+                         net::SchemefulSite(GURL("https://bar.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       &recorder_));
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://qux.com/")),
-          url::Origin::Create(GURL("https://bar.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://qux.com/")),
+                         net::SchemefulSite(GURL("https://bar.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -395,9 +396,9 @@ TEST_P(PostMessageCounterTest,
          ThirdPartyStoragePartitioning())),
       frame_counter_.RecordMessageAndCheckIfShouldSend(
           1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
-          StorageKey::CreateForTesting(
-              url::Origin::Create(GURL("https://foo.com/")),
-              url::Origin::Create(GURL("https://qux.com/"))),
+          StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                             net::SchemefulSite(GURL("https://qux.com/")),
+                             blink::mojom::AncestorChainBit::kCrossSite),
           &recorder_));
   EXPECT_EQ(
       !(PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked() ||
@@ -405,9 +406,9 @@ TEST_P(PostMessageCounterTest,
          ThirdPartyStoragePartitioning())),
       frame_counter_.RecordMessageAndCheckIfShouldSend(
           1, StorageKey::CreateFromStringForTesting("https://foo.com/"), 2,
-          StorageKey::CreateForTesting(
-              url::Origin::Create(GURL("https://foo.com/")),
-              url::Origin::Create(GURL("https://qux.com/"))),
+          StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                             net::SchemefulSite(GURL("https://qux.com/")),
+                             blink::mojom::AncestorChainBit::kCrossSite),
           &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -430,16 +431,16 @@ TEST_P(PostMessageCounterTest,
   // Check storage key counter state
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://qux.com/")),
-          url::Origin::Create(GURL("https://bar.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://qux.com/")),
+                         net::SchemefulSite(GURL("https://bar.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       2, StorageKey::CreateFromStringForTesting("https://foo.com/"),
       &recorder_));
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://qux.com/")),
-          url::Origin::Create(GURL("https://bar.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://qux.com/")),
+                         net::SchemefulSite(GURL("https://bar.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       2, StorageKey::CreateFromStringForTesting("https://foo.com/"),
       &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
@@ -467,9 +468,9 @@ TEST_P(PostMessageCounterTest,
          ThirdPartyStoragePartitioning())),
       frame_counter_.RecordMessageAndCheckIfShouldSend(
           1,
-          StorageKey::CreateForTesting(
-              url::Origin::Create(GURL("https://foo.com/")),
-              url::Origin::Create(GURL("https://qux.com/"))),
+          StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                             net::SchemefulSite(GURL("https://qux.com/")),
+                             blink::mojom::AncestorChainBit::kCrossSite),
           2, StorageKey::CreateFromStringForTesting("https://foo.com/"),
           &recorder_));
   EXPECT_EQ(
@@ -478,9 +479,9 @@ TEST_P(PostMessageCounterTest,
          ThirdPartyStoragePartitioning())),
       frame_counter_.RecordMessageAndCheckIfShouldSend(
           1,
-          StorageKey::CreateForTesting(
-              url::Origin::Create(GURL("https://foo.com/")),
-              url::Origin::Create(GURL("https://qux.com/"))),
+          StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                             net::SchemefulSite(GURL("https://qux.com/")),
+                             blink::mojom::AncestorChainBit::kCrossSite),
           2, StorageKey::CreateFromStringForTesting("https://foo.com/"),
           &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
@@ -504,23 +505,23 @@ TEST_P(PostMessageCounterTest,
   // Check storage key counter state
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://foo.com/")),
-          url::Origin::Create(GURL("https://qux.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                         net::SchemefulSite(GURL("https://qux.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       2,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://bar.com/")),
-          url::Origin::Create(GURL("https://qux.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://bar.com/")),
+                         net::SchemefulSite(GURL("https://qux.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       &recorder_));
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://foo.com/")),
-          url::Origin::Create(GURL("https://qux.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                         net::SchemefulSite(GURL("https://qux.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       2,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://bar.com/")),
-          url::Origin::Create(GURL("https://qux.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://bar.com/")),
+                         net::SchemefulSite(GURL("https://qux.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -547,13 +548,13 @@ TEST_P(PostMessageCounterTest,
          ThirdPartyStoragePartitioning())),
       frame_counter_.RecordMessageAndCheckIfShouldSend(
           1,
-          StorageKey::CreateForTesting(
-              url::Origin::Create(GURL("https://foo.com/")),
-              url::Origin::Create(GURL("https://qux.com/"))),
+          StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                             net::SchemefulSite(GURL("https://qux.com/")),
+                             blink::mojom::AncestorChainBit::kCrossSite),
           2,
-          StorageKey::CreateForTesting(
-              url::Origin::Create(GURL("https://foo.com/")),
-              url::Origin::Create(GURL("https://bar.com/"))),
+          StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                             net::SchemefulSite(GURL("https://bar.com/")),
+                             blink::mojom::AncestorChainBit::kCrossSite),
           &recorder_));
   EXPECT_EQ(
       !(PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked() ||
@@ -561,13 +562,13 @@ TEST_P(PostMessageCounterTest,
          ThirdPartyStoragePartitioning())),
       frame_counter_.RecordMessageAndCheckIfShouldSend(
           1,
-          StorageKey::CreateForTesting(
-              url::Origin::Create(GURL("https://foo.com/")),
-              url::Origin::Create(GURL("https://qux.com/"))),
+          StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                             net::SchemefulSite(GURL("https://qux.com/")),
+                             blink::mojom::AncestorChainBit::kCrossSite),
           2,
-          StorageKey::CreateForTesting(
-              url::Origin::Create(GURL("https://foo.com/")),
-              url::Origin::Create(GURL("https://bar.com/"))),
+          StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                             net::SchemefulSite(GURL("https://bar.com/")),
+                             blink::mojom::AncestorChainBit::kCrossSite),
           &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -589,23 +590,23 @@ TEST_P(PostMessageCounterTest, ThirdPartyToThirdPartySameBucket) {
   // Check storage key counter state
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://foo.com/")),
-          url::Origin::Create(GURL("https://bar.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                         net::SchemefulSite(GURL("https://bar.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       2,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://foo.com/")),
-          url::Origin::Create(GURL("https://bar.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                         net::SchemefulSite(GURL("https://bar.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       &recorder_));
   EXPECT_TRUE(frame_counter_.RecordMessageAndCheckIfShouldSend(
       1,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://foo.com/")),
-          url::Origin::Create(GURL("https://bar.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                         net::SchemefulSite(GURL("https://bar.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       2,
-      StorageKey::CreateForTesting(
-          url::Origin::Create(GURL("https://foo.com/")),
-          url::Origin::Create(GURL("https://bar.com/"))),
+      StorageKey::Create(url::Origin::Create(GURL("https://foo.com/")),
+                         net::SchemefulSite(GURL("https://bar.com/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
       &recorder_));
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_

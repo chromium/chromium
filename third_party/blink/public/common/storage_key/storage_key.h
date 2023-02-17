@@ -99,22 +99,6 @@ class BLINK_COMMON_EXPORT StorageKey {
   // (1F) Construct a first-party storage key for tests.
   static StorageKey CreateFromStringForTesting(const std::string& origin);
 
-  // Note that this method cannot be used to construct the case where
-  // A.com is a nested frame of B.com is a nested frame of A.com. To do that
-  // Call Create with the same origin and top_level_site with a kCrossSite
-  // ancestor_chain_bit.
-  // TODO(crbug.com/1346450): Remove this and use Create().
-  static StorageKey CreateForTesting(const url::Origin& origin,
-                                     const url::Origin& top_level_site);
-
-  // Note that this method cannot be used to construct the case where
-  // A.com is a nested frame of B.com is a nested frame of A.com. To do that
-  // Call Create with the same origin and top_level_site with a kCrossSite
-  // ancestor_chain_bit.
-  // TODO(crbug.com/1346450): Remove this and use Create().
-  static StorageKey CreateForTesting(const url::Origin& origin,
-                                     const net::SchemefulSite& top_level_site);
-
   // (1G) Copy, move, and destruct.
   StorageKey(const StorageKey& other) = default;
   StorageKey& operator=(const StorageKey& other) = default;

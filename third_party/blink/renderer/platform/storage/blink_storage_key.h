@@ -62,15 +62,6 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // (1F) Construct a first-party storage key for tests.
   static BlinkStorageKey CreateFromStringForTesting(const WTF::String& origin);
 
-  // Note that this method cannot be used to construct the case where
-  // A.com is a nested frame of B.com is a nested frame of A.com. To do that
-  // Call Create with the same origin and top_level_site with a kCrossSite
-  // ancestor_chain_bit.
-  // TODO(crbug.com/1346450): Remove this and use Create().
-  static BlinkStorageKey CreateForTesting(
-      scoped_refptr<const SecurityOrigin> origin,
-      const BlinkSchemefulSite& top_level_site);
-
   // (1G) Copy, move, and destruct.
   BlinkStorageKey(const BlinkStorageKey& other) = default;
   BlinkStorageKey& operator=(const BlinkStorageKey& other) = default;

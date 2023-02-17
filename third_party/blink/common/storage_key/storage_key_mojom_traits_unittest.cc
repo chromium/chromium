@@ -33,21 +33,21 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
         StorageKey::CreateFromStringForTesting("https://example.test"),
         StorageKey::CreateFromStringForTesting("https://sub.example.com"),
         StorageKey::CreateFromStringForTesting("http://sub2.example.com"),
-        StorageKey::CreateForTesting(
-            url::Origin::Create(GURL("https://example.com")),
-            url::Origin::Create(GURL("https://example.com"))),
-        StorageKey::CreateForTesting(
-            url::Origin::Create(GURL("http://example.com")),
-            url::Origin::Create(GURL("https://example2.com"))),
-        StorageKey::CreateForTesting(
-            url::Origin::Create(GURL("https://example.test")),
-            url::Origin::Create(GURL("https://example.com"))),
-        StorageKey::CreateForTesting(
-            url::Origin::Create(GURL("https://sub.example.com")),
-            url::Origin::Create(GURL("https://example2.com"))),
-        StorageKey::CreateForTesting(
-            url::Origin::Create(GURL("http://sub2.example.com")),
-            url::Origin::Create(GURL("https://example.com"))),
+        StorageKey::Create(url::Origin::Create(GURL("https://example.com")),
+                           net::SchemefulSite(GURL("https://example.com")),
+                           blink::mojom::AncestorChainBit::kSameSite),
+        StorageKey::Create(url::Origin::Create(GURL("http://example.com")),
+                           net::SchemefulSite(GURL("https://example2.com")),
+                           blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url::Origin::Create(GURL("https://example.test")),
+                           net::SchemefulSite(GURL("https://example.com")),
+                           blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url::Origin::Create(GURL("https://sub.example.com")),
+                           net::SchemefulSite(GURL("https://example2.com")),
+                           blink::mojom::AncestorChainBit::kCrossSite),
+        StorageKey::Create(url::Origin::Create(GURL("http://sub2.example.com")),
+                           net::SchemefulSite(GURL("https://example.com")),
+                           blink::mojom::AncestorChainBit::kCrossSite),
         StorageKey::CreateFirstParty(url::Origin()),
         StorageKey::CreateWithNonce(
             url::Origin::Create(GURL("https://.example.com")),

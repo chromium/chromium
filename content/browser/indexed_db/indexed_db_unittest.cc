@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
@@ -135,28 +136,31 @@ class IndexedDBTest : public testing::Test,
     bucket_info = InitBucket(kSessionOnlyFirstPartyStorageKey);
     kSessionOnlyFirstPartyBucketLocator = bucket_info.ToBucketLocator();
 
-    kNormalThirdPartyStorageKey = blink::StorageKey::CreateForTesting(
-        url::Origin::Create(GURL("http://normal/")),
-        url::Origin::Create(GURL("http://rando/")));
+    kNormalThirdPartyStorageKey =
+        blink::StorageKey::Create(url::Origin::Create(GURL("http://normal/")),
+                                  net::SchemefulSite(GURL("http://rando/")),
+                                  blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kNormalThirdPartyStorageKey);
     kNormalThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
-    kSessionOnlyThirdPartyStorageKey = blink::StorageKey::CreateForTesting(
+    kSessionOnlyThirdPartyStorageKey = blink::StorageKey::Create(
         url::Origin::Create(GURL("http://session-only/")),
-        url::Origin::Create(GURL("http://rando/")));
+        net::SchemefulSite(GURL("http://rando/")),
+        blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kSessionOnlyThirdPartyStorageKey);
     kSessionOnlyThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
-    kInvertedNormalThirdPartyStorageKey = blink::StorageKey::CreateForTesting(
-        url::Origin::Create(GURL("http://rando/")),
-        url::Origin::Create(GURL("http://normal/")));
+    kInvertedNormalThirdPartyStorageKey =
+        blink::StorageKey::Create(url::Origin::Create(GURL("http://rando/")),
+                                  net::SchemefulSite(GURL("http://normal/")),
+                                  blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kInvertedNormalThirdPartyStorageKey);
     kInvertedNormalThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
-    kInvertedSessionOnlyThirdPartyStorageKey =
-        blink::StorageKey::CreateForTesting(
-            url::Origin::Create(GURL("http://rando/")),
-            url::Origin::Create(GURL("http://session-only/")));
+    kInvertedSessionOnlyThirdPartyStorageKey = blink::StorageKey::Create(
+        url::Origin::Create(GURL("http://rando/")),
+        net::SchemefulSite(GURL("http://session-only/")),
+        blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kInvertedSessionOnlyThirdPartyStorageKey);
     kInvertedSessionOnlyThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
@@ -455,9 +459,10 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
 }
 
 TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
-  const blink::StorageKey kTestStorageKey = blink::StorageKey::CreateForTesting(
-      url::Origin::Create(GURL("http://test/")),
-      url::Origin::Create(GURL("http://rando/")));
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::Create(url::Origin::Create(GURL("http://test/")),
+                                net::SchemefulSite(GURL("http://rando/")),
+                                blink::mojom::AncestorChainBit::kCrossSite);
   storage::BucketInfo bucket_info = InitBucket(kTestStorageKey);
   storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
@@ -544,9 +549,10 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedFirstParty) {
 }
 
 TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedThirdParty) {
-  const blink::StorageKey kTestStorageKey = blink::StorageKey::CreateForTesting(
-      url::Origin::Create(GURL("http://test/")),
-      url::Origin::Create(GURL("http://rando/")));
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::Create(url::Origin::Create(GURL("http://test/")),
+                                net::SchemefulSite(GURL("http://rando/")),
+                                blink::mojom::AncestorChainBit::kCrossSite);
   storage::BucketInfo bucket_info = InitBucket(kTestStorageKey);
   storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
@@ -610,9 +616,10 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
 }
 
 TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
-  const blink::StorageKey kTestStorageKey = blink::StorageKey::CreateForTesting(
-      url::Origin::Create(GURL("http://test/")),
-      url::Origin::Create(GURL("http://rando/")));
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::Create(url::Origin::Create(GURL("http://test/")),
+                                net::SchemefulSite(GURL("http://rando/")),
+                                blink::mojom::AncestorChainBit::kCrossSite);
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;

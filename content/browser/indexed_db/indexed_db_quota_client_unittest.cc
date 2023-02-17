@@ -28,6 +28,7 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -66,11 +67,13 @@ class IndexedDBQuotaClientTest : public testing::Test,
     // This cannot be created above as the kThirdPartyStoragePartitioning must
     // be set.
     kStorageKeyThirdPartyA =
-        StorageKey::CreateForTesting(url::Origin::Create(GURL("http://host")),
-                                     url::Origin::Create(GURL("http://other")));
-    kStorageKeyThirdPartyB = StorageKey::CreateForTesting(
-        url::Origin::Create(GURL("http://host:8000")),
-        url::Origin::Create(GURL("http://other")));
+        StorageKey::Create(url::Origin::Create(GURL("http://host")),
+                           net::SchemefulSite(GURL("http://other")),
+                           blink::mojom::AncestorChainBit::kCrossSite);
+    kStorageKeyThirdPartyB =
+        StorageKey::Create(url::Origin::Create(GURL("http://host:8000")),
+                           net::SchemefulSite(GURL("http://other")),
+                           blink::mojom::AncestorChainBit::kCrossSite);
     CreateTempDir();
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*in_memory=*/false, temp_dir_.GetPath(),

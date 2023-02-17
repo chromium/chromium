@@ -302,8 +302,8 @@ TEST_P(BlobURLStoreImplTestP, RevokeURLWithFragment) {
 }
 
 TEST_P(BlobURLStoreImplTestP, RevokeWrongStorageKey) {
-  const blink::StorageKey kWrongStorageKey =
-      blink::StorageKey::CreateForTesting(kOrigin, kWrongTopLevelSite);
+  const blink::StorageKey kWrongStorageKey = blink::StorageKey::Create(
+      kOrigin, kWrongTopLevelSite, blink::mojom::AncestorChainBit::kCrossSite);
 
   mojo::PendingRemote<blink::mojom::Blob> blob =
       CreateBlobFromString(kId, "hello world");

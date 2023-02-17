@@ -174,11 +174,11 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   // Now do some tests with third-party storage keys>
   if (StoragePartitioningEnabled()) {
     blink::StorageKey partitionedStorageKey1 =
-        blink::StorageKey::CreateForTesting(url::Origin::Create(kURL1),
-                                            kTopLevelSite1);
+        blink::StorageKey::Create(url::Origin::Create(kURL1), kTopLevelSite1,
+                                  blink::mojom::AncestorChainBit::kCrossSite);
     blink::StorageKey partitionedStorageKey2 =
-        blink::StorageKey::CreateForTesting(url::Origin::Create(kURL1),
-                                            kTopLevelSite2);
+        blink::StorageKey::Create(url::Origin::Create(kURL1), kTopLevelSite2,
+                                  blink::mojom::AncestorChainBit::kCrossSite);
 
     EXPECT_TRUE(registry.AddUrlMapping(kURL1, blob1.Clone(),
                                        partitionedStorageKey1, kTokenId1,

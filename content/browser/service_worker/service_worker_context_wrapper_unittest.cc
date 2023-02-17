@@ -21,6 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -224,17 +225,19 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForPartitionedKeys) {
 
   // Make two registrations for same origin, but different top-level site.
   GURL scope("https://example1.com/abc/");
-  url::Origin site1 = url::Origin::Create(GURL("https://site1.example"));
+  net::SchemefulSite site1 = net::SchemefulSite(GURL("https://site1.example"));
   blink::StorageKey key1 =
-      blink::StorageKey::CreateForTesting(url::Origin::Create(scope), site1);
+      blink::StorageKey::Create(url::Origin::Create(scope), site1,
+                                blink::mojom::AncestorChainBit::kCrossSite);
   GURL script("https://example1.com/abc/sw.js");
   scoped_refptr<ServiceWorkerRegistration> registration1 =
       CreateServiceWorkerRegistrationAndVersion(context(), scope, script, key1,
                                                 /*resource_id=*/1);
 
-  url::Origin site2 = url::Origin::Create(GURL("https://site2.example"));
+  net::SchemefulSite site2 = net::SchemefulSite(GURL("https://site2.example"));
   blink::StorageKey key2 =
-      blink::StorageKey::CreateForTesting(url::Origin::Create(scope), site2);
+      blink::StorageKey::Create(url::Origin::Create(scope), site2,
+                                blink::mojom::AncestorChainBit::kCrossSite);
   scoped_refptr<ServiceWorkerRegistration> registration2 =
       CreateServiceWorkerRegistrationAndVersion(context(), scope, script, key2,
                                                 2);

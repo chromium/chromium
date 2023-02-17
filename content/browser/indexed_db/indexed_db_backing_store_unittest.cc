@@ -48,6 +48,7 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/fake_blob.h"
 #include "storage/browser/test/mock_quota_manager.h"
@@ -1759,9 +1760,10 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
   auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
       storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
   storage::BucketLocator bucket_locator;
-  bucket_locator.storage_key = blink::StorageKey::CreateForTesting(
+  bucket_locator.storage_key = blink::StorageKey::Create(
       url::Origin::Create(GURL("http://www.google.com/")),
-      url::Origin::Create(GURL("http://www.youtube.com/")));
+      net::SchemefulSite(GURL("http://www.youtube.com/")),
+      blink::mojom::AncestorChainBit::kCrossSite);
   bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
   bucket_locator.is_default = true;
   const base::FilePath path_base = idb_context_->GetDataPath(bucket_locator);

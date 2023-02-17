@@ -194,8 +194,12 @@ TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningDisabled) {
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
   StorageKey key_origin1 = StorageKey::CreateFirstParty(origin1);
-  StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
-  StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
+  StorageKey key_origin1_site1 =
+      StorageKey::Create(origin1, net::SchemefulSite(origin1),
+                         mojom::blink::AncestorChainBit::kSameSite);
+  StorageKey key_origin1_site2 =
+      StorageKey::Create(origin1, net::SchemefulSite(origin2),
+                         mojom::blink::AncestorChainBit::kCrossSite);
 
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
@@ -216,9 +220,11 @@ TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
 
   BlinkStorageKey key_origin1 = BlinkStorageKey::CreateFirstParty(origin1);
   BlinkStorageKey key_origin1_site1 =
-      BlinkStorageKey::CreateForTesting(origin1, BlinkSchemefulSite(origin1));
+      BlinkStorageKey::Create(origin1, BlinkSchemefulSite(origin1),
+                              mojom::blink::AncestorChainBit::kSameSite);
   BlinkStorageKey key_origin1_site2 =
-      BlinkStorageKey::CreateForTesting(origin1, BlinkSchemefulSite(origin2));
+      BlinkStorageKey::Create(origin1, BlinkSchemefulSite(origin2),
+                              mojom::blink::AncestorChainBit::kCrossSite);
 
   EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1.GetTopLevelSite());
   EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1_site1.GetTopLevelSite());

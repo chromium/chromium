@@ -116,9 +116,11 @@ TEST_F(StorageKeyTest, EquivalenceUnpartitioned) {
        StorageKey::CreateWithNonce(origin2, nonce2), false},
       // When storage partitioning is disabled, the top-level site isn't taken
       // into account for equivalence.
-      {StorageKey::CreateForTesting(origin1, origin2),
+      {StorageKey::Create(origin1, net::SchemefulSite(origin2),
+                          blink::mojom::AncestorChainBit::kCrossSite),
        StorageKey::CreateFirstParty(origin1), true},
-      {StorageKey::CreateForTesting(origin2, origin1),
+      {StorageKey::Create(origin2, net::SchemefulSite(origin1),
+                          blink::mojom::AncestorChainBit::kCrossSite),
        StorageKey::CreateFirstParty(origin2), true},
   };
   for (const auto& test_case : kTestCases) {
@@ -137,6 +139,9 @@ TEST_F(StorageKeyTest, EquivalencePartitioned) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
+  net::SchemefulSite site1(origin1);
+  net::SchemefulSite site2(origin2);
+
   // Keys should only match when both the origin and top-level site are the
   // same. Such as keys made from the single argument constructor and keys
   // created by the two argument constructor (when both arguments are the same
@@ -145,21 +150,21 @@ TEST_F(StorageKeyTest, EquivalencePartitioned) {
   const StorageKey OneArgKey_origin1 = StorageKey::CreateFirstParty(origin1);
   const StorageKey OneArgKey_origin2 = StorageKey::CreateFirstParty(origin2);
 
-  StorageKey TwoArgKey_origin1_origin1 =
-      StorageKey::CreateForTesting(origin1, origin1);
-  StorageKey TwoArgKey_origin2_origin2 =
-      StorageKey::CreateForTesting(origin2, origin2);
+  StorageKey TwoArgKey_origin1_origin1 = StorageKey::Create(
+      origin1, site1, blink::mojom::AncestorChainBit::kSameSite);
+  StorageKey TwoArgKey_origin2_origin2 = StorageKey::Create(
+      origin2, site2, blink::mojom::AncestorChainBit::kSameSite);
 
   EXPECT_EQ(OneArgKey_origin1, TwoArgKey_origin1_origin1);
   EXPECT_EQ(OneArgKey_origin2, TwoArgKey_origin2_origin2);
 
   // And when the two argument constructor gets different values
-  StorageKey TwoArgKey1_origin1_origin2 =
-      StorageKey::CreateForTesting(origin1, origin2);
-  StorageKey TwoArgKey2_origin1_origin2 =
-      StorageKey::CreateForTesting(origin1, origin2);
-  StorageKey TwoArgKey_origin2_origin1 =
-      StorageKey::CreateForTesting(origin2, origin1);
+  StorageKey TwoArgKey1_origin1_origin2 = StorageKey::Create(
+      origin1, site2, blink::mojom::AncestorChainBit::kCrossSite);
+  StorageKey TwoArgKey2_origin1_origin2 = StorageKey::Create(
+      origin1, site2, blink::mojom::AncestorChainBit::kCrossSite);
+  StorageKey TwoArgKey_origin2_origin1 = StorageKey::Create(
+      origin2, site1, blink::mojom::AncestorChainBit::kCrossSite);
 
   EXPECT_EQ(TwoArgKey1_origin1_origin2, TwoArgKey2_origin1_origin2);
 
@@ -440,7 +445,11 @@ TEST_F(StorageKeyTest, SerializeDeserializePartitioned) {
     url::Origin origin = url::Origin::Create(GURL(test.origin));
     const net::SchemefulSite& site = test.site;
 
-    StorageKey key = StorageKey::CreateForTesting(origin, site);
+    StorageKey key =
+        StorageKey::Create(origin, site,
+                           net::SchemefulSite(origin) == site
+                               ? mojom::AncestorChainBit::kSameSite
+                               : mojom::AncestorChainBit::kCrossSite);
     std::string key_string = key.Serialize();
     std::string key_string_for_local_storage = key.SerializeForLocalStorage();
     absl::optional<StorageKey> key_deserialized =
@@ -455,14 +464,14 @@ TEST_F(StorageKeyTest, SerializeDeserializePartitioned) {
       EXPECT_EQ(key, *key_deserialized_from_local_storage);
     } else {
       // file origins are all collapsed to file:// by serialization.
-      EXPECT_EQ(
-          StorageKey::CreateForTesting(url::Origin::Create(GURL("file://")),
-                                       net::SchemefulSite(GURL("file://"))),
-          *key_deserialized);
-      EXPECT_EQ(
-          StorageKey::CreateForTesting(url::Origin::Create(GURL("file://")),
-                                       net::SchemefulSite(GURL("file://"))),
-          *key_deserialized_from_local_storage);
+      EXPECT_EQ(StorageKey::Create(url::Origin::Create(GURL("file://")),
+                                   net::SchemefulSite(GURL("file://")),
+                                   mojom::AncestorChainBit::kSameSite),
+                *key_deserialized);
+      EXPECT_EQ(StorageKey::Create(url::Origin::Create(GURL("file://")),
+                                   net::SchemefulSite(GURL("file://")),
+                                   mojom::AncestorChainBit::kSameSite),
+                *key_deserialized_from_local_storage);
     }
   }
 }
@@ -583,21 +592,24 @@ TEST_F(StorageKeyTest, DeserializeNonces) {
         },
         {
             "https://example.com/^41^50^6",
-            blink::StorageKey::CreateForTesting(
+            blink::StorageKey::Create(
                 url::Origin::Create(GURL("https://example.com/")),
-                GetOpaqueSite(1ULL, 0ULL, "")),
+                GetOpaqueSite(1ULL, 0ULL, ""),
+                mojom::AncestorChainBit::kCrossSite),
         },
         {
             "https://example.com/^40^51^6",
-            blink::StorageKey::CreateForTesting(
+            blink::StorageKey::Create(
                 url::Origin::Create(GURL("https://example.com/")),
-                GetOpaqueSite(0ULL, 1ULL, "")),
+                GetOpaqueSite(0ULL, 1ULL, ""),
+                mojom::AncestorChainBit::kCrossSite),
         },
         {
             "https://example.com/^41^51^6",
-            blink::StorageKey::CreateForTesting(
+            blink::StorageKey::Create(
                 url::Origin::Create(GURL("https://example.com/")),
-                GetOpaqueSite(1ULL, 1ULL, "")),
+                GetOpaqueSite(1ULL, 1ULL, ""),
+                mojom::AncestorChainBit::kCrossSite),
         },
         {
             "https://example.com/^10^20",
@@ -695,14 +707,18 @@ TEST_F(StorageKeyTest, TopLevelSiteGetterWithPartitioningDisabled) {
       net::features::kThirdPartyStoragePartitioning);
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
+  net::SchemefulSite site1(origin1);
+  net::SchemefulSite site2(origin2);
 
   const StorageKey key_origin1 = StorageKey::CreateFirstParty(origin1);
-  StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
-  StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
+  StorageKey key_origin1_site1 =
+      StorageKey::Create(origin1, site1, mojom::AncestorChainBit::kSameSite);
+  StorageKey key_origin1_site2 =
+      StorageKey::Create(origin1, site2, mojom::AncestorChainBit::kCrossSite);
 
-  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
-  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
-  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site2.top_level_site());
+  EXPECT_EQ(site1, key_origin1.top_level_site());
+  EXPECT_EQ(site1, key_origin1_site1.top_level_site());
+  EXPECT_EQ(site1, key_origin1_site2.top_level_site());
 }
 
 // Test that StorageKey's top_level_site getter returns the top level site when
@@ -716,8 +732,11 @@ TEST_F(StorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
   const StorageKey key_origin1 = StorageKey::CreateFirstParty(origin1);
-  StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
-  StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
+  StorageKey key_origin1_site1 = StorageKey::Create(
+      origin1, net::SchemefulSite(origin1), mojom::AncestorChainBit::kSameSite);
+  StorageKey key_origin1_site2 =
+      StorageKey::Create(origin1, net::SchemefulSite(origin2),
+                         mojom::AncestorChainBit::kCrossSite);
 
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
@@ -783,13 +802,20 @@ TEST_F(StorageKeyTest, IsThirdPartyContext) {
       EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
       continue;
     }
-    StorageKey key = StorageKey::CreateForTesting(test_case.origin,
-                                                  test_case.top_level_origin);
+    mojom::AncestorChainBit ancestor_chain_bit =
+        net::SchemefulSite(test_case.origin) ==
+                net::SchemefulSite(test_case.top_level_origin)
+            ? mojom::AncestorChainBit::kSameSite
+            : mojom::AncestorChainBit::kCrossSite;
+    StorageKey key = StorageKey::Create(
+        test_case.origin, net::SchemefulSite(test_case.top_level_origin),
+        ancestor_chain_bit);
     EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
     EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
     // IsThirdPartyContext should not depend on the order of the arguments.
-    key = StorageKey::CreateForTesting(test_case.top_level_origin,
-                                       test_case.origin);
+    key = StorageKey::Create(test_case.top_level_origin,
+                             net::SchemefulSite(test_case.origin),
+                             ancestor_chain_bit);
     EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
     EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
   }
@@ -905,9 +931,9 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
     TestCase test_cases[] = {
         {StorageKey::CreateFromStringForTesting("https://www.example.com"),
          absl::nullopt},
-        {StorageKey::CreateForTesting(
-             url::Origin::Create(GURL("https://www.foo.com")),
-             url::Origin::Create(GURL("https://www.bar.com"))),
+        {StorageKey::Create(url::Origin::Create(GURL("https://www.foo.com")),
+                            net::SchemefulSite(GURL("https://www.bar.com")),
+                            mojom::AncestorChainBit::kCrossSite),
          absl::nullopt},
         {StorageKey::CreateWithNonce(
              url::Origin::Create(GURL("https://www.example.com")), nonce),
@@ -952,9 +978,9 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
         {StorageKey::CreateFromStringForTesting("https://www.example.com"),
          net::CookiePartitionKey::FromURLForTesting(
              GURL("https://www.example.com"))},
-        {StorageKey::CreateForTesting(
-             url::Origin::Create(GURL("https://www.foo.com")),
-             url::Origin::Create(GURL("https://www.bar.com"))),
+        {StorageKey::Create(url::Origin::Create(GURL("https://www.foo.com")),
+                            net::SchemefulSite(GURL("https://www.bar.com")),
+                            mojom::AncestorChainBit::kCrossSite),
          net::CookiePartitionKey::FromURLForTesting(
              GURL("https://subdomain.bar.com"))},
         {StorageKey::CreateWithNonce(

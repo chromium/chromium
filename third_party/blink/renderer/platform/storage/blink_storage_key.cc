@@ -73,17 +73,6 @@ BlinkStorageKey BlinkStorageKey::CreateFromStringForTesting(
       SecurityOrigin::CreateFromString(origin));
 }
 
-// static
-BlinkStorageKey BlinkStorageKey::CreateForTesting(
-    scoped_refptr<const SecurityOrigin> origin,
-    const BlinkSchemefulSite& top_level_site) {
-  return BlinkStorageKey(
-      origin, top_level_site, nullptr,
-      BlinkSchemefulSite(origin) == top_level_site && !top_level_site.IsOpaque()
-          ? mojom::blink::AncestorChainBit::kSameSite
-          : mojom::blink::AncestorChainBit::kCrossSite);
-}
-
 BlinkStorageKey::BlinkStorageKey(const StorageKey& storage_key)
     : origin_(SecurityOrigin::CreateFromUrlOrigin(storage_key.origin())),
       top_level_site_(BlinkSchemefulSite(storage_key.top_level_site())),
