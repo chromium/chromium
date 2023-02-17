@@ -13,6 +13,12 @@ namespace ash::device_activity {
 
 namespace {
 
+// We define the inception date as January 1st 2000, Pacific Time.
+// This value is used to keep track of the number of months since the
+// inception date in the first 10 bits of the active status
+// |value_|.
+const char kActiveStatusInceptionDate[] = "2000-01-01 00:00:00 PST";
+
 // Default value for devices that are missing the activate date.
 const char kActivateDateKeyNotFound[] = "ACTIVATE_DATE_KEY_NOT_FOUND";
 
@@ -66,11 +72,11 @@ base::Time Iso8601DateWeekAsTime(int activate_year, int activate_week_of_year) {
   base::Time new_year_ts;
   std::string new_year_date =
       "Jan 01 00:00:00 GMT " + std::to_string(activate_year);
-  bool success = base::Time::FromString(new_year_date.c_str(), &new_year_ts);
+  bool success = base::Time::FromUTCString(new_year_date.c_str(), &new_year_ts);
 
   if (!success) {
     LOG(ERROR)
-        << "Failed to store new year in base::Time using FromString method.";
+        << "Failed to store new year in base::Time using FromUTCString method.";
     return base::Time();
   }
 
@@ -156,7 +162,21 @@ void ChurnActiveStatus::InitializeValue(int value) {
   value_ = value;
 }
 
-int ChurnActiveStatus::GetMonthsSinceInception() {
+const base::Time ChurnActiveStatus::GetInceptionMonth() const {
+  base::Time inception_ts;
+  bool success =
+      base::Time::FromUTCString(kActiveStatusInceptionDate, &inception_ts);
+
+  if (!success) {
+    LOG(ERROR) << "Failed to convert kActiveStatusInceptionDate to timestamp "
+               << "object.";
+    return base::Time();
+  }
+
+  return inception_ts;
+}
+
+int ChurnActiveStatus::GetMonthsSinceInception() const {
   // Get first 10 bits of |value_| which represent the total months since
   // inception.
   std::string month_from_inception = value_.to_string().substr(
@@ -165,6 +185,33 @@ int ChurnActiveStatus::GetMonthsSinceInception() {
 
   return static_cast<int>(
       std::bitset<kMonthsSinceInceptionSize>(month_from_inception).to_ulong());
+}
+
+const base::Time ChurnActiveStatus::GetCurrentActiveMonth() const {
+  DCHECK_GT(GetMonthsSinceInception(), 0);
+
+  base::Time inception_ts = GetInceptionMonth();
+  int months_from_inception = GetMonthsSinceInception();
+
+  int years_from_inception = std::floor(months_from_inception / 12);
+  int months_from_inception_remaining = months_from_inception % 12;
+
+  base::Time::Exploded exploded;
+  inception_ts.UTCExplode(&exploded);
+
+  exploded.year += years_from_inception;
+  exploded.month += months_from_inception_remaining;
+
+  base::Time current_active_month_ts;
+  bool success =
+      base::Time::FromUTCExploded(exploded, &current_active_month_ts);
+
+  if (!success) {
+    LOG(ERROR) << "Failed to convert current active month back to timestamp.";
+    return base::Time();
+  }
+
+  return current_active_month_ts;
 }
 
 int ChurnActiveStatus::GetActiveMonthBits() {
@@ -183,7 +230,6 @@ void ChurnActiveStatus::SetValueForTesting(
 }
 
 const base::Time ChurnActiveStatus::GetFirstActiveWeek() const {
-  DCHECK_NE(first_active_week_, base::Time());
   return first_active_week_;
 }
 
@@ -214,6 +260,8 @@ void ChurnActiveStatus::SetFirstActiveWeek() {
   std::string first_active_week_str =
       std::string(first_active_week_val.value_or(kActivateDateKeyNotFound));
 
+  // TODO(hirthanan): Add UMA histogram to count set vs unset after
+  // browser start.
   if (first_active_week_str == kActivateDateKeyNotFound) {
     LOG(ERROR)
         << "Failed to retrieve ActivateDate VPD field from machine statistics. "

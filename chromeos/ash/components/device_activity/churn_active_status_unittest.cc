@@ -297,13 +297,20 @@ class ChurnActiveStatusAtInceptionDate : public ChurnActiveStatusBase {
   // 000000000000000000 = No active months
   // 0000000000000000000000000000 = 0
   static constexpr int kInceptionDate = 0;
-  static constexpr char kInceptionTimeString[] = "01 Jan 2000 00:00:00 GMT";
+  static constexpr char kInceptionTimeString[] = "01 Jan 2000 00:00:00 PST";
 
   ChurnActiveStatusAtInceptionDate() : ChurnActiveStatusBase(kInceptionDate) {}
 };
 
 TEST_F(ChurnActiveStatusAtInceptionDate, GetDefaultConstructorValue) {
   EXPECT_EQ(GetChurnActiveStatus()->GetValueAsInt(), 0);
+}
+
+TEST_F(ChurnActiveStatusAtInceptionDate, ValidateTimestampForInceptionDate) {
+  base::Time month;
+  EXPECT_TRUE(base::Time::FromString(kInceptionTimeString, &month));
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetInceptionMonth(), month);
 }
 
 TEST_F(ChurnActiveStatusAtInceptionDate, SetMaxActiveStatusValueAsInt) {
@@ -449,9 +456,19 @@ class ChurnActiveStatusAtFixedDate : public ChurnActiveStatusBase {
   // 000000000000000001 = Only active in January 2023.
   // 0100010100000000000000000001 = 72351745
   static constexpr int kFixedDate = 72351745;
+  static constexpr char kFixedDateTimeString[] = "01 Jan 2023 00:00:00 PST";
 
   ChurnActiveStatusAtFixedDate() : ChurnActiveStatusBase(kFixedDate) {}
 };
+
+TEST_F(ChurnActiveStatusAtFixedDate, ValidateCurrentActiveMonth) {
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
+
+  base::Time month;
+  EXPECT_TRUE(base::Time::FromString(kFixedDateTimeString, &month));
+
+  EXPECT_EQ(churn_active_status->GetCurrentActiveMonth(), month);
+}
 
 TEST_F(ChurnActiveStatusAtFixedDate, UpdateActiveBefore18Months) {
   ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
@@ -524,6 +541,118 @@ TEST_F(ChurnActiveStatusAtFixedDate, UpdateActiveFailsOnSettingBeforeDate) {
             ConvertBitSetToInt(expected_months_count));
   EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
             ConvertBitSetToInt(expected_active_months));
+}
+
+struct ChurnActiveStatusTestCase {
+  // Name of specific test.
+  std::string test_name;
+
+  // 28 bit integer represents months from inception + 18 months of actives.
+  int active_status_value;
+
+  // As stored by the ActivateDate script.
+  // Formatted: YYYY-WW
+  std::string activate_date;
+
+  // Expected values from given inputs.
+  int expected_months_since_inception;
+
+  std::string expected_current_active_month;
+
+  int expected_active_month_bits;
+
+  std::string expected_first_active_week;
+};
+
+class ChurnActiveStatusTest
+    : public testing::TestWithParam<ChurnActiveStatusTestCase> {
+ public:
+  static constexpr char kInceptionTimeString[] = "01 Jan 2000 00:00:00 PST";
+
+  // Construct ChurnActiveStatusTest object with various ActiveStatus values.
+  ChurnActiveStatusTest() {
+    // Set the fake instance of statistics provider before
+    // initializing churn active status.
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+
+    // Initialize value of ActivateDate vpd field as kFakeFirstActivateDate.
+    statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
+                                             GetParam().activate_date);
+
+    churn_active_status_ =
+        std::make_unique<ChurnActiveStatus>(GetParam().active_status_value);
+  }
+  ChurnActiveStatusTest(const ChurnActiveStatusTest&) = delete;
+  ChurnActiveStatusTest& operator=(const ChurnActiveStatusTest&) = delete;
+  ~ChurnActiveStatusTest() override = default;
+
+ protected:
+  ChurnActiveStatus* GetChurnActiveStatus() {
+    DCHECK(churn_active_status_);
+    return churn_active_status_.get();
+  }
+
+ private:
+  system::FakeStatisticsProvider statistics_provider_;
+
+  // Object under test.
+  std::unique_ptr<ChurnActiveStatus> churn_active_status_;
+};
+
+// Add parameterized tests for validating behaviour ChurnActiveStatus for
+// different 28 bit ActiveStatus integer values.
+INSTANTIATE_TEST_SUITE_P(
+    VaryingActiveStatusValues,
+    ChurnActiveStatusTest,
+    testing::ValuesIn<ChurnActiveStatusTestCase>({
+        {"FirstNewMonthFromInception", 262145, "2000-01", 1,
+         "01 Feb 2000 00:00:00 PST", 1, "03 Jan 2000 00:00:00 GMT"},
+        {"ArbitraryDate1", 1310721, "2000-01", 5, "01 Jun 2000 00:00:00 PST", 1,
+         "03 Jan 2000 00:00:00 GMT"},
+        {"ActiveValueGreaterThanVPDActivateDate", 72613889, "2023-10", 277,
+         "01 Feb 2023 00:00:00 PST", 1, "06 Mar 2023 00:00:00 GMT"},
+    }),
+    [](const testing::TestParamInfo<ChurnActiveStatusTestCase>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(ChurnActiveStatusTest, ValidateGetCurrentActiveMonth) {
+  ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
+
+  // Validate the active status value passed to constructor is aligned with
+  // expected value.
+  EXPECT_EQ(churn_active_status->GetValueAsInt(),
+            GetParam().active_status_value);
+
+  // Validate inception month is always Jan 2000 PST.
+  base::Time inception_ts;
+  EXPECT_TRUE(base::Time::FromUTCString(kInceptionTimeString, &inception_ts));
+  EXPECT_EQ(churn_active_status->GetInceptionMonth(), inception_ts);
+
+  // Validate expected months since inception.
+  EXPECT_EQ(churn_active_status->GetMonthsSinceInception(),
+            GetParam().expected_months_since_inception);
+
+  // Validate current active month is aligned with the
+  // expected current active month ts.
+  base::Time current_active_month_ts;
+  EXPECT_TRUE(base::Time::FromUTCString(
+      GetParam().expected_current_active_month.c_str(),
+      &current_active_month_ts));
+  EXPECT_EQ(churn_active_status->GetCurrentActiveMonth(),
+            current_active_month_ts);
+
+  // Validate the active month bits from the 28 bit value is aligned with what
+  // is expected.
+  EXPECT_EQ(churn_active_status->GetActiveMonthBits(),
+            GetParam().expected_active_month_bits);
+
+  // Validate first active week is converted correctly based on ISO8601 week
+  // format.
+  base::Time first_active_week_ts;
+  EXPECT_TRUE(base::Time::FromUTCString(
+      GetParam().expected_first_active_week.c_str(), &first_active_week_ts));
+  EXPECT_EQ(churn_active_status->GetFirstActiveWeek(), first_active_week_ts);
 }
 
 }  // namespace ash::device_activity

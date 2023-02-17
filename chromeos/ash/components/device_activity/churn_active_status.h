@@ -53,8 +53,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // local_state or preserved file active status value.
   void InitializeValue(int value);
 
+  // Returns the base::Time object representing the defined inception date.
+  const base::Time GetInceptionMonth() const;
+
   // Returns the int representation of the known months since inception.
-  int GetMonthsSinceInception();
+  int GetMonthsSinceInception() const;
+
+  // Uses the inception month and months since inception in order to return
+  // a new timestamp representing the current active month.
+  // TODO(hirthanan): Compare against UpdateValue parameter ts month and year to
+  // see accuracy and correctness of this method.
+  const base::Time GetCurrentActiveMonth() const;
 
   // Returns the int representation of the known active months in |value_|.
   int GetActiveMonthBits();
