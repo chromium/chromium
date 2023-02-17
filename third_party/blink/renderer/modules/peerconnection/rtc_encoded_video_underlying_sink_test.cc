@@ -19,18 +19,19 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
-#include "third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
+using webrtc::MockTransformableVideoFrame;
 
 namespace blink {
 

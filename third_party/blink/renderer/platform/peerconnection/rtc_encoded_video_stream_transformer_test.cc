@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
+#include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using ::testing::NiceMock;
@@ -48,27 +49,9 @@ class MockTransformerCallbackHolder {
                void(std::unique_ptr<webrtc::TransformableVideoFrameInterface>));
 };
 
-// Not allowed to include
-// third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_video_frame.h
-// from here.
-class MockTransformableVideoFrame
-    : public webrtc::TransformableVideoFrameInterface {
- public:
-  MOCK_METHOD(rtc::ArrayView<const uint8_t>, GetData, (), (const override));
-  MOCK_METHOD(void, SetData, (rtc::ArrayView<const uint8_t> data), (override));
-  MOCK_METHOD(uint8_t, GetPayloadType, (), (const, override));
-  MOCK_METHOD(uint32_t, GetSsrc, (), (const, override));
-  MOCK_METHOD(uint32_t, GetTimestamp, (), (const override));
-  MOCK_METHOD(bool, IsKeyFrame, (), (const, override));
-  MOCK_METHOD(std::vector<uint8_t>, GetAdditionalData, (), (const, override));
-  MOCK_METHOD(const webrtc::VideoFrameMetadata&,
-              GetMetadata,
-              (),
-              (const, override));
-};
-
 std::unique_ptr<webrtc::TransformableVideoFrameInterface> CreateMockFrame() {
-  auto mock_frame = std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  auto mock_frame =
+      std::make_unique<NiceMock<webrtc::MockTransformableVideoFrame>>();
   ON_CALL(*mock_frame.get(), GetSsrc).WillByDefault(Return(kSSRC));
   return mock_frame;
 }
