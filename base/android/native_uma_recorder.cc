@@ -4,6 +4,7 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/base_jni_headers/NativeUmaRecorder_jni.h"
 #include "base/format_macros.h"
@@ -262,6 +263,36 @@ jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
       actual_count -= snapshot_data->second->TotalCount();
   }
   return actual_count;
+}
+
+// Returns an array with 3 entries for each bucket, representing (min, max,
+// count).
+ScopedJavaLocalRef<jlongArray>
+JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& histogram_name) {
+  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
+  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
+  std::vector<int64_t> buckets;
+
+  if (histogram == nullptr) {
+    // No samples have been recorded for this histogram.
+    return base::android::ToJavaLongArray(env, buckets);
+  }
+
+  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
+  for (auto sampleCountIterator = samples->Iterator();
+       !sampleCountIterator->Done(); sampleCountIterator->Next()) {
+    HistogramBase::Sample min;
+    int64_t max;
+    HistogramBase::Count count;
+    sampleCountIterator->Get(&min, &max, &count);
+    buckets.push_back(min);
+    buckets.push_back(max);
+    buckets.push_back(count);
+  }
+
+  return base::android::ToJavaLongArray(env, buckets);
 }
 
 jlong JNI_NativeUmaRecorder_CreateHistogramSnapshotForTesting(JNIEnv* env) {

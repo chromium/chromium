@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.locks.Lock;
@@ -364,6 +365,11 @@ public final class CachingUmaRecorderTest {
         }
 
         @Override
+        public List<HistogramBucket> getHistogramSamplesForTesting(String name) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public void addUserActionCallbackForTesting(Callback<String> callback) {
             throw new UnsupportedOperationException();
         }
@@ -469,6 +475,11 @@ public final class CachingUmaRecorderTest {
 
         @Override
         public int getHistogramTotalCountForTesting(String name) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<HistogramBucket> getHistogramSamplesForTesting(String name) {
             throw new UnsupportedOperationException();
         }
 

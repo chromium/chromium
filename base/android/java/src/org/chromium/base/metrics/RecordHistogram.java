@@ -10,6 +10,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.MainDex;
 
+import java.util.List;
+
 /**
  * Java API for recording UMA histograms.
  * */
@@ -283,5 +285,10 @@ public class RecordHistogram {
     @VisibleForTesting
     public static int getHistogramTotalCountForTesting(String name) {
         return UmaRecorderHolder.get().getHistogramTotalCountForTesting(name);
+    }
+
+    @VisibleForTesting
+    public static List<HistogramBucket> getHistogramSamplesForTesting(String name) {
+        return UmaRecorderHolder.get().getHistogramSamplesForTesting(name);
     }
 }

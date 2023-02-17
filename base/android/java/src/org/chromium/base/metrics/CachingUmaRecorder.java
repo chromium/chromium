@@ -17,6 +17,8 @@ import org.chromium.build.BuildConfig;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -604,6 +606,37 @@ import javax.annotation.concurrent.GuardedBy;
             synchronized (histogram) {
                 return histogram.mSamples.size();
             }
+        } finally {
+            mRwLock.readLock().unlock();
+        }
+    }
+
+    @VisibleForTesting
+    @Override
+    public List<HistogramBucket> getHistogramSamplesForTesting(String name) {
+        mRwLock.readLock().lock();
+        try {
+            if (mDelegate != null) return mDelegate.getHistogramSamplesForTesting(name);
+
+            Histogram histogram = mHistogramByName.get(name);
+            if (histogram == null) return Collections.emptyList();
+            Integer[] samplesCopy;
+            synchronized (histogram) {
+                samplesCopy = histogram.mSamples.toArray(new Integer[0]);
+            }
+            Arrays.sort(samplesCopy);
+            List<HistogramBucket> buckets = new ArrayList<>();
+            for (int i = 0; i < samplesCopy.length;) {
+                int value = samplesCopy[i];
+                int countInBucket = 0;
+                do {
+                    countInBucket++;
+                    i++;
+                } while (i < samplesCopy.length && samplesCopy[i] == value);
+
+                buckets.add(new HistogramBucket(value, value + 1, countInBucket));
+            }
+            return buckets;
         } finally {
             mRwLock.readLock().unlock();
         }

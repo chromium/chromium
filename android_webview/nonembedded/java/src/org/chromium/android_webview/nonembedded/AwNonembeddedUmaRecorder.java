@@ -23,6 +23,7 @@ import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord.R
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.HistogramBucket;
 import org.chromium.base.metrics.UmaRecorder;
 
 import java.util.ArrayList;
@@ -161,6 +162,11 @@ public class AwNonembeddedUmaRecorder implements UmaRecorder {
 
     @Override
     public int getHistogramTotalCountForTesting(String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<HistogramBucket> getHistogramSamplesForTesting(String name) {
         throw new UnsupportedOperationException();
     }
 

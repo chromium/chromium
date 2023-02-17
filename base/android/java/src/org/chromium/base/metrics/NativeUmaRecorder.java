@@ -10,8 +10,10 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.build.annotations.MainDex;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -82,6 +84,19 @@ import java.util.Map;
     }
 
     @Override
+    public List<HistogramBucket> getHistogramSamplesForTesting(String name) {
+        long[] samplesArray = NativeUmaRecorderJni.get().getHistogramSamplesForTesting(name);
+        List<HistogramBucket> buckets = new ArrayList<>(samplesArray.length);
+        for (int i = 0; i < samplesArray.length; i += 3) {
+            int min = (int) samplesArray[i];
+            long max = samplesArray[i + 1];
+            int count = (int) samplesArray[i + 2];
+            buckets.add(new HistogramBucket(min, max, count));
+        }
+        return buckets;
+    }
+
+    @Override
     public void addUserActionCallbackForTesting(Callback<String> callback) {
         long ptr = NativeUmaRecorderJni.get().addActionCallbackForTesting(callback);
         if (mUserActionTestingCallbackNativePtrs == null) {
@@ -144,6 +159,7 @@ import java.util.Map;
 
         int getHistogramValueCountForTesting(String name, int sample, long snapshotPtr);
         int getHistogramTotalCountForTesting(String name, long snapshotPtr);
+        long[] getHistogramSamplesForTesting(String name);
 
         long createHistogramSnapshotForTesting();
         void destroyHistogramSnapshotForTesting(long snapshotPtr);

@@ -8,14 +8,22 @@ import static org.junit.Assert.fail;
 
 import androidx.annotation.Nullable;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
+
+import org.chromium.base.metrics.HistogramBucket;
 import org.chromium.base.metrics.RecordHistogram;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Watches a number of histograms in tests to assert later that the expected values were recorded.
@@ -92,8 +100,8 @@ public class HistogramWatcher {
          * histograms to calculate the delta later.
          */
         public HistogramWatcher build() {
-            return new HistogramWatcher(
-                    mRecordsExpected, mTotalRecordsExpected, mHistogramsAllowedExtraRecords);
+            return new HistogramWatcher(mRecordsExpected, mTotalRecordsExpected.keySet(),
+                    mHistogramsAllowedExtraRecords);
         }
 
         /**
@@ -125,6 +133,18 @@ public class HistogramWatcher {
          * an int {@code value}.
          */
         public Builder expectIntRecords(String histogram, int value, int times) {
+            if (value < 0) {
+                throw new IllegalArgumentException("Histograms cannot record negative values");
+            }
+            if (times < 0) {
+                throw new IllegalArgumentException(
+                        "Cannot expect records a negative number of times");
+            } else if (times == 0) {
+                throw new IllegalArgumentException("Cannot expect records zero times. Use "
+                        + "expectNoRecords() if no records are expected for this histogram. "
+                        + "If only certain values are expected for this histogram, by default "
+                        + "extra records will already raise an assert.");
+            }
             HistogramAndValue histogramAndValue = new HistogramAndValue(histogram, value);
             incrementRecordsExpected(histogramAndValue, times);
             incrementTotalRecordsExpected(histogram, times);
@@ -143,6 +163,8 @@ public class HistogramWatcher {
          * any values.
          */
         public Builder expectAnyRecords(String histogram, int times) {
+            HistogramAndValue histogramAndValue = new HistogramAndValue(histogram, ANY_VALUE);
+            incrementRecordsExpected(histogramAndValue, times);
             incrementTotalRecordsExpected(histogram, times);
             return this;
         }
@@ -191,30 +213,27 @@ public class HistogramWatcher {
         }
     }
 
+    private static final int ANY_VALUE = -1;
+
     private final Map<HistogramAndValue, Integer> mRecordsExpected;
-    private final Map<String, Integer> mTotalRecordsExpected;
+    private final Set<String> mHistogramsWatched;
     private final Set<String> mHistogramsAllowedExtraRecords;
 
-    private final Map<HistogramAndValue, Integer> mStartingCounts = new HashMap<>();
-    private final Map<String, Integer> mStartingTotalCounts = new HashMap<>();
+    private final Map<String, List<HistogramBucket>> mStartingSamples = new HashMap<>();
 
     private HistogramWatcher(Map<HistogramAndValue, Integer> recordsExpected,
-            Map<String, Integer> totalRecordsExpected, Set<String> histogramsAllowedExtraRecords) {
+            Set<String> histogramsWatched, Set<String> histogramsAllowedExtraRecords) {
         mRecordsExpected = recordsExpected;
-        mTotalRecordsExpected = totalRecordsExpected;
+        mHistogramsWatched = histogramsWatched;
         mHistogramsAllowedExtraRecords = histogramsAllowedExtraRecords;
 
         takeSnapshot();
     }
 
     private void takeSnapshot() {
-        for (HistogramAndValue histogramAndValue : mRecordsExpected.keySet()) {
-            int currentCount = histogramAndValue.getHistogramValueCountForTesting();
-            mStartingCounts.put(histogramAndValue, currentCount);
-        }
-        for (String histogram : mTotalRecordsExpected.keySet()) {
-            int currentCount = RecordHistogram.getHistogramTotalCountForTesting(histogram);
-            mStartingTotalCounts.put(histogram, currentCount);
+        for (String histogram : mHistogramsWatched) {
+            mStartingSamples.put(
+                    histogram, RecordHistogram.getHistogramSamplesForTesting(histogram));
         }
     }
 
@@ -230,63 +249,211 @@ public class HistogramWatcher {
      * assertion is not satisfied.
      */
     public void assertExpected(@Nullable String customMessage) {
-        for (Entry<HistogramAndValue, Integer> kv : mRecordsExpected.entrySet()) {
-            HistogramAndValue histogramAndValue = kv.getKey();
-            int expectedDelta = kv.getValue();
-
-            int actualFinalCount = histogramAndValue.getHistogramValueCountForTesting();
-            int actualDelta = actualFinalCount - mStartingCounts.get(histogramAndValue);
-
-            if (!mHistogramsAllowedExtraRecords.contains(histogramAndValue.mHistogram)) {
-                if (expectedDelta != actualDelta) {
-                    String defaultMessage = String.format(
-                            "Expected delta of <%d record(s)> of histogram \"%s\" with value [%d], "
-                                    + "but saw a delta of <%d record(s)> in that value's bucket.",
-                            expectedDelta, histogramAndValue.mHistogram, histogramAndValue.mValue,
-                            actualDelta);
-                    failWithDefaultOrCustomMessage(customMessage, defaultMessage);
-                }
-            } else {
-                if (expectedDelta < actualDelta) {
-                    String defaultMessage = String.format(
-                            "Expected delta of at least <%d record(s)> of histogram \"%s\" with value "
-                                    + "[%d], but saw a delta of <%d record(s)> in that value's bucket.",
-                            expectedDelta, histogramAndValue.mHistogram, histogramAndValue.mValue,
-                            actualDelta);
-                    failWithDefaultOrCustomMessage(customMessage, defaultMessage);
-                }
-            }
-        }
-
-        for (Entry<String, Integer> kv : mTotalRecordsExpected.entrySet()) {
-            String histogram = kv.getKey();
-            int expectedDelta = kv.getValue();
-
-            int actualFinalCount = RecordHistogram.getHistogramTotalCountForTesting(histogram);
-            int actualDelta = actualFinalCount - mStartingTotalCounts.get(histogram);
-
-            if (!mHistogramsAllowedExtraRecords.contains(histogram)) {
-                if (expectedDelta != actualDelta) {
-                    String defaultMessage = String.format(
-                            "Expected delta of <%d total record(s)> of histogram \"%s\", but saw a "
-                                    + "delta of <%d total record(s)>.",
-                            expectedDelta, histogram, actualDelta);
-                    failWithDefaultOrCustomMessage(customMessage, defaultMessage);
-                }
-            } else {
-                if (expectedDelta < actualDelta) {
-                    String defaultMessage = String.format(
-                            "Expected delta of at least <%d total record(s)> of histogram \"%s\", but "
-                                    + " saw a delta of <%d total record(s)>.",
-                            expectedDelta, histogram, actualDelta);
-                    failWithDefaultOrCustomMessage(customMessage, defaultMessage);
-                }
-            }
+        for (String histogram : mHistogramsWatched) {
+            assertExpected(histogram, customMessage);
         }
     }
 
-    private void failWithDefaultOrCustomMessage(
-            @Nullable String customMessage, String defaultMessage) {
+    private void assertExpected(String histogram, @Nullable String customMessage) {
+        List<HistogramBucket> actualBuckets = computeActualBuckets(histogram);
+        TreeMap<Integer, Integer> expectedValuesAndCounts = new TreeMap<>();
+        for (Entry<HistogramAndValue, Integer> kv : mRecordsExpected.entrySet()) {
+            if (kv.getKey().mHistogram.equals(histogram)) {
+                expectedValuesAndCounts.put(kv.getKey().mValue, kv.getValue());
+            }
+        }
+
+        // Since |expectedValuesAndCounts| is a TreeMap, iterates expected records in ascending
+        // order by value.
+        Iterator<Entry<Integer, Integer>> expectedValuesAndCountsIt =
+                expectedValuesAndCounts.entrySet().iterator();
+        Entry<Integer, Integer> expectedValueAndCount =
+                expectedValuesAndCountsIt.hasNext() ? expectedValuesAndCountsIt.next() : null;
+        if (expectedValueAndCount != null && expectedValueAndCount.getKey() == ANY_VALUE) {
+            // Skip the ANY_VALUE records expected - conveniently always the first entry -1 when
+            // present to check them differently at the end.
+            expectedValueAndCount =
+                    expectedValuesAndCountsIt.hasNext() ? expectedValuesAndCountsIt.next() : null;
+        }
+
+        // Will match the actual records with the expected and flag |unexpected| when the actual
+        // records cannot match the expected, and count how many |actualExtraRecords| are seen to
+        // match them with |ANY_VALUE|s at the end.
+        boolean unexpected = false;
+        int actualExtraRecords = 0;
+
+        for (HistogramBucket actualBucket : actualBuckets) {
+            if (expectedValueAndCount == null) {
+                // No expected values are left, so all records seen in this bucket are extra.
+                actualExtraRecords += actualBucket.mCount;
+                continue;
+            }
+
+            // Count how many expected records fall inside the bucket.
+            int expectedRecordsMatchedToActualBucket = 0;
+            do {
+                int expectedValue = expectedValueAndCount.getKey();
+                int expectedCount = expectedValueAndCount.getValue();
+                if (actualBucket.contains(expectedValue)) {
+                    expectedRecordsMatchedToActualBucket += expectedCount;
+                    expectedValueAndCount = expectedValuesAndCountsIt.hasNext()
+                            ? expectedValuesAndCountsIt.next()
+                            : null;
+                } else {
+                    break;
+                }
+            } while (expectedValueAndCount != null);
+
+            if (actualBucket.mCount > expectedRecordsMatchedToActualBucket) {
+                // Saw more records than expected for that bucket's range.
+                // Consider the difference as extra records.
+                actualExtraRecords += actualBucket.mCount - expectedRecordsMatchedToActualBucket;
+            } else if (actualBucket.mCount < expectedRecordsMatchedToActualBucket) {
+                // Saw fewer records than expected for that bucket's range.
+                // Assert since all expected records should be accounted for.
+                unexpected = true;
+                break;
+            }
+            // else, actual records match expected, so just move to check the next actual bucket.
+        }
+
+        if (expectedValueAndCount != null) {
+            // Still had more expected values but not seen in any actual bucket.
+            unexpected = true;
+        }
+
+        boolean allowAnyNumberOfExtraRecords = mHistogramsAllowedExtraRecords.contains(histogram);
+        int expectedExtraRecords =
+                mRecordsExpected.getOrDefault(new HistogramAndValue(histogram, ANY_VALUE), 0);
+        if (!allowAnyNumberOfExtraRecords && actualExtraRecords > expectedExtraRecords
+                || actualExtraRecords < expectedExtraRecords) {
+            // Expected |extraRecordsExpected| records with any value, found |extraActualRecords|.
+            unexpected = true;
+        }
+
+        if (unexpected) {
+            String expectedRecordsString =
+                    getExpectedHistogramSamplesAsString(expectedValuesAndCounts);
+            String actualRecordsString = bucketsToString(actualBuckets);
+            String atLeastString = allowAnyNumberOfExtraRecords ? "At least " : "";
+            int expectedTotalDelta = 0;
+            for (Integer expectedCount : expectedValuesAndCounts.values()) {
+                expectedTotalDelta += expectedCount;
+            }
+            int actualTotalDelta = 0;
+            for (HistogramBucket actualBucket : actualBuckets) {
+                actualTotalDelta += actualBucket.mCount;
+            }
+            String defaultMessage =
+                    String.format("Records for histogram \"%s\" did not match expected.\n"
+                                    + "%s%d record(s) expected: [%s]\n"
+                                    + "%d record(s) seen: [%s]",
+                            histogram, atLeastString, expectedTotalDelta, expectedRecordsString,
+                            actualTotalDelta, actualRecordsString);
+            failWithDefaultOrCustomMessage(defaultMessage, customMessage);
+        }
+    }
+
+    private static String getExpectedHistogramSamplesAsString(
+            TreeMap<Integer, Integer> expectedValuesAndCounts) {
+        List<String> expectedRecordsStrings = new ArrayList<>();
+        for (Entry<Integer, Integer> kv : expectedValuesAndCounts.entrySet()) {
+            int value = kv.getKey();
+            int count = kv.getValue();
+            if (value == ANY_VALUE) {
+                // Write records matching "Any" at the end.
+                continue;
+            }
+            expectedRecordsStrings.add(bucketToString(value, value + 1, count));
+        }
+
+        if (expectedValuesAndCounts.containsKey(ANY_VALUE)) {
+            int anyExpectedCount = expectedValuesAndCounts.get(ANY_VALUE);
+            expectedRecordsStrings.add(bucketToString(ANY_VALUE, ANY_VALUE + 1, anyExpectedCount));
+        }
+
+        return String.join(", ", expectedRecordsStrings);
+    }
+
+    private List<HistogramBucket> computeActualBuckets(String histogram) {
+        List<HistogramBucket> startingBuckets = mStartingSamples.get(histogram);
+        List<HistogramBucket> finalBuckets =
+                RecordHistogram.getHistogramSamplesForTesting(histogram);
+        List<HistogramBucket> deltaBuckets = new ArrayList<>();
+
+        PeekingIterator<HistogramBucket> startingBucketsIt =
+                Iterators.peekingIterator(startingBuckets.iterator());
+
+        for (HistogramBucket finalBucket : finalBuckets) {
+            int totalInEquivalentStartingBuckets = 0;
+            while (startingBucketsIt.hasNext()
+                    && startingBucketsIt.peek().mMax <= finalBucket.mMax) {
+                HistogramBucket startBucket = startingBucketsIt.next();
+                if (startBucket.mMin >= finalBucket.mMax) {
+                    // This should not happen as the only transition in bucket schema is from the
+                    // CachingUmaRecord (which is as granular as possible, buckets of [n, n+1) )
+                    // to NativeUmaRecorder (which has varying granularity).
+                    fail(String.format(
+                            "Histogram bucket bounds before and after the test don't match, cannot "
+                                    + "assert histogram counts.\n"
+                                    + "Before: [%s]\n"
+                                    + "After: [%s]",
+                            bucketsToString(startingBuckets), bucketsToString(finalBuckets)));
+                }
+                if (startBucket.mMin >= finalBucket.mMin) {
+                    // Since start.max <= final.max, this means the start bucket is contained in the
+                    // final bucket.
+                    totalInEquivalentStartingBuckets += startBucket.mCount;
+                }
+            }
+
+            int delta = finalBucket.mCount - totalInEquivalentStartingBuckets;
+
+            if (delta == 0) {
+                // Empty buckets don't need to be printed.
+                continue;
+            } else {
+                deltaBuckets.add(new HistogramBucket(finalBucket.mMin, finalBucket.mMax, delta));
+            }
+        }
+        return deltaBuckets;
+    }
+
+    private static String bucketsToString(List<HistogramBucket> buckets) {
+        List<String> bucketStrings = new ArrayList<>();
+        for (HistogramBucket bucket : buckets) {
+            bucketStrings.add(bucketToString(bucket));
+        }
+        return String.join(", ", bucketStrings);
+    }
+
+    private static String bucketToString(HistogramBucket bucket) {
+        return bucketToString(bucket.mMin, bucket.mMax, bucket.mCount);
+    }
+
+    private static String bucketToString(int bucketMin, long bucketMax, int count) {
+        String bucketString;
+        if (bucketMin == ANY_VALUE) {
+            bucketString = "Any";
+        } else if (bucketMax == bucketMin + 1) {
+            // bucketString is "100" for bucketMin == 100, bucketMax == 101
+            bucketString = String.valueOf(bucketMin);
+        } else {
+            // bucketString is "[100, 120)" for bucketMin == 100, bucketMax == 120
+            bucketString = String.format("[%d, %d)", bucketMin, bucketMax);
+        }
+
+        if (count == 1) {
+            // result is "100" for count == 1
+            return bucketString;
+        } else {
+            // result is "100 (2 times)" for count == 2
+            return String.format("%s (%d times)", bucketString, count);
+        }
+    }
+
+    private static void failWithDefaultOrCustomMessage(
+            String defaultMessage, @Nullable String customMessage) {
         if (customMessage != null) {
             fail(String.format("%s\n%s", customMessage, defaultMessage));
         } else {
@@ -310,11 +477,11 @@ public class HistogramWatcher {
 
         @Override
         public boolean equals(@Nullable Object obj) {
-            return Objects.equals(this, obj);
-        }
-
-        private int getHistogramValueCountForTesting() {
-            return RecordHistogram.getHistogramValueCountForTesting(mHistogram, mValue);
+            if (obj instanceof HistogramAndValue) {
+                HistogramAndValue that = (HistogramAndValue) obj;
+                return this.mHistogram.equals(that.mHistogram) && this.mValue == that.mValue;
+            }
+            return false;
         }
     }
 }
