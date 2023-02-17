@@ -251,7 +251,7 @@ class ConversionContext {
   Vector<StateEntry> state_stack_;
 
   const PropertyTreeState& layer_state_;
-  gfx::Vector2dF layer_offset_;
+  const gfx::Vector2dF layer_offset_;
   bool translated_for_layer_offset_ = false;
 
   // These fields are never nullptr.
@@ -793,9 +793,11 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
         continue;
       }
 
+      // `SwitchToChunkState` will also update `chunk_to_layer_mapper_`'s chunk
+      // but we need to explicitly switch the state ahead of time to ensure the
+      // call to `chunk_to_layer_mapper_.MapVisualRect` uses the correct state.
       if (!switched_to_chunk_state) {
-        SwitchToChunkState(chunk);
-        switched_to_chunk_state = true;
+        chunk_to_layer_mapper_.SwitchToChunk(chunk);
       }
 
       gfx::Rect visual_rect =
@@ -803,6 +805,11 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
       if (additional_cull_rect && can_ignore_record &&
           !additional_cull_rect->Intersects(visual_rect)) {
         continue;
+      }
+
+      if (!switched_to_chunk_state) {
+        SwitchToChunkState(chunk);
+        switched_to_chunk_state = true;
       }
 
       result_.StartPaint();
