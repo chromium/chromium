@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/task_util.h"
-#include "google_apis/credentials_mode.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -175,7 +174,7 @@ void UrlFetchRequestBase::StartAfterPrepare(
   request->url = url;
   request->method = GetRequestType();
   request->load_flags = net::LOAD_DISABLE_CACHE;
-  request->credentials_mode = GetOmitCredentialsModeForGaiaRequests();
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   // Add request headers.
   // Note that SetHeader clears the current headers and sets it to the passed-in

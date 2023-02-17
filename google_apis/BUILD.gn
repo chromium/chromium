@@ -115,8 +115,6 @@ config("key_defines") {
 template("google_apis_tmpl") {
   source_set(target_name) {
     sources = [
-      "credentials_mode.cc",
-      "credentials_mode.h",
       "gaia/core_account_id.cc",
       "gaia/core_account_id.h",
       "gaia/gaia_access_token_fetcher.cc",
@@ -168,7 +166,6 @@ template("google_apis_tmpl") {
     public_deps = [
       ":buildflags",
       "//build:chromeos_buildflags",
-      "//services/network/public/cpp",
     ]
 
     deps = [
@@ -179,6 +176,7 @@ template("google_apis_tmpl") {
       "//build:chromeos_buildflags",
       "//crypto",
       "//mojo/public/cpp/bindings:struct_traits",
+      "//services/network/public/cpp",
     ]
 
     if (_use_official_google_keys_and_generate_metrics_key_header) {
