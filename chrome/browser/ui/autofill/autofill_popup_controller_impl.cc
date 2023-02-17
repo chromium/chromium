@@ -294,7 +294,10 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
     return;
   }
 
-  const Suggestion& suggestion = suggestions_[index];
+  // Use a copy instead of a reference here. Under certain circumstances,
+  // `DidAcceptSuggestion()` can call `SetSuggestions()` and invalidate the
+  // reference.
+  Suggestion suggestion = suggestions_[index];
 #if BUILDFLAG(IS_ANDROID)
   auto mf_controller = ManualFillingController::GetOrCreate(web_contents_);
   // Accepting a suggestion should hide all suggestions. To prevent them from
