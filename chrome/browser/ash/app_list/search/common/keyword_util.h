@@ -53,6 +53,9 @@ using KeywordExtractedInfoList = std::vector<KeywordInfo>;
 //   - Multiple keywords may map to the same SearchProvider.
 KeywordExtractedInfoList ExtractKeywords(const std::u16string& query);
 
+// Strips the user query from the keyword.
+const std::u16string StripQuery(const std::u16string query);
+
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_KEYWORD_UTIL_H_

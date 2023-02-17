@@ -127,5 +127,32 @@ TEST(KeywordUtilTest, ExactAndFuzzyMatching) {
             actual_1[1].search_providers);
 }
 
+/*********************** Query Stripping Tests ***********************/
+
+// Test stripping one keyword from query
+TEST(KeywordUtilTest, StripOneKeyword) {
+  std::u16string query1 = u"strip keyboard from query";
+  EXPECT_EQ(StripQuery(query1), u"strip from query");
+
+  std::u16string query2 = u"help";
+  EXPECT_EQ(StripQuery(query2), u"");
+
+  std::u16string query3 = u"personalization background";
+  EXPECT_EQ(StripQuery(query3), u"background");
+}
+
+// Test stripping multiple keywords form query
+TEST(KeywordUtilTest, StripMultipleKeywords) {
+  std::u16string query1 =
+      u"strip keyboard random word in between files from query";
+  EXPECT_EQ(StripQuery(query1), u"strip random word in between from query");
+
+  std::u16string query2 = u"google gaming minecraft";
+  EXPECT_EQ(StripQuery(query2), u"minecraft");
+
+  std::u16string query3 = u"file cat drive boba gaming tetris";
+  EXPECT_EQ(StripQuery(query3), u"cat boba tetris");
+}
+
 }  // namespace
 }  // namespace app_list::list

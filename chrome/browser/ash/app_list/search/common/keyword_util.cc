@@ -97,4 +97,21 @@ KeywordExtractedInfoList ExtractKeywords(const std::u16string& query) {
   return extracted_keywords_to_providers;
 }
 
+// Strips the keyword from the query
+const std::u16string StripQuery(const std::u16string query) {
+  KeywordExtractedInfoList extracted_keywords = ExtractKeywords(query);
+  std::u16string stripped_query = query;
+
+  for (const KeywordInfo& keyword_info : extracted_keywords) {
+    const std::u16string& keyword = keyword_info.query_token;
+    auto iter_start = stripped_query.find(keyword);
+
+    if (iter_start != std::string::npos) {
+      stripped_query = stripped_query.erase(iter_start, keyword.length() + 1);
+    }
+  }
+
+  return stripped_query;
+}
+
 }  // namespace app_list
