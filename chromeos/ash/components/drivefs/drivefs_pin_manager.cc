@@ -882,6 +882,7 @@ void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
 
 void PinManager::OnFileCreated(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(event.type, mojom::FileChange::Type::kCreate);
 
   if (!InProgress(progress_.stage)) {
     VLOG(2) << "Ignored " << Quote(event) << ": PinManager is currently "
@@ -909,6 +910,7 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
 
 void PinManager::OnFileDeleted(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(event.type, mojom::FileChange::Type::kDelete);
 
   VLOG(1) << "Got " << Quote(event);
   const Path& path = event.path;
@@ -932,6 +934,7 @@ void PinManager::OnFileDeleted(const mojom::FileChange& event) {
 
 void PinManager::OnFileModified(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(event.type, mojom::FileChange::Type::kModify);
 
   const Id id = Id(event.stable_id);
   const Path& path = event.path;
