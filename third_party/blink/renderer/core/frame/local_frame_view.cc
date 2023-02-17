@@ -194,8 +194,8 @@
 // function.
 #define CHECK_FOR_DIRTY_LAYOUT(arg) \
   do {                              \
+    DCHECK(arg);                    \
     if (!(arg)) {                   \
-      NOTREACHED();                 \
       return false;                 \
     }                               \
   } while (false)
