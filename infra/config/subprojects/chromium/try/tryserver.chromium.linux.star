@@ -248,25 +248,6 @@ try_.builder(
 )
 
 try_.orchestrator_builder(
-    name = "linux-wayland-rel-inverse-fyi",
-    mirrors = [
-        "ci/Linux Builder (Wayland)",
-        "ci/Linux Tests (Wayland)",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    compilator = "linux-wayland-rel-compilator",
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    use_orchestrator_pool = True,
-)
-
-try_.orchestrator_builder(
     name = "linux-wayland-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
@@ -406,25 +387,6 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-)
-
-try_.orchestrator_builder(
-    name = "linux_chromium_asan_rel_ng-inverse-fyi",
-    mirrors = [
-        "ci/Linux ASan LSan Builder",
-        "ci/Linux ASan LSan Tests (1)",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    compilator = "linux_chromium_asan_rel_ng-compilator",
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
@@ -576,25 +538,6 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
 )
 
-try_.orchestrator_builder(
-    name = "linux_chromium_tsan_rel_ng-inverse-fyi",
-    mirrors = [
-        "ci/Linux TSan Builder",
-        "ci/Linux TSan Tests",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    compilator = "linux_chromium_tsan_rel_ng-compilator",
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    use_orchestrator_pool = True,
-)
-
 try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
@@ -744,31 +687,6 @@ try_.builder(
     name = "linux-js-code-coverage",
     mirrors = ["ci/linux-js-code-coverage"],
     execution_timeout = 20 * time.hour,
-)
-
-# RTS builders
-try_.orchestrator_builder(
-    name = "linux-rel-inverse-fyi",
-    mirrors = [
-        "ci/Linux Builder",
-        "ci/Linux Tests",
-        "ci/GPU Linux Builder",
-        "ci/Linux Release (NVIDIA)",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    check_for_flakiness = True,
-    compilator = "linux-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    use_clang_coverage = True,
-    use_orchestrator_pool = True,
 )
 
 # ML experimental builder, modifies RTS itself to use a ml model

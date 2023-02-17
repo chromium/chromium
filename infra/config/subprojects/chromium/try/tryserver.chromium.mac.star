@@ -132,26 +132,6 @@ try_.orchestrator_builder(
     #use_orchestrator_pool = True,
 )
 
-try_.orchestrator_builder(
-    name = "mac-rel-inverse-fyi",
-    mirrors = builder_config.copy_from("try/mac-rel"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    check_for_flakiness = True,
-    compilator = "mac-rel-compilator",
-    coverage_test_types = ["overall", "unit"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    main_list_view = "try",
-    use_clang_coverage = True,
-    use_orchestrator_pool = True,
-)
-
 try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,

@@ -224,32 +224,6 @@ try_.builder(
     goma_backend = goma.backend.RBE_PROD,
 )
 
-try_.orchestrator_builder(
-    name = "win-rel-inverse-fyi",
-    mirrors = [
-        "ci/Win x64 Builder",
-        "ci/Win10 Tests x64",
-        "ci/GPU Win x64 Builder",
-        "ci/Win10 x64 Release (NVIDIA)",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    compilator = "win-rel-compilator",
-    # TODO (crbug.com/1413505) - disabling due to high pending times. test
-    # history inaccuracies causing additional tests to be run.
-    # check_for_flakiness = True,
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    use_clang_coverage = True,
-    use_orchestrator_pool = True,
-)
-
 try_.builder(
     name = "win-fieldtrial-rel",
     mirrors = ["ci/win-fieldtrial-rel"],

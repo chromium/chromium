@@ -124,28 +124,6 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
 )
 
-try_.orchestrator_builder(
-    name = "android-arm64-rel-inverse-fyi",
-    mirrors = [
-        "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
-        "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    check_for_flakiness = True,
-    compilator = "android-arm64-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    use_clang_coverage = True,
-    use_orchestrator_pool = True,
-)
-
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -354,27 +332,6 @@ try_.orchestrator_builder(
     # are addressed
     # use_orchestrator_pool = True,
     use_java_coverage = True,
-)
-
-try_.orchestrator_builder(
-    name = "android-nougat-x86-rel-inverse-fyi",
-    mirrors = [
-        "ci/android-nougat-x86-rel",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    check_for_flakiness = True,
-    compilator = "android-nougat-x86-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    use_java_coverage = True,
-    use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
