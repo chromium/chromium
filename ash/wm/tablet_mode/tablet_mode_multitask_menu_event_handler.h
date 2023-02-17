@@ -26,15 +26,13 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
       const TabletModeMultitaskMenuEventHandler&) = delete;
   ~TabletModeMultitaskMenuEventHandler() override;
 
-  void MaybeCreateMultitaskMenu(aura::Window* active_window);
+  // Creates and shows the menu.
+  void ShowMultitaskMenu(aura::Window* window);
 
   // Destroys the multitask menu.
   void ResetMultitaskMenu();
 
   // ui::EventHandler:
-  // TODO(crbug.com/1336836): Temporarily allow mouse wheel events to show or
-  // hide the multitask menu for developers. Remove this before launch.
-  void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
   TabletModeMultitaskMenu* multitask_menu_for_testing() {
@@ -54,6 +52,8 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   };
 
   bool CanProcessEvent(aura::Window* window) const;
+
+  void MaybeCreateMultitaskMenu(aura::Window* active_window);
 
   // Valid if we may need to handle the event.
   absl::optional<InitialDragData> initial_drag_data_;

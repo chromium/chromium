@@ -40,7 +40,7 @@ chromeos::MultitaskMenuNudgeController* GetNudgeControllerForWindow(
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
-        ->tablet_mode_multitask_menu_event_handler_for_testing()
+        ->tablet_mode_multitask_menu_event_handler()
         ->multitask_cue_for_testing()
         ->nudge_controller_for_testing();
   }

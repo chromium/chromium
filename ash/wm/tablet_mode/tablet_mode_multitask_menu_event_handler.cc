@@ -36,58 +36,14 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
-void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
-    aura::Window* active_window) {
-  if (!multitask_menu_) {
-    multitask_menu_ =
-        std::make_unique<TabletModeMultitaskMenu>(this, active_window);
-
-    multitask_cue_->DismissCue();
-  }
+void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
+    aura::Window* window) {
+  MaybeCreateMultitaskMenu(window);
+  multitask_menu_->Animate(/*show=*/true);
 }
 
 void TabletModeMultitaskMenuEventHandler::ResetMultitaskMenu() {
   multitask_menu_.reset();
-}
-
-void TabletModeMultitaskMenuEventHandler::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSEWHEEL)
-    return;
-
-  // Note that connecting a mouse normally puts the device in clamshell mode
-  // unless a developer switch is enabled.
-  if (!debug::DeveloperAcceleratorsEnabled())
-    return;
-
-  const float y_offset = event->AsMouseWheelEvent()->y_offset();
-  if (y_offset == 0.f)
-    return;
-
-  aura::Window* target = static_cast<aura::Window*>(event->target());
-
-  // Close the multitask menu if it is the target and we have a upwards scroll.
-  if (y_offset > 0.f && multitask_menu_ &&
-      target == multitask_menu_->widget()->GetNativeWindow()) {
-    multitask_menu_->Animate(/*show=*/false);
-    return;
-  }
-
-  if (multitask_menu_)
-    return;
-
-  aura::Window* active_window = window_util::GetActiveWindow();
-  if (!active_window || !active_window->Contains(target) ||
-      !WindowState::Get(active_window)->CanMaximize()) {
-    return;
-  }
-
-  // Show the multitask menu if it is in the top quarter of the target and is a
-  // downwards scroll.
-  if (y_offset < 0.f &&
-      event->location_f().y() < target->bounds().height() / 4.f) {
-    MaybeCreateMultitaskMenu(active_window);
-    multitask_menu_->Animate(/*show=*/true);
-  }
 }
 
 void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
@@ -204,6 +160,15 @@ bool TabletModeMultitaskMenuEventHandler::CanProcessEvent(
   }
   auto* window_state = WindowState::Get(window);
   return !window_state->IsFloated() && window_state->CanMaximize();
+}
+
+void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
+    aura::Window* active_window) {
+  if (!multitask_menu_) {
+    multitask_menu_ =
+        std::make_unique<TabletModeMultitaskMenu>(this, active_window);
+    multitask_cue_->DismissCue();
+  }
 }
 
 }  // namespace ash

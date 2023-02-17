@@ -53,6 +53,11 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   ~TabletModeWindowManager() override;
 
+  TabletModeMultitaskMenuEventHandler*
+  tablet_mode_multitask_menu_event_handler() {
+    return tablet_mode_multitask_menu_event_handler_.get();
+  }
+
   void Init();
 
   // Stops tracking windows and returns them to their clamshell mode state. Work
@@ -106,11 +111,6 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
-
-  TabletModeMultitaskMenuEventHandler*
-  tablet_mode_multitask_menu_event_handler_for_testing() {
-    return tablet_mode_multitask_menu_event_handler_.get();
-  }
 
  private:
   using WindowToState = std::map<aura::Window*, TabletModeWindowState*>;

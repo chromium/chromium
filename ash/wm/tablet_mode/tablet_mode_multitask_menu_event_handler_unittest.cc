@@ -94,13 +94,13 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
   TabletModeMultitaskMenuEventHandler* GetMultitaskMenuEventHandler() {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
-        ->tablet_mode_multitask_menu_event_handler_for_testing();
+        ->tablet_mode_multitask_menu_event_handler();
   }
 
   TabletModeMultitaskMenu* GetMultitaskMenu() {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
-        ->tablet_mode_multitask_menu_event_handler_for_testing()
+        ->tablet_mode_multitask_menu_event_handler()
         ->multitask_menu_for_testing();
   }
 
@@ -314,10 +314,9 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
 
   ShowMultitaskMenu(*window);
 
-  auto* event_handler =
-      TabletModeControllerTestApi()
-          .tablet_mode_window_manager()
-          ->tablet_mode_multitask_menu_event_handler_for_testing();
+  auto* event_handler = TabletModeControllerTestApi()
+                            .tablet_mode_window_manager()
+                            ->tablet_mode_multitask_menu_event_handler();
   auto* multitask_menu = event_handler->multitask_menu_for_testing();
   ASSERT_TRUE(multitask_menu);
   ASSERT_TRUE(multitask_menu->widget()->GetContentsView()->GetVisible());
