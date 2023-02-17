@@ -22,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
@@ -108,7 +109,10 @@ class PageSchedulerImplTest : public testing::Test {
     test_task_runner_->AdvanceMockTickClock(base::Milliseconds(5));
     scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
         base::sequence_manager::SequenceManagerForTest::Create(
-            nullptr, test_task_runner_, test_task_runner_->GetMockTickClock()));
+            nullptr, test_task_runner_, test_task_runner_->GetMockTickClock(),
+            base::sequence_manager::SequenceManager::Settings::Builder()
+                .SetPrioritySettings(CreatePrioritySettings())
+                .Build()));
     agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_delegate_ = std::make_unique<MockPageSchedulerDelegate>();
     page_scheduler_ =

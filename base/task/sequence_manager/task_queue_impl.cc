@@ -49,29 +49,6 @@ BASE_FEATURE(kSweepCancelledTasks,
 
 }  // namespace
 
-// static
-const char* TaskQueue::PriorityToString(TaskQueue::QueuePriority priority) {
-  switch (priority) {
-    case kControlPriority:
-      return "control";
-    case kHighestPriority:
-      return "highest";
-    case kVeryHighPriority:
-      return "very_high";
-    case kHighPriority:
-      return "high";
-    case kNormalPriority:
-      return "normal";
-    case kLowPriority:
-      return "low";
-    case kBestEffortPriority:
-      return "best_effort";
-    default:
-      NOTREACHED();
-      return nullptr;
-  }
-}
-
 namespace internal {
 
 namespace {
@@ -398,10 +375,12 @@ TimeDelta TaskQueueImpl::GetTaskDelayAdjustment(CurrentThread current_thread) {
     // Add a per-priority delay to cross thread tasks. This can help diagnose
     // scheduler induced flakiness by making things flake most of the time.
     return sequence_manager_->settings()
-        .per_priority_cross_thread_task_delay[any_thread_.queue_set_index];
+        .priority_settings
+        .per_priority_cross_thread_task_delay()[any_thread_.queue_set_index];
   } else {
-    return sequence_manager_->settings().per_priority_same_thread_task_delay
-        [main_thread_only().immediate_work_queue->work_queue_set_index()];
+    return sequence_manager_->settings()
+        .priority_settings.per_priority_same_thread_task_delay()
+            [main_thread_only().immediate_work_queue->work_queue_set_index()];
   }
 #else
   // No delay adjustment.
@@ -683,11 +662,10 @@ absl::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
   // High resolution is needed if the queue contains high resolution tasks and
   // has a priority index <= kNormalPriority (precise execution time is
   // unnecessary for a low priority queue).
-  WakeUpResolution resolution =
-      has_pending_high_resolution_tasks() &&
-              GetQueuePriority() <= TaskQueue::QueuePriority::kNormalPriority
-          ? WakeUpResolution::kHigh
-          : WakeUpResolution::kLow;
+  WakeUpResolution resolution = has_pending_high_resolution_tasks() &&
+                                        GetQueuePriority() <= DefaultPriority()
+                                    ? WakeUpResolution::kHigh
+                                    : WakeUpResolution::kLow;
 
   const auto& top_task = main_thread_only().delayed_incoming_queue.top();
   return WakeUp{top_task.delayed_run_time, top_task.leeway, resolution,
@@ -810,16 +788,13 @@ void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
   UpdateWakeUp(&lazy_now);
 #endif
 
-  static_assert(TaskQueue::QueuePriority::kLowPriority >
-                    TaskQueue::QueuePriority::kNormalPriority,
-                "Priorities are not ordered as expected");
-  if (priority > TaskQueue::QueuePriority::kNormalPriority) {
-    // |priority| is now kLowPriority or less important so update accordingly.
+  if (priority > DefaultPriority()) {
+    // |priority| is now lower than the default, so update accordingly.
     main_thread_only()
         .enqueue_order_at_which_we_became_unblocked_with_normal_priority =
         EnqueueOrder::max();
-  } else if (previous_priority > TaskQueue::QueuePriority::kNormalPriority) {
-    // |priority| is no longer kLowPriority or less important so record current
+  } else if (previous_priority > DefaultPriority()) {
+    // |priority| is no longer lower than the default, so record current
     // sequence number.
     DCHECK_EQ(
         main_thread_only()
@@ -908,7 +883,7 @@ Value::Dict TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
     state.Set("delayed_incoming_queue",
               main_thread_only().delayed_incoming_queue.AsValue(now));
   }
-  state.Set("priority", TaskQueue::PriorityToString(GetQueuePriority()));
+  state.Set("priority", GetQueuePriority());
   return state;
 }
 
@@ -1534,12 +1509,8 @@ void TaskQueueImpl::OnQueueUnblocked() {
 
   main_thread_only().enqueue_order_at_which_we_became_unblocked =
       sequence_manager_->GetNextSequenceNumber();
-
-  static_assert(TaskQueue::QueuePriority::kLowPriority >
-                    TaskQueue::QueuePriority::kNormalPriority,
-                "Priorities are not ordered as expected");
-  if (GetQueuePriority() <= TaskQueue::QueuePriority::kNormalPriority) {
-    // We are kNormalPriority or more important so update
+  if (GetQueuePriority() <= DefaultPriority()) {
+    // We are default priority or more important so update
     // |enqueue_order_at_which_we_became_unblocked_with_normal_priority|.
     main_thread_only()
         .enqueue_order_at_which_we_became_unblocked_with_normal_priority =
@@ -1632,6 +1603,10 @@ TaskQueueImpl::OnTaskPostedCallbackHandleImpl::
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (task_queue_impl_)
     task_queue_impl_->RemoveOnTaskPostedHandler(this);
+}
+
+TaskQueue::QueuePriority TaskQueueImpl::DefaultPriority() const {
+  return sequence_manager()->settings().priority_settings.default_priority();
 }
 
 }  // namespace internal

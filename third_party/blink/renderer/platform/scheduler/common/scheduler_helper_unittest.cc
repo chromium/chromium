@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -53,9 +54,12 @@ class SchedulerHelperTest : public testing::Test {
       : task_environment_(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {
+    auto settings = base::sequence_manager::SequenceManager::Settings::Builder()
+                        .SetPrioritySettings(CreatePrioritySettings())
+                        .Build();
     sequence_manager_ = base::sequence_manager::SequenceManagerForTest::Create(
         nullptr, task_environment_.GetMainThreadTaskRunner(),
-        task_environment_.GetMockTickClock());
+        task_environment_.GetMockTickClock(), std::move(settings));
     scheduler_helper_ = std::make_unique<NonMainThreadSchedulerHelper>(
         sequence_manager_.get(), nullptr, TaskType::kInternalTest);
     scheduler_helper_->AttachToCurrentThread();

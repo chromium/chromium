@@ -16,6 +16,7 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/browser/scheduler/browser_task_priority.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 
@@ -28,7 +29,7 @@ BASE_FEATURE(kServiceWorkerStorageControlResponseUseHighPriority,
              "ServiceWorkerStorageControlResponseUseHighPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-using QueuePriority = ::base::sequence_manager::TaskQueue::QueuePriority;
+using BrowserTaskPriority = ::content::internal::BrowserTaskPriority;
 using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;
 using InsertFencePosition =
     ::base::sequence_manager::TaskQueue::InsertFencePosition;
@@ -173,34 +174,34 @@ BrowserTaskQueues::BrowserTaskQueues(
       queue_data_[static_cast<uint32_t>(QueueType::kDefault)].task_queue_;
 
   GetBrowserTaskQueue(QueueType::kUserVisible)
-      ->SetQueuePriority(QueuePriority::kLowPriority);
+      ->SetQueuePriority(BrowserTaskPriority::kLowPriority);
 
   // Best effort queue
   GetBrowserTaskQueue(QueueType::kBestEffort)
-      ->SetQueuePriority(QueuePriority::kBestEffortPriority);
+      ->SetQueuePriority(BrowserTaskPriority::kBestEffortPriority);
 
   // User Input queue
   GetBrowserTaskQueue(QueueType::kUserInput)
-      ->SetQueuePriority(QueuePriority::kHighestPriority);
+      ->SetQueuePriority(BrowserTaskPriority::kHighestPriority);
 
   GetBrowserTaskQueue(QueueType::kNavigationNetworkResponse)
-      ->SetQueuePriority(QueuePriority::kHighPriority);
+      ->SetQueuePriority(BrowserTaskPriority::kHighPriority);
 
   GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
-      ->SetQueuePriority(QueuePriority::kHighestPriority);
+      ->SetQueuePriority(BrowserTaskPriority::kHighestPriority);
 
   // Control queue
   control_queue_ =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           GetControlTaskQueueName(thread_id)));
-  control_queue_->SetQueuePriority(QueuePriority::kControlPriority);
+  control_queue_->SetQueuePriority(BrowserTaskPriority::kControlPriority);
 
   // Run all pending queue
   run_all_pending_tasks_queue_ =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           GetRunAllPendingTaskQueueName(thread_id)));
   run_all_pending_tasks_queue_->SetQueuePriority(
-      QueuePriority::kBestEffortPriority);
+      BrowserTaskPriority::kBestEffortPriority);
 
   handle_ = base::AdoptRef(new Handle(this));
 }
@@ -244,15 +245,17 @@ void BrowserTaskQueues::OnStartupComplete() {
   }
 
   // Update ServiceWorker task queue priority.
-  DCHECK_EQ(GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
-                ->GetQueuePriority(),
-            QueuePriority::kHighestPriority);
+  DCHECK_EQ(
+      static_cast<BrowserTaskPriority>(
+          GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
+              ->GetQueuePriority()),
+      BrowserTaskPriority::kHighestPriority);
   GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
       ->SetQueuePriority(
           base::FeatureList::IsEnabled(
               kServiceWorkerStorageControlResponseUseHighPriority)
-              ? QueuePriority::kHighPriority
-              : QueuePriority::kNormalPriority);
+              ? BrowserTaskPriority::kHighPriority
+              : BrowserTaskPriority::kNormalPriority);
 }
 
 void BrowserTaskQueues::EnableAllExceptBestEffortQueues() {

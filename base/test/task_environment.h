@@ -203,20 +203,9 @@ class TaskEnvironment {
                 trait_helpers::AreValidTraits<ValidTraits,
                                               TaskEnvironmentTraits...>::value>>
   NOINLINE explicit TaskEnvironment(TaskEnvironmentTraits... traits)
-      : TaskEnvironment(
-            trait_helpers::GetEnum<TimeSource, TimeSource::DEFAULT>(traits...),
-            trait_helpers::GetEnum<MainThreadType, MainThreadType::DEFAULT>(
-                traits...),
-            trait_helpers::GetEnum<ThreadPoolExecutionMode,
-                                   ThreadPoolExecutionMode::DEFAULT>(traits...),
-            trait_helpers::GetEnum<ThreadingMode, ThreadingMode::DEFAULT>(
-                traits...),
-            trait_helpers::GetEnum<ThreadPoolCOMEnvironment,
-                                   ThreadPoolCOMEnvironment::DEFAULT>(
-                traits...),
-            trait_helpers::HasTrait<SubclassCreatesDefaultTaskRunner,
-                                    TaskEnvironmentTraits...>(),
-            trait_helpers::NotATraitTag()) {}
+      : TaskEnvironment(sequence_manager::SequenceManager::PrioritySettings::
+                            CreateDefault(),
+                        traits...) {}
 
   TaskEnvironment(const TaskEnvironment&) = delete;
   TaskEnvironment& operator=(const TaskEnvironment&) = delete;
@@ -389,7 +378,42 @@ class TaskEnvironment {
   static constexpr int kNumForegroundThreadPoolThreads = 4;
 
  protected:
-  explicit TaskEnvironment(TaskEnvironment&& other);
+  template <typename... TaskEnvironmentTraits,
+            class CheckArgumentsAreValid = std::enable_if_t<
+                trait_helpers::AreValidTraits<ValidTraits,
+                                              TaskEnvironmentTraits...>::value>>
+  NOINLINE static TaskEnvironment CreateTaskEnvironmentWithPriorities(
+      sequence_manager::SequenceManager::PrioritySettings priority_settings,
+      TaskEnvironmentTraits... traits) {
+    return TaskEnvironment(std::move(priority_settings), traits...);
+  }
+
+  // Constructor accepts zero or more traits which customize the testing
+  // environment.
+  template <typename... TaskEnvironmentTraits,
+            class CheckArgumentsAreValid = std::enable_if_t<
+                trait_helpers::AreValidTraits<ValidTraits,
+                                              TaskEnvironmentTraits...>::value>>
+  NOINLINE explicit TaskEnvironment(
+      sequence_manager::SequenceManager::PrioritySettings priority_settings,
+      TaskEnvironmentTraits... traits)
+      : TaskEnvironment(
+            std::move(priority_settings),
+            trait_helpers::GetEnum<TimeSource, TimeSource::DEFAULT>(traits...),
+            trait_helpers::GetEnum<MainThreadType, MainThreadType::DEFAULT>(
+                traits...),
+            trait_helpers::GetEnum<ThreadPoolExecutionMode,
+                                   ThreadPoolExecutionMode::DEFAULT>(traits...),
+            trait_helpers::GetEnum<ThreadingMode, ThreadingMode::DEFAULT>(
+                traits...),
+            trait_helpers::GetEnum<ThreadPoolCOMEnvironment,
+                                   ThreadPoolCOMEnvironment::DEFAULT>(
+                traits...),
+            trait_helpers::HasTrait<SubclassCreatesDefaultTaskRunner,
+                                    TaskEnvironmentTraits...>(),
+            trait_helpers::NotATraitTag()) {}
+
+  TaskEnvironment(TaskEnvironment&& other);
 
   constexpr MainThreadType main_thread_type() const {
     return main_thread_type_;
@@ -423,13 +447,15 @@ class TaskEnvironment {
 
   // The template constructor has to be in the header but it delegates to this
   // constructor to initialize all other members out-of-line.
-  TaskEnvironment(TimeSource time_source,
-                  MainThreadType main_thread_type,
-                  ThreadPoolExecutionMode thread_pool_execution_mode,
-                  ThreadingMode threading_mode,
-                  ThreadPoolCOMEnvironment thread_pool_com_environment,
-                  bool subclass_creates_default_taskrunner,
-                  trait_helpers::NotATraitTag tag);
+  TaskEnvironment(
+      sequence_manager::SequenceManager::PrioritySettings priority_settings,
+      TimeSource time_source,
+      MainThreadType main_thread_type,
+      ThreadPoolExecutionMode thread_pool_execution_mode,
+      ThreadingMode threading_mode,
+      ThreadPoolCOMEnvironment thread_pool_com_environment,
+      bool subclass_creates_default_taskrunner,
+      trait_helpers::NotATraitTag tag);
 
   const MainThreadType main_thread_type_;
   const ThreadPoolExecutionMode thread_pool_execution_mode_;

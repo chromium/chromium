@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_helper.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 
 namespace blink {
@@ -25,7 +26,7 @@ MainThreadSchedulerHelper::MainThreadSchedulerHelper(
           NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
                            MainThreadTaskQueue::QueueType::kControl)
                            .SetShouldNotifyObservers(false))) {
-  control_task_queue_->SetQueuePriority(TaskQueue::kControlPriority);
+  control_task_queue_->SetQueuePriority(TaskPriority::kControlPriority);
   InitDefaultTaskRunner(default_task_queue_->CreateTaskRunner(
       TaskType::kMainThreadTaskQueueDefault));
 

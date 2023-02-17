@@ -17,6 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
@@ -120,7 +121,10 @@ class WorkerSchedulerImplTest : public testing::Test {
             base::sequence_manager::SequenceManagerForTest::Create(
                 nullptr,
                 mock_task_runner_,
-                mock_task_runner_->GetMockTickClock())),
+                mock_task_runner_->GetMockTickClock(),
+                base::sequence_manager::SequenceManager::Settings::Builder()
+                    .SetPrioritySettings(CreatePrioritySettings())
+                    .Build())),
         scheduler_(new WorkerThreadSchedulerForTest(ThreadType::kTestThread,
                                                     sequence_manager_.get(),
                                                     nullptr /* proxy */)) {

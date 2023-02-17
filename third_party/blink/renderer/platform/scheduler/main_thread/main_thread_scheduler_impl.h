@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/pollable_thread_safe_flag.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/deadline_task_runner.h"
@@ -317,8 +318,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Note that the main's thread policy should be upto date to compute
   // the correct priority.
-  base::sequence_manager::TaskQueue::QueuePriority ComputePriority(
-      MainThreadTaskQueue* task_queue) const;
+  TaskPriority ComputePriority(MainThreadTaskQueue* task_queue) const;
 
   // Test helpers.
   MainThreadSchedulerHelper* GetSchedulerHelperForTesting();
@@ -367,7 +367,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   base::WeakPtr<MainThreadSchedulerImpl> GetWeakPtr();
 
-  base::sequence_manager::TaskQueue::QueuePriority compositor_priority() const {
+  TaskPriority compositor_priority() const {
     return main_thread_only().compositor_priority;
   }
 
@@ -380,7 +380,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     return main_thread_only().main_thread_compositing_is_fast;
   }
 
-  QueuePriority find_in_page_priority() const {
+  TaskPriority find_in_page_priority() const {
     return main_thread_only().current_policy.find_in_page_priority();
   }
 
@@ -506,11 +506,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       return should_pause_task_queues_for_android_webview_;
     }
 
-    base::sequence_manager::TaskQueue::QueuePriority& find_in_page_priority() {
-      return find_in_page_priority_;
-    }
-    base::sequence_manager::TaskQueue::QueuePriority find_in_page_priority()
-        const {
+    TaskPriority& find_in_page_priority() { return find_in_page_priority_; }
+    TaskPriority find_in_page_priority() const {
       return find_in_page_priority_;
     }
 
@@ -545,7 +542,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool should_pause_task_queues_{false};
     bool should_pause_task_queues_for_android_webview_{false};
 
-    base::sequence_manager::TaskQueue::QueuePriority find_in_page_priority_{
+    TaskPriority find_in_page_priority_{
         FindInPageBudgetPoolController::kFindInPageBudgetNotExhaustedPriority};
 
     UseCase use_case_{UseCase::kNone};
@@ -674,7 +671,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Computes compositor priority based on various experiments and
   // the use case. Defaults to kNormalPriority.
-  TaskQueue::QueuePriority ComputeCompositorPriority() const;
+  TaskPriority ComputeCompositorPriority() const;
 
   // Used to update the compositor priority on the main thread.
   void UpdateCompositorTaskQueuePriority();
@@ -687,8 +684,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Computes the priority for compositing based on the current use case.
   // Returns nullopt if the use case does not need to set the priority.
-  absl::optional<TaskQueue::QueuePriority>
-  ComputeCompositorPriorityFromUseCase() const;
+  absl::optional<TaskPriority> ComputeCompositorPriorityFromUseCase() const;
 
   static void RunIdleTask(Thread::IdleTask, base::TimeTicks deadline);
 
@@ -826,9 +822,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     TraceableState<absl::optional<TaskDescriptionForTracing>,
                    TracingCategory::kInfo>
         task_description_for_tracing;  // Don't use except for tracing.
-    TraceableState<
-        absl::optional<base::sequence_manager::TaskQueue::QueuePriority>,
-        TracingCategory::kInfo>
+    TraceableState<absl::optional<TaskPriority>,
+                   TracingCategory::kInfo>
         task_priority_for_tracing;  // Only used for tracing.
 
     // Holds task queues that are currently running.
@@ -853,8 +848,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // kNormalPriority and is updated via UpdateCompositorTaskQueuePriority().
     // After 100ms with nothing running from this queue, the compositor will
     // be set to kVeryHighPriority until a frame is run.
-    TraceableState<TaskQueue::QueuePriority, TracingCategory::kDefault>
-        compositor_priority;
+    TraceableState<TaskPriority, TracingCategory::kDefault> compositor_priority;
     base::TimeTicks last_frame_time;
     bool should_prioritize_compositor_task_queue_after_delay;
     bool have_seen_a_frame;

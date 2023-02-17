@@ -1896,6 +1896,8 @@ source_set("browser") {
     "scheduler/browser_io_thread_delegate.h",
     "scheduler/browser_task_executor.cc",
     "scheduler/browser_task_executor.h",
+    "scheduler/browser_task_priority.cc",
+    "scheduler/browser_task_priority.h",
     "scheduler/browser_task_queues.cc",
     "scheduler/browser_task_queues.h",
     "scheduler/browser_ui_thread_scheduler.cc",

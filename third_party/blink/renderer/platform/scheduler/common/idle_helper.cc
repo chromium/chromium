@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 
 namespace blink {
 namespace scheduler {
@@ -57,7 +58,7 @@ IdleHelper::IdleHelper(
 
   // This fence will block any idle tasks from running.
   idle_queue_->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);
-  idle_queue_->SetQueuePriority(TaskQueue::kBestEffortPriority);
+  idle_queue_->SetQueuePriority(TaskPriority::kBestEffortPriority);
 }
 
 IdleHelper::~IdleHelper() {

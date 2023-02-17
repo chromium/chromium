@@ -13,6 +13,7 @@
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/task_order.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,13 +33,21 @@ class MockObserver : public WorkQueueSets::Observer {
   MOCK_METHOD1(WorkQueueSetBecameNonEmpty, void(size_t set_index));
 };
 
+const TaskQueue::QueuePriority kHighestPriority = 0;
+const TaskQueue::QueuePriority kDefaultPriority = 5;
+const TaskQueue::QueuePriority kPriorityCount = 10;
+
 }  // namespace
 
 class WorkQueueSetsTest : public testing::Test {
  public:
   void SetUp() override {
     work_queue_sets_ = std::make_unique<WorkQueueSets>(
-        "test", &mock_observer_, SequenceManager::Settings());
+        "test", &mock_observer_,
+        SequenceManager::Settings::Builder()
+            .SetPrioritySettings(SequenceManager::PrioritySettings(
+                kPriorityCount, kDefaultPriority))
+            .Build());
   }
 
   void TearDown() override {
@@ -54,7 +63,7 @@ class WorkQueueSetsTest : public testing::Test {
       WorkQueue::QueueType queue_type = WorkQueue::QueueType::kImmediate) {
     WorkQueue* queue = new WorkQueue(nullptr, "test", queue_type);
     work_queues_.push_back(WrapUnique(queue));
-    work_queue_sets_->AddQueue(queue, TaskQueue::kControlPriority);
+    work_queue_sets_->AddQueue(queue, kHighestPriority);
     return queue;
   }
 
@@ -97,21 +106,21 @@ class WorkQueueSetsTest : public testing::Test {
 
 TEST_F(WorkQueueSetsTest, ChangeSetIndex) {
   WorkQueue* work_queue = NewTaskQueue("queue");
-  size_t set = TaskQueue::kNormalPriority;
+  size_t set = kDefaultPriority;
   work_queue_sets_->ChangeSetIndex(work_queue, set);
   EXPECT_EQ(set, work_queue->work_queue_set_index());
 }
 
 TEST_F(WorkQueueSetsTest, GetOldestQueueAndTaskOrderInSet_QueueEmpty) {
   WorkQueue* work_queue = NewTaskQueue("queue");
-  size_t set = TaskQueue::kNormalPriority;
+  size_t set = kDefaultPriority;
   work_queue_sets_->ChangeSetIndex(work_queue, set);
   EXPECT_FALSE(work_queue_sets_->GetOldestQueueAndTaskOrderInSet(set));
 }
 
 TEST_F(WorkQueueSetsTest, OnTaskPushedToEmptyQueue) {
   WorkQueue* work_queue = NewTaskQueue("queue");
-  size_t set = TaskQueue::kNormalPriority;
+  size_t set = kDefaultPriority;
   work_queue_sets_->ChangeSetIndex(work_queue, set);
   EXPECT_FALSE(work_queue_sets_->GetOldestQueueAndTaskOrderInSet(set));
 
@@ -338,7 +347,7 @@ TEST_F(WorkQueueSetsTest, BlockQueuesByFence) {
   queue1->Push(FakeTaskWithEnqueueOrder(8));
   queue2->Push(FakeTaskWithEnqueueOrder(9));
 
-  size_t set = TaskQueue::kControlPriority;
+  size_t set = kHighestPriority;
 
   EXPECT_EQ(queue1, GetOldestQueueInSet(set));
 
@@ -408,7 +417,7 @@ TEST_F(WorkQueueSetsTest, CompareDelayedTasksWithSameEnqueueOrder) {
                                   /*sequence_num=*/2),
   };
 
-  constexpr size_t kSet = TaskQueue::kNormalPriority;
+  constexpr size_t kSet = kDefaultPriority;
 
   for (int i = 0; i < kNumQueues; i++) {
     queues[i]->Push(FakeTaskWithTaskOrder(task_orders[i]));
@@ -442,7 +451,7 @@ TEST_F(WorkQueueSetsTest, CompareDelayedTasksWithSameEnqueueOrderAndRunTime) {
                                   /*sequence_num=*/4),
   };
 
-  constexpr size_t kSet = TaskQueue::kNormalPriority;
+  constexpr size_t kSet = kDefaultPriority;
 
   for (int i = 0; i < kNumQueues; i++) {
     queues[i]->Push(FakeTaskWithTaskOrder(task_orders[i]));
@@ -491,7 +500,7 @@ TEST_F(WorkQueueSetsTest, CompareDelayedAndImmediateTasks) {
                                   /*sequence_num=*/2),
   };
 
-  constexpr size_t kSet = TaskQueue::kNormalPriority;
+  constexpr size_t kSet = kDefaultPriority;
 
   for (int i = kNumQueues - 1; i >= 0; i--) {
     queues[i]->Push(FakeTaskWithTaskOrder(task_orders[i]));

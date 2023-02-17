@@ -33,6 +33,18 @@ namespace internal {
 // To avoid symbol collisions in jumbo builds.
 namespace task_queue_selector_unittest {
 
+namespace {
+const TaskQueue::QueuePriority kHighestPriority = 0;
+const TaskQueue::QueuePriority kHighPriority = 4;
+const TaskQueue::QueuePriority kDefaultPriority = 5;
+const TaskQueue::QueuePriority kPriorityCount = 10;
+const size_t kTaskQueueCount = kPriorityCount;
+
+// Tests assume high priority is higher than default priority, but nothing about
+// their values.
+static_assert(kHighPriority < kDefaultPriority);
+}  // namespace
+
 class MockObserver : public TaskQueueSelector::Observer {
  public:
   MockObserver() = default;
@@ -54,7 +66,13 @@ class TaskQueueSelectorForTest : public TaskQueueSelector {
 
   explicit TaskQueueSelectorForTest(
       scoped_refptr<AssociatedThreadId> associated_thread)
-      : TaskQueueSelector(associated_thread, SequenceManager::Settings()) {}
+      : TaskQueueSelector(
+            associated_thread,
+            SequenceManager::Settings::Builder()
+                .SetPrioritySettings(
+                    SequenceManager::PrioritySettings(kPriorityCount,
+                                                      kDefaultPriority))
+                .Build()) {}
 };
 
 class TaskQueueSelectorTest : public testing::Test {
@@ -112,12 +130,11 @@ class TaskQueueSelectorTest : public testing::Test {
       std::unique_ptr<TaskQueueImpl> task_queue =
           std::make_unique<TaskQueueImpl>(nullptr, nullptr,
                                           TaskQueue::Spec(QueueName::TEST_TQ));
-      selector_.AddQueue(task_queue.get());
+      selector_.AddQueue(task_queue.get(), kDefaultPriority);
       task_queues_.push_back(std::move(task_queue));
     }
     for (size_t i = 0; i < kTaskQueueCount; i++) {
-      EXPECT_EQ(TaskQueue::kNormalPriority, task_queues_[i]->GetQueuePriority())
-          << i;
+      EXPECT_EQ(kDefaultPriority, task_queues_[i]->GetQueuePriority()) << i;
       queue_to_index_map_.insert(std::make_pair(task_queues_[i].get(), i));
     }
   }
@@ -137,8 +154,6 @@ class TaskQueueSelectorTest : public testing::Test {
                                            TaskQueue::Spec(QueueName::TEST_TQ));
   }
 
-  const size_t kTaskQueueCount =
-      static_cast<size_t>(TaskQueue::QueuePriority::kQueuePriorityCount);
   RepeatingClosure test_closure_;
   scoped_refptr<AssociatedThreadId> associated_thread_;
   TaskQueueSelectorForTest selector_;
@@ -152,52 +167,35 @@ TEST_F(TaskQueueSelectorTest, TestDefaultPriority) {
   EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(4, 3, 2, 1, 0));
 }
 
-TEST_F(TaskQueueSelectorTest, TestHighestPriority) {
-  size_t queue_order[] = {0, 1, 2, 3, 4};
-  PushTasks(queue_order, 5);
-  selector_.SetQueuePriority(task_queues_[2].get(),
-                             TaskQueue::kHighestPriority);
-  EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(2, 0, 1, 3, 4));
+TEST_F(TaskQueueSelectorTest, TestPriorities) {
+  for (size_t priority = 0; priority < kDefaultPriority; ++priority) {
+    size_t queue_order[] = {0, 1, 2, 3, 4};
+    PushTasks(queue_order, 5);
+    if (priority != kDefaultPriority) {
+      selector_.SetQueuePriority(task_queues_[2].get(), priority);
+    }
+    EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(2, 0, 1, 3, 4));
+  }
 }
 
-TEST_F(TaskQueueSelectorTest, TestHighPriority) {
-  size_t queue_order[] = {0, 1, 2, 3, 4};
-  PushTasks(queue_order, 5);
-  selector_.SetQueuePriority(task_queues_[2].get(),
-                             TaskQueue::kHighestPriority);
-  selector_.SetQueuePriority(task_queues_[1].get(), TaskQueue::kHighPriority);
-  selector_.SetQueuePriority(task_queues_[0].get(), TaskQueue::kLowPriority);
-  EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(2, 1, 3, 4, 0));
-}
+TEST_F(TaskQueueSelectorTest, TestMultiplePriorities) {
+  size_t reverse_priority_order[kPriorityCount];
+  for (size_t priority = 0; priority < kPriorityCount; ++priority) {
+    reverse_priority_order[(kPriorityCount - 1) - priority] = priority;
+  }
 
-TEST_F(TaskQueueSelectorTest, TestLowPriority) {
-  size_t queue_order[] = {0, 1, 2, 3, 4};
-  PushTasks(queue_order, 5);
-  selector_.SetQueuePriority(task_queues_[2].get(), TaskQueue::kLowPriority);
-  EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(0, 1, 3, 4, 2));
-}
+  PushTasks(reverse_priority_order, kPriorityCount);
 
-TEST_F(TaskQueueSelectorTest, TestBestEffortPriority) {
-  size_t queue_order[] = {0, 1, 2, 3, 4};
-  PushTasks(queue_order, 5);
-  selector_.SetQueuePriority(task_queues_[0].get(),
-                             TaskQueue::kBestEffortPriority);
-  selector_.SetQueuePriority(task_queues_[2].get(), TaskQueue::kLowPriority);
-  selector_.SetQueuePriority(task_queues_[3].get(),
-                             TaskQueue::kHighestPriority);
-  EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(3, 1, 4, 2, 0));
-}
+  for (size_t i = 0; i < kPriorityCount; ++i) {
+    TaskQueue::QueuePriority priority = reverse_priority_order[i];
+    if (priority != kDefaultPriority) {
+      selector_.SetQueuePriority(task_queues_[i].get(), priority);
+    }
+    EXPECT_EQ(task_queues_[i]->GetQueuePriority(), priority);
+  }
 
-TEST_F(TaskQueueSelectorTest, TestControlPriority) {
-  size_t queue_order[] = {0, 1, 2, 3, 4};
-  PushTasks(queue_order, 5);
-  selector_.SetQueuePriority(task_queues_[4].get(),
-                             TaskQueue::kControlPriority);
-  EXPECT_EQ(TaskQueue::kControlPriority, task_queues_[4]->GetQueuePriority());
-  selector_.SetQueuePriority(task_queues_[2].get(),
-                             TaskQueue::kHighestPriority);
-  EXPECT_EQ(TaskQueue::kHighestPriority, task_queues_[2]->GetQueuePriority());
-  EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(4, 2, 0, 1, 3));
+  EXPECT_THAT(PopTasksAndReturnQueueIndices(),
+              ElementsAre(9, 8, 7, 6, 5, 4, 3, 2, 1, 0));
 }
 
 TEST_F(TaskQueueSelectorTest, TestObserverWithEnabledQueue) {
@@ -217,14 +215,12 @@ TEST_F(TaskQueueSelectorTest, TestObserverWithEnabledQueue) {
 
 TEST_F(TaskQueueSelectorTest,
        TestObserverWithSetQueuePriorityAndQueueAlreadyEnabled) {
-  selector_.SetQueuePriority(task_queues_[1].get(),
-                             TaskQueue::kHighestPriority);
+  selector_.SetQueuePriority(task_queues_[1].get(), kHighPriority);
   {
     MockObserver mock_observer;
     selector_.SetTaskQueueSelectorObserver(&mock_observer);
     EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_)).Times(0);
-    selector_.SetQueuePriority(task_queues_[1].get(),
-                               TaskQueue::kNormalPriority);
+    selector_.SetQueuePriority(task_queues_[1].get(), kDefaultPriority);
 
     // Clear observer before it goes out of scope.
     selector_.SetTaskQueueSelectorObserver(nullptr);
@@ -242,15 +238,14 @@ TEST_F(TaskQueueSelectorTest, TestDisableEnable) {
   task_queues_[4]->SetQueueEnabled(false);
   selector_.DisableQueue(task_queues_[4].get());
   // Disabling a queue should not affect its priority.
-  EXPECT_EQ(TaskQueue::kNormalPriority, task_queues_[2]->GetQueuePriority());
-  EXPECT_EQ(TaskQueue::kNormalPriority, task_queues_[4]->GetQueuePriority());
+  EXPECT_EQ(kDefaultPriority, task_queues_[2]->GetQueuePriority());
+  EXPECT_EQ(kDefaultPriority, task_queues_[4]->GetQueuePriority());
   EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(0, 1, 3));
 
   EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_)).Times(2);
   task_queues_[2]->SetQueueEnabled(true);
   selector_.EnableQueue(task_queues_[2].get());
-  selector_.SetQueuePriority(task_queues_[2].get(),
-                             TaskQueue::kBestEffortPriority);
+  selector_.SetQueuePriority(task_queues_[2].get(), kPriorityCount - 1);
   EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(2));
   task_queues_[4]->SetQueueEnabled(true);
   selector_.EnableQueue(task_queues_[4].get());
@@ -265,8 +260,7 @@ TEST_F(TaskQueueSelectorTest, TestDisableChangePriorityThenEnable) {
   EXPECT_TRUE(task_queues_[2]->immediate_work_queue()->Empty());
 
   task_queues_[2]->SetQueueEnabled(false);
-  selector_.SetQueuePriority(task_queues_[2].get(),
-                             TaskQueue::kHighestPriority);
+  selector_.SetQueuePriority(task_queues_[2].get(), kHighPriority);
 
   size_t queue_order[] = {0, 1, 2, 3, 4};
   PushTasks(queue_order, 5);
@@ -275,7 +269,7 @@ TEST_F(TaskQueueSelectorTest, TestDisableChangePriorityThenEnable) {
   EXPECT_FALSE(task_queues_[2]->immediate_work_queue()->Empty());
   task_queues_[2]->SetQueueEnabled(true);
 
-  EXPECT_EQ(TaskQueue::kHighestPriority, task_queues_[2]->GetQueuePriority());
+  EXPECT_EQ(kHighPriority, task_queues_[2]->GetQueuePriority());
   EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(2, 0, 1, 3, 4));
 }
 
@@ -362,14 +356,14 @@ TEST_F(TaskQueueSelectorTest, GetHighestPendingPriority) {
   size_t queue_order[] = {0, 1};
   PushTasks(queue_order, 2);
 
-  selector_.SetQueuePriority(task_queues_[1].get(), TaskQueue::kHighPriority);
+  selector_.SetQueuePriority(task_queues_[1].get(), kHighPriority);
 
-  EXPECT_EQ(TaskQueue::kHighPriority, *selector_.GetHighestPendingPriority());
+  EXPECT_EQ(kHighPriority, *selector_.GetHighestPendingPriority());
   PopTasksAndReturnQueueIndices();
   EXPECT_FALSE(selector_.GetHighestPendingPriority().has_value());
 
   PushTasks(queue_order, 1);
-  EXPECT_EQ(TaskQueue::kNormalPriority, *selector_.GetHighestPendingPriority());
+  EXPECT_EQ(kDefaultPriority, *selector_.GetHighestPendingPriority());
   PopTasksAndReturnQueueIndices();
   EXPECT_FALSE(selector_.GetHighestPendingPriority().has_value());
 }
@@ -379,7 +373,7 @@ TEST_F(TaskQueueSelectorTest, ChooseWithPriority_Empty) {
       nullptr,
       selector_
           .ChooseWithPriority<TaskQueueSelectorForTest::SetOperationOldest>(
-              TaskQueue::kNormalPriority));
+              kDefaultPriority));
 }
 
 TEST_F(TaskQueueSelectorTest, ChooseWithPriority_OnlyDelayed) {
@@ -391,7 +385,7 @@ TEST_F(TaskQueueSelectorTest, ChooseWithPriority_OnlyDelayed) {
       task_queues_[0]->delayed_work_queue(),
       selector_
           .ChooseWithPriority<TaskQueueSelectorForTest::SetOperationOldest>(
-              TaskQueue::kNormalPriority));
+              kDefaultPriority));
 }
 
 TEST_F(TaskQueueSelectorTest, ChooseWithPriority_OnlyImmediate) {
@@ -403,7 +397,7 @@ TEST_F(TaskQueueSelectorTest, ChooseWithPriority_OnlyImmediate) {
       task_queues_[0]->immediate_work_queue(),
       selector_
           .ChooseWithPriority<TaskQueueSelectorForTest::SetOperationOldest>(
-              TaskQueue::kNormalPriority));
+              kDefaultPriority));
 }
 
 TEST_F(TaskQueueSelectorTest,
@@ -483,7 +477,7 @@ TEST_F(TaskQueueSelectorTest, TestObserverWithOneBlockedQueue) {
   EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_)).Times(1);
 
   std::unique_ptr<TaskQueueImpl> task_queue(NewTaskQueueWithBlockReporting());
-  selector.AddQueue(task_queue.get());
+  selector.AddQueue(task_queue.get(), kDefaultPriority);
 
   task_queue->SetQueueEnabled(false);
   selector.DisableQueue(task_queue.get());
@@ -507,15 +501,15 @@ TEST_F(TaskQueueSelectorTest, TestObserverWithTwoBlockedQueues) {
 
   std::unique_ptr<TaskQueueImpl> task_queue(NewTaskQueueWithBlockReporting());
   std::unique_ptr<TaskQueueImpl> task_queue2(NewTaskQueueWithBlockReporting());
-  selector.AddQueue(task_queue.get());
-  selector.AddQueue(task_queue2.get());
+  selector.AddQueue(task_queue.get(), kDefaultPriority);
+  selector.AddQueue(task_queue2.get(), kDefaultPriority);
 
   task_queue->SetQueueEnabled(false);
   task_queue2->SetQueueEnabled(false);
   selector.DisableQueue(task_queue.get());
   selector.DisableQueue(task_queue2.get());
 
-  selector.SetQueuePriority(task_queue2.get(), TaskQueue::kControlPriority);
+  selector.SetQueuePriority(task_queue2.get(), kHighestPriority);
 
   Task task1(PostedTask(nullptr, test_closure_, FROM_HERE),
              EnqueueOrder::FromIntForTesting(2),
@@ -546,7 +540,7 @@ TEST_F(TaskQueueSelectorTest, TestObserverWithTwoBlockedQueues) {
 TEST_F(TaskQueueSelectorTest, CollectSkippedOverLowerPriorityTasks) {
   size_t queue_order[] = {0, 1, 2, 3, 2, 1, 0};
   PushTasks(queue_order, 7);
-  selector_.SetQueuePriority(task_queues_[3].get(), TaskQueue::kHighPriority);
+  selector_.SetQueuePriority(task_queues_[3].get(), kHighPriority);
 
   std::vector<const Task*> result;
   selector_.CollectSkippedOverLowerPriorityTasks(
@@ -593,7 +587,7 @@ TEST_P(ChooseWithPriorityTest, RoundRobinTest) {
   WorkQueue* chosen_work_queue =
       selector_
           .ChooseWithPriority<TaskQueueSelectorForTest::SetOperationOldest>(
-              TaskQueue::kNormalPriority);
+              kDefaultPriority);
   EXPECT_EQ(chosen_work_queue->task_queue(), task_queues_[0].get());
   EXPECT_STREQ(chosen_work_queue->name(), GetParam().expected_work_queue_name);
 }
@@ -609,28 +603,24 @@ class ActivePriorityTrackerTest : public testing::Test {
 
 TEST_F(ActivePriorityTrackerTest, SetPriorityActiveAndInactive) {
   EXPECT_FALSE(active_priority_tracker_.HasActivePriority());
-  EXPECT_FALSE(active_priority_tracker_.IsActive(
-      TaskQueue::QueuePriority::kNormalPriority));
+  EXPECT_FALSE(active_priority_tracker_.IsActive(kDefaultPriority));
 
-  active_priority_tracker_.SetActive(TaskQueue::QueuePriority::kNormalPriority,
-                                     true);
+  active_priority_tracker_.SetActive(kDefaultPriority, true);
 
   EXPECT_TRUE(active_priority_tracker_.HasActivePriority());
-  EXPECT_TRUE(active_priority_tracker_.IsActive(
-      TaskQueue::QueuePriority::kNormalPriority));
+  EXPECT_TRUE(active_priority_tracker_.IsActive(kDefaultPriority));
 
-  active_priority_tracker_.SetActive(TaskQueue::QueuePriority::kNormalPriority,
-                                     false);
+  active_priority_tracker_.SetActive(kDefaultPriority, false);
 
   EXPECT_FALSE(active_priority_tracker_.HasActivePriority());
-  EXPECT_FALSE(active_priority_tracker_.IsActive(
-      TaskQueue::QueuePriority::kNormalPriority));
+  EXPECT_FALSE(active_priority_tracker_.IsActive(kDefaultPriority));
 }
 
 TEST_F(ActivePriorityTrackerTest, HighestActivePriority) {
   EXPECT_FALSE(active_priority_tracker_.HasActivePriority());
 
-  for (size_t i = 0; i < TaskQueue::QueuePriority::kQueuePriorityCount; i++) {
+  for (size_t i = 0; i < SequenceManager::PrioritySettings::kMaxPriorities;
+       i++) {
     TaskQueue::QueuePriority priority =
         static_cast<TaskQueue::QueuePriority>(i);
     EXPECT_FALSE(active_priority_tracker_.IsActive(priority));
@@ -638,7 +628,8 @@ TEST_F(ActivePriorityTrackerTest, HighestActivePriority) {
     EXPECT_TRUE(active_priority_tracker_.IsActive(priority));
   }
 
-  for (size_t i = 0; i < TaskQueue::QueuePriority::kQueuePriorityCount; i++) {
+  for (size_t i = 0; i < SequenceManager::PrioritySettings::kMaxPriorities;
+       i++) {
     EXPECT_TRUE(active_priority_tracker_.HasActivePriority());
     TaskQueue::QueuePriority priority =
         static_cast<TaskQueue::QueuePriority>(i);

@@ -7,7 +7,7 @@ package base.sequence_manager;
 message SequenceManagerTestDescription {
   // NEXT ID = 2
 
-  // This should be consistent with TaskQueue::QueuePriority.
+  // This should be consistent with blink::scheduler::TaskPriority.
   enum QueuePriority {
     // NEXT ID = 7
 

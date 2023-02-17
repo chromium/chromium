@@ -4,14 +4,103 @@
 
 #include "base/task/sequence_manager/sequence_manager.h"
 
+#include <utility>
+
 namespace base {
 namespace sequence_manager {
+
+namespace {
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+perfetto::protos::pbzero::SequenceManagerTask::Priority
+DefaultTaskPriorityToProto(TaskQueue::QueuePriority priority) {
+  DCHECK_EQ(priority, static_cast<TaskQueue::QueuePriority>(
+                          TaskQueue::DefaultQueuePriority::kNormalPriority));
+  return perfetto::protos::pbzero::SequenceManagerTask::Priority::
+      NORMAL_PRIORITY;
+}
+#endif
+
+void CheckPriorities(TaskQueue::QueuePriority priority_count,
+                     TaskQueue::QueuePriority default_priority) {
+  CHECK_LE(static_cast<size_t>(priority_count),
+           SequenceManager::PrioritySettings::kMaxPriorities)
+      << "The number of priorities cannot exceed kMaxPriorities.";
+  CHECK_LT(static_cast<size_t>(default_priority), priority_count)
+      << "The default priority must be within the priority range.";
+}
+
+}  // namespace
 
 SequenceManager::MetricRecordingSettings::MetricRecordingSettings(
     double task_thread_time_sampling_rate)
     : task_sampling_rate_for_recording_cpu_time(
           base::ThreadTicks::IsSupported() ? task_thread_time_sampling_rate
                                            : 0) {}
+
+// static
+SequenceManager::PrioritySettings
+SequenceManager::PrioritySettings::CreateDefault() {
+  PrioritySettings settings(
+      TaskQueue::DefaultQueuePriority::kQueuePriorityCount,
+      TaskQueue::DefaultQueuePriority::kNormalPriority);
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  settings.SetProtoPriorityConverter(&DefaultTaskPriorityToProto);
+#endif
+  return settings;
+}
+
+SequenceManager::PrioritySettings::PrioritySettings(
+    TaskQueue::QueuePriority priority_count,
+    TaskQueue::QueuePriority default_priority)
+#if DCHECK_IS_ON()
+    : PrioritySettings(priority_count,
+                       default_priority,
+                       std::vector<TimeDelta>(priority_count),
+                       std::vector<TimeDelta>(priority_count)){}
+#else
+    : priority_count_(priority_count), default_priority_(default_priority) {
+  CheckPriorities(priority_count, default_priority);
+}
+#endif
+
+#if DCHECK_IS_ON()
+      SequenceManager::PrioritySettings::PrioritySettings(
+          TaskQueue::QueuePriority priority_count,
+          TaskQueue::QueuePriority default_priority,
+          std::vector<TimeDelta> per_priority_cross_thread_task_delay,
+          std::vector<TimeDelta> per_priority_same_thread_task_delay)
+    : priority_count_(priority_count),
+      default_priority_(default_priority),
+      per_priority_cross_thread_task_delay_(
+          std::move(per_priority_cross_thread_task_delay)),
+      per_priority_same_thread_task_delay_(
+          std::move(per_priority_same_thread_task_delay)) {
+  CheckPriorities(priority_count, default_priority);
+  DCHECK_EQ(priority_count, per_priority_cross_thread_task_delay_.size());
+  DCHECK_EQ(priority_count, per_priority_same_thread_task_delay_.size());
+}
+#endif
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+perfetto::protos::pbzero::SequenceManagerTask::Priority
+SequenceManager::PrioritySettings::TaskPriorityToProto(
+    TaskQueue::QueuePriority priority) const {
+  // `proto_priority_converter_` will be null in some unit tests, but those
+  // tests should not be tracing.
+  DCHECK(proto_priority_converter_)
+      << "A tracing priority-to-proto-priority function was not provided";
+  return proto_priority_converter_(priority);
+}
+#endif
+
+SequenceManager::PrioritySettings::~PrioritySettings() = default;
+
+SequenceManager::PrioritySettings::PrioritySettings(PrioritySettings&&) =
+    default;
+
+SequenceManager::PrioritySettings& SequenceManager::PrioritySettings::operator=(
+    PrioritySettings&&) = default;
 
 SequenceManager::Settings::Settings() = default;
 
@@ -50,6 +139,13 @@ SequenceManager::Settings::Builder::SetAddQueueTimeToTasks(
   return *this;
 }
 
+SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetPrioritySettings(
+    SequenceManager::PrioritySettings settings) {
+  settings_.priority_settings = std::move(settings);
+  return *this;
+}
+
 #if DCHECK_IS_ON()
 
 SequenceManager::Settings::Builder&
@@ -79,23 +175,6 @@ SequenceManager::Settings::Builder::SetLogTaskDelayExpiry(
   return *this;
 }
 
-SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetPerPriorityCrossThreadTaskDelay(
-    std::array<TimeDelta, TaskQueue::kQueuePriorityCount>
-        per_priority_cross_thread_task_delay_val) {
-  settings_.per_priority_cross_thread_task_delay =
-      per_priority_cross_thread_task_delay_val;
-  return *this;
-}
-
-SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetPerPrioritySameThreadTaskDelay(
-    std::array<TimeDelta, TaskQueue::kQueuePriorityCount>
-        per_priority_same_thread_task_delay_val) {
-  settings_.per_priority_same_thread_task_delay =
-      per_priority_same_thread_task_delay_val;
-  return *this;
-}
 #endif  // DCHECK_IS_ON()
 
 SequenceManager::Settings SequenceManager::Settings::Builder::Build() {

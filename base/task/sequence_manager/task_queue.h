@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/check.h"
@@ -99,35 +100,21 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Shuts down the queue when there are no more tasks queued.
   void ShutdownTaskQueueGracefully();
 
-  // Queues with higher priority are selected to run before queues of lower
-  // priority. Note that there is no starvation protection, i.e., a constant
-  // stream of high priority work can mean that tasks in lower priority queues
-  // won't get to run.
-  // TODO(scheduler-dev): Could we define a more clear list of priorities?
-  // See https://crbug.com/847858.
-  enum QueuePriority : uint8_t {
-    // Queues with control priority will run before any other queue, and will
-    // explicitly starve other queues. Typically this should only be used for
-    // private queues which perform control operations.
-    kControlPriority = 0,
+  // Queues with higher priority (smaller number) are selected to run before
+  // queues of lower priority. Note that there is no starvation protection,
+  // i.e., a constant stream of high priority work can mean that tasks in lower
+  // priority queues won't get to run.
+  using QueuePriority = uint8_t;
 
-    kHighestPriority = 1,
-    kVeryHighPriority = 2,
-    kHighPriority = 3,
-    kNormalPriority = 4,  // Queues with normal priority are the default.
-    kLowPriority = 5,
-
-    // Queues with best effort priority will only be run if all other queues are
-    // empty.
-    kBestEffortPriority = 6,
+  // By default there is only a single priority. Sequences making use of
+  // priorities should parameterize the `SequenceManager` with the appropriate
+  // `SequenceManager::PrioritySettings`.
+  enum class DefaultQueuePriority : QueuePriority {
+    kNormalPriority = 0,
 
     // Must be the last entry.
-    kQueuePriorityCount = 7,
-    kFirstQueuePriority = kControlPriority,
+    kQueuePriorityCount = 1,
   };
-
-  // Can be called on any thread.
-  static const char* PriorityToString(QueuePriority priority);
 
   // Options for constructing a TaskQueue.
   struct Spec {
@@ -293,6 +280,15 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Set the priority of the queue to |priority|. NOTE this must be called on
   // the thread this TaskQueue was created by.
   void SetQueuePriority(QueuePriority priority);
+
+  // Same as above but with an enum value as the priority.
+  template <typename T, typename = typename std::enable_if_t<std::is_enum_v<T>>>
+  void SetQueuePriority(T priority) {
+    static_assert(std::is_same_v<std::underlying_type_t<T>, QueuePriority>,
+                  "Enumerated priorites must have the same underlying type as "
+                  "TaskQueue::QueuePriority");
+    SetQueuePriority(static_cast<QueuePriority>(priority));
+  }
 
   // Returns the current queue priority.
   QueuePriority GetQueuePriority() const;

@@ -83,6 +83,11 @@ class SequencedTaskSource {
   // becomes available as a result of any processing done by this callback,
   // return true to schedule a future DoWork.
   virtual bool OnSystemIdle() = 0;
+
+  // Called prior to running `selected_task` to emit trace event data for it.
+  virtual void MaybeEmitTaskDetails(
+      perfetto::EventContext& ctx,
+      const SelectedTask& selected_task) const = 0;
 };
 
 }  // namespace internal

@@ -138,7 +138,8 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
     running_stack_.push_back(std::move(tasks_.front()));
     tasks_.pop();
     return SelectedTask(running_stack_.back(), TaskExecutionTraceLogger(),
-                        TaskQueue::QueuePriority::kNormalPriority,
+                        static_cast<TaskQueue::QueuePriority>(
+                            TaskQueue::DefaultQueuePriority::kNormalPriority),
                         QueueName::TEST_TQ);
   }
 
@@ -183,6 +184,9 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
   }
 
   bool OnSystemIdle() override { return false; }
+
+  void MaybeEmitTaskDetails(perfetto::EventContext& ctx,
+                            const SelectedTask& selected_task) const override {}
 
  private:
   raw_ptr<TickClock> clock_;

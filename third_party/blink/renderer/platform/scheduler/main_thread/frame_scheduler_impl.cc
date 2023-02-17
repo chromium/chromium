@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/find_in_page_budget_pool_controller.h"
@@ -867,7 +868,7 @@ bool FrameSchedulerImpl::IsExemptFromBudgetBasedThrottling() const {
   return opted_out_from_aggressive_throttling();
 }
 
-TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
+TaskPriority FrameSchedulerImpl::ComputePriority(
     MainThreadTaskQueue* task_queue) const {
   DCHECK(task_queue);
 
@@ -882,15 +883,15 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   switch (task_queue->GetPrioritisationType()) {
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::
         kInternalScriptContinuation:
-      return TaskQueue::QueuePriority::kVeryHighPriority;
+      return TaskPriority::kVeryHighPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kBestEffort:
-      return TaskQueue::QueuePriority::kBestEffortPriority;
+      return TaskPriority::kBestEffortPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::
         kPostMessageForwarding:
-      return TaskQueue::QueuePriority::kVeryHighPriority;
+      return TaskPriority::kVeryHighPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::
         kInternalNavigationCancellation:
-      return TaskQueue::QueuePriority::kVeryHighPriority;
+      return TaskPriority::kVeryHighPriority;
     default:
       break;
   }
@@ -901,37 +902,37 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   if (task_queue->web_scheduling_priority()) {
     switch (task_queue->web_scheduling_priority().value()) {
       case WebSchedulingPriority::kUserBlockingPriority:
-        return TaskQueue::QueuePriority::kHighPriority;
+        return TaskPriority::kHighPriority;
       case WebSchedulingPriority::kUserVisiblePriority:
-        return TaskQueue::QueuePriority::kNormalPriority;
+        return TaskPriority::kNormalPriority;
       case WebSchedulingPriority::kBackgroundPriority:
-        return TaskQueue::QueuePriority::kLowPriority;
+        return TaskPriority::kLowPriority;
     }
   }
 
   if (!parent_page_scheduler_) {
     // Frame might be detached during its shutdown. Return a default priority
     // in that case.
-    return TaskQueue::QueuePriority::kNormalPriority;
+    return TaskPriority::kNormalPriority;
   }
 
   // A hidden page with no audio.
   if (parent_page_scheduler_->IsBackgrounded()) {
     if (main_thread_scheduler_->scheduling_settings()
             .low_priority_background_page) {
-      return TaskQueue::QueuePriority::kLowPriority;
+      return TaskPriority::kLowPriority;
     }
 
     if (main_thread_scheduler_->scheduling_settings()
             .best_effort_background_page) {
-      return TaskQueue::QueuePriority::kBestEffortPriority;
+      return TaskPriority::kBestEffortPriority;
     }
   }
 
   // Low priority feature enabled for hidden frame.
   if (main_thread_scheduler_->scheduling_settings().low_priority_hidden_frame &&
       !IsFrameVisible()) {
-    return TaskQueue::QueuePriority::kLowPriority;
+    return TaskPriority::kLowPriority;
   }
 
   bool is_subframe = GetFrameType() == FrameScheduler::FrameType::kSubframe;
@@ -942,44 +943,44 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   // Low priority feature enabled for sub-frame.
   if (main_thread_scheduler_->scheduling_settings().low_priority_subframe &&
       is_subframe) {
-    return TaskQueue::QueuePriority::kLowPriority;
+    return TaskPriority::kLowPriority;
   }
 
   // Low priority feature enabled for sub-frame throttleable task queues.
   if (main_thread_scheduler_->scheduling_settings()
           .low_priority_subframe_throttleable &&
       is_subframe && is_throttleable_task_queue) {
-    return TaskQueue::QueuePriority::kLowPriority;
+    return TaskPriority::kLowPriority;
   }
 
   // Low priority feature enabled for throttleable task queues.
   if (main_thread_scheduler_->scheduling_settings().low_priority_throttleable &&
       is_throttleable_task_queue) {
-    return TaskQueue::QueuePriority::kLowPriority;
+    return TaskPriority::kLowPriority;
   }
 
   // Ad frame experiment.
   if (IsAdFrame()) {
     if (main_thread_scheduler_->scheduling_settings().low_priority_ad_frame) {
-      return TaskQueue::QueuePriority::kLowPriority;
+      return TaskPriority::kLowPriority;
     }
 
     if (main_thread_scheduler_->scheduling_settings().best_effort_ad_frame) {
-      return TaskQueue::QueuePriority::kBestEffortPriority;
+      return TaskPriority::kBestEffortPriority;
     }
   }
 
   // Frame origin type experiment.
   if (IsCrossOriginToNearestMainFrame() &&
       main_thread_scheduler_->scheduling_settings().low_priority_cross_origin) {
-    return TaskQueue::QueuePriority::kLowPriority;
+    return TaskPriority::kLowPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kLoadingControl) {
     return main_thread_scheduler_->should_prioritize_loading_with_compositing()
-               ? TaskQueue::QueuePriority::kVeryHighPriority
-               : TaskQueue::QueuePriority::kHighPriority;
+               ? TaskPriority::kVeryHighPriority
+               : TaskPriority::kHighPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==
@@ -996,14 +997,14 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::
           kHighPriorityLocalFrame) {
-    return TaskQueue::QueuePriority::kHighestPriority;
+    return TaskPriority::kHighestPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==
           MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput &&
       base::FeatureList::IsEnabled(
           ::blink::features::kInputTargetClientHighPriority)) {
-    return TaskQueue::QueuePriority::kHighestPriority;
+    return TaskPriority::kHighestPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==
@@ -1012,11 +1013,11 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
     // TODO(shaseley): This decision should probably be based on Agent
     // visibility. Consider changing this before shipping anything.
     return parent_page_scheduler_->IsPageVisible()
-               ? TaskQueue::QueuePriority::kHighPriority
-               : TaskQueue::QueuePriority::kNormalPriority;
+               ? TaskPriority::kHighPriority
+               : TaskPriority::kNormalPriority;
   }
 
-  return TaskQueue::QueuePriority::kNormalPriority;
+  return TaskPriority::kNormalPriority;
 }
 
 std::unique_ptr<blink::mojom::blink::PauseSubresourceLoadingHandle>

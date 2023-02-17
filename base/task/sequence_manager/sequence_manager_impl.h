@@ -113,10 +113,6 @@ class BASE_EXPORT SequenceManagerImpl
   // according to its default state.
   static void ResetNoWakeUpsForCanceledTasksForTesting();
 
-  static void MaybeEmitTaskDetails(
-      perfetto::EventContext& ctx,
-      const SequencedTaskSource::SelectedTask& selected_task);
-
   // SequenceManager implementation:
   void BindToCurrentThread() override;
   scoped_refptr<SequencedTaskRunner> GetTaskRunnerForCurrentTask() override;
@@ -145,6 +141,7 @@ class BASE_EXPORT SequenceManagerImpl
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
   absl::optional<WakeUp> GetNextDelayedWakeUp() const override;
+  TaskQueue::QueuePriority GetPriorityCount() const override;
 
   // SequencedTaskSource implementation:
   absl::optional<SelectedTask> SelectNextTask(
@@ -157,6 +154,9 @@ class BASE_EXPORT SequenceManagerImpl
       SelectTaskOption option = SelectTaskOption::kDefault) const override;
   bool HasPendingHighResolutionTasks() override;
   bool OnSystemIdle() override;
+  void MaybeEmitTaskDetails(
+      perfetto::EventContext& ctx,
+      const SequencedTaskSource::SelectedTask& selected_task) const override;
 
   void AddDestructionObserver(
       CurrentThread::DestructionObserver* destruction_observer);

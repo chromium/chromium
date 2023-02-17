@@ -30,6 +30,7 @@ include_rules = [
   "+base/run_loop.h",
   "+base/sequence_checker.h",
   "+base/task/single_thread_task_runner.h",
+  "+base/tracing_buildflags.h",
   "+base/strings/string_number_conversions.h",
   "+base/synchronization/atomic_flag.h",
   "+base/synchronization/cancellation_flag.h",

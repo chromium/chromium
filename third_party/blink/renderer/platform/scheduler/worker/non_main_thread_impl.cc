@@ -21,6 +21,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 
@@ -107,6 +108,7 @@ NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
       base::sequence_manager::SequenceManager::Settings::Builder()
           .SetMessagePumpType(base::MessagePumpType::DEFAULT)
           .SetRandomisedSamplingEnabled(true)
+          .SetPrioritySettings(CreatePrioritySettings())
           .Build());
   internal_task_queue_ = sequence_manager_->CreateTaskQueue(
       base::sequence_manager::TaskQueue::Spec(

@@ -252,8 +252,12 @@ void TaskQueue::SetQueuePriority(TaskQueue::QueuePriority priority) {
 
 TaskQueue::QueuePriority TaskQueue::GetQueuePriority() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (!impl_)
-    return TaskQueue::QueuePriority::kLowPriority;
+  // TODO(crbug.com/1413795): change this to DCHECK(impl_) since task queues
+  // should not be used after shutdown.
+  if (!impl_) {
+    DCHECK(sequence_manager_);
+    return sequence_manager_->settings().priority_settings.default_priority();
+  }
   return impl_->GetQueuePriority();
 }
 

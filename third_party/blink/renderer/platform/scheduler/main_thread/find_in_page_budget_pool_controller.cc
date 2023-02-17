@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 
@@ -22,9 +23,9 @@ constexpr base::TimeDelta kFindInPageMaxBudget = base::Seconds(1);
 const double kFindInPageBudgetRecoveryRate = 0.25;
 }  // namespace
 
-const QueuePriority
+const TaskPriority
     FindInPageBudgetPoolController::kFindInPageBudgetNotExhaustedPriority;
-const QueuePriority
+const TaskPriority
     FindInPageBudgetPoolController::kFindInPageBudgetExhaustedPriority;
 
 FindInPageBudgetPoolController::FindInPageBudgetPoolController(
@@ -33,7 +34,7 @@ FindInPageBudgetPoolController::FindInPageBudgetPoolController(
       best_effort_budget_experiment_enabled_(
           base::FeatureList::IsEnabled(kBestEffortPriorityForFindInPage)) {
   if (best_effort_budget_experiment_enabled_) {
-    task_priority_ = QueuePriority::kBestEffortPriority;
+    task_priority_ = TaskPriority::kBestEffortPriority;
   } else {
     task_priority_ = kFindInPageBudgetNotExhaustedPriority;
   }
@@ -62,9 +63,9 @@ void FindInPageBudgetPoolController::OnTaskCompleted(
 
   bool is_exhausted =
       !find_in_page_budget_pool_->CanRunTasksAt(task_timing->end_time());
-  QueuePriority task_priority = is_exhausted
-                                    ? kFindInPageBudgetExhaustedPriority
-                                    : kFindInPageBudgetNotExhaustedPriority;
+  TaskPriority task_priority = is_exhausted
+                                   ? kFindInPageBudgetExhaustedPriority
+                                   : kFindInPageBudgetNotExhaustedPriority;
 
   if (task_priority != task_priority_) {
     task_priority_ = task_priority;

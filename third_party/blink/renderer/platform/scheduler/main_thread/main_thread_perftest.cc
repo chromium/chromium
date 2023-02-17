@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
 
@@ -37,6 +38,7 @@ class MainThreadPerfTest : public testing::Test {
         base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
             base::MessagePump::Create(base::MessagePumpType::DEFAULT),
             base::sequence_manager::SequenceManager::Settings::Builder()
+                .SetPrioritySettings(CreatePrioritySettings())
                 .Build()));
     scheduler_overrider_ = std::make_unique<ScopedSchedulerOverrider>(
         scheduler_.get(), scheduler_->DefaultTaskRunner());

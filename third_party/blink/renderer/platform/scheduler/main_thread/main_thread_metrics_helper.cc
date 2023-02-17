@@ -165,8 +165,8 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
   if (queue && base::TimeTicks::IsHighResolution()) {
     base::TimeDelta elapsed =
         task_timing.start_time() - task.GetDesiredExecutionTime();
-    queueing_delay_histograms_[queue->GetQueuePriority()].CountMicroseconds(
-        elapsed);
+    queueing_delay_histograms_[static_cast<size_t>(queue->GetQueuePriority())]
+        .CountMicroseconds(elapsed);
   }
 
   // Don't log the metrics to evaluate impact of CPU reduction.

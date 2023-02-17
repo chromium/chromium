@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/metrics_helper.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/thread_load_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
@@ -97,9 +98,9 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   TaskDurationPerTaskTypeMetricReporter
       input_handling_per_task_type_duration_reporter_;
 
-  static_assert(TaskQueue::kQueuePriorityCount == 7);
-  CustomCountHistogram
-      queueing_delay_histograms_[TaskQueue::kQueuePriorityCount];
+  static_assert(static_cast<size_t>(TaskPriority::kPriorityCount) == 7);
+  CustomCountHistogram queueing_delay_histograms_[static_cast<size_t>(
+      TaskPriority::kPriorityCount)];
 
   scheduling_metrics::TotalDurationMetricReporter total_task_time_reporter_;
 

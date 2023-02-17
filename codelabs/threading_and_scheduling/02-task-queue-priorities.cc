@@ -16,6 +16,13 @@ enum class TaskType : unsigned char {
   kSource2 = 2,
 };
 
+enum class TaskPriority : base::sequence_manager::TaskQueue::QueuePriority {
+  kHighPriority = 0,
+  kNormalPriority = 1,
+
+  kNumPriorities = 2,
+};
+
 void Task(base::StringPiece tq, int task_number) {
   if (tq == "A") {
     LOG(INFO) << "TaskQueue(" << tq << "): " << task_number;
@@ -35,13 +42,18 @@ int main() {
   std::unique_ptr<base::MessagePump> pump =
       base::MessagePump::Create(base::MessagePumpType::DEFAULT);
 
+  base::sequence_manager::SequenceManager::PrioritySettings priority_settings(
+      TaskPriority::kNumPriorities, TaskPriority::kNormalPriority);
+
   // Create the main thread's SequenceManager; it will choose which of the two
   // below TaskQueues will be served at each spin of the loop, based on their
   // priority.
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager =
       base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
           std::move(pump),
-          base::sequence_manager::SequenceManager::Settings::Builder().Build());
+          base::sequence_manager::SequenceManager::Settings::Builder()
+              .SetPrioritySettings(std::move(priority_settings))
+              .Build());
 
   // Create two TaskQueues that feed into the main thread's SequenceManager,
   // each with a different priority to demonstrate that TaskQueue is the
@@ -51,13 +63,11 @@ int main() {
   scoped_refptr<base::sequence_manager::TaskQueue> tq_a =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           base::sequence_manager::QueueName::TEST_TQ));
-  tq_a->SetQueuePriority(
-      base::sequence_manager::TaskQueue::QueuePriority::kNormalPriority);
+  tq_a->SetQueuePriority(TaskPriority::kNormalPriority);
   scoped_refptr<base::sequence_manager::TaskQueue> tq_b =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           base::sequence_manager::QueueName::TEST2_TQ));
-  tq_b->SetQueuePriority(
-      base::sequence_manager::TaskQueue::QueuePriority::kHighPriority);
+  tq_b->SetQueuePriority(TaskPriority::kHighPriority);
 
   // Get TaskRunners for both TaskQueues.
   scoped_refptr<base::SingleThreadTaskRunner> a_runner_1 =

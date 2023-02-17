@@ -17,6 +17,7 @@ WorkQueueSets::WorkQueueSets(const char* name,
                              Observer* observer,
                              const SequenceManager::Settings& settings)
     : name_(name),
+      work_queue_heaps_(settings.priority_settings.priority_count()),
 #if DCHECK_IS_ON()
       last_rand_(settings.random_task_selection_seed),
 #endif
@@ -214,7 +215,7 @@ void WorkQueueSets::CollectSkippedOverLowerPriorityTasks(
       selected_work_queue->GetFrontTaskOrder();
   CHECK(task_order);
   for (size_t priority = selected_work_queue->work_queue_set_index() + 1;
-       priority < TaskQueue::kQueuePriorityCount; priority++) {
+       priority < work_queue_heaps_.size(); priority++) {
     for (const OldestTaskOrder& pair : work_queue_heaps_[priority]) {
       pair.value->CollectTasksOlderThan(*task_order, result);
     }

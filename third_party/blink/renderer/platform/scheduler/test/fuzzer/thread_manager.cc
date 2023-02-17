@@ -4,6 +4,7 @@
 
 #include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/thread_pool_manager.h"
 
 namespace base {
@@ -11,28 +12,30 @@ namespace sequence_manager {
 
 namespace {
 
-TaskQueue::QueuePriority ToTaskQueuePriority(
+blink::scheduler::TaskPriority ToTaskQueuePriority(
     SequenceManagerTestDescription::QueuePriority priority) {
-  static_assert(TaskQueue::kQueuePriorityCount == 7,
-                "Number of task queue priorities has changed in "
-                "TaskQueue::QueuePriority.");
+  using blink::scheduler::TaskPriority;
+
+  static_assert(static_cast<int>(TaskPriority::kPriorityCount) == 7,
+                "Number of task priorities has changed in "
+                "blink::scheduler::TaskPriority.");
 
   switch (priority) {
     case SequenceManagerTestDescription::BEST_EFFORT:
-      return TaskQueue::kBestEffortPriority;
+      return TaskPriority::kBestEffortPriority;
     case SequenceManagerTestDescription::LOW:
-      return TaskQueue::kLowPriority;
+      return TaskPriority::kLowPriority;
     case SequenceManagerTestDescription::UNDEFINED:
     case SequenceManagerTestDescription::NORMAL:
-      return TaskQueue::kNormalPriority;
+      return TaskPriority::kNormalPriority;
     case SequenceManagerTestDescription::HIGH:
-      return TaskQueue::kHighPriority;
+      return TaskPriority::kHighPriority;
     case SequenceManagerTestDescription::VERY_HIGH:
-      return TaskQueue::kVeryHighPriority;
+      return TaskPriority::kVeryHighPriority;
     case SequenceManagerTestDescription::HIGHEST:
-      return TaskQueue::kHighestPriority;
+      return TaskPriority::kHighestPriority;
     case SequenceManagerTestDescription::CONTROL:
-      return TaskQueue::kControlPriority;
+      return TaskPriority::kControlPriority;
   }
 }
 
@@ -55,7 +58,10 @@ ThreadManager::ThreadManager(base::TimeTicks initial_time,
 
   manager_ = SequenceManagerForTest::Create(
       nullptr, SingleThreadTaskRunner::GetCurrentDefault(),
-      test_task_runner_->GetMockTickClock());
+      test_task_runner_->GetMockTickClock(),
+      SequenceManager::Settings::Builder()
+          .SetPrioritySettings(::blink::scheduler::CreatePrioritySettings())
+          .Build());
 
   TaskQueue::Spec spec = TaskQueue::Spec(QueueName::DEFAULT_TQ);
   task_queues_.emplace_back(MakeRefCounted<TaskQueueWithVoters>(

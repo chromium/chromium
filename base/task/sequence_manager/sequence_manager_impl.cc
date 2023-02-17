@@ -69,31 +69,6 @@ class TracedBaseValue : public trace_event::ConvertableToTraceFormat {
   base::Value value_;
 };
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-perfetto::protos::pbzero::SequenceManagerTask::Priority TaskPriorityToProto(
-    TaskQueue::QueuePriority priority) {
-  using ProtoPriority = perfetto::protos::pbzero::SequenceManagerTask::Priority;
-  switch (priority) {
-    case TaskQueue::QueuePriority::kControlPriority:
-      return ProtoPriority::CONTROL_PRIORITY;
-    case TaskQueue::QueuePriority::kHighestPriority:
-      return ProtoPriority::HIGHEST_PRIORITY;
-    case TaskQueue::QueuePriority::kVeryHighPriority:
-      return ProtoPriority::VERY_HIGH_PRIORITY;
-    case TaskQueue::QueuePriority::kHighPriority:
-      return ProtoPriority::HIGH_PRIORITY;
-    case TaskQueue::QueuePriority::kNormalPriority:
-      return ProtoPriority::NORMAL_PRIORITY;
-    case TaskQueue::QueuePriority::kLowPriority:
-      return ProtoPriority::LOW_PRIORITY;
-    case TaskQueue::QueuePriority::kBestEffortPriority:
-      return ProtoPriority::BEST_EFFORT_PRIORITY;
-    case TaskQueue::QueuePriority::kQueuePriorityCount:
-      return ProtoPriority::UNKNOWN;
-  }
-}
-#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
-
 }  // namespace
 
 std::unique_ptr<SequenceManager> CreateSequenceManagerOnCurrentThread(
@@ -415,7 +390,8 @@ SequenceManagerImpl::CreateTaskQueueImpl(const TaskQueue::Spec& spec) {
                           : main_thread_only().wake_up_queue.get(),
           spec);
   main_thread_only().active_queues.insert(task_queue.get());
-  main_thread_only().selector.AddQueue(task_queue.get());
+  main_thread_only().selector.AddQueue(
+      task_queue.get(), settings().priority_settings.default_priority());
   return task_queue;
 }
 
@@ -539,7 +515,7 @@ void SequenceManagerImpl::SetNextWakeUp(LazyNow* lazy_now,
 
 void SequenceManagerImpl::MaybeEmitTaskDetails(
     perfetto::EventContext& ctx,
-    const SequencedTaskSource::SelectedTask& selected_task) {
+    const SequencedTaskSource::SelectedTask& selected_task) const {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   // Other parameters are included only when "scheduler" category is enabled.
   const uint8_t* scheduler_category_enabled =
@@ -550,7 +526,7 @@ void SequenceManagerImpl::MaybeEmitTaskDetails(
   auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
   auto* sequence_manager_task = event->set_sequence_manager_task();
   sequence_manager_task->set_priority(
-      TaskPriorityToProto(selected_task.priority));
+      settings().priority_settings.TaskPriorityToProto(selected_task.priority));
   sequence_manager_task->set_queue_name(selected_task.task_queue_name);
 
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
@@ -1279,6 +1255,10 @@ internal::TaskQueueImpl* SequenceManagerImpl::currently_executing_task_queue()
   if (main_thread_only().task_execution_stack.empty())
     return nullptr;
   return main_thread_only().task_execution_stack.rbegin()->task_queue;
+}
+
+TaskQueue::QueuePriority SequenceManagerImpl::GetPriorityCount() const {
+  return settings().priority_settings.priority_count();
 }
 
 constexpr TimeDelta SequenceManagerImpl::kReclaimMemoryInterval;

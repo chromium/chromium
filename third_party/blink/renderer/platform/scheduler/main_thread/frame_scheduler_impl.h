@@ -22,6 +22,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
@@ -165,8 +166,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // Computes the priority of |task_queue| if it is associated to this frame
   // scheduler. Note that the main thread's policy should be upto date to
   // compute the correct priority.
-  base::sequence_manager::TaskQueue::QueuePriority ComputePriority(
-      MainThreadTaskQueue* task_queue) const;
+  TaskPriority ComputePriority(MainThreadTaskQueue* task_queue) const;
 
   ukm::SourceId GetUkmSourceId() override;
   ukm::UkmRecorder* GetUkmRecorder();
@@ -328,9 +328,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   BackForwardCacheDisablingFeatureTracker
       back_forward_cache_disabling_feature_tracker_;
 
-  base::sequence_manager::TaskQueue::QueuePriority
-      default_loading_task_priority_ =
-          base::sequence_manager::TaskQueue::QueuePriority::kNormalPriority;
+  TaskPriority default_loading_task_priority_ = TaskPriority::kNormalPriority;
 
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().

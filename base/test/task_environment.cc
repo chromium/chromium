@@ -26,6 +26,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/lazy_now.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/simple_task_executor.h"
@@ -88,12 +89,14 @@ base::MessagePumpType GetMessagePumpTypeForMainThreadType(
 
 std::unique_ptr<sequence_manager::SequenceManager>
 CreateSequenceManagerForMainThreadType(
-    TaskEnvironment::MainThreadType main_thread_type) {
+    TaskEnvironment::MainThreadType main_thread_type,
+    sequence_manager::SequenceManager::PrioritySettings priority_settings) {
   auto type = GetMessagePumpTypeForMainThreadType(main_thread_type);
   return sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
       MessagePump::Create(type),
       base::sequence_manager::SequenceManager::Settings::Builder()
           .SetMessagePumpType(type)
+          .SetPrioritySettings(std::move(priority_settings))
           .Build());
 }
 
@@ -370,6 +373,7 @@ TaskEnvironment::MockTimeDomain*
     TaskEnvironment::MockTimeDomain::current_mock_time_domain_ = nullptr;
 
 TaskEnvironment::TaskEnvironment(
+    sequence_manager::SequenceManager::PrioritySettings priority_settings,
     TimeSource time_source,
     MainThreadType main_thread_type,
     ThreadPoolExecutionMode thread_pool_execution_mode,
@@ -383,7 +387,8 @@ TaskEnvironment::TaskEnvironment(
       thread_pool_com_environment_(thread_pool_com_environment),
       subclass_creates_default_taskrunner_(subclass_creates_default_taskrunner),
       sequence_manager_(
-          CreateSequenceManagerForMainThreadType(main_thread_type)),
+          CreateSequenceManagerForMainThreadType(main_thread_type,
+                                                 std::move(priority_settings))),
       mock_time_domain_(
           time_source != TimeSource::SYSTEM_TIME
               ? std::make_unique<TaskEnvironment::MockTimeDomain>(

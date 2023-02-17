@@ -44,6 +44,8 @@ blink_platform_sources("scheduler") {
     "common/simple_main_thread_scheduler.h",
     "common/single_thread_idle_task_runner.cc",
     "common/single_thread_idle_task_runner.h",
+    "common/task_priority.cc",
+    "common/task_priority.h",
     "common/thread.cc",
     "common/thread_cpu_throttler.cc",
     "common/thread_load_tracker.cc",

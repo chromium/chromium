@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
@@ -67,6 +69,87 @@ class BASE_EXPORT SequenceManager {
     }
   };
 
+  class BASE_EXPORT PrioritySettings {
+   public:
+    // This limit is based on an implementation detail of `TaskQueueSelector`'s
+    // `ActivePriorityTracker`, which can be refactored if more priorities are
+    // needed.
+    static constexpr size_t kMaxPriorities = sizeof(size_t) * 8 - 1;
+
+    static PrioritySettings CreateDefault();
+
+    template <typename T,
+              typename = typename std::enable_if_t<std::is_enum_v<T>>>
+    PrioritySettings(T priority_count, T default_priority)
+        : PrioritySettings(
+              static_cast<TaskQueue::QueuePriority>(priority_count),
+              static_cast<TaskQueue::QueuePriority>(default_priority)) {
+      static_assert(
+          std::is_same_v<std::underlying_type_t<T>, TaskQueue::QueuePriority>,
+          "Enumerated priorites must have the same underlying type as "
+          "TaskQueue::QueuePriority");
+    }
+
+    PrioritySettings(TaskQueue::QueuePriority priority_count,
+                     TaskQueue::QueuePriority default_priority);
+
+    ~PrioritySettings();
+
+    PrioritySettings(PrioritySettings&&);
+    PrioritySettings& operator=(PrioritySettings&&);
+
+    TaskQueue::QueuePriority priority_count() const { return priority_count_; }
+
+    TaskQueue::QueuePriority default_priority() const {
+      return default_priority_;
+    }
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+    void SetProtoPriorityConverter(
+        perfetto::protos::pbzero::SequenceManagerTask::Priority (
+            *proto_priority_converter)(TaskQueue::QueuePriority)) {
+      proto_priority_converter_ = proto_priority_converter;
+    }
+
+    perfetto::protos::pbzero::SequenceManagerTask::Priority TaskPriorityToProto(
+        TaskQueue::QueuePriority priority) const;
+#endif
+
+   private:
+    TaskQueue::QueuePriority priority_count_;
+    TaskQueue::QueuePriority default_priority_;
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+    perfetto::protos::pbzero::SequenceManagerTask::Priority (
+        *proto_priority_converter_)(TaskQueue::QueuePriority) = nullptr;
+#endif
+
+#if DCHECK_IS_ON()
+   public:
+    PrioritySettings(
+        TaskQueue::QueuePriority priority_count,
+        TaskQueue::QueuePriority default_priority,
+        std::vector<TimeDelta> per_priority_cross_thread_task_delay,
+        std::vector<TimeDelta> per_priority_same_thread_task_delay);
+
+    const std::vector<TimeDelta>& per_priority_cross_thread_task_delay() const {
+      return per_priority_cross_thread_task_delay_;
+    }
+
+    const std::vector<TimeDelta>& per_priority_same_thread_task_delay() const {
+      return per_priority_same_thread_task_delay_;
+    }
+
+   private:
+    // Scheduler policy induced raciness is an area of concern. This lets us
+    // apply an extra delay per priority for cross thread posting.
+    std::vector<TimeDelta> per_priority_cross_thread_task_delay_;
+
+    // Like the above but for same thread posting.
+    std::vector<TimeDelta> per_priority_same_thread_task_delay_;
+#endif
+  };
+
   // Settings defining the desired SequenceManager behaviour: the type of the
   // MessageLoop and whether randomised sampling should be enabled.
   struct BASE_EXPORT Settings {
@@ -89,6 +172,8 @@ class BASE_EXPORT SequenceManager {
     // If true, add the timestamp the task got queued to the task.
     bool add_queue_time_to_tasks = false;
 
+    PrioritySettings priority_settings = PrioritySettings::CreateDefault();
+
 #if DCHECK_IS_ON()
     // TODO(alexclarke): Consider adding command line flags to control these.
     enum class TaskLogging {
@@ -109,15 +194,6 @@ class BASE_EXPORT SequenceManager {
     // If true debug logs will be emitted when a delayed task becomes eligible
     // to run.
     bool log_task_delay_expiry = false;
-
-    // Scheduler policy induced raciness is an area of concern. This lets us
-    // apply an extra delay per priority for cross thread posting.
-    std::array<TimeDelta, TaskQueue::kQueuePriorityCount>
-        per_priority_cross_thread_task_delay;
-
-    // Like the above but for same thread posting.
-    std::array<TimeDelta, TaskQueue::kQueuePriorityCount>
-        per_priority_same_thread_task_delay;
 
     // If not zero this seeds a PRNG used by the task selection logic to choose
     // a random TaskQueue for a given priority rather than the TaskQueue with
@@ -202,6 +278,8 @@ class BASE_EXPORT SequenceManager {
   // Returns the metric recording configuration for the current SequenceManager.
   virtual const MetricRecordingSettings& GetMetricRecordingSettings() const = 0;
 
+  virtual TaskQueue::QueuePriority GetPriorityCount() const = 0;
+
   // Creates a task queue with the given type, `spec` and args.
   // Must be called on the main thread.
   // TODO(scheduler-dev): SequenceManager should not create TaskQueues.
@@ -273,6 +351,8 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
   // Whether or not queueing timestamp will be added to tasks.
   Builder& SetAddQueueTimeToTasks(bool add_queue_time_to_tasks);
 
+  Builder& SetPrioritySettings(PrioritySettings settings);
+
 #if DCHECK_IS_ON()
   // Controls task execution logging.
   Builder& SetTaskLogging(TaskLogging task_execution_logging);
@@ -283,18 +363,6 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
   // Whether or not debug logs will be emitted when a delayed task becomes
   // eligible to run.
   Builder& SetLogTaskDelayExpiry(bool log_task_delay_expiry);
-
-  // Scheduler policy induced raciness is an area of concern. This lets us
-  // apply an extra delay per priority for cross thread posting.
-  Builder& SetPerPriorityCrossThreadTaskDelay(
-      std::array<TimeDelta, TaskQueue::kQueuePriorityCount>
-          per_priority_cross_thread_task_delay);
-
-  // Scheduler policy induced raciness is an area of concern. This lets us
-  // apply an extra delay per priority for same thread posting.
-  Builder& SetPerPrioritySameThreadTaskDelay(
-      std::array<TimeDelta, TaskQueue::kQueuePriorityCount>
-          per_priority_same_thread_task_delay);
 
   // If not zero this seeds a PRNG used by the task selection logic to choose a
   // random TaskQueue for a given priority rather than the TaskQueue with the

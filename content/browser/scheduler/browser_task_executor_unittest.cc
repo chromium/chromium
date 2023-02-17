@@ -18,6 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "content/browser/scheduler/browser_io_thread_delegate.h"
+#include "content/browser/scheduler/browser_task_priority.h"
 #include "content/browser/scheduler/browser_task_queues.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -187,6 +188,7 @@ class BrowserTaskExecutorWithCustomSchedulerTest : public testing::Test {
    public:
     TaskEnvironmentWithCustomScheduler()
         : base::test::TaskEnvironment(
+              internal::CreateBrowserTaskPrioritySettings(),
               SubclassCreatesDefaultTaskRunner{},
               base::test::TaskEnvironment::MainThreadType::UI,
               base::test::TaskEnvironment::TimeSource::MOCK_TIME) {

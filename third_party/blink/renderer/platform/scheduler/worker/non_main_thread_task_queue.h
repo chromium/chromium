@@ -13,6 +13,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 
@@ -54,11 +55,12 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   void IncreaseThrottleRefCount();
   void DecreaseThrottleRefCount();
 
-  void SetQueuePriority(TaskQueue::QueuePriority priority) {
+  void SetQueuePriority(TaskPriority priority) {
     task_queue_->SetQueuePriority(priority);
   }
-  TaskQueue::QueuePriority GetQueuePriority() const {
-    return task_queue_->GetQueuePriority();
+
+  TaskPriority GetQueuePriority() const {
+    return static_cast<TaskPriority>(task_queue_->GetQueuePriority());
   }
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> CreateQueueEnabledVoter() {

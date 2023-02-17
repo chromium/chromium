@@ -554,6 +554,8 @@ class BASE_EXPORT TaskQueueImpl {
   void RemoveOnTaskPostedHandler(
       OnTaskPostedCallbackHandleImpl* on_task_posted_callback_handle);
 
+  TaskQueue::QueuePriority DefaultPriority() const;
+
   QueueName name_;
   const raw_ptr<SequenceManagerImpl, DanglingUntriaged> sequence_manager_;
 

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
 
 namespace blink {
@@ -33,6 +34,7 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
             base::MessagePump::Create(base::MessagePumpType::DEFAULT),
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetMessagePumpType(base::MessagePumpType::DEFAULT)
+                .SetPrioritySettings(CreatePrioritySettings())
                 .Build());
     scheduler_helper_ = std::make_unique<NonMainThreadSchedulerHelper>(
         sequence_manager_.get(), nullptr, TaskType::kInternalTest);

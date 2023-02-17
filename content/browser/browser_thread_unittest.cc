@@ -27,6 +27,7 @@
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/scheduler/browser_io_thread_delegate.h"
 #include "content/browser/scheduler/browser_task_executor.h"
+#include "content/browser/scheduler/browser_task_priority.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,8 +42,10 @@ using ::testing::Invoke;
 class SequenceManagerThreadDelegate : public base::Thread::Delegate {
  public:
   SequenceManagerThreadDelegate() {
-    ui_sequence_manager_ =
-        base::sequence_manager::CreateUnboundSequenceManager();
+    ui_sequence_manager_ = base::sequence_manager::CreateUnboundSequenceManager(
+        base::sequence_manager::SequenceManager::Settings::Builder()
+            .SetPrioritySettings(internal::CreateBrowserTaskPrioritySettings())
+            .Build());
     auto browser_ui_thread_scheduler =
         BrowserUIThreadScheduler::CreateForTesting(ui_sequence_manager_.get());
 
@@ -274,7 +277,9 @@ class BrowserThreadWithCustomSchedulerTest : public testing::Test {
       : public base::test::TaskEnvironment {
    public:
     TaskEnvironmentWithCustomScheduler()
-        : base::test::TaskEnvironment(SubclassCreatesDefaultTaskRunner{}) {
+        : base::test::TaskEnvironment(
+              internal::CreateBrowserTaskPrioritySettings(),
+              SubclassCreatesDefaultTaskRunner{}) {
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
           BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
       DeferredInitFromSubclass(

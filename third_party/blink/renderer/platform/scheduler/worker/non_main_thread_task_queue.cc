@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_base.h"
 
@@ -103,13 +104,13 @@ void NonMainThreadTaskQueue::OnWebSchedulingPriorityChanged() {
   DCHECK(web_scheduling_priority_);
   switch (web_scheduling_priority_.value()) {
     case WebSchedulingPriority::kUserBlockingPriority:
-      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kHighPriority);
+      task_queue_->SetQueuePriority(TaskPriority::kHighPriority);
       return;
     case WebSchedulingPriority::kUserVisiblePriority:
-      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kNormalPriority);
+      task_queue_->SetQueuePriority(TaskPriority::kNormalPriority);
       return;
     case WebSchedulingPriority::kBackgroundPriority:
-      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kLowPriority);
+      task_queue_->SetQueuePriority(TaskPriority::kLowPriority);
       return;
   }
 }

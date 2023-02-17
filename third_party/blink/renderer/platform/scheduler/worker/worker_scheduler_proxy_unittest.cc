@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
@@ -127,7 +128,10 @@ class WorkerSchedulerProxyTest : public testing::Test {
             base::sequence_manager::SequenceManagerForTest::Create(
                 nullptr,
                 task_environment_.GetMainThreadTaskRunner(),
-                task_environment_.GetMockTickClock()))),
+                task_environment_.GetMockTickClock(),
+                base::sequence_manager::SequenceManager::Settings::Builder()
+                    .SetPrioritySettings(CreatePrioritySettings())
+                    .Build()))),
         agent_group_scheduler_(
             main_thread_scheduler_->CreateAgentGroupScheduler()),
         page_scheduler_(agent_group_scheduler_->CreatePageScheduler(nullptr)),

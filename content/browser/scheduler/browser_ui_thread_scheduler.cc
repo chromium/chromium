@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "content/browser/scheduler/browser_task_priority.h"
 #include "content/browser/scheduler/browser_task_queues.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
@@ -138,6 +139,8 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
           base::sequence_manager::CreateUnboundSequenceManager(
               base::sequence_manager::SequenceManager::Settings::Builder()
                   .SetMessagePumpType(base::MessagePumpType::UI)
+                  .SetPrioritySettings(
+                      internal::CreateBrowserTaskPrioritySettings())
                   .Build())),
       task_queues_(BrowserThread::UI, owned_sequence_manager_.get()),
       queue_data_(task_queues_.GetQueueData()),
@@ -162,6 +165,8 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler(
 
 void BrowserUIThreadScheduler::CommonSequenceManagerSetup(
     base::sequence_manager::SequenceManager* sequence_manager) {
+  DCHECK_EQ(static_cast<size_t>(sequence_manager->GetPriorityCount()),
+            static_cast<size_t>(internal::BrowserTaskPriority::kPriorityCount));
   sequence_manager->EnableCrashKeys("ui_scheduler_async_stack");
 }
 

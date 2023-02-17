@@ -208,13 +208,14 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
 
       // Note: all arguments after task are just passed to a TRACE_EVENT for
       // logging so lambda captures are safe as lambda is executed inline.
+      SequencedTaskSource* source = sequence_;
       task_annotator_.RunTask(
           "ThreadControllerImpl::RunTask", *selected_task->task,
-          [&selected_task](perfetto::EventContext& ctx) {
+          [&selected_task, &source](perfetto::EventContext& ctx) {
             if (selected_task->task_execution_trace_logger)
               selected_task->task_execution_trace_logger.Run(
                   ctx, *selected_task->task);
-            SequenceManagerImpl::MaybeEmitTaskDetails(ctx, *selected_task);
+            source->MaybeEmitTaskDetails(ctx, *selected_task);
           });
       if (!weak_ptr)
         return;

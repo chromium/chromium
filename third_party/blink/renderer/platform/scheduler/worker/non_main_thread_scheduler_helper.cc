@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_task_queue.h"
 
 namespace blink {
@@ -26,10 +27,10 @@ NonMainThreadSchedulerHelper::NonMainThreadSchedulerHelper(
       input_task_queue_(
           NewTaskQueueInternal(TaskQueue::Spec(QueueName::SUBTHREAD_INPUT_TQ))),
       control_task_queue_(
-          NewTaskQueueInternal(TaskQueue::Spec(QueueName::SUBTHREAD_CONTROL_TQ)
-                                   .SetShouldNotifyObservers(false))) {
-  control_task_queue_->SetQueuePriority(TaskQueue::kControlPriority);
-  input_task_queue_->SetQueuePriority(TaskQueue::kHighestPriority);
+          NewTaskQueue(TaskQueue::Spec(QueueName::SUBTHREAD_CONTROL_TQ)
+                           .SetShouldNotifyObservers(false))) {
+  control_task_queue_->SetQueuePriority(TaskPriority::kControlPriority);
+  input_task_queue_->SetQueuePriority(TaskPriority::kHighestPriority);
 
   InitDefaultTaskRunner(
       default_task_queue_->CreateTaskRunner(default_task_type));

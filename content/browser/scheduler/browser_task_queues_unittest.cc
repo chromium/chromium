@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "content/browser/scheduler/browser_task_priority.h"
 #include "content/public/browser/browser_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +38,11 @@ class BrowserTaskQueuesTest : public testing::Test {
  protected:
   BrowserTaskQueuesTest()
       : sequence_manager_(CreateSequenceManagerOnCurrentThreadWithPump(
-            base::MessagePump::Create(base::MessagePumpType::DEFAULT))),
+            base::MessagePump::Create(base::MessagePumpType::DEFAULT),
+            base::sequence_manager::SequenceManager::Settings::Builder()
+                .SetPrioritySettings(
+                    internal::CreateBrowserTaskPrioritySettings())
+                .Build())),
         queues_(std::make_unique<BrowserTaskQueues>(BrowserThread::UI,
                                                     sequence_manager_.get())),
         handle_(queues_->GetHandle()) {

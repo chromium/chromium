@@ -5,7 +5,6 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_WORK_QUEUE_SETS_H_
 #define BASE_TASK_SEQUENCE_MANAGER_WORK_QUEUE_SETS_H_
 
-#include <array>
 #include <functional>
 #include <vector>
 
@@ -123,9 +122,7 @@ class BASE_EXPORT WorkQueueSets {
 
   // For each set |work_queue_heaps_| has a queue of WorkQueue ordered by the
   // oldest task in each WorkQueue.
-  std::array<IntrusiveHeap<OldestTaskOrder, std::greater<>>,
-             TaskQueue::kQueuePriorityCount>
-      work_queue_heaps_;
+  std::vector<IntrusiveHeap<OldestTaskOrder, std::greater<>>> work_queue_heaps_;
 
 #if DCHECK_IS_ON()
   static inline uint64_t MurmurHash3(uint64_t value) {

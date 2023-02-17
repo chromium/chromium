@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -26,12 +27,12 @@ WebThreadScheduler::~WebThreadScheduler() = default;
 std::unique_ptr<WebThreadScheduler>
 WebThreadScheduler::CreateMainThreadScheduler(
     std::unique_ptr<base::MessagePump> message_pump) {
-  auto settings =
-      base::sequence_manager::SequenceManager::Settings::Builder()
-          .SetMessagePumpType(base::MessagePumpType::DEFAULT)
-          .SetRandomisedSamplingEnabled(true)
-          .SetAddQueueTimeToTasks(true)
-          .Build();
+  auto settings = base::sequence_manager::SequenceManager::Settings::Builder()
+                      .SetMessagePumpType(base::MessagePumpType::DEFAULT)
+                      .SetRandomisedSamplingEnabled(true)
+                      .SetAddQueueTimeToTasks(true)
+                      .SetPrioritySettings(CreatePrioritySettings())
+                      .Build();
   auto sequence_manager =
       message_pump
           ? base::sequence_manager::

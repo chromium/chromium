@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 
@@ -154,7 +155,8 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
                                               TaskEnvironmentTraits...>::value>>
   NOINLINE explicit BrowserTaskEnvironment(TaskEnvironmentTraits... traits)
       : BrowserTaskEnvironment(
-            base::test::TaskEnvironment(
+            CreateTaskEnvironmentWithPriorities(
+                CreateBrowserTaskPrioritySettings(),
                 SubclassCreatesDefaultTaskRunner{},
                 base::trait_helpers::GetEnum<MainThreadType,
                                              MainThreadType::UI>(traits...),
@@ -174,6 +176,9 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
   ~BrowserTaskEnvironment() override;
 
  private:
+  static base::sequence_manager::SequenceManager::PrioritySettings
+  CreateBrowserTaskPrioritySettings();
+
   // The template constructor has to be in the header but it delegates to this
   // constructor to initialize all other members out-of-line.
   BrowserTaskEnvironment(base::test::TaskEnvironment&& scoped_task_environment,

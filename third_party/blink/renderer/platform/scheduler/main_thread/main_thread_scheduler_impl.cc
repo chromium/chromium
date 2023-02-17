@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
@@ -84,8 +85,8 @@ const int64_t kSecondsPerMinute = 60;
 constexpr base::TimeDelta kDefaultPrioritizeCompositingAfterDelay =
     base::Milliseconds(100);
 
-constexpr TaskQueue::QueuePriority kPrioritizeCompositingAfterDelayPriority =
-    TaskQueue::QueuePriority::kVeryHighPriority;
+constexpr TaskPriority kPrioritizeCompositingAfterDelayPriority =
+    TaskPriority::kVeryHighPriority;
 
 v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
   switch (rail_mode) {
@@ -169,10 +170,10 @@ const char* OptionalTaskDescriptionToString(
 }
 
 const char* OptionalTaskPriorityToString(
-    absl::optional<TaskQueue::QueuePriority> priority) {
+    absl::optional<TaskPriority> priority) {
   if (!priority)
     return nullptr;
-  return TaskQueue::PriorityToString(priority.value());
+  return TaskPriorityToString(*priority);
 }
 
 bool IsBlockingEvent(const blink::WebInputEvent& web_input_event) {
@@ -206,23 +207,21 @@ const char* InputEventStateToString(
   }
 }
 
-TaskQueue::QueuePriority
-GetPriorityFromCompositorTQPolicyDuringThreadedScrolling(
+TaskPriority GetPriorityFromCompositorTQPolicyDuringThreadedScrolling(
     CompositorTQPolicyDuringThreadedScroll policy) {
   switch (policy) {
     case CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways:
     case CompositorTQPolicyDuringThreadedScroll::kLowPriorityWithAntiStarvation:
-      return TaskQueue::QueuePriority::kLowPriority;
+      return TaskPriority::kLowPriority;
     case CompositorTQPolicyDuringThreadedScroll::
         kNormalPriorityWithAntiStarvation:
-      return TaskQueue::QueuePriority::kNormalPriority;
+      return TaskPriority::kNormalPriority;
     case CompositorTQPolicyDuringThreadedScroll::kVeryHighPriorityAlways:
-      return TaskQueue::QueuePriority::kVeryHighPriority;
+      return TaskPriority::kVeryHighPriority;
   }
 }
 
-TaskQueue::QueuePriority MaxPriority(TaskQueue::QueuePriority priority1,
-                                     TaskQueue::QueuePriority priority2) {
+TaskPriority MaxPriority(TaskPriority priority1, TaskPriority priority2) {
   return std::min(priority1, priority2);
 }
 
@@ -468,10 +467,10 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
           &main_thread_scheduler_impl->tracing_controller_,
           YesNoStateToString),
       main_thread_compositing_is_fast(false),
-      compositor_priority(TaskQueue::QueuePriority::kNormalPriority,
+      compositor_priority(TaskPriority::kNormalPriority,
                           "Scheduler.CompositorPriority",
                           &main_thread_scheduler_impl->tracing_controller_,
-                          TaskQueue::PriorityToString),
+                          TaskPriorityToString),
       last_frame_time(now),
       should_prioritize_compositor_task_queue_after_delay(false),
       have_seen_a_frame(false),
@@ -1785,7 +1784,7 @@ void MainThreadSchedulerImpl::OnVirtualTimeEnabled() {
       helper_.NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
           MainThreadTaskQueue::QueueType::kControl));
   virtual_time_control_task_queue_->SetQueuePriority(
-      TaskQueue::kControlPriority);
+      TaskPriority::kControlPriority);
 
   ForceUpdatePolicy();
 
@@ -2361,9 +2360,8 @@ void MainThreadSchedulerImpl::OnTaskStarted(
           : absl::nullopt};
 
   main_thread_only().task_priority_for_tracing =
-      queue
-          ? absl::optional<TaskQueue::QueuePriority>(queue->GetQueuePriority())
-          : absl::nullopt;
+      queue ? absl::optional<TaskPriority>(queue->GetQueuePriority())
+            : absl::nullopt;
 }
 
 void MainThreadSchedulerImpl::OnTaskCompleted(
@@ -2503,7 +2501,7 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
   return UkmRecordingStatus::kSuccess;
 }
 
-TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputePriority(
+TaskPriority MainThreadSchedulerImpl::ComputePriority(
     MainThreadTaskQueue* task_queue) const {
   DCHECK(task_queue);
 
@@ -2519,14 +2517,14 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputePriority(
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor:
       return main_thread_only().compositor_priority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput:
-      return TaskQueue::QueuePriority::kHighestPriority;
+      return TaskPriority::kHighestPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kBestEffort:
-      return TaskQueue::QueuePriority::kBestEffortPriority;
+      return TaskPriority::kBestEffortPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kRegular:
-      return TaskQueue::QueuePriority::kNormalPriority;
+      return TaskPriority::kNormalPriority;
     default:
       NOTREACHED();
-      return TaskQueue::QueuePriority::kNormalPriority;
+      return TaskPriority::kNormalPriority;
   }
 }
 
@@ -2581,18 +2579,17 @@ MainThreadSchedulerImpl::scheduling_settings() const {
   return scheduling_settings_;
 }
 
-TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
-    const {
+TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
   if (main_thread_only().prioritize_compositing_after_input) {
     // Return the highest priority here otherwise consecutive heavy inputs (e.g.
     // typing) will starve rendering.
-    return TaskQueue::QueuePriority::kHighestPriority;
+    return TaskPriority::kHighestPriority;
   } else if (scheduling_settings_
                  .prioritize_compositing_and_loading_during_early_loading &&
              current_use_case() == UseCase::kEarlyLoading) {
-    return TaskQueue::QueuePriority::kHighPriority;
+    return TaskPriority::kHighPriority;
   } else {
-    absl::optional<TaskQueue::QueuePriority> computed_compositor_priority =
+    absl::optional<TaskPriority> computed_compositor_priority =
         ComputeCompositorPriorityFromUseCase();
     // The default behavior for compositor gestures like compositor-driven
     // scrolling is to deprioritize compositor TQ tasks (low priority) and not
@@ -2620,12 +2617,11 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
       return kPrioritizeCompositingAfterDelayPriority;
     }
   }
-  return TaskQueue::QueuePriority::kNormalPriority;
+  return TaskPriority::kNormalPriority;
 }
 
 void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
-  TaskQueue::QueuePriority old_compositor_priority =
-      main_thread_only().compositor_priority;
+  TaskPriority old_compositor_priority = main_thread_only().compositor_priority;
   main_thread_only().compositor_priority = ComputeCompositorPriority();
 
   if (old_compositor_priority == main_thread_only().compositor_priority)
@@ -2695,12 +2691,12 @@ void MainThreadSchedulerImpl::
   }
 }
 
-absl::optional<TaskQueue::QueuePriority>
+absl::optional<TaskPriority>
 MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
   switch (current_use_case()) {
     case UseCase::kCompositorGesture:
       if (main_thread_only().blocking_input_expected_soon)
-        return TaskQueue::QueuePriority::kHighestPriority;
+        return TaskPriority::kHighestPriority;
       // What we really want to do is priorize loading tasks, but that doesn't
       // seem to be safe. Instead we do that by proxy by deprioritizing
       // compositor tasks. This should be safe since we've already gone to the
@@ -2723,7 +2719,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
       // block expensive tasks because we don't know whether they were integral
       // to the page's functionality or not.
       if (main_thread_only().main_thread_compositing_is_fast)
-        return TaskQueue::QueuePriority::kHighestPriority;
+        return TaskPriority::kHighestPriority;
       return absl::nullopt;
 
     case UseCase::kMainThreadGesture:
@@ -2732,7 +2728,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
       // by the main thread. Since we know the established gesture type, we can
       // be a little more aggressive about prioritizing compositing and input
       // handling over other tasks.
-      return TaskQueue::QueuePriority::kHighestPriority;
+      return TaskPriority::kHighestPriority;
 
     case UseCase::kNone:
     case UseCase::kEarlyLoading:

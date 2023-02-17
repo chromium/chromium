@@ -38,6 +38,7 @@
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/find_in_page_budget_pool_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
@@ -423,6 +424,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
             nullptr, test_task_runner_, test_task_runner_->GetMockTickClock(),
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetRandomisedSamplingEnabled(true)
+                .SetPrioritySettings(CreatePrioritySettings())
                 .Build())));
 
     EXPECT_EQ(ForceUpdatePolicyAndGetCurrentUseCase(), UseCase::kNone);
@@ -2862,7 +2864,7 @@ TEST_F(MainThreadSchedulerImplTest, SYNCHRONIZED_GESTURE_CompositingExpensive) {
 
   // Throttleable tasks should not have been starved by the expensive compositor
   // tasks.
-  EXPECT_EQ(TaskQueue::kNormalPriority,
+  EXPECT_EQ(TaskPriority::kNormalPriority,
             compositor_task_queue()->GetQueuePriority());
   EXPECT_EQ(1000u, run_order.size());
 }
@@ -2902,7 +2904,7 @@ TEST_F(MainThreadSchedulerImplTest, MAIN_THREAD_CUSTOM_INPUT_HANDLING) {
 
   // Throttleable tasks should not have been starved by the expensive compositor
   // tasks.
-  EXPECT_EQ(TaskQueue::kNormalPriority,
+  EXPECT_EQ(TaskPriority::kNormalPriority,
             compositor_task_queue()->GetQueuePriority());
   EXPECT_EQ(1000u, run_order.size());
 }
@@ -2940,7 +2942,7 @@ TEST_F(MainThreadSchedulerImplTest, MAIN_THREAD_GESTURE) {
     EXPECT_EQ(UseCase::kMainThreadGesture, CurrentUseCase()) << "i = " << i;
   }
 
-  EXPECT_EQ(TaskQueue::kHighestPriority,
+  EXPECT_EQ(TaskPriority::kHighestPriority,
             compositor_task_queue()->GetQueuePriority());
   EXPECT_EQ(279u, run_order.size());
 }
@@ -3392,6 +3394,7 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
                 test_task_runner_->GetMockTickClock(),
                 base::sequence_manager::SequenceManager::Settings::Builder()
                     .SetRandomisedSamplingEnabled(true)
+                    .SetPrioritySettings(CreatePrioritySettings())
                     .Build()));
     main_thread_scheduler->EnableVirtualTime(
         /* initial_time= */ base::Time::FromJsTime(1000000.0));
@@ -3569,7 +3572,7 @@ TEST_F(BestEffortPriorityForFindInPageExperimentTest,
   PostTestTasks(&run_order, "F1 D1 F2 D2 F3 D3");
   EnableIdleTasks();
   EXPECT_EQ(scheduler_->find_in_page_priority(),
-            QueuePriority::kBestEffortPriority);
+            TaskPriority::kBestEffortPriority);
   base::RunLoop().RunUntilIdle();
   // Find-in-page tasks have "best-effort" priority, so they will be done after
   // the default tasks (which have normal priority).

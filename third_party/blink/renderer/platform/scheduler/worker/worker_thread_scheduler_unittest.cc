@@ -15,6 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
+#include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/recording_task_time_observer.h"
 
@@ -146,7 +147,10 @@ class WorkerThreadSchedulerTest : public testing::Test {
             base::sequence_manager::SequenceManagerForTest::Create(
                 nullptr,
                 task_environment_.GetMainThreadTaskRunner(),
-                task_environment_.GetMockTickClock())),
+                task_environment_.GetMockTickClock(),
+                base::sequence_manager::SequenceManager::Settings::Builder()
+                    .SetPrioritySettings(CreatePrioritySettings())
+                    .Build())),
         scheduler_(new WorkerThreadSchedulerForTest(
             sequence_manager_.get(),
             task_environment_.GetMockTickClock(),
@@ -492,7 +496,10 @@ class WorkerThreadSchedulerWithProxyTest : public testing::Test {
             base::sequence_manager::SequenceManagerForTest::Create(
                 nullptr,
                 task_environment_.GetMainThreadTaskRunner(),
-                task_environment_.GetMockTickClock())) {
+                task_environment_.GetMockTickClock(),
+                base::sequence_manager::SequenceManager::Settings::Builder()
+                    .SetPrioritySettings(CreatePrioritySettings())
+                    .Build())) {
     frame_scheduler_delegate_ =
         std::make_unique<FrameSchedulerDelegateWithUkmSourceId>(42);
     frame_scheduler_ = FakeFrameScheduler::Builder()
