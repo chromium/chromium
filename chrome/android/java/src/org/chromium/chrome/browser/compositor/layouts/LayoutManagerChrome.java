@@ -594,8 +594,18 @@ public class LayoutManagerChrome
         @Override
         public boolean isSwipeEnabled(@ScrollDirection int direction) {
             FullscreenManager manager = mHost.getFullscreenManager();
-            if ((getActiveLayout() != mStaticLayout && getActiveLayout() != mStartSurfaceHomeLayout)
-                    || !DeviceClassManager.enableToolbarSwipe()
+            if (getActiveLayout() != mStaticLayout) {
+                if (mStartSurfaceHomeLayout != null
+                        && getActiveLayout() == mStartSurfaceHomeLayout) {
+                    // Left and right swipe is disabled on Start surface.
+                    if (direction != ScrollDirection.DOWN) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            if (!DeviceClassManager.enableToolbarSwipe()
                     || (manager != null && manager.getPersistentFullscreenMode())) {
                 return false;
             }
