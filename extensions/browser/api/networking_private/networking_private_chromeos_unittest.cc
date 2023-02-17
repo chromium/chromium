@@ -277,9 +277,10 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     return profile_test()->GetService(service_path, profile_path).has_value();
   }
 
-  base::Value GetNetworkProperties(const std::string& service_path) {
+  absl::optional<base::Value::Dict> GetNetworkProperties(
+      const std::string& service_path) {
     base::RunLoop run_loop;
-    absl::optional<base::Value> properties;
+    absl::optional<base::Value::Dict> properties;
     ash::NetworkHandler::Get()
         ->network_configuration_handler()
         ->GetShillProperties(
@@ -289,16 +290,17 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                            base::Unretained(&properties),
                            run_loop.QuitClosure()));
     run_loop.Run();
-    if (!properties)
-      return base::Value();
+    if (!properties) {
+      return absl::nullopt;
+    }
     return std::move(*properties);
   }
 
   void OnNetworkProperties(const std::string& expected_path,
-                           absl::optional<base::Value>* result,
+                           absl::optional<base::Value::Dict>* result,
                            base::OnceClosure callback,
                            const std::string& service_path,
-                           absl::optional<base::Value> properties) {
+                           absl::optional<base::Value::Dict> properties) {
     if (!properties) {
       ADD_FAILURE() << "Error calling shill client.";
       std::move(callback).Run();
@@ -309,11 +311,12 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     std::move(callback).Run();
   }
 
-  std::unique_ptr<base::Value> GetNetworkUiData(const base::Value& properties) {
-    CHECK(properties.is_dict());
-    const std::string* ui_data_json = properties.FindStringKey("UIData");
-    if (!ui_data_json)
+  std::unique_ptr<base::Value> GetNetworkUiData(
+      absl::optional<base::Value::Dict>& properties) {
+    const std::string* ui_data_json = properties->FindString("UIData");
+    if (!ui_data_json) {
       return nullptr;
+    }
 
     JSONStringValueDeserializer deserializer(*ui_data_json);
     return deserializer.Deserialize(nullptr, nullptr);
@@ -326,21 +329,26 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                                            ->network_state_handler()
                                            ->GetNetworkStateFromGuid(guid);
 
-    base::Value properties = GetNetworkProperties(network->path());
-    if (properties.is_none())
+    absl::optional<base::Value::Dict> properties =
+        GetNetworkProperties(network->path());
+    if (!properties.has_value()) {
       return false;
+    }
 
     std::unique_ptr<base::Value> ui_data = GetNetworkUiData(properties);
-    if (!ui_data)
+    if (!ui_data) {
       return false;
+    }
 
     const std::string* user_setting =
         ui_data->FindStringPath("user_settings." + key);
-    if (!user_setting)
+    if (!user_setting) {
       return false;
+    }
 
-    if (value)
+    if (value) {
       *value = *user_setting;
+    }
     return true;
   }
 
@@ -896,8 +904,9 @@ TEST_F(NetworkingPrivateApiTest,
                                          ->network_state_handler()
                                          ->GetNetworkStateFromGuid(guid);
 
-  base::Value properties = GetNetworkProperties(network->path());
-  ASSERT_TRUE(properties.is_dict());
+  absl::optional<base::Value::Dict> properties =
+      GetNetworkProperties(network->path());
+  ASSERT_TRUE(properties.has_value());
 
   std::unique_ptr<base::Value> ui_data = GetNetworkUiData(properties);
   ASSERT_TRUE(ui_data && ui_data->is_dict());

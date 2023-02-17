@@ -21,14 +21,14 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDBusFailedError[];
 // On success, |result| contains the result. On failure, |result| is nullopt.
 using ResultCallback =
     base::OnceCallback<void(const std::string& service_path,
-                            absl::optional<base::Value> result)>;
+                            absl::optional<base::Value::Dict> result)>;
 
 // On success, |properties| contains the resulting properties and |error| is
 // nullopt. On failure, |result| is nullopt and |error| may contain an error
 // identifier.
 using PropertiesCallback =
     base::OnceCallback<void(const std::string& service_path,
-                            absl::optional<base::Value> properties,
+                            absl::optional<base::Value::Dict> properties,
                             absl::optional<std::string> error)>;
 
 // An error callback used by both the configuration handler and the state

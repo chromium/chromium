@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   // ConnectToNetwork(), see comment for info.
   void VerifyConfiguredAndConnect(bool check_error_state,
                                   const std::string& service_path,
-                                  absl::optional<base::Value> properties);
+                                  absl::optional<base::Value::Dict> properties);
 
   // Queues a connect request until certificates have loaded.
   void QueueConnectRequest(const std::string& service_path);
@@ -197,7 +197,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   std::unique_ptr<ConnectRequest> queued_connect_;
 
   // Track certificate loading state.
-  bool certificates_loaded_;
+  bool certificates_loaded_ = false;
 };
 
 }  // namespace ash

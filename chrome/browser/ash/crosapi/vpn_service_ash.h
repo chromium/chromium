@@ -253,7 +253,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
   // configuration provided that it belongs to some enabled extension.
   void OnGetShillProperties(
       const std::string& service_path,
-      absl::optional<base::Value> configuration_properties);
+      absl::optional<base::Value::Dict> configuration_properties);
 
   // Always returns a valid pointer.
   VpnServiceForExtensionAsh* GetVpnServiceForExtension(

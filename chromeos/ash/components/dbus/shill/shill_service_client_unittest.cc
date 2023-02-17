@@ -107,13 +107,13 @@ TEST_F(ShillServiceClientTest, GetProperties) {
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::test::TestFuture<absl::optional<base::Value>> get_properties_result;
+  base::test::TestFuture<absl::optional<base::Value::Dict>>
+      get_properties_result;
   client_->GetProperties(dbus::ObjectPath(kExampleServicePath),
                          get_properties_result.GetCallback());
-  absl::optional<base::Value> result = get_properties_result.Take();
+  absl::optional<base::Value::Dict> result = get_properties_result.Take();
   EXPECT_TRUE(result.has_value());
-  const base::Value::Dict& result_value = result.value().GetDict();
-  EXPECT_EQ(expected_value, result_value);
+  EXPECT_EQ(expected_value, result.value());
 }
 
 TEST_F(ShillServiceClientTest, SetProperty) {

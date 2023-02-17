@@ -131,7 +131,7 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
 
  private:
   void GetProfileEntriesToDeleteCallback(
-      absl::optional<base::Value> profile_entries) {
+      absl::optional<base::Value::Dict> profile_entries) {
     if (!profile_entries) {
       InvokeErrorCallback(service_path_, std::move(error_callback_),
                           "GetLoadableProfileEntriesFailed");
@@ -141,7 +141,7 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
       return;
     }
 
-    for (const auto iter : profile_entries->DictItems()) {
+    for (const auto iter : *profile_entries) {
       std::string profile_path = StripQuotations(iter.first);
       std::string entry_path;
       if (iter.second.is_string()) {
@@ -268,7 +268,7 @@ void NetworkConfigurationHandler::GetShillProperties(
     // Provide properties from NetworkState.
     base::Value dictionary(base::Value::Type::DICT);
     network_state->GetStateProperties(&dictionary);
-    std::move(callback).Run(service_path, std::move(dictionary));
+    std::move(callback).Run(service_path, std::move(dictionary.GetDict()));
     return;
   }
   ShillServiceClient::Get()->GetProperties(
@@ -593,7 +593,7 @@ void NetworkConfigurationHandler::SetNetworkProfileCompleted(
 void NetworkConfigurationHandler::GetPropertiesCallback(
     network_handler::ResultCallback callback,
     const std::string& service_path,
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     // Because network services are added and removed frequently, we will see
     // failures regularly, so don't log these.
@@ -604,18 +604,18 @@ void NetworkConfigurationHandler::GetPropertiesCallback(
   // Get the correct name from WifiHex if necessary.
   std::string name =
       shill_property_util::GetNameFromProperties(service_path, *properties);
-  if (!name.empty())
-    properties->SetKey(shill::kNameProperty, base::Value(name));
+  if (!name.empty()) {
+    properties->Set(shill::kNameProperty, name);
+  }
 
   // Get the GUID property from NetworkState if it is not set in Shill.
   const std::string* guid =
-      properties->FindStringKey(::onc::network_config::kGUID);
+      properties->FindString(::onc::network_config::kGUID);
   if (!guid || guid->empty()) {
     const NetworkState* network_state =
         network_state_handler_->GetNetworkState(service_path);
     if (network_state) {
-      properties->SetKey(::onc::network_config::kGUID,
-                         base::Value(network_state->guid()));
+      properties->Set(::onc::network_config::kGUID, network_state->guid());
     }
   }
 

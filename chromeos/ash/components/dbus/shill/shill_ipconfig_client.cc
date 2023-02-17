@@ -93,7 +93,7 @@ void ShillIPConfigClientImpl::GetProperties(
   dbus::MethodCall method_call(shill::kFlimflamIPConfigInterface,
                                shill::kGetPropertiesFunction);
   GetHelper(ipconfig_path)
-      ->CallValueDictMethod(&method_call, std::move(callback));
+      ->CallDictValueMethod(&method_call, std::move(callback));
 }
 
 void ShillIPConfigClientImpl::SetProperty(

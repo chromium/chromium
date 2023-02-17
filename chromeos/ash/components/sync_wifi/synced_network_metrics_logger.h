@@ -128,7 +128,7 @@ class SyncedNetworkMetricsLogger : public NetworkConnectionObserver,
   void OnConnectErrorGetProperties(
       const std::string& error_name,
       const std::string& service_path,
-      absl::optional<base::Value> shill_properties);
+      absl::optional<base::Value::Dict> shill_properties);
 
   bool IsEligible(const NetworkState* network);
 

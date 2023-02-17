@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // fields.
   void OnGetManagedProperties(std::string iccid,
                               const std::string& service_path,
-                              absl::optional<base::Value> properties,
+                              absl::optional<base::Value::Dict> properties,
                               absl::optional<std::string> error);
 
   base::flat_set<std::string> iccids_in_migration_;

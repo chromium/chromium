@@ -64,7 +64,7 @@ class NetworkStateTest : public testing::Test {
   }
 
   bool SignalInitialPropertiesReceived() {
-    return network_state_->InitialPropertiesReceived(properties_);
+    return network_state_->InitialPropertiesReceived(properties_.GetDict());
   }
 
   void SetConnectionState(const std::string& connection_state) {
@@ -72,7 +72,7 @@ class NetworkStateTest : public testing::Test {
   }
 
   void UpdateCaptivePortalState(const base::Value& properties) {
-    network_state_->UpdateCaptivePortalState(properties);
+    network_state_->UpdateCaptivePortalState(properties.GetDict());
   }
 
   NetworkState::PortalState GetShillPortalState() {

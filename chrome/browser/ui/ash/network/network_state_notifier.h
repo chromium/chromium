@@ -92,12 +92,12 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   void OnConnectErrorGetProperties(
       const std::string& error_name,
       const std::string& service_path,
-      absl::optional<base::Value> shill_properties);
+      absl::optional<base::Value::Dict> shill_properties);
 
   void ShowConnectErrorNotification(
       const std::string& error_name,
       const std::string& service_path,
-      absl::optional<base::Value> shill_properties);
+      absl::optional<base::Value::Dict> shill_properties);
 
   void ShowVpnDisconnectedNotification(VpnDetails* vpn);
 

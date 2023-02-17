@@ -208,8 +208,9 @@ class ArcNetHostImpl : public KeyedService,
       const std::string& error_name);
 
   // Callback for ash::NetworkHandler::GetShillProperties
-  void ReceiveShillProperties(const std::string& service_path,
-                              absl::optional<base::Value> shill_properties);
+  void ReceiveShillProperties(
+      const std::string& service_path,
+      absl::optional<base::Value::Dict> shill_properties);
 
   // PatchPanelClient::Observer implementation:
   void NetworkConfigurationChanged() override;

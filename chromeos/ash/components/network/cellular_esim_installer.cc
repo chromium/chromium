@@ -70,10 +70,9 @@ void AppendRequiredCellularProperties(
   }
 }
 
-bool IsManagedNetwork(const base::Value& new_shill_properties) {
+bool IsManagedNetwork(const base::Value::Dict& new_shill_properties) {
   std::unique_ptr<NetworkUIData> ui_data =
-      shill_property_util::GetUIDataFromProperties(
-          new_shill_properties.GetDict());
+      shill_property_util::GetUIDataFromProperties(new_shill_properties);
   return ui_data && (ui_data->onc_source() == ::onc::ONC_SOURCE_DEVICE_POLICY ||
                      ui_data->onc_source() == ::onc::ONC_SOURCE_USER_POLICY);
 }
@@ -141,7 +140,7 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
     const dbus::ObjectPath& euicc_path,
-    base::Value new_shill_properties,
+    base::Value::Dict new_shill_properties,
     InstallProfileFromActivationCodeCallback callback,
     bool is_initial_install,
     bool is_install_via_qr_code) {
@@ -164,7 +163,7 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
     const dbus::ObjectPath& euicc_path,
-    base::Value new_shill_properties,
+    base::Value::Dict new_shill_properties,
     bool is_initial_install,
     bool is_install_via_qr_code,
     InstallProfileFromActivationCodeCallback callback,
@@ -193,7 +192,7 @@ void CellularESimInstaller::OnProfileInstallResult(
     InstallProfileFromActivationCodeCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     const dbus::ObjectPath& euicc_path,
-    const base::Value& new_shill_properties,
+    const base::Value::Dict& new_shill_properties,
     bool is_initial_install,
     bool is_install_via_qr_code,
     HermesResponseStatus status,
@@ -215,7 +214,7 @@ void CellularESimInstaller::OnProfileInstallResult(
                                  is_initial_install, is_install_via_qr_code);
   pending_inhibit_locks_.emplace(*profile_path, std::move(inhibit_lock));
   ConfigureESimService(
-      new_shill_properties.GetDict(), euicc_path, *profile_path,
+      new_shill_properties, euicc_path, *profile_path,
       base::BindOnce(&CellularESimInstaller::EnableProfile,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      euicc_path, *profile_path));

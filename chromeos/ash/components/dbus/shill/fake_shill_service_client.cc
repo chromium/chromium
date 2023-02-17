@@ -169,7 +169,7 @@ void FakeShillServiceClient::RemovePropertyChangedObserver(
 
 void FakeShillServiceClient::GetProperties(
     const dbus::ObjectPath& service_path,
-    chromeos::DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
   absl::optional<base::Value::Dict> result_properties;
   const base::Value::Dict* nested_dict =
       GetServiceProperties(service_path.value());
@@ -184,14 +184,8 @@ void FakeShillServiceClient::GetProperties(
     VLOG(2) << "Properties not found for: " << service_path.value();
   }
 
-  // REMOVE when moving callback to <base::Value::Dict>.
-  absl::optional<base::Value> result_properties_value;
-  if (result_properties.has_value()) {
-    result_properties_value.emplace(std::move(result_properties.value()));
-  }
-  // END REMOVE
   base::OnceClosure property_update =
-      base::BindOnce(std::move(callback), std::move(result_properties_value));
+      base::BindOnce(std::move(callback), std::move(result_properties));
   if (hold_back_service_property_updates_) {
     recorded_property_updates_.push_back(std::move(property_update));
   } else {
@@ -354,7 +348,7 @@ void FakeShillServiceClient::CompleteCellularActivation(
 
 void FakeShillServiceClient::GetLoadableProfileEntries(
     const dbus::ObjectPath& service_path,
-    chromeos::DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
   ShillProfileClient::TestInterface* profile_client =
       ShillProfileClient::Get()->GetTestInterface();
   std::vector<std::string> profiles;
@@ -370,8 +364,8 @@ void FakeShillServiceClient::GetLoadableProfileEntries(
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                base::Value(std::move(result_properties))));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(result_properties)));
 }
 
 void FakeShillServiceClient::GetWiFiPassphrase(

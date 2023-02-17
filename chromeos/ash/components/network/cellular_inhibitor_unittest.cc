@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -125,18 +126,19 @@ class CellularInhibitorTest : public testing::Test {
   }
 
   GetInhibitedPropertyResult GetInhibitedProperty() {
-    properties_ = {};
+    properties_.reset();
     helper_.network_device_handler()->GetDeviceProperties(
         kDefaultCellularDevicePath,
         base::BindOnce(&CellularInhibitorTest::GetPropertiesCallback,
                        base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
 
-    if (properties_.is_none())
+    if (!properties_.has_value()) {
       return GetInhibitedPropertyResult::kOperationFailed;
+    }
 
     absl::optional<bool> inhibited =
-        properties_.GetDict().FindBool(shill::kInhibitedProperty);
+        properties_->FindBool(shill::kInhibitedProperty);
     EXPECT_TRUE(inhibited.has_value());
     return inhibited.value() ? GetInhibitedPropertyResult::kTrue
                              : GetInhibitedPropertyResult::kFalse;
@@ -168,8 +170,8 @@ class CellularInhibitorTest : public testing::Test {
 
  private:
   void GetPropertiesCallback(const std::string& device_path,
-                             absl::optional<base::Value> properties) {
-    properties_ = properties ? std::move(*properties) : base::Value();
+                             absl::optional<base::Value::Dict> properties) {
+    properties_ = std::move(properties);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -178,7 +180,7 @@ class CellularInhibitorTest : public testing::Test {
   CellularInhibitor cellular_inhibitor_;
   TestObserver observer_;
 
-  base::Value properties_;
+  absl::optional<base::Value::Dict> properties_;
 };
 
 TEST_F(CellularInhibitorTest, SuccessSingleRequest) {

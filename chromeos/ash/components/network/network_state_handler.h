@@ -492,10 +492,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Parses the properties for the network service or device. Mostly calls
   // managed->PropertyChanged(key, value) for each dictionary entry.
-  // |properties| is expected to be type DICTIONARY.
-  void UpdateManagedStateProperties(ManagedState::ManagedType type,
-                                    const std::string& path,
-                                    const base::Value& properties) override;
+  void UpdateManagedStateProperties(
+      ManagedState::ManagedType type,
+      const std::string& path,
+      const base::Value::Dict& properties) override;
 
   // Called by ShillPropertyHandler when a watched service property changes.
   void UpdateNetworkServiceProperty(const std::string& service_path,
@@ -598,9 +598,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void UpdateNetworkStats();
 
   // NetworkState specific method for UpdateManagedStateProperties which
-  // notifies observers. |properties| is expected to be type DICTIONARY.
+  // notifies observers.
   void UpdateNetworkStateProperties(NetworkState* network,
-                                    const base::Value& properties);
+                                    const base::Value::Dict& properties);
 
   // Ensure a valid GUID for NetworkState.
   void UpdateGuid(NetworkState* network);

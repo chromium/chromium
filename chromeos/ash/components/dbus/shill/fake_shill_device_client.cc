@@ -84,7 +84,7 @@ void FakeShillDeviceClient::RemovePropertyChangedObserver(
 
 void FakeShillDeviceClient::GetProperties(
     const dbus::ObjectPath& device_path,
-    chromeos::DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillDeviceClient::PassStubDeviceProperties,
@@ -557,14 +557,14 @@ bool FakeShillDeviceClient::SimTryPuk(const std::string& device_path,
 
 void FakeShillDeviceClient::PassStubDeviceProperties(
     const dbus::ObjectPath& device_path,
-    chromeos::DBusMethodCallback<base::Value> callback) const {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) const {
   const base::Value::Dict* device_properties =
       stub_devices_.FindDict(device_path.value());
   if (!device_properties) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  std::move(callback).Run(base::Value(device_properties->Clone()));
+  std::move(callback).Run(device_properties->Clone());
 }
 
 // Posts a task to run a void callback with status code |status|.

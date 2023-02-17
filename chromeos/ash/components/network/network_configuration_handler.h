@@ -190,7 +190,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   // Set the Name and GUID properties correctly and Invoke |callback|.
   void GetPropertiesCallback(network_handler::ResultCallback callback,
                              const std::string& service_path,
-                             absl::optional<base::Value> properties);
+                             absl::optional<base::Value::Dict> properties);
 
   // Invoke |callback| and inform NetworkStateHandler to request an update
   // for the service after setting properties.

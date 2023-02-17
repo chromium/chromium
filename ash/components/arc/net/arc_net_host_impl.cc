@@ -1068,7 +1068,7 @@ void ArcNetHostImpl::NetworkPropertiesUpdated(
 
 void ArcNetHostImpl::ReceiveShillProperties(
     const std::string& service_path,
-    absl::optional<base::Value> shill_properties) {
+    absl::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
     NET_LOG(ERROR) << "Failed to get shill Service properties for "
                    << service_path;
@@ -1081,7 +1081,8 @@ void ArcNetHostImpl::ReceiveShillProperties(
     return;
   }
 
-  shill_network_properties_[service_path] = std::move(*shill_properties);
+  shill_network_properties_[service_path] =
+      base::Value(std::move(*shill_properties));
 
   // Get patchpanel devices and update active networks.
   ash::PatchPanelClient::Get()->GetDevices(base::BindOnce(

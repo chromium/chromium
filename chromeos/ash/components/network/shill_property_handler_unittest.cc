@@ -57,9 +57,10 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     UpdateEntries(GetTypeString(type), entries);
   }
 
-  void UpdateManagedStateProperties(ManagedState::ManagedType type,
-                                    const std::string& path,
-                                    const base::Value& properties) override {
+  void UpdateManagedStateProperties(
+      ManagedState::ManagedType type,
+      const std::string& path,
+      const base::Value::Dict& properties) override {
     VLOG(2) << "UpdateManagedStateProperties: " << GetTypeString(type);
     initial_property_updates(GetTypeString(type))[path] += 1;
   }

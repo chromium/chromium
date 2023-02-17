@@ -104,7 +104,7 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
   void GetPropertiesCallback(const std::string& guid,
                              PropertiesCallback callback,
                              const std::string& service_path,
-                             absl::optional<base::Value> dictionary,
+                             absl::optional<base::Value::Dict> dictionary,
                              absl::optional<std::string> error);
 
   // Populate ThirdPartyVPN.ProviderName with the provider name for third-party

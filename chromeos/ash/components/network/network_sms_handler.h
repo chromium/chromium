@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // Callback to handle the device properties for |device_path|.
   // A NetworkSmsDeviceHandler will be instantiated for each cellular device.
   void DevicePropertiesCallback(const std::string& device_path,
-                                absl::optional<base::Value> properties);
+                                absl::optional<base::Value::Dict> properties);
 
   // Called when the cellular device's object path changes. This means that
   // there has been an update to the device's SIM (removed or inserted) and that

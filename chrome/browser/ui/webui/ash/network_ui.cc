@@ -329,15 +329,15 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillNetworkProperties(const std::string& callback_id,
                                    const std::string& guid,
                                    const std::string& service_path,
-                                   absl::optional<base::Value> result) {
+                                   absl::optional<base::Value::Dict> result) {
     if (!result) {
       RunErrorCallback(callback_id, guid, kGetNetworkProperties, "Error.DBus");
       return;
     }
     // Set the 'service_path' property for debugging.
-    result->GetDict().Set("service_path", base::Value(service_path));
+    result->Set("service_path", service_path);
     // Set the device properties for debugging.
-    SetDeviceProperties(result->GetIfDict());
+    SetDeviceProperties(&result.value());
     base::Value::List return_arg_list;
     return_arg_list.Append(std::move(*result));
     Respond(callback_id, return_arg_list);
@@ -466,7 +466,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillDeviceProperties(const std::string& callback_id,
                                   const std::string& type,
                                   const std::string& device_path,
-                                  absl::optional<base::Value> result) {
+                                  absl::optional<base::Value::Dict> result) {
     if (!result) {
       RunErrorCallback(callback_id, type, kGetDeviceProperties,
                        "GetDeviceProperties failed");
@@ -474,7 +474,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     }
 
     // Set the 'device_path' property for debugging.
-    result->GetDict().Set("device_path", base::Value(device_path));
+    result->Set("device_path", device_path);
 
     base::Value::List return_arg_list;
     return_arg_list.Append(std::move(*result));

@@ -44,12 +44,12 @@ bool IsDeviceEnterpriseEnrolled() {
   return InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
-bool OncIsPskWiFi(const base::Value& network) {
+bool OncIsPskWiFi(const base::Value::Dict& network) {
   return rollback_network_config::OncIsWiFi(network) &&
          rollback_network_config::OncWiFiIsPsk(network);
 }
 
-bool ShouldSaveNetwork(const base::Value& network) {
+bool ShouldSaveNetwork(const base::Value::Dict& network) {
   return (rollback_network_config::OncIsSourceDevicePolicy(network) ||
           rollback_network_config::OncIsSourceDevice(network)) &&
          (rollback_network_config::OncHasNoSecurity(network) ||
@@ -78,7 +78,7 @@ void ManagedOncConfigureActivePartAsDeviceWide(
   rollback_network_config::ManagedOncCollapseToActive(&network);
 
   const std::string& guid = rollback_network_config::GetStringValue(
-      network, onc::network_config::kGUID);
+      network.GetDict(), onc::network_config::kGUID);
   const NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
 
@@ -182,7 +182,7 @@ class RollbackNetworkConfig::Exporter {
  private:
   void OnGetManagedNetworkConfig(base::OnceClosure network_finished,
                                  const std::string& service_path,
-                                 absl::optional<base::Value> properties,
+                                 absl::optional<base::Value::Dict> properties,
                                  absl::optional<std::string> error);
 
   void AddPskPassword(base::ScopedClosureRunner exit_call,
@@ -199,7 +199,7 @@ class RollbackNetworkConfig::Exporter {
   void SendNetworkConfigs(ExportCallback callback);
   std::string SerializeNetworkConfigs() const;
 
-  std::vector<base::Value> network_configs_;
+  std::vector<base::Value::Dict> network_configs_;
   ExportCallback callback_;
 
   base::WeakPtrFactory<Exporter> weak_factory_{this};
@@ -228,7 +228,7 @@ void RollbackNetworkConfig::Exporter::Export(ExportCallback callback) {
 void RollbackNetworkConfig::Exporter::OnGetManagedNetworkConfig(
     base::OnceClosure network_finished,
     const std::string& service_path,
-    absl::optional<base::Value> managed_network,
+    absl::optional<base::Value::Dict> managed_network,
     absl::optional<std::string> error) {
   base::ScopedClosureRunner exit_call(std::move(network_finished));
 
@@ -238,24 +238,24 @@ void RollbackNetworkConfig::Exporter::OnGetManagedNetworkConfig(
     return;
   }
 
-  base::Value active_network = managed_network->Clone();
+  base::Value active_network = base::Value(managed_network->Clone());
   rollback_network_config::ManagedOncCollapseToActive(&active_network);
 
-  if (!ShouldSaveNetwork(active_network)) {
+  if (!ShouldSaveNetwork(active_network.GetDict())) {
     return;
   }
 
   network_configs_.push_back(std::move(*managed_network));
   int network_idx = network_configs_.size() - 1;
 
-  if (OncIsPskWiFi(active_network)) {
+  if (OncIsPskWiFi(active_network.GetDict())) {
     GetPskPassword(
         base::BindOnce(&RollbackNetworkConfig::Exporter::AddPskPassword,
                        weak_factory_.GetWeakPtr(), std::move(exit_call),
                        network_idx),
         service_path);
   } else if (rollback_network_config::OncIsEapWithoutClientCertificate(
-                 active_network)) {
+                 active_network.GetDict())) {
     GetEapPassword(
         base::BindOnce(&RollbackNetworkConfig::Exporter::AddEapPassword,
                        weak_factory_.GetWeakPtr(), std::move(exit_call),
@@ -274,7 +274,7 @@ void RollbackNetworkConfig::Exporter::AddPskPassword(
     LOG(ERROR) << error_name << " " << error_message;
     return;
   }
-  base::Value* network = &network_configs_[network_idx];
+  base::Value::Dict* network = &network_configs_[network_idx];
   rollback_network_config::ManagedOncWiFiSetPskPassword(network, *password);
 }
 
@@ -288,7 +288,7 @@ void RollbackNetworkConfig::Exporter::AddEapPassword(
     LOG(ERROR) << error_name << " " << error_message;
     return;
   }
-  base::Value* network = &network_configs_[network_idx];
+  base::Value::Dict* network = &network_configs_[network_idx];
   rollback_network_config::ManagedOncSetEapPassword(network, *password);
 }
 
@@ -417,12 +417,12 @@ void RollbackNetworkConfig::Importer::PoliciesApplied(
     const std::string& userhash) {
   for (const base::Value& network_config : imported_networks_) {
     const std::string& guid = rollback_network_config::GetStringValue(
-        network_config, onc::network_config::kGUID);
+        network_config.GetDict(), onc::network_config::kGUID);
     const NetworkState* network_state =
         network_state_handler()->GetNetworkStateFromGuid(guid);
 
-    if (network_state &&
-        rollback_network_config::OncIsSourceDevicePolicy(network_config)) {
+    if (network_state && rollback_network_config::OncIsSourceDevicePolicy(
+                             network_config.GetDict())) {
       if (network_state->IsManagedByPolicy()) {
         ReconfigureUiData(network_config, guid);
       } else {  // Policy did not reconfigure the network, delete it.
@@ -437,9 +437,10 @@ void RollbackNetworkConfig::Importer::PoliciesApplied(
 void RollbackNetworkConfig::Importer::DeleteImportedPolicyNetworks() {
   for (const base::Value& network_config : imported_networks_) {
     const std::string& guid = rollback_network_config::GetStringValue(
-        network_config, onc::network_config::kGUID);
+        network_config.GetDict(), onc::network_config::kGUID);
 
-    if (rollback_network_config::OncIsSourceDevicePolicy(network_config)) {
+    if (rollback_network_config::OncIsSourceDevicePolicy(
+            network_config.GetDict())) {
       const NetworkState* network_state =
           network_state_handler()->GetNetworkStateFromGuid(guid);
 

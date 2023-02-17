@@ -20,10 +20,6 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "url/gurl.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace ash {
 
 class DeviceState;
@@ -79,7 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // If you change this method, update GetProperties too.
   bool PropertyChanged(const std::string& key,
                        const base::Value& value) override;
-  bool InitialPropertiesReceived(const base::Value& properties) override;
+  bool InitialPropertiesReceived(const base::Value::Dict& properties) override;
   void GetStateProperties(base::Value* dictionary) const override;
   bool IsActive() const override;
 
@@ -307,14 +303,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   friend class NetworkStateHandler;
   friend class NetworkStateTest;
 
-  // Updates |name_| from the 'WiFi.HexSSID' entry in |properties|, which must
-  // be of type DICTIONARY, if the key exists, and validates |name_|. Returns
-  // true if |name_| changes.
-  bool UpdateName(const base::Value& properties);
+  // Updates |name_| from the 'WiFi.HexSSID' entry in |properties|, if the key
+  // exists, and validates |name_|. Returns true if |name_| changes.
+  bool UpdateName(const base::Value::Dict& properties);
 
   // Uses the Shill connection state and PortalDetectionFailedStatus to generate
   // |shill_portal_state_|.
-  void UpdateCaptivePortalState(const base::Value& properties);
+  void UpdateCaptivePortalState(const base::Value::Dict& properties);
 
   void SetVpnProvider(const std::string& id, const std::string& type);
 

@@ -52,14 +52,14 @@ class ShillManagerClientImpl : public ShillManagerClient {
       chromeos::DBusMethodCallback<base::Value::Dict> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetPropertiesFunction);
-    helper_->CallValueDictMethod(&method_call, std::move(callback));
+    helper_->CallDictValueMethod(&method_call, std::move(callback));
   }
 
   void GetNetworksForGeolocation(
       chromeos::DBusMethodCallback<base::Value::Dict> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetNetworksForGeolocation);
-    helper_->CallValueDictMethod(&method_call, std::move(callback));
+    helper_->CallDictValueMethod(&method_call, std::move(callback));
   }
 
   void SetProperty(const std::string& name,

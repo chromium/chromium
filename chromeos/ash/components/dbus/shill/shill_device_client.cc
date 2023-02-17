@@ -63,10 +63,11 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
 
   void GetProperties(
       const dbus::ObjectPath& device_path,
-      chromeos::DBusMethodCallback<base::Value> callback) override {
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamDeviceInterface,
                                  shill::kGetPropertiesFunction);
-    GetHelper(device_path)->CallValueMethod(&method_call, std::move(callback));
+    GetHelper(device_path)
+        ->CallDictValueMethod(&method_call, std::move(callback));
   }
 
   void SetProperty(const dbus::ObjectPath& device_path,

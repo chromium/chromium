@@ -135,12 +135,13 @@ TEST_F(ShillDeviceClientTest, GetProperties) {
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call GetProperties.
-  base::test::TestFuture<absl::optional<base::Value>> properties_result_future;
+  base::test::TestFuture<absl::optional<base::Value::Dict>>
+      properties_result_future;
   client_->GetProperties(dbus::ObjectPath(kExampleDevicePath),
                          properties_result_future.GetCallback());
-  absl::optional<base::Value> result = properties_result_future.Take();
+  absl::optional<base::Value::Dict> result = properties_result_future.Take();
   EXPECT_TRUE(result.has_value());
-  const base::Value::Dict& result_value = result.value().GetDict();
+  const base::Value::Dict& result_value = result.value();
   EXPECT_EQ(expected_value, result_value);
 }
 

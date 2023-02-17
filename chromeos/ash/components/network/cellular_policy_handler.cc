@@ -227,7 +227,7 @@ void CellularPolicyHandler::SetupESim(const dbus::ObjectPath& euicc_path) {
   // require confirmation code.
   cellular_esim_installer_->InstallProfileFromActivationCode(
       GetCurrentSmdpAddress(), /*confirmation_code=*/std::string(), euicc_path,
-      base::Value(std::move(new_shill_properties)),
+      std::move(new_shill_properties),
       base::BindOnce(
           &CellularPolicyHandler::OnESimProfileInstallAttemptComplete,
           weak_ptr_factory_.GetWeakPtr()),

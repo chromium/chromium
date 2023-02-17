@@ -436,7 +436,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetwork) {
   // Execute the GetManagedProperties callback, expect that the migration
   // service marks the network as migrated.
   std::move(get_managed_properties_callback)
-      .Run(cellular_service_path_1, base::Value(), /*error=*/absl::nullopt);
+      .Run(cellular_service_path_1, base::Value::Dict(),
+           /*error=*/absl::nullopt);
 }
 
 }  // namespace ash

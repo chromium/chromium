@@ -213,8 +213,9 @@ void ShillDataCollector::OnGetManagerProperties(
   CheckIfDone();
 }
 
-void ShillDataCollector::OnGetDevice(const std::string& device_path,
-                                     absl::optional<base::Value> properties) {
+void ShillDataCollector::OnGetDevice(
+    const std::string& device_path,
+    absl::optional<base::Value::Dict> properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!properties) {
     collector_err_["Device"].emplace_back(device_path);
@@ -227,13 +228,13 @@ void ShillDataCollector::OnGetDevice(const std::string& device_path,
 
 void ShillDataCollector::AddDeviceAndRequestIPConfigs(
     const std::string& device_path,
-    const base::Value& properties) {
+    const base::Value::Dict& properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   shill_log_.FindDict(kNetworkDevices)
-      ->Set(device_path, ExpandProperties(device_path, properties.GetDict()));
+      ->Set(device_path, ExpandProperties(device_path, properties));
 
   const base::Value::List* ip_configs =
-      properties.GetIfDict()->FindList(shill::kIPConfigsProperty);
+      properties.FindList(shill::kIPConfigsProperty);
   if (!ip_configs)
     return;
 
@@ -280,15 +281,15 @@ void ShillDataCollector::AddIPConfig(const std::string& device_path,
   ip_configs->Set(ip_config_path, ExpandProperties(ip_config_path, properties));
 }
 
-void ShillDataCollector::OnGetService(const std::string& service_path,
-                                      absl::optional<base::Value> properties) {
+void ShillDataCollector::OnGetService(
+    const std::string& service_path,
+    absl::optional<base::Value::Dict> properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!properties) {
     collector_err_["Service"].emplace_back(service_path);
   } else {
     shill_log_.FindDict(kNetworkServices)
-        ->Set(service_path,
-              ExpandProperties(service_path, properties->GetDict()));
+        ->Set(service_path, ExpandProperties(service_path, properties.value()));
   }
   --num_entries_left_;
   CheckIfDone();

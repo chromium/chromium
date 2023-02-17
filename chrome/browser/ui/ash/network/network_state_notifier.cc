@@ -56,9 +56,10 @@ bool IsConfigurationError(const std::string& shill_error) {
          shill_error == shill::kErrorBadWEPKey;
 }
 
-std::string GetStringFromDictionary(const absl::optional<base::Value>& dict,
-                                    const std::string& key) {
-  const std::string* v = dict ? dict->GetDict().FindString(key) : nullptr;
+std::string GetStringFromDictionary(
+    const absl::optional<base::Value::Dict>& dict,
+    const std::string& key) {
+  const std::string* v = dict ? dict->FindString(key) : nullptr;
   return v ? *v : std::string();
 }
 
@@ -450,7 +451,7 @@ void NetworkStateNotifier::RemoveConnectNotification() {
 void NetworkStateNotifier::OnConnectErrorGetProperties(
     const std::string& error_name,
     const std::string& service_path,
-    absl::optional<base::Value> shill_properties) {
+    absl::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
     ShowConnectErrorNotification(error_name, service_path,
                                  std::move(shill_properties));
@@ -473,7 +474,7 @@ void NetworkStateNotifier::OnConnectErrorGetProperties(
 void NetworkStateNotifier::ShowConnectErrorNotification(
     const std::string& error_name,
     const std::string& service_path,
-    absl::optional<base::Value> shill_properties) {
+    absl::optional<base::Value::Dict> shill_properties) {
   std::u16string error = GetConnectErrorString(error_name);
   NET_LOG(DEBUG) << "Notify: " << NetworkPathId(service_path)
                  << ": Connect error: " << error_name << ": "

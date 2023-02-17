@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     virtual void SetErrorForNextSetPropertiesAttempt(
         const std::string& error_name) = 0;
 
-    // Sets a state property to set affer a call to RequestPortalDetection.
+    // Sets a state property to set after a call to RequestPortalDetection.
     virtual void SetRequestPortalState(const std::string& state) = 0;
 
     // If |hold_back| is set to true, stops sending service property updates to
@@ -134,7 +134,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
         base::RepeatingCallback<base::Time()>) = 0;
 
    protected:
-    virtual ~TestInterface() {}
+    virtual ~TestInterface() = default;
   };
 
   // Creates and initializes the global instance. |bus| must not be null.
@@ -163,11 +163,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
       ShillPropertyChangedObserver* observer) = 0;
 
   // Calls the GetProperties DBus method and invokes |callback| when complete.
-  // |callback| receives a dictionary Value containing the Service properties on
+  // |callback| receives a dictionary containing the Service properties on
   // success or nullopt on failure.
   virtual void GetProperties(
       const dbus::ObjectPath& service_path,
-      chromeos::DBusMethodCallback<base::Value> callback) = 0;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call succeeds.
@@ -226,7 +226,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   // |callback| is called after the method call succeeds.
   virtual void GetLoadableProfileEntries(
       const dbus::ObjectPath& service_path,
-      chromeos::DBusMethodCallback<base::Value> callback) = 0;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) = 0;
 
   // Retrieves the saved WiFi passphrase for the given network.
   virtual void GetWiFiPassphrase(const dbus::ObjectPath& service_path,

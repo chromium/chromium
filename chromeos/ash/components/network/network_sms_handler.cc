@@ -333,14 +333,13 @@ void NetworkSmsHandler::UpdateDevices(const base::Value::List& devices) {
 
 void NetworkSmsHandler::DevicePropertiesCallback(
     const std::string& device_path,
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "NetworkSmsHandler error for: " << device_path;
     return;
   }
 
-  const std::string* device_type =
-      properties->FindStringKey(shill::kTypeProperty);
+  const std::string* device_type = properties->FindString(shill::kTypeProperty);
   if (!device_type) {
     NET_LOG(ERROR) << "NetworkSmsHandler: No type for: " << device_path;
     return;
@@ -349,7 +348,7 @@ void NetworkSmsHandler::DevicePropertiesCallback(
     return;
 
   const std::string* service_name =
-      properties->FindStringKey(shill::kDBusServiceProperty);
+      properties->FindString(shill::kDBusServiceProperty);
   if (!service_name) {
     NET_LOG(ERROR) << "Device has no DBusService Property: " << device_path;
     return;
@@ -359,7 +358,7 @@ void NetworkSmsHandler::DevicePropertiesCallback(
     return;
 
   const std::string* object_path_string =
-      properties->FindStringKey(shill::kDBusObjectProperty);
+      properties->FindString(shill::kDBusObjectProperty);
   if (!object_path_string || object_path_string->empty()) {
     NET_LOG(ERROR) << "Device has no or empty DBusObject Property: "
                    << device_path;

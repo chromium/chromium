@@ -251,10 +251,11 @@ bool NetworkState::PropertyChanged(const std::string& key,
   return false;
 }
 
-bool NetworkState::InitialPropertiesReceived(const base::Value& properties) {
+bool NetworkState::InitialPropertiesReceived(
+    const base::Value::Dict& properties) {
   NET_LOG(EVENT) << "InitialPropertiesReceived: " << NetworkId(this)
                  << " State: " << connection_state_ << " Visible: " << visible_;
-  if (!properties.GetDict().contains(shill::kTypeProperty)) {
+  if (!properties.contains(shill::kTypeProperty)) {
     NET_LOG(ERROR) << "NetworkState has no type: " << NetworkId(this);
     return false;
   }
@@ -656,7 +657,7 @@ std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
 
 // Private methods.
 
-bool NetworkState::UpdateName(const base::Value& properties) {
+bool NetworkState::UpdateName(const base::Value::Dict& properties) {
   std::string updated_name =
       shill_property_util::GetNameFromProperties(path(), properties);
   if (updated_name != name()) {
@@ -666,7 +667,8 @@ bool NetworkState::UpdateName(const base::Value& properties) {
   return false;
 }
 
-void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
+void NetworkState::UpdateCaptivePortalState(
+    const base::Value::Dict& properties) {
   if (!IsConnectedState()) {
     // Unconnected networks are in an unknown portal state and should not
     // update histograms.
@@ -675,7 +677,7 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
   }
 
   int status_code =
-      properties.FindIntKey(shill::kPortalDetectionFailedStatusCodeProperty)
+      properties.FindInt(shill::kPortalDetectionFailedStatusCodeProperty)
           .value_or(0);
   if (connection_state_ == shill::kStateNoConnectivity) {
     shill_portal_state_ = PortalState::kNoInternet;

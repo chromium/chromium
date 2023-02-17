@@ -1433,7 +1433,7 @@ void NetworkStateHandler::ProfileListChanged(const base::Value& profile_list) {
 void NetworkStateHandler::UpdateManagedStateProperties(
     ManagedState::ManagedType type,
     const std::string& path,
-    const base::Value& properties) {
+    const base::Value::Dict& properties) {
   ManagedStateList* managed_list = GetManagedList(type);
   ManagedState* managed = GetModifiableManagedState(managed_list, path);
   if (!managed) {
@@ -1450,8 +1450,9 @@ void NetworkStateHandler::UpdateManagedStateProperties(
     UpdateNetworkStateProperties(managed->AsNetworkState(), properties);
   } else {
     // Device
-    for (const auto iter : properties.DictItems())
+    for (const auto iter : properties) {
       managed->PropertyChanged(iter.first, iter.second);
+    }
     managed->InitialPropertiesReceived(properties);
   }
   managed->set_update_requested(false);
@@ -1459,13 +1460,13 @@ void NetworkStateHandler::UpdateManagedStateProperties(
 
 void NetworkStateHandler::UpdateNetworkStateProperties(
     NetworkState* network,
-    const base::Value& properties) {
+    const base::Value::Dict& properties) {
   DCHECK(network);
   bool network_property_updated = false;
   std::string prev_connection_state = network->connection_state();
   bool metered = false;
   bool had_icccid_before_update = !network->iccid().empty();
-  for (const auto iter : properties.DictItems()) {
+  for (const auto iter : properties) {
     if (network->PropertyChanged(iter.first, iter.second))
       network_property_updated = true;
     if (iter.first == shill::kMeteredProperty)

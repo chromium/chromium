@@ -139,12 +139,13 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
                      weak_factory_.GetWeakPtr(), network.iccid()));
 }
 
-void ApnMigrator::OnGetManagedProperties(std::string iccid,
-                                         const std::string& service_path,
-                                         absl::optional<base::Value> properties,
-                                         absl::optional<std::string> error) {
+void ApnMigrator::OnGetManagedProperties(
+    std::string iccid,
+    const std::string& service_path,
+    absl::optional<base::Value::Dict> properties,
+    absl::optional<std::string> error) {
   // TODO(b/162365553): Implement this case: Network with custom APNs needs to
-  // be migrated
+  // be migrated.
   managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
   iccids_in_migration_.erase(iccid);
 }

@@ -800,12 +800,12 @@ void NetworkingPrivateChromeOS::GetPropertiesCallback(
     const std::string& guid,
     PropertiesCallback callback,
     const std::string& service_path,
-    absl::optional<base::Value> dictionary,
+    absl::optional<base::Value::Dict> dictionary,
     absl::optional<std::string> error) {
   if (dictionary) {
-    AppendThirdPartyProviderName(&dictionary->GetDict());
+    AppendThirdPartyProviderName(&dictionary.value());
   }
-  std::move(callback).Run(std::move(dictionary->GetDict()), std::move(error));
+  std::move(callback).Run(std::move(dictionary), std::move(error));
 }
 
 void NetworkingPrivateChromeOS::AppendThirdPartyProviderName(

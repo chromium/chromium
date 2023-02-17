@@ -133,13 +133,13 @@ class CrosNetworkConfig
   void OnGetManagedProperties(GetManagedPropertiesCallback callback,
                               std::string guid,
                               const std::string& service_path,
-                              absl::optional<base::Value> properties,
+                              absl::optional<base::Value::Dict> properties,
                               absl::optional<std::string> error);
   void OnGetManagedPropertiesEap(
       GetManagedPropertiesCallback callback,
       chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties,
       const std::string& service_path,
-      absl::optional<base::Value> properties,
+      absl::optional<base::Value::Dict> properties,
       absl::optional<std::string> error);
   void SetPropertiesInternal(const std::string& guid,
                              const NetworkState& network,

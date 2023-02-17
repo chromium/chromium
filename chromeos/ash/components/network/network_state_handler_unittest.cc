@@ -455,8 +455,8 @@ class NetworkStateHandlerTest : public testing::Test {
                              base::Value(network->type()));
     properties_to_set.SetKey(shill::kWifiHexSsid,
                              base::Value(network->GetHexSsid()));
-    network_state_handler_->UpdateNetworkStateProperties(network,
-                                                         properties_to_set);
+    network_state_handler_->UpdateNetworkStateProperties(
+        network, properties_to_set.GetDict());
   }
 
   void GetTetherNetworkList(int limit,

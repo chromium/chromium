@@ -228,7 +228,7 @@ bool SyncedNetworkMetricsLogger::IsEligible(const NetworkState* network) {
 void SyncedNetworkMetricsLogger::OnConnectErrorGetProperties(
     const std::string& error_name,
     const std::string& service_path,
-    absl::optional<base::Value> shill_properties) {
+    absl::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
     base::UmaHistogramBoolean(kConnectionResultManualHistogram, false);
     base::UmaHistogramEnumeration(kConnectionFailureReasonManualHistogram,
@@ -236,7 +236,7 @@ void SyncedNetworkMetricsLogger::OnConnectErrorGetProperties(
     return;
   }
   const std::string* state =
-      shill_properties->FindStringKey(shill::kStateProperty);
+      shill_properties->FindString(shill::kStateProperty);
   if (state && (NetworkState::StateIsConnected(*state) ||
                 NetworkState::StateIsConnecting(*state))) {
     // If network is no longer in an error state, don't record it.
@@ -244,10 +244,9 @@ void SyncedNetworkMetricsLogger::OnConnectErrorGetProperties(
   }
 
   const std::string* shill_error =
-      shill_properties->FindStringKey(shill::kErrorProperty);
+      shill_properties->FindString(shill::kErrorProperty);
   if (!shill_error || !NetworkState::ErrorIsValid(*shill_error)) {
-    shill_error =
-        shill_properties->FindStringKey(shill::kPreviousErrorProperty);
+    shill_error = shill_properties->FindString(shill::kPreviousErrorProperty);
     if (!shill_error || !NetworkState::ErrorIsValid(*shill_error))
       shill_error = &error_name;
   }

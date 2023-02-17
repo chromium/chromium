@@ -67,11 +67,6 @@ std::string GetStringFromDictionary(const base::Value::Dict& dict,
   return v ? *v : std::string();
 }
 
-std::string GetStringFromDictionary(const base::Value* dict, const char* key) {
-  DCHECK(dict->is_dict());
-  return GetStringFromDictionary(dict->GetDict(), key);
-}
-
 }  // namespace
 
 void SetSSID(const std::string& ssid, base::Value::Dict* properties) {
@@ -159,15 +154,15 @@ std::string GetNetworkIdFromProperties(const base::Value::Dict& properties) {
 }
 
 std::string GetNameFromProperties(const std::string& service_path,
-                                  const base::Value& properties) {
-  std::string name = GetStringFromDictionary(&properties, shill::kNameProperty);
+                                  const base::Value::Dict& properties) {
+  std::string name = GetStringFromDictionary(properties, shill::kNameProperty);
   std::string validated_name = ValidateUTF8(name);
   if (validated_name != name) {
     NET_LOG(DEBUG) << "GetNameFromProperties: " << service_path
                    << " Validated name=" << validated_name << " name=" << name;
   }
 
-  std::string type = GetStringFromDictionary(&properties, shill::kTypeProperty);
+  std::string type = GetStringFromDictionary(properties, shill::kTypeProperty);
   if (type.empty()) {
     NET_LOG(ERROR) << "GetNameFromProperties: " << service_path << " No type.";
     return validated_name;
@@ -177,7 +172,7 @@ std::string GetNameFromProperties(const std::string& service_path,
 
   bool unknown_ssid_encoding = false;
   std::string ssid = GetSSIDFromProperties(
-      properties.GetDict(), true /* verbose_logging */, &unknown_ssid_encoding);
+      properties, true /* verbose_logging */, &unknown_ssid_encoding);
   if (ssid.empty()) {
     NET_LOG(ERROR) << "GetNameFromProperties: " << service_path
                    << " No SSID set";

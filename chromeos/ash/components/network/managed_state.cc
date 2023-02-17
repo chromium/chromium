@@ -73,7 +73,8 @@ const DeviceState* ManagedState::AsDeviceState() const {
   return nullptr;
 }
 
-bool ManagedState::InitialPropertiesReceived(const base::Value& properties) {
+bool ManagedState::InitialPropertiesReceived(
+    const base::Value::Dict& properties) {
   return false;
 }
 

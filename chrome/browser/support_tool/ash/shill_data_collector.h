@@ -76,10 +76,10 @@ class ShillDataCollector : public DataCollector {
   void OnGetManagerProperties(absl::optional<base::Value::Dict> result);
 
   void OnGetDevice(const std::string& device_path,
-                   absl::optional<base::Value> properties);
+                   absl::optional<base::Value::Dict> properties);
 
   void AddDeviceAndRequestIPConfigs(const std::string& device_path,
-                                    const base::Value& properties);
+                                    const base::Value::Dict& properties);
 
   void OnGetIPConfig(const std::string& device_path,
                      const std::string& ip_config_path,
@@ -90,7 +90,7 @@ class ShillDataCollector : public DataCollector {
                    const base::Value::Dict& properties);
 
   void OnGetService(const std::string& service_path,
-                    absl::optional<base::Value> properties);
+                    absl::optional<base::Value::Dict> properties);
 
   // Expands UIData from JSON into a dictionary if present. Also detects PII
   // such as the device and service names.

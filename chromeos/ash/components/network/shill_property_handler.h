@@ -50,11 +50,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
                                    const base::Value& entries) = 0;
 
     // Called when the properties for a managed state have changed.
-    // |properties| is expected to be of type DICTIONARY.
     virtual void UpdateManagedStateProperties(
         ManagedState::ManagedType type,
         const std::string& path,
-        const base::Value& properties) = 0;
+        const base::Value::Dict& properties) = 0;
 
     // Called when the list of profiles changes.
     virtual void ProfileListChanged(const base::Value& profile_list) = 0;
@@ -226,7 +225,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   // Called when Shill returns the properties for a service or device.
   void GetPropertiesCallback(ManagedState::ManagedType type,
                              const std::string& path,
-                             absl::optional<base::Value> properties);
+                             absl::optional<base::Value::Dict> properties);
 
   // Callback invoked when a watched property changes. Calls appropriate
   // handlers and signals observers.

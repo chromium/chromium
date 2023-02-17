@@ -80,7 +80,7 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
     case client_cert::ConfigType::kNone:
       return true;
     case client_cert::ConfigType::kOpenVpn:
-      // We don't know whether a pasphrase or certificates are required, so
+      // We don't know whether a passphrase or certificates are required, so
       // always return true here (otherwise we will never attempt to connect).
       // TODO(stevenjb/cernekee): Fix this?
       return true;
@@ -220,11 +220,7 @@ NetworkConnectionHandlerImpl::ConnectRequest::~ConnectRequest() = default;
 NetworkConnectionHandlerImpl::ConnectRequest::ConnectRequest(ConnectRequest&&) =
     default;
 
-NetworkConnectionHandlerImpl::NetworkConnectionHandlerImpl()
-    : network_cert_loader_(nullptr),
-      network_state_handler_(nullptr),
-      configuration_handler_(nullptr),
-      certificates_loaded_(false) {}
+NetworkConnectionHandlerImpl::NetworkConnectionHandlerImpl() = default;
 
 NetworkConnectionHandlerImpl::~NetworkConnectionHandlerImpl() {
   if (network_cert_loader_)
@@ -616,7 +612,7 @@ void NetworkConnectionHandlerImpl::OnConnectTimeout(ConnectRequest* request) {
 void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     bool check_error_state,
     const std::string& service_path,
-    absl::optional<base::Value> properties) {
+    absl::optional<base::Value::Dict> properties) {
   if (!properties) {
     HandleConfigurationFailure(
         service_path, "GetShillProperties failed",
@@ -629,17 +625,14 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   // If 'passphrase_required' is still true, then the 'Passphrase' property
   // has not been set to a minimum length value.
-  DCHECK(properties->is_dict());
-  const base::Value::Dict& properties_dict = properties->GetDict();
   bool passphrase_required =
-      properties_dict.FindBool(shill::kPassphraseRequiredProperty)
-          .value_or(false);
+      properties->FindBool(shill::kPassphraseRequiredProperty).value_or(false);
   if (passphrase_required) {
     ErrorCallbackForPendingRequest(service_path, kErrorPassphraseRequired);
     return;
   }
 
-  const std::string* type = properties_dict.FindString(shill::kTypeProperty);
+  const std::string* type = properties->FindString(shill::kTypeProperty);
   if (!type) {
     HandleConfigurationFailure(
         service_path, "Properties with no type",
@@ -647,7 +640,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     return;
   }
   bool connectable =
-      properties_dict.FindBool(shill::kConnectableProperty).value_or(false);
+      properties->FindBool(shill::kConnectableProperty).value_or(false);
 
   // In case NetworkState was not available in ConnectToNetwork (e.g. it had
   // been recently configured), we need to check Connectable again.
@@ -660,7 +653,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   // Get VPN provider type and host (required for configuration) and ensure
   // that required VPN non-cert properties are set.
   const base::Value::Dict* provider_properties =
-      properties_dict.FindDict(shill::kProviderProperty);
+      properties->FindDict(shill::kProviderProperty);
   std::string vpn_provider_type, vpn_provider_host, vpn_client_cert_id;
   if (*type == shill::kTypeVPN) {
     // VPN Provider values are read from the "Provider" dictionary, not the
@@ -681,9 +674,8 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     }
   }
 
-  const std::string* guid = properties_dict.FindString(shill::kGuidProperty);
-  const std::string* profile =
-      properties_dict.FindString(shill::kProfileProperty);
+  const std::string* guid = properties->FindString(shill::kGuidProperty);
+  const std::string* profile = properties->FindString(shill::kProfileProperty);
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
   const base::Value* policy = nullptr;
   if (guid && profile) {
@@ -696,8 +688,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   if (*type == shill::kTypeWifi &&
       onc_source != ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY &&
       onc_source != ::onc::ONCSource::ONC_SOURCE_USER_POLICY) {
-    const std::string* hex_ssid =
-        properties_dict.FindString(shill::kWifiHexSsid);
+    const std::string* hex_ssid = properties->FindString(shill::kWifiHexSsid);
     if (!hex_ssid) {
       ErrorCallbackForPendingRequest(service_path, kErrorHexSsidRequired);
       return;
@@ -733,14 +724,14 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
       }
     } else if (vpn_provider_type == shill::kProviderIKEv2) {
       const std::string* auth_type =
-          properties_dict.FindString(shill::kIKEv2AuthenticationTypeProperty);
+          properties->FindString(shill::kIKEv2AuthenticationTypeProperty);
       if (auth_type && *auth_type == shill::kIKEv2AuthenticationTypeCert) {
         client_cert_type = client_cert::ConfigType::kIkev2;
       }
     }
   } else if (*type == shill::kTypeWifi) {
     const std::string* security_class =
-        properties_dict.FindString(shill::kSecurityClassProperty);
+        properties->FindString(shill::kSecurityClassProperty);
     if (security_class && *security_class == shill::kSecurityClass8021x)
       client_cert_type = client_cert::ConfigType::kEap;
   }
@@ -779,7 +770,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
         return;
       }
     } else if (check_error_state &&
-               !IsCertificateConfigured(client_cert_type, properties_dict)) {
+               !IsCertificateConfigured(client_cert_type, properties.value())) {
       // Network may not be configured.
       NET_LOG(ERROR) << "Certificate not configured for: "
                      << NetworkPathId(service_path);

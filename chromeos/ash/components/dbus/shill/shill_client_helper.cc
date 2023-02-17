@@ -154,7 +154,7 @@ void OnValueMethod(ShillClientHelper::RefHolder* ref_holder,
 }
 
 // Handles responses for methods with base::Value::Dict results.
-void OnValueDictMethod(ShillClientHelper::RefHolder* ref_holder,
+void OnDictValueMethod(ShillClientHelper::RefHolder* ref_holder,
                        chromeos::DBusMethodCallback<base::Value::Dict> callback,
                        dbus::Response* response,
                        dbus::ErrorResponse* error_response) {
@@ -186,23 +186,6 @@ void OnVoidMethodWithErrorCallback(ShillClientHelper::RefHolder* ref_holder,
                                    base::OnceClosure callback,
                                    dbus::Response* response) {
   std::move(callback).Run();
-}
-
-// Handles responses for methods with base::Value results.
-// Used by CallValueMethodWithErrorCallback().
-void OnValueMethodWithErrorCallback(
-    ShillClientHelper::RefHolder* ref_holder,
-    base::OnceCallback<void(base::Value result)> callback,
-    ShillClientHelper::ErrorCallback error_callback,
-    dbus::Response* response) {
-  dbus::MessageReader reader(response);
-  base::Value value(dbus::PopDataAsValue(&reader));
-  if (!value.is_dict()) {
-    std::move(error_callback)
-        .Run(kInvalidResponseErrorName, kInvalidResponseErrorMessage);
-    return;
-  }
-  std::move(callback).Run(std::move(value));
 }
 
 // Handles responses for methods with base::Value::Dict results.
@@ -349,13 +332,13 @@ void ShillClientHelper::CallValueMethod(
                      std::move(callback)));
 }
 
-void ShillClientHelper::CallValueDictMethod(
+void ShillClientHelper::CallDictValueMethod(
     dbus::MethodCall* method_call,
     chromeos::DBusMethodCallback<base::Value::Dict> callback) {
   DCHECK(!callback.is_null());
   proxy_->CallMethodWithErrorResponse(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&OnValueDictMethod,
+      base::BindOnce(&OnDictValueMethod,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
                      std::move(callback)));
 }
@@ -399,21 +382,6 @@ void ShillClientHelper::CallStringMethodWithErrorCallback(
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnStringMethodWithErrorCallback,
-                     base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), std::move(split_callback.first)),
-      base::BindOnce(&OnError, std::move(split_callback.second)));
-}
-
-void ShillClientHelper::CallValueMethodWithErrorCallback(
-    dbus::MethodCall* method_call,
-    base::OnceCallback<void(base::Value result)> callback,
-    ErrorCallback error_callback) {
-  DCHECK(!callback.is_null());
-  DCHECK(!error_callback.is_null());
-  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
-  proxy_->CallMethodWithErrorCallback(
-      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&OnValueMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
                      std::move(callback), std::move(split_callback.first)),
       base::BindOnce(&OnError, std::move(split_callback.second)));

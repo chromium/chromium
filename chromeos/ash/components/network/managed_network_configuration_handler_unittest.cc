@@ -1229,13 +1229,14 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
       base::Value(base::Value::Type::DICT));  // no device global config
 
   base::RunLoop get_properties_run_loop;
-  base::Value dictionary;
+  absl::optional<base::Value::Dict> dictionary;
   managed_handler()->GetManagedProperties(
       kUser1, wifi2_service_path,
       base::BindOnce(
-          [](base::Value* dictionary_out, base::RepeatingClosure quit_closure,
+          [](absl::optional<base::Value::Dict>* dictionary_out,
+             base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             absl::optional<base::Value> dictionary,
+             absl::optional<base::Value::Dict> dictionary,
              absl::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = std::move(*dictionary);
@@ -1248,12 +1249,12 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
 
   get_properties_run_loop.Run();
 
-  ASSERT_TRUE(!dictionary.is_none());
+  ASSERT_TRUE(dictionary.has_value());
   base::Value expected_managed_onc = test_utils::ReadTestDictionaryValue(
       "policy/"
       "managed_onc_disallow_autoconnect_on_unmanaged_wifi2.onc");
   EXPECT_TRUE(
-      PropertiesMatch(expected_managed_onc.GetDict(), dictionary.GetDict()));
+      PropertiesMatch(expected_managed_onc.GetDict(), dictionary.value()));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, LateProfileLoading) {
@@ -1534,17 +1535,18 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
       base::Value(base::Value::Type::LIST),   // no device network policy
       base::Value(base::Value::Type::DICT));  // no device global config
 
-  base::Value dictionary_before_pref;
-  base::Value dictionary_after_pref;
+  absl::optional<base::Value::Dict> dictionary_before_pref;
+  absl::optional<base::Value::Dict> dictionary_after_pref;
 
   base::RunLoop get_initial_properties_run_loop;
   // Get properties and verify that proxy is used.
   managed_handler()->GetManagedProperties(
       kUser1, wifi_service_path,
       base::BindOnce(
-          [](base::Value* dictionary_out, base::RepeatingClosure quit_closure,
+          [](absl::optional<base::Value::Dict>* dictionary_out,
+             base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             absl::optional<base::Value> dictionary,
+             absl::optional<base::Value::Dict> dictionary,
              absl::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = std::move(*dictionary);
@@ -1558,11 +1560,11 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
 
   get_initial_properties_run_loop.Run();
 
-  std::string policy_before_pref =
-      dictionary_before_pref.FindPath("ProxySettings.Type.UserPolicy")
-          ->GetString();
-  ASSERT_TRUE(!dictionary_before_pref.is_none());
-  ASSERT_EQ(policy_before_pref, "PAC");
+  std::string* policy_before_pref =
+      dictionary_before_pref->FindStringByDottedPath(
+          "ProxySettings.Type.UserPolicy");
+  ASSERT_TRUE(dictionary_before_pref.has_value());
+  ASSERT_EQ(*policy_before_pref, "PAC");
 
   // Set pref not to use proxy.
   user_prefs_.SetManagedPref(proxy_config::prefs::kProxy,
@@ -1573,9 +1575,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
   managed_handler()->GetManagedProperties(
       kUser1, wifi_service_path,
       base::BindOnce(
-          [](base::Value* dictionary_out, base::RepeatingClosure quit_closure,
+          [](absl::optional<base::Value::Dict>* dictionary_out,
+             base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             absl::optional<base::Value> dictionary,
+             absl::optional<base::Value::Dict> dictionary,
              absl::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = std::move(*dictionary);
@@ -1589,13 +1592,13 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
 
   get_merged_properties_run_loop.Run();
 
-  std::string policy_after_pref =
-      dictionary_after_pref.FindPath("ProxySettings.Type.UserPolicy")
-          ->GetString();
+  std::string* policy_after_pref =
+      dictionary_after_pref->FindStringByDottedPath(
+          "ProxySettings.Type.UserPolicy");
 
-  ASSERT_TRUE(!dictionary_after_pref.is_none());
+  ASSERT_TRUE(dictionary_after_pref.has_value());
   ASSERT_NE(dictionary_before_pref, dictionary_after_pref);
-  ASSERT_EQ(policy_after_pref, "Direct");
+  ASSERT_EQ(*policy_after_pref, "Direct");
 }
 
 }  // namespace ash

@@ -25,7 +25,7 @@ namespace ash {
 // the device settings that were imported remain, the rest is deleted.
 // Note: Import expects ONC dictionaries to be valid, do not use with
 // non validated input.
-// If implot or export are called multiple times, all but the latest request
+// If import or export are called multiple times, all but the latest request
 // will be cancelled.
 class RollbackNetworkConfig
     : public rollback_network_config::mojom::RollbackNetworkConfig {

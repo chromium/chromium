@@ -161,7 +161,7 @@ class CellularESimInstallerTest : public testing::Test {
     base::RunLoop run_loop;
     cellular_esim_installer_->InstallProfileFromActivationCode(
         activation_code, confirmation_code, euicc_path,
-        std::move(new_shill_properties),
+        std::move(new_shill_properties.GetDict()),
         base::BindLambdaForTesting(
             [&](HermesResponseStatus install_result,
                 absl::optional<dbus::ObjectPath> esim_profile_path,
