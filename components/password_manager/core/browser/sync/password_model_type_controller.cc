@@ -117,6 +117,7 @@ void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
 
 syncer::DataTypeController::PreconditionState
 PasswordModelTypeController::GetPreconditionState() const {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // If Sync-the-feature is enabled, then the user has opted in to that, and no
   // additional opt-in is required here.
   if (sync_service_->IsSyncFeatureEnabled() ||
@@ -128,6 +129,12 @@ PasswordModelTypeController::GetPreconditionState() const {
   return features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)
              ? PreconditionState::kPreconditionsMet
              : PreconditionState::kMustStopAndClearData;
+#else
+  // On Android and iOS, there is no explicit opt-in - instead the user's choice
+  // is handled via Sync's selected types (see `UserSelectableType`). So nothing
+  // to check here.
+  return PreconditionState::kPreconditionsMet;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
