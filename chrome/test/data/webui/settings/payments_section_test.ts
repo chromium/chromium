@@ -968,7 +968,7 @@ suite('PaymentsSection', function() {
     paymentsManager.assertExpectations(expectations);
   });
 
-  test('verifyRemoveCreditCardClicked', async function() {
+  test('verifyRemoveLocalCreditCardDialogConfirmed', async function() {
     const creditCard = createCreditCardEntry();
 
     creditCard.metadata!.isLocal = true;
@@ -992,10 +992,71 @@ suite('PaymentsSection', function() {
     section.$.menuRemoveCreditCard.click();
     flush();
 
+    const confirmationDialog = section.shadowRoot!.querySelector(
+        'settings-local-credit-card-remove-confirmation-dialog');
+    assertTrue(!!confirmationDialog);
+    await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
+
+    const closePromise = eventToPromise('close', confirmationDialog);
+
+    const removeButton = confirmationDialog.$.remove;
+    assertTrue(!!removeButton);
+    removeButton.click();
+    flush();
+
+    // Wait for the dialog close event to propagate to the PaymentManager.
+    await closePromise;
+
     const paymentsManager =
         PaymentsManagerImpl.getInstance() as TestPaymentsManager;
     const expectations = getDefaultExpectations();
     expectations.removedCreditCards = 1;
+    paymentsManager.assertExpectations(expectations);
+  });
+
+  test('verifyRemoveLocalCreditCardDialogCancelled', async function() {
+    const creditCard = createCreditCardEntry();
+
+    creditCard.metadata!.isLocal = true;
+    creditCard.metadata!.isCached = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
+
+    const section = await createPaymentsSection(
+        [creditCard], /*ibans=*/[], /*upiIds=*/[], /*prefValues=*/ {});
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    assertFalse(section.$.menuRemoveCreditCard.hidden);
+    section.$.menuRemoveCreditCard.click();
+    flush();
+
+    const confirmationDialog = section.shadowRoot!.querySelector(
+        'settings-local-credit-card-remove-confirmation-dialog');
+    assertTrue(!!confirmationDialog);
+    await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
+
+    const closePromise = eventToPromise('close', confirmationDialog);
+
+    const cancelButton = confirmationDialog.$.cancel;
+    assertTrue(!!cancelButton);
+    cancelButton.click();
+    flush();
+
+    // Wait for the dialog close event to propagate to the PaymentManager.
+    await closePromise;
+
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    const expectations = getDefaultExpectations();
+    expectations.removedCreditCards = 0;
     paymentsManager.assertExpectations(expectations);
   });
 
