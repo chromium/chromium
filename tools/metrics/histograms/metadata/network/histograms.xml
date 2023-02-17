@@ -49,6 +49,15 @@ chromium-metrics-reviews@google.com.
   <variant name="L2tpIpsec" summary="L2TP/IPsec"/>
 </variants>
 
+<variants name="VPNType">
+  <variant name="ARC" summary="Android VPN"/>
+  <variant name="Ikev2" summary="IKEv2"/>
+  <variant name="L2tpIpsec" summary="L2TP/IPsec"/>
+  <variant name="OpenVPN" summary="OpenVPN"/>
+  <variant name="ThirdParty" summary="Chrome VpnProvider App"/>
+  <variant name="WireGuard" summary="WireGuard"/>
+</variants>
+
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2023-10-18">
   <owner>gordonseto@google.com</owner>
@@ -2518,6 +2527,18 @@ chromium-metrics-reviews@google.com.
     this connection.
   </summary>
   <token key="VPNType" variants="IPsecVPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPType" enum="VPNIPType"
+    expires_after="2023-12-01">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the IP family provided in this connection.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
 </histogram>
 
 <histogram name="Network.Shill.WiFi.AdapterAllowlisted"

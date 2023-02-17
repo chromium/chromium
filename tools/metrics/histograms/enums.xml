@@ -106165,6 +106165,13 @@ others/histograms.xml -->
   <int value="6" label="AES_CMAC_96"/>
 </enum>
 
+<enum name="VPNIPType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="IPv4"/>
+  <int value="2" label="IPv6"/>
+  <int value="3" label="Dual-stack"/>
+</enum>
+
 <enum name="VPNL2TPIPsecTunnelGroupUsage">
   <int value="0" label="Tunnel group is not used"/>
   <int value="1" label="Tunnel group is used"/>
