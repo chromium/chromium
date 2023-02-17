@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/synthetic_trials.h"
@@ -37,15 +39,18 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile)
                           base::Unretained(this)));
 
   // Track Advanced Protection status.
-  obs_.Observe(
-      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-          profile_));
-  // On startup, AdvancedProtectionStatusManager runs before this class so we
-  // don't get called back. Run the callback to get the AP setting.
-  OnAdvancedProtectionStatusChanged(
-      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-          profile_)
-          ->IsUnderAdvancedProtection());
+  if (base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeForAdvancedProtectionUsers)) {
+    obs_.Observe(
+        safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+            profile_));
+    // On startup, AdvancedProtectionStatusManager runs before this class so we
+    // don't get called back. Run the callback to get the AP setting.
+    OnAdvancedProtectionStatusChanged(
+        safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+            profile_)
+            ->IsUnderAdvancedProtection());
+  }
 
   // Make sure the pref state is logged and the synthetic field trial state is
   // created at startup (as the pref may never change over the session).
@@ -72,6 +77,8 @@ void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
 }
 
 void HttpsFirstModeService::OnAdvancedProtectionStatusChanged(bool enabled) {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kHttpsFirstModeForAdvancedProtectionUsers));
   // Override the pref if AP is enabled. We explicitly don't unset the pref if
   // the user is no longer under Advanced Protection.
   if (enabled &&
