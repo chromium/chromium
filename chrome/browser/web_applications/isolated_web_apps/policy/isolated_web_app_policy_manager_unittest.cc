@@ -18,7 +18,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
-#include "chrome/browser/web_applications/isolation_data.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -165,11 +164,11 @@ class TestIwaInstallCommandWrapper
  public:
   TestIwaInstallCommandWrapper() = default;
   void Install(
-      const IsolationData& isolation_data,
-      const IsolatedWebAppUrlInfo& isolation_info,
+      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppUrlInfo& url_info,
       WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) override {
-    if (isolation_info.web_bundle_id().id() == kWebBundleId1 ||
-        isolation_info.web_bundle_id().id() == kWebBundleId2) {
+    if (url_info.web_bundle_id().id() == kWebBundleId1 ||
+        url_info.web_bundle_id().id() == kWebBundleId2) {
       std::move(callback).Run(InstallIsolatedWebAppCommandSuccess{});
       return;
     }

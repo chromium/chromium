@@ -12,7 +12,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
@@ -81,7 +81,7 @@ class IsolatedWebAppURLLoaderFactory
 
   void HandleDevModeProxy(
       const IsolatedWebAppUrlInfo& url_info,
-      const IsolationData::DevModeProxy& dev_mode_proxy,
+      const DevModeProxy& dev_mode_proxy,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       const network::ResourceRequest& resource_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,

@@ -195,8 +195,9 @@ void WebAppInstallFinalizer::FinalizeInstall(
   }
 #endif
 
-  if (options.isolation_data.has_value()) {
-    web_app->SetIsolationData(*options.isolation_data);
+  if (options.isolated_web_app_location.has_value()) {
+    web_app->SetIsolationData(
+        WebApp::IsolationData(*options.isolated_web_app_location));
   }
 
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);

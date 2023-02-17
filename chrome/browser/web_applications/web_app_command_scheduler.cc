@@ -32,7 +32,6 @@
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -294,7 +293,7 @@ void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
 
 void WebAppCommandScheduler::InstallIsolatedWebApp(
     const IsolatedWebAppUrlInfo& url_info,
-    const IsolationData& isolation_data,
+    const IsolatedWebAppLocation& location,
     InstallIsolatedWebAppCallback callback) {
   if (IsShuttingDown()) {
     InstallIsolatedWebAppCommandError error;
@@ -307,7 +306,7 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
-          url_info, isolation_data, CreateIsolatedWebAppWebContents(*profile_),
+          url_info, location, CreateIsolatedWebAppWebContents(*profile_),
           std::make_unique<WebAppUrlLoader>(), *profile_, std::move(callback)));
 }
 

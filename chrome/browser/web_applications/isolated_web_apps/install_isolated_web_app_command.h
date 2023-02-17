@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -64,19 +65,19 @@ struct InstallIsolatedWebAppCommandError {
 class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
  public:
   //
-  // |isolation_info| holds the origin information of the app. It is
+  // |url_info| holds the origin information of the app. It is
   // randomly generated for dev-proxy and the public key of signed bundle. It is
   // guarantee to be valid.
   //
-  // |isolation_data| holds information about the
+  // |location| holds information about the
   // mode(dev-mod-proxy/signed-bundle) and the source.
   //
   // |callback| must be not null.
   //
   // The `id` in the application's manifest must equal "/".
   explicit InstallIsolatedWebAppCommand(
-      const IsolatedWebAppUrlInfo& isolation_info,
-      const IsolationData& isolation_data,
+      const IsolatedWebAppUrlInfo& url_info,
+      const IsolatedWebAppLocation& location,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       content::BrowserContext& browser_context,
@@ -87,8 +88,8 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   // Same constructor as above, but additionally exposes the
   // `response_reader_factory` for providing a mock factory in testing.
   explicit InstallIsolatedWebAppCommand(
-      const IsolatedWebAppUrlInfo& isolation_info,
-      const IsolationData& isolation_data,
+      const IsolatedWebAppUrlInfo& url_info,
+      const IsolatedWebAppLocation& location,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       content::BrowserContext& browser_context,
@@ -157,8 +158,8 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
-  IsolatedWebAppUrlInfo isolation_info_;
-  IsolationData isolation_data_;
+  IsolatedWebAppUrlInfo url_info_;
+  IsolatedWebAppLocation location_;
 
   std::unique_ptr<IsolatedWebAppResponseReaderFactory> response_reader_factory_;
 

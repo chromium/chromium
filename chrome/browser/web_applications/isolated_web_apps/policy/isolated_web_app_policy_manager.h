@@ -12,6 +12,8 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -53,16 +55,16 @@ class IsolatedWebAppPolicyManager {
         delete;
     virtual ~IwaInstallCommandWrapper() = default;
     virtual void Install(
-        const IsolationData& isolation_data,
-        const IsolatedWebAppUrlInfo& isolation_info,
+        const IsolatedWebAppLocation& location,
+        const IsolatedWebAppUrlInfo& url_info,
         WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) = 0;
   };
 
   class IwaInstallCommandWrapperImpl : public IwaInstallCommandWrapper {
    public:
     explicit IwaInstallCommandWrapperImpl(web_app::WebAppProvider* provider);
-    void Install(const IsolationData& isolation_data,
-                 const IsolatedWebAppUrlInfo& isolation_info,
+    void Install(const IsolatedWebAppLocation& location,
+                 const IsolatedWebAppUrlInfo& url_info,
                  WebAppCommandScheduler::InstallIsolatedWebAppCallback callback)
         override;
     ~IwaInstallCommandWrapperImpl() override = default;

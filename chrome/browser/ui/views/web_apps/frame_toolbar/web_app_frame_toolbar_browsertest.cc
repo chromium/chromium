@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
-#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -484,7 +484,7 @@ class WebAppFrameToolbarBrowserTest_Borderless
       web_app::ScopedRegistryUpdate(&provider->sync_bridge_unsafe())
           ->UpdateApp(app_id)
           ->SetIsolationData(
-              web_app::IsolationData(web_app::IsolationData::DevModeProxy{
+              web_app::WebApp::IsolationData(web_app::DevModeProxy{
                   .proxy_url = url::Origin::Create(start_url)}));
     }
 

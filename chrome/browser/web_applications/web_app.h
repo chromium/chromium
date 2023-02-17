@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -317,6 +317,20 @@ class WebApp {
 
   // If present, signals that this app is an Isolated Web App, and contains
   // IWA-specific information like bundle location.
+  struct IsolationData {
+    explicit IsolationData(IsolatedWebAppLocation location);
+    ~IsolationData();
+    IsolationData(const IsolationData&);
+    IsolationData& operator=(const IsolationData&);
+    IsolationData(IsolationData&&);
+    IsolationData& operator=(IsolationData&&);
+
+    bool operator==(const IsolationData&) const;
+    bool operator!=(const IsolationData&) const;
+    base::Value AsDebugValue() const;
+
+    IsolatedWebAppLocation location;
+  };
   const absl::optional<IsolationData>& isolation_data() const {
     return isolation_data_;
   }

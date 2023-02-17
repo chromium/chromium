@@ -160,7 +160,7 @@ message IsolationDataProto {
     optional string proxy_url = 1;
   }
 
-  oneof content {
+  oneof location {
     InstalledBundle installed_bundle = 1;
     DevModeBundle dev_mode_bundle = 2;
     DevModeProxy dev_mode_proxy = 3;

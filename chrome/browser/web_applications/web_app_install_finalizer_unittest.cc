@@ -17,7 +17,7 @@
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -476,11 +476,11 @@ TEST_P(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
   info.start_url = GURL("https://foo.example");
   info.title = u"Foo Title";
 
-  const IsolationData isolation_data{IsolationData::DevModeBundle{
-      .path = base::FilePath(FILE_PATH_LITERAL("p"))}};
+  const IsolatedWebAppLocation location =
+      DevModeBundle{.path = base::FilePath(FILE_PATH_LITERAL("p"))};
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_POLICY);
-  options.isolation_data = isolation_data;
+  options.isolated_web_app_location = location;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(info, options);
 
@@ -489,7 +489,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
             GenerateAppId(/*manifest_id=*/absl::nullopt, info.start_url));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
-  EXPECT_EQ(isolation_data, installed_app->isolation_data());
+  EXPECT_EQ(location, installed_app->isolation_data()->location);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -148,7 +148,7 @@
    "is_locally_installed": true,
    "is_uninstalling": false,
    "isolation_data": {
-      "content": {
+      "isolated_web_app_location": {
          "dev_mode_proxy": {
             "proxy_url": "https://proxy-1234.com"
          }

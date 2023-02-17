@@ -146,7 +146,7 @@ class WebAppCommandScheduler {
   // Schedules a command that installs the Isolated Web App described by the
   // given IsolatedWebAppUrlInfo and IsolationData.
   void InstallIsolatedWebApp(const IsolatedWebAppUrlInfo& url_info,
-                             const IsolationData& isolation_data,
+                             const IsolatedWebAppLocation& location,
                              InstallIsolatedWebAppCallback callback);
 
   // Scheduler a command that installs a web app from sync.

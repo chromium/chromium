@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_PENDING_INSTALL_INFO_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_PENDING_INSTALL_INFO_H_
 
-#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -13,8 +13,6 @@ class WebContents;
 }
 
 namespace web_app {
-
-struct IsolationData;
 
 // Indicates that the specific instance of |WebContents| serves data for IWA
 // installation. Components which share the same instance of |WebContents| can
@@ -34,16 +32,16 @@ class IsolatedWebAppPendingInstallInfo {
 
   ~IsolatedWebAppPendingInstallInfo();
 
-  void set_isolation_data(const IsolationData& isolation_data);
+  void set_isolated_web_app_location(const IsolatedWebAppLocation& location);
 
-  const absl::optional<IsolationData>& isolation_data() const;
+  const absl::optional<IsolatedWebAppLocation>& location() const;
 
-  void ResetIsolationData();
+  void ResetIsolatedWebAppLocation();
 
  private:
   IsolatedWebAppPendingInstallInfo();
 
-  absl::optional<IsolationData> isolation_data_;
+  absl::optional<IsolatedWebAppLocation> location_ = absl::nullopt;
 };
 
 }  // namespace web_app

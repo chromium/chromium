@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -78,7 +78,7 @@ class WebAppInstallFinalizer {
     absl::optional<ash::SystemWebAppData> system_web_app_data;
 #endif
     absl::optional<AppId> parent_app_id;
-    absl::optional<web_app::IsolationData> isolation_data;
+    absl::optional<web_app::IsolatedWebAppLocation> isolated_web_app_location;
 
     // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
     // meaning that all other OS Hooks related parameters below will be ignored.

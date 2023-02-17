@@ -19,6 +19,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -331,13 +332,13 @@ TEST(WebAppTest, IsolationDataStartsEmpty) {
 TEST(WebAppTest, IsolationDataDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
                            GURL("https://example.com"))};
-  app.SetIsolationData(IsolationData(IsolationData::InstalledBundle{
+  app.SetIsolationData(WebApp::IsolationData(InstalledBundle{
       .path = base::FilePath(FILE_PATH_LITERAL("random_path"))}));
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
   base::Value expected_isolation_data = base::JSONReader::Read(R"({
-        "content": {
+        "isolated_web_app_location": {
           "installed_bundle": {
             "path": "random_path"
           }

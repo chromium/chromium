@@ -10,7 +10,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -142,28 +142,28 @@ TEST_F(IsolatedWebAppUrlInfoTest, StoragePartitionConfigUsesOrigin) {
               Eq(expected_config));
 }
 
-class IsolatedWebAppUrlInfoFromIsolationDataTest : public ::testing::Test {
+class IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest
+    : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
-TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
+TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
        GetIsolatedWebAppUrlInfoWhenInstalledBundleSucceeds) {
-  IsolationData isolation_data =
-      IsolationData{IsolationData::InstalledBundle{}};
+  IsolatedWebAppLocation location = InstalledBundle{};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
 
-  IsolatedWebAppUrlInfo::CreateFromIsolationData(isolation_data,
-                                                 test_future.GetCallback());
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
+      location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
 
   ASSERT_THAT(result.has_value(), false);
   EXPECT_THAT(result.error(), HasSubstr("is not implemented"));
 }
 
-TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
+TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
        GetIsolatedWebAppUrlInfoWhenDevModeBundleSucceeds) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -172,31 +172,29 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
   TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
   ASSERT_TRUE(base::WriteFile(path, bundle.data));
 
-  IsolationData isolation_data =
-      IsolationData{IsolationData::DevModeBundle{.path = path}};
+  IsolatedWebAppLocation location = DevModeBundle{.path = path};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
-  IsolatedWebAppUrlInfo::CreateFromIsolationData(isolation_data,
-                                                 test_future.GetCallback());
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
+      location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
 
   ASSERT_THAT(result.has_value(), true);
   EXPECT_EQ(result.value().web_bundle_id(), bundle.id);
 }
 
-TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
+TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
        GetIsolatedWebAppUrlInfoWhenDevModeBundleFailsWhenFileNotExist) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path = temp_dir.GetPath().Append(
       base::FilePath::FromASCII("file_not_exist.swbn"));
-  IsolationData isolation_data =
-      IsolationData{IsolationData::DevModeBundle{.path = path}};
+  IsolatedWebAppLocation location = DevModeBundle{.path = path};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
 
-  IsolatedWebAppUrlInfo::CreateFromIsolationData(isolation_data,
-                                                 test_future.GetCallback());
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
+      location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
 
   ASSERT_THAT(result.has_value(), false);
@@ -205,7 +203,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
                         "bundle: FILE_ERROR_NOT_FOUND"));
 }
 
-TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
+TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
        GetIsolatedWebAppUrlInfoWhenDevModeBundleFailsWhenInvalidFile) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -213,13 +211,12 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
       temp_dir.GetPath().Append(base::FilePath::FromASCII("invalid_file.swbn"));
   ASSERT_TRUE(
       base::WriteFile(path, "clearly, this is not a valid signed web bundle"));
-  IsolationData isolation_data =
-      IsolationData{IsolationData::DevModeBundle{.path = path}};
+  IsolatedWebAppLocation location = DevModeBundle{.path = path};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
 
-  IsolatedWebAppUrlInfo::CreateFromIsolationData(isolation_data,
-                                                 test_future.GetCallback());
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
+      location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
 
   ASSERT_THAT(result.has_value(), false);
@@ -228,14 +225,14 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
                         "bundle: Wrong array size or magic bytes."));
 }
 
-TEST_F(IsolatedWebAppUrlInfoFromIsolationDataTest,
+TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
        GetIsolatedWebAppUrlInfoSucceedsWhenDevModeProxy) {
-  IsolationData isolation_data = IsolationData{IsolationData::DevModeProxy{}};
+  IsolatedWebAppLocation location = DevModeProxy{};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
 
-  IsolatedWebAppUrlInfo::CreateFromIsolationData(isolation_data,
-                                                 test_future.GetCallback());
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
+      location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
 
   EXPECT_THAT(result.has_value(), true);

@@ -25,15 +25,16 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
-#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -91,8 +92,8 @@ CreateDefaultResponseReaderFactory(content::BrowserContext& browser_context) {
 }  // namespace
 
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
-    const IsolatedWebAppUrlInfo& isolation_info,
-    const IsolationData& isolation_data,
+    const IsolatedWebAppUrlInfo& url_info,
+    const IsolatedWebAppLocation& location,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     content::BrowserContext& browser_context,
@@ -100,8 +101,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
                                            InstallIsolatedWebAppCommandError>)>
         callback)
     : InstallIsolatedWebAppCommand(
-          isolation_info,
-          isolation_data,
+          url_info,
+          location,
           std::move(web_contents),
           std::move(url_loader),
           browser_context,
@@ -109,8 +110,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
           CreateDefaultResponseReaderFactory(browser_context)) {}
 
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
-    const IsolatedWebAppUrlInfo& isolation_info,
-    const IsolationData& isolation_data,
+    const IsolatedWebAppUrlInfo& url_info,
+    const IsolatedWebAppLocation& location,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     content::BrowserContext& browser_context,
@@ -121,9 +122,9 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
         response_reader_factory)
     : WebAppCommandTemplate<AppLock>("InstallIsolatedWebAppCommand"),
       lock_description_(
-          std::make_unique<AppLockDescription>(isolation_info.app_id())),
-      isolation_info_(isolation_info),
-      isolation_data_(isolation_data),
+          std::make_unique<AppLockDescription>(url_info.app_id())),
+      url_info_(url_info),
+      location_(location),
       response_reader_factory_(std::move(response_reader_factory)),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
@@ -157,12 +158,12 @@ const LockDescription& InstallIsolatedWebAppCommand::lock_description() const {
 
 base::Value InstallIsolatedWebAppCommand::ToDebugValue() const {
   base::Value::Dict debug_value;
-  debug_value.Set("app_id", isolation_info_.app_id());
-  debug_value.Set("origin", isolation_info_.origin().Serialize());
-  debug_value.Set("bundle_id", isolation_info_.web_bundle_id().id());
+  debug_value.Set("app_id", url_info_.app_id());
+  debug_value.Set("origin", url_info_.origin().Serialize());
+  debug_value.Set("bundle_id", url_info_.web_bundle_id().id());
   debug_value.Set("bundle_type",
-                  static_cast<int>(isolation_info_.web_bundle_id().type()));
-  debug_value.Set("isolation_data", isolation_data_.AsDebugValue());
+                  static_cast<int>(url_info_.web_bundle_id().type()));
+  debug_value.Set("location", IsolatedWebAppLocationAsDebugValue(location_));
   return base::Value(std::move(debug_value));
 }
 
@@ -177,24 +178,24 @@ void InstallIsolatedWebAppCommand::StartWithLock(
 void InstallIsolatedWebAppCommand::CheckTrustAndSignatures() {
   absl::visit(
       base::Overloaded{
-          [&](const IsolationData::InstalledBundle& content) {
-            DCHECK_EQ(isolation_info_.web_bundle_id().type(),
+          [&](const InstalledBundle& location) {
+            DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            CheckTrustAndSignaturesOfBundle(content.path);
+            CheckTrustAndSignaturesOfBundle(location.path);
           },
-          [&](const IsolationData::DevModeBundle& content) {
-            DCHECK_EQ(isolation_info_.web_bundle_id().type(),
+          [&](const DevModeBundle& location) {
+            DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            CheckTrustAndSignaturesOfBundle(content.path);
+            CheckTrustAndSignaturesOfBundle(location.path);
           },
-          [&](const IsolationData::DevModeProxy& content) {
-            DCHECK_EQ(isolation_info_.web_bundle_id().type(),
+          [&](const DevModeProxy& location) {
+            DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kDevelopment);
             // Dev mode proxy mode does not use Web Bundles, hence there is no
             // bundle to validate / trust and no signatures to check.
             OnTrustAndSignaturesChecked(absl::nullopt);
           }},
-      isolation_data_.content);
+      location_);
 }
 
 void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
@@ -208,7 +209,7 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
   //   `skip_signature_verification` below is set to `false`).
   // - ...contains valid metadata / no invalid URLs.
   response_reader_factory_->CreateResponseReader(
-      path, isolation_info_.web_bundle_id(),
+      path, url_info_.web_bundle_id(),
       // During installation, we always want to verify signatures, regardless
       // of the OS.
       /*skip_signature_verification=*/false,
@@ -244,7 +245,7 @@ void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
 
 void InstallIsolatedWebAppCommand::CreateStoragePartition() {
   browser_context_->GetStoragePartition(
-      isolation_info_.storage_partition_config(&*browser_context_),
+      url_info_.storage_partition_config(&*browser_context_),
       /*can_create=*/true);
 }
 
@@ -256,10 +257,10 @@ void InstallIsolatedWebAppCommand::LoadUrl() {
   // process vs application data serving) and source of data (proxy, web
   // bundle, etc...).
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents_)
-      .set_isolation_data(isolation_data_);
+      .set_isolated_web_app_location(location_);
 
   GURL install_page_url =
-      isolation_info_.origin().GetURL().Resolve(kGeneratedInstallPagePath);
+      url_info_.origin().GetURL().Resolve(kGeneratedInstallPagePath);
   url_loader_->LoadUrl(install_page_url, web_contents_.get(),
                        WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
                        base::BindOnce(&InstallIsolatedWebAppCommand::OnLoadUrl,
@@ -322,7 +323,7 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
         {R"(Manifest `id` must be "/". Resolved manifest id: )", *encoded_id})};
   }
 
-  url::Origin origin = isolation_info_.origin();
+  url::Origin origin = url_info_.origin();
   if (manifest.scope != origin.GetURL()) {
     return base::unexpected{
         base::StrCat({"Scope should resolve to the origin. scope: ",
@@ -390,7 +391,7 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
     const WebAppInstallInfo& info) {
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
-  options.isolation_data = isolation_data_;
+  options.isolated_web_app_location = location_;
 
   lock_->install_finalizer().FinalizeInstall(
       info, options,

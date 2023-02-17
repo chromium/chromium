@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -101,9 +101,9 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
       GetWebAppRegistrar().GetAppById(id),
       Pointee(Property(
           &WebApp::isolation_data,
-          Optional(Field(&IsolationData::content,
-                         VariantWith<IsolationData::DevModeProxy>(
-                             Field(&IsolationData::DevModeProxy::proxy_url,
+          Optional(Field(&WebApp::IsolationData::location,
+                         VariantWith<DevModeProxy>(
+                             Field(&DevModeProxy::proxy_url,
                                    Eq(url::Origin::Create(GetAppUrl())))))))));
 }
 
@@ -145,13 +145,13 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(*bundle_id_).app_id());
   ASSERT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
 
-  EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
-              Pointee(Property(
-                  &WebApp::isolation_data,
-                  Optional(Field(&IsolationData::content,
-                                 VariantWith<IsolationData::DevModeBundle>(
-                                     Field(&IsolationData::DevModeBundle::path,
-                                           Eq(signed_web_bundle_path_))))))));
+  EXPECT_THAT(
+      GetWebAppRegistrar().GetAppById(id),
+      Pointee(Property(&WebApp::isolation_data,
+                       Optional(Field(&WebApp::IsolationData::location,
+                                      VariantWith<DevModeBundle>(Field(
+                                          &DevModeBundle::path,
+                                          Eq(signed_web_bundle_path_))))))));
 }
 
 }  // namespace

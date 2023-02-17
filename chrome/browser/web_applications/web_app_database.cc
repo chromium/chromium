@@ -16,6 +16,7 @@
 #include "base/functional/overloaded.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -792,21 +793,21 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     auto* mutable_data = local_data->mutable_isolation_data();
     absl::visit(
         base::Overloaded{
-            [&mutable_data](const IsolationData::InstalledBundle& bundle) {
+            [&mutable_data](const InstalledBundle& bundle) {
               mutable_data->mutable_installed_bundle()->set_path(
                   FilePathToProto(bundle.path));
             },
-            [&mutable_data](const IsolationData::DevModeBundle& bundle) {
+            [&mutable_data](const DevModeBundle& bundle) {
               mutable_data->mutable_dev_mode_bundle()->set_path(
                   FilePathToProto(bundle.path));
             },
-            [&mutable_data](const IsolationData::DevModeProxy& proxy) {
+            [&mutable_data](const DevModeProxy& proxy) {
               DCHECK(!proxy.proxy_url.opaque());
               mutable_data->mutable_dev_mode_proxy()->set_proxy_url(
                   proxy.proxy_url.Serialize());
             },
         },
-        web_app.isolation_data().value().content);
+        web_app.isolation_data().value().location);
   }
 
   return local_data;
@@ -1457,8 +1458,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.has_isolation_data()) {
-    switch (local_data.isolation_data().content_case()) {
-      case IsolationDataProto::ContentCase::kInstalledBundle: {
+    switch (local_data.isolation_data().location_case()) {
+      case IsolationDataProto::LocationCase::kInstalledBundle: {
         absl::optional<base::FilePath> path = ProtoToFilePath(
             local_data.isolation_data().installed_bundle().path());
         if (!path.has_value()) {
@@ -1467,11 +1468,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
           return nullptr;
         }
         web_app->SetIsolationData(
-            IsolationData(IsolationData::InstalledBundle{.path = *path}));
+            WebApp::IsolationData(InstalledBundle{.path = *path}));
         break;
       }
 
-      case IsolationDataProto::ContentCase::kDevModeBundle: {
+      case IsolationDataProto::LocationCase::kDevModeBundle: {
         absl::optional<base::FilePath> path = ProtoToFilePath(
             local_data.isolation_data().dev_mode_bundle().path());
         if (!path.has_value()) {
@@ -1480,11 +1481,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
           return nullptr;
         }
         web_app->SetIsolationData(
-            IsolationData(IsolationData::DevModeBundle{.path = *path}));
+            WebApp::IsolationData(DevModeBundle{.path = *path}));
         break;
       }
 
-      case IsolationDataProto::ContentCase::kDevModeProxy: {
+      case IsolationDataProto::LocationCase::kDevModeProxy: {
         GURL gurl_proxy_url =
             GURL(local_data.isolation_data().dev_mode_proxy().proxy_url());
         url::Origin proxy_url = url::Origin::Create(gurl_proxy_url);
@@ -1496,13 +1497,13 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
           return nullptr;
         }
         web_app->SetIsolationData(
-            IsolationData(IsolationData::DevModeProxy{.proxy_url = proxy_url}));
+            WebApp::IsolationData(DevModeProxy{.proxy_url = proxy_url}));
         break;
       }
 
-      case IsolationDataProto::ContentCase::CONTENT_NOT_SET:
+      case IsolationDataProto::LocationCase::LOCATION_NOT_SET:
         DLOG(ERROR) << "WebApp proto isolation_data parse error: "
-                    << "content not set";
+                    << "location not set";
         return nullptr;
     }
   }

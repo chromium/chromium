@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -62,8 +63,9 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
   return web_app;
 }
 
-std::unique_ptr<WebApp> CreateIsolatedWebApp(const GURL& start_url,
-                                             IsolationData isolation_data) {
+std::unique_ptr<WebApp> CreateIsolatedWebApp(
+    const GURL& start_url,
+    WebApp::IsolationData isolation_data) {
   auto web_app = CreateWebApp(start_url);
   web_app->SetIsolationData(isolation_data);
   web_app->SetIsLocallyInstalled(true);
@@ -219,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest, LoadsBundle) {
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -238,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -266,7 +268,7 @@ fetch('title.txt')
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -282,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -301,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -386,7 +388,7 @@ self.addEventListener('activate', (event) => {
 )js");
   RegisterWebApp(CreateIsolatedWebApp(
       GURL(kUrl),
-      IsolationData{IsolationData::InstalledBundle{
+      WebApp::IsolationData{InstalledBundle{
           .path = SignAndWriteBundleToDisk(builder.CreateBundle())}}));
   TrustWebBundleId();
 

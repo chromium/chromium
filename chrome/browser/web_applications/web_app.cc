@@ -10,6 +10,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/overloaded.h"
+#include "base/json/values_util.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -690,6 +692,32 @@ base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
   root.Set("install_urls", std::move(urls));
   root.Set("is_placeholder", is_placeholder);
   return root;
+}
+
+WebApp::IsolationData::IsolationData(IsolatedWebAppLocation location)
+    : location(location) {}
+WebApp::IsolationData::~IsolationData() = default;
+WebApp::IsolationData::IsolationData(const WebApp::IsolationData&) = default;
+WebApp::IsolationData& WebApp::IsolationData::operator=(
+    const WebApp::IsolationData&) = default;
+WebApp::IsolationData::IsolationData(WebApp::IsolationData&&) = default;
+WebApp::IsolationData& WebApp::IsolationData::operator=(
+    WebApp::IsolationData&&) = default;
+
+bool WebApp::IsolationData::operator==(
+    const WebApp::IsolationData& other) const {
+  return location == other.location;
+}
+bool WebApp::IsolationData::operator!=(
+    const WebApp::IsolationData& other) const {
+  return !(*this == other);
+}
+
+base::Value WebApp::IsolationData::AsDebugValue() const {
+  base::Value::Dict value;
+  value.Set("isolated_web_app_location",
+            IsolatedWebAppLocationAsDebugValue(location));
+  return base::Value(std::move(value));
 }
 
 bool WebApp::operator==(const WebApp& other) const {

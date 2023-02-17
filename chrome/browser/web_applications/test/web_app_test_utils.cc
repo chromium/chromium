@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -732,22 +733,20 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   }
 
   if (random.next_bool()) {
-    using IsolationDataContent = decltype(IsolationData::content);
-    constexpr size_t kNumContentTypes =
-        absl::variant_size<IsolationDataContent>::value;
+    constexpr size_t kNumLocationTypes =
+        absl::variant_size<IsolatedWebAppLocation>::value;
     auto path = base::FilePath::FromUTF8Unsafe(seed_str);
-    IsolationDataContent content_types[] = {
-        IsolationData::InstalledBundle{.path = path},
-        IsolationData::DevModeBundle{.path = path},
-        IsolationData::DevModeProxy{
-            .proxy_url = url::Origin::Create(
-                GURL(base::StrCat({"https://proxy-", seed_str, ".com/"})))},
+    IsolatedWebAppLocation location_types[] = {
+        InstalledBundle{.path = path},
+        DevModeBundle{.path = path},
+        DevModeProxy{.proxy_url = url::Origin::Create(GURL(
+                         base::StrCat({"https://proxy-", seed_str, ".com/"})))},
     };
-    static_assert(std::size(content_types) == kNumContentTypes);
+    static_assert(std::size(location_types) == kNumLocationTypes);
 
-    IsolationData isolation_data(
-        content_types[random.next_uint(kNumContentTypes)]);
-    app->SetIsolationData(isolation_data);
+    IsolatedWebAppLocation location(
+        location_types[random.next_uint(kNumLocationTypes)]);
+    app->SetIsolationData(WebApp::IsolationData(location));
   }
 
   return app;

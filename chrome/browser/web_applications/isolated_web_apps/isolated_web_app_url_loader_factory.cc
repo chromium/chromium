@@ -16,12 +16,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
-#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -352,8 +352,8 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  auto forward_request_to_isolation_data_content =
-      [&](const IsolationData& isolation_data) {
+  auto forward_request_to_app_content =
+      [&](const IsolatedWebAppLocation& location) {
         if (!IsSupportedHttpMethod(resource_request.method)) {
           CompleteWithGeneratedHtmlResponse(
               mojo::Remote<network::mojom::URLLoaderClient>(
@@ -364,16 +364,16 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
 
         absl::visit(
             base::Overloaded{
-                [&](const IsolationData::InstalledBundle& content) {
+                [&](const InstalledBundle& location) {
                   DCHECK_EQ(
                       url_info->web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-                  HandleSignedBundle(content.path, url_info->web_bundle_id(),
+                  HandleSignedBundle(location.path, url_info->web_bundle_id(),
                                      std::move(loader_receiver),
                                      resource_request,
                                      std::move(loader_client));
                 },
-                [&](const IsolationData::DevModeBundle& content) {
+                [&](const DevModeBundle& location) {
                   DCHECK_EQ(
                       url_info->web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
@@ -381,32 +381,33 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                   // like a properly installed Signed Web Bundle, with the only
                   // difference being that we implicitly trust its public
                   // key(s).
-                  HandleSignedBundle(content.path, url_info->web_bundle_id(),
+                  HandleSignedBundle(location.path, url_info->web_bundle_id(),
                                      std::move(loader_receiver),
                                      resource_request,
                                      std::move(loader_client));
                 },
-                [&](const IsolationData::DevModeProxy& content) {
+                [&](const DevModeProxy& location) {
                   DCHECK_EQ(url_info->web_bundle_id().type(),
                             web_package::SignedWebBundleId::Type::kDevelopment);
-                  HandleDevModeProxy(*url_info, content,
+                  HandleDevModeProxy(*url_info, location,
                                      std::move(loader_receiver),
                                      resource_request, std::move(loader_client),
                                      traffic_annotation);
                 }},
-            isolation_data.content);
+            location);
       };
 
-  absl::optional<IsolationData> pending_install_isolation_data = absl::nullopt;
+  absl::optional<IsolatedWebAppLocation> pending_install_app_location =
+      absl::nullopt;
 
   if (frame_tree_node_id_.has_value()) {
-    pending_install_isolation_data =
+    pending_install_app_location =
         IsolatedWebAppPendingInstallInfo::FromWebContents(
             *content::WebContents::FromFrameTreeNodeId(*frame_tree_node_id_))
-            .isolation_data();
+            .location();
   }
 
-  if (pending_install_isolation_data.has_value()) {
+  if (pending_install_app_location.has_value()) {
     if (resource_request.url.path() == kInstallPagePath &&
         IsSupportedHttpMethod(resource_request.method)) {
       CompleteWithGeneratedHtmlResponse(
@@ -416,7 +417,7 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
       return;
     }
 
-    forward_request_to_isolation_data_content(*pending_install_isolation_data);
+    forward_request_to_app_content(*pending_install_app_location);
     return;
   }
 
@@ -428,7 +429,7 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  forward_request_to_isolation_data_content(*iwa->get().isolation_data());
+  forward_request_to_app_content(iwa->get().isolation_data()->location);
 }
 
 void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(
@@ -465,7 +466,7 @@ void IsolatedWebAppURLLoaderFactory::HandleSignedBundle(
 
 void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
     const IsolatedWebAppUrlInfo& url_info,
-    const IsolationData::DevModeProxy& dev_mode_proxy,
+    const DevModeProxy& dev_mode_proxy,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     const network::ResourceRequest& resource_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,

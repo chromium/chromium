@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
-#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -49,10 +48,10 @@ IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl::
     : provider_(provider) {}
 
 void IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl::Install(
-    const IsolationData& isolation_data,
-    const IsolatedWebAppUrlInfo& isolation_info,
+    const IsolatedWebAppLocation& location,
+    const IsolatedWebAppUrlInfo& url_info,
     WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
-  provider_->scheduler().InstallIsolatedWebApp(isolation_info, isolation_data,
+  provider_->scheduler().InstallIsolatedWebApp(url_info, location,
                                                std::move(callback));
 }
 
@@ -338,14 +337,13 @@ void IsolatedWebAppPolicyManager::OnWebBundleDownloaded(
     return;
   }
 
-  IsolationData isolation_data =
-      IsolationData(IsolationData::InstalledBundle{.path = path});
-  IsolatedWebAppUrlInfo isolation_info =
+  IsolatedWebAppLocation location = InstalledBundle{.path = path};
+  IsolatedWebAppUrlInfo url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           current_app_->web_bundle_id());
 
   installer_->Install(
-      isolation_data, isolation_info,
+      location, url_info,
       base::BindOnce(&IsolatedWebAppPolicyManager::OnIwaInstalled,
                      weak_factory_.GetWeakPtr()));
 }

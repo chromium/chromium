@@ -592,7 +592,7 @@ class WebAppDatabaseProtoDataTest : public ::testing::Test {
   }
 
   std::unique_ptr<WebApp> CreateIsolatedWebApp(
-      const IsolationData& isolation_data) {
+      const WebApp::IsolationData& isolation_data) {
     std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
     web_app->SetIsolationData(isolation_data);
     return web_app;
@@ -624,20 +624,20 @@ TEST_F(WebAppDatabaseProtoDataTest, DoesNotSetIsolationDataIfNotIsolated) {
 TEST_F(WebAppDatabaseProtoDataTest, SavesInstalledBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData(IsolationData::InstalledBundle{.path = path}));
+      WebApp::IsolationData(InstalledBundle{.path = path}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app->isolation_data()->content,
-              VariantWith<IsolationData::InstalledBundle>(Field(
-                  "path", &IsolationData::InstalledBundle::path, Eq(path))));
+  EXPECT_THAT(web_app->isolation_data()->location,
+              VariantWith<InstalledBundle>(
+                  Field("path", &InstalledBundle::path, Eq(path))));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedInstalledBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData(IsolationData::InstalledBundle{.path = path}));
+      WebApp::IsolationData(InstalledBundle{.path = path}));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -657,21 +657,21 @@ TEST_F(WebAppDatabaseProtoDataTest,
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("dev_bundle_path"));
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData(IsolationData::DevModeBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app =
+      CreateIsolatedWebApp(WebApp::IsolationData(DevModeBundle{.path = path}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app->isolation_data()->content,
-              VariantWith<IsolationData::DevModeBundle>(Field(
-                  "path", &IsolationData::DevModeBundle::path, Eq(path))));
+  EXPECT_THAT(web_app->isolation_data()->location,
+              VariantWith<DevModeBundle>(
+                  Field("path", &DevModeBundle::path, Eq(path))));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedDevModeBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData(IsolationData::DevModeBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app =
+      CreateIsolatedWebApp(WebApp::IsolationData(DevModeBundle{.path = path}));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -690,16 +690,16 @@ TEST_F(WebAppDatabaseProtoDataTest,
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(IsolationData(
-      IsolationData::DevModeProxy{.proxy_url = url::Origin::Create(
-                                      GURL("https://proxy-example.com/"))}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
+      WebApp::IsolationData(DevModeProxy{.proxy_url = url::Origin::Create(GURL(
+                                             "https://proxy-example.com/"))}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
   EXPECT_THAT(
-      web_app->isolation_data()->content,
-      VariantWith<IsolationData::DevModeProxy>(
-          Field("proxy_url", &IsolationData::DevModeProxy::proxy_url,
+      web_app->isolation_data()->location,
+      VariantWith<DevModeProxy>(
+          Field("proxy_url", &DevModeProxy::proxy_url,
                 Eq(url::Origin::Create(GURL("https://proxy-example.com/"))))));
 }
 

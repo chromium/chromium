@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -105,8 +106,7 @@ IsolatedWebAppBrowserTestHarness::InstallDevModeProxyIsolatedWebApp(
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   WebAppProvider::GetForWebApps(profile())->scheduler().InstallIsolatedWebApp(
-      url_info, IsolationData{IsolationData::DevModeProxy{.proxy_url = origin}},
-      future.GetCallback());
+      url_info, DevModeProxy{.proxy_url = origin}, future.GetCallback());
 
   CHECK(future.Get().has_value()) << future.Get().error();
 
