@@ -1264,7 +1264,7 @@ TEST_F(AshNotificationViewTest, LeftContentAndTitleRowHeightMatches) {
   notification_view()->ToggleExpand();
   ASSERT_TRUE(notification_view()->IsExpanded());
 
-  notification->set_small_image(gfx::Image());
+  notification->set_icon(ui::ImageModel());
   notification_view()->UpdateWithNotification(*notification);
 
   EXPECT_EQ(GetLeftContent(notification_view())->height(),

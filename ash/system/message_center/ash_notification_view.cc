@@ -1232,7 +1232,7 @@ void AshNotificationView::CreateOrUpdateTitleView(
     ReorderViewInLeftContent(title_row_);
   }
 
-  int max_available_width = notification.small_image().IsEmpty()
+  int max_available_width = notification.icon().IsEmpty()
                                 ? kTitleRowMinimumWidth
                                 : kTitleRowMinimumWidthWithIcon;
   if (shown_in_popup_) {
