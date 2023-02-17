@@ -32,12 +32,15 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -124,6 +127,23 @@ void DeleteMultiProfileShortcutsForAppAndPostCallback(const std::string& app_id,
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
+std::vector<WebAppShortcutsMenuItemInfo::Icon>
+ConvertIconProtoDataToShortcutsMenuIcon(
+    const ::google::protobuf::RepeatedPtrField<proto::ShortcutIconData>&
+        shortcut_icon_data) {
+  std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_menu_item_icons;
+  for (const auto& icon_data : shortcut_icon_data) {
+    WebAppShortcutsMenuItemInfo::Icon icon;
+    icon.square_size_px = icon_data.icon_size();
+    // The icon url is set to an empty GURL() because we need this data
+    // structure to pass in for OS integration but the url is not used for
+    // setting OS integration.
+    icon.url = GURL();
+    shortcut_menu_item_icons.push_back(std::move(icon));
+  }
+  return shortcut_menu_item_icons;
+}
+
 }  // namespace
 
 ShortcutInfo::ShortcutInfo() = default;
@@ -169,7 +189,25 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     }
   }
 
-  // TODO(https://crbug.com/1295044): Add shortcut menu infos.
+// TODO(crbug.com/1416965): Implement tests on Linux for using shortcuts_menu
+// actions.
+#if BUILDFLAG(IS_LINUX)
+  const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos =
+      CreateShortcutsMenuItemInfos(state.shortcut_menus());
+  DCHECK_LE(shortcuts_menu_item_infos.size(), kMaxApplicationDockMenuItems);
+  for (const auto& shortcuts_menu_item_info : shortcuts_menu_item_infos) {
+    if (!shortcuts_menu_item_info.name.empty() &&
+        !shortcuts_menu_item_info.url.is_empty()) {
+      // Generates ID from the name by replacing all characters that are not
+      // numbers, letters, or '-' with '-'.
+      std::string id = base::UTF16ToUTF8(shortcuts_menu_item_info.name);
+      RE2::GlobalReplace(&id, "[^a-zA-Z0-9\\-]", "-");
+      shortcut_info->actions.emplace(
+          id, base::UTF16ToUTF8(shortcuts_menu_item_info.name),
+          shortcuts_menu_item_info.url);
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
   shortcut_info->handlers_per_profile =
@@ -177,6 +215,24 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
 #endif
 
   return shortcut_info;
+}
+
+std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
+    const proto::ShortcutMenus& shortcut_menus) {
+  std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_infos;
+  for (const auto& shortcut_menu_info : shortcut_menus.shortcut_menu_info()) {
+    WebAppShortcutsMenuItemInfo item_info;
+    item_info.name = base::UTF8ToUTF16(shortcut_menu_info.shortcut_name());
+    item_info.url = GURL(shortcut_menu_info.shortcut_launch_url());
+    item_info.any = ConvertIconProtoDataToShortcutsMenuIcon(
+        shortcut_menu_info.icon_data_any());
+    item_info.maskable = ConvertIconProtoDataToShortcutsMenuIcon(
+        shortcut_menu_info.icon_data_maskable());
+    item_info.monochrome = ConvertIconProtoDataToShortcutsMenuIcon(
+        shortcut_menu_info.icon_data_monochrome());
+    shortcut_menu_item_infos.push_back(std::move(item_info));
+  }
+  return shortcut_menu_item_infos;
 }
 
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {

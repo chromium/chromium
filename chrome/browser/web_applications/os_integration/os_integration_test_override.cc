@@ -52,11 +52,17 @@
 
 #include <shellapi.h>
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_gdi_object.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/win/jumplist_updater.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/shell_util.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -265,6 +271,47 @@ absl::optional<SkColor> OsIntegrationTestOverride::GetShortcutIconTopLeftColor(
   return GetIconTopLeftColorFromShortcutFile(shortcut_path);
 }
 #endif
+
+#if BUILDFLAG(IS_WIN)
+void OsIntegrationTestOverride::AddShortcutsMenuJumpListEntryForApp(
+    const std::wstring& app_user_model_id,
+    const std::vector<scoped_refptr<ShellLinkItem>>& shell_link_items) {
+  jump_list_entry_map_[app_user_model_id] = shell_link_items;
+  shortcut_menu_apps_registered_.emplace(app_user_model_id);
+}
+
+void OsIntegrationTestOverride::DeleteShortcutsMenuJumpListEntryForApp(
+    const std::wstring& app_user_model_id) {
+  jump_list_entry_map_.erase(app_user_model_id);
+  shortcut_menu_apps_registered_.erase(app_user_model_id);
+}
+
+int OsIntegrationTestOverride::GetCountOfShortcutIconsCreated(
+    const std::wstring& app_user_model_id) {
+  DCHECK(IsShortcutsMenuRegisteredForApp(app_user_model_id));
+  return jump_list_entry_map_[app_user_model_id].size();
+}
+
+std::vector<SkColor> OsIntegrationTestOverride::GetIconColorsForShortcutsMenu(
+    const std::wstring& app_user_model_id) {
+  DCHECK(IsShortcutsMenuRegisteredForApp(app_user_model_id));
+  std::vector<SkColor> icon_colors;
+  for (auto& shell_link_item : jump_list_entry_map_[app_user_model_id]) {
+    icon_colors.emplace_back(
+        ReadColorFromShortcutMenuIcoFile(shell_link_item->icon_path()));
+  }
+  return icon_colors;
+}
+
+bool OsIntegrationTestOverride::IsShortcutsMenuRegisteredForApp(
+    const std::wstring& app_user_model_id) {
+  return base::Contains(jump_list_entry_map_, app_user_model_id);
+}
+#endif
+
+bool OsIntegrationTestOverride::AreShortcutsMenuRegistered() {
+  return !shortcut_menu_apps_registered_.empty();
+}
 
 base::FilePath OsIntegrationTestOverride::GetShortcutPath(
     Profile* profile,
@@ -564,6 +611,21 @@ SkColor OsIntegrationTestOverride::GetIconTopLeftColorFromShortcutFile(
     return 0;
   }
 #endif
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+SkColor OsIntegrationTestOverride::ReadColorFromShortcutMenuIcoFile(
+    const base::FilePath& file_path) {
+  HICON icon = static_cast<HICON>(
+      LoadImage(NULL, file_path.value().c_str(), IMAGE_ICON, 32, 32,
+                LR_LOADTRANSPARENT | LR_LOADFROMFILE));
+  base::win::ScopedHICON scoped_icon(icon);
+  SkBitmap output_image =
+      IconUtil::CreateSkBitmapFromHICON(scoped_icon.get(), gfx::Size(32, 32));
+  SkColor color = output_image.getColor(output_image.dimensions().width() / 2,
+                                        output_image.dimensions().height() / 2);
+  return color;
 }
 #endif
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_MENU_HANDLING_SUB_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_MENU_HANDLING_SUB_MANAGER_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -21,7 +22,8 @@ class WebAppRegistrar;
 // are changed.
 class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
  public:
-  ShortcutMenuHandlingSubManager(WebAppIconManager& icon_manager,
+  ShortcutMenuHandlingSubManager(const base::FilePath& profile_path,
+                                 WebAppIconManager& icon_manager,
                                  WebAppRegistrar& registrar);
   ~ShortcutMenuHandlingSubManager() override;
   void Start() override;
@@ -34,13 +36,27 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
                const absl::optional<SynchronizeOsOptions>& synchronize_options,
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
-               base::OnceClosure callback) override;
+               base::OnceClosure execute_complete) override;
 
  private:
   void StoreShortcutMenuData(const AppId& app_id,
                              proto::ShortcutMenus* shortcut_menus,
                              WebAppIconManager::ShortcutIconDataVector data);
+  void StartShortcutsMenuUnregistration(
+      const AppId& app_id,
+      const proto::WebAppOsIntegrationState& current_state,
+      base::OnceClosure registration_callback);
+  void ReadIconDataForShortcutsMenu(
+      const AppId& app_id,
+      const proto::WebAppOsIntegrationState& desired_state,
+      base::OnceClosure execute_complete);
+  void OnIconDataLoadedRegisterShortcutsMenu(
+      const AppId& app_id,
+      const proto::WebAppOsIntegrationState& desired_state,
+      base::OnceClosure execute_complete,
+      ShortcutsMenuIconBitmaps shortcut_menu_icon_bitmaps);
 
+  const base::FilePath profile_path_;
   const raw_ref<WebAppIconManager> icon_manager_;
   const raw_ref<WebAppRegistrar> registrar_;
 

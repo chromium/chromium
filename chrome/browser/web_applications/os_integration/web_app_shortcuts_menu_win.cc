@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -86,20 +87,19 @@ bool WriteShortcutsMenuIconsToIcoFiles(
   return true;
 }
 
-std::wstring GenerateAppUserModelId(const base::FilePath& profile_path,
-                                    const AppId& app_id) {
-  std::wstring app_name =
-      base::UTF8ToWide(GenerateApplicationNameFromAppId(app_id));
-  return shell_integration::win::GetAppUserModelIdForApp(app_name,
-                                                         profile_path);
-}
-
 bool UpdateJumpList(
     std::wstring app_user_model_id,
     const std::vector<scoped_refptr<ShellLinkItem>>& link_items) {
   if (GetUpdateJumpListForTesting())
     return std::move(GetUpdateJumpListForTesting())
         .Run(app_user_model_id, link_items);
+
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      GetOsIntegrationTestOverride();
+  if (test_override) {
+    test_override->AddShortcutsMenuJumpListEntryForApp(app_user_model_id,
+                                                       link_items);
+  }
 
   JumpListUpdater jumplist_updater(app_user_model_id);
   if (!jumplist_updater.BeginUpdate())
@@ -118,6 +118,14 @@ void SetUpdateJumpListForTesting(
   GetUpdateJumpListForTesting() = std::move(updateJumpListForTesting);
 }
 
+std::wstring GenerateAppUserModelId(const base::FilePath& profile_path,
+                                    const AppId& app_id) {
+  std::wstring app_name =
+      base::UTF8ToWide(GenerateApplicationNameFromAppId(app_id));
+  return shell_integration::win::GetAppUserModelIdForApp(app_name,
+                                                         profile_path);
+}
+
 bool ShouldRegisterShortcutsMenuWithOs() {
   return true;
 }
@@ -128,6 +136,9 @@ bool RegisterShortcutsMenuWithOsTask(
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      GetOsIntegrationTestOverride();
+
   // Each entry in the ShortcutsMenu (JumpList on Windows) needs an icon in .ico
   // format. This helper writes these icon files to disk as a series of
   // <index>.ico files, where index is a particular shortcut's index in the
@@ -193,6 +204,13 @@ void RegisterShortcutsMenuWithOs(
 bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
                                    const base::FilePath& profile_path,
                                    RegisterShortcutsMenuCallback callback) {
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      GetOsIntegrationTestOverride();
+  if (test_override) {
+    test_override->DeleteShortcutsMenuJumpListEntryForApp(
+        GenerateAppUserModelId(profile_path, app_id));
+  }
+
   bool unregistration_successful = false;
   if (!JumpListUpdater::IsEnabled()) {
     unregistration_successful = true;
@@ -200,6 +218,7 @@ bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
     unregistration_successful = JumpListUpdater::DeleteJumpList(
         GenerateAppUserModelId(profile_path, app_id));
   }
+
   std::move(callback).Run(unregistration_successful ? Result::kOk
                                                     : Result::kError);
   return unregistration_successful;

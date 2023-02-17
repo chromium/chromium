@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -19,7 +21,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/containers/flat_map.h"
+#endif
+
 class Profile;
+
+#if BUILDFLAG(IS_WIN)
+class ShellLinkItem;
+#endif
 
 namespace web_app {
 
@@ -63,6 +73,10 @@ class OsIntegrationTestOverride
  public:
   using AppProtocolList =
       std::vector<std::tuple<AppId, std::vector<std::string>>>;
+#if BUILDFLAG(IS_WIN)
+  using JumpListEntryMap =
+      base::flat_map<std::wstring, std::vector<scoped_refptr<ShellLinkItem>>>;
+#endif
   // Destroying this class blocks the thread until all users of
   // GetOsIntegrationTestOverride() have completed.
   struct BlockingRegistration {
@@ -109,6 +123,25 @@ class OsIntegrationTestOverride
       const AppId& app_id,
       const std::string& app_name);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  // These should not be called from tests, these are automatically
+  // called from production code in testing to set
+  // up OS integration data for shortcuts menu registration and
+  // unregistration.
+  void AddShortcutsMenuJumpListEntryForApp(
+      const std::wstring& app_user_model_id,
+      const std::vector<scoped_refptr<ShellLinkItem>>& shell_link_items);
+  void DeleteShortcutsMenuJumpListEntryForApp(
+      const std::wstring& app_user_model_id);
+
+  std::vector<SkColor> GetIconColorsForShortcutsMenu(
+      const std::wstring& app_user_model_id);
+  int GetCountOfShortcutIconsCreated(const std::wstring& app_user_model_id);
+  bool IsShortcutsMenuRegisteredForApp(const std::wstring& app_user_model_id);
+#endif
+
+  bool AreShortcutsMenuRegistered();
 
   // Gets the current shortcut path based on a shortcut directory, app_id and
   // app_name. This should only be run on Windows, Mac and Linux.
@@ -182,10 +215,18 @@ class OsIntegrationTestOverride
 #endif
 
 #if BUILDFLAG(IS_WIN)
+  SkColor ReadColorFromShortcutMenuIcoFile(const base::FilePath& file_path);
+#endif
+
+#if BUILDFLAG(IS_WIN)
   base::ScopedTempDir desktop_;
   base::ScopedTempDir application_menu_;
   base::ScopedTempDir quick_launch_;
   base::ScopedTempDir startup_;
+
+  // Records all ShellLinkItems for a given AppUserModelId for handling
+  // shortcuts menu registration.
+  JumpListEntryMap jump_list_entry_map_;
 #elif BUILDFLAG(IS_MAC)
   base::ScopedTempDir chrome_apps_folder_;
   std::map<base::FilePath, bool> startup_enabled_;
@@ -199,6 +240,8 @@ class OsIntegrationTestOverride
   // simplification on the OS-side, unregistrations are not recorded, and
   // instead this list can be checked for an empty registration.
   AppProtocolList protocol_scheme_registrations_;
+
+  base::flat_set<std::wstring> shortcut_menu_apps_registered_;
 
   // |on_destruction_| has it's closure set only once (when BlockingRegistration
   // is destroyed) and executed when OsIntegrationTestOverride is destroyed.

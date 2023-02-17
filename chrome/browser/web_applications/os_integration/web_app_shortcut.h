@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
@@ -42,6 +43,7 @@ class ImageSkia;
 namespace web_app {
 namespace proto {
 class WebAppOsIntegrationState;
+class ShortcutMenus;
 }
 
 // Represents the info required to create a shortcut for an app.
@@ -95,6 +97,9 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const base::FilePath& profile_path,
     const std::string& profile_name,
     const proto::WebAppOsIntegrationState& state);
+
+std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
+    const proto::ShortcutMenus& shortcut_menus);
 
 // This specifies a folder in the system applications menu (e.g the Start Menu
 // on Windows).
