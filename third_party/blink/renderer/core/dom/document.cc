@@ -124,6 +124,7 @@
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/context_features.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/document_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -2440,6 +2441,13 @@ bool Document::SetNeedsStyleRecalcForToggles() {
   }
 
   return true;
+}
+
+CSSToggleInference& Document::EnsureCSSToggleInference() {
+  if (!css_toggle_inference_) {
+    css_toggle_inference_ = MakeGarbageCollected<CSSToggleInference>(this);
+  }
+  return *css_toggle_inference_;
 }
 
 void Document::ApplyScrollRestorationLogic() {
@@ -8608,6 +8616,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(elements_with_css_toggles_);
   visitor->Trace(elements_needing_style_recalc_for_toggle_);
+  visitor->Trace(css_toggle_inference_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);
   visitor->Trace(elem_sheet_);

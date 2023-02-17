@@ -66,6 +66,8 @@ blink_core_sources_dom = [
   "css_toggle.h",
   "css_toggle_event.cc",
   "css_toggle_event.h",
+  "css_toggle_inference.cc",
+  "css_toggle_inference.h",
   "css_toggle_map.cc",
   "css_toggle_map.h",
   "css_toggle_traversal.h",

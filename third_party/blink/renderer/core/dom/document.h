@@ -131,6 +131,7 @@ class Attr;
 class BeforeUnloadEventListener;
 class CDATASection;
 class CSSStyleSheet;
+class CSSToggleInference;
 class CanvasFontCache;
 class ChromeClient;
 class Comment;
@@ -1567,6 +1568,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // Call SetNeedsStyleRecalc for elements from AddToRecalcStyleForToggle;
   // return whether any calls were made.
   bool SetNeedsStyleRecalcForToggles();
+  CSSToggleInference* GetCSSToggleInference() { return css_toggle_inference_; }
+  CSSToggleInference& EnsureCSSToggleInference();
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
@@ -2414,6 +2417,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // Elements that need to be restyled because a toggle was created on them,
   // or a prior sibling, during the previous restyle.
   HeapHashSet<Member<Element>> elements_needing_style_recalc_for_toggle_;
+  // The inference engine for CSS toggles.
+  Member<CSSToggleInference> css_toggle_inference_;
 
   int load_event_delay_count_;
 

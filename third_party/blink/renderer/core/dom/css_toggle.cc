@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringsequence_unsignedlong.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_event.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_traversal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -341,6 +342,8 @@ void CSSToggle::SetNeedsStyleRecalc(Element* toggle_element,
       SetElementNeedsStyleRecalc(e, when, reason);
     }
   }
+
+  toggle_element->GetDocument().EnsureCSSToggleInference().MarkNeedsRebuild();
 }
 
 void CSSToggle::SetLaterSiblingsNeedStyleRecalc(Element* toggle_element,
@@ -354,6 +357,8 @@ void CSSToggle::SetLaterSiblingsNeedStyleRecalc(Element* toggle_element,
       break;
     SetElementNeedsStyleRecalc(e, when, reason);
   }
+
+  toggle_element->GetDocument().EnsureCSSToggleInference().MarkNeedsRebuild();
 }
 
 const ToggleRoot* CSSToggle::FindToggleSpecifier() const {
