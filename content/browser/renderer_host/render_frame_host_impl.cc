@@ -767,29 +767,6 @@ bool VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   return true;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void DumpPrerenderTerminationSnapshot(
-    const ChildProcessTerminationInfo& info,
-    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
-  SCOPED_CRASH_KEY_BOOL("Prerender", "has_visible_clients",
-                        info.renderer_has_visible_clients);
-  SCOPED_CRASH_KEY_BOOL("Prerender", "was_subframe",
-                        info.renderer_was_subframe);
-  SCOPED_CRASH_KEY_BOOL("Prerender", "was_killed_by_browser",
-                        info.was_killed_intentionally_by_browser);
-  SCOPED_CRASH_KEY_BOOL("Prerender", "threw_exception_during_init",
-                        info.threw_exception_during_init);
-  SCOPED_CRASH_KEY_BOOL("Prerender", "clean_exit", info.clean_exit);
-  SCOPED_CRASH_KEY_NUMBER("Prerender", "termination_state",
-                          static_cast<int>(info.status));
-  SCOPED_CRASH_KEY_NUMBER("Prerender", "exit_code", info.exit_code);
-  SCOPED_CRASH_KEY_STRING32(
-      "Prerender", "rfhi_lifecycle",
-      RenderFrameHostImpl::LifecycleStateImplToString(lifecycle_state));
-  base::debug::DumpWithoutCrashing();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Enum used for Navigation.VerifyDidCommitParams histogram, to indicate which
 // DidCommitProvisionalLoadParams differ when comparing browser- vs
 // renderer-calculated values.
@@ -3142,16 +3119,10 @@ void RenderFrameHostImpl::RenderProcessGone(
                   kRendererProcessKilled);
   }
 
-  if (CancelPrerendering(PrerenderCancellationReason(
-          info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
-              ? PrerenderFinalStatus::kRendererProcessCrashed
-              : PrerenderFinalStatus::kRendererProcessKilled))) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(https://crbug.com/1407056): Report detailed status about the gone
-    // process for debugging.
-    DumpPrerenderTerminationSnapshot(info, lifecycle_state_);
-#endif  // BUILDFLAG(IS_ANDROID)
-  }
+  CancelPrerendering(PrerenderCancellationReason(
+      info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
+          ? PrerenderFinalStatus::kRendererProcessCrashed
+          : PrerenderFinalStatus::kRendererProcessKilled));
 
   if (owned_render_widget_host_)
     owned_render_widget_host_->RendererExited();
