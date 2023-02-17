@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 
 #include "base/feature_list.h"
+#include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
+#include "third_party/blink/renderer/platform/audio/audio_destination.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -387,14 +389,25 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
                   MaxChannelCount(), GetCallbackBufferSize()));
   DCHECK(IsMainThread());
 
-  // Stop the current sink and create a new with the provided sink descriptor.
-  StopPlatformDestination();
-  sink_descriptor_ = sink_descriptor;
-  CreatePlatformDestination();
-  StartPlatformDestination();
+  // Create a pending AudioDestination to replace the current one.
+  scoped_refptr<AudioDestination> pending_platform_destination =
+      AudioDestination::Create(
+          *this, sink_descriptor, ChannelCount(), latency_hint_, sample_rate_,
+          Context()->GetDeferredTaskHandler().RenderQuantumFrames());
 
-  // Currently we assume that the recreation request never fails.
-  std::move(callback).Run(media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
+  // With this pending AudioDestination, create and initialize an underlying
+  // sink in order to query the device status. If the status is OK, then replace
+  // the `platform_destination_` with the pending_platform_destination.
+  media::OutputDeviceStatus status =
+      pending_platform_destination->CreateSinkAndGetDeviceStatus();
+  if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+    StopPlatformDestination();
+    platform_destination_ = pending_platform_destination;
+    sink_descriptor_ = sink_descriptor;
+    StartPlatformDestination();
+  }
+
+  std::move(callback).Run(status);
 }
 
 }  // namespace blink

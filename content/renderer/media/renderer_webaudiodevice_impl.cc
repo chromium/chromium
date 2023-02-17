@@ -23,6 +23,7 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
+#include "media/base/output_device_info.h"
 #include "media/base/silent_sink_suspender.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -189,26 +190,7 @@ void RendererWebAudioDeviceImpl::Start() {
   if (sink_)
     return;  // Already started.
 
-  switch (sink_descriptor_.Type()) {
-    case blink::WebAudioSinkDescriptor::kAudible:
-      sink_ = AudioDeviceFactory::GetInstance()->NewAudioRendererSink(
-          GetLatencyHintSourceType(latency_hint_.Category()), frame_token_,
-          media::AudioSinkParameters(base::UnguessableToken(),
-                                     sink_descriptor_.SinkId().Utf8()));
-
-      // Use a task runner instead of the render thread for fake Render() calls
-      // since it has special connotations for Blink and garbage collection.
-      // Timeout value chosen to be highly unlikely in the normal case.
-      silent_sink_suspender_ = std::make_unique<media::SilentSinkSuspender>(
-          this, base::Seconds(30), current_sink_params_, sink_,
-          GetSilentSinkTaskRunner());
-      sink_->Initialize(current_sink_params_, silent_sink_suspender_.get());
-      break;
-    case blink::WebAudioSinkDescriptor::kSilent:
-      sink_ = create_silent_sink_cb_.Run(GetSilentSinkTaskRunner());
-      sink_->Initialize(current_sink_params_, this);
-      break;
-  }
+  CreateAudioRendererSink();
   sink_->Start();
   sink_->Play();
 }
@@ -300,6 +282,54 @@ RendererWebAudioDeviceImpl::GetSilentSinkTaskRunner() {
 
 void RendererWebAudioDeviceImpl::SendLogMessage(const std::string& message) {
   blink::WebRtcLogMessage(base::StringPrintf("[WA]RWADI::%s", message.c_str()));
+}
+
+void RendererWebAudioDeviceImpl::CreateAudioRendererSink() {
+  DCHECK(!sink_);
+
+  switch (sink_descriptor_.Type()) {
+    case blink::WebAudioSinkDescriptor::kAudible:
+      sink_ = AudioDeviceFactory::GetInstance()->NewAudioRendererSink(
+          GetLatencyHintSourceType(latency_hint_.Category()), frame_token_,
+          media::AudioSinkParameters(base::UnguessableToken(),
+                                     sink_descriptor_.SinkId().Utf8()));
+
+      // Use a task runner instead of the render thread for fake Render() calls
+      // since it has special connotations for Blink and garbage collection.
+      // Timeout value chosen to be highly unlikely in the normal case.
+      silent_sink_suspender_ = std::make_unique<media::SilentSinkSuspender>(
+          this, base::Seconds(30), current_sink_params_, sink_,
+          GetSilentSinkTaskRunner());
+      sink_->Initialize(current_sink_params_, silent_sink_suspender_.get());
+      break;
+    case blink::WebAudioSinkDescriptor::kSilent:
+      sink_ = create_silent_sink_cb_.Run(GetSilentSinkTaskRunner());
+      sink_->Initialize(current_sink_params_, this);
+      break;
+  }
+}
+
+media::OutputDeviceStatus
+RendererWebAudioDeviceImpl::CreateSinkAndGetDeviceStatus() {
+  CreateAudioRendererSink();
+
+  // The device status of a silent sink is always OK.
+  bool is_silent_sink =
+      sink_descriptor_.Type() == blink::WebAudioSinkDescriptor::kSilent;
+  media::OutputDeviceStatus status =
+      is_silent_sink ? media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK
+                     : sink_->GetOutputDeviceInfo().device_status();
+
+  // If sink status is not OK, reset `sink_` and `silent_sink_suspender_`
+  // because this instance will be destroyed.
+  if (status != media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+    sink_ = nullptr;
+    silent_sink_suspender_.reset();
+  } else {
+    sink_->Start();
+    sink_->Play();
+  }
+  return status;
 }
 
 }  // namespace content

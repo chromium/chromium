@@ -130,6 +130,12 @@ class PLATFORM_EXPORT AudioDestination final
 
   unsigned RenderQuantumFrames() const;
 
+  // Creates a new sink and return its device status. If the status is OK,
+  // replace the existing sink with the new one. This function is called in
+  // RealtimeAudioDestinationHandler::SetSinkDescriptor, which can be invoked
+  // from the constructor of AudioContext and AudioContext.setSinkId() method.
+  media::OutputDeviceStatus CreateSinkAndGetDeviceStatus();
+
  private:
   explicit AudioDestination(AudioIOCallback&,
                             const WebAudioSinkDescriptor& sink_descriptor,

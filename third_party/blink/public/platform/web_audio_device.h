@@ -29,6 +29,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_AUDIO_DEVICE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_AUDIO_DEVICE_H_
 
+#include "media/base/output_device_info.h"
+#include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
@@ -59,6 +61,10 @@ class WebAudioDevice {
 
   // Sets the detect silence flag for |RendererWebAudioDeviceImpl|.
   virtual void SetDetectSilence(bool detect_silence) {}
+
+  // Creates a new sink and return its device status. If the status is OK,
+  // replace the existing sink with the new one.
+  virtual media::OutputDeviceStatus CreateSinkAndGetDeviceStatus() = 0;
 };
 
 }  // namespace blink

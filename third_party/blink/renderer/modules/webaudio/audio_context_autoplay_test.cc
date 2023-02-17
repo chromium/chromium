@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "media/base/output_device_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
@@ -47,6 +48,10 @@ class MockWebAudioDeviceForAutoplayTest : public WebAudioDevice {
   double SampleRate() override { return sample_rate_; }
   int FramesPerBuffer() override { return frames_per_buffer_; }
   int MaxChannelCount() override { return 2; }
+  media::OutputDeviceStatus CreateSinkAndGetDeviceStatus() override {
+    // In this test, we assume the sink creation always succeeds.
+    return media::OUTPUT_DEVICE_STATUS_OK;
+  }
 
  private:
   double sample_rate_;

@@ -77,6 +77,13 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
     return current_sink_params_;
   }
 
+  // Create and initialize an instance of AudioRendererSink.
+  void CreateAudioRendererSink();
+
+  // Creates a new sink and return its device status. If the status is OK,
+  // replace the existing sink with the new one.
+  media::OutputDeviceStatus CreateSinkAndGetDeviceStatus() override;
+
  protected:
   // Callback to get output device params (for tests).
   using OutputDeviceParamsCallback = base::OnceCallback<media::AudioParameters(
@@ -138,6 +145,13 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   bool is_rendering_ = false;
 
   CreateSilentSinkCallback create_silent_sink_cb_;
+
+  FRIEND_TEST_ALL_PREFIXES(RendererWebAudioDeviceImplTest,
+                           CreateSinkAndGetDeviceStatus_HealthyDevice);
+  FRIEND_TEST_ALL_PREFIXES(RendererWebAudioDeviceImplTest,
+                           CreateSinkAndGetDeviceStatus_ErrorDevice);
+  FRIEND_TEST_ALL_PREFIXES(RendererWebAudioDeviceImplTest,
+                           CreateSinkAndGetDeviceStatus_SilentSink);
 };
 
 }  // namespace content

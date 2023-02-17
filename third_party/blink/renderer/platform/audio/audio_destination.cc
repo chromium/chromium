@@ -490,4 +490,8 @@ void AudioDestination::SendLogMessage(const String& message) const {
                        .Utf8());
 }
 
+media::OutputDeviceStatus AudioDestination::CreateSinkAndGetDeviceStatus() {
+  return web_audio_device_->CreateSinkAndGetDeviceStatus();
+}
+
 }  // namespace blink
