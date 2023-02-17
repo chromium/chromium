@@ -105,6 +105,7 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Search metadata that's often used to persist into History.
   struct SearchMetadata {
+    const TemplateURL* template_url;
     GURL normalized_url;
     std::u16string search_terms;
   };

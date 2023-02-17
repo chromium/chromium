@@ -846,7 +846,7 @@ TemplateURLService::ExtractSearchMetadata(const GURL& url) const {
     return absl::nullopt;
   }
 
-  return SearchMetadata{normalized_url, normalized_search_terms};
+  return SearchMetadata{template_url, normalized_url, normalized_search_terms};
 }
 
 bool TemplateURLService::IsSideSearchSupportedForDefaultSearchProvider() const {

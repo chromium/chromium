@@ -4,11 +4,13 @@
 
 #include "components/image_service/image_service.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/image_service/features.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/search_engines/search_engine_type.h"
@@ -23,6 +25,7 @@ namespace image_service {
 // A one-time use object that uses Suggest to get an image URL corresponding
 // to `search_query` and `entity_id`. This is a hacky temporary implementation,
 // ideally this should be replaced by persisted Suggest-provided entities.
+// TODO(tommycli): Move this to its own separate file with unit tests.
 class ImageService::SuggestEntityImageURLFetcher {
  public:
   SuggestEntityImageURLFetcher(
@@ -150,7 +153,51 @@ base::WeakPtr<ImageService> ImageService::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool ImageService::FetchImageFor(const std::u16string& search_query,
+void ImageService::FetchImageFor(mojom::ClientId client_id,
+                                 const GURL& page_url,
+                                 const mojom::Options& options,
+                                 ResultCallback callback) {
+  if (!base::FeatureList::IsEnabled(kImageService)) {
+    // In general this should never happen, because each UI should have its own
+    // feature gate, but this is just so we have a whole-service killswitch.
+    return std::move(callback).Run(GURL());
+  }
+
+  // TODO(b/244507194): This one only checks Sync consent, we probably need to
+  // delegate consent checking to the UI layer entirely, since Bookmarks needs
+  // to use a Bookmarks-specific Sync permission checker.
+  DCHECK(url_consent_helper_ && url_consent_helper_->IsEnabled());
+
+  if (options.suggest_images &&
+      base::FeatureList::IsEnabled(kImageServiceSuggestPoweredImages)) {
+    // TODO(b/244507194): Get our "own" TemplateURLService.
+    if (auto* template_url_service =
+            autocomplete_provider_client_->GetTemplateURLService()) {
+      auto search_metadata =
+          template_url_service->ExtractSearchMetadata(page_url);
+      // Fetch entity-keyed images for Google SRP visits only, because only
+      // Google SRP visits can expect to have a reasonable entity from Google
+      // Suggest.
+      if (search_metadata && search_metadata->template_url &&
+          search_metadata->template_url->GetEngineType(
+              template_url_service->search_terms_data()) ==
+              SEARCH_ENGINE_GOOGLE) {
+        return FetchImageFor(/*search_query=*/search_metadata->search_terms,
+                             /*entity_id=*/"", std::move(callback));
+      }
+    }
+  }
+
+  if (options.optimization_guide_images &&
+      base::FeatureList::IsEnabled(
+          kImageServiceOptimizationGuideSalientImages)) {
+    // TODO(b/248367751): Insert OptimizationGuide Salient Image call here.
+  }
+
+  std::move(callback).Run(GURL());
+}
+
+void ImageService::FetchImageFor(const std::u16string& search_query,
                                  const std::string& entity_id,
                                  ResultCallback callback) {
   DCHECK(url_consent_helper_ && url_consent_helper_->IsEnabled());
@@ -164,7 +211,6 @@ bool ImageService::FetchImageFor(const std::u16string& search_query,
   fetcher_raw_ptr->Start(
       base::BindOnce(&ImageService::OnImageFetched, weak_factory_.GetWeakPtr(),
                      std::move(fetcher), std::move(callback)));
-  return true;
 }
 
 void ImageService::OnImageFetched(

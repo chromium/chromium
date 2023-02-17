@@ -5,10 +5,13 @@
 component("image_service") {
   defines = [ "IS_IMAGE_SERVICE_IMPL" ]
   sources = [
+    "features.cc",
+    "features.h",
     "image_service.cc",
     "image_service.h",
   ]
   deps = [
+    "mojom:mojo_bindings",
     "//base",
     "//components/google/core/common",
     "//components/keyed_service/core",
