@@ -229,6 +229,10 @@ void NtpCustomBackgroundService::UpdateCustomBackgroundColorAsync(
     const GURL& image_url,
     const gfx::Image& fetched_image,
     const image_fetcher::RequestMetadata& metadata) {
+  if (metadata.http_response_code ==
+      image_fetcher::RequestMetadata::ResponseCode::RESPONSE_CODE_INVALID) {
+    return;
+  }
   // Calculate the bitmap color asynchronously as it is slow (1-2 seconds for
   // the thumbnail). However, prefs should be updated on the main thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -242,8 +246,6 @@ void NtpCustomBackgroundService::UpdateCustomBackgroundColorAsync(
 void NtpCustomBackgroundService::FetchCustomBackgroundAndExtractBackgroundColor(
     const GURL& image_url,
     const GURL& fetch_url) {
-  DCHECK(!fetch_url.is_empty());
-
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("ntp_custom_background",
                                           R"(

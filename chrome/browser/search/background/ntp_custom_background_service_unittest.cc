@@ -543,7 +543,7 @@ TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
   scoped_feature_list.InitAndEnableFeature(
       ntp_features::kCustomizeChromeColorExtraction);
 
-  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(4);
+  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(2);
   SkBitmap bitmap;
   bitmap.allocN32Pixels(32, 32);
   bitmap.eraseColor(SK_ColorRED);
@@ -573,9 +573,23 @@ TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
       kUrl, kThumbnailUrl, kAttributionLine1, kAttributionLine2, kActionUrl,
       "");
 
+  image_fetcher::RequestMetadata metadata = image_fetcher::RequestMetadata();
+
+  // Background color will not update if metadata http code invalid.
+  metadata.http_response_code =
+      image_fetcher::RequestMetadata::ResponseCode::RESPONSE_CODE_INVALID;
+  custom_background_service_->UpdateCustomBackgroundColorAsync(kUrl, image,
+                                                               metadata);
+  task_environment_.RunUntilIdle();
+  custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_NE(
+      SK_ColorRED,
+      custom_background->custom_background_main_color.value_or(SK_ColorWHITE));
+
   // Background color will not update if current background url changed.
+  metadata.http_response_code = 200;
   custom_background_service_->UpdateCustomBackgroundColorAsync(
-      GURL("different_url"), image, image_fetcher::RequestMetadata());
+      GURL("different_url"), image, metadata);
   task_environment_.RunUntilIdle();
   custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_NE(
@@ -583,8 +597,8 @@ TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
       custom_background->custom_background_main_color.value_or(SK_ColorWHITE));
 
   // Background color should update.
-  custom_background_service_->UpdateCustomBackgroundColorAsync(
-      kUrl, image, image_fetcher::RequestMetadata());
+  custom_background_service_->UpdateCustomBackgroundColorAsync(kUrl, image,
+                                                               metadata);
   task_environment_.RunUntilIdle();
   custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(
