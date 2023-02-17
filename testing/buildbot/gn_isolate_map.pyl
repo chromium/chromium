@@ -545,6 +545,10 @@
     "label": "//:wpt_tests_isolate_content_shell",
     "type": "generated_script",
   },
+  "wpt_tests_ios": {
+    "label": "//ios/chrome/test/wpt:wpt_tests_ios",
+    "type": "generated_script",
+  },
   "chrome/browser/media/router": {
     "label": "//chrome/browser/media/router:router",
     "type": "additional_compile_target",

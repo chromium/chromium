@@ -18272,6 +18272,7 @@
       {
         "args": [
           "--log-wptreport",
+          "--use-upstream-wpt",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -18279,14 +18280,14 @@
           "--xctest"
         ],
         "experiment_percentage": 100,
-        "isolate_name": "wpt_tests_isolate",
+        "isolate_name": "wpt_tests_ios",
         "merge": {
           "args": [
             "--verbose"
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "wpt_tests_suite",
+        "name": "wpt_tests_ios",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -18316,7 +18317,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+        "test_id_prefix": "ninja://ios/chrome/test/wpt:wpt_tests_ios/"
       }
     ]
   },

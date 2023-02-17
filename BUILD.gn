@@ -1133,14 +1133,6 @@ if (!is_ios) {
         "//chrome/test/chromedriver:chromedriver_server",
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
-
-      if (is_ios) {
-        args = [
-          "--product=chrome_ios",
-          "--no-show-results",
-        ]
-        data_deps += [ ":blink_web_tests_support_data" ]
-      }
     }
     script_test("wpt_tests_isolate_content_shell") {
       script = "//third_party/blink/tools/run_wpt_tests.py"

@@ -3302,7 +3302,7 @@
           'xctest',
         ],
         'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_ios',
+          'isolated_scripts': 'wpt_tests_ios',
         },
       },
       'ios15-beta-simulator': {

@@ -8,6 +8,35 @@ import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/chrome/test/xcuitest/ios_chrome_xcuitest_app_host.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
+import("//testing/test.gni")
+
+script_test("wpt_tests_ios") {
+  script = "//third_party/blink/tools/run_wpt_tests.py"
+  args = [
+    "--product",
+    "chrome_ios",
+  ]
+  deps = [ ":all_tests" ]
+  data = [
+    "//third_party/blink/tools/run_wpt_tests.py",
+    "//third_party/wpt_tools/",
+    "//third_party/blink/tools/wpt_process_results.py",
+    "//third_party/blink/tools/blinkpy/",
+    "//build/skia_gold_common/",
+    "//third_party/blink/web_tests/external/",
+    "//third_party/blink/web_tests/wpt_internal/",
+    "//third_party/blink/web_tests/resources/testdriver-vendor.js",
+    "//third_party/blink/web_tests/wptrunner.blink.ini",
+    "//third_party/blink/web_tests/FlagSpecificConfig",
+    "//third_party/blink/web_tests/SmokeTests/",
+    "//.vpython3",
+  ]
+  data_deps = [
+    "//testing:test_scripts_shared",
+    "//third_party/catapult/third_party/typ:typ",
+    "//tools/imagediff",
+  ]
+}
 
 group("all_tests") {
   testonly = true
