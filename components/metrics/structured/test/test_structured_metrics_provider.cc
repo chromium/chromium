@@ -82,6 +82,7 @@ void TestStructuredMetricsProvider::OnEventRecord(const Event& event) {
   if (!event_record_callback_) {
     return;
   }
+
   event_record_callback_.Run(event);
 }
 

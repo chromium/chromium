@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/timer/timer.h"
+#include "chrome/browser/apps/app_service/metrics/app_discovery_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_input_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
@@ -79,6 +80,7 @@ class AppPlatformMetricsService {
   std::unique_ptr<apps::AppPlatformMetrics> app_platform_app_metrics_;
   std::unique_ptr<apps::AppPlatformInputMetrics> app_platform_input_metrics_;
   std::unique_ptr<apps::WebsiteMetrics> website_metrics_;
+  std::unique_ptr<apps::AppDiscoveryMetrics> app_discovery_metrics_;
 };
 
 }  // namespace apps

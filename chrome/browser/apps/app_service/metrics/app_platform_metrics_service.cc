@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -66,6 +67,12 @@ void AppPlatformMetricsService::Start(
       profile_, instance_registry);
   website_metrics_ = std::make_unique<apps::WebsiteMetrics>(
       profile_, GetUserTypeByDeviceTypeMetrics());
+
+  // App discovery logging.
+  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
+    app_discovery_metrics_ = std::make_unique<apps::AppDiscoveryMetrics>(
+        profile_, instance_registry, app_platform_app_metrics_.get());
+  }
 
   day_id_ = profile_->GetPrefs()->GetInteger(kAppPlatformMetricsDayId);
   CheckForNewDay();

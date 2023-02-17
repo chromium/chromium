@@ -495,6 +495,90 @@
     Project used to record a sequence of events that are related to each other.
   </summary>
 
+  <event name="AppDiscovery.AppInstalled">
+    <summary>
+      Recorded whenever a new app is installed on Chrome OS.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
+      </summary>
+    </metric>
+    <metric name="AppType" type="int">
+      <summary>
+        The type of app that was installed (ie ARC, native, Crostini, etc.).
+      </summary>
+    </metric>
+    <metric name="InstallSource" type="int">
+      <summary>
+        Origin from which the app was installed (ie launcher, playstore).
+      </summary>
+    </metric>
+    <metric name="InstallReason" type="int">
+      <summary>
+        Reason for which the app was installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.AppLaunched">
+    <summary>
+      Recorded whenever a new app is launched on Chrome OS.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
+      </summary>
+    </metric>
+    <metric name="AppType" type="int">
+      <summary>
+        The type of app that was installed (ie ARC, native, Crostini, etc.).
+      </summary>
+    </metric>
+    <metric name="LaunchSource" type="int">
+      <summary>
+        From where the app was launched from (ie launcher, shelf).
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.AppUninstall">
+    <summary>
+      Recorded whenever an app is uninstalled on Chrome OS.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
+      </summary>
+    </metric>
+    <metric name="AppType" type="int">
+      <summary>
+        The type of app that was installed (ie ARC, native, Crostini, etc.).
+      </summary>
+    </metric>
+    <metric name="UninstallSource" type="int">
+      <summary>
+        From where the app was uninstalled.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.AppStateChanged">
+    <summary>
+      Recorded when a change in an app state has been detected.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
+      </summary>
+    </metric>
+    <metric name="AppState" type="int">
+      <summary>
+        Denotes a change in an app state. 0 - INACTIVE, 1 - ACTIVE, 2 - CLOSED.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.
