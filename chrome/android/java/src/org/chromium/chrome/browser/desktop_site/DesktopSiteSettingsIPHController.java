@@ -252,11 +252,13 @@ public class DesktopSiteSettingsIPHController {
         mActivityTabTabObserver = new ActivityTabTabObserver(mActivityTabProvider) {
             @Override
             protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                if (tab == null) return;
                 showIPHCallback.onResult(tab);
             }
 
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
+                if (tab == null) return;
                 showIPHCallback.onResult(tab);
             }
         };

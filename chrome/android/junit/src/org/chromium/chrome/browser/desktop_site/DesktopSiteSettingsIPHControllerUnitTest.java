@@ -216,6 +216,25 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
         verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
     }
 
+    // This tests the fix for the crash reported in crbug.com/1416519.
+    @Test
+    public void testCreateTabObserver_NullTab() {
+        // Re-instantiate the controller to re-register the ActivityTabTabObserver with applicable
+        // fieldtrial params set.
+        mController.destroy();
+        var params = new HashMap<String, String>();
+        params.put(DesktopSiteSettingsIPHController.PARAM_IPH_TYPE_SPECIFIC, "true");
+        params.put(DesktopSiteSettingsIPHController.PARAM_SITE_LIST,
+                String.join(",", mTopDesktopSitesDomainMap.values()));
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, params);
+        initializeController();
+
+        ActivityTabTabObserver activityTabTabObserver =
+                mController.getActiveTabObserverForTesting();
+        activityTabTabObserver.onPageLoadFinished(null, mTabUrl);
+        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
+    }
+
     @Test
     @Config(qualifiers = "sw320dp")
     public void testCreateTabObserver_GenericIPH_NonTabletDevice() {
