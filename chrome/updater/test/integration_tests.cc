@@ -840,8 +840,6 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(crbug.com/1416358) - enable this code for other platforms.
-#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
   ScopedServer test_server(test_commands_);
 
@@ -871,7 +869,6 @@ TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
 
   // Expect that the updater uninstalled itself as well as the lower version.
 }
-#endif  // IS_WIN
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
