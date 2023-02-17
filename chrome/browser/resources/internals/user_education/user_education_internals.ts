@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
@@ -12,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,9 +21,11 @@ import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/poly
 import {getTemplate} from './user_education_internals.html.js';
 import {FeaturePromoDemoPageInfo, UserEducationInternalsPageHandler, UserEducationInternalsPageHandlerInterface} from './user_education_internals.mojom-webui.js';
 
-const UserEducationInternalsElementBase = HelpBubbleMixin(PolymerElement) as {
-  new (): PolymerElement & HelpBubbleMixinInterface,
-};
+const UserEducationInternalsElementBase =
+    CrContainerShadowMixin(HelpBubbleMixin(PolymerElement)) as {
+      new (): PolymerElement & HelpBubbleMixinInterface &
+          CrContainerShadowMixinInterface,
+    };
 
 interface UserEducationInternalsElement {
   $: {

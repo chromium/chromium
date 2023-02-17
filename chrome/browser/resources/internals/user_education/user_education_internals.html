@@ -1,7 +1,8 @@
-<style include="cr-hidden-style">
+<style include="cr-hidden-style cr-shared-style">
 :host {
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   --main-column-max-width: 680px;
   --side-bar-width: 200px;
@@ -9,9 +10,6 @@
 
 cr-toolbar {
   min-height: 56px;
-  position: sticky;
-  top: 0;
-  z-index: 2;
 
   --cr-toolbar-center-basis: var(--main-column-max-width);
 }
@@ -20,12 +18,17 @@ cr-toolbar:not([narrow]) {
   --cr-toolbar-left-spacer-width: var(--side-bar-width);
 }
 
+#cr-container-shadow-top {
+  /* Needs to be higher than #container's z-index to appear above
+    * scrollbars. */
+  z-index: 2;
+}
+
 #container {
   align-items: flex-start;
   display: flex;
   flex: 1;
-  overflow: overlay;
-  position: relative;
+  overflow: auto;
 }
 
 #left,
@@ -42,6 +45,7 @@ cr-toolbar:not([narrow]) {
   display: flex;
   flex-basis: var(--main-column-max-width);
   justify-content: center;
+  position: relative;
 }
 
 #content {
