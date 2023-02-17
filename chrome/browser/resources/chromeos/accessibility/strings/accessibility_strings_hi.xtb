@@ -138,7 +138,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1810107444790159527">सूची बॉक्स</translation>
 <translation id="1812527064848182527">लैंडस्केप</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
-<translation id="1834891354138622109">स्तंभ</translation>
+<translation id="1834891354138622109">कॉलम</translation>
 <translation id="1846771122725914429">ब्लूटूथ ब्रेल डिसप्ले</translation>
 <translation id="1852018405765032699">ChromeVox के मेन्यू खोलने और बंद करने के लिए, स्क्रीन पर चार उंगलियों से टैप करना होगा. इन मेन्यू में कमांड और शॉर्टकट से जुड़ी काम की जानकारी होती है. जब मेन्यू खुले हों, तब आप एक आइटम से दूसरे आइटम पर जाने के लिए, एक उंगली से स्वाइप कर सकते हैं. साथ ही, आइटम चालू करने के लिए दो बार टैप कर सकते हैं. जारी रखने के लिए, स्क्रीन पर चार उंगलियों से टैप करें.</translation>
 <translation id="1864430479908918647">Search+Space बटन दबाएं</translation>
@@ -488,7 +488,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4187322598335821254">लाइन एक-एक करके खिसकाने के लिए ऊपर या नीचे स्वाइप करें</translation>
 <translation id="4188530942454211480">पिछला वाक्य</translation>
 <translation id="4191918948604314587">बटन</translation>
-<translation id="419265409837491189">पिछले स्तंभ पर जाएं</translation>
+<translation id="419265409837491189">पिछले कॉलम पर जाएं</translation>
 <translation id="4202186506458631436">दाएं ले जाएं</translation>
 <translation id="4204126831294769023">आसमानी नीला</translation>
 <translation id="4204864733111726379">हल्का गुलाबी</translation>
@@ -551,7 +551,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4660783501463101648">क्लासिक को हटाया गया. ChromeVox क्लासिक में वापस ले जाने वाला कीबोर्ड टॉगल हटा दिया गया है.</translation>
 <translation id="4661075872484491155">ट्री</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4677535310137735442">अगले स्तंभ पर जाएं</translation>
+<translation id="4677535310137735442">अगले कॉलम पर जाएं</translation>
 <translation id="4688873778442829762">grd</translation>
 <translation id="4693675773662933727">पिछला लैंडमार्क</translation>
 <translation id="4710166929009737753">एक उंगली से दाईं ओर स्वाइप करें</translation>
@@ -720,7 +720,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5819072574982403430">ट्री आइटम</translation>
 <translation id="5822819874379903994">गहरा फ़िरोज़ी</translation>
 <translation id="5824976764713185207">पेज लोड हो जाने के बाद उसे अपने-आप पढ़ें</translation>
-<translation id="5826479389509458994">पंक्ति <ph name="ROW" /> स्तंभ <ph name="COL" /></translation>
+<translation id="5826479389509458994">पंक्ति <ph name="ROW" /> कॉलम <ph name="COL" /></translation>
 <translation id="5833044594931167190">कोई ARIA लैंडमार्क नहीं है</translation>
 <translation id="5842625257683688671">आगे कोई ग्राफ़िक नहीं है</translation>
 <translation id="5847883414085148048">लगन</translation>
@@ -801,7 +801,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6368143427468974988">पिछला शीर्षक</translation>
 <translation id="6376999910001533545">मरून</translation>
 <translation id="6378394210114975876">बहुत हल्का जामुनी</translation>
-<translation id="6385591741672306837">स्तंभ</translation>
+<translation id="6385591741672306837">कॉलम</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">सभी इवेंट फ़िल्टर बंद करें</translation>
 <translation id="6411569524720229058">पतझड़</translation>

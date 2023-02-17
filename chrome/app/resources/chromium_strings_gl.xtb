@@ -12,7 +12,7 @@
 <translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
-<translation id="1231839967188101156">Cando a opción está activada, Chromium libera memoria das pestanas inactivas. Desta forma as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chromium sigue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="1231839967188101156">Cando esta opción está activada, Chromium libera memoria das pestanas inactivas. Desta forma, as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chromium segue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Chromium funciona máis rápido grazas a Aforro de memoria</translation>
 <translation id="1315551408014407711">Configura o teu novo perfil de Chromium</translation>
 <translation id="1396446129537741364">Chromium está tentando mostrar contrasinais.</translation>

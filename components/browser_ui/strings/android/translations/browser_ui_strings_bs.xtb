@@ -184,7 +184,7 @@
 <translation id="4883854917563148705">Upravljane postavke se ne mogu poništiti</translation>
 <translation id="4887024562049524730">Web lokacije moraju tražiti dozvolu za korištenje uređaja i podataka virtuelne realnosti (preporučeno)</translation>
 <translation id="4955223779495905865">Web lokacija koju posjetite može ugraditi sadržaj s drugih web lokacija, naprimjer slike, oglase i tekst. Bilo koja od tih web lokacija može sačuvati kolačiće i druge podatke da personalizira vaše iskustvo.</translation>
-<translation id="4962975101802056554">Opozovi sva odobrenja za uređaj</translation>
+<translation id="4962975101802056554">Opozovite sva odobrenja za uređaj</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
 <translation id="4976702386844183910">Posljednji put je posjećeno <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
@@ -207,7 +207,7 @@
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">Uredu, razumijem</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
-<translation id="5335288049665977812">Dozvoli web lokacijama da pokrenu JavaScript (preporučeno)</translation>
+<translation id="5335288049665977812">Dozvolite web lokacijama da pokrenu JavaScript (preporučeno)</translation>
 <translation id="534295439873310000">NFC uređaji</translation>
 <translation id="5354152178998424783">Ovim će se obrisati <ph name="DATASIZE" /> podataka i kolačića koje su pohranile web lokacije.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i još 1)}one{(i još #)}few{(i još #)}other{(i još #)}}</translation>
@@ -376,7 +376,7 @@
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvijek zatraži verziju web lokacije za mobilni uređaj</translation>
 <translation id="8499083585497694743">Uključi mikrofon</translation>
-<translation id="851751545965956758">Blokiraj web lokacije da se ne povezuju s uređajima</translation>
+<translation id="851751545965956758">Blokirajte web lokacije da se ne povezuju s uređajima</translation>
 <translation id="8525306231823319788">Cijeli ekran</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokaciju čiji je vlasnik <ph name="FPS_OWNER" />}one{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokaciju čiji je vlasnik <ph name="FPS_OWNER" />}few{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokacije čiji je vlasnik <ph name="FPS_OWNER" />}other{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokacija čiji je vlasnik <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>

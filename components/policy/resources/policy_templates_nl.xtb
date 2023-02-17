@@ -87,7 +87,7 @@
       Ga naar https://support.google.com/chrome/a?p=Supported_directory_variables voor een lijst met variabelen die je kunt gebruiken.
 
       Als je deze instelling niet instelt, wordt de standaard profieldirectory gebruikt.</translation>
-<translation id="1059069692400941670">Import van standaardzoekmachine bij eerste uitvoering uitzetten</translation>
+<translation id="1059069692400941670">Import van standaard zoekmachine bij eerste uitvoering uitzetten</translation>
 <translation id="1062011392452772310">Externe bevestiging van apparaat aanzetten</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1063860513136880926">Als je het beleid toepast, zijn screenshots die worden gemaakt met sneltoetsen of extensie-API's niet toegestaan. Als je het beleid niet toepast of niet instelt, zijn screenshots toegestaan.
@@ -5851,7 +5851,7 @@ Dit beleid wordt in de toekomst verwijderd uit <ph name="PRODUCT_NAME" />.</tran
       Geef een <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hash op door de naam van het hash-algoritme, een slash en de Base64-codering van het betreffende toegepaste hash-algoritme te koppelen aan de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> met DER-codering van het opgegeven certificaat. Een indeling met Base64-codering komt overeen met die van een SPKI-vingerafdruk. Het enige herkende hash-algoritme is sha256. Andere algoritmen worden genegeerd.
 
       Als je het beleid niet instelt, betekent dit dat als certificaten die openbaar moeten worden gemaakt via Certificaattransparantie niet openbaar worden gemaakt, de betreffende certificaten niet door <ph name="PRODUCT_NAME" /> worden vertrouwd.</translation>
-<translation id="6703381779632216549">Import van standaardzoekmachine bij eerste uitvoering aanzetten</translation>
+<translation id="6703381779632216549">Import van standaard zoekmachine bij eerste uitvoering aanzetten</translation>
 <translation id="6704445641918520643">Lazy loading van WebUI voor inloggen aanzetten.</translation>
 <translation id="6704515759227307131">Dit beleid is beëindigd en is vervangen door AdvancedProtectionAllowed.
 

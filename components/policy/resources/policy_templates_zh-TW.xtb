@@ -189,7 +189,7 @@
 <translation id="1160939557934457296">停用略過安全瀏覽警告網頁繼續進行</translation>
 <translation id="1163080558183062209">停用拒絕清單上的印表機類型</translation>
 <translation id="1165923723751466821">允許透過瀏覽器訪客模式和設定檔登入</translation>
-<translation id="117059611145966538">外部列印伺服器</translation>
+<translation id="117059611145966538">外部印表機伺服器</translation>
 <translation id="117080706484659953">允許 <ph name="MAC_OS_NAME" /> 上的政策範圍偵測</translation>
 <translation id="1171106901454883937">啟用裝置版本資訊回報功能</translation>
 <translation id="1171785618439752042">你可以透過這項政策，指定從 <ph name="MS_AD_NAME" /> 伺服器提出 Kerberos 票證要求時可使用哪些加密類型。
@@ -1014,19 +1014,19 @@
       只有當 ARC 處於未執行狀態 (例如 Chrome OS 啟動期間) 時，這項政策的變更才會生效。</translation>
 <translation id="1985598967415986700">使用者代理程式縮減功能可透過 Field-Trials 和 Origin-Trials 功能控管。</translation>
 <translation id="1987789058026551147">啟用裝置資訊站工作階段回報功能</translation>
-<translation id="1988345404999458987">為可用的列印伺服器提供設定。
+<translation id="1988345404999458987">為可用的印表機伺服器提供設定。
 
-      這項政策可讓你使用 JSON 檔案為 <ph name="PRODUCT_OS_NAME" />裝置提供外部列印伺服器設定。
+      這項政策可讓你使用 JSON 檔案為 <ph name="PRODUCT_OS_NAME" />裝置提供外部印表機伺服器設定。
 
       檔案大小不得超過 1 MB，且必須包含記錄陣列 (JSON 物件)。每項記錄都必須包含「id」、「url」和「display_name」欄位，並以字串做為欄位值。「id」欄位的值不得重複。
 
       系統會下載並快取這個檔案，並使用加密編譯雜湊碼來驗證下載內容的完整性。只要網址或雜湊碼有任何變更，系統就會重新下載檔案。
 
-      如果正確設定這項政策的值，裝置會嘗試使用 IPP 通訊協定查詢指定的列印伺服器，確認是否有可用的印表機。
+      如果正確設定這項政策的值，裝置會嘗試使用 IPP 通訊協定查詢指定的印表機伺服器，確認是否有可用的印表機。
 
       如果未設定這項政策或設定的值不正確，使用者就不會看到任何伺服器印表機。
 
-      目前列印伺服器的數量上限是 16 個，系統只會查詢清單中的前 16 個列印伺服器。
+      目前印表機伺服器的數量上限是 16 個，系統只會查詢清單中的前 16 個印表機伺服器。
       這項政策與 <ph name="EXTERNAL_PRINT_SERVERS_POLICY" /> 相似，不過前者是依據裝置所設定。
       </translation>
 <translation id="1988371335297483117">系統可透過 HTTP (而非 HTTPS) 下載 <ph name="PRODUCT_OS_NAME" /> 的自動更新裝載。這可讓 HTTP 廣域快取 HTTP 下載內容。
@@ -1196,7 +1196,7 @@
 
       如果將這項政策設為啟用或不設定，系統會將已造訪的來源回報給 OS，而在「裝置使用時間」設定中設為封鎖的來源會顯示封鎖畫面。
       如果停用這項政策，則系統不會向 OS 回報已造訪的來源，且使用者可以存取在「裝置使用時間」設定中設為封鎖的來源。</translation>
-<translation id="2156755242840687300">已啟用的外部列印伺服器</translation>
+<translation id="2156755242840687300">已啟用的外部印表機伺服器</translation>
 <translation id="2157842368188031417">這項政策僅適用於受管理的訪客工作階段。你必須為 Imprivata 的共用工作站模式啟用此政策，才能讓使用者在工作階段中進行切換。
       如果將此政策設為 True，系統會強制覆寫某些功能的政策，這些功能會保留機密的使用者資料，且不會由清理機制處理 (該機制用於 Imprivata 共用工作站模式下的工作階段中使用者切換作業)。
       如果將這項政策設為 False 或不設定，系統便不會覆寫任何政策。</translation>
@@ -1926,13 +1926,13 @@
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2874209944580848064">支援 Android 裝置的 <ph name="PRODUCT_OS_NAME" />裝置注意事項：</translation>
 <translation id="287474029350993681">停用將內容投放到裝置的功能</translation>
-<translation id="2875192972412983412">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。
+<translation id="2875192972412983412">指定系統尋找伺服器印表機時，要查詢符合何種條件的印表機伺服器。
 
       如果使用這項政策，使用者只能使用 ID 符合本政策值的伺服器印表機。
 
       這些 ID 必須與 <ph name="EXTERNAL_PRINT_SERVERS_POLICY" /> 中指定檔案的「id」欄位相符。
 
-      如果不設定這項政策，系統不會進行篩選，並納入所有列印伺服器。</translation>
+      如果不設定這項政策，系統不會進行篩選，並納入所有印表機伺服器。</translation>
 <translation id="2877225735001246144">在交涉 Kerberos 驗證時，停用 CNAME 查詢</translation>
 <translation id="288448261660192095">如果將這項政策設為啟用，在遠端連線期間，系統會停用遠端存取主機的實體輸入和輸出裝置。
 
@@ -3797,13 +3797,13 @@
 <translation id="4663509616441994711">禁止合併使用者層級的雲端政策。</translation>
 <translation id="4663588423815449593">強制 <ph name="PEPPER_NAME" /> 使用舊版影片解碼器。</translation>
 <translation id="4665897631924472251">擴充功能管理設定</translation>
-<translation id="4666930704271463612">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。
+<translation id="4666930704271463612">指定系統尋找伺服器印表機時，要查詢符合何種條件的印表機伺服器。
 
       如果使用這項政策，使用者只能使用 ID 符合本政策值的伺服器印表機。
 
       這些 ID 必須與 <ph name="EXTERNAL_PRINT_SERVERS_POLICY" /> 中指定檔案的「id」欄位相符。
 
-      如果不設定這項政策，系統會查詢所有的列印伺服器，而不會進行篩選。
+      如果不設定這項政策，系統會查詢所有的印表機伺服器，而不會進行篩選。
 
       這項政策已遭淘汰，請改用 <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />。</translation>
 <translation id="4668325077104657568">預設圖片設定</translation>
@@ -4663,13 +4663,13 @@
 這項功能自 <ph name="WIN_NAME" /> 10 起開放使用。
 
 注意：這項政策不適用於無痕或訪客模式。</translation>
-<translation id="5572971233886879856">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。這項設定僅適用於 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策。
+<translation id="5572971233886879856">指定系統尋找伺服器印表機時，要查詢符合何種條件的印表機伺服器。這項設定僅適用於 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策。
 
       如果使用這項政策，使用者只能透過裝置政策使用 ID 符合本政策值的伺服器印表機。
 
       這些 ID 必須與 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策中指定檔案的「id」欄位相符。
 
-      如果不設定這項政策，系統不會進行篩選，並且會納入 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策提供的所有列印伺服器。</translation>
+      如果不設定這項政策，系統不會進行篩選，並且會納入 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策提供的所有印表機伺服器。</translation>
 <translation id="5573207364545428684">允許遠端存取使用者向遠端主機傳輸檔案，或從遠端主機接收檔案</translation>
 <translation id="557360560705413259">啟用這項設定後，即使憑證缺少 subjectAlternativeName 延伸，只要能順利驗證並鏈結至本機上安裝的 CA 憑證，<ph name="PRODUCT_NAME" /> 仍會使用伺服器憑證的 commonName 比對主機名稱。
 
@@ -5989,19 +5989,19 @@
 <translation id="6894178810167845842">新分頁網址</translation>
 <translation id="6897730193187922386">禁止顯示 <ph name="CLOUD_PRINT_NAME" />淘汰訊息</translation>
 <translation id="6899705656741990703">自動偵測 Proxy 設定</translation>
-<translation id="6902561336084511004">為可用的列印伺服器提供設定。
+<translation id="6902561336084511004">為可用的印表機伺服器提供設定。
 
-      這項政策可讓你使用 JSON 檔案為 <ph name="PRODUCT_OS_NAME" />裝置提供外部列印伺服器設定。
+      這項政策可讓你使用 JSON 檔案為 <ph name="PRODUCT_OS_NAME" />裝置提供外部印表機伺服器設定。
 
       檔案大小不得超過 1 MB，且必須包含記錄陣列 (JSON 物件)。每項記錄都必須包含「id」、「url」和「display_name」欄位，並以字串做為欄位值。「id」欄位的值不得重複。
 
       系統會下載並快取這個檔案，並使用加密編譯雜湊碼來驗證下載內容的完整性。只要網址或雜湊碼有任何變更，系統就會重新下載檔案。
 
-      如果正確設定這項政策的值，裝置會嘗試使用 IPP 通訊協定查詢指定的列印伺服器，確認是否有可用的印表機。
+      如果正確設定這項政策的值，裝置會嘗試使用 IPP 通訊協定查詢指定的印表機伺服器，確認是否有可用的印表機。
 
       如果未設定這項政策或設定的值不正確，使用者就不會看到任何伺服器印表機。
 
-      目前列印伺服器的數量上限是 16 個，系統只會查詢清單中的前 16 個列印伺服器。
+      目前印表機伺服器的數量上限是 16 個，系統只會查詢清單中的前 16 個印表機伺服器。
       </translation>
 <translation id="6903814433019432303">僅在零售模式下啟用這項政策。
 
@@ -7633,7 +7633,7 @@
       警告：我們不建議設定版本限制，因為這可能導致使用者無法接收軟體更新和重大安全性修正項目。限制裝置更新至特定版本可能會讓使用者面臨風險。</translation>
 <translation id="8519617069657262768">啟用 Google 雲端硬碟同步功能</translation>
 <translation id="8520064498689833152">強制啟用 Google 搜尋的安全搜尋功能和中度以上的 YouTube 嚴格篩選模式</translation>
-<translation id="8524334245528364388">含有列印伺服器清單的 JSON 檔案的網址。</translation>
+<translation id="8524334245528364388">含有印表機伺服器清單的 JSON 檔案的網址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>
 <translation id="8526745614158856826">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用裝置。
 

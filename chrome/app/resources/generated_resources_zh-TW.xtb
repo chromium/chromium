@@ -891,7 +891,7 @@
 <translation id="1803545009660609783">重新調校</translation>
 <translation id="1805738995123446102">背景分頁正在使用你的麥克風</translation>
 <translation id="1805822111539868586">查看檢視模式</translation>
-<translation id="1805888043020974594">列印伺服器</translation>
+<translation id="1805888043020974594">印表機伺服器</translation>
 <translation id="1805967612549112634">確認 PIN 碼</translation>
 <translation id="1806335016774576568">切換至其他已開啟的應用程式</translation>
 <translation id="1807246157184219062">淺色</translation>
@@ -2742,7 +2742,7 @@
 <translation id="347670947055184738">糟糕！系統無法擷取裝置政策。</translation>
 <translation id="347785443197175480">繼續允許 <ph name="HOST" /> 存取你的攝影機和麥克風</translation>
 <translation id="3479552764303398839">現在不要</translation>
-<translation id="3479685872808224578">偵測不到列印伺服器。請檢查位址是否正確，然後再試一次。</translation>
+<translation id="3479685872808224578">偵測不到印表機伺服器。請檢查位址是否正確，然後再試一次。</translation>
 <translation id="3480612136143976912">自訂即時字幕的文字大小和樣式。部分應用程式及網站也會套用這項設定。</translation>
 <translation id="3480827850068960424">找到 <ph name="NUM" /> 個分頁</translation>
 <translation id="3481268647794498892">將於 <ph name="COUNTDOWN_SECONDS" /> 秒後在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
@@ -2986,7 +2986,7 @@
 <translation id="3709244229496787112">瀏覽器在下載尚未完成時遭到關閉。</translation>
 <translation id="371174301504454251">為保護個人隱私，我們會自動將 4 週以上的網站從清單中刪除。你再次造訪的網站可能會重新加入清單中。假如你不想讓系統根據特定網站定義興趣喜好，也可以移除網站。</translation>
 <translation id="3711931198657368127">貼上 <ph name="URL" /> 並前往該網址 (&amp;S)</translation>
-<translation id="3711945201266135623">在列印伺服器上找到 <ph name="NUM_PRINTERS" /> 台印表機</translation>
+<translation id="3711945201266135623">在印表機伺服器上找到 <ph name="NUM_PRINTERS" /> 台印表機</translation>
 <translation id="3712050472459130149">必須更新帳戶</translation>
 <translation id="3712897371525859903">另存網頁為(&amp;A)...</translation>
 <translation id="371300529209814631">後退/前進</translation>
@@ -4187,7 +4187,7 @@
 <translation id="4829768588131278040">設定 PIN 碼</translation>
 <translation id="4830026649400230050">所有符合資格的下載內容都會轉送至貴機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
-<translation id="4833683849865011483">在列印伺服器上找到 1 台印表機</translation>
+<translation id="4833683849865011483">在印表機伺服器上找到 1 台印表機</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回 Google 搜尋嗎？</translation>
 <translation id="4837165100461973682">重新載入頁面即可套用變更</translation>
@@ -6132,7 +6132,7 @@
 <translation id="6659213950629089752">「<ph name="NAME" />」擴充功能已調整這個頁面的大小</translation>
 <translation id="6659594942844771486">分頁</translation>
 <translation id="6660819301598582123">敏捷的棕色狐狸跳過一條懶狗。</translation>
-<translation id="666099631117081440">列印伺服器</translation>
+<translation id="666099631117081440">印表機伺服器</translation>
 <translation id="6662931079349804328">企業政策已變更，[實驗性功能] 按鈕已從工具列移除。</translation>
 <translation id="6663190258859265334">在 <ph name="DEVICE_TYPE" /> 上執行 Powerwash 並返回先前的版本。</translation>
 <translation id="6664774537677393800">開啟你的設定檔時發生錯誤。請先登出，然後再次登入。</translation>
@@ -6920,7 +6920,7 @@
 <translation id="7406912950279255498">色彩反轉模式</translation>
 <translation id="7407430846095439694">匯入和繫結</translation>
 <translation id="7407504355934009739">大多數使用者封鎖了這個網站傳送的通知</translation>
-<translation id="740810853557944681">新增列印伺服器</translation>
+<translation id="740810853557944681">新增印表機伺服器</translation>
 <translation id="7409549334477097887">特大</translation>
 <translation id="7409599290172516453">最近的相片</translation>
 <translation id="7409735910987429903">網站可能會傳送彈出式視窗以顯示廣告，或是透過重新導向將你帶往不想造訪的網站</translation>
@@ -6955,7 +6955,7 @@
 <translation id="7433957986129316853">保留</translation>
 <translation id="7434509671034404296">開發人員選項</translation>
 <translation id="7434757724413878233">滑鼠加速</translation>
-<translation id="7434969625063495310">無法新增列印伺服器。請檢查伺服器設定，然後再試一次。</translation>
+<translation id="7434969625063495310">無法新增印表機伺服器。請檢查伺服器設定，然後再試一次。</translation>
 <translation id="7436921188514130341">糟糕！重新命名過程中發生錯誤。</translation>
 <translation id="7438495332316988804">在啟動器中輸入「Chrome」即可找到標準瀏覽器。</translation>
 <translation id="7439519621174723623">新增裝置名稱即可繼續</translation>
@@ -8166,7 +8166,7 @@
 <translation id="8540503336857689453">基於安全考量，建議你不要使用隱藏的網路。</translation>
 <translation id="854071720451629801">標示為已讀取</translation>
 <translation id="8540942859441851323">服務供應商要求使用漫遊服務</translation>
-<translation id="8541462173655894684">在列印伺服器上找不到任何印表機</translation>
+<translation id="8541462173655894684">在印表機伺服器上找不到任何印表機</translation>
 <translation id="8541838361296720865">按下外接切換裝置或鍵盤按鍵，即可為其指派「<ph name="ACTION" />」</translation>
 <translation id="8546186510985480118">裝置空間即將用盡</translation>
 <translation id="8546306075665861288">圖片快取</translation>
