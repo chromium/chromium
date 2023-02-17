@@ -23,6 +23,6 @@ enum NavigationType {
     readonly attribute DOMHighResTimeStamp loadEventEnd;
     readonly attribute NavigationType      type;
     readonly attribute unsigned short      redirectCount;
-    [RuntimeEnabled=BackForwardCacheNotRestoredReasons, CallWith=ScriptState] readonly attribute object notRestoredReasons;
+    [RuntimeEnabled=BackForwardCacheNotRestoredReasons, CallWith=ScriptState] readonly attribute object? notRestoredReasons;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
