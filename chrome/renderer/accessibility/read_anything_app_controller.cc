@@ -638,12 +638,7 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
 }
 
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
-  background_color_ = new_theme->background_color;
-  font_name_ = new_theme->font_name;
-  font_size_ = new_theme->font_size;
-  foreground_color_ = new_theme->foreground_color;
-  letter_spacing_ = GetLetterSpacingValue(new_theme->letter_spacing);
-  line_spacing_ = GetLineSpacingValue(new_theme->line_spacing);
+  model_.OnThemeChanged(std::move(new_theme));
 
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
@@ -711,27 +706,27 @@ int ReadAnythingAppController::EndOffset() const {
 }
 
 SkColor ReadAnythingAppController::BackgroundColor() const {
-  return background_color_;
+  return model_.background_color();
 }
 
 std::string ReadAnythingAppController::FontName() const {
-  return font_name_;
+  return model_.font_name();
 }
 
 float ReadAnythingAppController::FontSize() const {
-  return font_size_;
+  return model_.font_size();
 }
 
 SkColor ReadAnythingAppController::ForegroundColor() const {
-  return foreground_color_;
+  return model_.foreground_color();
 }
 
 float ReadAnythingAppController::LetterSpacing() const {
-  return letter_spacing_;
+  return model_.letter_spacing();
 }
 
 float ReadAnythingAppController::LineSpacing() const {
-  return line_spacing_;
+  return model_.line_spacing();
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -916,34 +911,6 @@ void ReadAnythingAppController::SetPageHandlerForTesting(
     mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler) {
   page_handler_.reset();
   page_handler_.Bind(std::move(page_handler));
-}
-
-double ReadAnythingAppController::GetLetterSpacingValue(
-    read_anything::mojom::LetterSpacing letter_spacing) const {
-  switch (letter_spacing) {
-    case read_anything::mojom::LetterSpacing::kTightDeprecated:
-      return -0.05;
-    case read_anything::mojom::LetterSpacing::kStandard:
-      return 0;
-    case read_anything::mojom::LetterSpacing::kWide:
-      return 0.05;
-    case read_anything::mojom::LetterSpacing::kVeryWide:
-      return 0.1;
-  }
-}
-
-double ReadAnythingAppController::GetLineSpacingValue(
-    read_anything::mojom::LineSpacing line_spacing) const {
-  switch (line_spacing) {
-    case read_anything::mojom::LineSpacing::kTightDeprecated:
-      return 1.0;
-    case read_anything::mojom::LineSpacing::kStandard:
-      return 1.15;
-    case read_anything::mojom::LineSpacing::kLoose:
-      return 1.5;
-    case read_anything::mojom::LineSpacing::kVeryLoose:
-      return 2.0;
-  }
 }
 
 ui::AXNode* ReadAnythingAppController::GetAXNode(

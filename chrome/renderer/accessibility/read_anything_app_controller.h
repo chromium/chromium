@@ -175,11 +175,6 @@ class ReadAnythingAppController
   void SetPageHandlerForTesting(
       mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler);
 
-  double GetLetterSpacingValue(
-      read_anything::mojom::LetterSpacing letter_spacing) const;
-  double GetLineSpacingValue(
-      read_anything::mojom::LineSpacing line_spacing) const;
-
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
 
@@ -234,14 +229,6 @@ class ReadAnythingAppController
   ui::AXNodeID end_node_id_ = ui::kInvalidAXNodeID;
   int32_t start_offset_ = -1;
   int32_t end_offset_ = -1;
-
-  // Theme information.
-  SkColor background_color_;
-  std::string font_name_;
-  float font_size_;
-  SkColor foreground_color_;
-  float letter_spacing_;
-  float line_spacing_;
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
