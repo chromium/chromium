@@ -466,7 +466,8 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
     return nullptr;
 
   RenderFrameHostImpl* root =
-      current_child_frame_host()->GetOutermostMainFrameOrEmbedder();
+      current_child_frame_host()
+          ->GetOutermostMainFrameOrEmbedderExcludingProspectiveOwners();
   return static_cast<RenderWidgetHostViewBase*>(root->GetView());
 }
 
@@ -476,7 +477,8 @@ CrossProcessFrameConnector::GetParentRenderWidgetHostView() {
   // escape to an embedder.
   RenderFrameHostImpl* parent =
       current_child_frame_host()
-          ? current_child_frame_host()->GetParentOrOuterDocumentOrEmbedder()
+          ? current_child_frame_host()
+                ->GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners()
           : nullptr;
   return parent ? static_cast<RenderWidgetHostViewBase*>(parent->GetView())
                 : nullptr;

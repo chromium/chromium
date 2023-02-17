@@ -1023,6 +1023,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DidStopLoading() override;
   bool IsHidden() override;
   int GetOuterDelegateFrameTreeNodeId() override;
+  RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   FrameTree* LoadingTree() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
 

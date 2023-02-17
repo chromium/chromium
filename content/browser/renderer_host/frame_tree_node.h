@@ -502,7 +502,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
   // Do not use directly.
-  RenderFrameHostImpl* GetParentOrOuterDocumentHelper(bool escape_guest_view);
+  // `escape_guest_view` determines whether to iterate out of guest views and is
+  // the behaviour distinction between GetParentOrOuterDocument and
+  // GetParentOrOuterDocumentOrEmbedder. See the comment on
+  // GetParentOrOuterDocumentOrEmbedder for details.
+  // `include_prospective` includes embedders which own our frame tree, but have
+  // not yet attached it to the outer frame tree.
+  RenderFrameHostImpl* GetParentOrOuterDocumentHelper(bool escape_guest_view,
+                                                      bool include_prospective);
 
   // Sets the unique_name and name fields on replication_state_. To be used in
   // prerender activation to make sure the FrameTreeNode replication state is

@@ -146,6 +146,9 @@ class MimeHandlerViewGuest
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   bool ZoomPropagatesFromEmbedderToGuest() const final;
 
+  // BrowserPluginGuestDelegate implementation.
+  content::RenderFrameHost* GetProspectiveOuterDocument() final;
+
   // WebContentsDelegate implementation.
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,

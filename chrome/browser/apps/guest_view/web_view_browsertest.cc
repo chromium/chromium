@@ -1991,6 +1991,18 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   EXPECT_EQ(other_guest_rfh, other_guest_rfh->GetOutermostMainFrame());
   EXPECT_EQ(unattached_guest_rfh,
             unattached_guest_rfh->GetOutermostMainFrame());
+  // GetParentOrOuterDocumentOrEmbedder does escape GuestViews.
+  EXPECT_EQ(embedder_main_frame,
+            other_guest_rfh->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(embedder_main_frame,
+            other_guest_rfh->GetOutermostMainFrameOrEmbedder());
+  // The unattached guest should still be considered to have an embedder.
+  EXPECT_EQ(embedder_main_frame,
+            unattached_guest_rfh->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(embedder_main_frame,
+            unattached_guest_rfh->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(embedder,
+            unattached_guest->web_contents()->GetResponsibleWebContents());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestContentLoadEvent) {

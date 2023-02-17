@@ -248,14 +248,15 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   void SetNewOwnerWebContents(content::WebContents* owner_web_contents);
 
+  // BrowserPluginGuestDelegate implementation.
+  content::RenderFrameHost* GetProspectiveOuterDocument() override;
+
   // WebContentsDelegate implementation.
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
   bool PreHandleGestureEvent(content::WebContents* source,
                              const blink::WebGestureEvent& event) override;
-  content::WebContents* GetResponsibleWebContents(
-      content::WebContents* web_contents) override;
 
   // WebContentsObserver implementation.
   void DidFinishNavigation(

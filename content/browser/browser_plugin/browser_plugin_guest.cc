@@ -96,6 +96,11 @@ WebContentsImpl* BrowserPluginGuest::GetWebContents() const {
   return static_cast<WebContentsImpl*>(web_contents());
 }
 
+RenderFrameHostImpl* BrowserPluginGuest::GetProspectiveOuterDocument() {
+  return static_cast<RenderFrameHostImpl*>(
+      delegate_->GetProspectiveOuterDocument());
+}
+
 void BrowserPluginGuest::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   // Originally added to suppress the error page when a navigation is blocked

@@ -150,6 +150,12 @@ int FencedFrame::GetOuterDelegateFrameTreeNodeId() {
   return outer_delegate_frame_tree_node_->frame_tree_node_id();
 }
 
+RenderFrameHostImpl* FencedFrame::GetProspectiveOuterDocument() {
+  // A fenced frame's outer document is known at initialization, so we could
+  // never be in this unattached state.
+  return nullptr;
+}
+
 bool FencedFrame::IsPortal() {
   return false;
 }

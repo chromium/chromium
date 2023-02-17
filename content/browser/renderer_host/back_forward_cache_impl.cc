@@ -1028,10 +1028,7 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
       tree_result_ = std::move(rfh_result);
     } else {
       RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocumentOrEmbedder();
-      // TODO(https://crbug.com/1257276): parent can return null for unattached
-      // guests.
-      if (!parent)
-        parent = root_rfh_;
+      DCHECK(parent);
       parent_map[parent]->AppendChild(std::move(rfh_result));
     }
   });

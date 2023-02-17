@@ -412,6 +412,15 @@ WebContents* GuestViewBase::GetOwnerWebContents() {
   return owner_web_contents_;
 }
 
+content::RenderFrameHost* GuestViewBase::GetProspectiveOuterDocument() {
+  DCHECK(!attached());
+  // TODO(crbug.com/769461): We should be more specific here and return the
+  // owner RenderFrameHost rather than assume it's the owner's primary main
+  // frame.
+  return owner_web_contents() ? owner_web_contents()->GetPrimaryMainFrame()
+                              : nullptr;
+}
+
 const GURL& GuestViewBase::GetOwnerSiteURL() const {
   return owner_web_contents()
       ->GetPrimaryMainFrame()
@@ -633,11 +642,6 @@ void GuestViewBase::UpdatePreferredSize(WebContents* target_web_contents,
   if (IsPreferredSizeModeEnabled()) {
     OnPreferredSizeChanged(pref_size);
   }
-}
-
-content::WebContents* GuestViewBase::GetResponsibleWebContents(
-    content::WebContents* source) {
-  return owner_web_contents();
 }
 
 void GuestViewBase::UpdateTargetURL(WebContents* source, const GURL& url) {

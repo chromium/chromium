@@ -16,4 +16,8 @@ WebContents* BrowserPluginGuestDelegate::GetOwnerWebContents() {
   return nullptr;
 }
 
+RenderFrameHost* BrowserPluginGuestDelegate::GetProspectiveOuterDocument() {
+  return nullptr;
+}
+
 }  // namespace content

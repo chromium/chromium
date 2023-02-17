@@ -173,6 +173,17 @@ class CONTENT_EXPORT FrameTree {
     // FrameTreeNode::kFrameTreeNodeInvalidId.
     virtual int GetOuterDelegateFrameTreeNodeId() = 0;
 
+    // If the FrameTree using this delegate is an inner/nested FrameTree that
+    // has not yet been attached to an outer FrameTreeNode, returns the parent
+    // RenderFrameHost of the intended outer FrameTreeNode to which the inner
+    // frame tree will be attached. This is usually the RenderFrameHost that is
+    // the outer document once attachment occurs, however in the case of some
+    // kinds of GuestView, the outer document may end up being a same-origin
+    // subframe of the RenderFrameHost returned by this method (see the
+    // `testNewWindowAttachInSubFrame` webview test for an example of this).
+    // Otherwise, returns null.
+    virtual RenderFrameHostImpl* GetProspectiveOuterDocument() = 0;
+
     // Returns if this FrameTree represents a portal.
     virtual bool IsPortal() = 0;
 

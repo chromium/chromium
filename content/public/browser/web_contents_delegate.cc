@@ -377,11 +377,6 @@ bool WebContentsDelegate::ShouldShowStaleContentOnEviction(
   return false;
 }
 
-WebContents* WebContentsDelegate::GetResponsibleWebContents(
-    WebContents* web_contents) {
-  return web_contents;
-}
-
 device::mojom::GeolocationContext*
 WebContentsDelegate::GetInstalledWebappGeolocationContext() {
   return nullptr;

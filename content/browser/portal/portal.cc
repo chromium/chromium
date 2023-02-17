@@ -460,10 +460,6 @@ void Portal::CloseContents(WebContents* web_contents) {
   }
 }
 
-WebContents* Portal::GetResponsibleWebContents(WebContents* web_contents) {
-  return GetPortalHostContents();
-}
-
 void Portal::NavigationStateChanged(WebContents* source,
                                     InvalidateTypes changed_flags) {
   WebContents* outer_contents = GetPortalHostContents();

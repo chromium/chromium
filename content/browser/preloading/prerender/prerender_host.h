@@ -132,6 +132,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   bool IsHidden() override;
   FrameTree* LoadingTree() override;
   int GetOuterDelegateFrameTreeNodeId() override;
+  RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   bool IsPortal() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
 

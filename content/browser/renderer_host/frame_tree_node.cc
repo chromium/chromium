@@ -344,30 +344,46 @@ void FrameTreeNode::ResetForNavigation() {
 }
 
 RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocument() {
-  return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/false);
+  return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/false,
+                                        /*include_prospective=*/true);
 }
 
 RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocumentOrEmbedder() {
-  return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/true);
+  return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/true,
+                                        /*include_prospective=*/true);
 }
 
 RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocumentHelper(
-    bool escape_guest_view) {
+    bool escape_guest_view,
+    bool include_prospective) {
   // Find the parent in the FrameTree (iframe).
-  if (parent_)
+  if (parent_) {
     return parent_;
+  }
 
   if (!escape_guest_view) {
     // If we are not a fenced frame root nor inside a portal then return early.
     // This code does not escape GuestViews.
-    if (!IsFencedFrameRoot() && !frame_tree_->delegate()->IsPortal())
+    if (!IsFencedFrameRoot() && !frame_tree_->delegate()->IsPortal()) {
       return nullptr;
+    }
   }
 
   // Find the parent in the outer embedder (GuestView, Portal, or Fenced Frame).
   FrameTreeNode* frame_in_embedder = render_manager()->GetOuterDelegateNode();
-  if (frame_in_embedder)
+  if (frame_in_embedder) {
     return frame_in_embedder->current_frame_host()->GetParent();
+  }
+
+  // Consider embedders which own our frame tree, but have not yet attached it
+  // to the outer frame tree.
+  if (include_prospective) {
+    RenderFrameHostImpl* prospective_outer_document =
+        frame_tree_->delegate()->GetProspectiveOuterDocument();
+    if (prospective_outer_document) {
+      return prospective_outer_document;
+    }
+  }
 
   // No parent found.
   return nullptr;

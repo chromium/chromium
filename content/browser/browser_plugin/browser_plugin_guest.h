@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 
 namespace content {
+class RenderFrameHostImpl;
 class WebContentsImpl;
 
 // A browser plugin guest provides functionality for WebContents to operate in
@@ -67,6 +68,7 @@ class BrowserPluginGuest : public WebContentsObserver {
       base::TerminationStatus status) override;
 
   WebContentsImpl* GetWebContents() const;
+  RenderFrameHostImpl* GetProspectiveOuterDocument();
 
  private:
   // BrowserPluginGuest is a WebContentsObserver of |web_contents| and

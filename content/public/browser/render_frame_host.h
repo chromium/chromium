@@ -269,7 +269,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // <fencedframe> and <portal>). This will return the outer document in cases
   // of fenced frames and portals but will not cross a browsing session boundary
   // (ie. it will not escape a GuestView). See
-  // `RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder` for the
+  // `RenderFrameHost::GetParentOrOuterDocumentOrEmbedder` for the
   // version of this API that will cross a browsing session boundary.
   // This method typically will be used for permissions and policy decisions
   // based on checking origins.
@@ -285,6 +285,26 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //  B GetParent & GetParentOrOuterDocument returns A.
   //  A GetParent & GetParentOrOuterDocument returns nullptr.
   virtual RenderFrameHost* GetParentOrOuterDocument() const = 0;
+
+  // Returns the document owning the frame this RenderFrameHost is located
+  // in, which will either be a parent (for <iframe>s) or outer document (for
+  // <fencedframe>, <portal> or an embedder (e.g. GuestViews)). See
+  // `RenderFrameHost::GetParentOrOuterDocument` for the version of this API
+  // that does not cross a browsing session boundary (ie. Not escaping a
+  // GuestView). This method typically will be used for input, compositing, and
+  // focus related functionality where the physical arrangement of frames, as
+  // opposed to their semantics is required. Example:
+  //  A (GuestView embedder)
+  //   B (<webview> - placeholder frame)
+  //    B* (embedded document main frame)
+  //     C (iframe)
+  //
+  //  C GetParent & GetParentOrOuterDocumentOrEmbedder returns B*.
+  //  B* GetParent & GetParentOrOuterDocument returns null.
+  //  B* GetParentOrOuterDocumentOrEmbedder returns A.
+  //  B GetParent & GetParentOrOuterDocumentOrEmbedder returns A.
+  //  A GetParent & GetParentOrOuterDocumentOrEmbedder returns nullptr.
+  virtual RenderFrameHost* GetParentOrOuterDocumentOrEmbedder() const = 0;
 
   // Returns the eldest parent of this RenderFrameHost.
   // Always non-null, but might be equal to |this|.
@@ -313,6 +333,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // will return the cached/prerendered page's main RenderFrameHost.
   // See docs/frame_trees.md for more details.
   virtual RenderFrameHost* GetOutermostMainFrame() = 0;
+
+  // Returns the topmost ancestor RenderFrameHost. This includes any parents (in
+  // the case of subframes), any outer documents (e.g. fenced frame owners), and
+  // any GuestViews. See also GetOutermostMainFrame which does not escape
+  // GuestViews and GetParentOrOuterDocumentOrEmbedder for more details.
+  // Note that this may be different from getting the WebContents' primary main
+  // frame. For example, if `this` is in a bfcached or prerendered page, this
+  // will return the cached/prerendered page's main RenderFrameHost.
+  // See docs/frame_trees.md for more details.
+  virtual RenderFrameHost* GetOutermostMainFrameOrEmbedder() = 0;
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
   // Returns true if this document is the root of a fenced frame tree. This

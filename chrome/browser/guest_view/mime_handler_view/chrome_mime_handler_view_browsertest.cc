@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -37,6 +38,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_constants.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
@@ -712,3 +714,62 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbeddedThenPrint) {
   print_preview_delegate.WaitUntilPreviewIsReady();
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, FrameIterationBeforeAttach) {
+  TestGuestViewManager* manager = GetGuestViewManager();
+  TestMimeHandlerViewGuest::RegisterTestGuestViewType(manager);
+  ASSERT_TRUE(LoadTestExtension());
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Navigate to a page with a MimeHandlerView inside an iframe and pause
+  // between the creation of the MimeHandlerView and when it is attached to the
+  // placeholder frame inside the iframe.
+  base::RunLoop pre_attach_run_loop;
+  base::OnceClosure resume_attach;
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* mime_handler_view_helper = extensions::MimeHandlerViewAttachHelper::Get(
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+  mime_handler_view_helper->set_resume_attach_callback_for_testing(
+      base::BindLambdaForTesting([&](base::OnceClosure resume_closure) {
+        resume_attach = std::move(resume_closure);
+        pre_attach_run_loop.Quit();
+      }));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/test_iframe.html")));
+  pre_attach_run_loop.Run();
+
+  auto* guest = manager->GetLastGuestViewCreated();
+  auto* guest_main_frame = guest->GetGuestMainFrame();
+  content::RenderFrameHost* expected_outermost_rfh =
+      web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* expected_embedder_rfh =
+      content::ChildFrameAt(expected_outermost_rfh, 0);
+
+  // Ensure that iterating through ancestors is correct even when pending
+  // attachment.
+  EXPECT_EQ(nullptr, guest_main_frame->GetParent());
+  EXPECT_EQ(guest_main_frame, guest_main_frame->GetMainFrame());
+  EXPECT_EQ(nullptr, guest_main_frame->GetParentOrOuterDocument());
+  EXPECT_EQ(guest_main_frame, guest_main_frame->GetOutermostMainFrame());
+  // In particular, MimeHandlerView should still be considered to have an
+  // embedder in this state.
+  EXPECT_EQ(expected_embedder_rfh,
+            guest_main_frame->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(expected_outermost_rfh,
+            guest_main_frame->GetOutermostMainFrameOrEmbedder());
+
+  // Complete attachment and ensure the results afterwords are consistent with
+  // the above.
+  std::move(resume_attach).Run();
+  manager->WaitUntilAttached(guest);
+
+  EXPECT_EQ(nullptr, guest_main_frame->GetParent());
+  EXPECT_EQ(guest_main_frame, guest_main_frame->GetMainFrame());
+  EXPECT_EQ(nullptr, guest_main_frame->GetParentOrOuterDocument());
+  EXPECT_EQ(guest_main_frame, guest_main_frame->GetOutermostMainFrame());
+  EXPECT_EQ(expected_embedder_rfh,
+            guest_main_frame->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(expected_outermost_rfh,
+            guest_main_frame->GetOutermostMainFrameOrEmbedder());
+}

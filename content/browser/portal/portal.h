@@ -102,7 +102,6 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
                            bool should_show_loading_ui) override;
   void PortalWebContentsCreated(WebContents* portal_web_contents) override;
   void CloseContents(WebContents*) override;
-  WebContents* GetResponsibleWebContents(WebContents* web_contents) override;
   void NavigationStateChanged(WebContents* source,
                               InvalidateTypes changed_flags) override;
   bool ShouldFocusPageAfterCrash() override;

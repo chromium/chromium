@@ -256,6 +256,11 @@ int PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
   return FrameTreeNode::kFrameTreeNodeInvalidId;
 }
 
+RenderFrameHostImpl* PrerenderHost::GetProspectiveOuterDocument() {
+  // A prerendered FrameTree never has an outer document.
+  return nullptr;
+}
+
 bool PrerenderHost::IsPortal() {
   return false;
 }

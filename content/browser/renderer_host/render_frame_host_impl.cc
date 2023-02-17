@@ -2958,7 +2958,7 @@ bool RenderFrameHostImpl::AccessibilityIsRootFrame() const {
   // this RenderFrameHost is embedded. In addition, IsOutermostMainFrame()
   // does not escape guest views. Therefore, we must check for any kind of
   // parent document or embedder.
-  return !GetParentOrOuterDocumentOrEmbedder();
+  return !GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners();
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::AccessibilityRenderFrameHost() {
@@ -5511,7 +5511,10 @@ void RenderFrameHostImpl::ClosePage() {
   // RenderFrameHost is no longer a primary main frame (e.g., if it was placed
   // into back-forward cache just before getting here), we should
   // not close the active tab, so return early in that case.
-  DCHECK(IsOutermostMainFrame());
+  DCHECK(is_main_frame());
+  // TODO(crbug.com/1254770): Orphaned portals use this code path. Revisit how
+  // portals handle unload when migrating off of inner WebContents.
+  DCHECK(IsOutermostMainFrame() || frame_tree()->delegate()->IsPortal());
   if (!IsInPrimaryMainFrame()) {
     return;
   }
@@ -10186,8 +10189,9 @@ const RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() const {
   // give an incorrect result after |this| has been detached from the frame
   // tree.
   const RenderFrameHostImpl* main_frame = this;
-  while (main_frame->GetParent())
-    main_frame = main_frame->GetParent();
+  while (const RenderFrameHostImpl* parent = main_frame->GetParent()) {
+    main_frame = parent;
+  }
   return main_frame;
 }
 
@@ -10197,13 +10201,11 @@ bool RenderFrameHostImpl::IsInPrimaryMainFrame() {
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrame() {
   RenderFrameHostImpl* current = this;
-  while (true) {
-    RenderFrameHostImpl* parent_or_outer_doc =
-        current->GetParentOrOuterDocument();
-    if (!parent_or_outer_doc)
-      return current;
+  while (RenderFrameHostImpl* parent_or_outer_doc =
+             current->GetParentOrOuterDocument()) {
     current = parent_or_outer_doc;
-  };
+  }
+  return current;
 }
 
 bool RenderFrameHostImpl::CanAccessFilesOfPageState(
@@ -10446,7 +10448,7 @@ RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
 }
 
 ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
-  auto* parent = GetParentOrOuterDocumentOrEmbedder();
+  auto* parent = GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners();
   if (!parent) {
     DCHECK(AccessibilityIsRootFrame())
         << "Child frame requires a parent, root=" << GetLastCommittedURL();
@@ -14088,23 +14090,40 @@ void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() const {
   return frame_tree_node()->GetParentOrOuterDocumentHelper(
-      /*escape_guest_view=*/false);
+      /*escape_guest_view=*/false, /*include_prospective=*/true);
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder()
     const {
   return frame_tree_node()->GetParentOrOuterDocumentHelper(
-      /*escape_guest_view=*/true);
+      /*escape_guest_view=*/true, /*include_prospective=*/true);
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrameOrEmbedder() {
   RenderFrameHostImpl* current = this;
-  while (true) {
-    RenderFrameHostImpl* parent = current->GetParentOrOuterDocumentOrEmbedder();
-    if (!parent)
-      return current;
+  while (RenderFrameHostImpl* parent =
+             current->GetParentOrOuterDocumentOrEmbedder()) {
     current = parent;
-  };
+  }
+  return current;
+}
+
+RenderFrameHostImpl* RenderFrameHostImpl::
+    GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners() const {
+  return frame_tree_node()->GetParentOrOuterDocumentHelper(
+      /*escape_guest_view=*/true, /*include_prospective=*/false);
+}
+
+RenderFrameHostImpl* RenderFrameHostImpl::
+    GetOutermostMainFrameOrEmbedderExcludingProspectiveOwners() {
+  RenderFrameHostImpl* current = this;
+  while (
+      RenderFrameHostImpl* parent =
+          current
+              ->GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners()) {
+    current = parent;
+  }
+  return current;
 }
 
 scoped_refptr<WebAuthRequestSecurityChecker>

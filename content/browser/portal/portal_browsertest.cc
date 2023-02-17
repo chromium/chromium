@@ -1907,6 +1907,40 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), rfhi);
 }
 
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalHasOuterDocument) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
+
+  GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
+  WebContentsImpl* portal_contents = portal->GetPortalContents();
+  RenderFrameHostImpl* portal_main_frame =
+      portal_contents->GetPrimaryMainFrame();
+
+  // Block the activate callback so that the predecessor portal stays
+  // orphaned.
+  EXPECT_TRUE(ExecJs(portal_main_frame,
+                     "window.onportalactivate = e => { while(true) {} };"));
+
+  PortalActivatedObserver activated_observer(portal);
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
+  activated_observer.WaitForActivate();
+
+  // `web_contents_impl` should be owned by an orphaned portal.
+  EXPECT_TRUE(web_contents_impl->IsPortal());
+  EXPECT_EQ(web_contents_impl->GetOuterWebContents(), nullptr);
+
+  // While not yet embedded in the outer frame tree, the orphaned portal should
+  // still be considered to have an outer document.
+  EXPECT_EQ(portal_main_frame, main_frame->GetParentOrOuterDocument());
+  EXPECT_EQ(portal_main_frame, main_frame->GetOutermostMainFrame());
+  EXPECT_EQ(portal_contents, web_contents_impl->GetResponsibleWebContents());
+}
+
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));

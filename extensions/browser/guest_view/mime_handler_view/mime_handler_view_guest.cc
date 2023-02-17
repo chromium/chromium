@@ -269,6 +269,11 @@ bool MimeHandlerViewGuest::ZoomPropagatesFromEmbedderToGuest() const {
   return false;
 }
 
+content::RenderFrameHost* MimeHandlerViewGuest::GetProspectiveOuterDocument() {
+  DCHECK(!attached());
+  return GetEmbedderFrame();
+}
+
 WebContents* MimeHandlerViewGuest::OpenURLFromTab(
     WebContents* source,
     const content::OpenURLParams& params) {

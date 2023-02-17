@@ -9,18 +9,25 @@
 #include "content/public/browser/web_contents.h"
 
 namespace content {
+class RenderFrameHost;
 
 // Objects implement this interface to get notified about changes in the guest
 // WebContents and to provide necessary functionality.
 class CONTENT_EXPORT BrowserPluginGuestDelegate {
  public:
-  virtual ~BrowserPluginGuestDelegate() {}
+  virtual ~BrowserPluginGuestDelegate() = default;
 
   virtual std::unique_ptr<WebContents> CreateNewGuestWindow(
       const WebContents::CreateParams& create_params);
 
   // Returns the WebContents that currently owns this guest.
   virtual WebContents* GetOwnerWebContents();
+
+  // Returns the RenderFrameHost that owns this guest, but has not yet attached
+  // it.
+  // TODO(crbug.com/769461): Have all guest types return the specific owner
+  // RenderFrameHost and not assume it's the owner's main frame.
+  virtual RenderFrameHost* GetProspectiveOuterDocument();
 };
 
 }  // namespace content

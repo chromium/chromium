@@ -39,7 +39,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/activity_log/web_request_constants.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
@@ -733,20 +732,19 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         header_client,
     const url::Origin& request_initiator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
   if (!MayHaveProxies()) {
     bool skip_proxy = true;
     // There are a few internal WebUIs that use WebView tag that are allowlisted
     // for webRequest.
-    if (web_contents && WebViewGuest::IsGuest(frame)) {
-      auto* guest_web_contents =
-          WebViewGuest::GetTopLevelWebContents(web_contents);
-      auto& guest_url = guest_web_contents->GetLastCommittedURL();
-      if (guest_url.SchemeIs(content::kChromeUIScheme)) {
+    if (WebViewGuest::IsGuest(frame)) {
+      content::RenderFrameHost* embedder =
+          frame->GetOutermostMainFrameOrEmbedder();
+      const auto& embedder_url = embedder->GetLastCommittedURL();
+      if (embedder_url.SchemeIs(content::kChromeUIScheme)) {
         auto* feature = FeatureProvider::GetAPIFeature("webRequestInternal");
         if (feature
                 ->IsAvailableToContext(
-                    nullptr, Feature::WEBUI_CONTEXT, guest_url,
+                    nullptr, Feature::WEBUI_CONTEXT, embedder_url,
                     util::GetBrowserContextId(browser_context))
                 .is_available()) {
           skip_proxy = false;
