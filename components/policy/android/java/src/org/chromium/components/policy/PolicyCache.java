@@ -238,6 +238,13 @@ public class PolicyCache {
         enableWriteOnlyMode();
     }
 
+    /** Delete all entries from the cache. */
+    public void reset() {
+        SharedPreferences.Editor sharedPreferencesEditor = getSharedPreferencesEditor();
+        sharedPreferencesEditor.clear();
+        sharedPreferencesEditor.apply();
+    }
+
     private void enableWriteOnlyMode() {
         mSharedPreferences = null;
         mReadable = false;

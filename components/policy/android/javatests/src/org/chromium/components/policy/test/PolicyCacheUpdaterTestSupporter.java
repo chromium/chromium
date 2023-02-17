@@ -23,16 +23,30 @@ public class PolicyCacheUpdaterTestSupporter {
     @CalledByNative
     private PolicyCacheUpdaterTestSupporter() {}
 
+    /** Checks value for {@code policy} is not cached. */
     @CalledByNative
-    private void verifyPolicyCacheIntValue(String policy, boolean hasValue, int expectedValue) {
+    private void verifyIntPolicyNotCached(String policy) {
+        PolicyCache policyCache = PolicyCache.get();
+        policyCache.setReadableForTesting(true);
+        Assert.assertNull(policyCache.getIntValue(policy));
+    }
+
+    /**
+     * Checks value for {@code policy} is cached and the corresponding value is {@code
+     * expectedValue}.
+     */
+    @CalledByNative
+    private void verifyIntPolicyHasValue(String policy, int expectedValue) {
         PolicyCache policyCache = PolicyCache.get();
         policyCache.setReadableForTesting(true);
         Integer actualValue = policyCache.getIntValue(policy);
-        if (hasValue) {
-            Assert.assertNotNull(actualValue);
-            Assert.assertEquals(expectedValue, actualValue.intValue());
-        } else {
-            Assert.assertNull(actualValue);
-        }
+        Assert.assertNotNull(actualValue);
+        Assert.assertEquals(expectedValue, actualValue.intValue());
+    }
+
+    /** Deletes all entries from the policy cache. */
+    @CalledByNative
+    private void resetPolicyCache() {
+        PolicyCache.get().reset();
     }
 }
