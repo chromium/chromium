@@ -5422,6 +5422,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxSuggestionHeightVariations,
                                     "Uniform Omnibox Suggest Heights")},
 
+    {"omnibox-gm3-steady-state-height",
+     flag_descriptions::kOmniboxGM3SteadyStateHeightName,
+     flag_descriptions::kOmniboxGM3SteadyStateHeightDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateHeight)},
+
     {"omnibox-grouping-framework",
      flag_descriptions::kOmniboxGroupingFrameworkName,
      flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,

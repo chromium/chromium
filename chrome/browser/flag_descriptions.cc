@@ -2052,6 +2052,10 @@ const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
 const char kOmniboxFuzzyUrlSuggestionsDescription[] =
     "Enables URL suggestions for inputs that may contain typos.";
 
+const char kOmniboxGM3SteadyStateHeightName[] = "Omnibox Steady State Height";
+const char kOmniboxGM3SteadyStateHeightDescription[] =
+    "Updates Omnibox steady state height to comply with GM3 guidelines.";
+
 const char kOmniboxGroupingFrameworkName[] = "Omnibox Grouping Framework";
 const char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "

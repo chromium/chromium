@@ -1147,6 +1147,9 @@ extern const char kOmniboxExperimentalSuggestScoringDescription[];
 extern const char kOmniboxFuzzyUrlSuggestionsName[];
 extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
 
+extern const char kOmniboxGM3SteadyStateHeightName[];
+extern const char kOmniboxGM3SteadyStateHeightDescription[];
+
 extern const char kOmniboxGroupingFrameworkName[];
 extern const char kOmniboxGroupingFrameworkDescription[];
 

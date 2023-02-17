@@ -419,6 +419,12 @@ BASE_FEATURE(kOmniboxAssistantVoiceSearch,
              "OmniboxAssistantVoiceSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Omnibox "steady state" height is increased from 28 dp to 34 dp to
+// match GM3 guidelines.
+BASE_FEATURE(kOmniboxSteadyStateHeight,
+             "OmniboxSteadyStateHeight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClosePopupWithEscape,
              "OmniboxClosePopupWithEscape",
              base::FEATURE_DISABLED_BY_DEFAULT);
