@@ -7,6 +7,7 @@ import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 fuzzable_proto_library("proto") {
   sources = [
     "api_v1.proto",
+    "autofill_sampling_rate.proto",
     "autofill_sync.proto",
     "password_requirements.proto",
     "password_requirements_shard.proto",

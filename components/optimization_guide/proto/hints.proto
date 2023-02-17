@@ -180,6 +180,9 @@ enum OptimizationType {
   IBAN_AUTOFILL_BLOCKED = 25;
   // This optimization provides information about images for a URL.
   SALIENT_IMAGE = 26;
+  // This optimization provides information about a sampling rate of Autofill
+  // UKM metrics per origin based on origin popularity.
+  AUTOFILL_SAMPLING_RATE = 27;
 }
 
 // Presents semantics for how page load URLs should be matched.

@@ -71,6 +71,9 @@ chromium-metrics-reviews@google.com.
 <variants name="OptimizationType">
   <variant name="AboutThisSite"
       summary="Provides 'About this site' data about the site being visited"/>
+  <variant name="AutofillSamplingRate"
+      summary="This optimization provides information about a sampling rate
+               of Autofill UKM metrics per origin based on origin popularity."/>
   <variant name="BloomFilterValidation"
       summary="Validates bloom filer allowlist/blocklist based hints"/>
   <variant name="CompressPublicImages" summary="Compresses public images"/>
