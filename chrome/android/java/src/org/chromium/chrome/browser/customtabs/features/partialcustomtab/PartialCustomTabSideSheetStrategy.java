@@ -104,9 +104,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
         // For smooth animation, make the window full-width and then translate it
         // rather than resizing the window itself during the animation.
-        setWindowWidth(mVersionCompat.getDisplayWidth());
+        int displayWidth = mVersionCompat.getDisplayWidth();
+        setWindowWidth(displayWidth);
         int start = mActivity.getWindow().getAttributes().x;
-        int end = mIsMaximized ? 0 : mVersionCompat.getDisplayWidth() - mUnclampedInitialWidth;
+        int end = mIsMaximized ? 0 : displayWidth - calculateWidth(mUnclampedInitialWidth);
         startAnimation(start, end, this::onMaximizeProgress, this::onMaximizeEnd);
         return mIsMaximized;
     }
