@@ -1056,6 +1056,9 @@ TEST_F(TooltipControllerTest, TooltipHiddenWhenWindowDeactivated) {
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+using TestTooltip = TestTooltipLacros;
+#else
 class TestTooltip : public Tooltip {
  public:
   TestTooltip() = default;
@@ -1092,12 +1095,10 @@ class TestTooltip : public Tooltip {
   gfx::Point anchor_point_;
   TooltipTrigger trigger_;
 };
+#endif
 
 }  // namespace
 
-// Not yet supported on Lacros.
-// TODO(crbug.com/1394914): Support below.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Use for tests that don't depend upon views.
 class TooltipControllerTest2 : public aura::test::AuraTestBase {
  public:
@@ -1117,6 +1118,9 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
     root_window()->AddPreTargetHandler(controller_.get());
     SetTooltipClient(root_window(), controller_.get());
     helper_ = std::make_unique<TooltipControllerTestHelper>(controller_.get());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    test_tooltip_->SetStateManager(helper_->state_manager());
+#endif
     generator_ = std::make_unique<ui::test::EventGenerator>(root_window());
   }
 
@@ -1177,6 +1181,9 @@ TEST_F(TooltipControllerTest2, CloseOnCancelMode) {
   EXPECT_TRUE(helper_->GetTooltipParentWindow() == nullptr);
 }
 
+// Not yet supported on Lacros.
+// TODO(crbug.com/1394914): Support below.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Use for tests that need both views and a TestTooltip.
 class TooltipControllerTest3 : public ViewsTestBase {
  public:
