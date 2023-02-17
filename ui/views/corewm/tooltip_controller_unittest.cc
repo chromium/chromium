@@ -1181,9 +1181,6 @@ TEST_F(TooltipControllerTest2, CloseOnCancelMode) {
   EXPECT_TRUE(helper_->GetTooltipParentWindow() == nullptr);
 }
 
-// Not yet supported on Lacros.
-// TODO(crbug.com/1394914): Support below.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Use for tests that need both views and a TestTooltip.
 class TooltipControllerTest3 : public ViewsTestBase {
  public:
@@ -1220,6 +1217,9 @@ class TooltipControllerTest3 : public ViewsTestBase {
       GetRootWindow()->RemovePreTargetHandler(tooltip_controller);
     GetRootWindow()->AddPreTargetHandler(controller_.get());
     helper_ = std::make_unique<TooltipControllerTestHelper>(controller_.get());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    test_tooltip_->SetStateManager(helper_->state_manager());
+#endif
     SetTooltipClient(GetRootWindow(), controller_.get());
   }
 
@@ -1398,7 +1398,15 @@ TEST_F(TooltipStateManagerTest, ShowAndHideTooltip) {
   EXPECT_FALSE(helper_->IsTooltipVisible());
 }
 
-TEST_F(TooltipStateManagerTest, ShowTooltipWithDelay) {
+// Disabled on Lacros since TooltipLacros cannot handle tooltip with delay on
+// client side properly. To test with delay, it needs to use Ash server with
+// ui_controls in interactive_ui_tests.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShowTooltipWithDelay DISABLED_ShowTooltipWithDelay
+#else
+#define MAYBE_ShowTooltipWithDelay ShowTooltipWithDelay
+#endif
+TEST_F(TooltipStateManagerTest, MAYBE_ShowTooltipWithDelay) {
   EXPECT_EQ(nullptr, helper_->state_manager()->tooltip_parent_window());
   EXPECT_EQ(std::u16string(), helper_->state_manager()->tooltip_text());
 
@@ -1414,9 +1422,7 @@ TEST_F(TooltipStateManagerTest, ShowTooltipWithDelay) {
   EXPECT_EQ(GetRootWindow(), helper_->state_manager()->tooltip_parent_window());
   EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
   EXPECT_FALSE(helper_->IsTooltipVisible());
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_TRUE(helper_->IsWillShowTooltipTimerRunning());
-#endif
 
   // 2. Showing the tooltip again with a different expected text will cancel the
   // existing timers running and will update the text, but it still won't make
@@ -1428,26 +1434,30 @@ TEST_F(TooltipStateManagerTest, ShowTooltipWithDelay) {
   EXPECT_EQ(GetRootWindow(), helper_->state_manager()->tooltip_parent_window());
   EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
   EXPECT_FALSE(helper_->IsTooltipVisible());
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_TRUE(helper_->IsWillShowTooltipTimerRunning());
-#endif
 
   // 3. Calling HideAndReset should cancel the timer running.
   helper_->HideAndReset();
   EXPECT_EQ(nullptr, helper_->state_manager()->tooltip_parent_window());
   EXPECT_FALSE(helper_->IsTooltipVisible());
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(helper_->IsWillShowTooltipTimerRunning());
-#endif
 
   helper_->SkipTooltipShowDelay(true);
 }
 
+// Disabled on Lacros since TooltipLacros cannot handle tooltip with delay on
+// client side properly. To test with delay, it needs to use Ash server with
+// ui_controls in interactive_ui_tests.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_UpdatePositionIfNeeded DISABLED_UpdatePositionIfNeeded
+#else
+#define MAYBE_UpdatePositionIfNeeded UpdatePositionIfNeeded
+#endif
 // This test ensures that we can update the position of the tooltip after the
 // |will_show_tooltip_timer_| has been started. This is needed because the
 // cursor might still move between the moment Show is called and the timer
 // fires.
-TEST_F(TooltipStateManagerTest, UpdatePositionIfNeeded) {
+TEST_F(TooltipStateManagerTest, MAYBE_UpdatePositionIfNeeded) {
   EXPECT_EQ(nullptr, helper_->state_manager()->tooltip_parent_window());
   EXPECT_EQ(std::u16string(), helper_->state_manager()->tooltip_text());
 
@@ -1467,9 +1477,7 @@ TEST_F(TooltipStateManagerTest, UpdatePositionIfNeeded) {
     EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
     EXPECT_EQ(position, helper_->GetTooltipPosition());
     EXPECT_FALSE(helper_->IsTooltipVisible());
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     EXPECT_TRUE(helper_->IsWillShowTooltipTimerRunning());
-#endif
 
     gfx::Point new_position = gfx::Point(10, 10);
     // Because the tooltip was triggered by the cursor, the position should be
@@ -1506,9 +1514,7 @@ TEST_F(TooltipStateManagerTest, UpdatePositionIfNeeded) {
     EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
     EXPECT_EQ(position, helper_->GetTooltipPosition());
     EXPECT_FALSE(helper_->IsTooltipVisible());
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     EXPECT_TRUE(helper_->IsWillShowTooltipTimerRunning());
-#endif
 
     gfx::Point new_position = gfx::Point(10, 10);
     // Because the tooltip was triggered by the keyboard, the position shouldn't
@@ -1535,7 +1541,5 @@ TEST_F(TooltipStateManagerTest, UpdatePositionIfNeeded) {
 
   helper_->SkipTooltipShowDelay(true);
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace views::corewm::test
