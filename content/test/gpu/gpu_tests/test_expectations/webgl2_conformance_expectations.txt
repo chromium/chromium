@@ -361,6 +361,7 @@ crbug.com/angleproject/8003 [ mac passthrough angle-metal intel ] deqp/functiona
 crbug.com/angleproject/8003 [ mac passthrough angle-metal intel ] deqp/functional/gles3/uniformbuffers/multi_nested_struct.html [ Failure ]
 crbug.com/angleproject/8003 [ mac passthrough angle-metal intel ] deqp/functional/gles3/uniformbuffers/single_nested_struct.html [ Failure ]
 crbug.com/angleproject/8003 [ mac passthrough angle-metal intel ] deqp/functional/gles3/uniformbuffers/single_nested_struct_array.html [ Failure ]
+crbug.com/angleproject/8026 [ mac passthrough angle-metal intel ] conformance2/uniforms/dependent-buffer-change.html [ Failure ]
 
 ## Metal M1 ##
 
