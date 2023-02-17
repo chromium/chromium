@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,51 +86,41 @@ TEST_F(DeepLinkUtilTest, CreateAlarmTimerDeeplink) {
                 .value());
 
   // For invalid deeplink params, we will hit DCHECK since this API isn't meant
-  // to be used in such cases. We'll use a |ScopedLogAssertHandler| to safely
-  // ignore the NOTREACHED assertion.
-  logging::ScopedLogAssertHandler handler(base::BindRepeating(
-      [](const char* file, int line, const base::StringPiece message,
-         const base::StringPiece stack_trace) {}));
+  // to be used in such cases. As such ASSERT_DCHECK_DEATH on DCHECK builds.
+#if DCHECK_IS_ON()
+#define INVALID_DEEP_LINK(call) ASSERT_DCHECK_DEATH(call)
+#else
+#define INVALID_DEEP_LINK(call) ASSERT_EQ(absl::nullopt, call)
+#endif
 
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer, "1",
-                                     absl::nullopt));
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer,
-                                     absl::nullopt, base::Minutes(1)));
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer,
-                                     absl::nullopt, absl::nullopt));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer,
+                                             "1", absl::nullopt));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer,
+                                             absl::nullopt, base::Minutes(1)));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kAddTimeToTimer,
+                                             absl::nullopt, absl::nullopt));
 
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer,
-                                     absl::nullopt, absl::nullopt));
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer,
-                                     absl::nullopt, base::Minutes(1)));
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer, "1",
-                                     base::Minutes(1)));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer,
+                                             absl::nullopt, absl::nullopt));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer,
+                                             absl::nullopt, base::Minutes(1)));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kPauseTimer, "1",
+                                             base::Minutes(1)));
 
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kRemoveAlarmOrTimer,
-                                     absl::nullopt, absl::nullopt));
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kRemoveAlarmOrTimer,
-                                     absl::nullopt, base::Minutes(1)));
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kRemoveAlarmOrTimer, "1",
-                                     base::Minutes(1)));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(
+      AlarmTimerAction::kRemoveAlarmOrTimer, absl::nullopt, absl::nullopt));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(
+      AlarmTimerAction::kRemoveAlarmOrTimer, absl::nullopt, base::Minutes(1)));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(
+      AlarmTimerAction::kRemoveAlarmOrTimer, "1", base::Minutes(1)));
 
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer,
-                                     absl::nullopt, absl::nullopt));
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer,
-                                     absl::nullopt, base::Minutes(1)));
-  ASSERT_EQ(absl::nullopt,
-            CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer, "1",
-                                     base::Minutes(1)));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer,
+                                             absl::nullopt, absl::nullopt));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer,
+                                             absl::nullopt, base::Minutes(1)));
+  INVALID_DEEP_LINK(CreateAlarmTimerDeepLink(AlarmTimerAction::kResumeTimer,
+                                             "1", base::Minutes(1)));
+#undef INVALID_DEEP_LINK
 }
 
 TEST_F(DeepLinkUtilTest, CreateAssistantQueryDeepLink) {
@@ -750,17 +741,16 @@ TEST_F(DeepLinkUtilTest, GetAssistantUrl) {
                        {{"eid", "112233"}, {"id", "123456"}}),
   };
 
-  // For deep links that are not one of type {kLists, kNotes, kReminders}, we
-  // will hit NOTREACHED since this API isn't meant to be used in such cases.
-  // In unit tests, this would normally result in a DCHECK failure that would
-  // cause the test to fail so we'll use a |ScopedLogAssertHandler| to safely
-  // ignore the NOTREACHED assertion.
-  logging::ScopedLogAssertHandler handler(base::BindRepeating(
-      [](const char* file, int line, const base::StringPiece message,
-         const base::StringPiece stack_trace) {}));
-
   for (const auto& test_case : test_cases) {
     const absl::optional<GURL>& expected = test_case.second;
+    // For deep links that are not one of type {kLists, kNotes, kReminders},
+    // we will hit NOTREACHED since this API isn't meant to be used in such
+    // cases.
+    if (DCHECK_IS_ON() && !expected) {
+      EXPECT_DCHECK_DEATH(GetAssistantUrl(
+          /*type=*/test_case.first.first, /*params=*/test_case.first.second));
+      continue;
+    }
     const absl::optional<GURL> actual = GetAssistantUrl(
         /*type=*/test_case.first.first, /*params=*/test_case.first.second);
 
