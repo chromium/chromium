@@ -2513,7 +2513,7 @@ class TestPrinterQueryOop : public PrinterQueryOop {
   }
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
-  std::unique_ptr<PrintJobWorker> TransferContextToNewWorker(
+  std::unique_ptr<PrintJobWorkerOop> CreatePrintJobWorker(
       PrintJob* print_job) override {
     return std::make_unique<TestPrintJobWorkerOop>(
         std::move(printing_context_delegate_), std::move(printing_context_),

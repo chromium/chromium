@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/printing/print_job_worker_oop.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "printing/buildflags/buildflags.h"
@@ -58,6 +59,10 @@ class PrinterQueryOop : public PrinterQuery {
                               bool is_scripted,
                               SettingsCallback callback);
 #endif
+
+  // Used by `TransferContextToNewWorker()`.  Virtual to support testing.
+  virtual std::unique_ptr<PrintJobWorkerOop> CreatePrintJobWorker(
+      PrintJob* print_job);
 
   mojom::PrintTargetType print_target_type() const {
     return print_target_type_;
