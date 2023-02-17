@@ -253,10 +253,14 @@ suite('route', function() {
     assertTrue(routes.TRIGGERED_RESET_DIALOG.isNavigableDialog);
     assertTrue(routes.TRIGGERED_RESET_DIALOG.parent === routes.RESET);
 
-    assertTrue(routes.SIGN_OUT.isNavigableDialog);
-    assertTrue(routes.SIGN_OUT.parent === routes.PEOPLE);
+    // <if expr="chromeos_ash">
+    // Regression test for b/265453606.
+    assertFalse(!!routes.SIGN_OUT);
+    // </if>
 
     // <if expr="not chromeos_ash">
+    assertTrue(routes.SIGN_OUT.isNavigableDialog);
+    assertTrue(routes.SIGN_OUT.parent === routes.PEOPLE);
     assertTrue(routes.IMPORT_DATA.isNavigableDialog);
     assertTrue(routes.IMPORT_DATA.parent === routes.PEOPLE);
     // </if>
