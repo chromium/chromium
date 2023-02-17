@@ -500,7 +500,8 @@ class BASE_EXPORT MetronomeTimer : public internal::TimerBase {
              Receiver* receiver,
              void (Receiver::*method)(),
              TimeTicks phase = TimeTicks()) {
-    Start(posted_from, interval, BindOnce(method, Unretained(receiver)), phase);
+    Start(posted_from, interval, BindRepeating(method, Unretained(receiver)),
+          phase);
   }
 
   // Call this method to reset the timer delay. The user task must be set. If
