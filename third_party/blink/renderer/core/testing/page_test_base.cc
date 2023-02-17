@@ -87,7 +87,7 @@ void PageTestBase::MockClipboardHostProvider::Install(
   interface_broker_ = &interface_broker;
   interface_broker_->SetBinderForTesting(
       blink::mojom::blink::ClipboardHost::Name_,
-      base::BindRepeating(
+      WTF::BindRepeating(
           &PageTestBase::MockClipboardHostProvider::BindClipboardHost,
           base::Unretained(this)));
 }

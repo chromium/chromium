@@ -11,14 +11,15 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 void FakeLocalFrameHost::Init(blink::AssociatedInterfaceProvider* provider) {
   provider->OverrideBinderForTesting(
       mojom::blink::LocalFrameHost::Name_,
-      base::BindRepeating(&FakeLocalFrameHost::BindFrameHostReceiver,
-                          base::Unretained(this)));
+      WTF::BindRepeating(&FakeLocalFrameHost::BindFrameHostReceiver,
+                         base::Unretained(this)));
 }
 
 void FakeLocalFrameHost::EnterFullscreen(

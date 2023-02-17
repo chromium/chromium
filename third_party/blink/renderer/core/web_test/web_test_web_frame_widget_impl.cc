@@ -261,7 +261,7 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(
 
   in_synchronous_composite_ = true;
 
-  auto wrapped_callback = base::BindOnce(
+  auto wrapped_callback = WTF::BindOnce(
       [](base::OnceClosure cb, bool* in_synchronous_composite) {
         *in_synchronous_composite = false;
         if (cb) {
