@@ -123,6 +123,7 @@ ash_ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
+  allow_js = true
   composite = true
   use_lit = true
 
@@ -172,6 +173,7 @@ ts_library("test_build_ts") {
   testonly = true
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
+  allow_js = true
   tsconfig_base = "tsconfig_base.json"
 
   in_files =

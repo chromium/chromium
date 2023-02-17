@@ -10,8 +10,8 @@ tsc_folder = "$root_gen_dir/ui/webui/resources/tsc/mojo"
 ts_library("library") {
   root_dir = "$root_gen_dir/mojom-webui"
   out_dir = tsc_folder
-  tsconfig_base = "tsconfig_base.json"
   composite = true
+  allow_js = true
 
   in_files = [
     "mojo/public/mojom/base/big_buffer.mojom-webui.js",

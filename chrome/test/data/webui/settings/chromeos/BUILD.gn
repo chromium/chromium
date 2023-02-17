@@ -247,9 +247,9 @@ copy("copy_mojo") {
 }
 
 ts_library("build_ts") {
+  allow_js = true
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   in_files = [ "test_api.test-mojom-webui.js" ] + test_files
   deps = [
     "//chrome/test/data/webui:build_ts",

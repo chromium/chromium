@@ -209,6 +209,7 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = web_component_files + non_component_ts_files + html_wrapper_files +
              mojo_js_files + [ "fuse.js" ]
+  allow_js = true
   definitions = [ "$target_gen_dir/preprocessed/fuse.d.ts" ]
   deps = [
     "//third_party/polymer/v3_0:library",

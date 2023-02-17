@@ -45,10 +45,10 @@ mojom("untrusted") {
 # TODO(crbug.com/1002798): Mojo should generate this ts_library() from actual
 # TS files rather than creating d.ts files from the generated JS files.
 ts_library("mojom_ts") {
+  allow_js = true
   mojom_gen_dir = "$root_gen_dir/mojom-webui/$cur_dir"
   root_dir = mojom_gen_dir
   out_dir = "$mojom_gen_dir/tsc"
-  tsconfig_base = "../tsconfig_base.json"
   in_files = [
     "sample_system_web_app_untrusted_ui.mojom-webui.js",
     "sample_system_web_app_ui.mojom-webui.js",

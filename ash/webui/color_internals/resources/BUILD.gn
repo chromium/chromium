@@ -9,6 +9,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos_ash, "Color Internals is ash-chrome only")
 
 ash_ts_library("color_internals_ts") {
+  allow_js = true
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   composite = true
@@ -27,8 +28,6 @@ ash_ts_library("color_internals_ts") {
   # imports.
   path_mappings =
       [ "/*|" + rebase_path("$root_gen_dir/mojom-webui/*", target_gen_dir) ]
-
-  tsconfig_base = "tsconfig_base.json"
 }
 
 generate_grd("build_cros_styles_grdp") {

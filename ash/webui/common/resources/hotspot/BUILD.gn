@@ -28,9 +28,9 @@ copy("copy_files") {
 }
 
 ts_library("build_ts") {
+  allow_js = true
   root_dir = "$target_gen_dir/$preprocessed_dir"
   out_dir = "$target_gen_dir"
-  tsconfig_base = "tsconfig_base.json"
   in_files = ts_files + [ "cros_hotspot_config.mojom-webui.js" ]
   composite = true
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

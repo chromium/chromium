@@ -180,6 +180,9 @@ template("build_cr_component") {
     out_dir = tsc_dir
 
     composite = true
+    if (defined(invoker.tsc_allow_js)) {
+      allow_js = invoker.tsc_allow_js
+    }
 
     if (!defined(invoker.ts_use_local_config) || invoker.ts_use_local_config) {
       tsconfig_base = "tsconfig_base.json"

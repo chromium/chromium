@@ -118,7 +118,6 @@ if (!optimize_webui) {
   ts_library("labs_build_ts") {
     root_dir = target_gen_dir
     out_dir = "$target_gen_dir/tsc"
-    tsconfig_base = "labs/tsconfig_base.json"
     enable_source_maps = true
     extra_deps = [ ":copy_labs" ]
 

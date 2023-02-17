@@ -65,6 +65,7 @@ group("closure_compile") {
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
+  allow_js = true
   composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [

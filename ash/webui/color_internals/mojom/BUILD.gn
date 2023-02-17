@@ -34,10 +34,10 @@ mojom("mojom") {
 }
 
 ts_library("mojom_ts") {
+  allow_js = true
   mojom_gen_dir = "$root_gen_dir/mojom-webui/" + rebase_path(".", "//")
   root_dir = mojom_gen_dir
   out_dir = "$mojom_gen_dir/tsc"
-  tsconfig_base = "../resources/tsconfig_base.json"
   in_files = [ "color_internals.mojom-webui.js" ]
   deps = [ "//ui/webui/resources/mojo:library" ]
   extra_deps = [ ":mojom_webui_js" ]

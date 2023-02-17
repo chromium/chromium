@@ -2,8 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Overview: ts_library() supports only a small subset of all possible tsconfig
+# configurations. Some options cannot be used in general, and some options
+# should only be set through the ts_library() gn args corresponding to them. In
+# the latter case, there are requirements for how some of these args can be
+# configured. This file contains validation logic for tsconfig files and the gn
+# args corresponding to config options to limit the possibility of unsupported
+# configurations proliferating in the codebase.
+
 # Options configured by the ts_library should not be set separately.
 _tsconfig_compiler_options_mappings = {
+    'allowJs': 'allow_js=true',
     'composite': 'composite=true',
     'declaration': 'composite=true',
     'inlineSourceMap': 'enable_source_maps=true',
@@ -26,7 +35,6 @@ _allowed_compiler_options = [
     'types',
     'noUncheckedIndexedAccess',
     'noUnusedLocals',
-    'allowJs',
     'strictPropertyInitialization',
     'noPropertyAccessFromIndexSignature',
     'allowUmdGlobalAccess',
@@ -34,7 +42,7 @@ _allowed_compiler_options = [
 ]
 
 
-def ValidateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
+def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
   # Special exception for material_web_components, which uses ts_library()
   # in an unsupported way.
   if 'third_party/material_web_components/tsconfig_base.json' in tsconfig_file:
@@ -67,3 +75,60 @@ def ValidateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
               f'{tsconfig_file}.'
 
   return True, None
+
+
+# Note 1: DO NOT add any directories here corresponding to newly added or
+# existing TypeScript code. Instead use TypeScript, which is a requirement.
+# Note 2: Only add a directory here if you are in the process of migrating
+# legacy JS code to TS. Any new entries here should be accompanied by a bug
+# tracking the TS migration.
+def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
+  # Special case for iOS, which sets the root src/ directory as the source
+  # directory for the ts_library() call, see
+  # ios/web/public/js_messaging/compile_ts.gni.
+  # We don't want to generally allow allow_js anywhere in src/ so check the
+  # output directory against the standard ios directories instead. This is a
+  # really broad check so also use the platform to make sure this is not abused
+  # elsewhere; the iOS use case of using allowJs broadly is not supported.
+  if (is_ios and '/ios/' in out_dir):
+    return True, None
+
+  # Anything in these ChromeOS-specific directories is allowed to use allow_js.
+  # TODO (rbpotter): If possible, standardize the build setup in some of these
+  # folders such that they can be more accurately specified in the list below.
+  ash_directories = [
+      'ash/webui/camera_app_ui/',
+      'ash/webui/color_internals/',
+      'ash/webui/common/resources/',
+      'ash/webui/diagnostics_ui/',
+      'ash/webui/face_ml_app_ui/',
+      'ash/webui/file_manager/resources/labs/',
+      'ash/webui/shortcut_customization_ui/',
+      'ash/webui/sample_system_web_app_ui/',
+      'ui/file_manager/',
+  ]
+  for directory in ash_directories:
+    if directory in source_dir:
+      return True, None
+
+  # Specific exceptions for directories that are still migrating to TS.
+  migrating_directories = [
+      'chrome/browser/resources/bluetooth_internals',
+      'chrome/browser/resources/ntp4',
+      'chrome/browser/resources/chromeos/accessibility',
+      'chrome/browser/resources/chromeos/emoji_picker',
+      'chrome/browser/resources/settings/chromeos/tsc_input',
+      'chrome/test/data/webui',
+      'chrome/test/data/webui/chromeos',
+      'chrome/test/data/webui/settings/chromeos',
+      'components/policy/resources/webui',
+      'ui/webui/resources/js',
+      'mojom-webui',
+  ]
+  for directory in migrating_directories:
+    if (source_dir.endswith(directory)
+        or source_dir.endswith(directory + '/preprocessed')):
+      return True, None
+
+  return False, 'Invalid allow_js detected for input directory ' + \
+      f'{source_dir} and output directory {out_dir}'

@@ -19,8 +19,8 @@ ts_library("untrusted_ts") {
     "untrusted_page_interface.ts",
   ]
 
+  allow_js = true
   composite = true
-  tsconfig_base = "../../tsconfig_base.json"
 
   # Allows TSC to check the generated mojom-webui/ directory when it encounters
   # imports.

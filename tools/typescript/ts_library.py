@@ -19,7 +19,7 @@ import node
 import node_modules
 
 from path_mappings import GetDepToPathMappings
-from validate_tsconfig import ValidateTsconfigJson
+from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
@@ -46,6 +46,8 @@ def main(argv):
   parser.add_argument('--manifest_excludes', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   parser.add_argument('--composite', action='store_true')
+  parser.add_argument('--allow_js', action='store_true')
+  parser.add_argument('--is_ios', action='store_true')
   parser.add_argument('--enable_source_maps', action='store_true')
   parser.add_argument('--output_suffix', required=True)
   args = parser.parse_args(argv)
@@ -68,7 +70,7 @@ def main(argv):
   with io.open(tsconfig_base_file, encoding='utf-8', mode='r') as f:
     tsconfig_base = json.loads(f.read())
 
-    is_tsconfig_valid, error = ValidateTsconfigJson(tsconfig_base,
+    is_tsconfig_valid, error = validateTsconfigJson(tsconfig_base,
                                                     tsconfig_base_file,
                                                     args.tsconfig_base is None)
     if not is_tsconfig_valid:
@@ -99,6 +101,17 @@ def main(argv):
 
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
+
+  if args.allow_js:
+    source_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
+                                               root_dir)).replace('\\', '/')
+    out_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
+                                            out_dir)).replace('\\', '/')
+    is_js_allowed, error = validateJavaScriptAllowed(source_dir, out_dir,
+                                                     args.is_ios)
+    if not is_js_allowed:
+      raise AssertionError(error)
+    tsconfig['compilerOptions']['allowJs'] = True
 
   if args.composite:
     tsbuildinfo_name = f'tsconfig_{args.output_suffix}.tsbuildinfo'

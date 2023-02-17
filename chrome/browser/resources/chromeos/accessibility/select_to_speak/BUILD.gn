@@ -32,7 +32,7 @@ ts_modules = []
 
 # Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
-  tsconfig_base = "../tsconfig.a11y.json"
+  allow_js = true
   root_dir = "../"
   in_files = ts_modules
   out_dir = tsc_output_dir

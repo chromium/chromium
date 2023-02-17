@@ -17,10 +17,10 @@ mojom("trusted") {
 }
 
 ts_library("mojom_ts") {
+  allow_js = true
   mojom_gen_dir = "$root_gen_dir/mojom-webui/$cur_dir"
   root_dir = mojom_gen_dir
   out_dir = "$mojom_gen_dir/tsc"
-  tsconfig_base = "../tsconfig_base.json"
   in_files = [ "face_ml_app_ui.mojom-webui.js" ]
 
   # Required for Mojo's bindings.js resolution.

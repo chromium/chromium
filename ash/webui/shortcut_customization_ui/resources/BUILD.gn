@@ -162,6 +162,7 @@ ts_definitions("build_mojo_dts") {
 }
 
 ts_library("build_ts") {
+  allow_js = true
   composite = true
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/$out_folder"

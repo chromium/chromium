@@ -361,6 +361,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
+  allow_js = true
   in_files = [
     "chai_assert.ts",
     "chrome_timeticks_test.ts",

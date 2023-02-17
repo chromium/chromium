@@ -113,6 +113,7 @@ ts_library("build_ts") {
 
   tsconfig_base = "../tsconfig_base.json"
 
+  allow_js = true
   root_dir = "$target_gen_dir/.."
   out_dir = "$target_gen_dir/tsc"
 

@@ -121,6 +121,10 @@ template("ts_library") {
       args += [ "--composite" ]
     }
 
+    if (defined(invoker.allow_js) && invoker.allow_js) {
+      args += [ "--allow_js" ]
+    }
+
     if (defined(invoker.enable_source_maps) && invoker.enable_source_maps) {
       args += [ "--enable_source_maps" ]
     }
@@ -171,6 +175,11 @@ template("ts_library") {
                 "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
                 target_gen_dir),
       ]
+    }
+
+    # Flag to prevent special iOS exceptions being abused on other platforms.
+    if (is_ios) {
+      args += [ "--is_ios" ]
     }
 
     args += [ "--path_mappings" ] + path_mappings
