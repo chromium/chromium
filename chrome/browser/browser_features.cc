@@ -42,6 +42,13 @@ BASE_FEATURE(kDevToolsTabTarget,
              "DevToolsTabTarget",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Normally the toolbar texture is discarded when the toolbar is no longer
+// visible. This feature keeps the texture around so it does not need to get
+// re-uploaded when the toolbar becomes visible again.
+BASE_FEATURE(kKeepToolbarTexture,
+             "KeepToolbarTexture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Nukes profile directory before creating a new profile using
 // ProfileManager::CreateMultiProfileAsync().
 BASE_FEATURE(kNukeProfileBeforeCreateMultiAsync,

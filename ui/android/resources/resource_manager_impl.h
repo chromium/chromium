@@ -49,6 +49,7 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
                                       SkColor tint_color,
                                       bool preserve_color_alpha) override;
   void PreloadResource(AndroidResourceType res_type, int res_id) override;
+  void MarkTintNonDiscardable(SkColor tint_color) override;
   void OnFrameUpdatesFinished() override;
 
   // Called from Java
@@ -96,7 +97,7 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   TintedResourceMap tinted_resources_;
 
   // The set of tints that are used for resources in the current frame.
-  std::unordered_set<int> used_tints_;
+  std::unordered_set<SkColor> used_tints_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };

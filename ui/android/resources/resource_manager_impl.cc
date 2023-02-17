@@ -129,6 +129,10 @@ void ResourceManagerImpl::RemoveUnusedTints() {
   }
 }
 
+void ResourceManagerImpl::MarkTintNonDiscardable(SkColor tint_color) {
+  used_tints_.insert(tint_color);
+}
+
 void ResourceManagerImpl::OnFrameUpdatesFinished() {
   RemoveUnusedTints();
   used_tints_.clear();

@@ -62,6 +62,8 @@ class UI_ANDROID_EXPORT ResourceManager {
                                                : 0;
   }
 
+  virtual void MarkTintNonDiscardable(SkColor tint_color) = 0;
+
   // A notification that all updates have finished for the current frame.
   virtual void OnFrameUpdatesFinished() = 0;
 
