@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/focus_cycler.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
@@ -186,6 +187,13 @@ class NotificationCenterViewTest : public AshTestBase,
     auto* focused_message_view = test_api()->GetNotificationViewForId(id);
     focus_manager->SetFocusedView(focused_message_view);
     return focused_message_view;
+  }
+
+  void FocusClearAllButton() {
+    auto* widget = GetNotificationBarClearAllButton()->GetWidget();
+    widget->widget_delegate()->SetCanActivate(true);
+    Shell::Get()->focus_cycler()->FocusWidget(widget);
+    GetNotificationBarClearAllButton()->RequestFocus();
   }
 
   void RelayoutMessageCenterViewForTest() {
@@ -723,6 +731,23 @@ TEST_P(NotificationCenterViewTest, ClearAllButtonHeight) {
   // ClearAll Button height should remain the same.
   EXPECT_EQ(previous_button_height,
             GetNotificationBarClearAllButton()->height());
+}
+
+// Tests that the "Clear all" button is not focusable when it is disabled.
+TEST_P(NotificationCenterViewTest, ClearAllNotFocusableWhenDisabled) {
+  // Add a pinned notification and toggle the bubble.
+  test_api()->AddPinnedNotification();
+  test_api()->ToggleBubble();
+
+  // Verify that the "Clear all" button is visible but disabled.
+  ASSERT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
+  ASSERT_FALSE(GetNotificationBarClearAllButton()->GetEnabled());
+
+  // Attempt to focus the "Clear all" button.
+  FocusClearAllButton();
+
+  // Verify that the "Clear all" button did not receive focus.
+  EXPECT_FALSE(GetNotificationBarClearAllButton()->HasFocus());
 }
 
 TEST_P(NotificationCenterViewTest, StackedNotificationCount) {

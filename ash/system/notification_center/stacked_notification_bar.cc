@@ -328,9 +328,7 @@ bool StackedNotificationBar::Update(
       unpinned_count);
   clear_all_button_->SetTooltipText(tooltip);
   clear_all_button_->SetAccessibleName(tooltip);
-  clear_all_button_->SetState(unpinned_count == 0
-                                  ? views::Button::STATE_DISABLED
-                                  : views::Button::STATE_NORMAL);
+  clear_all_button_->SetEnabled(unpinned_count != 0);
 
   return true;
 }
