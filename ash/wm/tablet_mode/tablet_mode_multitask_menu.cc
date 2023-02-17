@@ -7,12 +7,15 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/window_state.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
@@ -108,6 +111,12 @@ class TabletModeMultitaskMenuView : public views::View {
         AddChildView(std::make_unique<chromeos::MultitaskMenuView>(
             window, std::move(callback), buttons));
 
+    // base::Unretained() is safe since `this` also destroys `menu_view_base_`
+    // and its child `feedback_button_`.
+    menu_view_base_->feedback_button()->SetCallback(base::BindRepeating(
+        &TabletModeMultitaskMenuView::ShowFeedbackPageForMenu,
+        base::Unretained(this)));
+
     if (menu_view_base_->partial_button() &&
         min_length > work_area_length * chromeos::kOneThirdSnapRatio) {
       // If `min_length` > 1/3, it can't fit into 1/3 split, so disable
@@ -177,6 +186,13 @@ class TabletModeMultitaskMenuView : public views::View {
   SystemShadow* shadow() { return shadow_.get(); }
 
  private:
+  // Shows a dogfood feedback page for the multitask menu.
+  void ShowFeedbackPageForMenu() {
+    Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+        ShellDelegate::FeedbackSource::kWindowLayoutMenu,
+        /*description_template=*/"#WindowLayoutMenu");
+  }
+
   raw_ptr<chromeos::MultitaskMenuView> menu_view_base_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
