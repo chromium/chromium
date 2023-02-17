@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {
@@ -178,6 +179,7 @@ template <typename Container, typename BoundsFunctor, typename PayloadFunctor>
 void RTree<T>::Build(const Container& items,
                      const BoundsFunctor& bounds_getter,
                      const PayloadFunctor& payload_getter) {
+  TRACE_EVENT1("cc", "RTree::Build", "size", items.size());
   DCHECK_EQ(0u, num_data_elements_);
 
   std::vector<Branch<T>> branches;
@@ -317,11 +319,14 @@ void RTree<T>::Search(const gfx::Rect& query,
   results->clear();
   if (num_data_elements_ == 0)
     return;
+
+  TRACE_EVENT_BEGIN1("cc", "RTree::Search", "size", num_data_elements_);
   if (!has_valid_bounds_) {
     SearchRecursiveFallback(root_.subtree.get(), query, results, rects);
   } else if (query.Intersects(root_.bounds)) {
     SearchRecursive(root_.subtree.get(), query, results, rects);
   }
+  TRACE_EVENT_END1("cc", "RTree::Search", "result_size", results->size());
 }
 
 template <typename T>
