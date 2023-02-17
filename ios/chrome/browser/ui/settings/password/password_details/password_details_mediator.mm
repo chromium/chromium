@@ -6,6 +6,8 @@
 
 #import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/move_password_to_account_store_helper.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
@@ -123,6 +125,18 @@ using base::SysNSStringToUTF16;
   if (it != _credentials.end()) {
     _credentials.erase(it);
   }
+}
+
+- (void)moveCredentialToAccountStore:
+            (const password_manager::CredentialUIEntry&)credential
+                              client:(password_manager::PasswordManagerClient*)
+                                         client {
+  MovePasswordsToAccountStore(
+      _manager->GetSavedPasswordsPresenter()->GetCorrespondingPasswordForms(
+          credential),
+      client,
+      password_manager::metrics_util::MoveToAccountStoreTrigger::
+          kExplicitlyTriggeredInSettings);
 }
 
 #pragma mark - PasswordDetailsTableViewControllerDelegate

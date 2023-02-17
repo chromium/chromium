@@ -23,6 +23,10 @@
 - (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
                                          anchorView:(UIView*)anchorView;
 
+// Called when the user wants to move a password from profile store to account
+// store.
+- (void)moveCredentialToAccountStore:(PasswordDetails*)password;
+
 // Called when the user wants to save edited password.
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin;
 

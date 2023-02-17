@@ -82,6 +82,9 @@ constexpr char kNote[] = "note";
   self.deletionCalledOnCompromisedPassword = password.isCompromised;
 }
 
+- (void)moveCredentialToAccountStore:(PasswordDetails*)password {
+}
+
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin {
   self.editingCalled = YES;
 }
