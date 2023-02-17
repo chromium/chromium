@@ -130,7 +130,7 @@ class AutofillTest : public InProcessBrowserTest {
    private:
     TestAutofillManagerWaiter forms_seen_waiter_{
         *this,
-        {&AutofillManager::Observer::OnAfterFormsSeen}};
+        {AutofillManagerEvent::kFormsSeen}};
   };
 
   AutofillTest() = default;

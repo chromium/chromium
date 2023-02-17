@@ -39,7 +39,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
    private:
     TestAutofillManagerWaiter forms_seen_waiter_{
         *this,
-        {&AutofillManager::Observer::OnAfterFormsSeen}};
+        {AutofillManagerEvent::kFormsSeen}};
   };
 
   void SetUpOnMainThread() override {

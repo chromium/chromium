@@ -144,9 +144,8 @@ class FormStructureBrowserTest
     TestAutofillManagerWaiter& waiter() { return waiter_; }
 
    private:
-    TestAutofillManagerWaiter waiter_{
-        *this,
-        {&AutofillManager::Observer::OnAfterFormsSeen}};
+    TestAutofillManagerWaiter waiter_{*this,
+                                      {AutofillManagerEvent::kFormsSeen}};
   };
 
   FormStructureBrowserTest();

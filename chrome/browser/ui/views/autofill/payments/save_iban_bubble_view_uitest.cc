@@ -76,7 +76,7 @@ class SaveIbanBubbleViewFullFormBrowserTest
    private:
     TestAutofillManagerWaiter forms_seen_waiter_{
         *this,
-        {&AutofillManager::Observer::OnAfterFormsSeen}};
+        {AutofillManagerEvent::kFormsSeen}};
   };
 
   // Various events that can be waited on by the DialogEventWaiter.

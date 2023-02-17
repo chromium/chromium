@@ -52,7 +52,7 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
  private:
   autofill::TestAutofillManagerWaiter forms_seen_waiter_{
       *this,
-      {&AutofillManager::Observer::OnAfterFormsSeen}};
+      {autofill::AutofillManagerEvent::kFormsSeen}};
 };
 
 }  // namespace

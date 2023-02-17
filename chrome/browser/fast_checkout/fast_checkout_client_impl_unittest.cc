@@ -660,7 +660,7 @@ TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
   EXPECT_CALL(*autofill_manager(),
               SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddressHome,
                                    fast_checkout_client()->run_id_));
-  fast_checkout_client()->OnAfterLoadedServerPredictions();
+  fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
   EXPECT_THAT(
       fast_checkout_client()->form_filling_states_,
       UnorderedElementsAre(
@@ -708,7 +708,8 @@ TEST_F(FastCheckoutClientImplTest,
                             autofill::FormType::kCreditCardForm),
                        FastCheckoutClientImpl::FillingState::kFilling)));
 
-  fast_checkout_client()->OnAfterDidFillAutofillFormData();
+  fast_checkout_client()->OnAfterDidFillAutofillFormData(
+      *autofill_manager(), credit_card_form->global_id());
 
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
   ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kSuccess);
@@ -720,7 +721,7 @@ TEST_F(FastCheckoutClientImplTest, OnAutofillManagerReset_ResetsState) {
       autofill_manager()->GetWeakPtr()));
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
-  fast_checkout_client()->OnAutofillManagerReset();
+  fast_checkout_client()->OnAutofillManagerReset(*autofill_manager());
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
   ExpectRunOutcomeUkm(
       FastCheckoutRunOutcome::kNavigationWhileBottomsheetWasShown);
@@ -732,7 +733,7 @@ TEST_F(FastCheckoutClientImplTest, OnAutofillManagerDestroyed_ResetsState) {
       autofill_manager()->GetWeakPtr()));
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
-  fast_checkout_client()->OnAutofillManagerDestroyed();
+  fast_checkout_client()->OnAutofillManagerDestroyed(*autofill_manager());
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
   ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kAutofillManagerDestroyed);
 }
@@ -835,7 +836,8 @@ TEST_F(
       kAutofillProfileLabel + u" address form filled.";
 
   EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
-  fast_checkout_client()->OnAfterDidFillAutofillFormData();
+  fast_checkout_client()->OnAfterDidFillAutofillFormData(
+      *autofill_manager(), address_form->global_id());
 }
 
 TEST_F(
@@ -850,7 +852,8 @@ TEST_F(
   std::u16string announcement_text = u"Email filled.";
 
   EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
-  fast_checkout_client()->OnAfterDidFillAutofillFormData();
+  fast_checkout_client()->OnAfterDidFillAutofillFormData(
+      *autofill_manager(), address_form->global_id());
 }
 
 TEST_F(
@@ -867,7 +870,8 @@ TEST_F(
   std::u16string announcement_text = kCreditCardNickname + u" filled.";
 
   EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
-  fast_checkout_client()->OnAfterDidFillAutofillFormData();
+  fast_checkout_client()->OnAfterDidFillAutofillFormData(
+      *autofill_manager(), credit_card_form->global_id());
 }
 
 TEST_F(FastCheckoutClientImplTest,
@@ -883,7 +887,7 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   EXPECT_CALL(*autofill_manager(), FillProfileFormImpl).Times(0);
 
-  fast_checkout_client()->OnAfterLoadedServerPredictions();
+  fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
 
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 }
@@ -906,7 +910,7 @@ TEST_F(FastCheckoutClientImplTest,
   // `BrowserAutofillManager`.
   EXPECT_CALL(*autofill_manager(), FillCreditCardFormImpl).Times(0);
 
-  fast_checkout_client()->OnAfterLoadedServerPredictions();
+  fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
 
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 }

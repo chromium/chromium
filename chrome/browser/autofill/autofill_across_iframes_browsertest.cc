@@ -109,10 +109,10 @@ class TestAutofillManager : public BrowserAutofillManager {
  private:
   TestAutofillManagerWaiter did_autofill_{
       *this,
-      {&AutofillManager::Observer::OnAfterDidFillAutofillFormData}};
+      {AutofillManagerEvent::kDidFillAutofillFormData}};
   TestAutofillManagerWaiter form_submitted_{
       *this,
-      {&AutofillManager::Observer::OnAfterFormSubmitted}};
+      {AutofillManagerEvent::kFormSubmitted}};
   absl::optional<FormData> submitted_form_;
 };
 

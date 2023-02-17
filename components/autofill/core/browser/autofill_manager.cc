@@ -30,7 +30,8 @@ namespace autofill {
 
 namespace {
 
-// Creates a reply callback for ParseFormAsync().
+// ParsingCallback(), NotifyObserversCallback(), and NotifyNoObserversCallback()
+// assemble the reply callback for ParseFormAsync().
 //
 // An event
 //   AutofillManager::OnFoo(const FormData& form, args...)
@@ -39,26 +40,58 @@ namespace {
 //   AutofillManager::OnFooImpl(const FormData& form, args...)
 // unless the AutofillManager has been destructed or reset in the meantime.
 //
-// ParsingCallback(&AutofillManager::OnFooImpl, args...) creates the
-// corresponding callback to be passed to ParseFormAsync().
+// For some events, AutofillManager::Observer::On{Before,After}Foo() must be
+// called before/after AutofillManager::OnFooImpl().
 //
-// The `after_event` is supposed to be &Observer::OnAfterFoo (or nullptr if no
-// such event exists). The callback notifies the observers of `after_event`.
+// The corresponding callback for ParseFormAsync() is assembled by
+//   ParsingCallback(&AutofillManager::OnFooImpl, ...)
+//       .Then(NotifyNoObserversCallback())
+// or
+//   ParsingCallback(&AutofillManager::OnFooImpl, ...)
+//       .Then(NotifyObserversCallback(&Observer::OnAfterFoo, ...))
+//
+// `.Then(NotifyNoObserversCallback())` is needed in the first case to discard
+// the return type of ParsingCallback().
 template <typename Functor, typename... Args>
-base::OnceCallback<void(AutofillManager&, const FormData&)> ParsingCallback(
-    Functor&& functor,
-    void (AutofillManager::Observer::*after_event)(),
-    Args&&... args) {
+base::OnceCallback<AutofillManager&(AutofillManager&, const FormData&)>
+ParsingCallback(Functor&& functor, Args&&... args) {
   return base::BindOnce(
-      [](Functor&& functor, void (AutofillManager::Observer::*after_event)(),
-         std::remove_reference_t<Args&&>... args, AutofillManager& self,
-         const FormData& form) {
+      [](Functor&& functor, std::remove_reference_t<Args&&>... args,
+         AutofillManager& self, const FormData& form) -> AutofillManager& {
         base::invoke(std::forward<Functor>(functor), self, form,
                      std::forward<Args>(args)...);
-        if (after_event)
-          self.NotifyObservers(after_event);
+        return self;
       },
-      std::forward<Functor>(functor), after_event, std::forward<Args>(args)...);
+      std::forward<Functor>(functor), std::forward<Args>(args)...);
+}
+
+// See ParsingCallback().
+template <typename Functor, typename... Args>
+base::OnceCallback<void(AutofillManager&)> NotifyObserversCallback(
+    Functor&& functor,
+    Args&&... args) {
+  return base::BindOnce(
+      [](Functor&& functor, std::remove_reference_t<Args&&>... args,
+         AutofillManager& self) {
+        self.NotifyObservers(std::forward<Functor>(functor),
+                             std::forward<Args>(args)...);
+      },
+      std::forward<Functor>(functor), std::forward<Args>(args)...);
+}
+
+// See ParsingCallback().
+base::OnceCallback<void(AutofillManager&)> NotifyNoObserversCallback() {
+  return base::DoNothingAs<void(AutofillManager&)>();
+}
+
+// Collects the FormGlobalIds of `forms`.
+std::vector<FormGlobalId> GetFormGlobalIds(base::span<const FormData> forms) {
+  std::vector<FormGlobalId> form_ids;
+  form_ids.reserve(forms.size());
+  for (const FormData& form : forms) {
+    form_ids.push_back(form.global_id());
+  }
+  return form_ids;
 }
 
 // Returns the AutofillField* corresponding to |field| in |form| or nullptr,
@@ -228,9 +261,9 @@ void AutofillManager::FillCreditCardForm(const FormData& form,
     FillCreditCardFormImpl(form, field, credit_card, cvc);
     return;
   }
-  ParseFormAsync(
-      form, ParsingCallback(&AutofillManager::FillCreditCardFormImpl,
-                            /*after_event=*/nullptr, field, credit_card, cvc));
+  ParseFormAsync(form, ParsingCallback(&AutofillManager::FillCreditCardFormImpl,
+                                       field, credit_card, cvc)
+                           .Then(NotifyNoObserversCallback()));
 }
 
 void AutofillManager::FillProfileForm(const AutofillProfile& profile,
@@ -240,9 +273,9 @@ void AutofillManager::FillProfileForm(const AutofillProfile& profile,
     FillProfileFormImpl(form, field, profile);
     return;
   }
-  ParseFormAsync(form,
-                 ParsingCallback(&AutofillManager::FillProfileFormImpl,
-                                 /*after_event=*/nullptr, field, profile));
+  ParseFormAsync(form, ParsingCallback(&AutofillManager::FillProfileFormImpl,
+                                       field, profile)
+                           .Then(NotifyNoObserversCallback()));
 }
 
 void AutofillManager::OnDidFillAutofillFormData(
@@ -251,16 +284,19 @@ void AutofillManager::OnDidFillAutofillFormData(
   if (!IsValidFormData(form))
     return;
 
-  NotifyObservers(&Observer::OnBeforeDidFillAutofillFormData);
+  NotifyObservers(&Observer::OnBeforeDidFillAutofillFormData, form.global_id());
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnDidFillAutofillFormDataImpl(form, timestamp);
-    NotifyObservers(&Observer::OnAfterDidFillAutofillFormData);
+    NotifyObservers(&Observer::OnAfterDidFillAutofillFormData,
+                    form.global_id());
     return;
   }
   ParseFormAsync(
       form,
       ParsingCallback(&AutofillManager::OnDidFillAutofillFormDataImpl,
-                      &Observer::OnAfterDidFillAutofillFormData, timestamp));
+                      timestamp)
+          .Then(NotifyObserversCallback(
+              &Observer::OnAfterDidFillAutofillFormData, form.global_id())));
 }
 
 void AutofillManager::OnFormSubmitted(const FormData& form,
@@ -270,10 +306,10 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
     return;
   }
 
-  NotifyObservers(&Observer::OnBeforeFormSubmitted);
+  NotifyObservers(&Observer::OnBeforeFormSubmitted, form.global_id());
   NotifyObservers(&Observer::OnFormSubmitted);
   OnFormSubmittedImpl(form, known_success, source);
-  NotifyObservers(&Observer::OnAfterFormSubmitted);
+  NotifyObservers(&Observer::OnAfterFormSubmitted, form.global_id());
 }
 
 void AutofillManager::OnFormsSeen(
@@ -293,7 +329,8 @@ void AutofillManager::OnFormsSeen(
   if (!ShouldParseForms(updated_forms))
     return;
 
-  NotifyObservers(&Observer::OnBeforeFormsSeen);
+  NotifyObservers(&Observer::OnBeforeFormsSeen,
+                  GetFormGlobalIds(updated_forms));
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     std::vector<FormData> parsed_forms;
     for (const FormData& form : updated_forms) {
@@ -325,7 +362,8 @@ void AutofillManager::OnFormsSeen(
     }
     if (!parsed_forms.empty())
       OnFormsParsed(parsed_forms);
-    NotifyObservers(&Observer::OnAfterFormsSeen);
+    NotifyObservers(&Observer::OnAfterFormsSeen,
+                    GetFormGlobalIds(parsed_forms));
     return;
   }
   DCHECK(base::FeatureList::IsEnabled(features::kAutofillParseAsync));
@@ -333,7 +371,8 @@ void AutofillManager::OnFormsSeen(
                                const std::vector<FormData>& parsed_forms) {
     if (!parsed_forms.empty())
       self.OnFormsParsed(parsed_forms);
-    self.NotifyObservers(&Observer::OnAfterFormsSeen);
+    self.NotifyObservers(&Observer::OnAfterFormsSeen,
+                         GetFormGlobalIds(parsed_forms));
   };
   ParseFormsAsync(updated_forms, base::BindOnce(ProcessParsedForms));
 }
@@ -403,17 +442,21 @@ void AutofillManager::OnTextFieldDidChange(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  NotifyObservers(&Observer::OnBeforeTextFieldDidChange);
+  NotifyObservers(&Observer::OnBeforeTextFieldDidChange, form.global_id(),
+                  field.global_id());
   NotifyObservers(&Observer::OnTextFieldDidChange);
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnTextFieldDidChangeImpl(form, field, bounding_box, timestamp);
-    NotifyObservers(&Observer::OnAfterTextFieldDidChange);
+    NotifyObservers(&Observer::OnAfterTextFieldDidChange, form.global_id(),
+                    field.global_id());
     return;
   }
-  ParseFormAsync(form,
-                 ParsingCallback(&AutofillManager::OnTextFieldDidChangeImpl,
-                                 &Observer::OnAfterTextFieldDidChange, field,
-                                 bounding_box, timestamp));
+  ParseFormAsync(
+      form,
+      ParsingCallback(&AutofillManager::OnTextFieldDidChangeImpl, field,
+                      bounding_box, timestamp)
+          .Then(NotifyObserversCallback(&Observer::OnAfterTextFieldDidChange,
+                                        form.global_id(), field.global_id())));
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,
@@ -427,9 +470,10 @@ void AutofillManager::OnTextFieldDidScroll(const FormData& form,
     OnTextFieldDidScrollImpl(form, field, bounding_box);
     return;
   }
-  ParseFormAsync(form,
-                 ParsingCallback(&AutofillManager::OnTextFieldDidScrollImpl,
-                                 /*after_event=*/nullptr, field, bounding_box));
+  ParseFormAsync(
+      form, ParsingCallback(&AutofillManager::OnTextFieldDidScrollImpl, field,
+                            bounding_box)
+                .Then(NotifyNoObserversCallback()));
 }
 
 void AutofillManager::OnSelectControlDidChange(const FormData& form,
@@ -445,7 +489,8 @@ void AutofillManager::OnSelectControlDidChange(const FormData& form,
   }
   ParseFormAsync(form,
                  ParsingCallback(&AutofillManager::OnSelectControlDidChangeImpl,
-                                 /*after_event=*/nullptr, field, bounding_box));
+                                 field, bounding_box)
+                     .Then(NotifyNoObserversCallback()));
 }
 
 void AutofillManager::OnAskForValuesToFill(
@@ -457,7 +502,8 @@ void AutofillManager::OnAskForValuesToFill(
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  NotifyObservers(&Observer::OnBeforeAskForValuesToFill);
+  NotifyObservers(&Observer::OnBeforeAskForValuesToFill, form.global_id(),
+                  field.global_id());
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)
 #if BUILDFLAG(IS_ANDROID)
       // TODO(crbug.com/1379149) Asynchronous parsing breaks Touch To Fill's
@@ -470,14 +516,17 @@ void AutofillManager::OnAskForValuesToFill(
     OnAskForValuesToFillImpl(form, field, bounding_box,
                              autoselect_first_suggestion,
                              form_element_was_clicked);
-    NotifyObservers(&Observer::OnAfterAskForValuesToFill);
+    NotifyObservers(&Observer::OnAfterAskForValuesToFill, form.global_id(),
+                    field.global_id());
     return;
   }
   ParseFormAsync(
       form,
-      ParsingCallback(&AutofillManager::OnAskForValuesToFillImpl,
-                      &Observer::OnAfterAskForValuesToFill, field, bounding_box,
-                      autoselect_first_suggestion, form_element_was_clicked));
+      ParsingCallback(&AutofillManager::OnAskForValuesToFillImpl, field,
+                      bounding_box, autoselect_first_suggestion,
+                      form_element_was_clicked)
+          .Then(NotifyObserversCallback(&Observer::OnAfterAskForValuesToFill,
+                                        form.global_id(), field.global_id())));
 }
 
 void AutofillManager::OnFocusOnFormField(const FormData& form,
@@ -490,9 +539,9 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
     OnFocusOnFormFieldImpl(form, field, bounding_box);
     return;
   }
-  ParseFormAsync(form,
-                 ParsingCallback(&AutofillManager::OnFocusOnFormFieldImpl,
-                                 /*after_event=*/nullptr, field, bounding_box));
+  ParseFormAsync(form, ParsingCallback(&AutofillManager::OnFocusOnFormFieldImpl,
+                                       field, bounding_box)
+                           .Then(NotifyNoObserversCallback()));
 }
 
 void AutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {
@@ -520,8 +569,8 @@ void AutofillManager::OnSelectFieldOptionsDidChange(const FormData& form) {
     return;
   }
   ParseFormAsync(
-      form, ParsingCallback(&AutofillManager::OnSelectFieldOptionsDidChangeImpl,
-                            /*after_event=*/nullptr));
+      form, ParsingCallback(&AutofillManager::OnSelectFieldOptionsDidChangeImpl)
+                .Then(NotifyNoObserversCallback()));
 }
 
 void AutofillManager::OnJavaScriptChangedAutofilledValue(
@@ -531,17 +580,21 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
   if (!IsValidFormData(form))
     return;
 
-  NotifyObservers(&Observer::OnBeforeJavaScriptChangedAutofilledValue);
+  NotifyObservers(&Observer::OnBeforeJavaScriptChangedAutofilledValue,
+                  form.global_id(), field.global_id());
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnJavaScriptChangedAutofilledValueImpl(form, field, old_value);
-    NotifyObservers(&Observer::OnAfterJavaScriptChangedAutofilledValue);
+    NotifyObservers(&Observer::OnAfterJavaScriptChangedAutofilledValue,
+                    form.global_id(), field.global_id());
     return;
   }
   ParseFormAsync(
       form,
       ParsingCallback(&AutofillManager::OnJavaScriptChangedAutofilledValueImpl,
-                      &Observer::OnAfterJavaScriptChangedAutofilledValue, field,
-                      old_value));
+                      field, old_value)
+          .Then(NotifyObserversCallback(
+              &Observer::OnAfterJavaScriptChangedAutofilledValue,
+              form.global_id(), field.global_id())));
 }
 
 // Returns true if |live_form| does not match |cached_form|.

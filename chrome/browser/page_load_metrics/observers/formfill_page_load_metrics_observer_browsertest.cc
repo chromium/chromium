@@ -47,7 +47,7 @@ class FormfillPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
    private:
     autofill::TestAutofillManagerWaiter waiter_{
         *this,
-        {&AutofillManager::Observer::OnAfterFormsSeen}};
+        {autofill::AutofillManagerEvent::kFormsSeen}};
   };
 
   void SetUpOnMainThread() override {

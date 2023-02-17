@@ -202,19 +202,25 @@ class MockAutofillObserver : public AutofillManager::Observer {
   MockAutofillObserver& operator=(const MockAutofillObserver&) = delete;
   ~MockAutofillObserver() override = default;
 
-  MOCK_METHOD(void, OnFormParsed, (), (override));
+  MOCK_METHOD(void, OnFormParsed, (AutofillManager&), (override));
 
-  MOCK_METHOD(void, OnTextFieldDidChange, (), (override));
+  MOCK_METHOD(void, OnTextFieldDidChange, (AutofillManager&), (override));
 
-  MOCK_METHOD(void, OnTextFieldDidScroll, (), (override));
+  MOCK_METHOD(void, OnTextFieldDidScroll, (AutofillManager&), (override));
 
-  MOCK_METHOD(void, OnSelectControlDidChange, (), (override));
+  MOCK_METHOD(void, OnSelectControlDidChange, (AutofillManager&), (override));
 
-  MOCK_METHOD(void, OnFormSubmitted, (), (override));
+  MOCK_METHOD(void, OnFormSubmitted, (AutofillManager&), (override));
 
-  MOCK_METHOD(void, OnBeforeLoadedServerPredictions, (), (override));
+  MOCK_METHOD(void,
+              OnBeforeLoadedServerPredictions,
+              (AutofillManager&),
+              (override));
 
-  MOCK_METHOD(void, OnAfterLoadedServerPredictions, (), (override));
+  MOCK_METHOD(void,
+              OnAfterLoadedServerPredictions,
+              (AutofillManager&),
+              (override));
 };
 
 // Creates a vector of test forms which differ in their FormGlobalIds
@@ -261,12 +267,11 @@ void OnFormsSeenWithExpectations(MockAutofillManager& manager,
   size_t num =
       std::min(updated_forms.size(), kAutofillManagerMaxFormCacheSize -
                                          manager.form_structures().size());
-  EXPECT_CALL(manager, ShouldParseForms(_)).Times(1).WillOnce(Return(true));
+  EXPECT_CALL(manager, ShouldParseForms).Times(1).WillOnce(Return(true));
   EXPECT_CALL(manager, OnBeforeProcessParsedForms()).Times(num > 0);
-  EXPECT_CALL(manager, OnFormProcessed(_, _)).Times(num);
-  EXPECT_CALL(manager, OnAfterProcessParsedForms(_)).Times(num > 0);
-  TestAutofillManagerWaiter waiter(
-      manager, {&AutofillManager::Observer::OnAfterFormsSeen});
+  EXPECT_CALL(manager, OnFormProcessed).Times(num);
+  EXPECT_CALL(manager, OnAfterProcessParsedForms).Times(num > 0);
+  TestAutofillManagerWaiter waiter(manager, {AutofillManagerEvent::kFormsSeen});
   manager.OnFormsSeen(updated_forms, removed_forms);
   ASSERT_TRUE(waiter.Wait());
   EXPECT_THAT(manager.form_structures(), HaveSameFormIdsAs(expectation));
@@ -387,26 +392,27 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // Reset the manager, the observers should stick around.
   manager_->Reset();
 
-  EXPECT_CALL(observer, OnTextFieldDidChange()).Times(1);
+  EXPECT_CALL(observer, OnTextFieldDidChange(testing::Address(manager_.get())));
   manager_->OnTextFieldDidChange(form, field, bounds, time);
-  EXPECT_CALL(observer, OnTextFieldDidChange()).Times(0);
+  EXPECT_CALL(observer, OnTextFieldDidChange).Times(0);
 
-  EXPECT_CALL(observer, OnTextFieldDidScroll()).Times(1);
+  EXPECT_CALL(observer, OnTextFieldDidScroll(testing::Address(manager_.get())));
   manager_->OnTextFieldDidScroll(form, field, bounds);
-  EXPECT_CALL(observer, OnTextFieldDidScroll()).Times(0);
+  EXPECT_CALL(observer, OnTextFieldDidScroll).Times(0);
 
-  EXPECT_CALL(observer, OnSelectControlDidChange()).Times(1);
+  EXPECT_CALL(observer,
+              OnSelectControlDidChange(testing::Address(manager_.get())));
   manager_->OnSelectControlDidChange(form, field, bounds);
-  EXPECT_CALL(observer, OnSelectControlDidChange()).Times(0);
+  EXPECT_CALL(observer, OnSelectControlDidChange).Times(0);
 
-  EXPECT_CALL(observer, OnFormSubmitted()).Times(1);
+  EXPECT_CALL(observer, OnFormSubmitted(testing::Address(manager_.get())));
   manager_->OnFormSubmitted(form, true,
                             mojom::SubmissionSource::FORM_SUBMISSION);
-  EXPECT_CALL(observer, OnFormSubmitted()).Times(0);
+  EXPECT_CALL(observer, OnFormSubmitted).Times(0);
 
   // Remove observer from manager, the observer should no longer receive pings.
   manager_->RemoveObserver(&observer);
-  EXPECT_CALL(observer, OnTextFieldDidChange()).Times(0);
+  EXPECT_CALL(observer, OnTextFieldDidChange).Times(0);
   manager_->OnTextFieldDidChange(form, field, bounds, time);
 }
 
@@ -431,8 +437,9 @@ TEST_F(
   SetUpObserverAndDownloadManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
-  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions());
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions()).Times(0);
+  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(
+                             testing::Address(manager_.get())));
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions).Times(0);
   OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
   task_environment_.RunUntilIdle();
 
@@ -445,8 +452,10 @@ TEST_F(
   SetUpObserverAndDownloadManager(/*successful_request=*/false);
 
   std::vector<FormData> forms = CreateTestForms(1);
-  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions());
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions());
+  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(
+                             testing::Address(manager_.get())));
+  EXPECT_CALL(observer_,
+              OnAfterLoadedServerPredictions(testing::Address(manager_.get())));
   OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
   task_environment_.RunUntilIdle();
 
@@ -459,11 +468,13 @@ TEST_F(
   SetUpObserverAndDownloadManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
-  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions());
+  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(
+                             testing::Address(manager_.get())));
   OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions());
+  EXPECT_CALL(observer_,
+              OnAfterLoadedServerPredictions(testing::Address(manager_.get())));
   manager_->OnLoadedServerPredictionsForTest("", {});
 
   manager_->RemoveObserver(&observer_);
@@ -475,11 +486,13 @@ TEST_F(
   SetUpObserverAndDownloadManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
-  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions());
+  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(
+                             testing::Address(manager_.get())));
   OnFormsSeenWithExpectations(*manager_, forms, {}, forms);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions());
+  EXPECT_CALL(observer_,
+              OnAfterLoadedServerPredictions(testing::Address(manager_.get())));
   manager_->OnLoadedServerPredictionsForTest(
       "",
       {manager_->FindCachedFormById(forms[0].global_id())->form_signature()});

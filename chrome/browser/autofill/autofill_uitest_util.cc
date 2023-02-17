@@ -140,8 +140,8 @@ void GenerateTestAutofillPopup(
       absl::get<AutofillDriver*>(autofill_external_delegate->GetDriver()));
   AutofillManager* manager = driver->autofill_manager();
   mojom::AutofillDriver* mojo_driver = driver;
-  TestAutofillManagerWaiter waiter(
-      *manager, {&AutofillManager::Observer::OnAfterAskForValuesToFill});
+  TestAutofillManagerWaiter waiter(*manager,
+                                   {AutofillManagerEvent::kAskForValuesToFill});
   mojo_driver->AskForValuesToFill(form, form.fields.front(), bounds,
                                   AutoselectFirstSuggestion(false),
                                   FormElementWasClicked(false));

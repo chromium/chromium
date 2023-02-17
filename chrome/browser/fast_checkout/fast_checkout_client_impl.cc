@@ -293,7 +293,8 @@ bool FastCheckoutClientImpl::IsFilling() const {
          selected_credit_card_guid_;
 }
 
-void FastCheckoutClientImpl::OnAfterLoadedServerPredictions() {
+void FastCheckoutClientImpl::OnAfterLoadedServerPredictions(
+    autofill::AutofillManager& manager) {
   TryToFillForms();
 }
 
@@ -442,7 +443,9 @@ void FastCheckoutClientImpl::OnFullCardRequestFailed(
   }
 }
 
-void FastCheckoutClientImpl::OnAfterDidFillAutofillFormData() {
+void FastCheckoutClientImpl::OnAfterDidFillAutofillFormData(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form_id) {
   if (!IsFilling()) {
     return;
   }
@@ -508,7 +511,8 @@ void FastCheckoutClientImpl::A11yAnnounce(
   }
 }
 
-void FastCheckoutClientImpl::OnAutofillManagerDestroyed() {
+void FastCheckoutClientImpl::OnAutofillManagerDestroyed(
+    autofill::AutofillManager& manager) {
   if (IsRunning()) {
     if (GetWebContents().IsBeingDestroyed()) {
       OnRunComplete(FastCheckoutRunOutcome::kTabClosed);
@@ -520,7 +524,8 @@ void FastCheckoutClientImpl::OnAutofillManagerDestroyed() {
   Stop(/*allow_further_runs=*/true);
 }
 
-void FastCheckoutClientImpl::OnAutofillManagerReset() {
+void FastCheckoutClientImpl::OnAutofillManagerReset(
+    autofill::AutofillManager& manager) {
   if (IsShowing()) {
     OnRunComplete(FastCheckoutRunOutcome::kNavigationWhileBottomsheetWasShown);
   }

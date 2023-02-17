@@ -5,18 +5,33 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_MANAGER_WAITER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_MANAGER_WAITER_H_
 
-#include <list>
+#include <map>
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+// One constant `kFoo` for each event
+// `AutofillManager::Observer::On{Before,After}Foo()`.
+enum class AutofillManagerEvent {
+  kLanguageDetermined,
+  kFormsSeen,
+  kTextFieldDidChange,
+  kAskForValuesToFill,
+  kDidFillAutofillFormData,
+  kJavaScriptChangedAutofilledValue,
+  kFormSubmitted,
+};
 
 // Records AutofillManager::Observer::OnBeforeFoo() events and blocks until the
 // corresponding OnAfterFoo() events have happened.
@@ -43,8 +58,8 @@ namespace autofill {
 // Typical usage is as follows:
 //
 //   TestAutofillManagerWaiter waiter(manager,
-//                                    {&AutofillManager::Observer::OnAfterFoo,
-//                                     &AutofillManager::Observer::OnAfterBar,
+//                                    {AutofillManagerEvent::kFoo,
+//                                     AutofillManagerEvent::kBar,
 //                                     ...});
 //   ... trigger events ...
 //   ASSERT_TRUE(waiter.Wait());  // Blocks.
@@ -53,7 +68,7 @@ namespace autofill {
 // say, 1 event because triggering events is asynchronous due to Mojo:
 //
 //   TestAutofillManagerWaiter waiter(manager,
-//                                    {&AutofillManager::Observer::OnAfterFoo,
+//                                    {AutofillManagerEvent::kFoo,
 //                                     ...});
 //   ... trigger asynchronous OnFoo event ...
 //   ASSERT_TRUE(waiter.Wait(1));  // Blocks until at least one OnFoo() event
@@ -64,13 +79,11 @@ namespace autofill {
 // OnAfterFoo() calls.
 class TestAutofillManagerWaiter : public AutofillManager::Observer {
  public:
-  // An OnFooAfter() event. As a convention, throughout this class we use the
-  // OnAfterFoo() events to identify the pair of OnAfterFoo() / OnBeforeFoo().
-  using AfterEvent = void (AutofillManager::Observer::*)();
+  using Event = AutofillManagerEvent;
 
   explicit TestAutofillManagerWaiter(
       AutofillManager& manager,
-      std::initializer_list<AfterEvent> relevant_events = {});
+      std::initializer_list<Event> relevant_events = {});
   TestAutofillManagerWaiter(const TestAutofillManagerWaiter&) = delete;
   TestAutofillManagerWaiter& operator=(const TestAutofillManagerWaiter&) =
       delete;
@@ -91,8 +104,6 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
  private:
   struct EventCount {
-    // An AutofillManager::Observer::OnAfterFoo() event.
-    AfterEvent event;
     // The OnBeforeFoo() function. Used for meaningful error messages.
     base::Location location;
     // The total number of recorded OnBeforeFoo() events.
@@ -109,18 +120,17 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
     State& operator=(State&) = delete;
     ~State();
 
-    EventCount& GetOrCreate(AfterEvent event, base::Location location);
-    EventCount* Get(AfterEvent event);
+    EventCount& GetOrCreate(Event event, base::Location location);
+    EventCount* Get(Event event);
 
     size_t num_total_calls() const;
     size_t num_pending_calls() const;
 
     std::string Describe() const;
 
-    // Effectively a map from `AfterEvent` to its count. Since `AfterEvent` is
-    // only equality-comparable, we use a list. (The list, rather than a vector,
-    // avoids invalidation of the references returned by GetOrCreate().)
-    std::list<EventCount> events;
+    // The std::map guarantees that references aren't invalidated by
+    // GetOrCreate().
+    std::map<Event, EventCount> events;
     // Decrement() unblocks Wait() when the number of awaited calls reaches 0.
     size_t num_awaiting_total_calls = std::numeric_limits<size_t>::max();
     // Running iff there are no awaited and no pending calls.
@@ -131,37 +141,55 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
     base::Lock lock;
   };
 
-  bool IsRelevant(AfterEvent event) const;
-  void Increment(AfterEvent event,
+  bool IsRelevant(Event event) const;
+  void Increment(Event event,
                  base::Location location = base::Location::Current());
-  void Decrement(AfterEvent event,
+  void Decrement(Event event,
                  base::Location location = base::Location::Current());
 
-  void OnAutofillManagerDestroyed() override;
-  void OnAutofillManagerReset() override;
+  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnAutofillManagerReset(AutofillManager& manager) override;
 
-  void OnBeforeLanguageDetermined() override;
-  void OnAfterLanguageDetermined() override;
+  void OnBeforeLanguageDetermined(AutofillManager& manager) override;
+  void OnAfterLanguageDetermined(AutofillManager& manager) override;
 
-  void OnBeforeFormsSeen() override;
-  void OnAfterFormsSeen() override;
+  void OnBeforeFormsSeen(AutofillManager& manager,
+                         base::span<const FormGlobalId> forms) override;
+  void OnAfterFormsSeen(AutofillManager& manager,
+                        base::span<const FormGlobalId> forms) override;
 
-  void OnBeforeTextFieldDidChange() override;
-  void OnAfterTextFieldDidChange() override;
+  void OnBeforeTextFieldDidChange(AutofillManager& manager,
+                                  FormGlobalId form,
+                                  FieldGlobalId field) override;
+  void OnAfterTextFieldDidChange(AutofillManager& manager,
+                                 FormGlobalId form,
+                                 FieldGlobalId field) override;
 
-  void OnBeforeAskForValuesToFill() override;
-  void OnAfterAskForValuesToFill() override;
+  void OnBeforeAskForValuesToFill(AutofillManager& manager,
+                                  FormGlobalId form,
+                                  FieldGlobalId field) override;
+  void OnAfterAskForValuesToFill(AutofillManager& manager,
+                                 FormGlobalId form,
+                                 FieldGlobalId field) override;
 
-  void OnBeforeDidFillAutofillFormData() override;
-  void OnAfterDidFillAutofillFormData() override;
+  void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
+                                       FormGlobalId form) override;
+  void OnAfterDidFillAutofillFormData(AutofillManager& manager,
+                                      FormGlobalId form) override;
 
-  void OnBeforeJavaScriptChangedAutofilledValue() override;
-  void OnAfterJavaScriptChangedAutofilledValue() override;
+  void OnBeforeJavaScriptChangedAutofilledValue(AutofillManager& manager,
+                                                FormGlobalId form,
+                                                FieldGlobalId field) override;
+  void OnAfterJavaScriptChangedAutofilledValue(AutofillManager& manager,
+                                               FormGlobalId form,
+                                               FieldGlobalId field) override;
 
-  void OnBeforeFormSubmitted() override;
-  void OnAfterFormSubmitted() override;
+  void OnBeforeFormSubmitted(AutofillManager& manager,
+                             FormGlobalId form) override;
+  void OnAfterFormSubmitted(AutofillManager& manager,
+                            FormGlobalId form) override;
 
-  std::vector<AfterEvent> relevant_events_;
+  std::vector<Event> relevant_events_;
   std::unique_ptr<State> state_ = std::make_unique<State>();
   base::TimeDelta timeout_ = base::Seconds(30);
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>

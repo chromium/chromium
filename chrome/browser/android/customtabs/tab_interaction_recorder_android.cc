@@ -54,19 +54,20 @@ AutofillObserverImpl::~AutofillObserverImpl() {
   Invalidate();
 }
 
-void AutofillObserverImpl::OnFormSubmitted() {
+void AutofillObserverImpl::OnFormSubmitted(autofill::AutofillManager&) {
   OnFormInteraction();
 }
 
-void AutofillObserverImpl::OnSelectControlDidChange() {
+void AutofillObserverImpl::OnSelectControlDidChange(
+    autofill::AutofillManager&) {
   OnFormInteraction();
 }
 
-void AutofillObserverImpl::OnTextFieldDidChange() {
+void AutofillObserverImpl::OnTextFieldDidChange(autofill::AutofillManager&) {
   OnFormInteraction();
 }
 
-void AutofillObserverImpl::OnTextFieldDidScroll() {
+void AutofillObserverImpl::OnTextFieldDidScroll(autofill::AutofillManager&) {
   OnFormInteraction();
 }
 

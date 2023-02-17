@@ -55,14 +55,16 @@ class FastCheckoutClientImpl
       std::unique_ptr<autofill::CreditCard> selected_credit_card) override;
   void OnDismiss() override;
 
-  // AutofillManager::Observer:
-  void OnAfterLoadedServerPredictions() override;
-  void OnAfterDidFillAutofillFormData() override;
+  // autofill::AutofillManager::Observer:
+  void OnAfterLoadedServerPredictions(
+      autofill::AutofillManager& manager) override;
+  void OnAfterDidFillAutofillFormData(autofill::AutofillManager& manager,
+                                      autofill::FormGlobalId form_id) override;
   // Is owned by a `ContentAutofillDriver` instance and its lifecycle thus is
   // dependent on the one of `RenderFrameHost`.
-  void OnAutofillManagerDestroyed() override;
+  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
   // Is called on navigation and resets its internal state.
-  void OnAutofillManagerReset() override;
+  void OnAutofillManagerReset(autofill::AutofillManager& manager) override;
 
   // autofill::payments::FullCardRequest::ResultDelegate:
   void OnFullCardRequestSucceeded(

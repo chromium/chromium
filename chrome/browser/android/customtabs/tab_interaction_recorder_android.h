@@ -34,10 +34,10 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
   ~AutofillObserverImpl() override;
 
   // AutofillManager::Observer:
-  void OnFormSubmitted() override;
-  void OnSelectControlDidChange() override;
-  void OnTextFieldDidChange() override;
-  void OnTextFieldDidScroll() override;
+  void OnFormSubmitted(autofill::AutofillManager&) override;
+  void OnSelectControlDidChange(autofill::AutofillManager&) override;
+  void OnTextFieldDidChange(autofill::AutofillManager&) override;
+  void OnTextFieldDidScroll(autofill::AutofillManager&) override;
 
  private:
   void OnFormInteraction();
