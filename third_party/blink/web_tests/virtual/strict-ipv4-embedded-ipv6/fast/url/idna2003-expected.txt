@@ -1,0 +1,38 @@
+IDNA2003 handling in domain name labels.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+The PASS/FAIL results of this test are set to the behavior in IDNA2003.
+PASS canonicalize('http://faß.de/') is 'http://fass.de/'
+PASS canonicalize('http://βόλος.com/') is 'http://xn--nxasmq6b.com/'
+PASS canonicalize('http://ශ්‍රී.com/') is 'http://xn--10cl1a0b.com/'
+PASS canonicalize('http://نامه‌ای.com/') is 'http://xn--mgba3gch31f.com/'
+PASS canonicalize('http://www.looĸout.net/') is 'http://www.xn--looout-5bb.net/'
+PASS canonicalize('http://ᗯᗯᗯ.lookout.net/') is 'http://xn--1qeaa.lookout.net/'
+PASS canonicalize('http://www.lookout.сом/') is 'http://www.lookout.xn--l1adi/'
+PASS canonicalize('http://www.lookout.net：80/') is 'http://www.lookout.net:80/'
+FAIL canonicalize('http://www‥lookout.net/') should be http://www..lookout.net/. Was http://www%E2%80%A5lookout.net/.
+PASS canonicalize('http://www.lookout‧net/') is 'http://www.xn--lookoutnet-406e/'
+PASS canonicalize('http://www.looĸout.net/') is 'http://www.xn--looout-5bb.net/'
+PASS canonicalize('http://www.lookout.net⩴80/') is 'http://www.lookout.net::%3D80/'
+PASS canonicalize('http://lookout́.net/') is 'http://xn--lookout-zge.net/'
+PASS canonicalize('http://look⁠out.net/') is 'http://lookout.net/'
+PASS canonicalize('http://look﻿out.net/') is 'http://lookout.net/'
+PASS canonicalize('http://look︀out.net/') is 'http://lookout.net/'
+PASS canonicalize('http://www .lookout.net/') is 'http://www%20.lookout.net/'
+PASS canonicalize('http:// lookout.net/') is 'http://%E1%9A%80lookout.net/'
+PASS canonicalize('http://lookout.net/') is 'http://%1Flookout.net/'
+PASS canonicalize('http://look۝out.net/') is 'http://look%DB%9Dout.net/'
+PASS canonicalize('http://look᠎out.net/') is 'http://look%E1%A0%8Eout.net/'
+FAIL canonicalize('http://look🿾out.net/') should be http://look%F0%9F%BF%BEout.net/. Was http://look%EF%BF%BDout.net/.
+PASS canonicalize('http://look￺out.net/') is 'http://look%EF%BF%BAout.net/'
+PASS canonicalize('http://look⿰out.net/') is 'http://look%E2%BF%B0out.net/'
+PASS canonicalize('http://look‮out.net/') is 'http://look%E2%80%AEout.net/'
+PASS canonicalize('http://look⁫out.net/') is 'http://look%E2%81%ABout.net/'
+PASS canonicalize('http://look󠀁out.net/') is 'http://look%F3%A0%80%81out.net/'
+PASS canonicalize('http://look󠀠out.net/') is 'http://look%F3%A0%80%A0out.net/'
+PASS canonicalize('http://look־out.net/') is 'http://look%D6%BEout.net/'
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

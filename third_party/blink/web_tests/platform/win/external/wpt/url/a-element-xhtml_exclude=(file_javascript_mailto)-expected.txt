@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 621 tests; 338 PASS, 283 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 624 tests; 339 PASS, 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -75,6 +75,7 @@ FAIL Parsing: <http://2001::1]> against <http://example.org/foo/bar> assert_equa
 FAIL Parsing: <http://2001::1]:80> against <http://example.org/foo/bar> assert_equals: failure should set href to input expected "http://2001::1]:80" but got "http://2001::1]/"
 PASS Parsing: <http://[2001::1]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[::127.0.0.1]> against <http://example.org/foo/bar>
+PASS Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[0:0:0:0:0:0:13.1.68.3]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[2001::1]:80> against <http://example.org/foo/bar>
 PASS Parsing: <http:/example.com/> against <http://example.org/foo/bar>
@@ -271,7 +272,9 @@ FAIL Parsing: <http://[google.com]> against <http://other.com/> assert_equals: f
 FAIL Parsing: <http://[::1.2.3.4x]> against <http://other.com/> assert_equals: failure should set href to input expected "http://[::1.2.3.4x]" but got "http://[::1.2.3.4x]/"
 FAIL Parsing: <http://[::1.2.3.]> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <http://[::1.2.]> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://[::.1.2]> against <http://other.com/> assert_equals: failure should set href to input expected "http://[::.1.2]" but got "http://[::.1.2]/"
 FAIL Parsing: <http://[::1.]> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://[::.1]> against <http://other.com/> assert_equals: failure should set href to input expected "http://[::.1]" but got "http://[::.1]/"
 FAIL Parsing: <http://[::%31]> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <http://%5B::1]> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
 PASS Parsing: <http://foo:💩@example.com/bar> against <http://other.com/>

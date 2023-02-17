@@ -35,6 +35,7 @@
 
 #include <stdint.h>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "url/gurl.h"
 #include "url/gurl_abstract_tests.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 namespace blink {
@@ -1104,6 +1106,44 @@ TEST(KURLTest, HasIDNA2008DeviationCharacters) {
   KURL url2(AtomicString::FromUTF8(url_string.data(), url_string.length()),
             url1.GetParsed(), url1.IsValid());
   EXPECT_FALSE(url2.HasIDNA2008DeviationCharacter());
+}
+
+class KURLIPv4EmbeddedIPv6Test : public ::testing::Test,
+                                 public ::testing::WithParamInterface<bool> {
+ public:
+  KURLIPv4EmbeddedIPv6Test() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          url::kStrictIPv4EmbeddedIPv6AddressParsing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          url::kStrictIPv4EmbeddedIPv6AddressParsing);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         KURLIPv4EmbeddedIPv6Test,
+                         ::testing::Bool());
+
+TEST_P(KURLIPv4EmbeddedIPv6Test, IPv4EmbeddedIPv6Address) {
+  EXPECT_TRUE(KURL(u"http://[::1.2.3.4.]/").IsValid());
+  EXPECT_TRUE(KURL(u"http://[::1.2.3.4]/").IsValid());
+  EXPECT_FALSE(KURL(u"http://[::1.2.3.4.5]/").IsValid());
+  EXPECT_FALSE(KURL(u"http://[::.1.2]/").IsValid());
+  EXPECT_FALSE(KURL(u"http://[::.]/").IsValid());
+
+  if (base::FeatureList::IsEnabled(
+          url::kStrictIPv4EmbeddedIPv6AddressParsing)) {
+    EXPECT_FALSE(KURL(u"http://[::1.2]/").IsValid());
+    EXPECT_FALSE(KURL(u"http://[::1.2.]/").IsValid());
+  } else {
+    EXPECT_TRUE(KURL(u"http://[::1.2]/").IsValid());
+    EXPECT_TRUE(KURL(u"http://[::1.2.]/").IsValid());
+  }
 }
 
 enum class PortIsValid {

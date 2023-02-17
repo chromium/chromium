@@ -290,8 +290,9 @@ TEST(URLCanonTest, Scheme) {
 // IDNA mode to use in CanonHost tests.
 enum class IDNAMode { kTransitional, kNonTransitional };
 
-class URLCanonHostTest : public ::testing::Test,
-                         public ::testing::WithParamInterface<IDNAMode> {
+class URLCanonHostTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<IDNAMode> {
  public:
   URLCanonHostTest() {
     if (GetParam() == IDNAMode::kNonTransitional) {
@@ -856,7 +857,30 @@ TEST(URLCanonTest, IPv4) {
   }
 }
 
-TEST(URLCanonTest, IPv6) {
+class URLCanonIPv6Test
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  URLCanonIPv6Test() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(kStrictIPv4EmbeddedIPv6AddressParsing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kStrictIPv4EmbeddedIPv6AddressParsing);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         URLCanonIPv6Test,
+                         ::testing::Bool());
+
+TEST_P(URLCanonIPv6Test, IPv6) {
+  bool strict_ipv4_embedded_ipv6_parsing =
+      base::FeatureList::IsEnabled(url::kStrictIPv4EmbeddedIPv6AddressParsing);
+
   IPAddressCase cases[] = {
       // Empty is not an IP address.
     {"", L"", "", Component(), CanonHostInfo::NEUTRAL, -1, ""},
@@ -895,8 +919,24 @@ TEST(URLCanonTest, IPv6) {
     {"[2001::192.168.0.1]", L"[2001::192.168.0.1]", "[2001::c0a8:1]", Component(0, 14), CanonHostInfo::IPV6, -1, "200100000000000000000000C0A80001"},
     {"[1:2:192.168.0.1:5:6]", L"[1:2:192.168.0.1:5:6]", "", Component(), CanonHostInfo::BROKEN, -1, ""},
 
-    // IPv4 with last component missing.
-    {"[::ffff:192.1.2]", L"[::ffff:192.1.2]", "[::ffff:c001:2]", Component(0,15), CanonHostInfo::IPV6, -1, "00000000000000000000FFFFC0010002"},
+    // IPv4 embedded IPv6 addresses
+    {"[::ffff:192.1.2]",
+     L"[::ffff:192.1.2]",
+     "[::ffff:c001:2]",
+     strict_ipv4_embedded_ipv6_parsing ? Component() : Component(0,15),
+     strict_ipv4_embedded_ipv6_parsing ? CanonHostInfo::BROKEN : CanonHostInfo::IPV6,
+     -1,
+     (strict_ipv4_embedded_ipv6_parsing ? "" : "00000000000000000000FFFFC0010002")},
+    {"[::ffff:192.1]",
+     L"[::ffff:192.1]",
+     "[::ffff:c000:1]",
+     strict_ipv4_embedded_ipv6_parsing ? Component() : Component(0,15),
+     strict_ipv4_embedded_ipv6_parsing ? CanonHostInfo::BROKEN : CanonHostInfo::IPV6,
+     -1,
+     (strict_ipv4_embedded_ipv6_parsing ? "" : "00000000000000000000FFFFC0000001")},
+    {"[::ffff:192.1.2.3.4]",
+     L"[::ffff:192.1.2.3.4]",
+     "", Component(), CanonHostInfo::BROKEN, -1, ""},
 
     // IPv4 using hex.
     // TODO(eroman): Should this format be disallowed?

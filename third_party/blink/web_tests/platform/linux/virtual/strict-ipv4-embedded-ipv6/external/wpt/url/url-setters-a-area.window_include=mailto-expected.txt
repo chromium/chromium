@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS Loading data…
+FAIL <a>: Setting <mailto:me@example.net>.protocol = 'http' Cannot-be-a-base URL doesn’t have a host, but URL in a special scheme must. assert_equals: expected "mailto:me@example.net" but got "http://me@example.net/"
+FAIL <area>: Setting <mailto:me@example.net>.protocol = 'http' Cannot-be-a-base URL doesn’t have a host, but URL in a special scheme must. assert_equals: expected "mailto:me@example.net" but got "http://me@example.net/"
+PASS <a>: Setting <mailto:you@example.net>.username = 'me' Cannot-be-a-base means no username
+PASS <area>: Setting <mailto:you@example.net>.username = 'me' Cannot-be-a-base means no username
+PASS <a>: Setting <mailto:me@example.net>.password = 'secret' Cannot-be-a-base means no password
+PASS <area>: Setting <mailto:me@example.net>.password = 'secret' Cannot-be-a-base means no password
+PASS <a>: Setting <mailto:me@example.net>.host = 'example.com' Cannot-be-a-base means no host
+PASS <area>: Setting <mailto:me@example.net>.host = 'example.com' Cannot-be-a-base means no host
+PASS <a>: Setting <mailto:me@example.net>.hostname = 'example.com' Cannot-be-a-base means no host
+PASS <area>: Setting <mailto:me@example.net>.hostname = 'example.com' Cannot-be-a-base means no host
+PASS <a>: Setting <mailto:me@example.net>.pathname = '/foo' Opaque paths cannot be set
+PASS <area>: Setting <mailto:me@example.net>.pathname = '/foo' Opaque paths cannot be set
+Harness: the test ran to completion.
+

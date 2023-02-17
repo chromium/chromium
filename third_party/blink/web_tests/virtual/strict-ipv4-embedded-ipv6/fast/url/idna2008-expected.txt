@@ -1,0 +1,28 @@
+IDNA2008 handling in domain name labels.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+The PASS/FAIL results of this test are set to the behavior in IDNA2008.
+PASS canonicalize('http://Bücher.de/') is 'http://xn--bcher-kva.de/'
+FAIL canonicalize('http://faß.de/') should be http://xn--fa-hia.de/. Was http://fass.de/.
+FAIL canonicalize('http://βόλος.com/') should be http://xn--nxasmm1c.com/. Was http://xn--nxasmq6b.com/.
+FAIL canonicalize('http://ශ්‍රී.com/') should be http://xn--10cl1a0b660p.com/. Was http://xn--10cl1a0b.com/.
+FAIL canonicalize('http://نامه‌ای.com/') should be http://xn--mgba3gch31f060k.com/. Was http://xn--mgba3gch31f.com/.
+FAIL canonicalize('http://♥.net/') should be http://�.net/. Was http://xn--g6h.net/.
+FAIL canonicalize('http://͸.net/') should be http://�.net/. Was http://%CD%B8.net/.
+FAIL canonicalize('http://Ӏ.com/') should be http://�.com/. Was http://%D3%80.com/.
+FAIL canonicalize('http://㛼.com/') should be http://�.com/. Was http://%F0%AF%A1%A8.com/.
+FAIL canonicalize('http://Ↄ.com/') should be http://�.com/. Was http://%E2%86%83.com/.
+PASS canonicalize('http://look͏out.net/') is 'http://lookout.net/'
+PASS canonicalize('http://gOoGle.com/') is 'http://google.com/'
+PASS canonicalize('http://ড়.com/') is 'http://xn--15b8c.com/'
+PASS canonicalize('http://ẞ.com/') is 'http://ss.com/'
+FAIL canonicalize('http://-foo.bar.com/') should be http:///. Was http://-foo.bar.com/.
+FAIL canonicalize('http://foo-.bar.com/') should be http:///. Was http://foo-.bar.com/.
+FAIL canonicalize('http://ab--cd.com/') should be http:///. Was http://ab--cd.com/.
+FAIL canonicalize('http://xn--0.com/') should be http:///. Was http://xn--0.com/.
+FAIL canonicalize('http://foò.bar.com/') should be http://foo%CC%80.bar.com/. Was http://xn--fo-3ja.bar.com/.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

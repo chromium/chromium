@@ -1304,7 +1304,7 @@ TEST_F(OmniboxEditModelTest, IPv4AddressPartsCount) {
   // Test IPv4 parts are correctly counted.
   OpenUrlFromEditBox(model(), u"http://127.0.0.1", false);
   OpenUrlFromEditBox(model(), u"http://127.1/test.html", false);
-  OpenUrlFromEditBox(model(), u"http://[::127.0.1]", false);
+  OpenUrlFromEditBox(model(), u"http://127.0.1", false);
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kIPv4AddressPartsCountHistogramName),
       testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1),

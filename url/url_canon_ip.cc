@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "url/url_canon_internal.h"
+#include "url/url_features.h"
 
 namespace url {
 
@@ -490,13 +491,20 @@ bool DoIPv6AddressToNumber(const CHAR* spec,
   // it to |address|.
   if (ipv6_parsed.ipv4_component.is_valid()) {
     // Append the 32-bit number to |address|.
-    int ignored_num_ipv4_components;
+    int num_ipv4_components = 0;
+    // The URL standard requires the embedded IPv4 address to be concisely
+    // composed of 4 parts. See https://url.spec.whatwg.org/#concept-ipv6-parser
     if (CanonHostInfo::IPV4 !=
-        IPv4AddressToNumber(spec,
-                            ipv6_parsed.ipv4_component,
-                            &address[cur_index_in_address],
-                            &ignored_num_ipv4_components))
+            IPv4AddressToNumber(spec, ipv6_parsed.ipv4_component,
+                                &address[cur_index_in_address],
+                                &num_ipv4_components)) {
       return false;
+    }
+    if (num_ipv4_components != 4 &&
+        base::FeatureList::IsEnabled(
+          url::kStrictIPv4EmbeddedIPv6AddressParsing)) {
+      return false;
+    }
   }
 
   return true;
