@@ -74,10 +74,13 @@ or running `gn args out/Default`:
     dcheck_always_on = true    # Enables DCHECK despite release build.
     enable_nacl = false        # Skips native client build, compiles faster.
 
-    # Set the following true to create a Chrome (instead of Chromium) build.
-    # This requires a src-internal checkout.
-    is_chrome_branded = true   # Adds internal features and branded art assets.
-    is_official_build = true   # Turns on many optimizations, slower build.
+    # Builds Chrome instead of Chromium. This requires a src-internal
+    # checkout. Adds internal features and branded art assets.
+    is_chrome_branded = true
+
+    # Enables many optimizations, leading to much slower compiles, links,
+    # and no runtime stack traces.
+    is_official_build = true
 
 NOTE: You may wish to replace 'Default' with something like 'Cros' if
 you switch back and forth between Linux and Chromium OS builds, or 'Debug'
