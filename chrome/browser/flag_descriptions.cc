@@ -3412,6 +3412,13 @@ const char kDmTokenDeletionDescription[] =
     "Chrome Browser Cloud Management.";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+const char kPolicyMergeMultiSourceName[] =
+    "Merge policies from multiple sources";
+const char kPolicyMergeMultiSourceDescription[] =
+    "Only merge policies that are set from multiple sources. Policies set from "
+    "a single source will not be treated as merged and will keep their "
+    "original source.";
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

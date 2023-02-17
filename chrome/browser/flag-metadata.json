@@ -5703,6 +5703,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "policy-merge-multi-source",
+    "owners": [ "igorruvinov", "ydago", "pastarmovj" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "popout-omnibox-ipad",
     "owners": [ "stkhapugin", "christianxu", "bling-flags@google.com" ],
     "expiry_milestone": 120

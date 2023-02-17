@@ -9378,6 +9378,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPassthroughYuvRgbConversionDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPassthroughYuvRgbConversion)},
 
+    {"policy-merge-multi-source",
+     flag_descriptions::kPolicyMergeMultiSourceName,
+     flag_descriptions::kPolicyMergeMultiSourceDescription, kOsAll,
+     FEATURE_VALUE_TYPE(policy::features::kPolicyMergeMultiSource)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

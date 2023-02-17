@@ -44,6 +44,9 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyLogsPageAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Prevent policies set by a single source from being treated as merged.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyMergeMultiSource);
+
 }  // namespace features
 }  // namespace policy
 
