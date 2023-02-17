@@ -26,10 +26,16 @@ namespace page_load_metrics {
 
 namespace {
 
-base::TimeDelta ClampDelta(double event, double start) {
-  if (event - start < 0)
-    event = start;
-  return base::Time::FromDoubleT(event) - base::Time::FromDoubleT(start);
+// This method creates a TimeDelta from two doubles that represents timestamps
+// in seconds.
+base::TimeDelta CreateTimeDeltaFromTimestampsInSeconds(
+    double event_time_in_seconds,
+    double start_time_in_seconds) {
+  if (event_time_in_seconds - start_time_in_seconds < 0) {
+    event_time_in_seconds = start_time_in_seconds;
+  }
+  return base::Time::FromDoubleT(event_time_in_seconds) -
+         base::Time::FromDoubleT(start_time_in_seconds);
 }
 
 base::TimeTicks ClampToStart(base::TimeTicks event, base::TimeTicks start) {
@@ -524,8 +530,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   timing->navigation_start = base::Time::FromDoubleT(start);
   monotonic_timing.navigation_start = perf.NavigationStartAsMonotonicTime();
   if (perf.InputForNavigationStart() > 0.0) {
-    timing->input_to_navigation_start =
-        ClampDelta(start, perf.InputForNavigationStart());
+    timing->input_to_navigation_start = CreateTimeDeltaFromTimestampsInSeconds(
+        start, perf.InputForNavigationStart());
   }
   if (perf.FirstInputDelay().has_value()) {
     timing->interactive_timing->first_input_delay = *perf.FirstInputDelay();
@@ -533,7 +539,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   }
   if (perf.FirstInputTimestamp().has_value()) {
     timing->interactive_timing->first_input_timestamp =
-        ClampDelta((*perf.FirstInputTimestamp()).InSecondsF(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(
+            (*perf.FirstInputTimestamp()).InSecondsF(), start);
   }
   if (perf.FirstInputTimestampAsMonotonicTime()) {
     monotonic_timing.first_input_timestamp =
@@ -544,7 +551,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   }
   if (perf.LongestInputTimestamp().has_value()) {
     timing->interactive_timing->longest_input_timestamp =
-        ClampDelta((*perf.LongestInputTimestamp()).InSecondsF(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(
+            (*perf.LongestInputTimestamp()).InSecondsF(), start);
   }
   if (perf.FirstInputProcessingTime().has_value()) {
     timing->interactive_timing->first_input_processing_time =
@@ -555,20 +563,24 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   }
   if (perf.FirstScrollTimestamp().has_value()) {
     timing->interactive_timing->first_scroll_timestamp =
-        ClampDelta((*perf.FirstScrollTimestamp()).InSecondsF(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(
+            (*perf.FirstScrollTimestamp()).InSecondsF(), start);
   }
   if (perf.ResponseStart() > 0.0)
-    timing->response_start = ClampDelta(perf.ResponseStart(), start);
+    timing->response_start =
+        CreateTimeDeltaFromTimestampsInSeconds(perf.ResponseStart(), start);
   if (perf.DomContentLoadedEventStart() > 0.0) {
     timing->document_timing->dom_content_loaded_event_start =
-        ClampDelta(perf.DomContentLoadedEventStart(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(
+            perf.DomContentLoadedEventStart(), start);
   }
   if (perf.LoadEventStart() > 0.0) {
     timing->document_timing->load_event_start =
-        ClampDelta(perf.LoadEventStart(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(perf.LoadEventStart(), start);
   }
   if (perf.FirstPaint() > 0.0)
-    timing->paint_timing->first_paint = ClampDelta(perf.FirstPaint(), start);
+    timing->paint_timing->first_paint =
+        CreateTimeDeltaFromTimestampsInSeconds(perf.FirstPaint(), start);
   if (!perf.BackForwardCacheRestore().empty()) {
     blink::WebPerformanceMetricsForReporting::BackForwardCacheRestoreTimings
         restore_timings = perf.BackForwardCacheRestore();
@@ -582,14 +594,16 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
       if (first_paint) {
         back_forward_cache_timing
             ->first_paint_after_back_forward_cache_restore =
-            ClampDelta(first_paint, navigation_start);
+            CreateTimeDeltaFromTimestampsInSeconds(first_paint,
+                                                   navigation_start);
       }
       for (double raf : restore_timing.request_animation_frames) {
         if (!raf)
           break;
         back_forward_cache_timing
             ->request_animation_frames_after_back_forward_cache_restore
-            .push_back(ClampDelta(raf, navigation_start));
+            .push_back(
+                CreateTimeDeltaFromTimestampsInSeconds(raf, navigation_start));
       }
       if (first_input_delay.has_value()) {
         back_forward_cache_timing
@@ -602,19 +616,21 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   }
   if (perf.FirstImagePaint() > 0.0) {
     timing->paint_timing->first_image_paint =
-        ClampDelta(perf.FirstImagePaint(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(perf.FirstImagePaint(), start);
   }
   if (perf.FirstContentfulPaint() > 0.0) {
     DCHECK(perf.FirstEligibleToPaint() > 0);
     timing->paint_timing->first_contentful_paint =
-        ClampDelta(perf.FirstContentfulPaint(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(perf.FirstContentfulPaint(),
+                                               start);
     monotonic_timing.first_contentful_paint =
         ClampToStart(perf.FirstContentfulPaintAsMonotonicTime(),
                      perf.NavigationStartAsMonotonicTime());
   }
   if (perf.FirstMeaningfulPaint() > 0.0) {
     timing->paint_timing->first_meaningful_paint =
-        ClampDelta(perf.FirstMeaningfulPaint(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(perf.FirstMeaningfulPaint(),
+                                               start);
   }
   if (perf.LargestImagePaintSizeForMetrics() > 0) {
     timing->paint_timing->largest_contentful_paint->largest_image_paint_size =
@@ -626,7 +642,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     timing->paint_timing->largest_contentful_paint->largest_image_paint =
         perf.LargestImagePaintForMetrics() == 0.0
             ? base::TimeDelta()
-            : ClampDelta(perf.LargestImagePaintForMetrics(), start);
+            : CreateTimeDeltaFromTimestampsInSeconds(
+                  perf.LargestImagePaintForMetrics(), start);
     timing->paint_timing->largest_contentful_paint->type =
         LargestContentfulPaintTypeToUKMFlags(
             perf.LargestContentfulPaintTypeForMetrics());
@@ -647,14 +664,14 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     // Set largest image load type
     if (perf.LargestContentfulPaintImageLoadStart().has_value()) {
       timing->paint_timing->largest_contentful_paint->largest_image_load_start =
-          ClampDelta(
+          CreateTimeDeltaFromTimestampsInSeconds(
               (*perf.LargestContentfulPaintImageLoadStart()).InSecondsF(),
               start);
     }
     if (perf.LargestContentfulPaintImageLoadEnd().has_value()) {
       timing->paint_timing->largest_contentful_paint->largest_image_load_end =
-          ClampDelta((*perf.LargestContentfulPaintImageLoadEnd()).InSecondsF(),
-                     start);
+          CreateTimeDeltaFromTimestampsInSeconds(
+              (*perf.LargestContentfulPaintImageLoadEnd()).InSecondsF(), start);
     }
   }
   if (perf.LargestTextPaintSizeForMetrics() > 0) {
@@ -662,7 +679,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     // same time. This is a renderer side DCHECK to ensure this.
     DCHECK(perf.LargestTextPaintForMetrics());
     timing->paint_timing->largest_contentful_paint->largest_text_paint =
-        ClampDelta(perf.LargestTextPaintForMetrics(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(
+            perf.LargestTextPaintForMetrics(), start);
     timing->paint_timing->largest_contentful_paint->largest_text_paint_size =
         perf.LargestTextPaintSizeForMetrics();
     timing->paint_timing->largest_contentful_paint->type =
@@ -680,7 +698,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         ->largest_image_paint =
         perf.ExperimentalLargestImagePaint() == 0.0
             ? base::TimeDelta()
-            : ClampDelta(perf.ExperimentalLargestImagePaint(), start);
+            : CreateTimeDeltaFromTimestampsInSeconds(
+                  perf.ExperimentalLargestImagePaint(), start);
     timing->paint_timing->experimental_largest_contentful_paint->type =
         LargestContentfulPaintTypeToUKMFlags(
             perf.LargestContentfulPaintTypeForMetrics());
@@ -691,8 +710,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     // this.
     DCHECK(perf.ExperimentalLargestTextPaint());
     timing->paint_timing->experimental_largest_contentful_paint
-        ->largest_text_paint =
-        ClampDelta(perf.ExperimentalLargestTextPaint(), start);
+        ->largest_text_paint = CreateTimeDeltaFromTimestampsInSeconds(
+        perf.ExperimentalLargestTextPaint(), start);
     timing->paint_timing->experimental_largest_contentful_paint
         ->largest_text_paint_size = perf.ExperimentalLargestTextPaintSize();
   }
@@ -701,18 +720,22 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   // propagate the null value.
   if (perf.FirstEligibleToPaint() > 0) {
     timing->paint_timing->first_eligible_to_paint =
-        ClampDelta(perf.FirstEligibleToPaint(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(perf.FirstEligibleToPaint(),
+                                               start);
   } else {
     timing->paint_timing->first_eligible_to_paint.reset();
   }
   if (perf.FirstInputOrScrollNotifiedTimestamp() > 0) {
     timing->paint_timing->first_input_or_scroll_notified_timestamp =
-        ClampDelta(perf.FirstInputOrScrollNotifiedTimestamp(), start);
+        CreateTimeDeltaFromTimestampsInSeconds(
+            perf.FirstInputOrScrollNotifiedTimestamp(), start);
   }
   if (perf.ParseStart() > 0.0)
-    timing->parse_timing->parse_start = ClampDelta(perf.ParseStart(), start);
+    timing->parse_timing->parse_start =
+        CreateTimeDeltaFromTimestampsInSeconds(perf.ParseStart(), start);
   if (perf.ParseStop() > 0.0)
-    timing->parse_timing->parse_stop = ClampDelta(perf.ParseStop(), start);
+    timing->parse_timing->parse_stop =
+        CreateTimeDeltaFromTimestampsInSeconds(perf.ParseStop(), start);
   if (timing->parse_timing->parse_start) {
     // If we started parsing, record all parser durations such as the amount of
     // time blocked on script load, even if those values are zero.
