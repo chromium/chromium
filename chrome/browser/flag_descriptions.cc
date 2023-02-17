@@ -4151,6 +4151,10 @@ const char kVoiceButtonInTopToolbarDescription[] =
     "Enables showing the voice search button in the top toolbar. Enabling "
     "Adaptive Button overrides this.";
 
+const char kUseToastManagerName[] = "Use Toast manager";
+const char kUseToastManagerDescription[] =
+    "Use Toast manager for queueing and managing Android Toast UI.";
+
 const char kWebFeedName[] = "Web Feed";
 const char kWebFeedDescription[] =
     "Allows users to keep up with and consume web content.";

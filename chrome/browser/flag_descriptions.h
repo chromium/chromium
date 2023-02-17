@@ -2363,6 +2363,9 @@ extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
 extern const char kVoiceButtonInTopToolbarName[];
 extern const char kVoiceButtonInTopToolbarDescription[];
 
+extern const char kUseToastManagerName[];
+extern const char kUseToastManagerDescription[];
+
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
 

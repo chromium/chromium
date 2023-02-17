@@ -6877,6 +6877,12 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"use-toast-manager", flag_descriptions::kUseToastManagerName,
+     flag_descriptions::kUseToastManagerDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(::features::kUseToastManager)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"contextual-nudges", flag_descriptions::kContextualNudgesName,
      flag_descriptions::kContextualNudgesDescription, kOsCrOS,

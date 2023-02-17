@@ -7043,6 +7043,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-toast-manager",
+    "owners": [ "jinsukkim", "twellington" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "use-wallpaper-staging-url",
     "owners": [ "cros-customization@google.com", "hsuregan", "khorimoto" ],
     // This flag is required for QA and dogfood testing.

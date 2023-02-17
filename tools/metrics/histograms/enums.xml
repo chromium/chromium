@@ -58032,6 +58032,7 @@ from previous Chrome versions.
   <int value="-2050039250"
       label="JourneysOnDeviceClusteringContentClustering:enabled"/>
   <int value="-2048927838" label="AutoplayWhitelistSettings:enabled"/>
+  <int value="-2048873628" label="UseToastManager:enabled"/>
   <int value="-2048732429" label="enable-alternative-services"/>
   <int value="-2048679945" label="NTPOfflinePageDownloadSuggestions:disabled"/>
   <int value="-2048395454" label="ChromeDuetLabeled:disabled"/>
@@ -60626,6 +60627,7 @@ from previous Chrome versions.
   <int value="-631740127" label="inert-visual-viewport"/>
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>
   <int value="-630256330" label="EnableDrDc:enabled"/>
+  <int value="-629084845" label="UseToastManager:disabled"/>
   <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
   <int value="-628675321" label="FedCmSelectiveDisclosure:disabled"/>
   <int value="-628535358"

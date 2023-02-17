@@ -38,6 +38,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.widget.Toast;
+import org.chromium.ui.widget.ToastManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -65,6 +66,7 @@ public class ToastHWATest implements CustomMainActivityStart {
 
         mDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        ToastManager.setEnabledForTesting(false);
     }
 
     @After
@@ -73,6 +75,7 @@ public class ToastHWATest implements CustomMainActivityStart {
 
         mTestServer.stopAndDestroyServer();
         mDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
+        ToastManager.setEnabledForTesting(null);
     }
 
     @Override

@@ -419,6 +419,15 @@ bool IsRawDrawUsingMSAA() {
   return kIsRawDrawUsingMSAA.Get();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kUseToastManager,
+             "UseToastManager",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+bool UseToastManager() {
+  return base::FeatureList::IsEnabled(kUseToastManager);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_FEATURE(kEnableVariableRefreshRate,
              "EnableVariableRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -41,6 +41,7 @@ component("android") {
     "resources/resource_manager_impl.h",
     "resources/ui_resource_provider.h",
     "screen_android.h",
+    "toast_manager.cc",
     "ui_android_export.h",
     "view_android.cc",
     "view_android.h",
@@ -102,6 +103,7 @@ generate_jni("ui_android_jni_headers") {
     "java/src/org/chromium/ui/resources/HandleViewResources.java",
     "java/src/org/chromium/ui/resources/ResourceFactory.java",
     "java/src/org/chromium/ui/resources/ResourceManager.java",
+    "java/src/org/chromium/ui/widget/ToastManager.java",
   ]
 }
 
@@ -372,6 +374,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/widget/TextViewWithLeading.java",
     "java/src/org/chromium/ui/widget/TextViewWithTightWrap.java",
     "java/src/org/chromium/ui/widget/Toast.java",
+    "java/src/org/chromium/ui/widget/ToastManager.java",
     "java/src/org/chromium/ui/widget/UiWidgetFactory.java",
     "java/src/org/chromium/ui/widget/ViewLookupCachingFrameLayout.java",
     "java/src/org/chromium/ui/widget/ViewRectProvider.java",
@@ -484,6 +487,7 @@ android_resources("ui_javatest_resources") {
     "junit/res/layout/inflated_view.xml",
     "junit/res/layout/layout_view_builder_test.xml",
     "junit/res/layout/main_view.xml",
+    "junit/res/values/strings.xml",
   ]
   android_manifest = "junit/AndroidManifest.xml"
 }
@@ -523,6 +527,8 @@ robolectric_binary("ui_junit_tests") {
     "junit/src/org/chromium/ui/util/TokenHolderTest.java",
     "junit/src/org/chromium/ui/widget/AnchoredPopupWindowTest.java",
     "junit/src/org/chromium/ui/widget/LoadingViewTest.java",
+    "junit/src/org/chromium/ui/widget/ToastManagerTest.java",
+    "junit/src/org/chromium/ui/widget/ToastTest.java",
     "junit/src/org/chromium/ui/widget/ViewLookupCachingFrameLayoutTest.java",
     "junit/src/org/chromium/ui/widget/ViewRectProviderTest.java",
   ]
