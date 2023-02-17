@@ -104,9 +104,9 @@ void SerialGetDevicesFunction::OnGotDevices(
   Respond(ArgumentList(serial::GetDevices::Results::Create(results)));
 }
 
-SerialConnectFunction::SerialConnectFunction() {}
+SerialConnectFunction::SerialConnectFunction() = default;
 
-SerialConnectFunction::~SerialConnectFunction() {}
+SerialConnectFunction::~SerialConnectFunction() = default;
 
 ExtensionFunction::ResponseAction SerialConnectFunction::Run() {
   auto params = serial::Connect::Params::Create(args());

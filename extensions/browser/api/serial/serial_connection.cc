@@ -175,7 +175,7 @@ SerialConnection::SerialConnection(const std::string& owner_extension_id)
       send_pipe_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
 }
 
-SerialConnection::~SerialConnection() {}
+SerialConnection::~SerialConnection() = default;
 
 bool SerialConnection::IsPersistent() const {
   return persistent();

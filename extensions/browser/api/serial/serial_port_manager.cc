@@ -64,14 +64,14 @@ SerialPortManager::SerialPortManager(content::BrowserContext* context)
   connections_ = manager->data_;
 }
 
-SerialPortManager::~SerialPortManager() {}
+SerialPortManager::~SerialPortManager() = default;
 
-SerialPortManager::ReceiveParams::ReceiveParams() {}
+SerialPortManager::ReceiveParams::ReceiveParams() = default;
 
 SerialPortManager::ReceiveParams::ReceiveParams(const ReceiveParams& other) =
     default;
 
-SerialPortManager::ReceiveParams::~ReceiveParams() {}
+SerialPortManager::ReceiveParams::~ReceiveParams() = default;
 
 void SerialPortManager::GetDevices(
     device::mojom::SerialPortManager::GetDevicesCallback callback) {
