@@ -65,7 +65,7 @@ mac_app_bundle("updater_bundle_test") {
 
   sources = [ "main.cc" ]
   deps = [
-    ":keystone_agent_bundle_resource_executable",
+    ":keystone_agent_bundle_resource_executable_test",
     ":keystone_agent_bundle_resource_plist",
     ":updater_bundle_helpers_test",
     ":updater_bundle_keystone_executable",
@@ -422,6 +422,26 @@ mac_app_bundle("keystone_agent_bundle") {
     "MAC_BUNDLE_IDENTIFIER=${keystone_bundle_identifier}.Agent",
     "PACKAGE_TYPE=APPL",
   ]
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+  ]
+}
+
+mac_app_bundle("keystone_agent_bundle_test") {
+  info_plist = "keystone/Info.plist"
+  sources = [ "keystone/agent_main.cc" ]
+  output_name = keystone_app_name + "Agent_test"
+  extra_substitutions = [
+    "MAC_BUNDLE_IDENTIFIER=${keystone_bundle_identifier}.Agent",
+    "PACKAGE_TYPE=APPL",
+  ]
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_test",
+  ]
 }
 
 bundle_data("keystone_agent_bundle_resource_executable") {
@@ -429,6 +449,17 @@ bundle_data("keystone_agent_bundle_resource_executable") {
 
   outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/{{source_file_part}}" ]
   public_deps = [ ":keystone_agent_bundle" ]
+
+  if (is_asan) {
+    sources += [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+  }
+}
+
+bundle_data("keystone_agent_bundle_resource_executable_test") {
+  sources = [ "$root_out_dir/${keystone_app_name}Agent_test.app/Contents/MacOS/${keystone_app_name}Agent_test" ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent" ]
+  public_deps = [ ":keystone_agent_bundle_test" ]
 
   if (is_asan) {
     sources += [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]

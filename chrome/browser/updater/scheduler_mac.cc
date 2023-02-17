@@ -75,6 +75,7 @@ void DoPeriodicTasks(base::OnceClosure callback) {
         }
       }
     }
+    std::move(callback).Run();
   }
 }
 
