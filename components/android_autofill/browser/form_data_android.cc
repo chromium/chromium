@@ -6,20 +6,25 @@
 
 #include <memory>
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
 #include "components/android_autofill/browser/jni_headers/FormData_jni.h"
 #include "components/autofill/core/browser/form_structure.h"
-
-using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
-using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
+
+namespace {
+
+using base::android::AttachCurrentThread;
+using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
+using base::android::ScopedJavaLocalRef;
+
+constexpr char kFormFieldDataAndroidClassname[] =
+    "org/chromium/components/autofill/FormFieldData";
+}  // namespace
 
 FormDataAndroid::FormDataAndroid(const FormData& form) : form_(form) {}
 
@@ -27,23 +32,35 @@ FormDataAndroid::~FormDataAndroid() = default;
 
 ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer(
     const FormStructure* form_structure) {
-  // |form_structure| is ephemeral and shouldn't be used outside this call
+  // `form_structure` is ephemeral and shouldn't be used outside this call
   // stack.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
-    for (size_t i = 0; i < form_.fields.size(); ++i) {
-      fields_.push_back(
-          std::make_unique<FormFieldDataAndroid>(&form_.fields[i]));
+    fields_.clear();
+    fields_.reserve(form_.fields.size());
+    for (FormFieldData& field : form_.fields) {
+      fields_.push_back(std::make_unique<FormFieldDataAndroid>(&field));
     }
+
     if (form_structure)
       UpdateFieldTypes(*form_structure);
+
     ScopedJavaLocalRef<jstring> jname =
         ConvertUTF16ToJavaString(env, form_.name);
     ScopedJavaLocalRef<jstring> jhost = ConvertUTF8ToJavaString(
         env, form_.url.DeprecatedGetOriginAsURL().spec());
-    obj = Java_FormData_createFormData(env, reinterpret_cast<intptr_t>(this),
-                                       jname, jhost, form_.fields.size());
+    std::vector<ScopedJavaLocalRef<jobject>> fields_android;
+    fields_android.reserve(fields_.size());
+    for (std::unique_ptr<FormFieldDataAndroid>& field : fields_) {
+      fields_android.push_back(field->GetJavaPeer());
+    }
+    ScopedJavaLocalRef<jclass> field_class =
+        base::android::GetClass(env, kFormFieldDataAndroidClassname);
+
+    obj = Java_FormData_createFormData(
+        env, reinterpret_cast<intptr_t>(this), jname, jhost,
+        base::android::ToJavaArrayOfObjects(env, field_class, fields_android));
     java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   }
   return obj;
@@ -52,13 +69,6 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer(
 void FormDataAndroid::UpdateFromJava() {
   for (std::unique_ptr<FormFieldDataAndroid>& field : fields_)
     field->UpdateFromJava();
-}
-
-ScopedJavaLocalRef<jobject> FormDataAndroid::GetNextFormFieldData(JNIEnv* env) {
-  DCHECK(index_ <= fields_.size());
-  if (index_ == fields_.size())
-    return ScopedJavaLocalRef<jobject>();
-  return fields_[index_++]->GetJavaPeer();
 }
 
 void FormDataAndroid::OnFormFieldDidChange(size_t index,
@@ -88,13 +98,13 @@ bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
   return false;
 }
 
-bool FormDataAndroid::SimilarFormAs(const FormData& form) {
+bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
   return form_.SimilarFormAs(form);
 }
 
 void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
-  // This form has been changed after the query starts, ignore this response,
-  // new one is on the way.
+  // This form has been changed after the query starts. Ignore this response,
+  // a new one is on the way.
   if (form_structure.field_count() != fields_.size())
     return;
   auto form_field_data_android = fields_.begin();

@@ -4,17 +4,14 @@
 
 package org.chromium.components.autofill;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * The wrap class of native autofill::FormDataAndroid.
+ * The wrapper class of the native autofill::FormDataAndroid.
  */
 @JNINamespace("autofill")
 public class FormData {
@@ -24,34 +21,13 @@ public class FormData {
 
     @CalledByNative
     private static FormData createFormData(
-            long nativeObj, String name, String origin, int fieldCount) {
-        return new FormData(nativeObj, name, origin, fieldCount);
+            long nativeObj, String name, String origin, FormFieldData[] fields) {
+        return new FormData(name, origin, Arrays.asList(fields));
     }
 
-    private static ArrayList<FormFieldData> popupFormFields(long nativeObj, int fieldCount) {
-        FormFieldData formFieldData = FormDataJni.get().getNextFormFieldData(nativeObj);
-        ArrayList<FormFieldData> fields = new ArrayList<FormFieldData>(fieldCount);
-        while (formFieldData != null) {
-            fields.add(formFieldData);
-            formFieldData = FormDataJni.get().getNextFormFieldData(nativeObj);
-        }
-        assert fields.size() == fieldCount;
-        return fields;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public FormData(String name, String host, List<FormFieldData> fields) {
         mName = name;
         mHost = host;
         mFields = fields;
-    }
-
-    private FormData(long nativeObj, String name, String host, int fieldCount) {
-        this(name, host, popupFormFields(nativeObj, fieldCount));
-    }
-
-    @NativeMethods
-    interface Natives {
-        FormFieldData getNextFormFieldData(long nativeFormDataAndroid);
     }
 }
