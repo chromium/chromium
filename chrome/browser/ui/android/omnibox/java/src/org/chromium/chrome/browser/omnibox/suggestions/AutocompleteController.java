@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.LifetimeAssert;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
@@ -45,7 +44,6 @@ public class AutocompleteController {
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
-    private final @NonNull LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private final @NonNull Profile mProfile;
     private final @NonNull Set<OnSuggestionsReceivedListener> mListeners = new HashSet<>();
     private long mNativeController;
@@ -231,7 +229,6 @@ public class AutocompleteController {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get().destroy(mNativeController);
         mNativeController = 0;
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
     /**
