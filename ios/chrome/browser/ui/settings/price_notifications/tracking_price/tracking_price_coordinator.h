@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PRICE_NOTIFICATIONS_TRACKING_PRICE_TRACKING_PRICE_COORDINATOR_H_
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_alert_presenter.h"
 
 @class TrackingPriceCoordinator;
 
@@ -19,7 +20,8 @@
 @end
 
 // The coordinator for the Tracking Price screen.
-@interface TrackingPriceCoordinator : ChromeCoordinator
+@interface TrackingPriceCoordinator
+    : ChromeCoordinator <TrackingPriceAlertPresenter>
 
 @property(nonatomic, weak) id<TrackingPriceCoordinatorDelegate> delegate;
 

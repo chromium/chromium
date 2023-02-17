@@ -1822,6 +1822,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_UNSUBSCRIBE_ERROR_ALERT_DESCRIPTION" desc="The description that informs the user that an error occurred during the price tracking subscription cancellation process.">
           Your change couldn't be saved.
       </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE" desc="Message for Price Notifications UI Alert Prompt displayed from the settings menu that redirects the user to the iOS push notifications permission page.">
+          To get notifications of price drop alerts, you'll need to turn on notifications in your iOS settings.
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_TITLE" desc="Title for Price Notifications UI Alert Prompt displayed from the settings menu that redirects the user to the iOS push notifications permission page.">
+          Turn on Price Alerts?
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_TITLE" desc="Title for Price Notifications settings menu.">
         Notifications
       </message>

@@ -14,7 +14,9 @@
 #import "ios/chrome/browser/push_notification/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_alert_presenter.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_consumer.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -94,9 +96,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)toggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
-    case ItemTypeMobileNotifications:
+    case ItemTypeMobileNotifications: {
       self.mobileNotificationItem.on = value;
+      if (!value) {
+        break;
+      }
+
+      __weak TrackingPriceMediator* weakSelf = self;
+      [PushNotificationUtil
+          requestPushNotificationPermission:^(BOOL granted, BOOL promptShown,
+                                              NSError* error) {
+            if (!error && !promptShown && !granted) {
+              // This callback can be executed on a background thread, make sure
+              // the UI is displayed on the main thread.
+              dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf.presenter presentPushNotificationPermissionAlert];
+              });
+            }
+          }];
       break;
+    }
     default:
       // Not a switch.
       NOTREACHED();

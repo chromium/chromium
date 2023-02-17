@@ -10,6 +10,7 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_view_controller_delegate.h"
 
+@protocol TrackingPriceAlertPresenter;
 @protocol TrackingPriceConsumer;
 class ChromeBrowserState;
 @class TableViewSwitchItem;
@@ -28,6 +29,9 @@ class ChromeBrowserState;
 
 // Mobile notification item.
 @property(nonatomic, strong) TableViewSwitchItem* mobileNotificationItem;
+
+// Handler for displaying price tracking related alerts.
+@property(nonatomic, weak) id<TrackingPriceAlertPresenter> presenter;
 
 @end
 

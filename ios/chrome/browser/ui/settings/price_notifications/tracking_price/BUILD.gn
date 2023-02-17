@@ -21,6 +21,7 @@ source_set("tracking_price") {
     "//ios/chrome/browser/push_notification:push_notification_browser_state_service_factory",
     "//ios/chrome/browser/push_notification:push_notification_client",
     "//ios/chrome/browser/push_notification:push_notification_service",
+    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/table_view:utils",
@@ -32,6 +33,7 @@ source_set("tracking_price") {
 source_set("tracking_price_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "tracking_price_alert_presenter.h",
     "tracking_price_consumer.h",
     "tracking_price_view_controller.h",
     "tracking_price_view_controller.mm",
