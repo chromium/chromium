@@ -16,6 +16,7 @@
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_tasks.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
@@ -25,7 +26,7 @@ namespace unexportable_keys {
 
 namespace {
 scoped_refptr<RefCountedUnexportableSigningKey> MakeSigningKeyRefCounted(
-    const base::Token& key_id,
+    const UnexportableKeyId& key_id,
     std::unique_ptr<crypto::UnexportableSigningKey> key) {
   if (!key) {
     return nullptr;
@@ -63,14 +64,15 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
 
   auto task = std::make_unique<GenerateKeyTask>(
       std::move(key_provider), acceptable_algorithms,
-      base::BindOnce(&MakeSigningKeyRefCounted, base::Token::CreateRandom())
+      base::BindOnce(&MakeSigningKeyRefCounted,
+                     UnexportableKeyId(base::Token::CreateRandom()))
           .Then(std::move(callback)));
   task_scheduler_.PostTask(std::move(task), priority);
 }
 
 void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
     base::span<const uint8_t> wrapped_key,
-    const base::Token& key_id,
+    const UnexportableKeyId& key_id,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(scoped_refptr<RefCountedUnexportableSigningKey>)>
         callback) {

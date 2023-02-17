@@ -6,14 +6,14 @@
 
 #include <memory>
 
-#include "base/token.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/unexportable_key.h"
 
 namespace unexportable_keys {
 
 RefCountedUnexportableSigningKey::RefCountedUnexportableSigningKey(
     std::unique_ptr<crypto::UnexportableSigningKey> key,
-    const base::Token& key_id)
+    const UnexportableKeyId& key_id)
     : key_(std::move(key)), id_(key_id) {
   DCHECK(key_);
 }

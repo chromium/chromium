@@ -6,8 +6,10 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/token.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
@@ -16,7 +18,7 @@
 namespace unexportable_keys {
 
 namespace {
-constexpr base::Token kTestToken{1234, 5678};
+constexpr UnexportableKeyId kTestToken{base::Token(1234, 5678)};
 }  // namespace
 
 class UnexportableKeyTaskManagerTest : public testing::Test {

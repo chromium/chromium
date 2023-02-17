@@ -11,6 +11,7 @@ static_library("unexportable_keys") {
     "background_task_priority.h",
     "ref_counted_unexportable_signing_key.cc",
     "ref_counted_unexportable_signing_key.h",
+    "unexportable_key_id.h",
     "unexportable_key_task_manager.cc",
     "unexportable_key_task_manager.h",
     "unexportable_key_tasks.cc",

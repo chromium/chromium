@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/token.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 
 namespace crypto {
 class UnexportableSigningKey;
@@ -31,7 +31,7 @@ class RefCountedUnexportableSigningKey
   // `key` must be non-null.
   explicit RefCountedUnexportableSigningKey(
       std::unique_ptr<crypto::UnexportableSigningKey> key,
-      const base::Token& key_id);
+      const UnexportableKeyId& key_id);
 
   RefCountedUnexportableSigningKey(const RefCountedUnexportableSigningKey&) =
       delete;
@@ -39,14 +39,14 @@ class RefCountedUnexportableSigningKey
       const RefCountedUnexportableSigningKey&) = delete;
 
   crypto::UnexportableSigningKey& key() const { return *key_; }
-  base::Token id() const { return id_; }
+  const UnexportableKeyId& id() const { return id_; }
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedUnexportableSigningKey>;
   ~RefCountedUnexportableSigningKey();
 
   const std::unique_ptr<crypto::UnexportableSigningKey> key_;
-  const base::Token id_;
+  const UnexportableKeyId id_;
 };
 
 }  // namespace unexportable_keys
