@@ -372,7 +372,7 @@ Section .pak.nontranslated: 0 bytes from 0 symbols.
 Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 136 bytes (19.6%)
 * 1 have source paths. Accounts for 559 bytes (80.4%).
-* 1 have a component assigned. Accounts for 559 bytes (80.4%).
+* 2 have a component assigned. Accounts for 695 bytes (100.0%).
 * 0 symbols have shared ownership.
 <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.text@28d900(size_without_padding=16,padding=0,full_name=_GLOBAL__sub_I_page_allocator.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
 <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=$SYSTEM/path.a/foo.o,source_path=,flags={startup},num_aliases=2,component=)
@@ -412,8 +412,8 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro.local@2c176f0(size_without_padding=56,padding=0,full_name=ChromeMainDelegate [vtable],object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro.local@2c17728(size_without_padding=24,padding=0,full_name=chrome::mojom::FieldTrialRecorder [vtable],object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro.local@2c17740(size_without_padding=789904,padding=0,full_name=chrome::mojom::FieldTrialRecorderProxy [vtable],object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
-<Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro.local@2cd84e0(size_without_padding=16,padding=16,full_name=.Lswitch.table.45,object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro.local@2cd84f0(size_without_padding=8,padding=0,full_name=kSystemClassPrefixes,object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o,source_path=,flags={anon},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro.local@2cd84e0(size_without_padding=16,padding=16,full_name=.Lswitch.table.45,object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o,source_path=,flags={},num_aliases=1,component=Internal>Android)
+<Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro.local@2cd84f0(size_without_padding=8,padding=0,full_name=kSystemClassPrefixes,object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o,source_path=,flags={anon},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro@2cd8500(size_without_padding=56,padding=0,full_name=ChromeMainDelegateAndroid [vtable],object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro@2cd8538(size_without_padding=24,padding=0,full_name=mojo::MessageReceiver [vtable],object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 <Bundle.minimal.apks/base.apk/test.so (armeabi-v7a)>.data.rel.ro@2cd8550(size_without_padding=12,padding=0,full_name=kMethodsAnimationFrameTimeHistogram,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
@@ -711,4 +711,4 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=560,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=559,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={},num_aliases=1,component=DEFAULT)
-<Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=DEFAULT)
