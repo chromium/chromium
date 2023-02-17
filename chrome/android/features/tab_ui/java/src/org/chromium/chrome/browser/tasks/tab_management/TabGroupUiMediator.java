@@ -17,7 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -133,7 +132,9 @@ public class TabGroupUiMediator implements BackPressHandler {
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
 
         if (layoutStateProviderSupplier.get() != null
-                && layoutStateProviderSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                && (layoutStateProviderSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)
+                        || (layoutStateProviderSupplier.get().isLayoutVisible(
+                                LayoutType.START_SURFACE)))) {
             // It is possible that the overview mode is showing when the TabGroupUiMediator is
             // created, sets the mIsShowingOverViewMode early to prevent the Tab strip is wrongly
             // showing on the Start surface homepage. See https://crbug.com/1239272.
@@ -194,7 +195,9 @@ public class TabGroupUiMediator implements BackPressHandler {
                 // page when restore completed.
                 if (currentTab == null
                         || (mLayoutStateProvider != null
-                                && mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER))) {
+                                && (mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)
+                                        || mLayoutStateProvider.isLayoutVisible(
+                                                LayoutType.START_SURFACE)))) {
                     return;
                 }
                 resetTabStripWithRelatedTabsForId(currentTab.getId());
@@ -208,26 +211,27 @@ public class TabGroupUiMediator implements BackPressHandler {
                 }
             }
         };
-        mLayoutStateObserver =
-                new FilterLayoutStateObserver(LayoutType.TAB_SWITCHER, new LayoutStateObserver() {
-                    @Override
-                    public void onStartedShowing(int layoutType, boolean showToolbar) {
-                        assert layoutType == LayoutType.TAB_SWITCHER;
+        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
+            @Override
+            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+                if (layoutType == LayoutType.TAB_SWITCHER
+                        || layoutType == LayoutType.START_SURFACE) {
+                    mIsShowingOverViewMode = true;
+                    resetTabStripWithRelatedTabsForId(Tab.INVALID_TAB_ID);
+                }
+            }
 
-                        mIsShowingOverViewMode = true;
-                        resetTabStripWithRelatedTabsForId(Tab.INVALID_TAB_ID);
-                    }
-
-                    @Override
-                    public void onFinishedHiding(int layoutType) {
-                        assert layoutType == LayoutType.TAB_SWITCHER;
-
-                        mIsShowingOverViewMode = false;
-                        Tab tab = mTabModelSelector.getCurrentTab();
-                        if (tab == null) return;
-                        resetTabStripWithRelatedTabsForId(tab.getId());
-                    }
-                });
+            @Override
+            public void onFinishedHiding(@LayoutType int layoutType) {
+                if (layoutType == LayoutType.TAB_SWITCHER
+                        || layoutType == LayoutType.START_SURFACE) {
+                    mIsShowingOverViewMode = false;
+                    Tab tab = mTabModelSelector.getCurrentTab();
+                    if (tab == null) return;
+                    resetTabStripWithRelatedTabsForId(tab.getId());
+                }
+            }
+        };
 
         mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
