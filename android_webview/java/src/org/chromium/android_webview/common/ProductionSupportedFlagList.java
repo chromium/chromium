@@ -31,9 +31,8 @@ import org.chromium.ui.accessibility.AccessibilityFeatures;
  * so it must not compromise the Android security model (i.e., WebView must still protect the app's
  * private data from being user visible).
  *
- * <p>
- * This lives in the common package so it can be shared by dev UI (to know which features/flags to
- * display) as well as the WebView implementation (so it knows which features/flags are safe to
+ * <p>This lives in the common package so it can be shared by dev UI (to know which features/flags
+ * to display) as well as the WebView implementation (so it knows which features/flags are safe to
  * honor).
  */
 public final class ProductionSupportedFlagList {
@@ -381,6 +380,9 @@ public final class ProductionSupportedFlagList {
                             + "affect text in editable web content."),
             Flag.baseFeature(AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS,
                     "Enables WebView to use zoom keyboard shortcuts on hardware keyboards."),
+            Flag.baseFeature(ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE,
+                    "When enabled, the following ads APIs will be available: Attribution Reporting,"
+                            + "FLEDGE, Topics."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
