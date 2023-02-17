@@ -599,4 +599,53 @@ TEST_F(ErrorPageTest, RestorationFromInvalidURL) {
       restored_web_state->GetNavigationManager()->GetForwardItems().size());
 }
 
+// Tests that navigating to a page that fails during the provisional load while
+// being on a session restoration page create a new navigation.
+TEST_F(ErrorPageTest, LoadFailingPageAfterRestoration) {
+  server_responds_with_content_ = true;
+
+  test::LoadUrl(web_state(), server_.GetURL("/echo-query?foo"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "foo"));
+
+  // Restore the session.
+  WebState::CreateParams params(GetBrowserState());
+  auto restored_web_state = WebState::CreateWithStorageSession(
+      params, web_state()->BuildSessionStorage());
+  NavigationManager* navigation_manager =
+      restored_web_state->GetNavigationManager();
+
+  navigation_manager->LoadIfNecessary();
+
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "foo"));
+  // Check that there is no back/forward item.
+  ASSERT_EQ(0UL, navigation_manager->GetBackwardItems().size());
+  ASSERT_EQ(0UL, navigation_manager->GetForwardItems().size());
+
+  // Load invalid URL (failing during the load).
+  std::string scheme = kTestWebUIScheme;
+  GURL invalid_webui = GURL(scheme + "://invalid");
+  test::LoadUrl(restored_web_state.get(), invalid_webui);
+
+  NSError* error = testing::CreateErrorWithUnderlyingErrorChain(
+      {{@"NSURLErrorDomain", NSURLErrorUnsupportedURL},
+       {net::kNSErrorDomain, net::ERR_INVALID_URL}});
+  ASSERT_TRUE(test::WaitForWebViewContainingText(
+      restored_web_state.get(),
+      testing::GetErrorText(restored_web_state.get(), invalid_webui, error,
+                            /*is_post=*/false, /*is_otr=*/false,
+                            /*cert_status=*/0)));
+
+  // Check that there is one item in the back list and no forward item.
+  EXPECT_EQ(1UL, navigation_manager->GetBackwardItems().size());
+  EXPECT_EQ(0UL, navigation_manager->GetForwardItems().size());
+
+  navigation_manager->GoBack();
+  ASSERT_TRUE(
+      test::WaitForWebViewContainingText(restored_web_state.get(), "foo"));
+
+  // Check that there is one item in the forward list and no back item.
+  EXPECT_EQ(0UL, navigation_manager->GetBackwardItems().size());
+  EXPECT_EQ(1UL, navigation_manager->GetForwardItems().size());
+}
+
 }  // namespace web
