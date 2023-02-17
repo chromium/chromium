@@ -19,6 +19,10 @@
 
 namespace base::internal {
 
+bool EndOfAliveAllocation(const volatile void* ptr, bool is_adjustable_ptr);
+bool LikelySmuggledScalar(const volatile void* ptr);
+
+template <bool IsAdjustablePtr>
 struct RawPtrAsanUnownedImpl {
   // Wraps a pointer.
   template <typename T>
@@ -91,13 +95,10 @@ struct RawPtrAsanUnownedImpl {
   template <typename T>
   static void ProbeForLowSeverityLifetimeIssue(T* wrapped_ptr) {
     if (wrapped_ptr && !LikelySmuggledScalar(wrapped_ptr) &&
-        !EndOfAliveAllocation(wrapped_ptr)) {
+        !EndOfAliveAllocation(wrapped_ptr, IsAdjustablePtr)) {
       reinterpret_cast<const volatile uint8_t*>(wrapped_ptr)[0];
     }
   }
-
-  static bool EndOfAliveAllocation(const volatile void* ptr);
-  static bool LikelySmuggledScalar(const volatile void* ptr);
 
   // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.

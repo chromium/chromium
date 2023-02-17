@@ -686,12 +686,13 @@ struct TraitsToImpl {
       /*allow_dangling=*/Contains(Traits, RawPtrTraits::kMayDangle)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
-  using UnderlyingImpl =
-      std::conditional_t<Contains(Traits, RawPtrTraits::kMayDangle),
-                         // No special bookkeeping required for this case,
-                         // just treat these as ordinary pointers.
-                         internal::RawPtrNoOpImpl,
-                         internal::RawPtrAsanUnownedImpl>;
+  using UnderlyingImpl = std::conditional_t<
+      Contains(Traits, RawPtrTraits::kMayDangle),
+      // No special bookkeeping required for this case,
+      // just treat these as ordinary pointers.
+      internal::RawPtrNoOpImpl,
+      internal::RawPtrAsanUnownedImpl<
+          Contains(Traits, RawPtrTraits::kAllowPtrArithmetic)>>;
 #elif PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   using UnderlyingImpl =
       std::conditional_t<Contains(Traits, RawPtrTraits::kDisableMTECheckedPtr),
