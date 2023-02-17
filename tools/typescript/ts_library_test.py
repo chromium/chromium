@@ -12,6 +12,7 @@ import tempfile
 import unittest
 
 _HERE_DIR = os.path.dirname(__file__)
+_CWD = os.getcwd()
 
 
 class TsLibraryTest(unittest.TestCase):
@@ -24,7 +25,8 @@ class TsLibraryTest(unittest.TestCase):
       shutil.rmtree(self._out_folder)
 
   def _build_project1(self, enable_source_maps=False):
-    gen_dir = os.path.join(self._out_folder, 'project1')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project1')
 
     # Generate definition .d.ts file for legacy JS file.
     ts_definitions.main([
@@ -45,11 +47,11 @@ class TsLibraryTest(unittest.TestCase):
         '--root_gen_dir',
         os.path.relpath(self._out_folder, gen_dir),
         '--root_dir',
-        os.path.join(_HERE_DIR, 'tests', 'project1'),
+        os.path.relpath(os.path.join(_HERE_DIR, 'tests', 'project1'), _CWD),
         '--gen_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--out_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--in_files',
         'foo.ts',
         '--definitions',
@@ -86,7 +88,8 @@ class TsLibraryTest(unittest.TestCase):
   def _build_project2(self, project1_gen_dir, project3_gen_dir,
                       project6_gen_dir):
     root_dir = os.path.join(_HERE_DIR, 'tests', 'project2')
-    gen_dir = os.path.join(self._out_folder, 'project2')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project2')
     project1_gen_dir = os.path.relpath(project1_gen_dir, gen_dir)
     project3_gen_dir = os.path.relpath(project3_gen_dir, gen_dir)
     project6_gen_dir = os.path.relpath(project6_gen_dir, gen_dir)
@@ -99,11 +102,11 @@ class TsLibraryTest(unittest.TestCase):
         '--raw_deps',
         '//ui/webui/resources/js:build_ts',
         '--root_dir',
-        root_dir,
+        os.path.relpath(root_dir, _CWD),
         '--gen_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--out_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--in_files',
         'bar.ts',
         '--deps',
@@ -135,7 +138,8 @@ class TsLibraryTest(unittest.TestCase):
 
   # Builds project3, which includes only definition files.
   def _build_project3(self):
-    gen_dir = os.path.join(self._out_folder, 'project3')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project3')
 
     ts_library.main([
         '--output_suffix',
@@ -143,13 +147,14 @@ class TsLibraryTest(unittest.TestCase):
         '--root_gen_dir',
         os.path.relpath(self._out_folder, gen_dir),
         '--root_dir',
-        os.path.join(_HERE_DIR, 'tests', 'project3'),
+        os.path.relpath(os.path.join(_HERE_DIR, 'tests', 'project3'), _CWD),
         '--gen_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--out_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--definitions',
-        '../../tests/project3/baz.d.ts',
+        os.path.relpath(
+            os.path.join(_HERE_DIR, 'tests', 'project3', 'baz.d.ts'), gen_dir),
         '--composite',
     ])
     return gen_dir
@@ -162,7 +167,8 @@ class TsLibraryTest(unittest.TestCase):
     self.assertFalse(os.path.exists(os.path.join(gen_dir, 'build_ts.manifest')))
 
   def _build_project4(self):
-    gen_dir = os.path.join(self._out_folder, 'project4')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project4')
 
     # Build project4, which includes multiple TS files, only one of which should
     # be included in the manifest.
@@ -172,11 +178,11 @@ class TsLibraryTest(unittest.TestCase):
         '--root_gen_dir',
         os.path.relpath(self._out_folder, gen_dir),
         '--root_dir',
-        os.path.join(_HERE_DIR, 'tests', 'project4'),
+        os.path.relpath(os.path.join(_HERE_DIR, 'tests', 'project4'), _CWD),
         '--gen_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--out_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--in_files',
         'include.ts',
         'exclude.ts',
@@ -205,7 +211,8 @@ class TsLibraryTest(unittest.TestCase):
       self.assertEqual(data['files'], expected_files)
 
   def _build_project5(self):
-    gen_dir = os.path.join(self._out_folder, 'project5')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project5')
     out_dir_test = os.path.join(self._out_folder, 'project5_test')
 
     # Build project5, which includes 2 TS projects one for prod and one for
@@ -218,11 +225,11 @@ class TsLibraryTest(unittest.TestCase):
         '--root_gen_dir',
         os.path.relpath(self._out_folder, gen_dir),
         '--root_dir',
-        os.path.join(_HERE_DIR, 'tests', 'project5'),
+        os.path.relpath(os.path.join(_HERE_DIR, 'tests', 'project5'), _CWD),
         '--gen_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--out_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--in_files',
         'bar.ts',
     ])
@@ -237,11 +244,11 @@ class TsLibraryTest(unittest.TestCase):
         '--root_gen_dir',
         os.path.relpath(self._out_folder, gen_dir),
         '--root_dir',
-        os.path.join(_HERE_DIR, 'tests', 'project5'),
+        os.path.relpath(os.path.join(_HERE_DIR, 'tests', 'project5'), _CWD),
         '--gen_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--out_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--in_files',
         'bar_test.ts',
     ])
@@ -264,7 +271,8 @@ class TsLibraryTest(unittest.TestCase):
     self._assert_manifest_files(manifest_test, ['bar_test.js'])
 
   def _build_project6(self):
-    gen_dir = os.path.join(self._out_folder, 'ui', 'webui', 'resources', 'js')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'ui', 'webui', 'resources', 'js')
     out_dir = os.path.join(self._out_folder, 'ui', 'webui', 'resources', 'tsc',
                            'js')
 
@@ -277,11 +285,13 @@ class TsLibraryTest(unittest.TestCase):
         '--root_gen_dir',
         os.path.relpath(self._out_folder, gen_dir),
         '--root_dir',
-        os.path.join(_HERE_DIR, 'tests', 'ui', 'webui', 'resources', 'js'),
+        os.path.relpath(
+            os.path.join(_HERE_DIR, 'tests', 'ui', 'webui', 'resources', 'js'),
+            _CWD),
         '--gen_dir',
-        gen_dir,
+        os.path.relpath(gen_dir, _CWD),
         '--out_dir',
-        out_dir,
+        os.path.relpath(out_dir, _CWD),
         '--in_files',
         'assert.ts',
         '--composite',
@@ -313,7 +323,7 @@ class TsLibraryTest(unittest.TestCase):
   # Test success case where both project1 and project2 are compiled successfully
   # and no errors are thrown.
   def testSuccess(self):
-    self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
     project1_gen_dir = self._build_project1()
     self._assert_project1_output(project1_gen_dir)
 
@@ -336,8 +346,9 @@ class TsLibraryTest(unittest.TestCase):
   # Test error case where a type violation exists, ensure that an error is
   # thrown.
   def testError(self):
-    self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
-    gen_dir = os.path.join(self._out_folder, 'project1')
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project1')
     try:
       ts_library.main([
           '--output_suffix',
@@ -345,11 +356,11 @@ class TsLibraryTest(unittest.TestCase):
           '--root_gen_dir',
           os.path.relpath(self._out_folder, gen_dir),
           '--root_dir',
-          os.path.join(_HERE_DIR, 'tests', 'project1'),
+          os.path.relpath(os.path.join(_HERE_DIR, 'tests', 'project1'), _CWD),
           '--gen_dir',
-          gen_dir,
+          os.path.relpath(gen_dir, _CWD),
           '--out_dir',
-          gen_dir,
+          os.path.relpath(gen_dir, _CWD),
           '--in_files',
           'errors.ts',
           '--composite',
@@ -365,9 +376,10 @@ class TsLibraryTest(unittest.TestCase):
 
   # Test error case where the project's tsconfig file is failing validation.
   def testTsConfigValidationError(self):
-    self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
     root_dir = os.path.join(_HERE_DIR, 'tests', 'project5')
-    gen_dir = os.path.join(self._out_folder, 'project5')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project5')
     try:
       ts_library.main([
           '--output_suffix',
@@ -375,11 +387,11 @@ class TsLibraryTest(unittest.TestCase):
           '--root_gen_dir',
           os.path.relpath(self._out_folder, gen_dir),
           '--root_dir',
-          root_dir,
+          os.path.relpath(root_dir, _CWD),
           '--gen_dir',
-          gen_dir,
+          os.path.relpath(gen_dir, _CWD),
           '--out_dir',
-          gen_dir,
+          os.path.relpath(gen_dir, _CWD),
           '--in_files',
           'bar.ts',
           '--tsconfig_base',
@@ -394,7 +406,7 @@ class TsLibraryTest(unittest.TestCase):
 
   # Test case where |enable_source_maps| is specified.
   def testEnableSourceMaps(self):
-    self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
 
     expectations_dir = os.path.join(_HERE_DIR, 'tests', 'expected', 'project1')
 

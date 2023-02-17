@@ -10,6 +10,13 @@
 # args corresponding to config options to limit the possibility of unsupported
 # configurations proliferating in the codebase.
 
+import os
+
+_CWD = os.getcwd().replace('\\', '/')
+_HERE_DIR = os.path.dirname(__file__)
+_SRC_DIR = os.path.normpath(os.path.join(_HERE_DIR, '..',
+                                         '..')).replace('\\', '/')
+
 # Options configured by the ts_library should not be set separately.
 _tsconfig_compiler_options_mappings = {
     'allowJs': 'allow_js=true',
@@ -132,3 +139,55 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
 
   return False, 'Invalid allow_js detected for input directory ' + \
       f'{source_dir} and output directory {out_dir}'
+
+
+# |root_dir| shouldn't refer to any parent directories. Specifically it should
+# be either:
+#   - within the folder tree starting at the ts_library() target's location
+#   - within the folder tree starting at the ts_library() target's corresponding
+#     target_gen_dir location.
+def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
+  root_gen_dir_from_build = os.path.normpath(os.path.join(
+      gen_dir, root_gen_dir)).replace('\\', '/')
+  target_path = os.path.relpath(gen_dir,
+                                root_gen_dir_from_build).replace('\\', '/')
+
+  # Broadly special casing ios/ for now, since compile_ts.gni relies on
+  # unsupported behavior of setting the root_dir to src/.
+  # TODO (https://www.crbug.com/1412158): Make iOS TypeScript build tools use
+  # ts_library in a supported way, or change them to not rely on ts_library.
+  if (is_ios and (target_path.startswith('ios') or '/ios/' in target_path)):
+    return True, None
+
+  # Legacy cases supported for backward-compatibility. Do not add new targets
+  # here. The existing exceptions should be removed over time.
+  exceptions = [
+      # TODO (https://www.crbug.com/1412158): Update this folder to copy files
+      # instead of setting $root_gen_dir/mojom-webui as the root_dir.
+      'ui/webui/resources/mojo',
+
+      # ChromeOS cases
+      'ash/webui/camera_app_ui/resources/js',
+      'ash/webui/color_internals/mojom',
+      'ash/webui/face_ml_app_ui/mojom',
+      'ash/webui/sample_system_web_app_ui/mojom',
+      'chrome/browser/resources/chromeos/accessibility/select_to_speak',
+  ]
+
+  if target_path in exceptions:
+    return True, None
+
+  target_path_src = os.path.relpath(os.path.join(_SRC_DIR, target_path),
+                                    _CWD).replace('\\', '/')
+  root_path_from_gen = os.path.relpath(root_dir,
+                                       root_gen_dir_from_build).replace(
+                                           '\\', '/')
+  root_path_from_src = os.path.relpath(os.path.join(_CWD, root_dir),
+                                       _SRC_DIR).replace('\\', '/')
+
+  if (root_path_from_gen.startswith(target_path)
+      or root_path_from_src.startswith(target_path)):
+    return True, None
+
+  return False, f'Error: root_dir ({root_dir}) should be within {gen_dir} ' + \
+      f'or {target_path_src}.'

@@ -19,7 +19,7 @@ import node
 import node_modules
 
 from path_mappings import GetDepToPathMappings
-from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed
+from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
@@ -54,6 +54,12 @@ def main(argv):
 
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)
   out_dir = os.path.relpath(args.out_dir, args.gen_dir)
+
+  is_root_dir_valid, error = validateRootDir(args.root_dir, args.gen_dir,
+                                             args.root_gen_dir, args.is_ios)
+  if not is_root_dir_valid:
+    raise AssertionError(error)
+
   TSCONFIG_BASE_PATH = os.path.join(_HERE_DIR, 'tsconfig_base.json')
 
   tsconfig = collections.OrderedDict()
