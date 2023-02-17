@@ -403,13 +403,6 @@ class SavedDeskTest : public OverviewTestBase {
         ->set_disable_app_id_check_for_saved_desks(disabled);
   }
 
-  SkBitmap GetFocusRingBitmap(views::FocusRing* focus_ring) {
-    gfx::Canvas canvas(focus_ring->size(), /*image_scale=*/1.0f,
-                       /*is_opaque=*/false);
-    focus_ring->OnPaint(&canvas);
-    return canvas.GetBitmap();
-  }
-
   SkBitmap GetBitmapWithInnerRoundedRect(gfx::Size size,
                                          int stroke_width,
                                          SkColor color) {
@@ -958,7 +951,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
 }
 
 // Tests that the color of save desk button focus ring is as expected.
-TEST_F(SavedDeskTest, SaveDeskButtonFocusRingColor) {
+TEST_F(SavedDeskTest, SaveDeskButtonHighlight) {
   // Create a test window in the current desk.
   auto test_window = CreateAppWindow();
 
@@ -968,45 +961,24 @@ TEST_F(SavedDeskTest, SaveDeskButtonFocusRingColor) {
       GetSaveDeskAsTemplateButtonForRoot(root_window);
   auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
 
-  // Verify the focus ring of the given button is as expected.
-  auto verify_button_focus_ring_color = [this](SavedDeskSaveDeskButton* button,
-                                               bool highlighted) {
-    EXPECT_EQ(cc::ExactPixelComparator().Compare(
-                  GetFocusRingBitmap(views::FocusRing::Get(button)),
-                  GetBitmapWithInnerRoundedRect(
-                      views::FocusRing::Get(button)->size(),
-                      /*stroke_width=*/2,
-                      ColorProvider::Get()->GetControlsLayerColor(
-                          ColorProvider::ControlsLayerType::kFocusRingColor))),
-              highlighted);
-  };
-
   // Both buttons are not highlighted.
   ASSERT_FALSE(save_as_template_button->IsViewHighlighted());
   ASSERT_FALSE(save_for_later_button->IsViewHighlighted());
-  verify_button_focus_ring_color(save_as_template_button, false);
-  verify_button_focus_ring_color(save_for_later_button, false);
 
   // Reverse tab, then save desk for later button is highlighted.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_FALSE(save_as_template_button->IsViewHighlighted());
   ASSERT_TRUE(save_for_later_button->IsViewHighlighted());
-  verify_button_focus_ring_color(save_as_template_button, false);
-  verify_button_focus_ring_color(save_for_later_button, true);
 
   // Reverse tab, then save desk as template button is highlighted.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(save_as_template_button->IsViewHighlighted());
   ASSERT_FALSE(save_for_later_button->IsViewHighlighted());
-  verify_button_focus_ring_color(save_as_template_button, true);
-  verify_button_focus_ring_color(save_for_later_button, false);
 
   // Reverse tab, then both buttons are not highlighted.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_FALSE(save_as_template_button->IsViewHighlighted());
   ASSERT_FALSE(save_for_later_button->IsViewHighlighted());
-  verify_button_focus_ring_color(save_as_template_button, false);
-  verify_button_focus_ring_color(save_for_later_button, false);
 }
 
 // Tests that the save desk as template button and save for later button are

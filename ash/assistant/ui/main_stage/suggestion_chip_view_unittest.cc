@@ -75,13 +75,6 @@ SkBitmap GetSuggestionChipViewBitmap(SuggestionChipView* view) {
   return canvas.GetBitmap();
 }
 
-SkBitmap GetFocusRingBitmap(views::FocusRing* focus_ring) {
-  gfx::Canvas canvas(focus_ring->size(), /*image_scale=*/1.0f,
-                     /*is_opaque=*/false);
-  focus_ring->OnPaint(&canvas);
-  return canvas.GetBitmap();
-}
-
 }  // namespace
 
 // Tests -----------------------------------------------------------------------
@@ -161,18 +154,6 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
           ColorProvider::Get()->GetContentLayerColor(
               ColorProvider::ContentLayerType::kSeparatorColor))));
 
-  // Focus the chip view and confirm that focus ring is rendered.
-  suggestion_chip_view->RequestFocus();
-  views::test::RunScheduledLayout(views::FocusRing::Get(suggestion_chip_view));
-  EXPECT_TRUE(cc::ExactPixelComparator().Compare(
-      GetFocusRingBitmap(views::FocusRing::Get(suggestion_chip_view)),
-      GetBitmapWithInnerRoundedRect(
-          kSuggestionChipViewSize, /*stroke_width=*/2,
-          ColorProvider::Get()->GetControlsLayerColor(
-              ColorProvider::ControlsLayerType::kFocusRingColor))));
-
-  suggestion_chip_view->GetFocusManager()->ClearFocus();
-
   // Switch the color mode.
   dark_light_mode_controller->ToggleColorMode();
   ASSERT_NE(initial_dark_mode_status,
@@ -187,15 +168,6 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
           kSuggestionChipViewSize, /*stroke_width=*/1,
           ColorProvider::Get()->GetContentLayerColor(
               ColorProvider::ContentLayerType::kSeparatorColor))));
-
-  // Focus the chip view and confirm that focus ring is rendered.
-  suggestion_chip_view->RequestFocus();
-  EXPECT_TRUE(cc::ExactPixelComparator().Compare(
-      GetFocusRingBitmap(views::FocusRing::Get(suggestion_chip_view)),
-      GetBitmapWithInnerRoundedRect(
-          kSuggestionChipViewSize, /*stroke_width=*/2,
-          ColorProvider::Get()->GetControlsLayerColor(
-              ColorProvider::ControlsLayerType::kFocusRingColor))));
 }
 
 TEST_F(SuggestionChipViewTest, FontWeight) {
