@@ -301,7 +301,6 @@ class ChromePrintContext : public PrintContext {
   void BeginPrintMode(float width, float height) override {
     DCHECK(!printed_page_width_);
     printed_page_width_ = width;
-    printed_page_height_ = height;
     PrintContext::BeginPrintMode(printed_page_width_, height);
   }
 
@@ -475,7 +474,6 @@ class ChromePrintContext : public PrintContext {
 
   // Set when printing.
   float printed_page_width_;
-  float printed_page_height_;
 };
 
 // Simple class to override some of PrintContext behavior. This is used when
