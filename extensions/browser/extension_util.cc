@@ -5,7 +5,6 @@
 #include "extensions/browser/extension_util.h"
 
 #include "base/barrier_closure.h"
-#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crx_file/id_util.h"
@@ -14,16 +13,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -293,6 +288,19 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
       Extension::CreateOriginFromExtensionId(extension_id);
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
+}
+
+bool IsAppLaunchable(const std::string& extension_id,
+                     content::BrowserContext* context) {
+  int reason = ExtensionPrefs::Get(context)->GetDisableReasons(extension_id);
+  return !((reason & disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) ||
+           (reason & disable_reason::DISABLE_CORRUPTED));
+}
+
+bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
+                                    content::BrowserContext* context) {
+  return ExtensionRegistry::Get(context)->GetExtensionById(
+             extension_id, ExtensionRegistry::ENABLED) != nullptr;
 }
 
 }  // namespace util

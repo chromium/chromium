@@ -60,15 +60,6 @@ void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow);
 
-// Returns true if |extension_id| can be launched (possibly only after being
-// enabled).
-bool IsAppLaunchable(const std::string& extension_id,
-                     content::BrowserContext* context);
-
-// Returns true if |extension_id| can be launched without being enabled first.
-bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
-                                    content::BrowserContext* context);
-
 // Returns true if |extension| should be synced.
 bool ShouldSync(const Extension* extension, content::BrowserContext* context);
 

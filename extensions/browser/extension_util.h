@@ -30,7 +30,7 @@ class ExtensionSet;
 
 namespace util {
 
-// TODO(benwells): Move functions from
+// TODO(crbug.com/1417028): Move functions from
 // chrome/browser/extensions/extension_util.h/cc that are only dependent on
 // extensions/ here.
 
@@ -109,6 +109,15 @@ std::string GetExtensionIdFromFrame(
 // *does* host this specific extension at this point in time.)
 bool CanRendererHostExtensionOrigin(int render_process_id,
                                     const ExtensionId& extension_id);
+
+// Returns true if `extension_id` can be launched (possibly only after being
+// enabled).
+bool IsAppLaunchable(const std::string& extension_id,
+                     content::BrowserContext* context);
+
+// Returns true if `extension_id` can be launched without being enabled first.
+bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
+                                    content::BrowserContext* context);
 
 }  // namespace util
 }  // namespace extensions
