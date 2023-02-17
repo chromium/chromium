@@ -2519,7 +2519,8 @@ class GLES2DecoderImpl : public GLES2Decoder,
   scoped_refptr<gl::GLImageNativePixmap> CreateAnonymousImage(
       const gfx::Size& size,
       gfx::BufferFormat format,
-      bool* is_cleared);
+      bool* is_cleared,
+      GLuint target);
 #endif
   unsigned int RequiredTextureTypeForAnonymousImage();
 
@@ -3234,11 +3235,10 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
     // duplicate BGRX_8888.
     buffer_format = gfx::BufferFormat::BGRX_8888;
   }
-  scoped_refptr<gl::GLImageNativePixmap> image =
-      decoder_->CreateAnonymousImage(size, buffer_format, &is_cleared);
+  scoped_refptr<gl::GLImageNativePixmap> image = decoder_->CreateAnonymousImage(
+      size, buffer_format, &is_cleared, Target());
   if (!image)
     return false;
-  image->BindTexImage(Target());
 
   image_ = image;
   decoder_->texture_manager()->SetLevelInfo(
@@ -19546,7 +19546,8 @@ bool GLES2DecoderImpl::SupportsCreateAnonymousImage() {
 scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
-    bool* is_cleared) {
+    bool* is_cleared,
+    GLuint target) {
   gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
   SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
@@ -19568,6 +19569,8 @@ scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
                << gfx::BufferUsageToString(usage);
     return nullptr;
   }
+  image->BindTexImage(target);
+
   *is_cleared = true;
   return image;
 }

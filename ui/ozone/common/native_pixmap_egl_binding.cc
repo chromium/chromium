@@ -65,6 +65,8 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
+  gl::ScopedTextureBinder binder(target, texture_id);
+
   auto gl_image = gl::GLImageNativePixmap::CreateForPlane(
       plane_size, plane_format, plane, std::move(pixmap), color_space);
   if (!gl_image) {
@@ -72,16 +74,12 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     return nullptr;
   }
 
+  gl_image->BindTexImage(target);
+
   auto binding = std::make_unique<NativePixmapEGLBinding>(std::move(gl_image),
                                                           plane_format);
-  binding->BindTexture(target, texture_id);
 
   return binding;
-}
-
-void NativePixmapEGLBinding::BindTexture(GLenum target, GLuint texture_id) {
-  gl::ScopedTextureBinder binder(target, texture_id);
-  gl_image_->BindTexImage(target);
 }
 
 GLuint NativePixmapEGLBinding::GetInternalFormat() {
