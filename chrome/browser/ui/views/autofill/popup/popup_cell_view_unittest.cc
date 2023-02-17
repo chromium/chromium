@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -189,6 +190,29 @@ TEST_F(PopupCellViewTest, MouseEvents) {
   EXPECT_CALL(exit_callback, Run);
   generator().MoveMouseTo(kOutOfBounds);
 }
+
+// Gestures are not supported on MacOS.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(PopupCellViewTest, GestureEvents) {
+  std::unique_ptr<PopupCellView> cell =
+      views::Builder<PopupCellView>().SetVoiceOverString(u"Dummy name").Build();
+  views::Label* label =
+      cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
+  ShowView(std::move(cell));
+
+  StrictMock<base::MockCallback<base::RepeatingClosure>> enter_callback;
+  StrictMock<base::MockCallback<base::RepeatingClosure>> exit_callback;
+  StrictMock<base::MockCallback<base::RepeatingClosure>> accept_callback;
+
+  view().SetOnEnteredCallback(enter_callback.Get());
+  view().SetOnExitedCallback(exit_callback.Get());
+  view().SetOnAcceptedCallback(accept_callback.Get());
+
+  EXPECT_CALL(enter_callback, Run);
+  EXPECT_CALL(accept_callback, Run);
+  generator().GestureTapAt(label->GetBoundsInScreen().CenterPoint());
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupCellViewTest, IgnoreClickIfMouseWasNotOutsideBefore) {
   std::unique_ptr<PopupCellView> cell =
