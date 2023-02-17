@@ -29,6 +29,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -71,6 +72,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#endif
 
 namespace content {
 
@@ -479,6 +484,11 @@ AttributionManagerImpl::AttributionManagerImpl(
   DCHECK(storage_task_runner_);
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);
+
+#if BUILDFLAG(IS_ANDROID)
+  attribution_os_level_manager_ =
+      std::make_unique<AttributionOsLevelManagerAndroid>();
+#endif
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
