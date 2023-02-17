@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 
@@ -142,7 +143,7 @@ void TouchToFillDelegateImpl::OnCreditCardScanned(const CreditCard& card) {
 
 void TouchToFillDelegateImpl::ShowCreditCardSettings() {
   HideTouchToFill();
-  manager_->client()->ShowAutofillSettings(/*show_credit_card_settings=*/true);
+  manager_->client()->ShowAutofillSettings(PopupType::kCreditCards);
 }
 
 void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {

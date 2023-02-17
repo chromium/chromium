@@ -131,7 +131,7 @@ class MockAutofillClient : public autofill::AutofillClient {
               (),
               (override));
   MOCK_METHOD(translate::TranslateDriver*, GetTranslateDriver, (), (override));
-  MOCK_METHOD(void, ShowAutofillSettings, (bool), (override));
+  MOCK_METHOD(void, ShowAutofillSettings, (autofill::PopupType), (override));
   MOCK_METHOD(void,
               ShowUnmaskPrompt,
               (const autofill::CreditCard&,

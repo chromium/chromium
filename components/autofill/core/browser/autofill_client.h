@@ -439,9 +439,8 @@ class AutofillClient : public RiskDataLoader {
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver);
 #endif
 
-  // Causes the Autofill settings UI to be shown. If |show_credit_card_settings|
-  // is true, will show the credit card specific subpage.
-  virtual void ShowAutofillSettings(bool show_credit_card_settings) = 0;
+  // Causes the Autofill settings UI to be shown.
+  virtual void ShowAutofillSettings(PopupType popup_type) = 0;
 
   // Show the OTP unmask dialog to accept user-input OTP value.
   virtual void ShowCardUnmaskOtpInputDialog(

@@ -727,6 +727,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",

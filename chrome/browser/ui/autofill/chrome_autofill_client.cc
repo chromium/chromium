@@ -358,21 +358,35 @@ ChromeAutofillClient::CreateCreditCardInternalAuthenticator(
 #endif
 }
 
-void ChromeAutofillClient::ShowAutofillSettings(
-    bool show_credit_card_settings) {
+void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
+  DCHECK(popup_type != PopupType::kPasswords);
 #if BUILDFLAG(IS_ANDROID)
-  if (show_credit_card_settings) {
-    ShowAutofillCreditCardSettings(web_contents());
-  } else {
-    ShowAutofillProfileSettings(web_contents());
+  switch (popup_type) {
+    case PopupType::kCreditCards:
+      ShowAutofillCreditCardSettings(web_contents());
+      return;
+    case PopupType::kPersonalInformation:
+    case PopupType::kAddresses:
+      ShowAutofillProfileSettings(web_contents());
+      return;
+    case PopupType::kUnspecified:
+    case PopupType::kPasswords:
+      NOTREACHED();
   }
 #else
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (browser) {
-    if (show_credit_card_settings) {
-      chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
-    } else {
-      chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
+    switch (popup_type) {
+      case PopupType::kCreditCards:
+        chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
+        return;
+      case PopupType::kPersonalInformation:
+      case PopupType::kAddresses:
+        chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
+        return;
+      case PopupType::kUnspecified:
+      case PopupType::kPasswords:
+        NOTREACHED();
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

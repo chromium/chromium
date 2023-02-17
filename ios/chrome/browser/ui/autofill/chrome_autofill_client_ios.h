@@ -79,7 +79,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
   std::string GetVariationConfigCountryCode() const override;
-  void ShowAutofillSettings(bool show_credit_card_settings) override;
+  void ShowAutofillSettings(PopupType popup_type) override;
   void ShowUnmaskPrompt(
       const CreditCard& card,
       const CardUnmaskPromptOptions& card_unmask_prompt_options,

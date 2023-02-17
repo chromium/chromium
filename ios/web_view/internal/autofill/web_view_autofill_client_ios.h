@@ -72,7 +72,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  void ShowAutofillSettings(bool show_credit_card_settings) override;
+  void ShowAutofillSettings(PopupType popup_type) override;
   void ShowUnmaskPrompt(
       const CreditCard& card,
       const CardUnmaskPromptOptions& card_unmask_prompt_options,

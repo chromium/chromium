@@ -584,9 +584,8 @@ CreditCardAccessManager* BrowserAutofillManager::GetCreditCardAccessManager() {
   return credit_card_access_manager_.get();
 }
 
-void BrowserAutofillManager::ShowAutofillSettings(
-    bool show_credit_card_settings) {
-  client()->ShowAutofillSettings(show_credit_card_settings);
+void BrowserAutofillManager::ShowAutofillSettings(PopupType popup_type) {
+  client()->ShowAutofillSettings(popup_type);
 }
 
 bool BrowserAutofillManager::ShouldShowScanCreditCard(

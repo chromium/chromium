@@ -41,10 +41,7 @@ class MockAutofillClient : public TestAutofillClient {
               (CreditCardScanCallback callback),
               (override));
   MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
-  MOCK_METHOD(void,
-              ShowAutofillSettings,
-              (bool show_credit_card_settings),
-              (override));
+  MOCK_METHOD(void, ShowAutofillSettings, (PopupType popup_type), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               (base::WeakPtr<autofill::TouchToFillDelegate> delegate,
@@ -532,7 +529,8 @@ TEST_F(TouchToFillDelegateImplUnitTest, ScanCreditCardIsCalled) {
 TEST_F(TouchToFillDelegateImplUnitTest, ShowCreditCardSettingsIsCalled) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(autofill_client_, ShowAutofillSettings(testing::Eq(true)));
+  EXPECT_CALL(autofill_client_,
+              ShowAutofillSettings(testing::Eq(PopupType::kCreditCards)));
   touch_to_fill_delegate_->ShowCreditCardSettings();
 
   ASSERT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);

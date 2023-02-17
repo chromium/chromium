@@ -132,7 +132,7 @@ translate::TranslateDriver* AutofillClientImpl::GetTranslateDriver() {
   return nullptr;
 }
 
-void AutofillClientImpl::ShowAutofillSettings(bool show_credit_card_settings) {
+void AutofillClientImpl::ShowAutofillSettings(autofill::PopupType popup_type) {
   NOTREACHED();
 }
 

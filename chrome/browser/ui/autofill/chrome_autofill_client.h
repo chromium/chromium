@@ -102,7 +102,7 @@ class ChromeAutofillClient
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
 
-  void ShowAutofillSettings(bool show_credit_card_settings) override;
+  void ShowAutofillSettings(PopupType popup_type) override;
   void ShowCardUnmaskOtpInputDialog(
       const size_t& otp_length,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;

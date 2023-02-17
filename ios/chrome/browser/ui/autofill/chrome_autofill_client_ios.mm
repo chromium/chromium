@@ -256,8 +256,7 @@ std::string ChromeAutofillClientIOS::GetVariationConfigCountryCode() const {
              : std::string();
 }
 
-void ChromeAutofillClientIOS::ShowAutofillSettings(
-    bool show_credit_card_settings) {
+void ChromeAutofillClientIOS::ShowAutofillSettings(PopupType popup_type) {
   NOTREACHED();
 }
 

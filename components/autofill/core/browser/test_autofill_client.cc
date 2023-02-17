@@ -164,7 +164,7 @@ TestAutofillClient::CreateCreditCardInternalAuthenticator(
 }
 #endif
 
-void TestAutofillClient::ShowAutofillSettings(bool show_credit_card_settings) {}
+void TestAutofillClient::ShowAutofillSettings(PopupType popup_type) {}
 
 void TestAutofillClient::ShowUnmaskPrompt(
     const autofill::CreditCard& card,

@@ -233,7 +233,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
     case POPUP_ITEM_ID_AUTOFILL_OPTIONS:
       // User selected 'Autofill Options'.
       autofill_metrics::LogAutofillSelectedManageEntry(popup_type_);
-      manager_->ShowAutofillSettings(popup_type_ == PopupType::kCreditCards);
+      manager_->ShowAutofillSettings(popup_type_);
       break;
     case POPUP_ITEM_ID_CLEAR_FORM:
       // User selected 'Clear form'.
