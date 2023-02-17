@@ -640,6 +640,57 @@ public class CustomTabIntentDataProviderTest {
         assertNull(provider.getSecondaryToolbarSwipeUpPendingIntent());
     }
 
+    @Test
+    public void testActivityDecorationType_Default() {
+        // Decoration not set
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Decoration types do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+                dataProvider.getActivitySideSheetDecorationType());
+
+        // Decoration set higher than max
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX + 1);
+        var dataProvider2 = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Decoration types do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+                dataProvider2.getActivitySideSheetDecorationType());
+    }
+
+    @Test
+    public void testActivityDecorationType_Shadow() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Decoration types do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
+                dataProvider.getActivitySideSheetDecorationType());
+    }
+
+    @Test
+    public void testActivityDecorationType_DividerLine() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Decoration types do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
+                dataProvider.getActivitySideSheetDecorationType());
+    }
+
+    @Test
+    public void testActivityDecorationType_None() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Decoration types do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
+                dataProvider.getActivitySideSheetDecorationType());
+    }
+
     private Bundle createActionButtonInToolbarBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt(CustomTabsIntent.KEY_ID, CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);

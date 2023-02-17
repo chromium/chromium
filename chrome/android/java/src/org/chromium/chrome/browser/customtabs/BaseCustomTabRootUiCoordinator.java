@@ -298,7 +298,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mActivityLifecycleDispatcher, mFullscreenManager,
                 DeviceFormFactor.isWindowOnTablet(mWindowAndroid),
                 intentDataProvider.canInteractWithBackground(),
-                intentDataProvider.showSideSheetMaximizeButton());
+                intentDataProvider.showSideSheetMaximizeButton(),
+                intentDataProvider.getActivitySideSheetDecorationType());
     }
 
     @Override

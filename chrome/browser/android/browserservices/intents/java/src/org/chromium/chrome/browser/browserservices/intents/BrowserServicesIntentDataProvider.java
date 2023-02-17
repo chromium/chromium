@@ -82,6 +82,17 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public static final int ACTIVITY_HEIGHT_FIXED = 2;
 
+    @IntDef({ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
+            ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
+            ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SideSheetDecorationType {}
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT = 0;
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE = 1;
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW = 2;
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER = 3;
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX = 3;
+
     /**
      * @return The type of the Activity;
      */
@@ -526,6 +537,13 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public int getActivityBreakPoint() {
         return 0;
+    }
+
+    /**
+     * @return An int representing the side sheet decoration type for the Activity.
+     */
+    public int getActivitySideSheetDecorationType() {
+        return ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
     }
 
     /**

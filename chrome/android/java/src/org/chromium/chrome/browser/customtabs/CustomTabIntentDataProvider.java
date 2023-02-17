@@ -262,6 +262,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP";
 
     /**
+     * Extra that, if set, allows you to set how you want to distinguish the PCCT side sheet from
+     * the rest of the display. Options include shadow, a divider line, or no decoration.
+     */
+    public static final String EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE =
+            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_DECORATION_TYPE";
+
+    /**
      * Extra that, if set, makes the toolbar's top corner radii to be x pixels. This will only have
      * effect if the custom tab is behaving as a bottom sheet. Currently, this is capped at 16dp.
      * TODO(jinsukkim): Deprecate this.
@@ -322,6 +329,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private List<CustomButtonParams> mToolbarButtons = new ArrayList<>(1);
     private List<CustomButtonParams> mBottombarButtons = new ArrayList<>(2);
     private RemoteViews mRemoteViews;
+    @SideSheetDecorationType
+    private int mSideSheetDecorationType;
     private int[] mClickableViewIds;
     private PendingIntent mRemoteViewsPendingIntent;
     private PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
@@ -423,6 +432,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP,
                 DEFAULT_BREAKPOINT_DP);
         return breakPointDp < 0 ? DEFAULT_BREAKPOINT_DP : breakPointDp;
+    }
+
+    private static int getActivitySideSheetDecorationTypeFromIntent(Intent intent) {
+        int decorationType =
+                IntentUtils.safeGetIntExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                        ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+        return decorationType < 0 || decorationType > ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX
+                ? ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT
+                : decorationType;
     }
 
     /**
@@ -558,6 +576,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int backgroundInteractBehavior = IntentUtils.safeGetIntExtra(
                 intent, EXTRA_ENABLE_BACKGROUND_INTERACTION, BACKGROUND_INTERACT_DEFAULT);
         mInteractWithBackground = backgroundInteractBehavior != BACKGROUND_INTERACT_OFF;
+        mSideSheetDecorationType = getActivitySideSheetDecorationTypeFromIntent(intent);
 
         logCustomTabFeatures(intent, colorScheme, usingDynamicFeatures);
     }
@@ -838,6 +857,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (IntentUtils.safeHasExtra(
                     intent, CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP);
+        }
+        if (IntentUtils.safeHasExtra(intent,
+                    CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE);
         }
         if (mEnableEmbeddedMediaExperience) {
             featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_EMBEDDED_MEDIA_EXPERIENCE);
@@ -1207,6 +1230,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
 
         return version;
+    }
+
+    @SideSheetDecorationType
+    @Override
+    public int getActivitySideSheetDecorationType() {
+        return mSideSheetDecorationType;
     }
 
     @Override

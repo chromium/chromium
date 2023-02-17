@@ -24244,6 +24244,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="48"
       label="Secondary toolbar swipe-up pending intent
              EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION"/>
+  <int value="49"
+      label="Decoration type EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE"/>
 </enum>
 
 <enum name="CustomTabsParallelRequestStatusOnStart">

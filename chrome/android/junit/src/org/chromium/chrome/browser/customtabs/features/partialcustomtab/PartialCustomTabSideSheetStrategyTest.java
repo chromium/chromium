@@ -58,7 +58,7 @@ public class PartialCustomTabSideSheetStrategyTest {
         PartialCustomTabSideSheetStrategy pcct = new PartialCustomTabSideSheetStrategy(
                 mPCCTTestRule.mActivity, widthPx, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizedButton=*/true,
-                /*startMaximized=*/false, mPCCTTestRule.mHandleStrategyFactory);
+                /*startMaximized=*/false, mPCCTTestRule.mHandleStrategyFactory, 0);
         pcct.setMockViewForTesting(mPCCTTestRule.mCoordinatorLayout, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator);
         return pcct;

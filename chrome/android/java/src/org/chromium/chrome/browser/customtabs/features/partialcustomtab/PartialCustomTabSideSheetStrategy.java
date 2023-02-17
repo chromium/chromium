@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
+
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
@@ -33,12 +36,13 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private final boolean mShowMaximizeButton;
 
     private boolean mIsMaximized;
+    private int mDecorationType;
 
     public PartialCustomTabSideSheetStrategy(Activity activity, @Px int initialWidth,
             CustomTabHeightStrategy.OnResizedCallback onResizedCallback,
             FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
             boolean showMaximizeButton, boolean startMaximized,
-            PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
+            PartialCustomTabHandleStrategyFactory handleStrategyFactory, int decorationType) {
         super(activity, onResizedCallback, fullscreenManager, isTablet, interactWithBackground,
                 handleStrategyFactory);
 
@@ -46,6 +50,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         mShowMaximizeButton = showMaximizeButton;
         mPositionUpdater = this::updatePosition;
         mIsMaximized = startMaximized;
+        mDecorationType = decorationType;
 
         setupAnimator();
     }
@@ -187,7 +192,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     @Override
     protected boolean shouldHaveNoShadowOffset() {
         // We remove shadow in maximized mode.
-        return isMaximized();
+        return isMaximized() || mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE
+                || mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
     }
 
     @Override

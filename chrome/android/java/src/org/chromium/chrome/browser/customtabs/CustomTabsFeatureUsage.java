@@ -51,7 +51,8 @@ public class CustomTabsFeatureUsage {
             CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP,
             CustomTabsFeature.EXTRA_INITIAL_ACTIVITY_WIDTH_PX,
             CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION,
-            CustomTabsFeature.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION, CustomTabsFeature.COUNT})
+            CustomTabsFeature.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION,
+            CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE, CustomTabsFeature.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsFeature {
         /** Special enum for the start of a session. */
@@ -104,9 +105,10 @@ public class CustomTabsFeatureUsage {
         int EXTRA_INITIAL_ACTIVITY_WIDTH_PX = 46;
         int EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION = 47;
         int EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION = 48;
+        int EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE = 49;
 
         /** Total count of entries. */
-        int COUNT = 49;
+        int COUNT = 50;
     }
 
     // Whether flag-enabled or not.

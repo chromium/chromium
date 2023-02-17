@@ -53,7 +53,7 @@ public class PartialCustomTabDisplayManagerTest {
         PartialCustomTabDisplayManager displayManager = new PartialCustomTabDisplayManager(
                 mPCCTTestRule.mActivity, heightPx, widthPx, breakPointDp, false,
                 mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mActivityLifecycleDispatcher,
-                mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizeButton=*/true);
+                mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizeButton=*/true, 0);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator = (type, maximized) -> {
             var strategy = sizeStrategyCreator.createForType(type, maximized);
