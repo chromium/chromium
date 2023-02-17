@@ -1538,7 +1538,8 @@ bool LocalFrameView::RunPostLayoutIntersectionObserverSteps() {
         // If the lifecycle state changed as a result of the notifications, we
         // should run the lifecycle again.
         needs_more_lifecycle_steps |= frame_view.Lifecycle().GetState() <
-                                      DocumentLifecycle::kPrePaintClean;
+                                          DocumentLifecycle::kPrePaintClean ||
+                                      frame_view.NeedsLayout();
       });
 
   return needs_more_lifecycle_steps;
@@ -2562,7 +2563,8 @@ bool LocalFrameView::RunViewTransitionSteps(
           transition->RunViewTransitionStepsOutsideMainFrame();
 
         re_run_lifecycle |= document->Lifecycle().GetState() <
-                            DocumentLifecycle::kPrePaintClean;
+                                DocumentLifecycle::kPrePaintClean ||
+                            frame_view.NeedsLayout();
       });
 
   return re_run_lifecycle;
