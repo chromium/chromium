@@ -221,16 +221,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.DeliveredToAppHandler" enum="BooleanDelivered"
+<histogram name="GCM.DeliveredToAppHandler{AppHandler}" enum="BooleanDelivered"
     expires_after="2023-10-19">
   <owner>peter@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
+  <owner>rushans@google.com</owner>
   <summary>
-    Whether a received GCM message could be delivered to an app handler.
-    Recorded for each received GCM message that didn't have encryption issues.
-    This metric was expired between July 2021 and January 2023, and may be
-    missing data until M111.
+    Whether a received GCM message could be delivered to an app handler
+    ({AppHandler}). Recorded for each received GCM message that didn't have
+    encryption issues. This metric was expired between July 2021 and January
+    2023, and may be missing data until M111.
   </summary>
+  <token key="AppHandler">
+    <variant name="" summary="all handlers"/>
+    <variant name=".FcmInvalidations" summary="FCM invalidations"/>
+    <variant name=".SyncInvalidations" summary="Sync standalone invalidations"/>
+  </token>
 </histogram>
 
 <histogram name="GCM.HeartbeatMissedDelta" units="ms"
