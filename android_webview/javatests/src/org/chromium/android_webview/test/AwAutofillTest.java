@@ -22,6 +22,7 @@ import android.os.IBinder;
 import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.SystemClock;
+import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
@@ -69,6 +70,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.ByteArrayInputStream;
@@ -876,6 +878,7 @@ public class AwAutofillTest {
     public AwActivityTestRule mRule = new AwActivityTestRule();
 
     private TestWebServer mWebServer;
+    private EmbeddedTestServer mEmbeddedServer;
     private AwTestContainerView mTestContainerView;
     private AwAutofillTestClient mContentsClient;
     private CallbackHelper mCallbackHelper = new CallbackHelper();
@@ -890,6 +893,8 @@ public class AwAutofillTest {
     @Before
     public void setUp() throws Exception {
         mWebServer = TestWebServer.start();
+        mEmbeddedServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
         AutofillProvider.setAutofillManagerWrapperFactoryForTesting(
                 new AutofillProvider.AutofillManagerWrapperFactoryForTesting() {
                     @Override
@@ -912,6 +917,7 @@ public class AwAutofillTest {
     public void setUpAwGNotCurrent() throws Exception {
         sIsAwGCurrentAutofillService = false;
         mWebServer.shutdown();
+        mEmbeddedServer.stopAndDestroyServer();
         // Initialize everything again.
         setUp();
     }
@@ -920,7 +926,12 @@ public class AwAutofillTest {
     public void tearDown() {
         sIsAwGCurrentAutofillService = true;
         mWebServer.shutdown();
+        mEmbeddedServer.stopAndDestroyServer();
         mAutofillProvider = null;
+    }
+
+    public String getAbsoluteTestPageUrl(String relativePageUrl) {
+        return mEmbeddedServer.getURL("/android_webview/test/data/autofill/" + relativePageUrl);
     }
 
     @Test
@@ -946,13 +957,8 @@ public class AwAutofillTest {
     }
 
     private void internalTestTriggerTest() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'"
-                + " placeholder='placeholder@placeholder.com' autocomplete='username name'>"
-                + "<input type='submit'>"
-                + "</form></body></html>";
         int cnt = 0;
-        final String url = mWebServer.setResponse(FILE, data, null);
+        final String url = getAbsoluteTestPageUrl("form_username.html");
         loadUrlSync(url);
         DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "text1");
         // Note that we currently depend on keyboard app's behavior.
@@ -1176,14 +1182,9 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testAutofillTriggersAfterReload() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'"
-                + " placeholder='placeholder@placeholder.com' autocomplete='username name'>"
-                + "<input type='submit'>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
         int cnt = 0;
 
+        final String url = getAbsoluteTestPageUrl("form_username.html");
         loadUrlSync(url);
         DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "text1");
         // TODO(changwan): mock out IME interaction.
@@ -1206,11 +1207,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNotifyVirtualValueChanged() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'"
-                + " placeholder='placeholder@placeholder.com' autocomplete='username name'>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
+        final String url = getAbsoluteTestPageUrl("form_username.html");
         loadUrlSync(url);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -1240,11 +1237,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testJavascriptNotTriggerNotifyVirtualValueChanged() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'"
-                + " placeholder='placeholder@placeholder.com' autocomplete='username name'>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
+        final String url = getAbsoluteTestPageUrl("form_username.html");
         loadUrlSync(url);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -2217,11 +2210,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testMismatchedAutofillValueWontCauseCrash() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'"
-                + " placeholder='placeholder@placeholder.com' autocomplete='username name'>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
+        final String url = getAbsoluteTestPageUrl("form_username.html");
         loadUrlSync(url);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -2248,12 +2237,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testDatalistSentToAutofillService() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'>"
-                + "<input list='datalist_id' name='count' id='text2'/><datalist id='datalist_id'>"
-                + "<option value='A1'>one</option><option value='A2'>two</option></datalist>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
+        final String url = getAbsoluteTestPageUrl("form_with_datalist.html");
         loadUrlSync(url);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -2288,12 +2272,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNoEventSentToAutofillServiceForFocusedDatalist() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'>"
-                + "<input list='datalist_id' name='count' id='text2'/><datalist id='datalist_id'>"
-                + "<option value='A1'>one</option><option value='A2'>two</option></datalist>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
+        final String url = getAbsoluteTestPageUrl("form_with_datalist.html");
         loadUrlSync(url);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text2').select();");
@@ -2319,12 +2298,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testDatalistPopup() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'>"
-                + "<input list='datalist_id' name='count' id='text2'/><datalist id='datalist_id'>"
-                + "<option value='A1'>one</option><option value='A2'>two</option></datalist>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
+        final String url = getAbsoluteTestPageUrl("form_with_datalist.html");
         loadUrlSync(url);
         executeJavaScriptAndWaitForResult("document.getElementById('text2').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -2339,12 +2313,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testHideDatalistPopup() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'>"
-                + "<input list='datalist_id' name='count' id='text2'/><datalist id='datalist_id'>"
-                + "<option value='A1'>one</option><option value='A2'>two</option></datalist>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
+        final String url = getAbsoluteTestPageUrl("form_with_datalist.html");
         loadUrlSync(url);
         executeJavaScriptAndWaitForResult("document.getElementById('text2').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
