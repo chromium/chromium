@@ -1248,6 +1248,10 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="BatteryCharge"/>
     <variant name="BatteryDischarge"/>
     <variant name="BatteryHealth"/>
+    <variant name="BluetoothDiscovery"/>
+    <variant name="BluetoothPairing"/>
+    <variant name="BluetoothPower"/>
+    <variant name="BluetoothScanning"/>
     <variant name="CaptivePortal"/>
     <variant name="CpuCache"/>
     <variant name="CpuStress"/>
