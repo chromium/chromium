@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build_overrides/build.gni")
 
 declare_args() {
   # Use in-tree libc++ (buildtools/third_party/libc++ and
@@ -52,13 +53,12 @@ declare_args() {
   libcxx_is_shared = use_custom_libcxx && is_component_build
 }
 
-# Enables assertions on safety checks in libc++.
-#
-# Typically, this should be set to true whenever we're using our custom libc++
-# in order to guard against undefined behavior. However, the asserts added by
-# hardening libc++ may introduce some performance overhead, so for now, we
-# pull this out into a separate variable to make it easier to run tests.
-enable_safe_libcxx = use_custom_libcxx
+# TODO(https://crbug.com/1385662): This is temporarily guarded to make it easier
+# to roll out this change. Once the various projects (ANGLE, v8, et cetera)
+# rolling in Chrome's //build have updated, remove this entirely.
+if (!defined(enable_safe_libcxx)) {
+  enable_safe_libcxx = true
+}
 
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.

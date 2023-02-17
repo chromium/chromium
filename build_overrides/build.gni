@@ -12,6 +12,18 @@ import("//build/config/gclient_args.gni")
 # Some non-Chromium builds don't support building java targets.
 enable_java_templates = true
 
+# Enables assertions on safety checks in libc++.
+#
+# This should be set to true whenever building with Chrome's custom libc++ in
+# order to guard against undefined behavior. However, the asserts added by
+# hardening libc++ may introduce some performance overhead, so this is
+# configurable to simplify A/B tests, and to allow performance-sensitive
+# projects embedding Chrome (e.g. ANGLE) to disable libc++ hardening.
+#
+# Note that setting this to true only has an effect when also building with
+# `use_custom_libcxx = true`.
+enable_safe_libcxx = true
+
 # Features used by //base/trace_event and //services/tracing.
 declare_args() {
   # Tracing support requires //third_party/perfetto, which is not available in

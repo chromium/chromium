@@ -94,7 +94,7 @@ config("runtime_library") {
       ]
     }
   }
-  if (enable_safe_libcxx) {
+  if (use_custom_libcxx && enable_safe_libcxx) {
     defines += [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
   }
 }
