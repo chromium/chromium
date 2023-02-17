@@ -11,9 +11,16 @@
 
 namespace cc {
 
-ClipNode::ClipNode() = default;
+ClipNode::ClipNode()
+    : id(kInvalidPropertyNodeId),
+      parent_id(kInvalidPropertyNodeId),
+      pixel_moving_filter_id(kInvalidPropertyNodeId),
+      transform_id(kInvalidPropertyNodeId) {}
+
 ClipNode::ClipNode(const ClipNode& other) = default;
+
 ClipNode& ClipNode::operator=(const ClipNode& other) = default;
+
 ClipNode::~ClipNode() = default;
 
 bool ClipNode::AppliesLocalClip() const {

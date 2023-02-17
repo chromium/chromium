@@ -398,7 +398,6 @@ cc_component("cc") {
     "trees/presentation_time_callback_buffer.h",
     "trees/property_animation_state.cc",
     "trees/property_animation_state.h",
-    "trees/property_ids.h",
     "trees/property_tree.cc",
     "trees/property_tree.h",
     "trees/property_tree_builder.cc",

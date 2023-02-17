@@ -644,7 +644,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
   if (paint_offset_translation) {
     TransformPaintPropertyNode::State state{
         {gfx::Transform::MakeTranslation(*paint_offset_translation)}};
-    state.flattens_inherited_transform =
+    state.flags.flattens_inherited_transform =
         context_.should_flatten_inherited_transform;
     state.rendering_context_id = context_.rendering_context_id;
     state.direct_compositing_reasons =
@@ -662,7 +662,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
 
     if (IsA<LayoutView>(object_)) {
       DCHECK(object_.GetFrame());
-      state.is_frame_paint_offset_translation = true;
+      state.flags.is_frame_paint_offset_translation = true;
       state.visible_frame_element_id =
           object_.GetFrame()->GetVisibleToHitTesting()
               ? CompositorElementIdFromUniqueObjectId(
@@ -707,7 +707,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
           box_model.UniqueId(),
           CompositorElementIdNamespace::kStickyTranslation);
       state.rendering_context_id = context_.rendering_context_id;
-      state.flattens_inherited_transform =
+      state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
 
       if (state.direct_compositing_reasons) {
@@ -804,7 +804,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
           box.UniqueId(),
           CompositorElementIdNamespace::kAnchorScrollTranslation);
       state.rendering_context_id = context_.rendering_context_id;
-      state.flattens_inherited_transform =
+      state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
 
       state.anchor_scroll_containers_data =
@@ -944,10 +944,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
       // be included here, such as setting animation_is_axis_aligned.
       state.direct_compositing_reasons =
           direct_compositing_reasons & CompositingReasonsForTransformProperty();
-      state.flattens_inherited_transform =
+      state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
-      state.is_for_svg_child = true;
+      state.flags.is_for_svg_child = true;
       state.compositor_element_id = GetCompositorElementId(
           CompositorElementIdNamespace::kPrimaryTransform);
 
@@ -1164,7 +1164,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         // TODO(crbug.com/1185254): Make this work correctly for block
         // fragmentation. It's the size of each individual NGPhysicalBoxFragment
         // that's interesting, not the total LayoutBox size.
-        state.animation_is_axis_aligned =
+        state.flags.animation_is_axis_aligned =
             UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
                 box, full_context_.direct_compositing_reasons);
       }
@@ -1173,7 +1173,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
           full_context_.direct_compositing_reasons &
           compositing_reasons_for_property;
 
-      state.flattens_inherited_transform =
+      state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       if (running_on_compositor_test) {
         state.compositor_element_id =
@@ -2264,7 +2264,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
           {matrix,
            gfx::Point3F(PerspectiveOrigin(To<LayoutBox>(object_)) +
                         gfx::Vector2dF(context_.current.paint_offset))}};
-      state.flattens_inherited_transform =
+      state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
       OnUpdateTransform(properties_->UpdatePerspective(
@@ -2298,7 +2298,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
     if (!content_to_parent_space.IsIdentity()) {
       TransformPaintPropertyNode::State state;
       state.transform_and_origin = {content_to_parent_space.ToTransform()};
-      state.flattens_inherited_transform =
+      state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
       OnUpdateTransform(properties_->UpdateReplacedContentTransform(
@@ -2435,7 +2435,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
             box.GetScrollableArea()->PendingScrollAnchorAdjustment();
         box.GetScrollableArea()->ClearPendingScrollAnchorAdjustment();
       }
-      state.flattens_inherited_transform =
+      state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
       state.direct_compositing_reasons =
@@ -2447,7 +2447,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // scrolling contents.
       if (object_.HasTransform() && object_.StyleRef().BackfaceVisibility() ==
                                         EBackfaceVisibility::kHidden) {
-        state.delegates_to_parent_for_backface = true;
+        state.flags.delegates_to_parent_for_backface = true;
       }
 
       auto effective_change_type = properties_->UpdateScrollTranslation(
