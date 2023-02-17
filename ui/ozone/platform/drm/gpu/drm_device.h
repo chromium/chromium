@@ -24,7 +24,8 @@ namespace ui {
 class HardwareDisplayPlaneManager;
 class GbmDevice;
 
-class DrmDevice : public DrmWrapper {
+class DrmDevice : public DrmWrapper,
+                  public base::RefCountedThreadSafe<DrmDevice> {
  public:
   using PageFlipCallback =
       base::OnceCallback<void(unsigned int /* frame */,
@@ -76,6 +77,8 @@ class DrmDevice : public DrmWrapper {
   GbmDevice* gbm_device() const { return gbm_.get(); }
 
  protected:
+  friend class base::RefCountedThreadSafe<DrmDevice>;
+
   friend class DrmDisplayTest;
 
   ~DrmDevice() override;

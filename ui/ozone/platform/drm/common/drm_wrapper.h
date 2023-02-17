@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
@@ -54,13 +53,14 @@ using ScopedDrmPropertyBlob = std::unique_ptr<DrmPropertyBlobMetadata>;
 // Wraps DRM calls into a tight interface. Used to provide different
 // implementations of the DRM calls. For the actual implementation the DRM API
 // would be called. In unit tests this interface would be stubbed.
-class DrmWrapper : public base::RefCountedThreadSafe<DrmWrapper> {
+class DrmWrapper {
  public:
   DrmWrapper(const base::FilePath& device_path,
              base::File file,
              bool is_primary_device);
   DrmWrapper(const DrmWrapper&) = delete;
   DrmWrapper& operator=(const DrmWrapper&) = delete;
+  virtual ~DrmWrapper();
 
   // Open device.
   virtual bool Initialize();
@@ -252,10 +252,6 @@ class DrmWrapper : public base::RefCountedThreadSafe<DrmWrapper> {
   bool is_primary_device() const { return is_primary_device_; }
 
  protected:
-  friend class base::RefCountedThreadSafe<DrmWrapper>;
-
-  virtual ~DrmWrapper();
-
   // Path to the DRM device (in sysfs).
   const base::FilePath device_path_;
   // DRM device.
