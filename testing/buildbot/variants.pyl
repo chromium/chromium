@@ -479,10 +479,10 @@
   'CROS_DEDEDE_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'dedede',
-      'cros_chrome_version': '111.0.5563.8',
-      'cros_img': 'dedede-release/R111-15329.8.0',
+      'cros_chrome_version': '112.0.5594.0',
+      'cros_img': 'dedede-release/R112-15350.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'DEDEDE_RELEASE_DEV',
   },
   'CROS_DEDEDE_RELEASE_BETA': {
@@ -561,10 +561,10 @@
   'CROS_HANA_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '111.0.5563.8',
-      'cros_img': 'hana-release/R111-15329.8.0',
+      'cros_chrome_version': '112.0.5594.0',
+      'cros_img': 'hana-release/R112-15350.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'HANA_RELEASE_DEV',
   },
   'CROS_HANA_RELEASE_BETA': {
@@ -606,10 +606,10 @@
   'CROS_JACUZZI_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '111.0.5563.8',
-      'cros_img': 'jacuzzi-release/R111-15329.8.0',
+      'cros_chrome_version': '112.0.5594.0',
+      'cros_img': 'jacuzzi-release/R112-15350.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'JACUZZI_RELEASE_DEV',
   },
   'CROS_JACUZZI_RELEASE_BETA': {
@@ -682,10 +682,10 @@
   'CROS_OCTOPUS_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '111.0.5563.8',
-      'cros_img': 'octopus-release/R111-15329.8.0',
+      'cros_chrome_version': '112.0.5594.0',
+      'cros_img': 'octopus-release/R112-15350.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'OCTOPUS_RELEASE_DEV',
   },
   'CROS_OCTOPUS_RELEASE_BETA': {
@@ -718,10 +718,10 @@
   'CROS_STRONGBAD_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '111.0.5550.0',
-      'cros_img': 'strongbad-release/R111-15324.0.0',
+      'cros_chrome_version': '112.0.5594.0',
+      'cros_img': 'strongbad-release/R112-15350.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'strongbad_RELEASE_DEV',
   },
   'CROS_STRONGBAD_RELEASE_BETA': {
