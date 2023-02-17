@@ -1,0 +1,45 @@
+<style include="cr-hidden-style cr-shared-style">
+:host {
+  border-top: 1px solid var(--cr-separator-color);
+  display: flex;
+  padding-block: var(--cr-section-vertical-padding);
+}
+
+.card-content {
+  flex: 1;
+}
+
+cr-button {
+  flex: 0;
+  margin-block-start: var(--cr-section-vertical-padding);
+  margin-inline-end: var(--cr-section-padding);
+}
+
+ol {
+  padding-inline-start: 2ex;
+}
+
+li {
+  margin-block: 1ex;
+}
+</style>
+<div class="card-content">
+  <h3>[[promo.displayTitle]]</h3>
+  <p>Added on [[formatDate_()]]</p>
+<p hidden$="[[!showDescription_()]]">
+  [[promo.displayDescription]]
+</p>
+<p><b>Type:</b> [[promo.type]]</p>
+<p><b>OS: </b>[[formatPlatforms_()]]</p>
+<div hidden$="[[!showInstructions_()]]">
+  <p><b>Instructions:</b></p>
+  <ol>
+  <template is="dom-repeat" items="[[promo.instructions]]">
+    <li>[[item]]</li>
+  </template>
+  </ol>
+</div>
+</div>
+<cr-button class="action-button" id="launch" on-click="launchPromo_">
+  Launch
+</cr-button>

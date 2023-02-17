@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
@@ -11,12 +10,13 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './user_education_internals_card.js';
 
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_education_internals.html.js';
 import {FeaturePromoDemoPageInfo, UserEducationInternalsPageHandler, UserEducationInternalsPageHandlerInterface} from './user_education_internals.mojom-webui.js';
@@ -93,7 +93,8 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     this.$.promos.addEventListener(
         'rendered-item-count-changed', (_: Event) => {
           this.registerHelpBubble(
-              'kWebUIIPHDemoElementIdentifier', '#IPH_WebUiHelpBubbleTest');
+              'kWebUIIPHDemoElementIdentifier',
+              ['#IPH_WebUiHelpBubbleTest', '#launch']);
         }, {
           once: true,
         });
@@ -107,8 +108,8 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     this.filter = (e.detail as string).toLowerCase();
   }
 
-  private startTutorial_(e: DomRepeatEvent<FeaturePromoDemoPageInfo>) {
-    const id = e.model.item.internalName;
+  private startTutorial_(e: CustomEvent) {
+    const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.startTutorial(id).then(({errorMessage}) => {
@@ -119,8 +120,8 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     });
   }
 
-  private showFeaturePromo_(e: DomRepeatEvent<FeaturePromoDemoPageInfo>) {
-    const id = e.model.item.internalName;
+  private showFeaturePromo_(e: CustomEvent) {
+    const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.showFeaturePromo(id).then(({errorMessage}) => {
@@ -139,23 +140,6 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
                 instruction.toLowerCase().includes(filter)) ||
         promo.supportedPlatforms.find(
             (platform: string) => platform.toLowerCase().includes(filter));
-  }
-
-  private showDescription_(promo: FeaturePromoDemoPageInfo) {
-    return promo.displayDescription !== '';
-  }
-
-  private formatItemDate_(promo: FeaturePromoDemoPageInfo) {
-    const date = new Date(Number(promo.addedTimestampMs));
-    return date.toDateString();
-  }
-
-  private formatPlatforms_(promo: FeaturePromoDemoPageInfo) {
-    return promo.supportedPlatforms.join(', ');
-  }
-
-  private showInstructions_(promo: FeaturePromoDemoPageInfo) {
-    return promo.instructions.length;
   }
 }
 

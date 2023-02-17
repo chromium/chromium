@@ -53,30 +53,6 @@ cr-toolbar:not([narrow]) {
   width: var(--main-column-max-width);
 }
 
-.card {
-  border-top: 1px solid var(--cr-separator-color);
-  display: flex;
-  padding-block: var(--cr-section-vertical-padding);
-}
-
-.card-content {
-  flex: 1;
-}
-
-.card cr-button {
-  flex: 0;
-  margin-block-start: var(--cr-section-vertical-padding);
-  margin-inline-end: var(--cr-section-padding);
-}
-
-.card ol {
-  padding-inline-start: 2ex;
-}
-
-.card li {
-  margin-block: 1ex;
-}
-
 /* Width is left + --cr-section-padding + main. */
 @media (max-width: 920px) {
   #main {
@@ -118,56 +94,21 @@ cr-toolbar:not([narrow]) {
       -->
       <h2>Tutorials</h2>
       <template id="tutorials" is="dom-repeat" items="[[tutorials_]]">
-        <!-- TODO(dfried): componentize this card object. -->
-        <div class="card" hidden$="[[!promoFilter_(item, filter)]]">
-          <div class="card-content">
-            <h3>[[item.displayTitle]]</h3>
-            <p>Added on [[formatItemDate_(item)]]</p>
-            <p hidden$="[[!showDescription_(item)]]">
-              [[item.displayDescription]]
-            </p>
-            <p><b>Type:</b> [[item.type]]</p>
-            <p><b>OS: </b>[[formatPlatforms_(item)]]</p>
-            <div hidden$="[[!showInstructions_(item)]]">
-              <p><b>Instructions:</b></p>
-              <ol>
-                <template is="dom-repeat" items="[[item.instructions]]">
-                  <li>[[item]]</li>
-                </template>
-              </ol>
-            </div>
-          </div>
-          <cr-button class="action-button" id="[[item.internalName]]"
-                     on-click="startTutorial_">
-            Launch
-          </cr-button>
-        </div>
+        <user-education-internals-card
+            id="[[item.internalName]]"
+            hidden$="[[!promoFilter_(item, filter)]]"
+            promo="[[item]]"
+            on-promo-launch="startTutorial_">
+        </user-education-internals-card>
       </template>
       <h2>Feature Promos</h2>
       <template is="dom-repeat" id="promos" items="[[featurePromos_]]">
-        <div class="card" hidden$="[[!promoFilter_(item, filter)]]">
-          <div class="card-content">
-            <h3>[[item.displayTitle]]</h3>
-            <p>Added on [[formatItemDate_(item)]]</p>
-            <p hidden$="[[!showDescription_(item)]]">
-              [[item.displayDescription]]
-            </p>
-            <p><b>Type:</b> [[item.type]]</p>
-            <p><b>OS:</b> [[formatPlatforms_(item)]]</p>
-            <div hidden$="[[!showInstructions_(item)]]">
-              <p><b>Instructions:</b></p>
-              <ol>
-                <template is="dom-repeat" items="[[item.instructions]]">
-                  <li>[[item]]</li>
-                </template>
-              </ol>
-            </div>
-          </div>
-          <cr-button class="action-button" id="[[item.internalName]]"
-                     on-click="showFeaturePromo_">
-            Launch
-          </cr-button>
-        </div>
+        <user-education-internals-card
+            id="[[item.internalName]]"
+            hidden$="[[!promoFilter_(item, filter)]]"
+            promo="[[item]]"
+            on-promo-launch="showFeaturePromo_">
+        </user-education-internals-card>
       </template>
     </div>
   </div>

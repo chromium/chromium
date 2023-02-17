@@ -12,19 +12,28 @@ assert(!is_android)
 preprocess_folder = "$target_gen_dir/preprocessed"
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = [ "user_education_internals.html" ]
+  in_files = [
+    "user_education_internals.html",
+    "user_education_internals_card.html",
+  ]
 }
 
 preprocess_if_expr("preprocess_gen") {
   in_folder = target_gen_dir
   out_folder = preprocess_folder
-  in_files = [ "user_education_internals.html.ts" ]
+  in_files = [
+    "user_education_internals.html.ts",
+    "user_education_internals_card.html.ts",
+  ]
   deps = [ ":html_wrapper_files" ]
 }
 
 preprocess_if_expr("preprocess_src") {
   out_folder = preprocess_folder
-  in_files = [ "user_education_internals.ts" ]
+  in_files = [
+    "user_education_internals.ts",
+    "user_education_internals_card.ts",
+  ]
 }
 
 copy("copy_mojo") {
@@ -39,7 +48,9 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "user_education_internals.ts",
+    "user_education_internals_card.ts",
     "user_education_internals.html.ts",
+    "user_education_internals_card.html.ts",
     "user_education_internals.mojom-webui.ts",
   ]
   deps = [
