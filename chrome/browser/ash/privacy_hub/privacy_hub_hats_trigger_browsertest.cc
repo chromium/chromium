@@ -51,29 +51,8 @@ class PrivacyHubHatsTriggerTest : public InProcessBrowserTest {
     return privacy_hub_trigger_.GetHatsNotificationControllerForTesting();
   }
 
-  base::OneShotTimer& GetTimer() {
-    return privacy_hub_trigger_.GetTimerForTesting();
-  }
-
   void SetNoProfileForTesting() {
     privacy_hub_trigger_.SetNoProfileForTesting(true);
-  }
-
-  void ExpectTimerIsRunningThenTrigger() {
-    EXPECT_TRUE(GetTimer().IsRunning());
-    EXPECT_FALSE(IsHatsNotificationActive());
-    EXPECT_FALSE(GetHatsNotificationController());
-
-    GetTimer().FireNow();
-  }
-
-  void RunThenTriggerTimer(base::TimeDelta delay) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &PrivacyHubHatsTriggerTest::ExpectTimerIsRunningThenTrigger,
-            base::Unretained(this)),
-        delay);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -87,13 +66,12 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubHatsTriggerTest, ShowSurveySuccess) {
 
   base::RunLoop loop;
   display_service_->SetNotificationAddedClosure(loop.QuitClosure());
-  privacy_hub_trigger_.ShowSurveyAfterDelayElapsed();
+  privacy_hub_trigger_.ShowSurveyIfSelected();
 
-  RunThenTriggerTimer(base::Seconds(2));
+  EXPECT_TRUE(GetHatsNotificationController());
 
   loop.Run();
 
-  EXPECT_TRUE(GetHatsNotificationController());
   EXPECT_TRUE(IsHatsNotificationActive());
 }
 
@@ -103,19 +81,15 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubHatsTriggerTest, ShowSurveyOnlyOnce) {
   // Show survey once
   base::RunLoop loop;
   display_service_->SetNotificationAddedClosure(loop.QuitClosure());
-  privacy_hub_trigger_.ShowSurveyAfterDelayElapsed();
-
-  RunThenTriggerTimer(base::Seconds(2));
-
-  loop.Run();
-
+  privacy_hub_trigger_.ShowSurveyIfSelected();
   const HatsNotificationController* hats_notification_controller =
       GetHatsNotificationController();
-  EXPECT_NE(hats_notification_controller, nullptr);
+  EXPECT_TRUE(hats_notification_controller);
+  loop.Run();
   EXPECT_TRUE(IsHatsNotificationActive());
 
   // Trigger survey again but the controller shouldn't be a new instance.
-  privacy_hub_trigger_.ShowSurveyAfterDelayElapsed();
+  privacy_hub_trigger_.ShowSurveyIfSelected();
 
   EXPECT_EQ(hats_notification_controller, GetHatsNotificationController());
 }
@@ -124,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubHatsTriggerTest, NoActiveProfile) {
   SetNoProfileForTesting();
   EXPECT_FALSE(IsHatsNotificationActive());
 
-  privacy_hub_trigger_.ShowSurveyAfterDelayElapsed();
+  privacy_hub_trigger_.ShowSurveyIfSelected();
 
   EXPECT_FALSE(GetHatsNotificationController());
 }
@@ -134,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubHatsTriggerTest, NoSurveyIfSessionNotActive) {
       session_manager::SessionState::LOCKED);
   EXPECT_FALSE(IsHatsNotificationActive());
 
-  privacy_hub_trigger_.ShowSurveyAfterDelayElapsed();
+  privacy_hub_trigger_.ShowSurveyIfSelected();
 
   EXPECT_FALSE(GetHatsNotificationController());
 }

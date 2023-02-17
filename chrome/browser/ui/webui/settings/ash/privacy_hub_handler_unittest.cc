@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/webui/settings/ash/privacy_hub_handler.h"
 
 #include "base/containers/adapters.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/privacy_hub/privacy_hub_hats_trigger.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {
@@ -19,8 +20,6 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
   using content::WebUIMessageHandler::set_web_ui;
 
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
-  using PrivacyHubHandler::HandlePrivacyPageClosed;
-  using PrivacyHubHandler::HandlePrivacyPageOpened;
 };
 
 using cps = cros::mojom::CameraPrivacySwitchState;
@@ -116,13 +115,6 @@ class PrivacyHubHandlerMicrophoneTest
   }
 };
 
-class PrivacyHubHandlerHatsTest : public PrivacyHubHandlerTest {
- public:
-  bool IsTimerStarted() {
-    return PrivacyHubHatsTrigger::Get().GetTimerForTesting().IsRunning();
-  }
-};
-
 TEST_P(PrivacyHubHandlerMicrophoneTest,
        MicrophoneHardwarePrivacySwitchChanged) {
   privacy_hub_handler_.MicrophoneHardwareToggleChanged(GetParam());
@@ -151,25 +143,6 @@ INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
                          testing::Values(true, false),
                          testing::PrintToStringParamName());
 
-TEST_F(PrivacyHubHandlerHatsTest, OnlyTriggerHatsIfPageWasVisited) {
-  const base::Value::List args;
-
-  EXPECT_FALSE(IsTimerStarted());
-
-  // We trigger the HaTS survey on the leave event but the user hasn't visited
-  // the page yet.
-  privacy_hub_handler_.HandlePrivacyPageClosed(args);
-  EXPECT_FALSE(IsTimerStarted());
-
-  // User goes to the page.
-  privacy_hub_handler_.HandlePrivacyPageOpened(args);
-  EXPECT_FALSE(IsTimerStarted());
-
-  // And leaves it again, now the survey should be triggered.
-  privacy_hub_handler_.HandlePrivacyPageClosed(args);
-  EXPECT_TRUE(IsTimerStarted());
-}
-
 #if DCHECK_IS_ON()
 using PrivacyHubHandlerDeathTest = PrivacyHubHandlerTest;
 
@@ -188,20 +161,6 @@ TEST_F(PrivacyHubHandlerDeathTest, HandleInitialMicrophoneSwitchStateWithArgs) {
 
   EXPECT_DEATH(privacy_hub_handler_.HandleInitialMicrophoneSwitchState(args),
                ".*Did not expect arguments.*");
-}
-
-TEST_F(PrivacyHubHandlerDeathTest, HandlePrivacyPageOpened) {
-  base::Value::List args;
-  args.Append(this_test_name_);
-
-  EXPECT_DEATH(privacy_hub_handler_.HandlePrivacyPageOpened(args), ".*empty.*");
-}
-
-TEST_F(PrivacyHubHandlerDeathTest, HandlePrivacyPageClosed) {
-  base::Value::List args;
-  args.Append(this_test_name_);
-
-  EXPECT_DEATH(privacy_hub_handler_.HandlePrivacyPageClosed(args), ".*empty.*");
 }
 #endif
 

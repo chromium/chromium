@@ -338,11 +338,8 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
       profile(), g_browser_process->metrics_service(),
       user_manager::UserManager::Get()));
 
-  if (ash::features::IsCrosPrivacyHubEnabled() ||
-      base::FeatureList::IsEnabled(
-          ::features::kHappinessTrackingPrivacyHubBaseline)) {
+  if (ash::features::IsCrosPrivacyHubEnabled())
     web_ui->AddMessageHandler(std::make_unique<PrivacyHubHandler>());
-  }
 
   if (IsSecureDnsAvailable())
     web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());
