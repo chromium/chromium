@@ -77,6 +77,12 @@ export class XfSelect extends XfBase {
    */
   @property({type: String, reflect: true}) value: string = '';
 
+  /**
+   * The alignment of items in the dropdown menu. Can be one of
+   * 'start', 'center', 'end'.
+   */
+  @property({type: String, reflect: true}) menuAlignment: string = 'center';
+
   static get events() {
     return {
       /** emits when the currently selected option changed. */
@@ -161,10 +167,11 @@ export class XfSelect extends XfBase {
    * Returns a template of the dropdown which shows available choices.
    */
   private renderDropdown_() {
+    const alignment = this.menuAlignment || 'center';
     return html`<cr-action-menu>
         ${this.options.map((option, index) => html`
           <cr-button
-              class="dropdown-item"
+              class="dropdown-item dropdown-item-${alignment}"
               role="menuitem"
               @click=${() => this.onOptionSelected_(index)}
               ?selected=${this.selectedOption_!.value === option.value}>
@@ -351,6 +358,15 @@ function getCSS(): CSSResultGroup {
     }
     cr-button.dropdown-item {
       --focus-shadow-color: none;
+    }
+    cr-button.dropdown-item-center {
+      justify-content: center;
+    }
+    cr-button.dropdown-item-start {
+      justify-content: start;
+    }
+    cr-button.dropdown-item-end {
+      justify-content: end;
     }
   `;
 }
