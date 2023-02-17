@@ -357,7 +357,14 @@ void CaptureModeDemoToolsController::OnTouchUp(
     const ui::PointerId& pointer_id,
     const gfx::PointF& event_location_in_window) {
   auto iter = touch_pointer_id_to_highlight_layer_map_.find(pointer_id);
-  DCHECK(iter != touch_pointer_id_to_highlight_layer_map_.end());
+
+  // Touch up may happen without been registered to
+  // `touch_pointer_id_to_highlight_layer_map_` for example a touch down may
+  // happen before video recording starts and touch up happens after video
+  // recording starts.
+  if (iter == touch_pointer_id_to_highlight_layer_map_.end()) {
+    return;
+  }
 
   std::unique_ptr<PointerHighlightLayer> touch_highlight_layer =
       std::move(iter->second);
@@ -387,8 +394,12 @@ void CaptureModeDemoToolsController::OnTouchUp(
 void CaptureModeDemoToolsController::OnTouchDragged(
     const ui::PointerId& pointer_id,
     const gfx::PointF& event_location_in_window) {
-  auto* highlight_layer =
-      touch_pointer_id_to_highlight_layer_map_[pointer_id].get();
+  auto iter = touch_pointer_id_to_highlight_layer_map_.find(pointer_id);
+  if (iter == touch_pointer_id_to_highlight_layer_map_.end()) {
+    return;
+  }
+
+  auto* highlight_layer = iter->second.get();
   DCHECK(highlight_layer);
   highlight_layer->CenterAroundPoint(event_location_in_window);
 }

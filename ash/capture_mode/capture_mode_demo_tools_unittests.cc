@@ -29,7 +29,13 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_test_util.h"
+#include "ash/shelf/shelf_view.h"
+#include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
@@ -41,6 +47,7 @@
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/pointer_details.h"
@@ -836,6 +843,69 @@ TEST_F(CaptureModeDemoToolsTest, WorkAreaChangeTest) {
   auto* docked_magnifier_controller =
       Shell::Get()->docked_magnifier_controller();
   docked_magnifier_controller->SetEnabled(/*enabled=*/true);
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+}
+
+// Tests that if a touch down event happens before video recording starts, there
+// will be no crash and no touch highlight will be generated.
+TEST_F(CaptureModeDemoToolsTest, TouchDownBeforeVideoRecordingTest) {
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+
+  // Press touch before starting the video recording.
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  const gfx::Rect root_window_bounds_in_screen =
+      root_window->GetBoundsInScreen();
+  const gfx::Point display_center = root_window_bounds_in_screen.CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressTouchId(0, display_center);
+
+  StartVideoRecordingImmediately();
+  WaitForSeconds(1);
+
+  auto* demo_tools_controller = GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+  const auto& touch_highlight_map =
+      demo_tools_test_api.GetTouchIdToHighlightLayerMap();
+  EXPECT_TRUE(touch_highlight_map.empty());
+  event_generator->ReleaseTouchId(0);
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+}
+
+// Tests that the drag and drop in the shelf during video recording with demo
+// tools enabled works properly with no crash.
+TEST_F(CaptureModeDemoToolsTest, DragAndDropIconOnShelfTest) {
+  ShelfItem item = ShelfTestUtil::AddAppShortcut("app_id", TYPE_PINNED_APP);
+  const ShelfID& id = item.id;
+  ShelfView* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  ShelfViewTestAPI test_api(shelf_view);
+  ShelfAppButton* button =
+      test_api.GetButton(ShelfModel::Get()->ItemIndexByID(id));
+  ASSERT_TRUE(button);
+  const gfx::Point button_center_point =
+      button->GetBoundsInScreen().CenterPoint();
+
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressTouch(button_center_point);
+  ASSERT_TRUE(button->FireDragTimerForTest());
+  button->FireRippleActivationTimerForTest();
+
+  ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+  ui::GestureEvent long_press(button_center_point.x(), button_center_point.y(),
+                              0, ui::EventTimeForNow(), event_details);
+  event_generator->Dispatch(&long_press);
+  event_generator->MoveTouchBy(0, -10);
+
+  EXPECT_TRUE(shelf_view->drag_view());
+  EXPECT_TRUE(button->state() & ShelfAppButton::STATE_DRAGGING);
+  event_generator->ReleaseTouch();
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 }
 

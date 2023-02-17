@@ -564,11 +564,7 @@ void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void VideoRecordingWatcher::OnTouchEvent(ui::TouchEvent* event) {
-  if (demo_tools_controller_ && PointerHighlightingEnabled() &&
-      (event->type() == ui::ET_TOUCH_PRESSED ||
-       event->type() == ui::ET_TOUCH_RELEASED ||
-       event->type() == ui::ET_TOUCH_MOVED ||
-       event->type() == ui::ET_TOUCH_CANCELLED)) {
+  if (demo_tools_controller_ && PointerHighlightingEnabled()) {
     demo_tools_controller_->OnTouchEvent(
         event->type(), event->pointer_details().id,
         GetEventLocationInWindow(window_being_recorded_, *event));
