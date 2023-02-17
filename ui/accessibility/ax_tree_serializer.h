@@ -445,16 +445,6 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChanges(
     timer_ = std::make_unique<base::ElapsedTimer>();
   incomplete_node_ids_.clear();
 
-  // Send the tree data if it's changed since the last update, or if
-  // out_update->has_tree_data is already set to true.
-  AXTreeData new_tree_data;
-  if (tree_->GetTreeData(&new_tree_data) &&
-      (out_update->has_tree_data || new_tree_data != client_tree_data_)) {
-    out_update->has_tree_data = true;
-    out_update->tree_data = new_tree_data;
-    client_tree_data_ = new_tree_data;
-  }
-
   // If the node isn't in the client tree, we need to serialize starting
   // with the LCA.
   AXSourceNode lca = LeastCommonAncestor(node);
@@ -512,6 +502,19 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChanges(
   if (did_reset_) {
     out_update->node_id_to_clear = tree_->GetId(lca);
     did_reset_ = false;
+  }
+
+  // Send the tree data if it's changed since the last update, or if
+  // out_update->has_tree_data is already set to true.
+  // Do this last, so that selection retrieval will cause recomputation of
+  // node inclusion before the the new tree structure has been updated in a
+  // top-down matter via SerializeChangedNodes().
+  AXTreeData new_tree_data;
+  if (tree_->GetTreeData(&new_tree_data) &&
+      (out_update->has_tree_data || new_tree_data != client_tree_data_)) {
+    out_update->has_tree_data = true;
+    out_update->tree_data = new_tree_data;
+    client_tree_data_ = new_tree_data;
   }
 
   return true;

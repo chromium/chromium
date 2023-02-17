@@ -139,7 +139,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // point to the relation_source.
   void UpdateReverseTextRelations(const AXObject* relation_source,
                                   const Vector<String>& target_ids);
-  void ChildrenChanged(AXObject*);
+  // Effects a ChildrenChanged() on the passed-in object, if unignored,
+  // otherwise, uses the first unignored ancestor. Returns the object that the
+  // children changed occurs on.
+  AXObject* ChildrenChanged(AXObject*);
   void ChildrenChangedWithCleanLayout(AXObject*);
   void ChildrenChanged(Node*) override;
   void ChildrenChanged(const LayoutObject*) override;
