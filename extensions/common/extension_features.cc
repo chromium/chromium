@@ -139,7 +139,7 @@ BASE_FEATURE(kWebviewTagMPArchBehavior,
 // mv2 extension by default but the error messages will improperly mention
 // enterprise policy.
 BASE_FEATURE(kExtensionsManifestV3Only,
-             "kExtensionsManifestV3Only",
+             "ExtensionsManifestV3Only",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the minimum MV3 Content-Security-Policy will include
