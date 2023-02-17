@@ -435,9 +435,10 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
         target_process, std::move(connection_params), process_error_callback,
         handle_policy);
     if (!params) {
-      if (process_error_callback) {
-        process_error_callback.Run("Unable to establish Mojo channel");
-      }
+      // NOTE: This can only occur if the client process has already been
+      // terminated by the time we get here. In this case we silently drop the
+      // connection.
+      DropPeer(temporary_node_name, /*channel=*/nullptr);
       return;
     }
 
