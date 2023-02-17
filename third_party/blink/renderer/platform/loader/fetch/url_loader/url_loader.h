@@ -47,6 +47,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -63,7 +64,6 @@ namespace blink {
 class ResourceLoadInfoNotifierWrapper;
 class BackForwardCacheLoaderHelper;
 class BlobDataHandle;
-class WebData;
 class ResourceRequestSender;
 class WebURLRequestExtraData;
 class URLLoaderClient;
@@ -104,7 +104,7 @@ class BLINK_PLATFORM_EXPORT URLLoader {
       URLLoaderClient* client,
       WebURLResponse& response,
       absl::optional<WebURLError>& error,
-      WebData& data,
+      scoped_refptr<SharedBuffer>& data,
       int64_t& encoded_data_length,
       uint64_t& encoded_body_length,
       scoped_refptr<BlobDataHandle>& downloaded_blob,

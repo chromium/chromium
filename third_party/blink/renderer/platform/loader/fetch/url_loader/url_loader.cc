@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
 
@@ -517,7 +518,7 @@ void URLLoader::LoadSynchronously(
     URLLoaderClient* client,
     WebURLResponse& response,
     absl::optional<WebURLError>& error,
-    WebData& data,
+    scoped_refptr<SharedBuffer>& data,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,
     scoped_refptr<BlobDataHandle>& downloaded_blob,
@@ -583,7 +584,7 @@ void URLLoader::LoadSynchronously(
     downloaded_blob = std::move(sync_load_response.downloaded_blob);
   }
 
-  data.Assign(sync_load_response.data);
+  data = sync_load_response.data;
 }
 
 void URLLoader::LoadAsynchronously(

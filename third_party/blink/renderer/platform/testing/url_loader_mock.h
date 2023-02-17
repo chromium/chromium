@@ -14,7 +14,6 @@
 
 namespace blink {
 
-class WebData;
 class WebURLRequestExtraData;
 class URLLoaderClient;
 class URLLoaderMockFactoryImpl;
@@ -38,7 +37,7 @@ class URLLoaderMock : public URLLoader {
   // Simulates the asynchronous request being served.
   void ServeAsynchronousRequest(URLLoaderTestDelegate* delegate,
                                 const WebURLResponse& response,
-                                const WebData& data,
+                                const scoped_refptr<SharedBuffer>& data,
                                 const absl::optional<WebURLError>& error);
 
   // Simulates the redirect being served.
@@ -55,7 +54,7 @@ class URLLoaderMock : public URLLoader {
       URLLoaderClient* client,
       WebURLResponse&,
       absl::optional<WebURLError>&,
-      WebData&,
+      scoped_refptr<SharedBuffer>&,
       int64_t& encoded_data_length,
       uint64_t& encoded_body_length,
       scoped_refptr<BlobDataHandle>& downloaded_blob,

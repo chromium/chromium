@@ -45,7 +45,7 @@ void InternetDisconnectedURLLoader::LoadSynchronously(
     URLLoaderClient*,
     WebURLResponse&,
     absl::optional<WebURLError>&,
-    WebData&,
+    scoped_refptr<SharedBuffer>&,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,
     scoped_refptr<BlobDataHandle>& downloaded_blob,

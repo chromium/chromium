@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -580,8 +581,9 @@ TEST_F(URLLoaderTest, SyncLengths) {
   SyncLoadResponse sync_load_response;
   sync_load_response.error_code = net::OK;
   sync_load_response.url = GURL(url);
-  sync_load_response.data.Assign(WebData(kBodyData));
-  ASSERT_EQ(17u, sync_load_response.data.size());
+  sync_load_response.data =
+      SharedBuffer::Create(kBodyData, sizeof(kBodyData) - 1);
+  ASSERT_EQ(17u, sync_load_response.data->size());
   sync_load_response.head->encoded_body_length =
       network::mojom::EncodedBodyLength::New(kEncodedBodyLength);
   sync_load_response.head->encoded_data_length = kEncodedDataLength;
@@ -589,7 +591,7 @@ TEST_F(URLLoaderTest, SyncLengths) {
 
   WebURLResponse response;
   absl::optional<WebURLError> error;
-  WebData data;
+  scoped_refptr<SharedBuffer> data;
   int64_t encoded_data_length = 0;
   uint64_t encoded_body_length = 0;
   scoped_refptr<BlobDataHandle> downloaded_blob;

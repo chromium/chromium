@@ -10,9 +10,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -52,7 +52,7 @@ struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
   GURL url ALLOW_DISCOURAGED_TYPE("Avoids conversion in loading code");
 
   // The response data.
-  WebData data;
+  scoped_refptr<SharedBuffer> data;
 
   // Used for blob response type XMLHttpRequest.
   scoped_refptr<BlobDataHandle> downloaded_blob;

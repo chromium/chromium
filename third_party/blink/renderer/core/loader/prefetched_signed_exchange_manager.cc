@@ -93,7 +93,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       URLLoaderClient* client,
       WebURLResponse& response,
       absl::optional<WebURLError>& error,
-      WebData& data,
+      scoped_refptr<SharedBuffer>& data,
       int64_t& encoded_data_length,
       uint64_t& encoded_body_length,
       scoped_refptr<BlobDataHandle>& downloaded_blob,

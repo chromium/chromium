@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace network {
@@ -24,7 +25,6 @@ struct ResourceRequest;
 namespace blink {
 
 class TestingPlatformSupport;
-class WebData;
 class URLLoader;
 class URLLoaderMock;
 class URLLoaderTestDelegate;
@@ -66,7 +66,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
                          WebURLResponse* response,
                          absl::optional<WebURLError>* error,
-                         WebData* data,
+                         scoped_refptr<SharedBuffer>& data,
                          int64_t* encoded_data_length);
   void LoadAsynchronouly(std::unique_ptr<network::ResourceRequest> request,
                          URLLoaderMock* loader);
@@ -87,7 +87,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   void LoadRequest(const WebURL& url,
                    WebURLResponse* response,
                    absl::optional<WebURLError>* error,
-                   WebData* data);
+                   scoped_refptr<SharedBuffer>& data);
 
   // Checks if the loader is pending. Otherwise, it may have been deleted.
   bool IsPending(base::WeakPtr<URLLoaderMock> loader);
@@ -99,9 +99,10 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
                  absl::optional<WebURLError>* error,
                  ResponseInfo* response_info);
 
-  // Reads |m_filePath| and puts its content in |data|.
+  // Reads 'file_path' and puts its content in 'data'.
   // Returns true if it successfully read the file.
-  static bool ReadFile(const base::FilePath& file_path, WebData* data);
+  static bool ReadFile(const base::FilePath& file_path,
+                       scoped_refptr<SharedBuffer>& data);
 
   URLLoaderTestDelegate* delegate_ = nullptr;
 

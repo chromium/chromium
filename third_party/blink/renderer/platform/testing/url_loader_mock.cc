@@ -32,11 +32,12 @@ URLLoaderMock::~URLLoaderMock() {
 void URLLoaderMock::ServeAsynchronousRequest(
     URLLoaderTestDelegate* delegate,
     const WebURLResponse& response,
-    const WebData& data,
+    const scoped_refptr<SharedBuffer>& data,
     const absl::optional<WebURLError>& error) {
   if (!client_) {
     return;
   }
+  size_t data_size = data ? data->size() : 0;
 
   // If no delegate is provided then create an empty one. The default behavior
   // will just proxy to the client.
@@ -47,7 +48,7 @@ void URLLoaderMock::ServeAsynchronousRequest(
   }
 
   if (error) {
-    delegate->DidFail(client_, *error, data.size(), 0, 0);
+    delegate->DidFail(client_, *error, data_size, 0, 0);
     return;
   }
 
@@ -60,22 +61,19 @@ void URLLoaderMock::ServeAsynchronousRequest(
     return;
   }
 
-  data.ForEachSegment([this, &delegate, &self](const char* segment,
-                                               size_t segment_size,
-                                               size_t segment_offset) {
-    delegate->DidReceiveData(client_, segment,
-                             base::checked_cast<int>(segment_size));
-    // DidReceiveData() may clear the |self| weak ptr.  We stop iterating
-    // when that happens.
-    return self;
-  });
-
-  if (!self) {
-    return;
+  if (data) {
+    for (const auto& span : *data) {
+      delegate->DidReceiveData(client_, span.data(), span.size());
+      // DidReceiveData() may clear the |self| weak ptr.  We stop iterating
+      // when that happens.
+      if (!self) {
+        return;
+      }
+    }
   }
 
-  delegate->DidFinishLoading(client_, base::TimeTicks(), data.size(),
-                             data.size(), data.size());
+  delegate->DidFinishLoading(client_, base::TimeTicks(), data_size, data_size,
+                             data_size);
 }
 
 WebURL URLLoaderMock::ServeRedirect(const WebString& method,
@@ -111,14 +109,14 @@ void URLLoaderMock::LoadSynchronously(
     URLLoaderClient* client,
     WebURLResponse& response,
     absl::optional<WebURLError>& error,
-    WebData& data,
+    scoped_refptr<SharedBuffer>& data,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,
     scoped_refptr<BlobDataHandle>& downloaded_blob,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   DCHECK(factory_->IsMockedURL(WebURL(KURL(request->url)))) << request->url;
-  factory_->LoadSynchronously(std::move(request), &response, &error, &data,
+  factory_->LoadSynchronously(std::move(request), &response, &error, data,
                               &encoded_data_length);
 }
 

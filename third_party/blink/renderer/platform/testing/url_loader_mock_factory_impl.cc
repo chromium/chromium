@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -128,8 +129,8 @@ void URLLoaderMockFactoryImpl::ServeAsynchronousRequests() {
 
     WebURLResponse response;
     absl::optional<WebURLError> error;
-    WebData data;
-    LoadRequest(WebURL(KURL(request->url)), &response, &error, &data);
+    scoped_refptr<SharedBuffer> data;
+    LoadRequest(WebURL(KURL(request->url)), &response, &error, data);
     // Follow any redirects while the loader is still active.
     while (response.HttpStatusCode() >= 300 &&
            response.HttpStatusCode() < 400) {
@@ -139,7 +140,7 @@ void URLLoaderMockFactoryImpl::ServeAsynchronousRequests() {
       if (!loader || loader->is_cancelled() || loader->is_deferred()) {
         break;
       }
-      LoadRequest(new_url, &response, &error, &data);
+      LoadRequest(new_url, &response, &error, data);
     }
     // Serve the request if the loader is still active.
     if (loader && !loader->is_cancelled() && !loader->is_deferred()) {
@@ -175,10 +176,10 @@ void URLLoaderMockFactoryImpl::FillNavigationParamsResponse(
   }
 
   absl::optional<WebURLError> error;
-  WebData data;
+  scoped_refptr<SharedBuffer> data;
 
   size_t redirects = 0;
-  LoadRequest(params->url, &params->response, &error, &data);
+  LoadRequest(params->url, &params->response, &error, data);
   DCHECK(!error);
   while (params->response.HttpStatusCode() >= 300 &&
          params->response.HttpStatusCode() < 400) {
@@ -189,14 +190,13 @@ void URLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     params->redirects[redirects - 1].redirect_response = params->response;
     params->redirects[redirects - 1].new_url = new_url;
     params->redirects[redirects - 1].new_http_method = "GET";
-    LoadRequest(new_url, &params->response, &error, &data);
+    LoadRequest(new_url, &params->response, &error, data);
     DCHECK(!error);
   }
 
   auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-  if (!data.IsNull()) {
-    scoped_refptr<SharedBuffer> buffer = data;
-    body_loader->Write(*buffer);
+  if (data) {
+    body_loader->Write(*data);
     body_loader->Finish();
   }
   params->is_static_data = true;
@@ -217,7 +217,7 @@ void URLLoaderMockFactoryImpl::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     WebURLResponse* response,
     absl::optional<WebURLError>* error,
-    WebData* data,
+    scoped_refptr<SharedBuffer>& data,
     int64_t* encoded_data_length) {
   LoadRequest(WebURL(KURL(request->url)), response, error, data);
   *encoded_data_length = data->size();
@@ -241,7 +241,7 @@ void URLLoaderMockFactoryImpl::RunUntilIdle() {
 void URLLoaderMockFactoryImpl::LoadRequest(const WebURL& url,
                                            WebURLResponse* response,
                                            absl::optional<WebURLError>* error,
-                                           WebData* data) {
+                                           scoped_refptr<SharedBuffer>& data) {
   ResponseInfo response_info;
   if (!LookupURL(url, error, &response_info)) {
     // Non mocked URLs should not have been passed to the default URLLoader.
@@ -284,7 +284,7 @@ bool URLLoaderMockFactoryImpl::LookupURL(const WebURL& url,
 
 // static
 bool URLLoaderMockFactoryImpl::ReadFile(const base::FilePath& file_path,
-                                        WebData* data) {
+                                        scoped_refptr<SharedBuffer>& data) {
   // If the path is empty then we return an empty file so tests can simulate
   // requests without needing to actually load files.
   if (file_path.empty()) {
@@ -296,7 +296,7 @@ bool URLLoaderMockFactoryImpl::ReadFile(const base::FilePath& file_path,
     return false;
   }
 
-  data->Assign(buffer.data(), buffer.size());
+  data = SharedBuffer::Create(buffer.data(), buffer.size());
   return true;
 }
 

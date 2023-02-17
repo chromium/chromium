@@ -24,6 +24,7 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -310,7 +311,12 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
     return;
   }
 
-  response_->data.Append(static_cast<const char*>(buffer), read_bytes);
+  if (!response_->data) {
+    response_->data =
+        SharedBuffer::Create(static_cast<const char*>(buffer), read_bytes);
+  } else {
+    response_->data->Append(static_cast<const char*>(buffer), read_bytes);
+  }
   body_handle_->EndReadData(read_bytes);
   body_watcher_.ArmOrNotify();
 }

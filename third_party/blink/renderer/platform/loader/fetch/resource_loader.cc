@@ -1401,7 +1401,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
     request_body_ = ResourceRequestBody(std::move(form_body));
   WebURLResponse response_out;
   absl::optional<WebURLError> error_out;
-  WebData data_out;
+  scoped_refptr<SharedBuffer> data_out;
   int64_t encoded_data_length = URLLoaderClient::kUnknownEncodedDataLength;
   uint64_t encoded_body_length = 0;
   scoped_refptr<BlobDataHandle> downloaded_blob;
@@ -1417,7 +1417,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
       error_out = WebURLError(result, resource_->Url());
     } else {
       response_out = WrappedResourceResponse(response);
-      data_out = WebData(std::move(data));
+      data_out = std::move(data);
     }
   } else {
     // Don't do mime sniffing for fetch (crbug.com/2016)
@@ -1434,7 +1434,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   // can bring about the cancellation of this load.
   if (!IsLoading())
     return;
-  int64_t decoded_body_length = data_out.size();
+  int64_t decoded_body_length = data_out ? data_out->size() : 0;
   if (error_out) {
     DidFail(*error_out, base::TimeTicks::Now(), encoded_data_length,
             encoded_body_length, decoded_body_length);
@@ -1449,12 +1449,10 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   // appending data to m_resource if the response body is empty. Copying the
   // empty buffer is a noop in most cases, but is destructive in the case of
   // a 304, where it will overwrite the cached data we should be reusing.
-  if (data_out.size()) {
-    data_out.ForEachSegment([this](const char* segment, size_t segment_size,
-                                   size_t segment_offset) {
-      DidReceiveData(segment, segment_size);
-      return true;
-    });
+  if (data_out && data_out->size()) {
+    for (const auto& span : *data_out) {
+      DidReceiveData(span.data(), span.size());
+    }
   }
 
   if (request.DownloadToBlob()) {

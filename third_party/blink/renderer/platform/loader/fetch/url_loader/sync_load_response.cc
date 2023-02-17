@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+
 namespace blink {
 
 SyncLoadResponse::SyncLoadResponse() = default;
