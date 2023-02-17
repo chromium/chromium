@@ -244,6 +244,8 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
         /*anchor=*/this, GetWidget(),
         base::BindOnce(&FrameSizeButton::OnMultitaskMenuClosed,
                        weak_factory_.GetWeakPtr()));
+    multitask_menu_->multitask_menu_view()->feedback_button()->SetCallback(
+        feedback_callback_);
     multitask_menu_->ShowBubble();
   }
 }
@@ -257,12 +259,20 @@ void FrameSizeButton::ToggleMultitaskMenu() {
         /*anchor=*/this, GetWidget(),
         base::BindOnce(&FrameSizeButton::OnMultitaskMenuClosed,
                        weak_factory_.GetWeakPtr()));
+    multitask_menu_->multitask_menu_view()->feedback_button()->SetCallback(
+        feedback_callback_);
   }
   multitask_menu_->ToggleBubble();
 }
 
 void FrameSizeButton::OnMultitaskMenuClosed() {
   multitask_menu_ = nullptr;
+}
+
+void FrameSizeButton::SetFeedbackButtonCallback(PressedCallback callback) {
+  // Callback cannot be set on the button here as the multitask menu has not
+  // been created yet, so store it for when it does get created.
+  feedback_callback_ = callback;
 }
 
 bool FrameSizeButton::OnMousePressed(const ui::MouseEvent& event) {

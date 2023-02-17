@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
                                uint32_t changed_metrics) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  MultitaskMenuView* multitask_menu_view_for_testing() {
+  MultitaskMenuView* multitask_menu_view() {
     return multitask_menu_view_.get();
   }
 

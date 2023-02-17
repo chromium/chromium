@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -38,8 +40,10 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/ui/wm/features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -162,6 +166,15 @@ void BrowserNonClientFrameViewChromeOS::Init() {
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
           frame(), std::move(tab_search_button)));
   caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
+  auto* size_button = caption_button_container_->size_button();
+
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() && size_button) {
+    // base::Unretained() is safe since `this` also destroys
+    // `caption_button_container` and its `size_button`.
+    size_button->SetFeedbackButtonCallback(base::BindRepeating(
+        &BrowserNonClientFrameViewChromeOS::ShowFeedbackPageForMenu,
+        base::Unretained(this)));
+  }
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
@@ -967,6 +980,16 @@ BrowserNonClientFrameViewChromeOS::CreateFrameHeader() {
 
   header->SetLeftHeaderView(window_icon_);
   return header;
+}
+
+void BrowserNonClientFrameViewChromeOS::ShowFeedbackPageForMenu() {
+  chrome::ShowFeedbackPage(
+      /*browser=*/browser_view()->browser(),
+      /*source=*/chrome::kFeedbackSourceWindowLayoutMenu,
+      /*description_template*/ "#WindowLayoutMenu\n",
+      /*description_placeholder_text=*/std::string(),
+      /*category_tag=*/std::string(),
+      /*extra_diagnostics=*/std::string());
 }
 
 void BrowserNonClientFrameViewChromeOS::UpdateTopViewInset() {
