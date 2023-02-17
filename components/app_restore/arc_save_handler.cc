@@ -176,14 +176,13 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
     // `task_id`.
     FullRestoreSaveHandler::GetInstance()->ModifyWindowId(
         profile_path_, session_it->second, session_id, task_id);
+    task_id_to_app_id_[task_id] = session_it->second;
     ghost_window_session_id_to_app_id_.erase(session_it);
-    task_id_to_app_id_[task_id] = app_id;
     return;
   }
 
-  task_id_to_app_id_[task_id] = app_id;
-
   auto app_launch_info = std::move(it->second.first);
+  task_id_to_app_id_[task_id] = app_launch_info->app_id;
   session_id_to_app_launch_info_.erase(it);
   if (session_id_to_app_launch_info_.empty())
     check_timer_.Stop();
