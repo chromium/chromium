@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "chromecast/media/cma/backend/cast_audio_json.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,12 +35,12 @@ class TestFileProvider : public CastAudioJsonProvider {
 
   void CallTuningChangedCallback(const std::string& new_config) {
     DCHECK(callback_);
-    callback_.Run(base::JSONReader::ReadDeprecated(new_config));
+    callback_.Run(base::test::ParseJsonDict(new_config));
   }
 
  private:
-  std::unique_ptr<base::Value> GetCastAudioConfig() override {
-    return base::JSONReader::ReadDeprecated(file_contents_);
+  absl::optional<base::Value::Dict> GetCastAudioConfig() override {
+    return base::test::ParseJsonDict(file_contents_);
   }
 
   void SetTuningChangedCallback(TuningChangedCallback callback) override {
@@ -52,7 +52,7 @@ class TestFileProvider : public CastAudioJsonProvider {
 };
 
 TEST(VolumeMapTest, UsesDefaultMapIfConfigEmpty) {
-  VolumeMap volume_map(std::make_unique<TestFileProvider>(""));
+  VolumeMap volume_map(std::make_unique<TestFileProvider>("{}"));
   EXPECT_NEAR(-58.0f, volume_map.VolumeToDbFS(0.01f), kEpsilon);
   EXPECT_NEAR(-48.0f, volume_map.VolumeToDbFS(1.0 / 11.0), kEpsilon);
   EXPECT_NEAR(-8.0f, volume_map.VolumeToDbFS(9.0 / 11.0), kEpsilon);
@@ -82,7 +82,7 @@ TEST(VolumeMapTest, DbFSToVolumeInterpolates) {
 }
 
 TEST(VolumeMapTest, LoadsNewMapWhenFileChanges) {
-  auto provider = std::make_unique<TestFileProvider>("");
+  auto provider = std::make_unique<TestFileProvider>("{}");
   TestFileProvider* provider_ptr = provider.get();
   VolumeMap volume_map(std::move(provider));
 

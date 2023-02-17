@@ -340,7 +340,12 @@ int CplayMain(int argc, char* argv[]) {
   // Set volume.
   std::string contents;
   base::ReadFileToString(params.cast_audio_json_path, &contents);
-  GetVolumeMap().LoadVolumeMap(base::JSONReader::ReadDeprecated(contents));
+  absl::optional<base::Value> parsed_json = base::JSONReader::Read(contents);
+  if (parsed_json && parsed_json->is_dict()) {
+    GetVolumeMap().LoadVolumeMap(std::move(*parsed_json).TakeDict());
+  } else {
+    GetVolumeMap().LoadVolumeMap(absl::nullopt);
+  }
   float volume_dbfs = GetVolumeMap().VolumeToDbFS(params.cast_volume);
   float volume_multiplier = std::pow(10.0, volume_dbfs / 20.0);
   mixer_input.SetVolumeMultiplier(1.0);

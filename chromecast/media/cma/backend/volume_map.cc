@@ -48,15 +48,16 @@ void VolumeMap::LoadFromFile() {
   LoadVolumeMap(config_provider_->GetCastAudioConfig());
 }
 
-void VolumeMap::LoadVolumeMap(std::unique_ptr<base::Value> cast_audio_config) {
-  if (!cast_audio_config || !cast_audio_config->is_dict()) {
+void VolumeMap::LoadVolumeMap(
+    absl::optional<base::Value::Dict> cast_audio_config) {
+  if (!cast_audio_config) {
     LOG(WARNING) << "No cast audio config found; using default volume map.";
     UseDefaultVolumeMap();
     return;
   }
 
   const base::Value::List* volume_map_list =
-      cast_audio_config->GetDict().FindList(kKeyVolumeMap);
+      cast_audio_config->FindList(kKeyVolumeMap);
   if (!volume_map_list) {
     LOG(WARNING) << "No volume map found; using default volume map.";
     UseDefaultVolumeMap();

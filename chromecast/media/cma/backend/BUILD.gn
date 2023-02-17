@@ -195,6 +195,7 @@ test("cast_audio_backend_unittests") {
     ":volume_map",
     "//base",
     "//base/test:run_all_unittests",
+    "//base/test:test_support",
     "//chromecast/media/cma/backend/mixer:unittests",
     "//media",
     "//testing/gmock",
