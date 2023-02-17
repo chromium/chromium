@@ -5,10 +5,13 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_BACKING_FACTORY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_BACKING_FACTORY_H_
 
+#include <climits>
+#include <cstdint>
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -28,7 +31,15 @@ struct Mailbox;
 
 class GPU_GLES2_EXPORT SharedImageBackingFactory {
  public:
-  SharedImageBackingFactory();
+  // Mask for all valid usage flags.
+  static constexpr uint32_t kUsageAll = (LAST_SHARED_IMAGE_USAGE << 1) - 1;
+
+  // `valid_usages` is an allowlist of usages that the backing created by
+  // factory can support. Requests to create a new shared image that contain
+  // any usages not in `valid_usages` will be rejected by the factory. However,
+  // if all usages are in `valid_usages` that doesn't imply support as
+  // IsSupported() may contain additional logic.
+  explicit SharedImageBackingFactory(uint32_t valid_usages);
   virtual ~SharedImageBackingFactory();
 
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -71,6 +82,20 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       uint32_t usage) = 0;
 
   // Returns true if the factory is supported
+  bool CanCreateSharedImage(uint32_t usage,
+                            viz::SharedImageFormat format,
+                            const gfx::Size& size,
+                            bool thread_safe,
+                            gfx::GpuMemoryBufferType gmb_type,
+                            GrContextType gr_context_type,
+                            base::span<const uint8_t> pixel_data);
+
+  base::WeakPtr<SharedImageBackingFactory> GetWeakPtr();
+
+ protected:
+  // Returns true if the factory is supported. This must return false if `usage`
+  // contains any usages from `invalid_usages_`. This is a temporary state to
+  // verify `invalid_usages_` is correct.
   virtual bool IsSupported(uint32_t usage,
                            viz::SharedImageFormat format,
                            const gfx::Size& size,
@@ -79,12 +104,10 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
                            GrContextType gr_context_type,
                            base::span<const uint8_t> pixel_data) = 0;
 
-  base::WeakPtr<SharedImageBackingFactory> GetWeakPtr();
-
- protected:
   void InvalidateWeakPtrsForTesting();
 
  private:
+  const uint32_t invalid_usages_;
   base::WeakPtrFactory<SharedImageBackingFactory> weak_ptr_factory_{this};
 };
 

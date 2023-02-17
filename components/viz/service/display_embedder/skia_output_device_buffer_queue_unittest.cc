@@ -144,7 +144,7 @@ class TestOnGpu : public ::testing::Test {
 
 class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
  public:
-  TestImageBackingFactory() = default;
+  TestImageBackingFactory() : SharedImageBackingFactory(kUsageAll) {}
   ~TestImageBackingFactory() override = default;
 
   MOCK_METHOD1(OnSharedImageSetPurgeable, void(const gpu::Mailbox& mailbox));

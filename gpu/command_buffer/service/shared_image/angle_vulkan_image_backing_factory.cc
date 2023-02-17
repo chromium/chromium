@@ -15,12 +15,27 @@
 #include "ui/gl/gl_surface_egl.h"
 
 namespace gpu {
+namespace {
+
+// TODO(penghuang): verify the scanout is the right usage for video playback.
+// crbug.com/1280798
+constexpr uint32_t kSupportedUsage =
+#if BUILDFLAG(IS_LINUX)
+    SHARED_IMAGE_USAGE_SCANOUT |
+#endif
+    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_DISPLAY_READ |
+    SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+    SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+}  // namespace
 
 AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     SharedContextState* context_state)
-    : GLCommonImageBackingFactory(gpu_preferences,
+    : GLCommonImageBackingFactory(kSupportedUsage,
+                                  gpu_preferences,
                                   workarounds,
                                   context_state->feature_info(),
                                   context_state->progress_reporter()),
@@ -116,19 +131,9 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
 bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
     uint32_t usage,
     gfx::GpuMemoryBufferType gmb_type) const {
-  // TODO(penghuang): verify the scanout is the right usage for video playback.
-  // crbug.com/1280798
-  constexpr auto kSupportedUsages =
-#if BUILDFLAG(IS_LINUX)
-      SHARED_IMAGE_USAGE_SCANOUT |
-#endif
-      SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-      SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_DISPLAY_READ |
-      SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-      SHARED_IMAGE_USAGE_CPU_UPLOAD;
-
-  if (usage & ~kSupportedUsages)
+  if (usage & ~kSupportedUsage) {
     return false;
+  }
 
   if (!IsGMBSupported(gmb_type))
     return false;
@@ -164,7 +169,7 @@ bool AngleVulkanImageBackingFactory::IsSupported(
     return false;
   }
 
-  return CanCreateSharedImage(format, size, pixel_data, GL_TEXTURE_2D);
+  return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
 }
 
 }  // namespace gpu

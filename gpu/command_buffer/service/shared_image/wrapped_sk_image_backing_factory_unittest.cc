@@ -117,9 +117,9 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(100, 100);
 
-  bool supported =
-      backing_factory_->IsSupported(kUsage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  bool supported = backing_factory_->CanCreateSharedImage(
+      kUsage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(

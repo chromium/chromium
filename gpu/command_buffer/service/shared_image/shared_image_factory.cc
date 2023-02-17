@@ -638,8 +638,9 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
 
   bool share_between_threads = IsSharedBetweenThreads(usage);
   for (auto& factory : factories_) {
-    if (factory->IsSupported(usage, format, size, share_between_threads,
-                             gmb_type, gr_context_type_, pixel_data)) {
+    if (factory->CanCreateSharedImage(usage, format, size,
+                                      share_between_threads, gmb_type,
+                                      gr_context_type_, pixel_data)) {
       return factory.get();
     }
   }

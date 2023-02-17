@@ -1167,7 +1167,7 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   const GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   const SkAlphaType alpha_type = kPremul_SkAlphaType;
 
-  EXPECT_TRUE(shared_image_factory_->IsSupported(
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
       usage, format, size, /*thread_safe=*/false, gfx::DXGI_SHARED_HANDLE,
       GrContextType::kGL, /*pixel_data=*/{}));
 

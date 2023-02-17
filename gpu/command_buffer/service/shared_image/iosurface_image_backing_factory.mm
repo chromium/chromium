@@ -101,6 +101,17 @@ bool IsPixelDataValid(viz::SharedImageFormat format,
   return true;
 }
 
+constexpr uint32_t kSupportedUsage =
+    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
+    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
+    SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE | SHARED_IMAGE_USAGE_VIDEO_DECODE |
+    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+    SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
+    SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING |
+    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
+
 }  // anonymous namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,7 +122,8 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
     gl::ProgressReporter* progress_reporter)
-    : progress_reporter_(progress_reporter),
+    : SharedImageBackingFactory(kSupportedUsage),
+      progress_reporter_(progress_reporter),
       gpu_memory_buffer_formats_(
           feature_info->feature_flags().gpu_memory_buffer_formats),
       angle_texture_usage_(feature_info->feature_flags().angle_texture_usage) {

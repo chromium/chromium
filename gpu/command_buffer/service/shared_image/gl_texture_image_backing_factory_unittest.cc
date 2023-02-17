@@ -261,9 +261,9 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
       viz::ResourceFormat::YUV_420_BIPLANAR);
   gfx::Size size(256, 256);
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   EXPECT_FALSE(supported);
 }
 
@@ -279,9 +279,9 @@ TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
 
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(
@@ -353,9 +353,9 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, IsSupported) {
   gfx::Size size(256, 256);
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
 
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   EXPECT_EQ(IsFormatSupport(format), supported);
 }
 
@@ -382,9 +382,9 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(
@@ -487,15 +487,15 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, InvalidSize) {
 
   gfx::Size size(0, 0);
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   EXPECT_FALSE(supported);
 
   size = gfx::Size(INT_MAX, INT_MAX);
-  supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   EXPECT_FALSE(supported);
 }
 
@@ -514,7 +514,7 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
   std::vector<uint8_t> initial_data(
       viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size, format));
 
-  bool supported = backing_factory_->IsSupported(
+  bool supported = backing_factory_->CanCreateSharedImage(
       usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
       GrContextType::kGL, initial_data);
   ASSERT_TRUE(supported);
@@ -570,15 +570,15 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialDataWrongSize) {
       viz::ResourceSizes::CheckedSizeInBytes<size_t>(size, format);
   std::vector<uint8_t> initial_data_small(required_size / 2);
   std::vector<uint8_t> initial_data_large(required_size * 2);
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size,
-                                    /*thread_safe=*/false, gfx::EMPTY_BUFFER,
-                                    GrContextType::kGL, initial_data_small);
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size,
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      initial_data_small);
   EXPECT_FALSE(supported);
-  supported =
-      backing_factory_->IsSupported(usage, format, size,
-                                    /*thread_safe=*/false, gfx::EMPTY_BUFFER,
-                                    GrContextType::kGL, initial_data_large);
+  supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size,
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      initial_data_large);
   EXPECT_FALSE(supported);
 }
 
@@ -596,9 +596,9 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_CPU_UPLOAD;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(
@@ -636,9 +636,9 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_CPU_UPLOAD;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(

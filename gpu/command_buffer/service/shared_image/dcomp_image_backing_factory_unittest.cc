@@ -188,36 +188,36 @@ class DCompImageBackingFactoryTest : public testing::Test {
 };
 
 TEST_F(DCompImageBackingFactoryTest, UsageFlags) {
-  EXPECT_TRUE(shared_image_factory_->IsSupported(
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
       kDCompSurfaceUsage, viz::SinglePlaneFormat::kRGBA_8888,
       gfx::Size(100, 100), false, gfx::GpuMemoryBufferType::EMPTY_BUFFER,
       kGrContextTypeDontCare, {}));
 
-  EXPECT_TRUE(shared_image_factory_->IsSupported(
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
       kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_8888,
       gfx::Size(100, 100), false, gfx::GpuMemoryBufferType::EMPTY_BUFFER,
       kGrContextTypeDontCare, {}));
 
   // DComp surfaces don't support readback.
-  EXPECT_FALSE(shared_image_factory_->IsSupported(
+  EXPECT_FALSE(shared_image_factory_->CanCreateSharedImage(
       kDCompSurfaceUsage | SHARED_IMAGE_USAGE_DISPLAY_READ,
       viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 100), false,
       gfx::GpuMemoryBufferType::EMPTY_BUFFER, kGrContextTypeDontCare, {}));
 
   // We require callers to explicitly state DXGI swap chains are readable.
-  EXPECT_FALSE(shared_image_factory_->IsSupported(
+  EXPECT_FALSE(shared_image_factory_->CanCreateSharedImage(
       SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_SCANOUT,
       viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 100), false,
       gfx::GpuMemoryBufferType::EMPTY_BUFFER, kGrContextTypeDontCare, {}));
 }
 
 TEST_F(DCompImageBackingFactoryTest, HDR10Support) {
-  EXPECT_TRUE(shared_image_factory_->IsSupported(
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
       kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_1010102,
       gfx::Size(100, 100), false, gfx::GpuMemoryBufferType::EMPTY_BUFFER,
       kGrContextTypeDontCare, {}));
 
-  EXPECT_FALSE(shared_image_factory_->IsSupported(
+  EXPECT_FALSE(shared_image_factory_->CanCreateSharedImage(
       kDCompSurfaceUsage, viz::SinglePlaneFormat::kRGBA_1010102,
       gfx::Size(100, 100), false, gfx::GpuMemoryBufferType::EMPTY_BUFFER,
       kGrContextTypeDontCare, {}));
@@ -235,7 +235,7 @@ TEST_F(DCompImageBackingFactoryTest, ValidFormats) {
   for (auto valid_usage : valid_usages) {
     for (auto valid_format : valid_formats) {
       // We don't support sharing memory
-      EXPECT_TRUE(shared_image_factory_->IsSupported(
+      EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
           valid_usage, valid_format, gfx::Size(100, 100), false,
           gfx::GpuMemoryBufferType::EMPTY_BUFFER, kGrContextTypeDontCare, {}))
           << "usage = " << CreateLabelForSharedImageUsage(valid_usage)

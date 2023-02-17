@@ -23,11 +23,13 @@ namespace gpu {
 // GLCommonImageBackingFactory
 
 GLCommonImageBackingFactory::GLCommonImageBackingFactory(
+    uint32_t supported_usages,
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
     gl::ProgressReporter* progress_reporter)
-    : use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
+    : SharedImageBackingFactory(supported_usages),
+      use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
                        gles2::PassthroughCommandDecoderSupported()),
       workarounds_(workarounds),
       use_webgpu_adapter_(gpu_preferences.use_webgpu_adapter),
@@ -99,7 +101,7 @@ GLCommonImageBackingFactory::GetFormatInfo(
   return iter->second;
 }
 
-bool GLCommonImageBackingFactory::CanCreateSharedImage(
+bool GLCommonImageBackingFactory::CanCreateTexture(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     base::span<const uint8_t> pixel_data,

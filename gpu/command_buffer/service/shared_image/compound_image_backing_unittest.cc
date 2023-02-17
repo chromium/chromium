@@ -29,6 +29,8 @@ constexpr uint32_t kTestBackingSize = 40000;
 
 class TestSharedImageBackingFactory : public SharedImageBackingFactory {
  public:
+  TestSharedImageBackingFactory() : SharedImageBackingFactory(kUsageAll) {}
+
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,

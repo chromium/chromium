@@ -20,6 +20,17 @@
 #include "ui/gl/shared_gl_fence_egl.h"
 
 namespace gpu {
+namespace {
+
+constexpr uint32_t kSupportedUsage =
+    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
+    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+    SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+    SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
+    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // EGLImageBackingFactory
@@ -28,7 +39,8 @@ EGLImageBackingFactory::EGLImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info)
-    : GLCommonImageBackingFactory(gpu_preferences,
+    : GLCommonImageBackingFactory(kSupportedUsage,
+                                  gpu_preferences,
                                   workarounds,
                                   feature_info,
                                   /*progress_reporter=*/nullptr) {}
@@ -126,7 +138,7 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
     }
   }
 
-  return CanCreateSharedImage(format, size, pixel_data, GL_TEXTURE_2D);
+  return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(

@@ -138,6 +138,8 @@ base::CheckedNumeric<uint64_t> GetExpectedTotalMippedSizeForPlanarImage(
 
 class TestSharedImageBackingFactory : public SharedImageBackingFactory {
  public:
+  TestSharedImageBackingFactory() : SharedImageBackingFactory(kUsageAll) {}
+
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,

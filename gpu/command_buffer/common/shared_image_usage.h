@@ -75,6 +75,8 @@ enum SharedImageUsage : uint32_t {
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
   SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 19,
+
+  LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
 
 // Returns true if usage is a valid client usage.

@@ -17,6 +17,18 @@
 #include "ui/gl/progress_reporter.h"
 
 namespace gpu {
+namespace {
+
+constexpr uint32_t kSupportedUsage =
+    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
+    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
+    SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLTextureImageBackingFactory
@@ -27,7 +39,8 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
     const gles2::FeatureInfo* feature_info,
     gl::ProgressReporter* progress_reporter,
     bool for_cpu_upload_usage)
-    : GLCommonImageBackingFactory(gpu_preferences,
+    : GLCommonImageBackingFactory(kSupportedUsage,
+                                  gpu_preferences,
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
@@ -160,7 +173,7 @@ bool GLTextureImageBackingFactory::IsSupported(
     return false;
   }
 
-  return CanCreateSharedImage(format, size, pixel_data, GL_TEXTURE_2D);
+  return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -174,7 +187,7 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  DCHECK(CanCreateSharedImage(format, size, pixel_data, GL_TEXTURE_2D));
+  DCHECK(CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D));
 
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |

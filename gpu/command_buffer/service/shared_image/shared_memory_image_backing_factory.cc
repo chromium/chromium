@@ -14,7 +14,8 @@
 
 namespace gpu {
 
-SharedMemoryImageBackingFactory::SharedMemoryImageBackingFactory() = default;
+SharedMemoryImageBackingFactory::SharedMemoryImageBackingFactory()
+    : SharedImageBackingFactory(SHARED_IMAGE_USAGE_CPU_WRITE) {}
 
 SharedMemoryImageBackingFactory::~SharedMemoryImageBackingFactory() = default;
 

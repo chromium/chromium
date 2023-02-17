@@ -37,10 +37,18 @@ bool IsFormatSupportedForScanout(viz::SharedImageFormat format) {
       return false;
   }
 }
+constexpr uint32_t kDXGISwapChainUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                         SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+                                         SHARED_IMAGE_USAGE_SCANOUT;
+constexpr uint32_t kDCompSurfaceUsage =
+    SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_SCANOUT |
+    SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
+constexpr uint32_t kSupportedUsage = kDXGISwapChainUsage | kDCompSurfaceUsage;
 
 }  // namespace
 
-DCompImageBackingFactory::DCompImageBackingFactory() = default;
+DCompImageBackingFactory::DCompImageBackingFactory()
+    : SharedImageBackingFactory(kSupportedUsage) {}
 
 DCompImageBackingFactory::~DCompImageBackingFactory() = default;
 
@@ -112,13 +120,6 @@ bool DCompImageBackingFactory::IsSupported(
   }
 
   // TODO(tangm): Allow write-only swap chain usage?
-  constexpr uint32_t kDXGISwapChainUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                           SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                           SHARED_IMAGE_USAGE_SCANOUT;
-  constexpr uint32_t kDCompSurfaceUsage =
-      SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_SCANOUT |
-      SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
-
   bool is_usage_valid =
       usage == kDXGISwapChainUsage || usage == kDCompSurfaceUsage;
   if (!is_usage_valid) {

@@ -63,7 +63,8 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
   };
 
  protected:
-  GLCommonImageBackingFactory(const GpuPreferences& gpu_preferences,
+  GLCommonImageBackingFactory(uint32_t supported_usages,
+                              const GpuPreferences& gpu_preferences,
                               const GpuDriverBugWorkarounds& workarounds,
                               const gles2::FeatureInfo* feature_info,
                               gl::ProgressReporter* progress_reporter);
@@ -73,10 +74,10 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
   // if format isn't supported.
   std::vector<FormatInfo> GetFormatInfo(viz::SharedImageFormat format) const;
 
-  bool CanCreateSharedImage(viz::SharedImageFormat format,
-                            const gfx::Size& size,
-                            base::span<const uint8_t> pixel_data,
-                            GLenum target);
+  bool CanCreateTexture(viz::SharedImageFormat format,
+                        const gfx::Size& size,
+                        base::span<const uint8_t> pixel_data,
+                        GLenum target);
 
   // Whether we're using the passthrough command decoder and should generate
   // passthrough textures.

@@ -45,6 +45,8 @@ namespace {
 
 class TestSharedImageBackingFactory : public gpu::SharedImageBackingFactory {
  public:
+  TestSharedImageBackingFactory() : SharedImageBackingFactory(kUsageAll) {}
+
   MOCK_METHOD(std::unique_ptr<gpu::SharedImageBacking>,
               CreateSharedImage,
               (const gpu::Mailbox& mailbox,
