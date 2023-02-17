@@ -5,6 +5,7 @@
 #include "gin/data_object_builder.h"
 
 #include "base/check_op.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "gin/dictionary.h"
@@ -85,7 +86,8 @@ TEST_F(DataObjectBuilderTest, DoesNotInvokeSetters) {
 // The internal handle is cleared when the builder is finished.
 // This makes the class harder to abuse, so that its methods cannot be used
 // after something may have modified the object in unexpected ways.
-#if DCHECK_IS_ON()
+// TODO(pbos): Consider making this a CHECK and test this everywhere.
+#if DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 TEST_F(DataObjectBuilderTest, UnusableAfterBuild) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
@@ -93,13 +95,8 @@ TEST_F(DataObjectBuilderTest, UnusableAfterBuild) {
   DataObjectBuilder builder(isolate);
   EXPECT_FALSE(builder.Build().IsEmpty());
 
-  bool has_dcheck_failure = false;
-  logging::ScopedLogAssertHandler handler(base::BindRepeating(
-      [](bool* flag, const char* file, int line, base::StringPiece message,
-         base::StringPiece stack_trace) { *flag = true; },
-      base::Unretained(&has_dcheck_failure)));
-  builder.Build();
-  EXPECT_TRUE(has_dcheck_failure);
+  EXPECT_DEATH_IF_SUPPORTED(builder.Build(),
+                            "Check failed: !object_.IsEmpty\\(\\)");
 }
 #endif  // DCHECK_IS_ON()
 
