@@ -202,10 +202,17 @@ const NetworkState* NetworkStateHandler::GetAvailableManagedWifiNetwork()
     const {
   DeviceState* device =
       GetModifiableDeviceStateByType(NetworkTypePattern::WiFi());
+  if (!device || !device->update_received()) {
+    NET_LOG(ERROR) << "GetAvailableManagedWifiNetwork() called with no WiFi "
+                   << "device available.";
+    return nullptr;
+  }
+
   const std::string& available_managed_network_path =
       device->available_managed_network_path();
-  if (available_managed_network_path.empty())
+  if (available_managed_network_path.empty()) {
     return nullptr;
+  }
   return GetNetworkState(available_managed_network_path);
 }
 

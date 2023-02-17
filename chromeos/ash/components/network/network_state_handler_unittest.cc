@@ -2670,6 +2670,13 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManagedIfAvailable) {
   EXPECT_TRUE(wifi2->blocked_by_policy());
 }
 
+// Regression test for b/269169473.
+TEST_F(NetworkStateHandlerTest, GetAvailableManagedWifiNetworkNoWifiDevice) {
+  RemoveDevice(kShillManagerClientStubWifiDevice);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(nullptr, network_state_handler_->GetAvailableManagedWifiNetwork());
+}
+
 TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
   // Verify that wifi2 is not connected or connecting and is not part of the
   // active list.
