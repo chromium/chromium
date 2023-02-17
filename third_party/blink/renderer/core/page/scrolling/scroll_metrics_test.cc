@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -36,7 +37,7 @@ namespace blink {
 
 namespace {
 
-class ScrollMetricsTest : public SimTest {
+class ScrollMetricsTest : public PaintTestConfigurations, public SimTest {
  public:
   void SetUpHtml(const char*);
   void Scroll(Element*, const WebGestureDevice);
@@ -44,6 +45,8 @@ class ScrollMetricsTest : public SimTest {
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 };
+
+INSTANTIATE_PAINT_TEST_SUITE_P(ScrollMetricsTest);
 
 class ScrollBeginEventBuilder : public WebGestureEvent {
  public:
@@ -123,7 +126,7 @@ void ScrollMetricsTest::SetUpHtml(const char* html_content) {
   UpdateAllLifecyclePhases();
 }
 
-TEST_F(ScrollMetricsTest, TouchAndWheelGeneralTest) {
+TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   SetUpHtml(R"HTML(
     <style>
      .box { overflow:scroll; width: 100px; height: 100px; }
@@ -146,7 +149,8 @@ TEST_F(ScrollMetricsTest, TouchAndWheelGeneralTest) {
     EXPECT_TOUCH_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_TOUCH_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
     EXPECT_TOUCH_BUCKET(
         cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
     EXPECT_TOUCH_TOTAL(3);
@@ -181,7 +185,8 @@ TEST_F(ScrollMetricsTest, TouchAndWheelGeneralTest) {
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
     EXPECT_WHEEL_BUCKET(
         cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
     EXPECT_WHEEL_TOTAL(3);
@@ -206,7 +211,7 @@ TEST_F(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   }
 }
 
-TEST_F(ScrollMetricsTest, CompositedScrollableAreaTest) {
+TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   SetUpHtml(R"HTML(
     <style>
      .box { overflow:scroll; width: 100px; height: 100px; }
@@ -228,7 +233,8 @@ TEST_F(ScrollMetricsTest, CompositedScrollableAreaTest) {
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
     EXPECT_WHEEL_BUCKET(
         cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
     EXPECT_WHEEL_TOTAL(3);
@@ -267,7 +273,7 @@ TEST_F(ScrollMetricsTest, CompositedScrollableAreaTest) {
   EXPECT_WHEEL_TOTAL(1);
 }
 
-TEST_F(ScrollMetricsTest, NotScrollableAreaTest) {
+TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   SetUpHtml(R"HTML(
     <style>.box { overflow:scroll; width: 100px; height: 100px; }
      .hidden { overflow: hidden; }
@@ -289,7 +295,8 @@ TEST_F(ScrollMetricsTest, NotScrollableAreaTest) {
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
     EXPECT_WHEEL_BUCKET(
         cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
     EXPECT_WHEEL_TOTAL(3);
@@ -350,7 +357,7 @@ TEST_F(ScrollMetricsTest, NotScrollableAreaTest) {
   }
 }
 
-TEST_F(ScrollMetricsTest, NestedScrollersTest) {
+TEST_P(ScrollMetricsTest, NestedScrollersTest) {
   SetUpHtml(R"HTML(
     <style>
      .container { overflow:scroll; width: 200px; height: 200px; }
