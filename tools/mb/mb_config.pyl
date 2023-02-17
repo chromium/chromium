@@ -1254,16 +1254,16 @@
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest_reclient',
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
       'ios-device': 'ios_device_release_compile_only_reclient',
-      'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
+      'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64_reclient',
       'ios-simulator': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
-      'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest',
+      'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_sim_reclient',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest_reclient',
       'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
-      'ios-simulator-inverse-fieldtrials-fyi': 'ios_simulator_debug_static_bot_invert_fieldtrials_xctest',
-      'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
+      'ios-simulator-inverse-fieldtrials-fyi': 'ios_simulator_debug_static_bot_invert_fieldtrials_xctest_reclient',
+      'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
@@ -1271,18 +1271,18 @@
       'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_trybot_reclient',
       'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
-      'mac-code-coverage': 'clang_code_coverage',
-      'mac-fieldtrial-tester': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
+      'mac-code-coverage': 'clang_code_coverage_reclient',
+      'mac-fieldtrial-tester': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
-      'mac-perfetto-rel': 'perfetto_release_trybot',
+      'mac-perfetto-rel': 'perfetto_release_trybot_reclient',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac10.15-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac11-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
-      'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
+      'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac12-arm64-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
-      'mac12-tests': 'release_trybot',
+      'mac12-tests': 'release_trybot_reclient',
       'mac12-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'mac13-arm64-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'mac13-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
@@ -2285,16 +2285,12 @@
       'chromeos_with_codecs', 'release_bot_reclient', 'also_build_lacros_chrome'
     ],
 
-    'clang_code_coverage': [
-      'release_bot', 'clang', 'use_clang_coverage', 'no_symbols', 'chrome_with_codecs',
-    ],
-
-    'clang_code_coverage_ios_xctest': [
-        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'use_clang_coverage',
-    ],
-
     'clang_code_coverage_ios_xctest_reclient': [
       'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'xctest',
+    ],
+
+    'clang_code_coverage_ios_xctest_sim_reclient': [
+      'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'xctest', 'ios_simulator',
     ],
 
     'clang_code_coverage_reclient': [
@@ -2896,8 +2892,8 @@
       'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
     ],
 
-    'ios_simulator_debug_static_bot_invert_fieldtrials_xctest': [
-        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'invert_fieldtrials', 'xctest',
+    'ios_simulator_debug_static_bot_invert_fieldtrials_xctest_reclient': [
+        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'invert_fieldtrials', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_xctest': [
@@ -3078,10 +3074,6 @@
 
     'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient': [
       'arm64', 'gpu_tests', 'release_bot_reclient', 'minimal_symbols', 'disable_nacl',
-    ],
-
-    'mac_arm64_gpu_tests_release_trybot_no_symbols': [
-      'arm64', 'gpu_tests', 'release_trybot', 'no_symbols',
     ],
 
     'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient': [

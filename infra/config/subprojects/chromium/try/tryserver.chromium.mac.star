@@ -81,7 +81,7 @@ try_.builder(
         "ci/mac-fieldtrial-tester",
     ],
     os = os.MAC_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -98,7 +98,7 @@ try_.builder(
     mirrors = [
         "ci/mac-perfetto-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.orchestrator_builder(
@@ -147,7 +147,6 @@ try_.builder(
     mirrors = [
         "ci/mac10.15-wpt-content-shell-fyi-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -165,7 +164,6 @@ try_.builder(
     mirrors = [
         "ci/mac11-wpt-content-shell-fyi-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.orchestrator_builder(
@@ -186,8 +184,6 @@ try_.compilator_builder(
     name = "mac12-arm64-rel-compilator",
     os = os.MAC_12,
     check_for_flakiness = True,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.J150,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
@@ -198,7 +194,6 @@ try_.builder(
     mirrors = [
         "ci/mac12-arm64-wpt-content-shell-fyi-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -206,7 +201,6 @@ try_.builder(
     mirrors = [
         "ci/mac12-wpt-content-shell-fyi-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -214,7 +208,6 @@ try_.builder(
     mirrors = [
         "ci/mac13-arm64-wpt-content-shell-fyi-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -222,7 +215,6 @@ try_.builder(
     mirrors = [
         "ci/mac13-wpt-content-shell-fyi-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 # NOTE: the following trybots aren't sensitive to Mac version on which
@@ -271,7 +263,6 @@ try_.builder(
         "ci/Mac Builder",
         "ci/Mac12 Tests",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -346,7 +337,6 @@ try_.builder(
     name = "mac-code-coverage",
     mirrors = ["ci/mac-code-coverage"],
     execution_timeout = 20 * time.hour,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 ios_builder(
@@ -376,7 +366,6 @@ ios_builder(
     name = "ios-fieldtrial-rel",
     mirrors = ["ci/ios-fieldtrial-rel"],
     builderless = True,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 ios_builder(
@@ -468,13 +457,11 @@ ios_builder(
 ios_builder(
     name = "ios-simulator-inverse-fieldtrials-fyi",
     mirrors = builder_config.copy_from("try/ios-simulator"),
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 ios_builder(
     name = "ios-simulator-multi-window",
     mirrors = ["ci/ios-simulator-multi-window"],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 ios_builder(
@@ -523,7 +510,6 @@ ios_builder(
     name = "ios-simulator-code-coverage",
     mirrors = ["ci/ios-simulator-code-coverage"],
     execution_timeout = 20 * time.hour,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.gpu.optional_tests_builder(
