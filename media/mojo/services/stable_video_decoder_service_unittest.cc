@@ -787,6 +787,9 @@ TEST_F(StableVideoDecoderServiceTest,
       video_frame_to_send, kCanReadWithoutStalling, token_for_release);
   auxiliary_endpoints->video_decoder_client_remote.FlushForTesting();
   ASSERT_TRUE(video_frame_received);
+  EXPECT_FALSE(video_frame_received->metadata().end_of_stream);
+  EXPECT_TRUE(video_frame_received->metadata().read_lock_fences_enabled);
+  EXPECT_TRUE(video_frame_received->metadata().power_efficient);
   EXPECT_TRUE(video_frame_received->metadata().allow_overlay);
 }
 

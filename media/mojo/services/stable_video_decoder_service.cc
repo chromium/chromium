@@ -176,7 +176,6 @@ void StableVideoDecoderService::OnVideoFrameDecoded(
   // The mojo traits have been coded assuming these conditions.
   CHECK(frame->metadata().allow_overlay);
   CHECK(!frame->metadata().end_of_stream);
-  CHECK(frame->metadata().read_lock_fences_enabled);
   CHECK(frame->metadata().power_efficient);
 
   stable_video_decoder_client_remote_->OnVideoFrameDecoded(
