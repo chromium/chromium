@@ -86,7 +86,7 @@ class BlobRegistryImplTest : public testing::Test {
           base::SequencedTaskRunner::GetCurrentDefault());
     }
     auto delegate = std::make_unique<MockBlobRegistryDelegate>();
-    delegate_ptr_ = delegate.get();
+    delegate_ptr_ = delegate->AsWeakPtr();
     registry_impl_->Bind(registry_.BindNewPipeAndPassReceiver(),
                          std::move(delegate));
 
@@ -199,7 +199,7 @@ class BlobRegistryImplTest : public testing::Test {
   BlobUrlRegistry url_registry_;
   std::unique_ptr<BlobRegistryImpl> registry_impl_;
   mojo::Remote<blink::mojom::BlobRegistry> registry_;
-  raw_ptr<MockBlobRegistryDelegate> delegate_ptr_;
+  base::WeakPtr<MockBlobRegistryDelegate> delegate_ptr_;
   scoped_refptr<base::SequencedTaskRunner> bytes_provider_runner_;
 
   size_t reply_request_count_ = 0;
