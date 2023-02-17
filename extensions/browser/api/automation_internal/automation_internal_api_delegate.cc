@@ -6,7 +6,7 @@
 
 namespace extensions {
 
-AutomationInternalApiDelegate::AutomationInternalApiDelegate() {}
+AutomationInternalApiDelegate::AutomationInternalApiDelegate() = default;
 AutomationInternalApiDelegate::~AutomationInternalApiDelegate() = default;
 
 }  // namespace extensions
