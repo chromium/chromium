@@ -72,6 +72,12 @@ void FakeTrustedVaultClientBackend::RemoveObserver(Observer* observer) {
   // Do nothing.
 }
 
+void FakeTrustedVaultClientBackend::
+    SetDeviceRegistrationPublicKeyVerifierForUMA(
+        base::OnceCallback<void(const KeyMaterial&)> verifier) {
+  // Do nothing.
+}
+
 void FakeTrustedVaultClientBackend::FetchKeys(id<SystemIdentity> identity,
                                               KeyFetchedCallback callback) {
   // Do nothing.
@@ -105,6 +111,11 @@ void FakeTrustedVaultClientBackend::FixDegradedRecoverability(
     id<SystemIdentity> identity,
     UIViewController* presenting_view_controller,
     CompletionBlock callback) {
+  // Do nothing.
+}
+
+void FakeTrustedVaultClientBackend::ClearLocalData(id<SystemIdentity> identity,
+                                                   CompletionBlock callback) {
   // Do nothing.
 }
 

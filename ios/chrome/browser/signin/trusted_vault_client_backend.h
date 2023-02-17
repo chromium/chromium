@@ -20,8 +20,8 @@
 class TrustedVaultClientBackend : public KeyedService {
  public:
   // Helper types representing a key and a list of key respectively.
-  using SharedKey = std::vector<uint8_t>;
-  using SharedKeyList = std::vector<SharedKey>;
+  using KeyMaterial = std::vector<uint8_t>;
+  using SharedKeyList = std::vector<KeyMaterial>;
 
   // Represents the TrustedVaultClientBackend observers.
   using Observer = syncer::TrustedVaultClient::Observer;
@@ -29,6 +29,8 @@ class TrustedVaultClientBackend : public KeyedService {
   // Types for the different callbacks.
   using KeyFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
+  using GetClientPublicKeyCallback =
+      base::OnceCallback<void(const KeyMaterial&)>;
 
   TrustedVaultClientBackend();
 
@@ -41,6 +43,12 @@ class TrustedVaultClientBackend : public KeyedService {
   // Adds/removes observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Registers a delegate-like callback that implements device registration
+  // verification.
+  // TODO(crbug.com/1416626): Make abstract once all implementations land.
+  virtual void SetDeviceRegistrationPublicKeyVerifierForUMA(
+      base::OnceCallback<void(const KeyMaterial&)> verifier);
 
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
@@ -85,6 +93,12 @@ class TrustedVaultClientBackend : public KeyedService {
   // will not be called. If no reauthentication dialog is not present,
   // `callback` is called synchronously.
   virtual void CancelDialog(BOOL animated, ProceduralBlock callback) = 0;
+
+  // Clears local data belonging to `identity`, such as shared keys. This
+  // excludes the physical client's key pair, which remains unchanged.
+  // TODO(crbug.com/1416626): Make abstract once all implementations land.
+  virtual void ClearLocalData(id<SystemIdentity> identity,
+                              CompletionBlock callback);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_TRUSTED_VAULT_CLIENT_BACKEND_H_

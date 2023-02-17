@@ -18,6 +18,8 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   // TrustedVaultClientBackend implementation.
   void AddObserver(Observer* observer) final;
   void RemoveObserver(Observer* observer) final;
+  void SetDeviceRegistrationPublicKeyVerifierForUMA(
+      base::OnceCallback<void(const KeyMaterial&)> verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
                  KeyFetchedCallback callback) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
@@ -32,6 +34,8 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
                                  UIViewController* presenting_view_controller,
                                  CompletionBlock callback) final;
   void CancelDialog(BOOL animated, ProceduralBlock callback) final;
+  void ClearLocalData(id<SystemIdentity> identity,
+                      CompletionBlock callback) final;
 
   // Simulates user cancelling the reauth dialog.
   void SimulateUserCancel();
