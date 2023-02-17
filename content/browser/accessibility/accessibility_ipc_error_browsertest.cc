@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     // the first event.
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
-                                           ax::mojom::Event::kLayoutComplete);
+                                           ax::mojom::Event::kLoadComplete);
     ASSERT_TRUE(waiter.WaitForNotification());
   }
 
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     // the first event.
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
-                                           ax::mojom::Event::kLayoutComplete);
+                                           ax::mojom::Event::kLoadComplete);
     ASSERT_TRUE(waiter.WaitForNotification());
   }
 
