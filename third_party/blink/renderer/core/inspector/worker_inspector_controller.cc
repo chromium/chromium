@@ -121,7 +121,11 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
   if (auto* scope = DynamicTo<WorkerGlobalScope>(thread_->GlobalScope())) {
     auto* network_agent = session->CreateAndAppend<InspectorNetworkAgent>(
         inspected_frames_.Get(), scope, session->V8Session());
-    session->CreateAndAppend<InspectorEmulationAgent>(nullptr);
+    auto* virtual_time_controller =
+        thread_->GetScheduler()->GetVirtualTimeController();
+    DCHECK(virtual_time_controller);
+    session->CreateAndAppend<InspectorEmulationAgent>(nullptr,
+                                                      *virtual_time_controller);
     session->CreateAndAppend<InspectorAuditsAgent>(
         network_agent, thread_->GetInspectorIssueStorage(), nullptr);
     session->CreateAndAppend<InspectorMediaAgent>(inspected_frames_.Get(),

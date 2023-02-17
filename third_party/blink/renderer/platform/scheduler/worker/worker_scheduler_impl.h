@@ -54,6 +54,7 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
       SchedulingLifecycleState lifecycle_state) override;
   std::unique_ptr<PauseHandle> Pause() override;
   void InitializeOnWorkerThread(Delegate* delegate) override;
+  VirtualTimeController* GetVirtualTimeController() override;
 
   // FrameOrWorkerScheduler implementation:
   SchedulingLifecycleState CalculateLifecycleState(ObserverType) const override;
@@ -74,6 +75,9 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
+  WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
+      const String& name,
+      WebScopedVirtualTimePauser::VirtualTaskDuration) override;
 
  protected:
   scoped_refptr<NonMainThreadTaskQueue> ThrottleableTaskQueue();

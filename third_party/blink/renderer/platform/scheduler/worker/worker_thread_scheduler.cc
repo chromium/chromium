@@ -20,6 +20,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
@@ -122,6 +123,8 @@ WorkerThreadScheduler::WorkerThreadScheduler(
       base::FeatureList::IsEnabled(kDedicatedWorkerThrottling)) {
     CreateBudgetPools();
   }
+
+  GetHelper().SetObserver(this);
 
   TRACE_EVENT_OBJECT_CREATED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("worker.scheduler"), "WorkerScheduler", this);
@@ -318,6 +321,25 @@ WorkerThreadScheduler::GetWorkerSchedulersForTesting() {
 void WorkerThreadScheduler::PerformMicrotaskCheckpoint() {
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
+}
+
+base::SequencedTaskRunner* WorkerThreadScheduler::GetVirtualTimeTaskRunner() {
+  // Note this is not Control task runner because it has task notifications
+  // disabled.
+  return DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType().get();
+}
+
+void WorkerThreadScheduler::OnVirtualTimeDisabled() {}
+
+void WorkerThreadScheduler::OnVirtualTimePaused() {
+  DefaultTaskQueue()->GetTaskQueue()->InsertFence(
+      TaskQueue::InsertFencePosition::kNow);
+}
+
+void WorkerThreadScheduler::OnVirtualTimeResumed() {
+  TaskQueue* queue = DefaultTaskQueue()->GetTaskQueue();
+  DCHECK(queue->HasActiveFence());
+  queue->RemoveFence();
 }
 
 void WorkerThreadScheduler::PostIdleTask(const base::Location& location,

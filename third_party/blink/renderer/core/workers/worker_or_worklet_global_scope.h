@@ -189,6 +189,10 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // creating a cached metadta handler for all workers.
   virtual CodeCacheHost* GetCodeCacheHost() { return nullptr; }
 
+  // Called after the thread initialization is complete but before the script
+  // has started loading.
+  virtual void WillBeginLoading() {}
+
   Deprecation& GetDeprecation() { return deprecation_; }
 
   // Returns the current list of user preferred languages.

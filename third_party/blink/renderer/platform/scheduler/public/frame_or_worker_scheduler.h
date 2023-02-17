@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/strong_alias.h"
+#include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/feature_and_js_location_blocking_bfcache.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_lifecycle_state.h"
@@ -165,6 +166,17 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   // and should not generally be used.
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   CompositorTaskRunner() = 0;
+
+  // Returns a WebScopedVirtualTimePauser which can be used to vote for pausing
+  // virtual time. Virtual time will be paused if any WebScopedVirtualTimePauser
+  // votes to pause it, and only unpaused only if all
+  // WebScopedVirtualTimePausers are either destroyed or vote to unpause.  Note
+  // the WebScopedVirtualTimePauser returned by this method is initially
+  // unpaused.
+  // TODO(crbug.com/1416992): consider moving this to ThreadScheduler.
+  virtual WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
+      const String& name,
+      WebScopedVirtualTimePauser::VirtualTaskDuration) = 0;
 
  protected:
   FrameOrWorkerScheduler();

@@ -125,6 +125,12 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
   virtual void PerformMicrotaskCheckpoint();
 
  private:
+  // ThreadSchedulerBase overrides
+  base::SequencedTaskRunner* GetVirtualTimeTaskRunner() override;
+  void OnVirtualTimeDisabled() override;
+  void OnVirtualTimePaused() override;
+  void OnVirtualTimeResumed() override;
+
   void MaybeStartLongIdlePeriod();
 
   void RecordTaskUkm(
@@ -136,7 +142,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
   scoped_refptr<NonMainThreadTaskQueue> idle_helper_queue_;
   IdleHelper idle_helper_;
   bool initialized_ = false;
-  scoped_refptr<NonMainThreadTaskQueue> control_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> v8_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   SchedulingLifecycleState lifecycle_state_;

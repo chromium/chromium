@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -185,6 +186,7 @@ scheduler::WorkerScheduler* WorkerGlobalScope::GetScheduler() {
 
 void WorkerGlobalScope::Dispose() {
   DCHECK(IsContextThread());
+  loading_virtual_time_pauser_ = WebScopedVirtualTimePauser();
   closing_ = true;
   WorkerOrWorkletGlobalScope::Dispose();
 }
@@ -406,6 +408,16 @@ void WorkerGlobalScope::AddInspectorIssue(AuditsIssue issue) {
                                                              std::move(issue));
 }
 
+void WorkerGlobalScope::WillBeginLoading() {
+  loading_virtual_time_pauser_ =
+      GetScheduler()
+          ->GetVirtualTimeController()
+          ->CreateWebScopedVirtualTimePauser(
+              "WorkerStart",
+              WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
+  loading_virtual_time_pauser_.PauseVirtualTime();
+}
+
 CoreProbeSink* WorkerGlobalScope::GetProbeSink() {
   if (IsClosing())
     return nullptr;
@@ -490,6 +502,7 @@ void WorkerGlobalScope::RunWorkerScript() {
     debugger->ExternalAsyncTaskStarted(*stack_id_);
 
   ReportingProxy().WillEvaluateScript();
+  loading_virtual_time_pauser_.UnpauseVirtualTime();
 
   // Step 24. If script is a classic script, then run the classic script script.
   // Otherwise, it is a module script; run the module script script. [spec text]

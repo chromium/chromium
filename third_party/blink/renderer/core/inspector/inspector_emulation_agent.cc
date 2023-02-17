@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
@@ -37,8 +36,10 @@ using protocol::Maybe;
 using protocol::Response;
 
 InspectorEmulationAgent::InspectorEmulationAgent(
-    WebLocalFrameImpl* web_local_frame_impl)
+    WebLocalFrameImpl* web_local_frame_impl,
+    VirtualTimeController& virtual_time_controller)
     : web_local_frame_(web_local_frame_impl),
+      virtual_time_controller_(virtual_time_controller),
       default_background_color_override_rgba_(&agent_state_,
                                               /*default_value=*/{}),
       script_execution_disabled_(&agent_state_, /*default_value=*/false),
@@ -426,11 +427,6 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
     protocol::Maybe<int> max_virtual_time_task_starvation_count,
     protocol::Maybe<double> initial_virtual_time,
     double* virtual_time_ticks_base_ms) {
-  Response response = AssertPage();
-  if (!response.IsSuccess())
-    return response;
-  DCHECK(web_local_frame_);
-
   VirtualTimeController::VirtualTimePolicy scheduler_policy =
       VirtualTimeController::VirtualTimePolicy::kPause;
   if (protocol::Emulation::VirtualTimePolicyEnum::Advance == policy) {
@@ -460,23 +456,21 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
 
   InnerEnable();
 
-  VirtualTimeController* virtual_time_controller =
-      web_local_frame_->View()->Scheduler()->GetVirtualTimeController();
   // This needs to happen before we apply virtual time.
   base::Time initial_time =
       initial_virtual_time.isJust()
           ? base::Time::FromDoubleT(initial_virtual_time.fromJust())
           : base::Time();
   virtual_time_base_ticks_ =
-      virtual_time_controller->EnableVirtualTime(initial_time);
-  virtual_time_controller->SetVirtualTimePolicy(scheduler_policy);
+      virtual_time_controller_.EnableVirtualTime(initial_time);
+  virtual_time_controller_.SetVirtualTimePolicy(scheduler_policy);
   if (virtual_time_budget_ms.fromMaybe(0) > 0) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("renderer.scheduler", "VirtualTimeBudget",
                                       TRACE_ID_LOCAL(this), "budget",
                                       virtual_time_budget_ms.fromJust());
     const base::TimeDelta budget_amount =
         base::Milliseconds(virtual_time_budget_ms.fromJust());
-    virtual_time_controller->GrantVirtualTimeBudget(
+    virtual_time_controller_.GrantVirtualTimeBudget(
         budget_amount,
         WTF::BindOnce(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
                       WrapWeakPersistent(this)));
@@ -486,7 +480,7 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
   }
 
   if (max_virtual_time_task_starvation_count.fromMaybe(0)) {
-    virtual_time_controller->SetMaxVirtualTimeTaskStarvationCount(
+    virtual_time_controller_.SetMaxVirtualTimeTaskStarvationCount(
         max_virtual_time_task_starvation_count.fromJust());
   }
 
@@ -557,11 +551,7 @@ Response InspectorEmulationAgent::setNavigatorOverrides(
 void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler", "VirtualTimeBudget",
                                   TRACE_ID_LOCAL(this));
-  WebView* view = web_local_frame_->View();
-  if (!view)
-    return;
-
-  view->Scheduler()->GetVirtualTimeController()->SetVirtualTimePolicy(
+  virtual_time_controller_.SetVirtualTimePolicy(
       VirtualTimeController::VirtualTimePolicy::kPause);
   virtual_time_policy_.Set(protocol::Emulation::VirtualTimePolicyEnum::Pause);
   // We could have been detached while VT was still running.

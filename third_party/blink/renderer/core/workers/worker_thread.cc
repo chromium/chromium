@@ -668,6 +668,7 @@ void WorkerThread::InitializeOnWorkerThread(
   // from another thread and try to resume "pause on start" before
   // we even paused.
   worker_inspector_controller_->WaitForDebuggerIfNeeded();
+  GlobalScope()->WillBeginLoading();
 }
 
 void WorkerThread::EvaluateClassicScriptOnWorkerThread(

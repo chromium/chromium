@@ -298,6 +298,9 @@ class CORE_EXPORT WorkerGlobalScope
   void AddInspectorIssue(AuditsIssue) final;
   EventTarget* ErrorEventTarget() final { return this; }
 
+  // WorkerOrWorkletGlobalScope
+  void WillBeginLoading() override;
+
   KURL url_;
   const mojom::blink::ScriptType script_type_;
   const String user_agent_;
@@ -368,6 +371,12 @@ class CORE_EXPORT WorkerGlobalScope
   std::unique_ptr<CodeCacheHost> code_cache_host_;
 
   const ukm::SourceId ukm_source_id_;
+
+  // Pauses virtual time from the time the thread has initialized (including
+  // DevTools agents being configured while waiting for debugger) till the main
+  // script has completed loading. This is so that VT does not run while script
+  // is being loaded.
+  WebScopedVirtualTimePauser loading_virtual_time_pauser_;
 };
 
 template <>

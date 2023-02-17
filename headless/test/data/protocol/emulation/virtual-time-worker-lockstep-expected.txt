@@ -1,0 +1,41 @@
+Tests that VT advances in lockstep between worker and host page.
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/worker.js, type: Other
+[WORKER] Time in worker: 100120
+Time in page: 100170
+[WORKER] Time in worker: 100220
+Time in page: 100270
+[WORKER] Time in worker: 100320
+Time in page: 100370
+[WORKER] Time in worker: 100420
+Time in page: 100470
+[WORKER] Time in worker: 100520
+Time in page: 100570
+[WORKER] Time in worker: 100620
+Time in page: 100670
+[WORKER] Time in worker: 100720
+Time in page: 100770
+[WORKER] Time in worker: 100820
+Time in page: 100870
+[WORKER] Time in worker: 100920
+Time in page: 100970
+[WORKER] Time in worker: 101020
+Time in page: 101070
+[WORKER] Time in worker: 101120
+Time in page: 101170
+[WORKER] Time in worker: 101220
+Time in page: 101270
+[WORKER] Time in worker: 101320
+Time in page: 101370
+[WORKER] Time in worker: 101420
+Time in page: 101470
+[WORKER] Time in worker: 101520
+Time in page: 101570
+[WORKER] Time in worker: 101620
+Time in page: 101670
+[WORKER] Time in worker: 101720
+Time in page: 101770
+[WORKER] Time in worker: 101820
+Time in page: 101870
+[WORKER] Time in worker: 101920
+Time in page: 101970

@@ -1,0 +1,8 @@
+Tests basic virtual time functionality in workers.
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/worker.js, type: Other
+Started worker: 100020
+After a 500ms timeout: 100520
+virtual time expired, granting more
+After first budget expired: 105020
+Another 500ms later: 105520

@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
@@ -123,6 +124,9 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
       pending_dedicated_worker_host_;
   mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
       pending_back_forward_cache_controller_host_;
+
+  // Pauses virtual time in parent context until the worker is initialized.
+  WebScopedVirtualTimePauser virtual_time_pauser_;
 };
 
 }  // namespace blink

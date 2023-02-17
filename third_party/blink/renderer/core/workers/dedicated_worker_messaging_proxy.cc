@@ -60,7 +60,13 @@ DedicatedWorkerMessagingProxy::DedicatedWorkerMessagingProxy(
           worker_object_proxy_factory(this,
                                       worker_object,
                                       GetParentExecutionContextTaskRunners())),
-      worker_object_(worker_object) {}
+      worker_object_(worker_object),
+      virtual_time_pauser_(
+          execution_context->GetScheduler()->CreateWebScopedVirtualTimePauser(
+              "WorkerStart",
+              WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant)) {
+  virtual_time_pauser_.PauseVirtualTime();
+}
 
 DedicatedWorkerMessagingProxy::~DedicatedWorkerMessagingProxy() = default;
 
@@ -163,6 +169,7 @@ bool DedicatedWorkerMessagingProxy::HasPendingActivity() const {
 
 void DedicatedWorkerMessagingProxy::DidFailToFetchScript() {
   DCHECK(IsParentContextThread());
+  virtual_time_pauser_.UnpauseVirtualTime();
   if (!worker_object_ || AskedToTerminate())
     return;
   worker_object_->DispatchErrorEventForScriptFetchFailure();
@@ -187,6 +194,8 @@ void DedicatedWorkerMessagingProxy::Resume() {
 void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
   DCHECK(IsParentContextThread());
   was_script_evaluated_ = true;
+
+  virtual_time_pauser_.UnpauseVirtualTime();
 
   Vector<BlinkTransferableMessage> tasks;
   queued_early_tasks_.swap(tasks);

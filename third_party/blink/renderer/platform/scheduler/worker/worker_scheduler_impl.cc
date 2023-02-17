@@ -265,6 +265,10 @@ void WorkerSchedulerImpl::InitializeOnWorkerThread(Delegate* delegate) {
   back_forward_cache_disabling_feature_tracker_.SetDelegate(delegate);
 }
 
+VirtualTimeController* WorkerSchedulerImpl::GetVirtualTimeController() {
+  return thread_scheduler_;
+}
+
 scoped_refptr<NonMainThreadTaskQueue>
 WorkerSchedulerImpl::UnpausableTaskQueue() {
   return unpausable_task_queue_.get();
@@ -336,6 +340,13 @@ WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(
 scoped_refptr<base::SingleThreadTaskRunner>
 WorkerSchedulerImpl::CompositorTaskRunner() {
   return thread_scheduler_->CompositorTaskRunner();
+}
+
+WebScopedVirtualTimePauser
+WorkerSchedulerImpl::CreateWebScopedVirtualTimePauser(
+    const String& name,
+    WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
+  return thread_scheduler_->CreateWebScopedVirtualTimePauser(name, duration);
 }
 
 }  // namespace scheduler

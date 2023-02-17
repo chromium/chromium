@@ -35,7 +35,7 @@ class RGBA;
 class CORE_EXPORT InspectorEmulationAgent final
     : public InspectorBaseAgent<protocol::Emulation::Metainfo> {
  public:
-  explicit InspectorEmulationAgent(WebLocalFrameImpl*);
+  InspectorEmulationAgent(WebLocalFrameImpl*, VirtualTimeController&);
   InspectorEmulationAgent(const InspectorEmulationAgent&) = delete;
   InspectorEmulationAgent& operator=(const InspectorEmulationAgent&) = delete;
   ~InspectorEmulationAgent() override;
@@ -129,6 +129,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   void SetSystemThemeState();
 
   Member<WebLocalFrameImpl> web_local_frame_;
+  VirtualTimeController& virtual_time_controller_;
   base::TimeTicks virtual_time_base_ticks_;
   HeapVector<Member<DocumentLoader>> pending_document_loaders_;
 
