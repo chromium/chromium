@@ -971,6 +971,12 @@
     'chromium_gtests_for_win_and_linux_only': {
     },
 
+    'chromium_ios_scripts': {
+      'check_static_initializers': {
+        'script': 'check_static_initializers.py',
+      },
+    },
+
     'chromium_junit_tests_no_swarming': {
       'android_webview_junit_tests': {
         'remove_mixins': [

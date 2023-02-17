@@ -62,9 +62,32 @@ _MAC_SI_FILE_ALLOWLIST = [
 # (InitializeDefaultMallocZoneWithPartitionAlloc) to install a malloc zone.
 FALLBACK_EXPECTED_MAC_SI_COUNT = 3
 
+# Similar to mac, iOS needs the iosstream and PartitionAlloc-Everywhere static
+# initializer (InitializeDefaultMallocZoneWithPartitionAlloc) to install a
+# malloc zone.
+FALLBACK_EXPECTED_IOS_SI_COUNT = 2
+
 # For coverage builds, also allow 'IntrProfilingRuntime.cpp'
 COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT = 4
 
+def get_mod_init_count(executable, hermetic_xcode_path):
+  # Find the __DATA,__mod_init_func section.
+  if os.path.exists(hermetic_xcode_path):
+    otool_path = os.path.join(hermetic_xcode_path, 'Contents', 'Developer',
+        'Toolchains', 'XcodeDefault.xctoolchain', 'usr', 'bin', 'otool')
+  else:
+    otool_path = 'otool'
+
+  stdout = run_process([otool_path, '-l', executable])
+  section_index = stdout.find('sectname __mod_init_func')
+  if section_index == -1:
+    return 0
+
+  # If the section exists, the "size" line must follow it.
+  initializers_s = re.search('size 0x([0-9a-f]+)',
+                             stdout[section_index:]).group(1)
+  word_size = 8  # Assume 64 bit
+  return int(initializers_s, 16) / word_size
 
 def run_process(command):
   p = subprocess.Popen(command, stdout=subprocess.PIPE, universal_newlines=True)
@@ -74,8 +97,35 @@ def run_process(command):
         'ERROR from command "%s": %d' % (' '.join(command), p.returncode))
   return stdout
 
+def main_ios(src_dir, hermetic_xcode_path):
+  base_names = ('Chromium', 'Chrome')
+  ret = 0
+  for base_name in base_names:
+    app_bundle = base_name + '.app'
+    chromium_executable = os.path.join(app_bundle, base_name)
+    if os.path.exists(chromium_executable):
+      si_count = get_mod_init_count(chromium_executable,
+                                    hermetic_xcode_path)
+      if si_count > 0:
+        allowed_si_count = FALLBACK_EXPECTED_IOS_SI_COUNT
+        if si_count > allowed_si_count:
+          print('Expected <= %d static initializers in %s, but found %d' %
+              (allowed_si_count, chromium_executable,
+              si_count))
+          ret = 1
+          show_mod_init_func = os.path.join(src_dir, 'tools', 'mac',
+                                            'show_mod_init_func.py')
+          args = [show_mod_init_func]
+          args.append(chromium_executable)
 
-def main_mac(src_dir, allow_coverage_initializer = False):
+          if os.path.exists(hermetic_xcode_path):
+            args.extend(['--xcode-path', hermetic_xcode_path])
+          stdout = run_process(args)
+          print(stdout)
+  return ret
+
+
+def main_mac(src_dir, hermetic_xcode_path, allow_coverage_initializer = False):
   base_names = ('Chromium', 'Google Chrome')
   ret = 0
   for base_name in base_names:
@@ -92,28 +142,8 @@ def main_mac(src_dir, allow_coverage_initializer = False):
                                            'Resources', 'DWARF', framework_name)
     if os.path.exists(chromium_executable):
       # Count the number of files with at least one static initializer.
-      si_count = 0
-      # Find the __DATA,__mod_init_func section.
-
-      # If the checkout uses the hermetic xcode binaries, then otool must be
-      # directly invoked. The indirection via /usr/bin/otool won't work unless
-      # there's an actual system install of Xcode.
-      hermetic_xcode_path = os.path.join(src_dir, 'build', 'mac_files',
-          'xcode_binaries')
-      if os.path.exists(hermetic_xcode_path):
-        otool_path = os.path.join(hermetic_xcode_path, 'Contents', 'Developer',
-            'Toolchains', 'XcodeDefault.xctoolchain', 'usr', 'bin', 'otool')
-      else:
-        otool_path = 'otool'
-
-      stdout = run_process([otool_path, '-l', chromium_framework_executable])
-      section_index = stdout.find('sectname __mod_init_func')
-      if section_index != -1:
-        # If the section exists, the "size" line must follow it.
-        initializers_s = re.search('size 0x([0-9a-f]+)',
-                                   stdout[section_index:]).group(1)
-        word_size = 8  # Assume 64 bit
-        si_count = int(initializers_s, 16) / word_size
+      si_count = get_mod_init_count(chromium_framework_executable,
+                                    hermetic_xcode_path)
 
       # Print the list of static initializers.
       if si_count > 0:
@@ -198,8 +228,20 @@ def main_run(args):
   os.chdir(build_dir)
 
   if sys.platform.startswith('darwin'):
-    rc = main_mac(src_dir,
-      allow_coverage_initializer = '--allow-coverage-initializer' in args.args)
+    # If the checkout uses the hermetic xcode binaries, then otool must be
+    # directly invoked. The indirection via /usr/bin/otool won't work unless
+    # there's an actual system install of Xcode.
+    hermetic_xcode_path = os.path.join(src_dir, 'build', 'mac_files',
+        'xcode_binaries')
+
+    is_ios = 'target_platform' in args.properties and \
+      'ios' in args.properties['target_platform']
+    if is_ios:
+      rc = main_ios(src_dir, hermetic_xcode_path)
+    else:
+      rc = main_mac(src_dir, hermetic_xcode_path,
+        allow_coverage_initializer = '--allow-coverage-initializer' in \
+          args.args)
   elif sys.platform.startswith('linux'):
     is_chromeos = 'buildername' in args.properties and \
         'chromeos' in args.properties['buildername']
