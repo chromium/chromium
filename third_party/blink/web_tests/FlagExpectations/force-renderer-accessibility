@@ -15,9 +15,6 @@
 # run virtual test suites.
 virtual/* [ Skip ]
 
-# Crashes
-# Display-locking / content-visibility:
-crbug.com/1380449 external/wpt/css/css-contain/content-visibility/content-visibility-063.html [ Crash ]
 # ax_object_cache_impl.cc#1151 -- IsRelevantSlotElement():
 
 # Timeouts
