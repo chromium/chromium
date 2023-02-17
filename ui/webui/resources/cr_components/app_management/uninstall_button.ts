@@ -6,7 +6,6 @@ import './app_management_shared_style.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 
-import {assertNotReached} from '//resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App} from './app_management.mojom-webui.js';
@@ -38,21 +37,24 @@ export class AppManamentUninstallButtonElement extends PolymerElement {
 
   /**
    * Returns true if the button should be disabled due to app install type.
+   *
+   * If the compiler complains about the "lack of ending return statement",
+   * you maybe just added a new InstallReason and need to add a new case.
    */
   private getDisableState_(): boolean {
     switch (this.app.installReason) {
       case InstallReason.kSystem:
       case InstallReason.kPolicy:
+      case InstallReason.kKiosk:
         return true;
+      case InstallReason.kUnknown:
       case InstallReason.kOem:
       case InstallReason.kDefault:
       case InstallReason.kSync:
       case InstallReason.kUser:
-      case InstallReason.kUnknown:
+      case InstallReason.kSubApp:
       case InstallReason.kCommandLine:
         return false;
-      default:
-        assertNotReached();
     }
   }
 
