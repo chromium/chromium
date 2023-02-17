@@ -134,7 +134,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
         initWithArrangedSubviews:@[ _textTruncatingLabel ]];
     _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
     _textStackView.axis = UILayoutConstraintAxisVertical;
-    _textStackView.alignment = UIStackViewAlignmentLeading;
+    _textStackView.alignment = UIStackViewAlignmentFill;
     _textStackView.spacing = kTextSpacing;
 
     _detailTruncatingLabel =
@@ -344,7 +344,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
       [self.textStackView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTextTrailingMargin];
-  stackViewToCellTrailing.priority = UILayoutPriorityDefaultHigh;
+  stackViewToCellTrailing.priority = UILayoutPriorityRequired - 1;
   self.textTrailingConstraint = stackViewToCellTrailing;
 
   // These constraints need to be removed when freezing the position of these
