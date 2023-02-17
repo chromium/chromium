@@ -158,12 +158,11 @@ void BrowserTabsMetadataFetcherImpl::FetchForeignSyncedPhoneSessionMetadata(
     std::move(callback_).Run(absl::nullopt);
   }
 
-  results_ = GetSortedMetadataWithoutFaviconsFromForeignSyncedSession(session);
-
   // TODO(b/260599791): Fetch favicons before invoking the callback. We may need
   // to include the favicons directly in the Mojo payload that we receive from
   // Lacros.
-  std::move(callback).Run(std::move(results_));
+  std::move(callback).Run(
+      GetSortedMetadataWithoutFaviconsFromForeignSyncedSession(session));
 }
 
 void BrowserTabsMetadataFetcherImpl::OnAllFaviconsFetched() {

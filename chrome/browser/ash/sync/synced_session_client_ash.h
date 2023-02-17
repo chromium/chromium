@@ -75,7 +75,7 @@ class SyncedSessionClientAsh final
     // we receive an update of foreign synced phone sessions from Lacros via the
     // crosapi.
     virtual void OnForeignSyncedPhoneSessionsUpdated(
-        const std::vector<ForeignSyncedSessionAsh>& sessions) {}
+        const std::vector<ForeignSyncedSessionAsh>& phone_sessions) {}
   };
 
   SyncedSessionClientAsh();

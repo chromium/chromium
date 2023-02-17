@@ -1023,7 +1023,7 @@
   },
   {
     "name": "chromeos-synced-session-sharing",
-    "owners": ["jasonrhee", "chromeos-cross-device-eng@google.com"],
+    "owners": ["hansenmichael", "chromeos-cross-device-eng@google.com"],
     "expiry_milestone": 115
   },
   {

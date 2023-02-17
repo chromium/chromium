@@ -54,6 +54,11 @@ class SyncMojoServiceAsh : public KeyedService,
       mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver)
       override;
 
+  // Returns null if kChromeOSSyncedSessionClient is disabled.
+  SyncedSessionClientAsh* GetSyncedSessionClientAsh() {
+    return synced_session_client_.get();
+  }
+
  private:
   // Members below destroyed after Shutdown().
 

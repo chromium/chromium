@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/sync/synced_session_client_ash.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -37,10 +38,14 @@ namespace phonehub {
 // info on the server.
 class BrowserTabsModelProviderImpl
     : public BrowserTabsModelProvider,
-      public multidevice_setup::MultiDeviceSetupClient::Observer {
+      public multidevice_setup::MultiDeviceSetupClient::Observer,
+      public SyncedSessionClientAsh::Observer {
  public:
+  // |synced_session_client_ash| is null if kChromeOSSyncedSessionClient or
+  // Lacros Only are disabled.
   BrowserTabsModelProviderImpl(
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+      SyncedSessionClientAsh* synced_session_client_ash,
       syncer::SyncService* sync_service,
       sync_sessions::SessionSyncService* session_sync_service,
       std::unique_ptr<BrowserTabsMetadataFetcher>
@@ -58,14 +63,25 @@ class BrowserTabsModelProviderImpl
       const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
           host_device_with_status) override;
 
+  // SyncedSessionClientAsh::Observer:
+  // Called when Lacros detects changes to foreign sessions (recent tabs) via
+  // Crosapi. The session is used to update the model.
+  void OnForeignSyncedPhoneSessionsUpdated(
+      const std::vector<ForeignSyncedSessionAsh>& phone_sessions) override;
+
   void AttemptBrowserTabsModelUpdate();
   void InvalidateWeakPtrsAndClearTabMetadata(bool is_tab_sync_enabled);
   void OnMetadataFetched(
       absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
           metadata);
-  absl::optional<std::string> GetSessionName() const;
+  absl::optional<std::string> GetHostDeviceName() const;
 
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+
+  // |synced_session_client_ash_| is null if kChromeOSSyncedSessionClient or
+  // Lacros Only are disabled.
+  SyncedSessionClientAsh* synced_session_client_ash_;
+
   syncer::SyncService* sync_service_;
   sync_sessions::SessionSyncService* session_sync_service_;
   std::unique_ptr<BrowserTabsMetadataFetcher> browser_tabs_metadata_fetcher_;

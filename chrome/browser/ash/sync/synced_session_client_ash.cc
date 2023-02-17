@@ -56,8 +56,8 @@ void SyncedSessionClientAsh::BindReceiver(
 
 void SyncedSessionClientAsh::OnForeignSyncedPhoneSessionsUpdated(
     std::vector<crosapi::mojom::SyncedSessionPtr> sessions) {
-  // TODO(jasonrhee): Implement the deserialization as a Mojom StructTrait as a
-  // fast follow after initial prototype.
+  // TODO(b/260599791): Implement the deserialization as a Mojom StructTrait as
+  // a fast follow after initial prototype.
   last_foreign_synced_phone_sessions_.clear();
   for (const crosapi::mojom::SyncedSessionPtr& session : sessions) {
     ForeignSyncedSessionAsh current_session;
