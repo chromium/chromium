@@ -297,15 +297,16 @@ class LocationBarMediator
 
         if (hasFocus && mLocationBarDataProvider.hasTab()
                 && !mLocationBarDataProvider.isIncognito()) {
-            if (mNativeInitialized
-                    && mTemplateUrlServiceSupplier.get().isDefaultSearchEngineGoogle()) {
-                GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                        mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+            if (mTemplateUrlServiceSupplier.hasValue()) {
+                if (mTemplateUrlServiceSupplier.get().isDefaultSearchEngineGoogle()) {
+                    GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                            mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+                }
             } else {
-                mDeferredNativeRunnables.add(() -> {
-                    if (mTemplateUrlServiceSupplier.get().isDefaultSearchEngineGoogle()) {
+                mTemplateUrlServiceSupplier.onAvailable((templateUrlService) -> {
+                    if (templateUrlService.isDefaultSearchEngineGoogle()) {
                         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                                mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+                                mProfileSupplier.get(), templateUrlService);
                     }
                 });
             }

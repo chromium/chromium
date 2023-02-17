@@ -240,8 +240,6 @@ public class LocationBarMediatorTest {
 
     private Context mContext;
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
-    private OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
-            new OneshotSupplierImpl<>();
     private LocationBarMediator mMediator;
     private LocationBarMediator mTabletMediator;
     private UrlBarData mUrlBarData;
@@ -264,10 +262,12 @@ public class LocationBarMediatorTest {
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         Runnable noAction = () -> {}; // launchAssistanceSettingsAction
-        mTemplateUrlServiceSupplier.set(mTemplateUrlService);
+        OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
+                new OneshotSupplierImpl<>();
+        templateUrlServiceSupplier.set(mTemplateUrlService);
         mMediator = new LocationBarMediator(mContext, mLocationBarLayout, mLocationBarDataProvider,
                 mProfileSupplier, mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate,
-                mLocaleManager, mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
+                mLocaleManager, templateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
                 mWindowAndroid,
                 /*isTablet=*/false, mSearchEngineLogoUtils, mLensController, noAction,
                 tab -> true, mOmniboxUma, () -> mIsToolbarMicEnabled);
@@ -277,7 +277,7 @@ public class LocationBarMediatorTest {
 
         mTabletMediator = new LocationBarMediator(mContext, mLocationBarTablet,
                 mLocationBarDataProvider, mProfileSupplier, mPrivacyPreferencesManager,
-                mOverrideUrlLoadingDelegate, mLocaleManager, mTemplateUrlServiceSupplier,
+                mOverrideUrlLoadingDelegate, mLocaleManager, templateUrlServiceSupplier,
                 mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
                 /*isTablet=*/true, mSearchEngineLogoUtils, mLensController, noAction,
                 tab -> true, (tab, transition, isNtp) -> {}, () -> mIsToolbarMicEnabled);
@@ -845,6 +845,16 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnUrlFocusChange_geolocationPreNative() {
+        ShadowLooper looper = ShadowLooper.shadowMainLooper();
+        OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
+                new OneshotSupplierImpl<>();
+        mMediator = new LocationBarMediator(mContext, mLocationBarLayout, mLocationBarDataProvider,
+                mProfileSupplier, mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate,
+                mLocaleManager, templateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
+                mWindowAndroid,
+                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController,
+                () -> {}, tab -> true, mOmniboxUma, () -> mIsToolbarMicEnabled);
+        mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
         UrlBarData urlBarData = mock(UrlBarData.class);
@@ -862,7 +872,8 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(true);
 
         assertEquals(primeCount, sGeoHeaderPrimeCount);
-        mMediator.onFinishNativeInitialization();
+        templateUrlServiceSupplier.set(mTemplateUrlService);
+        looper.idle();
         assertEquals(primeCount + 1, sGeoHeaderPrimeCount);
     }
 
