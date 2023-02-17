@@ -279,14 +279,14 @@ export class XfTreeItem extends XfBase {
           !newItems.has(this.tree.selectedItem)) {
         // If the currently selected item exists in `oldItems` but not in
         // `newItems`, it means it's being removed from the children slot,
-        // we need to select the parent node of the removed item (i.e. `this`).
-        this.selected = true;
-        updateScheduled = true;
+        // we need to mark the selected item to null.
+        this.tree.selectedItem = null;
       }
     }
 
     if (!updateScheduled) {
-      // Explicitly trigger an update because render() relies on hasChildren().
+      // Explicitly trigger an update because render() relies on hasChildren(),
+      // which relies on `this.items_`.
       this.requestUpdate();
     }
   }

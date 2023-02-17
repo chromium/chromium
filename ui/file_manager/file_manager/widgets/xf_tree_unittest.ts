@@ -666,7 +666,7 @@ export async function testAddRemoveTreeItems(done: () => void) {
   done();
 }
 
-/** Tests removing a selected tree item should update selected properly. */
+/** Tests removing a selected tree item should update selectedItem properly. */
 export async function testSelectionUpdateAfterRemoving(done: () => void) {
   const tree = await getTree();
   await appendDirectTreeItems(tree);
@@ -680,10 +680,8 @@ export async function testSelectionUpdateAfterRemoving(done: () => void) {
   tree.removeChild(item2);
   await waitForElementUpdate(tree);
 
-  // The selected item should be item1 now.
-  const item1 = getTreeItemById('item1');
-  assertTrue(item1.selected);
-  assertEquals(item1, tree.selectedItem);
+  // The selected item should be null now.
+  assertEquals(null, tree.selectedItem);
 
   done();
 }

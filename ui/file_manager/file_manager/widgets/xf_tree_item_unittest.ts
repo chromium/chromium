@@ -415,8 +415,8 @@ export async function testRemoveSelectedItem(done: () => void) {
   item1.removeChild(item1a);
   await waitForElementUpdate(item1);
 
-  // item1 will be selected instead.
-  assertTrue(item1.selected);
+  // The selected item should be null now.
+  assertEquals(null, item1.tree?.selectedItem);
 
   done();
 }

@@ -102,8 +102,8 @@ export class XfTree extends XfBase {
           !newItems.has(this.selectedItem_)) {
         // If the currently selected item exists in `oldItems` but not in
         // `newItems`, it means it's being removed from the children slot,
-        // we need to select the first .
-        this.selectedItem = this.tabbableItems[0]!;
+        // we need to mark the selected item as null.
+        this.selectedItem = null;
       }
     }
   }
