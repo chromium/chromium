@@ -348,6 +348,7 @@ if (is_win || is_mac || is_linux) {
         "update_service_internal_impl_qualifying_linux.cc",
         "update_usage_stats_task_linux.cc",
       ]
+      public_configs = [ "linux:libcurl" ]
     }
   }
 

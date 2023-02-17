@@ -21,12 +21,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/native_library.h"
 #include "base/numerics/checked_math.h"
-#include "base/scoped_native_library.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -41,104 +38,6 @@
 
 namespace updater {
 namespace {
-
-constexpr std::array<const char*, 4> kCurlSOFilenames{
-    "libcurl.so",
-    "libcurl-gnutls.so.4",
-    "libcurl-nss.so.4",
-    "libcurl.so.4",
-};
-
-// Helper class to allow for creating refcounted ScopedNativeLibrarys that can
-// outlive the NetworkFetcherFactory.
-class RefCountableNativeLibrary
-    : public base::ScopedNativeLibrary,
-      public base::RefCountedThreadSafe<RefCountableNativeLibrary> {
- public:
-  // Takes ownership of the given library handle.
-  explicit RefCountableNativeLibrary(base::NativeLibrary library)
-      : base::ScopedNativeLibrary(std::move(library)) {}
-
- private:
-  friend class base::RefCountedThreadSafe<RefCountableNativeLibrary>;
-  ~RefCountableNativeLibrary() override = default;
-};
-
-// Function pointers into the dynamically loaded CURL library.
-struct LibcurlFunctionPtrs
-    : public base::RefCountedThreadSafe<LibcurlFunctionPtrs> {
-  static scoped_refptr<LibcurlFunctionPtrs> Create(
-      scoped_refptr<RefCountableNativeLibrary> library) {
-    if (!library) {
-      return nullptr;
-    }
-
-    scoped_refptr<LibcurlFunctionPtrs> curl_functions =
-        base::WrapRefCounted(new LibcurlFunctionPtrs);
-    curl_functions->easy_init =
-        reinterpret_cast<LibcurlFunctionPtrs::EasyInitFunction>(
-            library->GetFunctionPointer("curl_easy_init"));
-    curl_functions->easy_setopt =
-        reinterpret_cast<LibcurlFunctionPtrs::EasySetOptFunction>(
-            library->GetFunctionPointer("curl_easy_setopt"));
-    curl_functions->slist_append =
-        reinterpret_cast<LibcurlFunctionPtrs::SListAppendFunction>(
-            library->GetFunctionPointer("curl_slist_append"));
-    curl_functions->slist_free_all =
-        reinterpret_cast<LibcurlFunctionPtrs::SListFreeAllFunction>(
-            library->GetFunctionPointer("curl_slist_free_all"));
-    curl_functions->easy_perform =
-        reinterpret_cast<LibcurlFunctionPtrs::EasyPerformFunction>(
-            library->GetFunctionPointer("curl_easy_perform"));
-    curl_functions->easy_cleanup =
-        reinterpret_cast<LibcurlFunctionPtrs::EasyCleanupFunction>(
-            library->GetFunctionPointer("curl_easy_cleanup"));
-    curl_functions->easy_getinfo =
-        reinterpret_cast<LibcurlFunctionPtrs::EasyGetInfoFunction>(
-            library->GetFunctionPointer("curl_easy_getinfo"));
-    curl_functions->easy_reset =
-        reinterpret_cast<LibcurlFunctionPtrs::EasyResetFunction>(
-            library->GetFunctionPointer("curl_easy_reset"));
-
-    if (curl_functions->easy_init && curl_functions->easy_setopt &&
-        curl_functions->slist_append && curl_functions->slist_free_all &&
-        curl_functions->easy_perform && curl_functions->easy_cleanup &&
-        curl_functions->easy_getinfo && curl_functions->easy_reset) {
-      return curl_functions;
-    }
-    return nullptr;
-  }
-
-  using EasyInitFunction = CURL* (*)();
-  [[nodiscard]] EasyInitFunction easy_init = nullptr;
-
-  using EasySetOptFunction = CURLcode (*)(CURL*, CURLoption, ...);
-  [[nodiscard]] EasySetOptFunction easy_setopt = nullptr;
-
-  using SListAppendFunction = struct curl_slist* (*)(struct curl_slist*,
-                                                     const char*);
-  [[nodiscard]] SListAppendFunction slist_append = nullptr;
-
-  using SListFreeAllFunction = void (*)(struct curl_slist*);
-  SListFreeAllFunction slist_free_all = nullptr;
-
-  using EasyPerformFunction = CURLcode (*)(CURL*);
-  [[nodiscard]] EasyPerformFunction easy_perform = nullptr;
-
-  using EasyCleanupFunction = void (*)(CURL*);
-  EasyCleanupFunction easy_cleanup = nullptr;
-
-  using EasyGetInfoFunction = CURLcode (*)(CURL*, CURLINFO info, ...);
-  [[nodiscard]] EasyGetInfoFunction easy_getinfo = nullptr;
-
-  using EasyResetFunction = void (*)(CURL*);
-  EasyResetFunction easy_reset = nullptr;
-
- private:
-  friend class base::RefCountedThreadSafe<LibcurlFunctionPtrs>;
-  LibcurlFunctionPtrs() = default;
-  ~LibcurlFunctionPtrs() = default;
-};
 
 class LibcurlNetworkFetcherImpl {
  public:
@@ -158,8 +57,6 @@ class LibcurlNetworkFetcherImpl {
 
   LibcurlNetworkFetcherImpl(
       CURL* curl,
-      scoped_refptr<RefCountableNativeLibrary> library,
-      scoped_refptr<LibcurlFunctionPtrs> curl_functions,
       scoped_refptr<base::SequencedTaskRunner> callback_sequence_);
 
   void PostRequest(
@@ -211,8 +108,6 @@ class LibcurlNetworkFetcherImpl {
   }
 
   base::raw_ptr<CURL> curl_;
-  scoped_refptr<RefCountableNativeLibrary> library_;
-  scoped_refptr<LibcurlFunctionPtrs> curl_functions_;
   std::array<char, CURL_ERROR_SIZE> curl_error_buf_;
 
   // Sequence to post callbacks to.
@@ -226,19 +121,12 @@ class LibcurlNetworkFetcherImpl {
 
 LibcurlNetworkFetcherImpl::LibcurlNetworkFetcherImpl(
     CURL* curl,
-    scoped_refptr<RefCountableNativeLibrary> library,
-    scoped_refptr<LibcurlFunctionPtrs> curl_functions,
     scoped_refptr<base::SequencedTaskRunner> callback_sequence)
-    : curl_(curl),
-      library_(library),
-      curl_functions_(std::move(curl_functions)),
-      callback_sequence_(callback_sequence) {
-  CHECK(curl_functions_);
-}
+    : curl_(curl), callback_sequence_(callback_sequence) {}
 
 LibcurlNetworkFetcherImpl::~LibcurlNetworkFetcherImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  curl_functions_->easy_cleanup(curl_);
+  curl_easy_cleanup(curl_);
 }
 
 void LibcurlNetworkFetcherImpl::PostRequest(
@@ -252,14 +140,13 @@ void LibcurlNetworkFetcherImpl::PostRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << __func__;
 
-  curl_functions_->easy_reset(curl_);
+  curl_easy_reset(curl_);
 
   base::raw_ptr<struct curl_slist> headers = nullptr;
-  headers = curl_functions_->slist_append(
-      headers, ("Content-Type: " + content_type).c_str());
+  headers =
+      curl_slist_append(headers, ("Content-Type: " + content_type).c_str());
   for (const auto& [key, value] : post_additional_headers) {
-    headers =
-        curl_functions_->slist_append(headers, (key + ": " + value).c_str());
+    headers = curl_slist_append(headers, (key + ": " + value).c_str());
   }
 
   base::flat_map<std::string, std::string> response_headers;
@@ -267,39 +154,31 @@ void LibcurlNetworkFetcherImpl::PostRequest(
 
   base::WeakPtr<LibcurlNetworkFetcherImpl> weak_ptr =
       weak_factory_.GetWeakPtr();
-  if (curl_functions_->easy_setopt(curl_, CURLOPT_URL, url.spec().c_str()) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_HTTPPOST, 1L) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_HTTPHEADER, headers.get()) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_POSTFIELDSIZE,
-                                   post_data.size()) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_POSTFIELDS,
-                                   post_data.c_str()) ||
-      curl_functions_->easy_setopt(
-          curl_, CURLOPT_HEADERFUNCTION,
-          &LibcurlNetworkFetcherImpl::CurlHeaderCallback) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_HEADERDATA,
-                                   &response_headers) ||
-      curl_functions_->easy_setopt(
-          curl_, CURLOPT_WRITEFUNCTION,
-          &LibcurlNetworkFetcherImpl::CurlWriteStringCallback) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_WRITEDATA,
-                                   response_body.get()) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_NOPROGRESS, 0) ||
-      curl_functions_->easy_setopt(
-          curl_, CURLOPT_XFERINFOFUNCTION,
-          &LibcurlNetworkFetcherImpl::CurlTransferCallback) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_XFERINFODATA, &weak_ptr) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_ERRORBUFFER,
-                                   curl_error_buf_.data())) {
+  if (curl_easy_setopt(curl_, CURLOPT_URL, url.spec().c_str()) ||
+      curl_easy_setopt(curl_, CURLOPT_HTTPPOST, 1L) ||
+      curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers.get()) ||
+      curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, post_data.size()) ||
+      curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, post_data.c_str()) ||
+      curl_easy_setopt(curl_, CURLOPT_HEADERFUNCTION,
+                       &LibcurlNetworkFetcherImpl::CurlHeaderCallback) ||
+      curl_easy_setopt(curl_, CURLOPT_HEADERDATA, &response_headers) ||
+      curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION,
+                       &LibcurlNetworkFetcherImpl::CurlWriteStringCallback) ||
+      curl_easy_setopt(curl_, CURLOPT_WRITEDATA, response_body.get()) ||
+      curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 0) ||
+      curl_easy_setopt(curl_, CURLOPT_XFERINFOFUNCTION,
+                       &LibcurlNetworkFetcherImpl::CurlTransferCallback) ||
+      curl_easy_setopt(curl_, CURLOPT_XFERINFODATA, &weak_ptr) ||
+      curl_easy_setopt(curl_, CURLOPT_ERRORBUFFER, curl_error_buf_.data())) {
     VLOG(1) << "Failed to set curl options for HTTP POST.";
-    curl_functions_->slist_free_all(headers);
+    curl_slist_free_all(headers);
     return;
   }
 
   response_started_callback_ = std::move(response_started_callback);
   progress_callback_ = std::move(progress_callback);
 
-  CURLcode result = curl_functions_->easy_perform(curl_);
+  CURLcode result = curl_easy_perform(curl_);
   if (result != CURLE_OK) {
     VLOG(1) << "Failed to perform HTTP POST. "
             << (curl_error_buf_[0] ? curl_error_buf_.data() : "")
@@ -325,7 +204,7 @@ void LibcurlNetworkFetcherImpl::PostRequest(
                          update_client::NetworkFetcher::kHeaderXCupServerProof),
           x_retry_after));
 
-  curl_functions_->slist_free_all(headers);
+  curl_slist_free_all(headers);
 }
 
 void LibcurlNetworkFetcherImpl::DownloadToFile(
@@ -348,23 +227,20 @@ void LibcurlNetworkFetcherImpl::DownloadToFile(
     return;
   }
 
-  curl_functions_->easy_reset(curl_);
+  curl_easy_reset(curl_);
 
   base::WeakPtr<LibcurlNetworkFetcherImpl> weak_ptr =
       weak_factory_.GetWeakPtr();
-  if (curl_functions_->easy_setopt(curl_, CURLOPT_URL, url.spec().c_str()) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_HTTPGET, 1L) ||
-      curl_functions_->easy_setopt(
-          curl_, CURLOPT_WRITEFUNCTION,
-          &LibcurlNetworkFetcherImpl::CurlWriteFileCallback) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_WRITEDATA, &file) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_NOPROGRESS, 0) ||
-      curl_functions_->easy_setopt(
-          curl_, CURLOPT_XFERINFOFUNCTION,
-          &LibcurlNetworkFetcherImpl::CurlTransferCallback) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_XFERINFODATA, &weak_ptr) ||
-      curl_functions_->easy_setopt(curl_, CURLOPT_ERRORBUFFER,
-                                   curl_error_buf_.data())) {
+  if (curl_easy_setopt(curl_, CURLOPT_URL, url.spec().c_str()) ||
+      curl_easy_setopt(curl_, CURLOPT_HTTPGET, 1L) ||
+      curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION,
+                       &LibcurlNetworkFetcherImpl::CurlWriteFileCallback) ||
+      curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &file) ||
+      curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 0) ||
+      curl_easy_setopt(curl_, CURLOPT_XFERINFOFUNCTION,
+                       &LibcurlNetworkFetcherImpl::CurlTransferCallback) ||
+      curl_easy_setopt(curl_, CURLOPT_XFERINFODATA, &weak_ptr) ||
+      curl_easy_setopt(curl_, CURLOPT_ERRORBUFFER, curl_error_buf_.data())) {
     VLOG(1) << "Failed to set curl options for HTTP GET.";
     return;
   }
@@ -374,13 +250,13 @@ void LibcurlNetworkFetcherImpl::DownloadToFile(
 
   curl_off_t downloaded_bytes = 0;
   curl_error_buf_[0] = '\0';
-  CURLcode result = curl_functions_->easy_perform(curl_);
+  CURLcode result = curl_easy_perform(curl_);
   if (result != CURLE_OK) {
     VLOG(1) << "Failed to perform HTTP GET. "
             << (curl_error_buf_[0] ? curl_error_buf_.data() : "")
             << " (CURLcode " << result << ")";
-  } else if (curl_functions_->easy_getinfo(curl_, CURLINFO_SIZE_DOWNLOAD_T,
-                                           &downloaded_bytes) != CURLE_OK) {
+  } else if (curl_easy_getinfo(curl_, CURLINFO_SIZE_DOWNLOAD_T,
+                               &downloaded_bytes) != CURLE_OK) {
     VLOG(1) << "Cannot retrieve downloaded bytes for finished trasnfer";
     downloaded_bytes = 0;
   }
@@ -397,8 +273,8 @@ void LibcurlNetworkFetcherImpl::OnTransferInfo(curl_off_t total,
     // Query for an HTTP response code. If one has not been sent yet, the
     // transfer has not started.
     long response_code = 0;
-    if (curl_functions_->easy_getinfo(curl_, CURLINFO_RESPONSE_CODE,
-                                      &response_code) != CURLE_OK) {
+    if (curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &response_code) !=
+        CURLE_OK) {
       VLOG(1) << "Cannot retrieve HTTP response code for ongoing transfer.";
       return;
     } else if (response_code) {
@@ -514,9 +390,7 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
   LibcurlNetworkFetcher& operator=(const LibcurlNetworkFetcher&) = delete;
   ~LibcurlNetworkFetcher() override = default;
 
-  LibcurlNetworkFetcher(CURL* curl,
-                        scoped_refptr<RefCountableNativeLibrary> library,
-                        scoped_refptr<LibcurlFunctionPtrs> curl_functions);
+  explicit LibcurlNetworkFetcher(CURL* curl);
 
   // Overrides for update_client::NetworkFetcher
   void PostRequest(
@@ -539,14 +413,9 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
   base::SequenceBound<LibcurlNetworkFetcherImpl> impl_;
 };
 
-LibcurlNetworkFetcher::LibcurlNetworkFetcher(
-    CURL* curl,
-    scoped_refptr<RefCountableNativeLibrary> library,
-    scoped_refptr<LibcurlFunctionPtrs> curl_functions)
+LibcurlNetworkFetcher::LibcurlNetworkFetcher(CURL* curl)
     : impl_(base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
             curl,
-            library,
-            curl_functions,
             base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 void LibcurlNetworkFetcher::PostRequest(
@@ -578,70 +447,22 @@ void LibcurlNetworkFetcher::DownloadToFile(
 
 }  // namespace
 
-// Perform blocking IO to load libcurl when the NetworkFetcherFactory is
-// created. As long as the NetworkFetcherFactory is alive the library will not
-// need to be reloaded when creating LibcurlNetworkFetcher instances.
-class NetworkFetcherFactory::Impl {
- public:
-  Impl();
-  std::unique_ptr<update_client::NetworkFetcher> Create();
-
- private:
-  scoped_refptr<RefCountableNativeLibrary> library_;
-  scoped_refptr<LibcurlFunctionPtrs> functions_;
-};
-
-NetworkFetcherFactory::Impl::Impl() {
-  base::NativeLibrary native_library;
-  for (const char* name : kCurlSOFilenames) {
-    native_library = base::LoadNativeLibrary(base::FilePath(name), nullptr);
-    if (native_library) {
-      break;
-    }
-  }
-  if (!native_library) {
-    VLOG(1) << "Could not dynamically load libcurl.";
-    return;
-  }
-  scoped_refptr<RefCountableNativeLibrary> scoped_library =
-      base::MakeRefCounted<RefCountableNativeLibrary>(
-          std::move(native_library));
-
-  scoped_refptr<LibcurlFunctionPtrs> curl_functions =
-      LibcurlFunctionPtrs::Create(scoped_library);
-  if (!curl_functions) {
-    VLOG(1) << "Failed to get libcurl function pointers.";
-    return;
-  }
-
-  library_ = scoped_library;
-  functions_ = curl_functions;
-}
-
-std::unique_ptr<update_client::NetworkFetcher>
-NetworkFetcherFactory::Impl::Create() {
-  if (!library_ || !functions_) {
-    return nullptr;
-  }
-
-  raw_ptr<CURL> curl = functions_->easy_init();
-  if (!curl) {
-    VLOG(1) << "Failed to initialize a curl handle.";
-    return nullptr;
-  }
-
-  return std::make_unique<LibcurlNetworkFetcher>(curl, library_, functions_);
-}
+class NetworkFetcherFactory::Impl {};
 
 NetworkFetcherFactory::NetworkFetcherFactory(
-    absl::optional<PolicyServiceProxyConfiguration>)
-    : impl_(std::make_unique<Impl>()) {}
+    absl::optional<PolicyServiceProxyConfiguration>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return impl_->Create();
+  raw_ptr<CURL> curl = curl_easy_init();
+  if (!curl) {
+    VLOG(1) << "Failed to initialize a curl handle.";
+    return nullptr;
+  }
+
+  return std::make_unique<LibcurlNetworkFetcher>(curl);
 }
 
 }  // namespace updater
