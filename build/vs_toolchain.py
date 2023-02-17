@@ -17,8 +17,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2019 16.61 with 10.0.20348.0 SDK, 10.0.22621.755 version of Debuggers,
-# with ARM64 libraries and UWP support.
+# VS 2022 x.x with 10.0.22621.0 SDK with ARM64 libraries and UWP support.
 # See go/chromium-msvc-toolchain for instructions about how to update the
 # toolchain.
 #
@@ -27,14 +26,19 @@ from gn_helpers import ToGNString
 #
 # * //base/win/windows_version.cc NTDDI preprocessor check
 #   Triggers a compiler error if the available SDK is older than the minimum.
-# * SDK_VERSION in this file - must match the packaged/required SDK version.
+# * SDK_VERSION in this file
+#   Must match the packaged/required SDK version.
 # * SDK_VERSION in build/toolchain/win/setup_toolchain.py.
 # * //build/config/win/BUILD.gn NTDDI_VERSION value
 #   Affects the availability of APIs in the toolchain headers.
 # * //docs/windows_build_instructions.md mentions of VS or Windows SDK.
 #   Keeps the document consistent with the toolchain version.
-TOOLCHAIN_HASH = '0b5ee4d2b1'
-SDK_VERSION = '10.0.20348.0'
+# * MSVC_TOOLSET_VERSION in this file
+#   Maps between Visual Studio version and MSVC toolset
+# * MSVS_VERSIONS in this file
+#   Records the packaged and default version of Visual Studio
+TOOLCHAIN_HASH = '27370823e7'
+SDK_VERSION = '10.0.22621.0'
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 json_data_file = os.path.join(script_dir, 'win_toolchain.json')
@@ -43,8 +47,8 @@ json_data_file = os.path.join(script_dir, 'win_toolchain.json')
 # The first version is assumed by this script to be the one that is packaged,
 # which makes a difference for the arm64 runtime.
 MSVS_VERSIONS = collections.OrderedDict([
-    ('2019', '16.0'),  # Default and packaged version of Visual Studio.
-    ('2022', '17.0'),
+    ('2022', '17.0'),  # Default and packaged version of Visual Studio.
+    ('2019', '16.0'),
     ('2017', '15.0'),
 ])
 

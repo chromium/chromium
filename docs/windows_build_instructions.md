@@ -23,10 +23,8 @@ Are you a Google employee? See
 
 ### Visual Studio
 
-Chromium requires [Visual Studio 2019](https://docs.microsoft.com/en-us/visualstudio/releases/2019/release-notes) (>=16.0.0)
-to build, but [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes) (>=17.0.0)
-is preferred. Visual Studio can also be used to debug Chromium, and version 2022 is
-preferred for this as it handles Chromium's large debug information much better.
+Chromium requires [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes) (>=17.0.0)
+to build. Visual Studio can also be used to debug Chromium.
 The clang-cl compiler is used but Visual Studio's header files, libraries, and
 some tools are required. Visual Studio Community Edition should work if its
 license is appropriate for you. You must install the "Desktop development with
@@ -51,7 +49,7 @@ $ PATH_TO_INSTALLER.EXE ^
 --includeRecommended
 ```
 
--You must have the version 10.0.20348.0 [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
+-You must have the version 10.0.22621.0 [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
 installed. This can be installed separately or by checking the appropriate box
 in the Visual Studio Installer.
 
@@ -93,12 +91,9 @@ Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and 
 it to 0. This tells depot_tools to use your locally installed version of Visual
 Studio (by default, depot_tools will try to use a google-internal version).
 
-You may also have to set variable `vs2017_install` or `vs2019_install` or
-`vs2022_install` to your installation path of Visual Studio 2017 or 19 or 22, like
-`set vs2019_install=C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional`
-for Visual Studio 2019, or
-`set vs2022_install=C:\Program Files\Microsoft Visual Studio\2022\Professional`
-for Visual Studio 2022.
+You may also have to set variable `vs2022_install` to your installation path of
+Visual Studio 2022, like
+`set vs2022_install=C:\Program Files\Microsoft Visual Studio\2022\Professional`.
 
 From a cmd.exe shell, run:
 

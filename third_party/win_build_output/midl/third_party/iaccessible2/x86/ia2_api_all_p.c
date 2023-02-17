@@ -74,43 +74,43 @@ typedef struct _ia2_api_all_MIDL_EXPR_FORMAT_STRING
     } ia2_api_all_MIDL_EXPR_FORMAT_STRING;
 
 
-static const RPC_SYNTAX_IDENTIFIER  _RpcTransferSyntax = 
+static const RPC_SYNTAX_IDENTIFIER  _RpcTransferSyntax_2_0 = 
 {{0x8A885D04,0x1CEB,0x11C9,{0x9F,0xE8,0x08,0x00,0x2B,0x10,0x48,0x60}},{2,0}};
 
 #if defined(_CONTROL_FLOW_GUARD_XFG)
 #define XFG_TRAMPOLINES(ObjectType)\
-static unsigned long ObjectType ## _UserSize_XFG(unsigned long * pFlags, unsigned long Offset, void * pObject)\
+NDR_SHAREABLE unsigned long ObjectType ## _UserSize_XFG(unsigned long * pFlags, unsigned long Offset, void * pObject)\
 {\
-return  ObjectType ## _UserSize(pFlags, Offset, pObject);\
+return  ObjectType ## _UserSize(pFlags, Offset, (ObjectType *)pObject);\
 }\
-static unsigned char * ObjectType ## _UserMarshal_XFG(unsigned long * pFlags, unsigned char * pBuffer, void * pObject)\
+NDR_SHAREABLE unsigned char * ObjectType ## _UserMarshal_XFG(unsigned long * pFlags, unsigned char * pBuffer, void * pObject)\
 {\
-return ObjectType ## _UserMarshal(pFlags, pBuffer, pObject);\
+return ObjectType ## _UserMarshal(pFlags, pBuffer, (ObjectType *)pObject);\
 }\
-static unsigned char * ObjectType ## _UserUnmarshal_XFG(unsigned long * pFlags, unsigned char * pBuffer, void * pObject)\
+NDR_SHAREABLE unsigned char * ObjectType ## _UserUnmarshal_XFG(unsigned long * pFlags, unsigned char * pBuffer, void * pObject)\
 {\
-return ObjectType ## _UserUnmarshal(pFlags, pBuffer, pObject);\
+return ObjectType ## _UserUnmarshal(pFlags, pBuffer, (ObjectType *)pObject);\
 }\
-static void ObjectType ## _UserFree_XFG(unsigned long * pFlags, void * pObject)\
+NDR_SHAREABLE void ObjectType ## _UserFree_XFG(unsigned long * pFlags, void * pObject)\
 {\
-ObjectType ## _UserFree(pFlags, pObject);\
+ObjectType ## _UserFree(pFlags, (ObjectType *)pObject);\
 }
 #define XFG_TRAMPOLINES64(ObjectType)\
-static unsigned long ObjectType ## _UserSize64_XFG(unsigned long * pFlags, unsigned long Offset, void * pObject)\
+NDR_SHAREABLE unsigned long ObjectType ## _UserSize64_XFG(unsigned long * pFlags, unsigned long Offset, void * pObject)\
 {\
-return  ObjectType ## _UserSize64(pFlags, Offset, pObject);\
+return  ObjectType ## _UserSize64(pFlags, Offset, (ObjectType *)pObject);\
 }\
-static unsigned char * ObjectType ## _UserMarshal64_XFG(unsigned long * pFlags, unsigned char * pBuffer, void * pObject)\
+NDR_SHAREABLE unsigned char * ObjectType ## _UserMarshal64_XFG(unsigned long * pFlags, unsigned char * pBuffer, void * pObject)\
 {\
-return ObjectType ## _UserMarshal64(pFlags, pBuffer, pObject);\
+return ObjectType ## _UserMarshal64(pFlags, pBuffer, (ObjectType *)pObject);\
 }\
-static unsigned char * ObjectType ## _UserUnmarshal64_XFG(unsigned long * pFlags, unsigned char * pBuffer, void * pObject)\
+NDR_SHAREABLE unsigned char * ObjectType ## _UserUnmarshal64_XFG(unsigned long * pFlags, unsigned char * pBuffer, void * pObject)\
 {\
-return ObjectType ## _UserUnmarshal64(pFlags, pBuffer, pObject);\
+return ObjectType ## _UserUnmarshal64(pFlags, pBuffer, (ObjectType *)pObject);\
 }\
-static void ObjectType ## _UserFree64_XFG(unsigned long * pFlags, void * pObject)\
+NDR_SHAREABLE void ObjectType ## _UserFree64_XFG(unsigned long * pFlags, void * pObject)\
 {\
-ObjectType ## _UserFree64(pFlags, pObject);\
+ObjectType ## _UserFree64(pFlags, (ObjectType *)pObject);\
 }
 #define XFG_BIND_TRAMPOLINES(HandleType, ObjectType)\
 static void* ObjectType ## _bind_XFG(HandleType pObject)\
@@ -122,11 +122,13 @@ static void ObjectType ## _unbind_XFG(HandleType pObject, handle_t ServerHandle)
 ObjectType ## _unbind((ObjectType) pObject, ServerHandle);\
 }
 #define XFG_TRAMPOLINE_FPTR(Function) Function ## _XFG
+#define XFG_TRAMPOLINE_FPTR_DEPENDENT_SYMBOL(Symbol) Symbol ## _XFG
 #else
 #define XFG_TRAMPOLINES(ObjectType)
 #define XFG_TRAMPOLINES64(ObjectType)
 #define XFG_BIND_TRAMPOLINES(HandleType, ObjectType)
 #define XFG_TRAMPOLINE_FPTR(Function) Function
+#define XFG_TRAMPOLINE_FPTR_DEPENDENT_SYMBOL(Symbol) Symbol
 #endif
 
 
@@ -134,148 +136,274 @@ extern const ia2_api_all_MIDL_TYPE_FORMAT_STRING ia2_api_all__MIDL_TypeFormatStr
 extern const ia2_api_all_MIDL_PROC_FORMAT_STRING ia2_api_all__MIDL_ProcFormatString;
 extern const ia2_api_all_MIDL_EXPR_FORMAT_STRING ia2_api_all__MIDL_ExprFormatString;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleRelation_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleRelation_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleAction_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleAction_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessible2_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessible2_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessible2_2_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessible2_2_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessible2_3_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessible2_3_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessible2_4_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessible2_4_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleComponent_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleComponent_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleValue_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleValue_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleText_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleText_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleText2_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleText2_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleTextSelectionContainer_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleTextSelectionContainer_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleEditableText_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleEditableText_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleHyperlink_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleHyperlink_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleHypertext_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleHypertext_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleHypertext2_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleHypertext2_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleTable_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleTable_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleTable2_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleTable2_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleTableCell_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleTableCell_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleImage_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleImage_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleApplication_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IAccessibleApplication_ProxyInfo;
 
+#ifdef __cplusplus
+namespace {
+#endif
 
 extern const MIDL_STUB_DESC Object_StubDesc;
+#ifdef __cplusplus
+}
+#endif
 
 
 extern const MIDL_SERVER_INFO IAccessibleDocument_ServerInfo;
@@ -6444,26 +6572,26 @@ static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TA
         {
             
             {
-            XFG_TRAMPOLINE_FPTR(BSTR_UserSize)
-            ,XFG_TRAMPOLINE_FPTR(BSTR_UserMarshal)
-            ,XFG_TRAMPOLINE_FPTR(BSTR_UserUnmarshal)
-            ,XFG_TRAMPOLINE_FPTR(BSTR_UserFree)
+            (USER_MARSHAL_SIZING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserSize)
+            ,(USER_MARSHAL_MARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserMarshal)
+            ,(USER_MARSHAL_UNMARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserUnmarshal)
+            ,(USER_MARSHAL_FREEING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserFree)
             
             }
             ,
             {
-            XFG_TRAMPOLINE_FPTR(HWND_UserSize)
-            ,XFG_TRAMPOLINE_FPTR(HWND_UserMarshal)
-            ,XFG_TRAMPOLINE_FPTR(HWND_UserUnmarshal)
-            ,XFG_TRAMPOLINE_FPTR(HWND_UserFree)
+            (USER_MARSHAL_SIZING_ROUTINE)XFG_TRAMPOLINE_FPTR(HWND_UserSize)
+            ,(USER_MARSHAL_MARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(HWND_UserMarshal)
+            ,(USER_MARSHAL_UNMARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(HWND_UserUnmarshal)
+            ,(USER_MARSHAL_FREEING_ROUTINE)XFG_TRAMPOLINE_FPTR(HWND_UserFree)
             
             }
             ,
             {
-            XFG_TRAMPOLINE_FPTR(VARIANT_UserSize)
-            ,XFG_TRAMPOLINE_FPTR(VARIANT_UserMarshal)
-            ,XFG_TRAMPOLINE_FPTR(VARIANT_UserUnmarshal)
-            ,XFG_TRAMPOLINE_FPTR(VARIANT_UserFree)
+            (USER_MARSHAL_SIZING_ROUTINE)XFG_TRAMPOLINE_FPTR(VARIANT_UserSize)
+            ,(USER_MARSHAL_MARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(VARIANT_UserMarshal)
+            ,(USER_MARSHAL_UNMARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(VARIANT_UserUnmarshal)
+            ,(USER_MARSHAL_FREEING_ROUTINE)XFG_TRAMPOLINE_FPTR(VARIANT_UserFree)
             
             }
             
@@ -6739,7 +6867,7 @@ CINTERFACE_PROXY_VTABLE(46) _IAccessible2ProxyVtbl =
 };
 
 
-static const PRPC_STUB_FUNCTION IAccessible2_table[] =
+EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IAccessible2_table[] =
 {
     STUB_FORWARDING_FUNCTION,
     STUB_FORWARDING_FUNCTION,
@@ -6927,7 +7055,7 @@ CINTERFACE_PROXY_VTABLE(49) _IAccessible2_2ProxyVtbl =
 };
 
 
-static const PRPC_STUB_FUNCTION IAccessible2_2_table[] =
+EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IAccessible2_2_table[] =
 {
     STUB_FORWARDING_FUNCTION,
     STUB_FORWARDING_FUNCTION,
@@ -7124,7 +7252,7 @@ CINTERFACE_PROXY_VTABLE(50) _IAccessible2_3ProxyVtbl =
 };
 
 
-static const PRPC_STUB_FUNCTION IAccessible2_3_table[] =
+EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IAccessible2_3_table[] =
 {
     STUB_FORWARDING_FUNCTION,
     STUB_FORWARDING_FUNCTION,
@@ -7320,7 +7448,7 @@ CINTERFACE_PROXY_VTABLE(51) _IAccessible2_4ProxyVtbl =
 };
 
 
-static const PRPC_STUB_FUNCTION IAccessible2_4_table[] =
+EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IAccessible2_4_table[] =
 {
     STUB_FORWARDING_FUNCTION,
     STUB_FORWARDING_FUNCTION,
@@ -8475,6 +8603,9 @@ const CInterfaceStubVtbl _IAccessibleDocumentStubVtbl =
 /* Standard interface: __MIDL_itf_ia2_api_all_0000_0021, ver. 0.0,
    GUID={0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}} */
 
+#ifdef __cplusplus
+namespace {
+#endif
 static const MIDL_STUB_DESC Object_StubDesc = 
     {
     0,
@@ -8489,7 +8620,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     1, /* -error bounds_check flag */
     0x50002, /* Ndr library version */
     0,
-    0x8010272, /* MIDL Version 8.1.626 */
+    0x8010274, /* MIDL Version 8.1.628 */
     0,
     UserMarshalRoutines,
     0,  /* notify & notify_flag routine table */
@@ -8498,6 +8629,9 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0,   /* proxy/server info */
     0
     };
+#ifdef __cplusplus
+}
+#endif
 
 const CInterfaceProxyVtbl * const _ia2_api_all_ProxyVtblList[] = 
 {
@@ -8619,7 +8753,7 @@ int __stdcall _ia2_api_all_IID_Lookup( const IID * pIID, int * pIndex )
     
 }
 
-const ExtendedProxyFileInfo ia2_api_all_ProxyFileInfo = 
+EXTERN_C const ExtendedProxyFileInfo ia2_api_all_ProxyFileInfo = 
 {
     (PCInterfaceProxyVtblList *) & _ia2_api_all_ProxyVtblList,
     (PCInterfaceStubVtblList *) & _ia2_api_all_StubVtblList,
