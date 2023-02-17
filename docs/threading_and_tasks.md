@@ -462,6 +462,25 @@ com_sta_task_runner->PostTask(FROM_HERE, base::BindOnce(&TaskAUsingCOMSTA));
 com_sta_task_runner->PostTask(FROM_HERE, base::BindOnce(&TaskBUsingCOMSTA));
 ```
 
+## Memory ordering guarantees for posted Tasks
+
+This task system guarantees that all the memory effects of sequential execution
+before posting a task are _visible_ to the task when it starts running. In
+other words, a call to `PostTask()` and the execution of the posted task are in
+the [happens-before
+relationship](https://preshing.com/20130702/the-happens-before-relation/) with
+each other. This is true for all variants of posting a task in `::base`. The
+guarantee is also provided when posting a reply with `PostTaskAndReply()`.
+
+Chrome tasks commonly access memory beyond the immediate data copied into the
+`base::OnceCallback`, and this happens-before relationship allows to avoid
+additional synchronization within the tasks themselves.
+
+It helps to think of the task posting operation as implying a _transfer_ of all
+data necessary for task execution to the target task runner. In particular, this
+means that after posting to a different task runner, the (transferred) data
+should not be accessed until the task starts running.
+
 ## Annotating Tasks with TaskTraits
 
 [`base::TaskTraits`](https://cs.chromium.org/chromium/src/base/task/task_traits.h)
