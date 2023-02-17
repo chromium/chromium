@@ -8027,6 +8027,14 @@
                     ]
                 },
                 {
+                    "name": "Enabled_InMemoryCaching_ZPSPrefetchOnSRP_RelatedSearchesIntegration",
+                    "enable_features": [
+                        "ExtractRelatedSearchesFromPrefetchedZPSResponse",
+                        "ZeroSuggestInMemoryCaching",
+                        "ZeroSuggestPrefetchingOnSRP"
+                    ]
+                },
+                {
                     "name": "Enabled_InMemoryCaching_ZPSPrefetchOnSRPAndWeb",
                     "enable_features": [
                         "ZeroSuggestInMemoryCaching",
