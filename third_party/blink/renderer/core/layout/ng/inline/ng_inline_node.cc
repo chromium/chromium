@@ -973,7 +973,6 @@ const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
     // TODO(kojii): This shouldn't happen, but is not easy to fix all cases.
     // Return nullptr so that callers can chose to fail gracefully, or
     // null-deref. crbug.com/946004
-    base::debug::DumpWithoutCrashing();
     return nullptr;
   }
 
