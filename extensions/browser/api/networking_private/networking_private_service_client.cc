@@ -41,9 +41,9 @@ base::LazyThreadPoolSequencedTaskRunner g_sequenced_task_runner =
 
 }  // namespace
 
-NetworkingPrivateServiceClient::ServiceCallbacks::ServiceCallbacks() {}
+NetworkingPrivateServiceClient::ServiceCallbacks::ServiceCallbacks() = default;
 
-NetworkingPrivateServiceClient::ServiceCallbacks::~ServiceCallbacks() {}
+NetworkingPrivateServiceClient::ServiceCallbacks::~ServiceCallbacks() = default;
 
 NetworkingPrivateServiceClient::NetworkingPrivateServiceClient(
     std::unique_ptr<WiFiService> wifi_service)

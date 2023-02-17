@@ -41,7 +41,8 @@ NetworkingPrivateGetManagedPropertiesFunction::Run() {
 ////////////////////////////////////////////////////////////////////////////////
 // NetworkingPrivateGetStateFunction
 
-NetworkingPrivateGetStateFunction::~NetworkingPrivateGetStateFunction() {}
+NetworkingPrivateGetStateFunction::~NetworkingPrivateGetStateFunction() =
+    default;
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
   return RespondNow(Error(kStubError));
@@ -83,7 +84,8 @@ NetworkingPrivateForgetNetworkFunction::Run() {
 ////////////////////////////////////////////////////////////////////////////////
 // NetworkingPrivateGetNetworksFunction
 
-NetworkingPrivateGetNetworksFunction::~NetworkingPrivateGetNetworksFunction() {}
+NetworkingPrivateGetNetworksFunction::~NetworkingPrivateGetNetworksFunction() =
+    default;
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
   return RespondNow(Error(kStubError));

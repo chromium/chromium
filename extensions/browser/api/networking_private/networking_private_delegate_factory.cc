@@ -25,9 +25,11 @@ namespace extensions {
 
 using content::BrowserContext;
 
-NetworkingPrivateDelegateFactory::UIDelegateFactory::UIDelegateFactory() {}
+NetworkingPrivateDelegateFactory::UIDelegateFactory::UIDelegateFactory() =
+    default;
 
-NetworkingPrivateDelegateFactory::UIDelegateFactory::~UIDelegateFactory() {}
+NetworkingPrivateDelegateFactory::UIDelegateFactory::~UIDelegateFactory() =
+    default;
 
 // static
 NetworkingPrivateDelegate*

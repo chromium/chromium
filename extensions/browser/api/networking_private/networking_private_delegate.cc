@@ -8,11 +8,11 @@
 
 namespace extensions {
 
-NetworkingPrivateDelegate::UIDelegate::UIDelegate() {}
+NetworkingPrivateDelegate::UIDelegate::UIDelegate() = default;
 
-NetworkingPrivateDelegate::UIDelegate::~UIDelegate() {}
+NetworkingPrivateDelegate::UIDelegate::~UIDelegate() = default;
 
-NetworkingPrivateDelegate::NetworkingPrivateDelegate() {}
+NetworkingPrivateDelegate::NetworkingPrivateDelegate() = default;
 
 NetworkingPrivateDelegate::~NetworkingPrivateDelegate() {
 }
