@@ -155,7 +155,7 @@ void WebEngineContentRendererClient::RenderThreadStarted() {
           switches::kBrowserTest)) {
     memory_pressure_monitor_ =
         std::make_unique<memory_pressure::MultiSourceMemoryPressureMonitor>();
-    memory_pressure_monitor_->Start();
+    memory_pressure_monitor_->MaybeStartPlatformVoter();
   }
 }
 

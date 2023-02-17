@@ -36,7 +36,7 @@ MultiSourceMemoryPressureMonitor::~MultiSourceMemoryPressureMonitor() {
   system_evaluator_.reset();
 }
 
-void MultiSourceMemoryPressureMonitor::Start() {
+void MultiSourceMemoryPressureMonitor::MaybeStartPlatformVoter() {
   system_evaluator_ =
       SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(this);
 }
@@ -51,12 +51,6 @@ std::unique_ptr<MemoryPressureVoter>
 MultiSourceMemoryPressureMonitor::CreateVoter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return aggregator_.CreateVoter();
-}
-
-void MultiSourceMemoryPressureMonitor::SetDispatchCallback(
-    const DispatchCallback& callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dispatch_callback_ = callback;
 }
 
 void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
@@ -87,6 +81,14 @@ void MultiSourceMemoryPressureMonitor::SetSystemEvaluator(
     std::unique_ptr<SystemMemoryPressureEvaluator> evaluator) {
   DCHECK(!system_evaluator_);
   system_evaluator_ = std::move(evaluator);
+}
+
+void MultiSourceMemoryPressureMonitor::SetDispatchCallbackForTesting(
+    const DispatchCallback& callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Must be called before `Start()`.
+  DCHECK(!system_evaluator_);
+  dispatch_callback_ = callback;
 }
 
 }  // namespace memory_pressure

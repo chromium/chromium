@@ -23,10 +23,5 @@ FakeMemoryPressureMonitor::GetCurrentPressureLevel() const {
   return memory_pressure_level_;
 }
 
-void FakeMemoryPressureMonitor::SetDispatchCallback(
-    const DispatchCallback& callback) {
-  LOG(ERROR) << "FakeMemoryPressureMonitor::SetDispatchCallback";
-}
-
 }  // namespace test
 }  // namespace memory_pressure

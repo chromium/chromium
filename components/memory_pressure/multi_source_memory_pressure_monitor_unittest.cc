@@ -13,19 +13,24 @@
 
 namespace memory_pressure {
 
+TEST(MultiSourceMemoryPressureMonitorTest, NoEvaluatorUponConstruction) {
+  MultiSourceMemoryPressureMonitor monitor;
+  EXPECT_FALSE(monitor.system_evaluator_for_testing());
+}
+
 TEST(MultiSourceMemoryPressureMonitorTest, RunDispatchCallback) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
 
   MultiSourceMemoryPressureMonitor monitor;
-  monitor.Start();
-  auto* aggregator = monitor.aggregator_for_testing();
-
   bool callback_called = false;
-  monitor.SetDispatchCallback(base::BindLambdaForTesting(
+  monitor.SetDispatchCallbackForTesting(base::BindLambdaForTesting(
       [&](base::MemoryPressureListener::MemoryPressureLevel) {
         callback_called = true;
       }));
+  monitor.MaybeStartPlatformVoter();
+  auto* const aggregator = monitor.aggregator_for_testing();
+
   aggregator->OnVoteForTesting(
       absl::nullopt, base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
   aggregator->NotifyListenersForTesting();

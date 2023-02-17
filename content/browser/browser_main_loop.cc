@@ -375,7 +375,7 @@ std::unique_ptr<base::MemoryPressureMonitor> CreateMemoryPressureMonitor(
   // No memory monitor on other platforms...
 
   if (monitor)
-    monitor->Start();
+    monitor->MaybeStartPlatformVoter();
 
   return monitor;
 }
