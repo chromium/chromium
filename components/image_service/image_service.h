@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/image_service/mojom/image_service.mojom.h"
@@ -21,7 +20,7 @@ namespace image_service {
 
 // Used to get the image URL associated with a cluster. It doesn't actually
 // fetch the image, that's up to the UI to do.
-class COMPONENT_EXPORT(IMAGE_SERVICE) ImageService : public KeyedService {
+class ImageService : public KeyedService {
  public:
   using ResultCallback = base::OnceCallback<void(const GURL& image_url)>;
 

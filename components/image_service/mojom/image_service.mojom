@@ -4,6 +4,8 @@
 
 module image_service.mojom;
 
+import "url/mojom/url.mojom";
+
 // The UI client that's calling the service. Used to track usage.
 enum ClientId {
   // Approved as part of launch/4224996.
@@ -21,4 +23,19 @@ struct Options {
   // Turn these off if any UI client wants to disable a source.
   bool suggest_images = true;
   bool optimization_guide_images = true;
+};
+
+struct ImageResult {
+  // URL of the representative image for this page.
+  url.mojom.Url image_url;
+
+  // TODO(tommycli): Add attribution fields below.
+};
+
+// Browser-side handler for requests from the WebUI page.
+interface ImageServiceHandler {
+  // Gets the representative image URL for `page_url`.
+  GetPageImageUrl(ClientId client_id,
+                  url.mojom.Url page_url,
+                  Options options) => (ImageResult? result);
 };

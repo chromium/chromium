@@ -4,6 +4,7 @@ include_rules = [
   "+components/search_engines",
   "+components/sync/driver",
   "+components/unified_consent",
+  "+mojo/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
 ]

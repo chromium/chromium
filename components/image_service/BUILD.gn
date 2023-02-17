@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("image_service") {
-  defines = [ "IS_IMAGE_SERVICE_IMPL" ]
+source_set("image_service") {
   sources = [
     "features.cc",
     "features.h",
     "image_service.cc",
     "image_service.h",
+    "image_service_handler.cc",
+    "image_service_handler.h",
   ]
   deps = [
     "mojom:mojo_bindings",
