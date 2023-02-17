@@ -10,9 +10,9 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/active_ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/connection.h"
@@ -81,62 +81,74 @@ class RTC_EXPORT BridgeIceController
  private:
   void MaybeStartPinging();
   void SelectAndPingConnection();
-  void HandlePingResult(cricket::IceControllerInterface::PingResult result);
+
+  void DoPerformPing(const cricket::IceControllerInterface::PingResult result);
+  void DoPerformPing(const cricket::Connection* connection,
+                     absl::optional<int> recheck_delay_ms);
+  void DoSchedulePingRecheck(absl::optional<int> recheck_delay_ms);
 
   void SortAndSwitchToBestConnection(cricket::IceSwitchReason reason);
+
   void DoSortAndSwitchToBestConnection(cricket::IceSwitchReason reason);
-  void HandleSwitchResult(cricket::IceSwitchReason reason_for_switch,
-                          cricket::IceControllerInterface::SwitchResult result);
+  void DoPerformSwitch(
+      cricket::IceSwitchReason reason_for_switch,
+      const cricket::IceControllerInterface::SwitchResult result);
+  void DoPerformSwitch(cricket::IceSwitchReason reason_for_switch,
+                       const cricket::Connection* connection,
+                       absl::optional<cricket::IceRecheckEvent> recheck_event,
+                       base::span<const cricket::Connection* const>
+                           connections_to_forget_state_on);
+  void DoScheduleSwitchRecheck(
+      absl::optional<cricket::IceRecheckEvent> recheck_event);
+
   void UpdateStateOnConnectionsResorted();
+  void UpdateStateOnPrune();
 
   void PruneConnections();
+
+  // Callbacks from ICE interaction proxy.
+
+  void OnPingProposalAccepted(const IcePingProposal& proposal);
+  void OnPingProposalRejected(const IcePingProposal& proposal);
+
+  void OnSwitchProposalAccepted(const IceSwitchProposal& proposal);
+  void OnSwitchProposalRejected(const IceSwitchProposal& proposal);
+
+  void OnPruneProposalAccepted(const IcePruneProposal& proposal);
+  void OnPruneProposalRejected(const IcePruneProposal& proposal);
 
   // Receives ICE interaction requests and delegates them to the ICE controller
   // to act on as appropriate.
   class IceInteractionProxy : public IceInteractionInterface {
    public:
-    IceInteractionProxy() = default;
+    IceInteractionProxy(BridgeIceController* controller,
+                        scoped_refptr<base::SequencedTaskRunner> task_runner);
     ~IceInteractionProxy() override = default;
 
-    void AcceptPingProposal(const IcePingProposal& ping_proposal) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    }
-    void RejectPingProposal(const IcePingProposal& ping_proposal) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    }
+    void AcceptPingProposal(const IcePingProposal& proposal) override;
+    void RejectPingProposal(const IcePingProposal& proposal) override;
 
-    void AcceptSwitchProposal(
-        const IceSwitchProposal& switch_proposal) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    }
-    void RejectSwitchProposal(
-        const IceSwitchProposal& switch_proposal) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    }
+    void AcceptSwitchProposal(const IceSwitchProposal& proposal) override;
+    void RejectSwitchProposal(const IceSwitchProposal& proposal) override;
 
-    void AcceptPruneProposal(const IcePruneProposal& prune_proposal) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    }
-    void RejectPruneProposal(const IcePruneProposal& prune_proposal) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-    }
+    void AcceptPruneProposal(const IcePruneProposal& proposal) override;
+    void RejectPruneProposal(const IcePruneProposal& proposal) override;
 
     webrtc::RTCError PingIceConnection(
-        const IceConnection& connection) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-      return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
-    }
+        const IceConnection& connection) override;
     webrtc::RTCError SwitchToIceConnection(
-        const IceConnection& connection) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-      return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
-    }
+        const IceConnection& connection) override;
     webrtc::RTCError PruneIceConnections(
-        base::span<const IceConnection> connections_to_prune) override {
-      NOTIMPLEMENTED();  // TODO(crbug.com/1369096) implement!
-      return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
-    }
+        base::span<const IceConnection> connections_to_prune) override;
+
+   private:
+    BridgeIceController* controller_;
+    scoped_refptr<base::SequencedTaskRunner> task_runner_;
   };
+
+  void DoPerformPrune(base::span<const cricket::Connection* const> connections);
+
+  const cricket::Connection* FindConnection(uint32_t id) const;
 
   const scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
 

@@ -68,6 +68,37 @@ std::string IceSwitchReasonToString(IceSwitchReason reason) {
   }
 }
 
+cricket::IceSwitchReason ConvertToWebrtcIceSwitchReason(
+    IceSwitchReason reason) {
+  switch (reason) {
+    case IceSwitchReason::kRemoteCandidateGenerationChange:
+      return cricket::IceSwitchReason::REMOTE_CANDIDATE_GENERATION_CHANGE;
+    case IceSwitchReason::kNetworkPreferenceChange:
+      return cricket::IceSwitchReason::NETWORK_PREFERENCE_CHANGE;
+    case IceSwitchReason::kNewConnectionFromLocalCandidate:
+      return cricket::IceSwitchReason::NEW_CONNECTION_FROM_LOCAL_CANDIDATE;
+    case IceSwitchReason::kNewConnectionFromRemoteCandidate:
+      return cricket::IceSwitchReason::NEW_CONNECTION_FROM_REMOTE_CANDIDATE;
+    case IceSwitchReason::kNewConnectionFromUnknownRemoteAddress:
+      return cricket::IceSwitchReason::
+          NEW_CONNECTION_FROM_UNKNOWN_REMOTE_ADDRESS;
+    case IceSwitchReason::kNominationOnControlledSide:
+      return cricket::IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE;
+    case IceSwitchReason::kDataReceived:
+      return cricket::IceSwitchReason::DATA_RECEIVED;
+    case IceSwitchReason::kConnectStateChange:
+      return cricket::IceSwitchReason::CONNECT_STATE_CHANGE;
+    case IceSwitchReason::kSelectedConnectionDestroyed:
+      return cricket::IceSwitchReason::SELECTED_CONNECTION_DESTROYED;
+    case IceSwitchReason::kIceControllerRecheck:
+      return cricket::IceSwitchReason::ICE_CONTROLLER_RECHECK;
+    case IceSwitchReason::kUnknown:
+    default:
+      NOTREACHED();
+      return cricket::IceSwitchReason::UNKNOWN;
+  }
+}
+
 IceRecheckEvent::IceRecheckEvent(const cricket::IceRecheckEvent& event)
     : reason(ConvertFromWebrtcIceSwitchReason(event.reason)),
       recheck_delay_ms(event.recheck_delay_ms) {}

@@ -36,6 +36,7 @@ enum class IceSwitchReason {
 std::string IceSwitchReasonToString(IceSwitchReason reason);
 RTC_EXPORT IceSwitchReason
 ConvertFromWebrtcIceSwitchReason(cricket::IceSwitchReason reason);
+cricket::IceSwitchReason ConvertToWebrtcIceSwitchReason(IceSwitchReason reason);
 
 // Represents a future event to check whether an ICE switch should be performed.
 struct IceRecheckEvent {

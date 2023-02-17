@@ -45,35 +45,37 @@ TEST_F(IceSwitchProposalTest, Construct) {
   IceControllerInterface::SwitchResult switch_result{conn, recheck_event,
                                                      conns_to_forget};
   EXPECT_THAT(IceSwitchProposal(reason, switch_result, reply_expected),
-              SwitchProposalEq(reason, switch_result));
+              SwitchProposalEq(reason, switch_result, reply_expected));
 
   IceControllerInterface::SwitchResult empty_switch_result{
       absl::nullopt, recheck_event, conns_to_forget};
   EXPECT_THAT(IceSwitchProposal(reason, empty_switch_result, reply_expected),
-              SwitchProposalEq(reason, empty_switch_result));
+              SwitchProposalEq(reason, empty_switch_result, reply_expected));
 
   IceControllerInterface::SwitchResult null_switch_result{
       nullptr, recheck_event, conns_to_forget};
   EXPECT_THAT(IceSwitchProposal(reason, null_switch_result, reply_expected),
-              SwitchProposalEq(reason, null_switch_result));
+              SwitchProposalEq(reason, null_switch_result, reply_expected));
 
   IceControllerInterface::SwitchResult switch_result_no_recheck{
       conn, absl::nullopt, conns_to_forget};
   EXPECT_THAT(
       IceSwitchProposal(reason, switch_result_no_recheck, reply_expected),
-      SwitchProposalEq(reason, switch_result_no_recheck));
+      SwitchProposalEq(reason, switch_result_no_recheck, reply_expected));
 
   IceControllerInterface::SwitchResult switch_result_empty_conns_to_forget{
       conn, recheck_event, empty_conns_to_forget};
   EXPECT_THAT(IceSwitchProposal(reason, switch_result_empty_conns_to_forget,
                                 reply_expected),
-              SwitchProposalEq(reason, switch_result_empty_conns_to_forget));
+              SwitchProposalEq(reason, switch_result_empty_conns_to_forget,
+                               reply_expected));
 
   IceControllerInterface::SwitchResult switch_result_null_conns_to_forget{
       conn, recheck_event, null_conns_to_forget};
   EXPECT_THAT(IceSwitchProposal(reason, switch_result_null_conns_to_forget,
                                 reply_expected),
-              SwitchProposalEq(reason, switch_result_null_conns_to_forget));
+              SwitchProposalEq(reason, switch_result_null_conns_to_forget,
+                               reply_expected));
 }
 
 }  // unnamed namespace

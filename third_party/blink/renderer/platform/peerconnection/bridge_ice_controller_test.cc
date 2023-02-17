@@ -5,8 +5,11 @@
 #include "third_party/webrtc_overrides/p2p/base/bridge_ice_controller.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,6 +60,7 @@ using ::cricket::MockIceControllerFactory;
 using ::cricket::NominationMode;
 
 using ::testing::_;
+using ::testing::Combine;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::IsEmpty;
@@ -64,8 +68,12 @@ using ::testing::NiceMock;
 using ::testing::Ref;
 using ::testing::Return;
 using ::testing::Sequence;
+using ::testing::StrictMock;
 using ::testing::Test;
+using ::testing::TestParamInfo;
+using ::testing::Values;
 using ::testing::WithArgs;
+using ::testing::WithParamInterface;
 
 using ::blink::ConnectionEq;
 using ::blink::PingProposalEq;
@@ -74,8 +82,6 @@ using ::blink::SwitchProposalEq;
 
 using ::base::test::SingleThreadTaskEnvironment;
 using ::base::test::TaskEnvironment;
-
-using NiceMockIceController = NiceMock<MockIceController>;
 
 static const std::string kIp = "1.2.3.4";
 static const std::string kIpTwo = "1.3.5.7";
@@ -129,7 +135,56 @@ class MockIceControllerObserver : public IceControllerObserverInterface {
               (override));
 };
 
-class BridgeIceControllerTest : public blink::FakeConnectionTestBase {};
+class BridgeIceControllerTest : public ::blink::FakeConnectionTestBase {};
+
+enum class ProposalResponse {
+  ACCEPT,
+  REJECT,
+};
+using PingProposalResponse = ProposalResponse;
+using SwitchProposalResponse = ProposalResponse;
+using PruneProposalResponse = ProposalResponse;
+
+class BridgeIceControllerProposalTest
+    : public BridgeIceControllerTest,
+      public WithParamInterface<std::tuple<PingProposalResponse,
+                                           SwitchProposalResponse,
+                                           PruneProposalResponse>> {
+ protected:
+  BridgeIceControllerProposalTest()
+      : should_accept_ping_proposal(std::get<0>(GetParam()) ==
+                                    ProposalResponse::ACCEPT),
+        should_accept_switch_proposal(std::get<1>(GetParam()) ==
+                                      ProposalResponse::ACCEPT),
+        should_accept_prune_proposal(std::get<2>(GetParam()) ==
+                                     ProposalResponse::ACCEPT) {}
+
+  const bool should_accept_ping_proposal;
+  const bool should_accept_switch_proposal;
+  const bool should_accept_prune_proposal;
+};
+
+std::string ToTestSuffix(std::string type, ProposalResponse response) {
+  return base::StrCat(
+      {(response == ProposalResponse::ACCEPT ? "Accept" : "Reject"), "", type});
+}
+
+std::string MakeTestName(
+    const TestParamInfo<BridgeIceControllerProposalTest::ParamType>& info) {
+  return base::StrCat({ToTestSuffix("Ping", std::get<0>(info.param)), "_",
+                       ToTestSuffix("Switch", std::get<1>(info.param)), "_",
+                       ToTestSuffix("Prune", std::get<2>(info.param))});
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BridgeIceControllerProposalTest,
+                         Combine(Values(PingProposalResponse::ACCEPT,
+                                        PingProposalResponse::REJECT),
+                                 Values(SwitchProposalResponse::ACCEPT,
+                                        SwitchProposalResponse::REJECT),
+                                 Values(PruneProposalResponse::ACCEPT,
+                                        PruneProposalResponse::REJECT)),
+                         MakeTestName);
 
 TEST_F(BridgeIceControllerTest, ObserverAttached) {
   MockIceAgent agent;
@@ -168,10 +223,10 @@ TEST_F(BridgeIceControllerTest, PassthroughIceControllerInterface) {
 
   const Connection* conn = GetConnection(kIp, kPort);
   ASSERT_NE(conn, nullptr);
-  const Connection* connTwo = GetConnection(kIpTwo, kPort);
-  ASSERT_NE(connTwo, nullptr);
-  const Connection* connThree = GetConnection(kIpThree, kPort);
-  ASSERT_NE(connThree, nullptr);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  ASSERT_NE(conn_two, nullptr);
+  const Connection* conn_three = GetConnection(kIpThree, kPort);
+  ASSERT_NE(conn_three, nullptr);
 
   EXPECT_CALL(*wrapped, SetIceConfig(Ref(*kIceConfig)));
   controller.SetIceConfig(*kIceConfig);
@@ -204,59 +259,68 @@ TEST_F(BridgeIceControllerTest, PassthroughIceControllerInterface) {
   EXPECT_CALL(observer2, OnObserverAttached(_));
   controller.AttachObserver(&observer2);
 
-  EXPECT_CALL(*wrapped, AddConnection(connTwo));
+  EXPECT_CALL(*wrapped, AddConnection(conn_two));
   EXPECT_CALL(observer1, OnConnectionAdded).Times(0);
-  EXPECT_CALL(observer2, OnConnectionAdded(ConnectionEq(connTwo)));
-  controller.OnConnectionAdded(connTwo);
+  EXPECT_CALL(observer2, OnConnectionAdded(ConnectionEq(conn_two)));
+  controller.OnConnectionAdded(conn_two);
 
-  EXPECT_CALL(*wrapped, SetSelectedConnection(connTwo));
+  EXPECT_CALL(*wrapped, SetSelectedConnection(conn_two));
   EXPECT_CALL(observer1, OnConnectionSwitched).Times(0);
-  EXPECT_CALL(observer2, OnConnectionSwitched(ConnectionEq(connTwo)));
-  controller.OnConnectionSwitched(connTwo);
+  EXPECT_CALL(observer2, OnConnectionSwitched(ConnectionEq(conn_two)));
+  controller.OnConnectionSwitched(conn_two);
 
-  EXPECT_CALL(*wrapped, OnConnectionDestroyed(connTwo));
+  EXPECT_CALL(*wrapped, OnConnectionDestroyed(conn_two));
   EXPECT_CALL(observer1, OnConnectionDestroyed).Times(0);
-  EXPECT_CALL(observer2, OnConnectionDestroyed(ConnectionEq(connTwo)));
-  controller.OnConnectionDestroyed(connTwo);
+  EXPECT_CALL(observer2, OnConnectionDestroyed(ConnectionEq(conn_two)));
+  controller.OnConnectionDestroyed(conn_two);
 
   EXPECT_CALL(observer2, OnObserverDetached);
   controller.AttachObserver(nullptr);
 
-  EXPECT_CALL(*wrapped, AddConnection(connThree));
+  EXPECT_CALL(*wrapped, AddConnection(conn_three));
   EXPECT_CALL(observer1, OnConnectionAdded).Times(0);
   EXPECT_CALL(observer2, OnConnectionAdded).Times(0);
-  controller.OnConnectionAdded(connThree);
+  controller.OnConnectionAdded(conn_three);
 
-  EXPECT_CALL(*wrapped, SetSelectedConnection(connThree));
+  EXPECT_CALL(*wrapped, SetSelectedConnection(conn_three));
   EXPECT_CALL(observer1, OnConnectionSwitched).Times(0);
   EXPECT_CALL(observer2, OnConnectionSwitched).Times(0);
-  controller.OnConnectionSwitched(connThree);
+  controller.OnConnectionSwitched(conn_three);
 
-  EXPECT_CALL(*wrapped, OnConnectionDestroyed(connThree));
+  EXPECT_CALL(*wrapped, OnConnectionDestroyed(conn_three));
   EXPECT_CALL(observer1, OnConnectionDestroyed).Times(0);
   EXPECT_CALL(observer2, OnConnectionDestroyed).Times(0);
-  controller.OnConnectionDestroyed(connThree);
+  controller.OnConnectionDestroyed(conn_three);
 }
 
 TEST_F(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<NiceMockIceController> will_move =
-      std::make_unique<NiceMockIceController>(IceControllerFactoryArgs{});
-  NiceMockIceController* wrapped = will_move.get();
-  EXPECT_CALL(observer, OnObserverAttached(_));
+  std::unique_ptr<MockIceController> will_move =
+      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  MockIceController* wrapped = will_move.get();
+
+  scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
+  EXPECT_CALL(observer, OnObserverAttached(_))
+      .WillOnce(
+          WithArgs<0>([&](auto ia) { interaction_agent = std::move(ia); }));
   BridgeIceController controller(env.GetMainThreadTaskRunner(), &observer,
                                  &agent, std::move(will_move));
 
   const Connection* conn = GetConnection(kIp, kPort);
   ASSERT_NE(conn, nullptr);
-  const Connection* connTwo = GetConnection(kIpTwo, kPort);
-  ASSERT_NE(connTwo, nullptr);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  ASSERT_NE(conn_two, nullptr);
 
-  IceSwitchReason reason = IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE;
-  std::vector<const Connection*> conns_to_forget{connTwo};
-  int recheck_delay_ms = 10;
-  IceControllerInterface::SwitchResult switch_result{
+  // Set default native ICE controller behaviour.
+  const std::vector<const Connection*> connection_set{conn, conn_two};
+  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
+
+  const IceSwitchReason reason = IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE;
+  const std::vector<const Connection*> conns_to_forget{conn_two};
+  const int recheck_delay_ms = 10;
+  const IceControllerInterface::SwitchResult switch_result{
       conn,
       IceRecheckEvent(IceSwitchReason::ICE_CONTROLLER_RECHECK,
                       recheck_delay_ms),
@@ -267,8 +331,8 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
   EXPECT_CALL(*wrapped, ShouldSwitchConnection(reason, conn))
       .InSequence(check_then_switch)
       .WillOnce(Return(switch_result));
-  EXPECT_CALL(observer,
-              OnSwitchProposal(SwitchProposalEq(reason, switch_result)))
+  EXPECT_CALL(observer, OnSwitchProposal(SwitchProposalEq(
+                            reason, switch_result, /*reply_expected*/ false)))
       .InSequence(check_then_switch);
   EXPECT_CALL(agent, SwitchSelectedConnection(conn, reason))
       .InSequence(check_then_switch);
@@ -288,9 +352,9 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
       .InSequence(recheck_sort)
       .WillOnce(Return(kEmptySwitchResult));
   // Empty switch proposal could be eliminated, but reason may be interesting.
-  EXPECT_CALL(observer,
-              OnSwitchProposal(SwitchProposalEq(
-                  IceSwitchReason::ICE_CONTROLLER_RECHECK, kEmptySwitchResult)))
+  EXPECT_CALL(observer, OnSwitchProposal(SwitchProposalEq(
+                            IceSwitchReason::ICE_CONTROLLER_RECHECK,
+                            kEmptySwitchResult, /*reply_expected*/ false)))
       .InSequence(recheck_sort);
   EXPECT_CALL(agent, ForgetLearnedStateForConnections(IsEmpty()))
       .InSequence(recheck_sort);
@@ -305,28 +369,39 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
   env.FastForwardBy(kTick);
 }
 
-TEST_F(BridgeIceControllerTest, HandlesImmediateSortAndSwitchRequest) {
+TEST_P(BridgeIceControllerProposalTest, HandlesImmediateSortAndSwitchRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<NiceMockIceController> will_move =
-      std::make_unique<NiceMockIceController>(IceControllerFactoryArgs{});
-  NiceMockIceController* wrapped = will_move.get();
-  EXPECT_CALL(observer, OnObserverAttached(_));
+  std::unique_ptr<MockIceController> will_move =
+      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  MockIceController* wrapped = will_move.get();
+
+  scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
+  EXPECT_CALL(observer, OnObserverAttached(_))
+      .WillOnce(
+          WithArgs<0>([&](auto ia) { interaction_agent = std::move(ia); }));
   BridgeIceController controller(env.GetMainThreadTaskRunner(), &observer,
                                  &agent, std::move(will_move));
 
   const Connection* conn = GetConnection(kIp, kPort);
   ASSERT_NE(conn, nullptr);
-  const Connection* connTwo = GetConnection(kIpTwo, kPort);
-  ASSERT_NE(connTwo, nullptr);
-  const Connection* connThree = GetConnection(kIpThree, kPort);
-  ASSERT_NE(connThree, nullptr);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  ASSERT_NE(conn_two, nullptr);
+  const Connection* conn_three = GetConnection(kIpThree, kPort);
+  ASSERT_NE(conn_three, nullptr);
 
-  IceSwitchReason reason = IceSwitchReason::NEW_CONNECTION_FROM_LOCAL_CANDIDATE;
-  std::vector<const Connection*> conns_to_forget{connTwo};
-  std::vector<const Connection*> conns_to_prune{connThree};
-  int recheck_delay_ms = 10;
-  IceControllerInterface::SwitchResult switch_result{
+  // Set default native ICE controller behaviour.
+  const std::vector<const Connection*> connection_set{conn, conn_two,
+                                                      conn_three};
+  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
+
+  const IceSwitchReason reason =
+      IceSwitchReason::NEW_CONNECTION_FROM_LOCAL_CANDIDATE;
+  const std::vector<const Connection*> conns_to_forget{conn_two};
+  const std::vector<const Connection*> conns_to_prune{conn_three};
+  const int recheck_delay_ms = 10;
+  const IceControllerInterface::SwitchResult switch_result{
       conn,
       IceRecheckEvent(IceSwitchReason::ICE_CONTROLLER_RECHECK,
                       recheck_delay_ms),
@@ -337,18 +412,43 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSortAndSwitchRequest) {
   EXPECT_CALL(*wrapped, SortAndSwitchConnection(reason))
       .InSequence(sort_and_switch)
       .WillOnce(Return(switch_result));
-  EXPECT_CALL(observer,
-              OnSwitchProposal(SwitchProposalEq(reason, switch_result)))
-      .InSequence(sort_and_switch);
-  EXPECT_CALL(agent, SwitchSelectedConnection(conn, reason))
-      .InSequence(sort_and_switch);
+  EXPECT_CALL(observer, OnSwitchProposal(_))
+      .InSequence(sort_and_switch)
+      .WillOnce(WithArgs<0>([&](auto switch_proposal) {
+        EXPECT_THAT(switch_proposal, SwitchProposalEq(reason, switch_result,
+                                                      /*reply_expected*/ true));
+        if (should_accept_switch_proposal) {
+          interaction_agent->AcceptSwitchProposal(switch_proposal);
+        } else {
+          interaction_agent->RejectSwitchProposal(switch_proposal);
+        }
+      }));
+  // Only expect a switch to occur if switch proposal is accepted. Further state
+  // update occurs regardless.
+  if (should_accept_switch_proposal) {
+    EXPECT_CALL(agent, SwitchSelectedConnection(conn, reason))
+        .InSequence(sort_and_switch);
+  }
   EXPECT_CALL(*wrapped, PruneConnections())
       .InSequence(sort_and_switch)
       .WillOnce(Return(conns_to_prune));
-  EXPECT_CALL(observer, OnPruneProposal(PruneProposalEq(conns_to_prune)))
-      .InSequence(sort_and_switch);
-  EXPECT_CALL(agent, PruneConnections(ElementsAreArray(conns_to_prune)))
-      .InSequence(sort_and_switch);
+  EXPECT_CALL(observer, OnPruneProposal(_))
+      .InSequence(sort_and_switch)
+      .WillOnce(WithArgs<0>([&](auto prune_proposal) {
+        EXPECT_THAT(prune_proposal,
+                    PruneProposalEq(conns_to_prune, /*reply_expected*/ true));
+        if (should_accept_prune_proposal) {
+          interaction_agent->AcceptPruneProposal(prune_proposal);
+        } else {
+          interaction_agent->RejectPruneProposal(prune_proposal);
+        }
+      }));
+  // Only expect a pruning to occur if prune proposal is accepted. Recheck
+  // occurs regardless.
+  if (should_accept_prune_proposal) {
+    EXPECT_CALL(agent, PruneConnections(ElementsAreArray(conns_to_prune)))
+        .InSequence(sort_and_switch);
+  }
 
   controller.OnImmediateSortAndSwitchRequest(reason);
 
@@ -364,9 +464,9 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSortAndSwitchRequest) {
       .InSequence(recheck_sort)
       .WillOnce(Return(IceControllerInterface::SwitchResult{}));
   // Empty switch proposal could be eliminated, but reason may be interesting.
-  EXPECT_CALL(observer,
-              OnSwitchProposal(SwitchProposalEq(
-                  IceSwitchReason::ICE_CONTROLLER_RECHECK, kEmptySwitchResult)))
+  EXPECT_CALL(observer, OnSwitchProposal(SwitchProposalEq(
+                            IceSwitchReason::ICE_CONTROLLER_RECHECK,
+                            kEmptySwitchResult, /*reply_expected*/ false)))
       .InSequence(recheck_sort);
   EXPECT_CALL(*wrapped, PruneConnections())
       .InSequence(recheck_sort)
@@ -378,22 +478,31 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSortAndSwitchRequest) {
   env.FastForwardBy(kTick);
 }
 
-TEST_F(BridgeIceControllerTest, HandlesSortAndSwitchRequest) {
+TEST_P(BridgeIceControllerProposalTest, HandlesSortAndSwitchRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<NiceMockIceController> will_move =
-      std::make_unique<NiceMockIceController>(IceControllerFactoryArgs{});
-  NiceMockIceController* wrapped = will_move.get();
-  EXPECT_CALL(observer, OnObserverAttached(_));
+  std::unique_ptr<MockIceController> will_move =
+      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  MockIceController* wrapped = will_move.get();
+
+  scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
+  EXPECT_CALL(observer, OnObserverAttached(_))
+      .WillOnce(
+          WithArgs<0>([&](auto ia) { interaction_agent = std::move(ia); }));
   BridgeIceController controller(env.GetMainThreadTaskRunner(), &observer,
                                  &agent, std::move(will_move));
 
   const Connection* conn = GetConnection(kIp, kPort);
   ASSERT_NE(conn, nullptr);
-  const Connection* connTwo = GetConnection(kIpTwo, kPort);
-  ASSERT_NE(connTwo, nullptr);
+  const Connection* conn_two = GetConnection(kIpTwo, kPort);
+  ASSERT_NE(conn_two, nullptr);
 
-  IceSwitchReason reason = IceSwitchReason::NETWORK_PREFERENCE_CHANGE;
+  // Set default native ICE controller behaviour.
+  const std::vector<const Connection*> connection_set{conn, conn_two};
+  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
+
+  const IceSwitchReason reason = IceSwitchReason::NETWORK_PREFERENCE_CHANGE;
 
   // No action should occur immediately
   EXPECT_CALL(agent, UpdateConnectionStates()).Times(0);
@@ -403,9 +512,9 @@ TEST_F(BridgeIceControllerTest, HandlesSortAndSwitchRequest) {
 
   controller.OnSortAndSwitchRequest(reason);
 
-  std::vector<const Connection*> conns_to_forget{connTwo};
-  int recheck_delay_ms = 10;
-  IceControllerInterface::SwitchResult switch_result{
+  const std::vector<const Connection*> conns_to_forget{conn_two};
+  const int recheck_delay_ms = 10;
+  const IceControllerInterface::SwitchResult switch_result{
       conn,
       IceRecheckEvent(IceSwitchReason::ICE_CONTROLLER_RECHECK,
                       recheck_delay_ms),
@@ -417,28 +526,54 @@ TEST_F(BridgeIceControllerTest, HandlesSortAndSwitchRequest) {
   EXPECT_CALL(*wrapped, SortAndSwitchConnection(reason))
       .InSequence(sort_and_switch)
       .WillOnce(Return(switch_result));
-  EXPECT_CALL(observer,
-              OnSwitchProposal(SwitchProposalEq(reason, switch_result)))
-      .InSequence(sort_and_switch);
-  EXPECT_CALL(agent, SwitchSelectedConnection(conn, reason))
-      .InSequence(sort_and_switch);
+  EXPECT_CALL(observer, OnSwitchProposal(_))
+      .InSequence(sort_and_switch)
+      .WillOnce(WithArgs<0>([&](auto switch_proposal) {
+        EXPECT_THAT(switch_proposal, SwitchProposalEq(reason, switch_result,
+                                                      /*reply_expected*/ true));
+        if (should_accept_switch_proposal) {
+          interaction_agent->AcceptSwitchProposal(switch_proposal);
+        } else {
+          interaction_agent->RejectSwitchProposal(switch_proposal);
+        }
+      }));
+  // Only expect a switch to occur if switch proposal is accepted. Further state
+  // update occurs regardless.
+  if (should_accept_switch_proposal) {
+    EXPECT_CALL(agent, SwitchSelectedConnection(conn, reason))
+        .InSequence(sort_and_switch);
+  }
+  EXPECT_CALL(*wrapped, PruneConnections())
+      .InSequence(sort_and_switch)
+      .WillOnce(Return(kEmptyConnsList));
+  // No need to propose pruning if nothing to do.
+  EXPECT_CALL(observer, OnPruneProposal).Times(0);
+  EXPECT_CALL(agent, PruneConnections(IsEmpty())).InSequence(sort_and_switch);
 
   // Pick up the first task.
   env.FastForwardBy(kTick);
 }
 
-TEST_F(BridgeIceControllerTest, StartPingingAfterSortAndSwitch) {
+TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<NiceMockIceController> will_move =
-      std::make_unique<NiceMockIceController>(IceControllerFactoryArgs{});
-  NiceMockIceController* wrapped = will_move.get();
-  EXPECT_CALL(observer, OnObserverAttached(_));
+  std::unique_ptr<MockIceController> will_move =
+      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  MockIceController* wrapped = will_move.get();
+
+  scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
+  EXPECT_CALL(observer, OnObserverAttached(_))
+      .WillOnce(
+          WithArgs<0>([&](auto ia) { interaction_agent = std::move(ia); }));
   BridgeIceController controller(env.GetMainThreadTaskRunner(), &observer,
                                  &agent, std::move(will_move));
 
   const Connection* conn = GetConnection(kIp, kPort);
   ASSERT_NE(conn, nullptr);
+
+  // Set default native ICE controller behaviour.
+  const std::vector<const Connection*> connection_set{conn};
+  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
 
   // Pinging does not start automatically, unless triggered through a sort.
   EXPECT_CALL(*wrapped, HasPingableConnection()).Times(0);
@@ -451,9 +586,13 @@ TEST_F(BridgeIceControllerTest, StartPingingAfterSortAndSwitch) {
   // Pinging does not start if no pingable connection.
   EXPECT_CALL(*wrapped, SortAndSwitchConnection(IceSwitchReason::DATA_RECEIVED))
       .WillOnce(Return(kEmptySwitchResult));
-  EXPECT_CALL(observer,
-              OnSwitchProposal(SwitchProposalEq(IceSwitchReason::DATA_RECEIVED,
-                                                kEmptySwitchResult)));
+  EXPECT_CALL(observer, OnSwitchProposal(SwitchProposalEq(
+                            IceSwitchReason::DATA_RECEIVED, kEmptySwitchResult,
+                            /*reply_expected*/ false)));
+  EXPECT_CALL(*wrapped, PruneConnections()).WillOnce(Return(kEmptyConnsList));
+  // No need to propose pruning if nothing to do.
+  EXPECT_CALL(observer, OnPruneProposal).Times(0);
+  EXPECT_CALL(agent, PruneConnections(IsEmpty()));
   EXPECT_CALL(*wrapped, HasPingableConnection()).WillOnce(Return(false));
   EXPECT_CALL(*wrapped, SelectConnectionToPing(_)).Times(0);
   EXPECT_CALL(observer, OnPingProposal(_)).Times(0);
@@ -462,20 +601,26 @@ TEST_F(BridgeIceControllerTest, StartPingingAfterSortAndSwitch) {
   // Pick up the first task.
   env.FastForwardBy(kTick);
 
-  int recheck_delay_ms = 10;
-  IceControllerInterface::PingResult ping_result(conn, recheck_delay_ms);
-  IceControllerInterface::PingResult empty_ping_result(/* conn= */ nullptr,
-                                                       recheck_delay_ms);
+  const int recheck_delay_ms = 10;
+  const IceControllerInterface::PingResult ping_result(conn, recheck_delay_ms);
+  const IceControllerInterface::PingResult empty_ping_result(nullptr,
+                                                             recheck_delay_ms);
 
   // Pinging starts when there is a pingable connection.
   Sequence start_pinging;
   EXPECT_CALL(*wrapped, SortAndSwitchConnection(IceSwitchReason::DATA_RECEIVED))
       .InSequence(start_pinging)
       .WillOnce(Return(kEmptySwitchResult));
-  EXPECT_CALL(observer,
-              OnSwitchProposal(SwitchProposalEq(IceSwitchReason::DATA_RECEIVED,
-                                                kEmptySwitchResult)))
+  EXPECT_CALL(observer, OnSwitchProposal(SwitchProposalEq(
+                            IceSwitchReason::DATA_RECEIVED, kEmptySwitchResult,
+                            /*reply_expected*/ false)))
       .InSequence(start_pinging);
+  EXPECT_CALL(*wrapped, PruneConnections())
+      .InSequence(start_pinging)
+      .WillOnce(Return(kEmptyConnsList));
+  // No need to propose pruning if nothing to do.
+  EXPECT_CALL(observer, OnPruneProposal).Times(0);
+  EXPECT_CALL(agent, PruneConnections(IsEmpty())).InSequence(start_pinging);
   EXPECT_CALL(*wrapped, HasPingableConnection())
       .InSequence(start_pinging)
       .WillOnce(Return(true));
@@ -486,9 +631,22 @@ TEST_F(BridgeIceControllerTest, StartPingingAfterSortAndSwitch) {
   EXPECT_CALL(*wrapped, SelectConnectionToPing(123))
       .InSequence(start_pinging)
       .WillOnce(Return(ping_result));
-  EXPECT_CALL(observer, OnPingProposal(PingProposalEq(ping_result)))
-      .InSequence(start_pinging);
-  EXPECT_CALL(agent, SendPingRequest(conn)).InSequence(start_pinging);
+  EXPECT_CALL(observer, OnPingProposal(_))
+      .InSequence(start_pinging)
+      .WillOnce(WithArgs<0>([&](auto ping_proposal) {
+        EXPECT_THAT(ping_proposal, PingProposalEq(ping_result,
+                                                  /*reply_expected*/ true));
+        if (should_accept_ping_proposal) {
+          interaction_agent->AcceptPingProposal(ping_proposal);
+        } else {
+          interaction_agent->RejectPingProposal(ping_proposal);
+        }
+      }));
+  // Only expect a ping to occur if ping proposal is accepted. Recheck occurs
+  // regardless.
+  if (should_accept_ping_proposal) {
+    EXPECT_CALL(agent, SendPingRequest(conn)).InSequence(start_pinging);
+  }
 
   controller.OnSortAndSwitchRequest(IceSwitchReason::DATA_RECEIVED);
   env.FastForwardBy(kTick);
@@ -498,10 +656,163 @@ TEST_F(BridgeIceControllerTest, StartPingingAfterSortAndSwitch) {
   EXPECT_CALL(agent, GetLastPingSentMs()).WillOnce(Return(456));
   EXPECT_CALL(*wrapped, SelectConnectionToPing(456))
       .WillOnce(Return(empty_ping_result));
-  EXPECT_CALL(observer, OnPingProposal(PingProposalEq(empty_ping_result)));
+  EXPECT_CALL(observer,
+              OnPingProposal(PingProposalEq(empty_ping_result,
+                                            /*reply_expected*/ false)));
   EXPECT_CALL(agent, SendPingRequest(conn)).Times(0);
 
   env.FastForwardBy(base::Milliseconds(recheck_delay_ms));
+}
+
+// Tests that verify correct handling of invalid proposals.
+class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
+ protected:
+  BridgeIceControllerInvalidProposalTest()
+      : recheck_event(IceSwitchReason::ICE_CONTROLLER_RECHECK,
+                      recheck_delay_ms) {
+    std::unique_ptr<StrictMock<MockIceController>> will_move =
+        std::make_unique<StrictMock<MockIceController>>(
+            IceControllerFactoryArgs{});
+    wrapped_controller = will_move.get();
+
+    EXPECT_CALL(observer, OnObserverAttached(_))
+        .WillOnce(
+            WithArgs<0>([&](auto ia) { interaction_agent = std::move(ia); }));
+    controller = std::make_unique<BridgeIceController>(
+        env.GetMainThreadTaskRunner(), &observer, &agent, std::move(will_move));
+
+    conn = GetConnection(kIp, kPort);
+    EXPECT_NE(conn, nullptr);
+    conn_two = GetConnection(kIpTwo, kPort);
+    EXPECT_NE(conn_two, nullptr);
+
+    // Exclude conn_two to be able to test for unknown connection in proposal.
+    const std::vector<const Connection*> connection_set{conn};
+    EXPECT_CALL(*wrapped_controller, connections())
+        .WillRepeatedly(Return(connection_set));
+
+    // No expectations set on any mocks. Together with StrictMock, this ensures
+    // that invalid proposal actions with side-effects will cause a test
+    // failure.
+  }
+
+  void Recheck() { env.FastForwardBy(base::Milliseconds(recheck_delay_ms)); }
+
+  const int recheck_delay_ms = 10;
+  const Connection* conn = nullptr;
+  const Connection* conn_two = nullptr;
+  const std::vector<const Connection*> empty_conns_to_forget{};
+  const IceSwitchReason reason = IceSwitchReason::DATA_RECEIVED;
+  const IceRecheckEvent recheck_event;
+
+  scoped_refptr<IceInteractionInterface> interaction_agent;
+  StrictMock<MockIceAgent> agent;
+  StrictMock<MockIceControllerObserver> observer;
+  StrictMock<MockIceController>* wrapped_controller;
+  std::unique_ptr<BridgeIceController> controller;
+};
+
+// Alias for verifying DCHECKs. This test suite should be used for death tests.
+using BridgeIceControllerDeathTest = BridgeIceControllerInvalidProposalTest;
+// Alias for verifying no side-effects, without hitting a DCHECK.
+using BridgeIceControllerNoopTest = BridgeIceControllerInvalidProposalTest;
+
+TEST_F(BridgeIceControllerDeathTest, AcceptUnsolicitedPingProposal) {
+  const IceControllerInterface::PingResult ping_result(conn, recheck_delay_ms);
+  const IcePingProposal proposal(ping_result, /*reply_expected=*/false);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptPingProposal(proposal),
+                           "unsolicited");
+}
+
+TEST_F(BridgeIceControllerDeathTest, RejectUnsolicitedPingProposal) {
+  const IceControllerInterface::PingResult ping_result(conn, recheck_delay_ms);
+  const IcePingProposal proposal(ping_result, /*reply_expected=*/false);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->RejectPingProposal(proposal),
+                           "unsolicited");
+}
+
+TEST_F(BridgeIceControllerDeathTest, AcceptEmptyPingProposal) {
+  const IceControllerInterface::PingResult null_ping_result(nullptr,
+                                                            recheck_delay_ms);
+  const IcePingProposal proposal(null_ping_result, /*reply_expected=*/true);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptPingProposal(proposal),
+                           "without a connection");
+}
+
+TEST_F(BridgeIceControllerNoopTest, AcceptUnknownPingProposal) {
+  const IceControllerInterface::PingResult ping_result(conn_two,
+                                                       recheck_delay_ms);
+  const IcePingProposal proposal(ping_result, /*reply_expected=*/true);
+  interaction_agent->AcceptPingProposal(proposal);
+  Recheck();
+}
+
+TEST_F(BridgeIceControllerDeathTest, AcceptUnsolicitedSwitchProposal) {
+  const IceControllerInterface::SwitchResult switch_result{
+      conn, recheck_event, empty_conns_to_forget};
+  const IceSwitchProposal proposal(reason, switch_result,
+                                   /*reply_expected=*/false);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptSwitchProposal(proposal),
+                           "unsolicited");
+}
+
+TEST_F(BridgeIceControllerDeathTest, RejectUnsolicitedSwitchProposal) {
+  const IceControllerInterface::SwitchResult switch_result{
+      conn, recheck_event, empty_conns_to_forget};
+  const IceSwitchProposal proposal(reason, switch_result,
+                                   /*reply_expected=*/false);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->RejectSwitchProposal(proposal),
+                           "unsolicited");
+}
+
+TEST_F(BridgeIceControllerDeathTest, AcceptEmptySwitchProposal) {
+  const IceControllerInterface::SwitchResult switch_result{
+      absl::nullopt, recheck_event, empty_conns_to_forget};
+  const IceSwitchProposal proposal(reason, switch_result,
+                                   /*reply_expected=*/true);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptSwitchProposal(proposal),
+                           "without a connection");
+}
+
+TEST_F(BridgeIceControllerDeathTest, AcceptNullSwitchProposal) {
+  const IceControllerInterface::SwitchResult switch_result{
+      absl::optional<const Connection*>(nullptr), recheck_event,
+      empty_conns_to_forget};
+  const IceSwitchProposal proposal(reason, switch_result,
+                                   /*reply_expected=*/true);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptSwitchProposal(proposal),
+                           "without a connection");
+}
+
+TEST_F(BridgeIceControllerNoopTest, AcceptUnknownSwitchProposal) {
+  const IceControllerInterface::SwitchResult switch_result{
+      conn_two, recheck_event, empty_conns_to_forget};
+  const IceSwitchProposal proposal(reason, switch_result,
+                                   /*reply_expected=*/true);
+  interaction_agent->AcceptSwitchProposal(proposal);
+  Recheck();
+}
+
+TEST_F(BridgeIceControllerDeathTest, AcceptUnsolicitedPruneProposal) {
+  std::vector<const Connection*> conns_to_prune{conn};
+  const IcePruneProposal proposal(conns_to_prune, /*reply_expected=*/false);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->RejectPruneProposal(proposal),
+                           "unsolicited");
+}
+
+TEST_F(BridgeIceControllerDeathTest, RejectUnsolicitedPruneProposal) {
+  std::vector<const Connection*> conns_to_prune{conn};
+  const IcePruneProposal proposal(conns_to_prune, /*reply_expected=*/false);
+  EXPECT_DCHECK_DEATH_WITH(interaction_agent->RejectPruneProposal(proposal),
+                           "unsolicited");
+}
+
+TEST_F(BridgeIceControllerInvalidProposalTest, AcceptUnknownPruneProposal) {
+  std::vector<const Connection*> conns_to_prune{conn_two};
+  const IcePruneProposal proposal(conns_to_prune, /*reply_expected=*/true);
+  EXPECT_CALL(agent, UpdateState);
+  EXPECT_CALL(*wrapped_controller, HasPingableConnection);
+  interaction_agent->RejectPruneProposal(proposal);
 }
 
 }  // unnamed namespace

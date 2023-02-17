@@ -151,17 +151,21 @@ MATCHER_P(ConnectionSequenceEq,
 }
 
 // Tests the equality of a blink::IcePingProposal and a cricket::PingResult.
-MATCHER_P(PingProposalEq,
-          /* const blink::IcePingProposal& arg, */
-          /* const cricket::IceControllerInterface::PingResult& */ result,
-          base::StrCat({negation ? "doesn't match " : "matches ",
-                        PrintToString(result)})) {
+MATCHER_P2(PingProposalEq,
+           /* const blink::IcePingProposal& arg, */
+           /* const cricket::IceControllerInterface::PingResult& */ result,
+           /* bool */ reply_expected,
+           base::StrCat({negation ? "doesn't match " : "matches ",
+                         PrintToString(result)})) {
   if (!ExplainMatchResult(ConnectionOptionalsEq(result.connection),
                           arg.connection(), result_listener)) {
     return false;
   }
-  return ExplainMatchResult(Optional(result.recheck_delay_ms),
-                            arg.recheck_delay_ms(), result_listener);
+  if (!ExplainMatchResult(Optional(result.recheck_delay_ms),
+                          arg.recheck_delay_ms(), result_listener)) {
+    return false;
+  }
+  return arg.reply_expected() == reply_expected;
 }
 
 // Tests the equality of a blink::IceRecheckEvent and a
@@ -176,10 +180,11 @@ MATCHER_P(RecheckEventEq,
 }
 
 // Tests the equality of a blink::IceSwitchProposal and a cricket::SwitchResult.
-MATCHER_P2(SwitchProposalEq,
+MATCHER_P3(SwitchProposalEq,
            /* const blink::IceSwitchProposal& arg, */
            /* const cricket::IceSwitchReason */ reason,
            /* const cricket::IceControllerInterface::SwitchResult& */ result,
+           /* bool */ reply_expected,
            base::StrCat({negation ? "doesn't match " : "matches ",
                          PrintToString(result)})) {
   if (blink::ConvertFromWebrtcIceSwitchReason(reason) != arg.reason()) {
@@ -198,20 +203,27 @@ MATCHER_P2(SwitchProposalEq,
           arg.recheck_event(), result_listener)) {
     return false;
   }
-  return ExplainMatchResult(
-      ConnectionSequenceEq(result.connections_to_forget_state_on),
-      arg.connections_to_forget_state_on(), result_listener);
+  if (!ExplainMatchResult(
+          ConnectionSequenceEq(result.connections_to_forget_state_on),
+          arg.connections_to_forget_state_on(), result_listener)) {
+    return false;
+  }
+  return arg.reply_expected() == reply_expected;
 }
 
 // Tests the equality of a blink::IceOruneProposal and a collection of
 // cricket::Connections selected for pruning.
-MATCHER_P(PruneProposalEq,
-          /* const blink::IcePruneProposal& arg, */
-          /* std::vector<const cricket::Connection*> */ connections,
-          base::StrCat({negation ? "doesn't match " : "matches ",
-                        PrintToString(connections)})) {
-  return ExplainMatchResult(ConnectionSequenceEq(connections),
-                            arg.connections_to_prune(), result_listener);
+MATCHER_P2(PruneProposalEq,
+           /* const blink::IcePruneProposal& arg, */
+           /* std::vector<const cricket::Connection*> */ connections,
+           /* bool */ reply_expected,
+           base::StrCat({negation ? "doesn't match " : "matches ",
+                         PrintToString(connections)})) {
+  if (!ExplainMatchResult(ConnectionSequenceEq(connections),
+                          arg.connections_to_prune(), result_listener)) {
+    return false;
+  }
+  return arg.reply_expected() == reply_expected;
 }
 
 }  // namespace blink
