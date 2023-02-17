@@ -101,6 +101,7 @@
 <translation id="1608337082864370066">Търсене на копираното изображение</translation>
 <translation id="1612730193129642006">Показване на мрежа с раздели</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> повторно използвани пароли</translation>
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1650222530560417226">Докоснете бутона за стартиране на регистрирането, ако искате да се събират бъдещите регистрационни файлове от конзолата на JavaScript и грешките от всички раздели. Регистрационните файлове ще се събират (и съхраняват само в паметта), докато затворите съответната страница или докоснете бутона за спиране на регистрирането.</translation>
@@ -135,6 +136,7 @@
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1943478190258551035">„Меню → Настройки“</translation>
 <translation id="1952172573699511566">Когато е възможно, текстът на уебсайтовете ще се показва на предпочитания от вас език.</translation>
+<translation id="1959679933317802873">Изчаква се съдържание</translation>
 <translation id="1965935827552890526">Довършете действията си в другия отворен прозорец на Chrome.</translation>
 <translation id="1973912524893600642">Запазване на данните</translation>
 <translation id="1974060860693918893">Разширени</translation>
@@ -192,6 +194,7 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} запазен адрес е налице над клавиатурата ви.}other{{count} запазени адреса са налице над клавиатурата ви.}}</translation>
 <translation id="2421004566762153674">„Бисквитките“ на трети страни се блокират</translation>
 <translation id="2421044535038393232">Продължаване на редактирането</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="2434405374328098816">Вече запазихте парола за <ph name="USERNAME" /> за <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2451654228769116489">Фиксиране на раздела</translation>
@@ -335,6 +338,7 @@
 <translation id="345565170154308620">Управление на паролите...</translation>
 <translation id="3469166899695866866">Искате ли да спрете изтеглянето?</translation>
 <translation id="3470502288861289375">Копира се...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{за {COUNT} сайт или приложение}other{за {COUNT} сайта и приложения}}</translation>
 <translation id="3474624961160222204">Продължаване като <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Месец на валидност</translation>
 <translation id="3482959374254649722">Разделите ви се синхронизират...</translation>
@@ -381,6 +385,7 @@
 <translation id="3818293389945649617">Търсене на следващото</translation>
 <translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="3835964409414434850">Към следващия раздел</translation>
+<translation id="3838691874161539578">Проверете запазените си пароли, за да подобрите сигурността си и да бъдете по-защитени онлайн</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851938967634752633">Паролите за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и още <ph name="NUMBER_OF_ACCOUNTS" /> сайта ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="3858860766373142691">Име</translation>
@@ -435,6 +440,7 @@
 <translation id="424315890655130736">Въвеждане на пропуск</translation>
 <translation id="4249955472157341256">Сортиране по актуалност</translation>
 <translation id="4263576668337963058">Показване на наличните действия за страницата</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{Отхвърлихте {COUNT} предупреждение}other{Отхвърлихте {COUNT} предупреждения}}</translation>
 <translation id="4272631900155121838">За да сканирате код за бърза реакция, активирайте камерата от настройките</translation>
 <translation id="4277990410970811858">Безопасно сърфиране</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
@@ -481,6 +487,7 @@
 <translation id="4630540211544979320">Превод на страници</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
 <translation id="4636930964841734540">Информация</translation>
+<translation id="4642472735733036929">Проследяването на цената спря</translation>
 <translation id="4650125387981512669">Продължаване като <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Когато влезете в профила си в Google, тази функция се включва.</translation>
 <translation id="4659667755519643272">Влизане в превключвателя на раздели</translation>
@@ -539,7 +546,6 @@
 <translation id="4971735654804503942">По-бърза, изпреварваща защита срещу опасни уебсайтове, изтеглени файлове и разширения. Предупреждава ви за разкрити пароли. За да действа, до Google трябва да се изпращат данни за сърфирането.</translation>
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
 <translation id="4986678885919050584">Премахване от това устройство</translation>
-<translation id="4989542687859782284">Експерименти, които не са налице</translation>
 <translation id="498985224078955265">За да изпратите този раздел до друго устройство, влезте в профила си в Chrome и на двете устройства.</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5017828934289857214">Напомняне по-късно</translation>
@@ -555,6 +561,7 @@
 <translation id="5118764316110575523">Изкл.</translation>
 <translation id="5119391094379141756">Изберете Chrome.</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадеждна парола}other{{COUNT} ненадеждни пароли}}</translation>
 <translation id="5149188072385105201">Добавяне на парола...</translation>
 <translation id="5150492518600715772">Изпращане до устройството ви</translation>
 <translation id="5168414296986405587">Създадено за iPadOS</translation>
@@ -638,6 +645,7 @@
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5812974770859303494">Добавяне към...</translation>
 <translation id="581659025233126501">Включване на синхронизирането</translation>
+<translation id="5817176759448082654">Проверка на паролите</translation>
 <translation id="5819208479324046259">Управлява се от <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Можете да запазвате паролите, начините на плащане и адресите за Chrome, така че по-късно да се попълват автоматично.</translation>
 <translation id="5834415013958049700">Търсене с Обектив на копираното от вас изображение</translation>
@@ -838,6 +846,7 @@
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
 <translation id="7006788746334555276">Настройки за съдържанието</translation>
+<translation id="7014087399239955356">Паролите се проверяват...</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7062545763355031412">Приемане и превключване на профилите</translation>
@@ -887,11 +896,13 @@
 <translation id="7472734401283673885">Име на фирмата</translation>
 <translation id="7473891865547856676">Не, благодаря</translation>
 <translation id="7491131399623468277">Към настройките…</translation>
+<translation id="750228856503700085">Не са налице актуализации</translation>
 <translation id="750493650310597496">Избрахте 0</translation>
 <translation id="7508728395076009983">За да заключите разделите си в режим „инкогнито“, настройте Touch ID, Face ID или код за достъп.</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7531345132340165516">Настоящ сайт</translation>
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
+<translation id="754655535278952384">Проверихте <ph name="TIME" /></translation>
 <translation id="7553234618121028547">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и след това „Опции за паролите“.</translation>
 <translation id="7554645225856321710">Затваряне на всички</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
@@ -952,7 +963,6 @@
 <translation id="7971521879845308059">Изск. прозорци: Блокиране</translation>
 <translation id="797413074872316787">Включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства.</translation>
 <translation id="7978018860671536736">3. Докоснете „Автоматично попълване на паролите“.</translation>
-<translation id="7981908678811807838">Следенето на цените не е възможно за този сайт.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7987685713885608670">За допълнителна сигурност шифровайте паролите на устройството си, преди да бъдат запазени в мениджъра на паролите в Google.</translation>
 <translation id="7993619969781047893">Функциите в някои сайтове може да не работят правилно</translation>

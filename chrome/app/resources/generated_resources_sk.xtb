@@ -379,6 +379,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1339009753652684748">Aktivujte svojho Asistenta vyslovením výrazu „Ok, Google“. Ak chcete šetriť batériu, vyberte Zapnutý (odporúčané). Váš Asistent bude reagovať iba vtedy, keď bude zariadenie pripojené do zásuvky alebo sa bude nabíjať.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Zálohovať médiá zo zariadenia pomocou aplikácie Súbory</translation>
+<translation id="1341701348342335220">Dobrá práca.</translation>
 <translation id="1341871421050612057">Synchronizácia s účtom <ph name="USERNAME" /> nie je povolená</translation>
 <translation id="1343865611738742294">Udeľte systému Linux povolenia aplikácie na prístup k zariadeniam USB. Linux si nezapamätá odstránené zariadenia USB.</translation>
 <translation id="1343920184519992513">Pokračovať, kde ste prestali, a otvoriť konkrétnu skupinu stránok</translation>
@@ -3627,6 +3628,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4232375817808480934">Konfigurácia protokolu Kerberos</translation>
 <translation id="4235965441080806197">Zrušiť prihlasovanie</translation>
 <translation id="4236163961381003811">Objavte ďalšie rozšírenia</translation>
+<translation id="4237282663517880406">Zobraziť návrhy Disku Google</translation>
 <translation id="4241182343707213132">Reštartovaním aktualizujte aplikácie organizácie</translation>
 <translation id="4242145785130247982">Nie je podporovaných viacero certifikátov klienta</translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
@@ -6988,6 +6990,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7352651011704765696">Vyskytla sa chyba</translation>
 <translation id="7353261921908507769">Vaše kontakty s vami môžu zdieľať obsah, keď sú nablízku. Prenosy sa začnú až vtedy, keď ich prijmete.</translation>
 <translation id="735361434055555355">Inštaluje sa Linux…</translation>
+<translation id="7354120289251608189">Teraz môžete svojmu prehliadaču dať nový vzhľad kedykoľvek.</translation>
 <translation id="7356908624372060336">Denníky siete</translation>
 <translation id="735745346212279324">Sieť VPN je odpojená</translation>
 <translation id="7358324924540718595">Spomienky sú dnes skryté</translation>

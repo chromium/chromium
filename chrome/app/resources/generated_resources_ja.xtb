@@ -1427,6 +1427,7 @@
 <translation id="2251809247798634662">新しいシークレット ウィンドウ</translation>
 <translation id="2252017960592955005">のぞき見防止（ベータ版）</translation>
 <translation id="225240747099314620">保護されたコンテンツの ID を許可する（パソコンの再起動が必要になる場合があります）</translation>
+<translation id="2253318212986772520"><ph name="PRINTER_NAME" /> の PPD を取得できません。</translation>
 <translation id="2255077166240162850">このデバイスは別のドメインまたはモードにロックされています。</translation>
 <translation id="2255317897038918278">Microsoft タイム スタンプ</translation>
 <translation id="2256115617011615191">今すぐ再起動</translation>
@@ -2891,6 +2892,7 @@
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
 <translation id="3582299299336701326">明るい画面が暗くなり、暗い画面が明るくなります。色反転のオンとオフを切り替えるには、検索+Ctrl+H キーを押します。</translation>
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
+<translation id="3584527007414070635"><ph name="MODULE_TITLE" /> のジャーニーを再開</translation>
 <translation id="3586787825263265024">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、OneDrive へのアクセスが必要です。</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> の詳細</translation>
@@ -3848,6 +3850,7 @@
 <translation id="4443536555189480885">ヘルプ(&amp;H)</translation>
 <translation id="4444304522807523469">USB 接続またはローカル ネットワーク上のドキュメント スキャナーへのアクセス</translation>
 <translation id="4444512841222467874">十分な空き領域がない場合、ユーザーとデータが自動的に削除される可能性があります。</translation>
+<translation id="4445446646109808714">エンドユーザー使用許諾契約: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">ミラーリング</translation>
 <translation id="4448914100439890108"><ph name="DOMAIN" /> の <ph name="USERNAME" /> のパスワードを非表示にします</translation>
 <translation id="4449948729197510913">お客様のユーザー名は組織の企業アカウントに属しています。アカウントにデバイスを登録するには、まず管理コンソールでドメインの所有権を確認してください。なお、確認にはアカウントの管理者権限が必要です。</translation>
@@ -6966,6 +6969,7 @@
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353261921908507769">近くにいる連絡先から共有を受けられます。許可するまで転送は行われません。</translation>
 <translation id="735361434055555355">Linux をインストールしています...</translation>
+<translation id="7354120289251608189">ブラウザのデザインをいつでも変更できるようになりました。</translation>
 <translation id="7356908624372060336">ネットワーク ログ</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7358324924540718595">今日の思い出を非表示にしました</translation>

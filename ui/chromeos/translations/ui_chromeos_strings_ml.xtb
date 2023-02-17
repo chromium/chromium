@@ -27,12 +27,12 @@
 <translation id="1201402288615127009">അടുത്തത്</translation>
 <translation id="1209796539517632982">യാന്ത്രിക നാമ സെർവറുകൾ</translation>
 <translation id="1210831758834677569">ലാവോ</translation>
+<translation id="1221555006497674479">സ്റ്റോറേജ് കുറവാണ്, നിങ്ങളുടെ <ph name="TOTAL_SPACE" /> പങ്കിട്ട സ്റ്റോറേജിൽ <ph name="REMAINING_PERCENTAGE" />% ശേഷിക്കുന്നു.</translation>
 <translation id="1243314992276662751">അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="1249250836236328755">വിഭാഗം</translation>
 <translation id="1254593899333212300">നേരിട്ടുള്ള ഇന്‍റര്‍നെറ്റ് കണക്ഷന്‍</translation>
 <translation id="1272293450992660632">പിൻ മൂല്യങ്ങൾ പൊരുത്തപ്പെടുന്നില്ല.</translation>
 <translation id="1280820357415527819">മൊബൈൽ നെറ്റ്‌വർക്കുകൾ തിരയുന്നു</translation>
-<translation id="1291603679744561561">സിം ലോക്ക് ചെയ്‌തു</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google ഡ്രൈവ് ഇപ്പോൾ ലഭ്യമല്ല. ലഭ്യമായിക്കഴിഞ്ഞാൽ, അപ്‌ലോഡ് ചെയ്യുന്നത് സ്വമേധയാ പുനരാരംഭിക്കും.</translation>
 <translation id="1307931752636661898">Linux ഫയലുകൾ കാണാനാവുന്നില്ല</translation>
@@ -74,6 +74,7 @@
 <translation id="1641780993263690097">ചൈനീസ് പിൻയിൻ</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുന്നു</translation>
 <translation id="164969095109328410">Chrome ഉപകരണം</translation>
+<translation id="1661207570040737402">പങ്കിട്ട ഡ്രൈവിന്റെ Google Workspace സ്റ്റോറേജ് മുഴുവൻ നിങ്ങൾ ഉപയോഗിച്ചു.</translation>
 <translation id="1661867754829461514">PIN കാണാനില്ല</translation>
 <translation id="166439687370499867">പങ്കിട്ട നെറ്റ്‍വര്‍ക്ക് കോൺഫിഗറേഷനുകൾ മാറ്റാനാകില്ല</translation>
 <translation id="1665611772925418501">ഫയൽ പരിഷ്‌ക്കരിക്കാൻ കഴിഞ്ഞില്ല.</translation>

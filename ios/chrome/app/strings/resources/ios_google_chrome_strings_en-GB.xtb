@@ -67,6 +67,7 @@
 <translation id="5162467219239570114">Chrome is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chrome anymore.</translation>
 <translation id="5389212809648216794">Google Chrome can't use your camera because it's in use by another application</translation>
 <translation id="5460571915754665838">4. Select Chrome</translation>
+<translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>
 <translation id="5552137475244467770">Chrome periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5639704535586432836">Open Settings &gt; Privacy &gt; Camera &gt; Google Chrome and turn on the camera.</translation>
 <translation id="5642200033778930880">Google Chrome can't use your camera in Split View mode</translation>
@@ -112,6 +113,7 @@
 <translation id="7780154209050837198">To get the most out of Chrome, sign in to Chrome with your Google Account.</translation>
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
 <translation id="7939179037291298976">From your iPhone's settings, open 'Password options' and select 'Chrome'</translation>
+<translation id="7975131781538454817">Chrome notifications are turned off in your device settings. You'll need to allow notifications first.</translation>
 <translation id="8022947259858476807">Use Chrome by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="81358522153858150">Chrome now supports user policies for your managed account</translation>
 <translation id="8160472928944011082">Chrome can't update</translation>
@@ -141,6 +143,7 @@ Things to consider:
   • If Chrome crashes, details about the crash may include some personal info.
 
   • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
+<translation id="9101160735177453133">To turn on 'Track price' allow Chrome notifications in device settings</translation>
 <translation id="9103442491611662960">You're getting standard security protection for this Chrome profile</translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>
 <translation id="9122931302567044771">This means that Chrome will request the desktop site every time.</translation>

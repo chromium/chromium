@@ -1570,6 +1570,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Le note sulla schermata di blocco vengono salvate automaticamente nell'app <ph name="LOCK_SCREEN_APP_NAME" />. La nota più recente rimarrà sulla schermata di blocco.</translation>
 <translation id="2353297238722298836">Videocamera e microfono consentiti</translation>
+<translation id="2353910600995338714">Esportazione riuscita</translation>
 <translation id="2355314311311231464">Provisioning non andato a buon fine perché non è stato possibile recuperare i dati dell'account. Riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">Opzioni per il risparmio energetico</translation>
 <translation id="2355604387869345912">Attiva tethering istantaneo</translation>
@@ -5396,6 +5397,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5877064549588274448">Canale cambiato. Riavvia il dispositivo per applicare le modifiche.</translation>
 <translation id="5877584842898320529">La stampante selezionata non è disponibile o non è installata correttamente. <ph name="BR" /> Controlla la stampante o prova a selezionarne un'altra.</translation>
 <translation id="5878945009165002849">Blocca le richieste di accesso da servizi di identità</translation>
+<translation id="5881710783061958569">In questo caso, modifica la password salvata su <ph name="BRAND" /> in modo che corrisponda alla nuova password.</translation>
 <translation id="5882449899683447569">Si è verificato un problema e le tue password non sono state importate</translation>
 <translation id="5882919346125742463">Reti note</translation>
 <translation id="5883356647197510494">Autorizzazioni bloccate automaticamente: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>

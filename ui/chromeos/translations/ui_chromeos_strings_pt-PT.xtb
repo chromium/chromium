@@ -27,12 +27,12 @@
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1209796539517632982">Servidores de nome automático</translation>
 <translation id="1210831758834677569">Laosiano</translation>
+<translation id="1221555006497674479">Armazenamento quase cheio. Resta(m)<ph name="REMAINING_PERCENTAGE" />% do seu armazenamento do disco partilhado de <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Carregar</translation>
 <translation id="1249250836236328755">Género</translation>
 <translation id="1254593899333212300">Ligação direta à Internet</translation>
 <translation id="1272293450992660632">Os valores de PIN não correspondem.</translation>
 <translation id="1280820357415527819">A pesquisar redes móveis…</translation>
-<translation id="1291603679744561561">SIM bloqueado</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1297922636971898492">De momento, o Google Drive não está disponível. O carregamento será reiniciado automaticamente assim que o Google Drive voltar a estar disponível.</translation>
 <translation id="1307931752636661898">Não é possível ver os ficheiros Linux.</translation>
@@ -74,6 +74,7 @@
 <translation id="1641780993263690097">Chinês pinyin</translation>
 <translation id="1646019627374511909">A disponibilizar <ph name="NUMBER_OF_ITEMS" /> ficheiros offline…</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
+<translation id="1661207570040737402">Usou todo o armazenamento do Google Workspace do disco partilhado.</translation>
 <translation id="1661867754829461514">Falta o PIN</translation>
 <translation id="166439687370499867">Não é permitido alterar as configurações de rede partilhadas.</translation>
 <translation id="1665611772925418501">Não foi possível modificar o ficheiro.</translation>
