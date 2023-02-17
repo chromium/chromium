@@ -2985,8 +2985,6 @@ crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Fai
 crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Pass ]
-crbug.com/626703 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass ]
 crbug.com/626703 external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line-002.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
