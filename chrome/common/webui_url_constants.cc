@@ -153,6 +153,8 @@ const char kChromeUIOmniboxURL[] = "chrome://omnibox/";
 const char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
 const char kChromeUIPasswordManagerURL[] = "chrome://password-manager";
+const char kChromeUIPasswordManagerCheckupURL[] =
+    "chrome://password-manager/checkup?start=true";
 const char kChromeUIPerformanceSettingsURL[] = "chrome://settings/performance";
 const char kChromeUIPolicyHost[] = "policy";
 const char kChromeUIPolicyURL[] = "chrome://policy/";

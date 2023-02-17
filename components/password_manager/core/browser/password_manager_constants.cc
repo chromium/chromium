@@ -26,7 +26,4 @@ const char kManageMyPasswordsURL[] = "https://passwords.google.com/app";
 
 const char kReferrerURL[] = "https://passwords.google/";
 
-const char kTestingReferrerURL[] =
-    "https://xl-password-manager-staging.uc.r.appspot.com/";
-
 }  // namespace password_manager

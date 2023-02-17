@@ -97,13 +97,3 @@ TEST_F(PasswordManagerNavigationThrottleTest,
           url::Origin::Create(GURL(password_manager::kReferrerURL)),
   }));
 }
-
-TEST_F(PasswordManagerNavigationThrottleTest,
-       CreatesNavigationThrottleForTestingWebsite) {
-  EXPECT_TRUE(CreateNavigationThrottle({
-      .url = GURL(password_manager::kManageMyPasswordsURL),
-      .page_transition = ui::PAGE_TRANSITION_LINK,
-      .initiator_origin =
-          url::Origin::Create(GURL(password_manager::kTestingReferrerURL)),
-  }));
-}

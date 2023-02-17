@@ -20,6 +20,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#else
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #endif
 
 namespace {
@@ -27,10 +29,6 @@ namespace {
 using content::NavigationHandle;
 using content::NavigationThrottle;
 using content::WebContents;
-
-#if !BUILDFLAG(IS_ANDROID)
-constexpr char kChromeUIPasswordsURL[] = "chrome:/settings/passwords";
-#endif
 
 bool IsTriggeredOnGoogleOwnedUI(NavigationHandle* handle) {
   // Only cover cases when the user clicked on a link.
@@ -43,10 +41,9 @@ bool IsTriggeredOnGoogleOwnedUI(NavigationHandle* handle) {
     return false;
 
   url::Origin origin = handle->GetInitiatorOrigin().value_or(url::Origin());
-  if (origin != url::Origin::Create(GURL(password_manager::kReferrerURL)) &&
-      origin !=
-          url::Origin::Create(GURL(password_manager::kTestingReferrerURL)))
+  if (origin != url::Origin::Create(GURL(password_manager::kReferrerURL))) {
     return false;
+  }
 
   return true;
 }
@@ -85,24 +82,16 @@ PasswordManagerNavigationThrottle::WillStartRequest() {
       web_contents,
       password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite);
 #else
-  content::OpenURLParams params =
-      content::OpenURLParams::FromNavigationHandle(navigation_handle());
-  params.url = GURL(kChromeUIPasswordsURL);
-  params.transition = ui::PAGE_TRANSITION_CLIENT_REDIRECT;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<content::WebContents> web_contents,
-                        const content::OpenURLParams& params) {
-                       if (!web_contents)
-                         return;
-                       web_contents->OpenURL(params);
-                     },
-                     web_contents->GetWeakPtr(), std::move(params)));
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.ManagePasswordsReferrer",
-      password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite);
+  ChromePasswordManagerClient::FromWebContents(web_contents)
+      ->NavigateToManagePasswordsPage(
+          password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite);
 #endif
+  // Schedule a task to close current tab since on Android Password Manager is
+  // shown in the Native UI, and on desktop NavigateToManagePasswordsPage()
+  // handles creation or redirection to Passwords Manager tab.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&content::WebContents::Close, web_contents->GetWeakPtr()));
   return NavigationThrottle::CANCEL_AND_IGNORE;
 }
 

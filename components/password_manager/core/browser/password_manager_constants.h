@@ -29,11 +29,6 @@ extern const char kManageMyPasswordsURL[];
 // URL from which native Password Manager UI can be opened.
 extern const char kReferrerURL[];
 
-// URL for a testing website from which native Password Manager UI can be
-// opened.
-// TODO(crbug.com/1329165): remove when the main website is launched.
-extern const char kTestingReferrerURL[];
-
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_CONSTANTS_H_

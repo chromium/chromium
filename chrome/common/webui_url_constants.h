@@ -157,6 +157,7 @@ extern const char kChromeUIOsUrlAppURL[];
 #endif
 extern const char kChromeUIPasswordManagerInternalsHost[];
 extern const char kChromeUIPasswordManagerURL[];
+extern const char kChromeUIPasswordManagerCheckupURL[];
 extern const char kChromeUIPerformanceSettingsURL[];
 extern const char kChromeUIPolicyHost[];
 extern const char kChromeUIPolicyURL[];

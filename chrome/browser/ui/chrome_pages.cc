@@ -38,6 +38,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #include "components/signin/public/base/consent_level.h"
@@ -433,12 +434,24 @@ void ShowClearBrowsingDataDialog(Browser* browser) {
 
 void ShowPasswordManager(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordManager"));
-  ShowSettingsSubPage(browser, kPasswordManagerSubPage);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign)) {
+    ShowSingletonTabIgnorePathOverwriteNTP(browser,
+                                           GURL(kChromeUIPasswordManagerURL));
+  } else {
+    ShowSettingsSubPage(browser, kPasswordManagerSubPage);
+  }
 }
 
 void ShowPasswordCheck(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordCheck"));
-  ShowSettingsSubPage(browser, kPasswordCheckSubPage);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign)) {
+    ShowSingletonTabIgnorePathOverwriteNTP(
+        browser, GURL(kChromeUIPasswordManagerCheckupURL));
+  } else {
+    ShowSettingsSubPage(browser, kPasswordCheckSubPage);
+  }
 }
 
 void ShowSafeBrowsingEnhancedProtection(Browser* browser) {
