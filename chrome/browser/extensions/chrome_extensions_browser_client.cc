@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -73,6 +74,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
@@ -891,6 +893,25 @@ void ChromeExtensionsBrowserClient::AddAPIActionOrEventToActivityLog(
     action->mutable_other().Set(activity_log_constants::kActionExtra, extra);
   }
   AddActionToExtensionActivityLog(browser_context, action);
+}
+
+content::StoragePartitionConfig
+ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
+    content::BrowserContext* browser_context,
+    content::SiteInstance* owner_site_instance,
+    const std::string& partition_name,
+    bool in_memory) {
+  const GURL& owner_site_url = owner_site_instance->GetSiteURL();
+  if (owner_site_url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
+        web_app::IsolatedWebAppUrlInfo::Create(owner_site_url);
+    DCHECK(url_info.has_value()) << url_info.error();
+    return url_info->GetStoragePartitionConfigForControlledFrame(
+        browser_context, partition_name, in_memory);
+  }
+
+  return ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
+      browser_context, owner_site_instance, partition_name, in_memory);
 }
 
 }  // namespace extensions

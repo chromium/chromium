@@ -177,15 +177,28 @@ const web_package::SignedWebBundleId& IsolatedWebAppUrlInfo::web_bundle_id()
 content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
     content::BrowserContext* browser_context) const {
   DCHECK(browser_context != nullptr);
+  return content::StoragePartitionConfig::Create(browser_context,
+                                                 partition_domain(),
+                                                 /*partition_name=*/"",
+                                                 /*in_memory=*/false);
+}
 
+content::StoragePartitionConfig
+IsolatedWebAppUrlInfo::GetStoragePartitionConfigForControlledFrame(
+    content::BrowserContext* browser_context,
+    const std::string& partition_name,
+    bool in_memory) const {
+  DCHECK(browser_context);
+  DCHECK(!partition_name.empty() || in_memory);
+  return content::StoragePartitionConfig::Create(
+      browser_context, partition_domain(), partition_name, in_memory);
+}
+
+std::string IsolatedWebAppUrlInfo::partition_domain() const {
   constexpr char kIsolatedWebAppPartitionPrefix[] = "iwa-";
   // We add a prefix to `partition_domain` to avoid potential name conflicts
   // with Chrome Apps, which use their id/hostname as `partition_domain`.
-  return content::StoragePartitionConfig::Create(
-      browser_context,
-      /*partition_domain=*/kIsolatedWebAppPartitionPrefix + origin().host(),
-      /*partition_name=*/"",
-      /*in_memory=*/false);
+  return kIsolatedWebAppPartitionPrefix + origin().host();
 }
 
 }  // namespace web_app

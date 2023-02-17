@@ -125,6 +125,24 @@ TEST_F(IsolatedWebAppUrlInfoTest, WebBundleIdIsCorrect) {
               Eq("aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"));
 }
 
+TEST_F(IsolatedWebAppUrlInfoTest, GetStoragePartitionConfigForControlledFrame) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile testing_profile;
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
+  content::StoragePartitionConfig iwa_config =
+      url_info->storage_partition_config(&testing_profile);
+  content::StoragePartitionConfig frame_config =
+      url_info->GetStoragePartitionConfigForControlledFrame(
+          &testing_profile, "name", /*in_memory=*/false);
+
+  EXPECT_THAT(frame_config.partition_domain(),
+              Eq(iwa_config.partition_domain()));
+  EXPECT_THAT(frame_config.partition_name(), Eq("name"));
+  EXPECT_FALSE(frame_config.in_memory());
+}
+
 TEST_F(IsolatedWebAppUrlInfoTest, StoragePartitionConfigUsesOrigin) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile testing_profile;

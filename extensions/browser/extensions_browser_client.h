@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/bluetooth_chooser.h"
-#include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
@@ -41,6 +40,8 @@ class FilePath;
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
+class SiteInstance;
+class StoragePartitionConfig;
 class WebContents;
 }  // namespace content
 
@@ -492,6 +493,15 @@ class ExtensionsBrowserClient {
       const GURL& url,
       const std::u16string& url_title,
       int call_type);
+
+  // Returns the StoragePartitionConfig that should be used for a <webview> or
+  // <controlledframe> with the given |partition_name| that is owned by a frame
+  // within |owner_site_instance|.
+  virtual content::StoragePartitionConfig GetWebViewStoragePartitionConfig(
+      content::BrowserContext* browser_context,
+      content::SiteInstance* owner_site_instance,
+      const std::string& partition_name,
+      bool in_memory);
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

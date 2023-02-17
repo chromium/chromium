@@ -64,9 +64,18 @@ class IsolatedWebAppUrlInfo {
   content::StoragePartitionConfig storage_partition_config(
       content::BrowserContext* browser_context) const;
 
+  // Returns the StoragePartitionConfig that should be used by a controlled
+  // frame within the IWA represented by this object.
+  content::StoragePartitionConfig GetStoragePartitionConfigForControlledFrame(
+      content::BrowserContext* browser_context,
+      const std::string& partition_name,
+      bool in_memory) const;
+
  private:
   explicit IsolatedWebAppUrlInfo(
       const web_package::SignedWebBundleId& web_bundle_id);
+
+  std::string partition_domain() const;
 
   url::Origin origin_;
   AppId app_id_;

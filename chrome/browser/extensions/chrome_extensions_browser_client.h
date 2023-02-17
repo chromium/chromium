@@ -237,6 +237,11 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                                  const GURL& url,
                                  const std::u16string& url_title,
                                  int call_type) override;
+  content::StoragePartitionConfig GetWebViewStoragePartitionConfig(
+      content::BrowserContext* browser_context,
+      content::SiteInstance* owner_site_instance,
+      const std::string& partition_name,
+      bool in_memory) override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeExtensionsBrowserClient>;

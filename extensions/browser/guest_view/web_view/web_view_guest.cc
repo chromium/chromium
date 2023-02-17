@@ -308,8 +308,10 @@ int WebViewGuest::GetOrGenerateRulesRegistryID(int embedder_process_id,
 void WebViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
                                      const base::Value::Dict& create_params,
                                      WebContentsCreatedCallback callback) {
+  RenderFrameHost* owner_render_frame_host =
+      owner_web_contents()->GetPrimaryMainFrame();
   RenderProcessHost* owner_render_process_host =
-      owner_web_contents()->GetPrimaryMainFrame()->GetProcess();
+      owner_render_frame_host->GetProcess();
   DCHECK_EQ(browser_context(), owner_render_process_host->GetBrowserContext());
 
   std::string storage_partition_id;
@@ -325,28 +327,11 @@ void WebViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
     std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
-  std::string partition_domain = GetOwnerSiteURL().host();
-  auto partition_config = content::StoragePartitionConfig::Create(
-      browser_context(), partition_domain, storage_partition_id,
-      !persist_storage /* in_memory */);
 
-  if (GetOwnerSiteURL().SchemeIs(extensions::kExtensionScheme)) {
-    auto owner_config =
-        extensions::util::GetStoragePartitionConfigForExtensionId(
-            GetOwnerSiteURL().host(), browser_context());
-    if (browser_context()->IsOffTheRecord()) {
-      DCHECK(owner_config.in_memory());
-    }
-    if (!owner_config.is_default()) {
-      partition_config.set_fallback_to_partition_domain_for_blob_urls(
-          owner_config.in_memory()
-              ? content::StoragePartitionConfig::FallbackMode::
-                    kFallbackPartitionInMemory
-              : content::StoragePartitionConfig::FallbackMode::
-                    kFallbackPartitionOnDisk);
-      DCHECK(owner_config == partition_config.GetFallbackForBlobUrls().value());
-    }
-  }
+  content::StoragePartitionConfig partition_config =
+      ExtensionsBrowserClient::Get()->GetWebViewStoragePartitionConfig(
+          browser_context(), owner_render_frame_host->GetSiteInstance(),
+          storage_partition_id, /*in_memory=*/!persist_storage);
 
   // If we already have a webview tag in the same app using the same storage
   // partition, we should use the same SiteInstance so the existing tag and
