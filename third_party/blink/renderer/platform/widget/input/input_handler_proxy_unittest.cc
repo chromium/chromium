@@ -3179,6 +3179,11 @@ TEST_F(InputHandlerProxyEventQueueTest, CoalescedLatencyInfo) {
 }
 
 TEST_F(InputHandlerProxyEventQueueTest, CoalescedEventSwitchToMainThread) {
+  // After scroll unification, we do not handle scrolls on the main thread.
+  if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    return;
+  }
+
   cc::InputHandlerScrollResult scroll_result_did_scroll_;
   cc::InputHandlerScrollResult scroll_result_did_not_scroll_;
   scroll_result_did_scroll_.did_scroll = true;
