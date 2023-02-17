@@ -6,9 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_FILE_IO_HELPER_H_
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
-#include "chromeos/ash/services/recording/recording_encoder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace recording {
@@ -17,21 +15,30 @@ namespace mojom {
 enum class RecordingStatus;
 }  // namespace mojom
 
-class RecordingEncoder;
-
-// Defines a helper that can be used to performs remaining free space or
+// Defines a helper that can be used to perform remaining free space or
 // remaining DriveFs quota checks when writing bytes to the output file.
 class RecordingFileIoHelper {
  public:
+  // Defines an API so that the helper can notify with any IO errors that happen
+  // while writing to the file, or when the remaining disk space / DriveFS quota
+  // are less than the minimum threshold.
+  class Delegate {
+   public:
+    virtual void NotifyFailure(mojom::RecordingStatus status) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
   RecordingFileIoHelper(
       const base::FilePath& output_file_path,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-      RecordingEncoder* delegate);
+      Delegate* delegate);
   RecordingFileIoHelper(const RecordingFileIoHelper&) = delete;
   RecordingFileIoHelper& operator=(const RecordingFileIoHelper&) = delete;
   ~RecordingFileIoHelper();
 
-  RecordingEncoder* delegate() { return delegate_; }
+  Delegate* delegate() { return delegate_; }
 
   // Tells this helper that `num_bytes` have been written to the output file so
   // that it can perform any remaining disk space checks if needed.
@@ -63,7 +70,7 @@ class RecordingFileIoHelper {
   // The `RecordingEncoder` that owns this helper (either directly or
   // indirectly) which acts as a delegate of this class to notify with any IO
   // errors.
-  RecordingEncoder* const delegate_;
+  Delegate* const delegate_;
 
   // Once this value becomes <= 0, we trigger a remaining disk space poll.
   // Initialized to 0, so that we poll the disk space on the very first write

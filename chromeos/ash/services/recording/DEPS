@@ -10,6 +10,8 @@ include_rules = [
   "+mojo/public",
   "+services/audio/public",
   "+services/viz/privileged/mojom/compositing",
+  "+testing/gmock/include/gmock/gmock.h",
+  "+testing/gtest/include/gtest/gtest.h",
   "+ui/gfx",
 
   # Abseil is allowed by default, but some features are banned. See

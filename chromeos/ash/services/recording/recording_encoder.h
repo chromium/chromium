@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/recording/recording_file_io_helper.h"
 #include "media/base/encoder_status.h"
 #include "media/base/video_encoder.h"
 
@@ -32,12 +33,12 @@ using OnFailureCallback =
 // Defines a common interface for encoding audio and video frames. The concrete
 // implementation classes decides how encoding is done, and the type of the
 // underlying actual encoders.
-class RecordingEncoder {
+class RecordingEncoder : public RecordingFileIoHelper::Delegate {
  public:
   explicit RecordingEncoder(OnFailureCallback on_failure_callback);
   RecordingEncoder(const RecordingEncoder&) = delete;
   RecordingEncoder& operator=(const RecordingEncoder&) = delete;
-  virtual ~RecordingEncoder();
+  ~RecordingEncoder() override;
 
   bool did_failure_occur() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -71,10 +72,8 @@ class RecordingEncoder {
   // of `base::BindPostTask()`.
   virtual void FlushAndFinalize(base::OnceClosure on_done) = 0;
 
-  // Notifies the owner of this object (via `on_failure_callback_`) that a
-  // failure noted by `status` has occurred during encoding or saving to the
-  // output file.
-  void NotifyFailure(mojom::RecordingStatus status);
+  // RecordingFileIoHelper::Delegate:
+  void NotifyFailure(mojom::RecordingStatus status) override;
 
  protected:
   // Called by both the audio and video encoders to provide the `status` of

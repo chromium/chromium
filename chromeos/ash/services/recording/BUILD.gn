@@ -10,6 +10,10 @@ source_set("recording") {
   sources = [
     "gif_encoder.cc",
     "gif_encoder.h",
+    "gif_file_writer.cc",
+    "gif_file_writer.h",
+    "lzw_pixel_color_indices_writer.cc",
+    "lzw_pixel_color_indices_writer.h",
     "recording_encoder.cc",
     "recording_encoder.h",
     "recording_file_io_helper.cc",
@@ -45,5 +49,18 @@ source_set("test_support") {
     "//chromeos/ash/services/recording",
     "//chromeos/ash/services/recording/public/mojom",
     "//media",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "lzw_pixel_color_indices_writer_test.cc" ]
+
+  deps = [
+    ":recording",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/recording/public/mojom",
   ]
 }

@@ -5,8 +5,8 @@
 #include "chromeos/ash/services/recording/gif_encoder.h"
 
 #include "base/notreached.h"
+#include "chromeos/ash/services/recording/lzw_pixel_color_indices_writer.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
-#include "chromeos/ash/services/recording/recording_file_io_helper.h"
 #include "media/base/audio_bus.h"
 #include "media/base/video_frame.h"
 
@@ -32,11 +32,10 @@ GifEncoder::GifEncoder(
     const base::FilePath& gif_file_path,
     OnFailureCallback on_failure_callback)
     : RecordingEncoder(std::move(on_failure_callback)),
-      gif_file_(gif_file_path,
-                base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE),
-      file_io_helper_(gif_file_path,
-                      std::move(drive_fs_quota_delegate),
-                      /*delegate=*/this) {
+      gif_file_writer_(std::move(drive_fs_quota_delegate),
+                       gif_file_path,
+                       /*file_io_helper_delegate=*/this),
+      lzw_encoder_(&gif_file_writer_) {
   InitializeVideoEncoder(video_encoder_options);
 }
 

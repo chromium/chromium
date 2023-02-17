@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_RECORDING_GIF_ENCODER_H_
 #define CHROMEOS_ASH_SERVICES_RECORDING_GIF_ENCODER_H_
 
-#include "base/files/file.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
+#include "chromeos/ash/services/recording/gif_file_writer.h"
+#include "chromeos/ash/services/recording/lzw_pixel_color_indices_writer.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
-#include "chromeos/ash/services/recording/recording_file_io_helper.h"
 
 namespace recording {
 
@@ -67,14 +67,14 @@ class GifEncoder : public RecordingEncoder {
   void FlushAndFinalize(base::OnceClosure on_done) override;
 
  private:
-  // The file created at `gif_file_path` to which the output of the GIF encoder
-  // will be written.
-  base::File gif_file_;
+  // Abstracts writing bytes to the GIF file, and takes care of handling IO
+  // errors and remaining disk space / DriveFS quota issues.
+  GifFileWriter gif_file_writer_;
 
-  // A helper that will be used to calculate either the remaining disk space (if
-  // writing to a local file), or the remaining quota if the file exists on
-  // DriveFS.
-  RecordingFileIoHelper file_io_helper_;
+  // Abstracts encoding the video frame's image color indices using the
+  // Variable-Length-Code LZW compression algorithm and writing the output
+  // stream to the GIF file.
+  LzwPixelColorIndicesWriter lzw_encoder_;
 };
 
 }  // namespace recording

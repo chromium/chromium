@@ -24,7 +24,7 @@ constexpr int64_t kMinNumBytesBetweenDiskSpaceChecks = 10 * 1024 * 1024;
 RecordingFileIoHelper::RecordingFileIoHelper(
     const base::FilePath& output_file_path,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
-    RecordingEncoder* delegate)
+    Delegate* delegate)
     : output_file_path_(output_file_path),
       drive_fs_quota_delegate_remote_(std::move(drive_fs_quota_delegate)),
       delegate_(delegate) {
