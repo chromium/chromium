@@ -86,13 +86,17 @@ void GetVideoMetadata(const base::FilePath& video_path,
   int64_t size_in_byte;
   if (!base::PathExists(video_path) ||
       !base::GetFileSize(video_path, &size_in_byte)) {
-    std::move(callback).Run(
-        /*video=*/nullptr,
-        base::StringPrintf("Path does not exist or cannot read video size with "
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       /*video=*/nullptr,
+                       base::StringPrintf(
+                           "Path does not exist or cannot read video size with "
                            "video file id=%s",
-                           video->file_id.c_str()));
+                           video->file_id.c_str())));
     return;
   }
+
   auto parser = std::make_unique<SafeMediaMetadataParser>(
       size_in_byte, kProjectorMediaMimeType,
       /*get_attached_images=*/false,
