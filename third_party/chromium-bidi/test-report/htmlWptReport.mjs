@@ -30,6 +30,16 @@ function getOutputPath() {
   return process.argv.slice(2)[1];
 }
 
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\//g, '&#47;');
+}
+
 function generateHtml(report) {
   const stat = {all: 0, pass: 0};
   for (const test of report.results) {
@@ -93,7 +103,7 @@ function generateTestReport(test) {
         <summary class="path ${
           stat.all === stat.pass ? 'pass' : stat.pass === 0 ? 'fail' : 'part'
         }">
-          ${test.test}
+          ${escapeHtml(test.test)}
           <span class="stat" ><b>${stat.pass}/${stat.all}</b></span>
         </summary>
         ${test.subtests.map(generateSubtestReport).join('')}
@@ -108,8 +118,8 @@ function generateSubtestReport(subtest) {
         <p class="non-collapsible-item path ${
           subtest.status === 'PASS' ? 'pass' : 'fail'
         }">
-          ${subtest.name}
-          <span class="stat"><b>${subtest.status}</b></span>
+          ${escapeHtml(subtest.name)}
+          <span class="stat"><b>${escapeHtml(subtest.status)}</b></span>
         </p>
       </div>
 `;
