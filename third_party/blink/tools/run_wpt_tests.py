@@ -387,6 +387,9 @@ class WPTAdapter:
             # This property should always be a string so that the metadata
             # updater works, even when wptrunner is not running a flag-specific
             # suite.
+            'os': self.port.operating_system(),
+            'port': self.port.version(),
+            'debug': self.port.get_option('configuration') == 'Debug',
             'flag_specific': options.flag_specific or '',
             'used_upstream': options.use_upstream_wpt,
             'sanitizer_enabled': options.enable_sanitizer,

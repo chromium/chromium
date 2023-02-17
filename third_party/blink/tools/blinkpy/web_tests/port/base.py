@@ -299,6 +299,9 @@ class Port(object):
             self._name, self._version, self._architecture,
             self._test_configuration)
 
+    def version(self):
+        return self._version
+
     def get_platform_tags(self):
         """Returns system condition tags that are used to find active expectations
            for a test run on a specific system"""
