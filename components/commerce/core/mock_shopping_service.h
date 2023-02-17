@@ -12,7 +12,6 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace commerce {
 
@@ -52,6 +51,21 @@ class MockShoppingService : public commerce::ShoppingService {
               (std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
                base::OnceCallback<void(bool)> callback),
               (override));
+  MOCK_METHOD(
+      void,
+      GetAllSubscriptions,
+      (SubscriptionType type,
+       base::OnceCallback<void(std::vector<CommerceSubscription>)> callback),
+      (override));
+  MOCK_METHOD(void,
+              IsSubscribed,
+              (CommerceSubscription subscription,
+               base::OnceCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(bool,
+              IsSubscribedFromCache,
+              (const CommerceSubscription& subscription),
+              (override));
   MOCK_METHOD(void, ScheduleSavedProductUpdate, (), (override));
   MOCK_METHOD(bool, IsShoppingListEligible, (), (override));
   MOCK_METHOD(void,
@@ -68,6 +82,9 @@ class MockShoppingService : public commerce::ShoppingService {
       absl::optional<commerce::MerchantInfo> merchant_info);
   void SetSubscribeCallbackValue(bool subscribe_should_succeed);
   void SetUnsubscribeCallbackValue(bool unsubscribe_should_succeed);
+  void SetIsSubscribedCallbackValue(bool is_subscribed);
+  void SetGetAllSubscriptionsCallbackValue(
+      std::vector<CommerceSubscription> subscriptions);
   void SetIsShoppingListEligible(bool enabled);
   void SetIsClusterIdTrackedByUserResponse(bool is_tracked);
   void SetIsMerchantViewerEnabled(bool is_enabled);

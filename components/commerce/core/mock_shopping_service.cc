@@ -31,6 +31,8 @@ MockShoppingService::MockShoppingService()
   SetResponseForGetMerchantInfoForUrl(absl::nullopt);
   SetSubscribeCallbackValue(true);
   SetUnsubscribeCallbackValue(true);
+  SetIsSubscribedCallbackValue(true);
+  SetGetAllSubscriptionsCallbackValue(std::vector<CommerceSubscription>());
   SetIsShoppingListEligible(true);
   SetIsClusterIdTrackedByUserResponse(true);
   SetIsMerchantViewerEnabled(true);
@@ -106,6 +108,29 @@ void MockShoppingService::SetUnsubscribeCallbackValue(
                 FROM_HERE, base::BindOnce(std::move(callback),
                                           unsubscribe_should_succeed));
           });
+}
+
+void MockShoppingService::SetIsSubscribedCallbackValue(bool is_subscribed) {
+  ON_CALL(*this, IsSubscribed)
+      .WillByDefault([is_subscribed](CommerceSubscription subscription,
+                                     base::OnceCallback<void(bool)> callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), is_subscribed));
+      });
+  ON_CALL(*this, IsSubscribedFromCache)
+      .WillByDefault(testing::Return(is_subscribed));
+}
+
+void MockShoppingService::SetGetAllSubscriptionsCallbackValue(
+    std::vector<CommerceSubscription> subscriptions) {
+  ON_CALL(*this, GetAllSubscriptions)
+      .WillByDefault([subs = std::move(subscriptions)](
+                         SubscriptionType type,
+                         base::OnceCallback<void(
+                             std::vector<CommerceSubscription>)> callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), std::move(subs)));
+      });
 }
 
 void MockShoppingService::SetIsShoppingListEligible(bool eligible) {

@@ -721,6 +721,16 @@ void ShoppingService::RemoveSubscriptionsObserver(
   }
 }
 
+void ShoppingService::GetAllSubscriptions(
+    SubscriptionType type,
+    base::OnceCallback<void(std::vector<CommerceSubscription>)> callback) {
+  if (subscriptions_manager_) {
+    subscriptions_manager_->GetAllSubscriptions(type, std::move(callback));
+  } else {
+    CHECK_IS_TEST();
+  }
+}
+
 void ShoppingService::IsSubscribed(CommerceSubscription subscription,
                                    base::OnceCallback<void(bool)> callback) {
   if (subscriptions_manager_) {
@@ -731,7 +741,7 @@ void ShoppingService::IsSubscribed(CommerceSubscription subscription,
   }
 }
 
-bool ShoppingService::IsSubscriptedFromCache(
+bool ShoppingService::IsSubscribedFromCache(
     const CommerceSubscription& subscription) {
   if (subscriptions_manager_) {
     return subscriptions_manager_->IsSubscribedFromCache(subscription);

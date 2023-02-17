@@ -21,6 +21,7 @@
 #include "base/supports_user_data.h"
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -216,6 +217,12 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
 
+  // Gets all subscriptions for the specified type. The list of subscriptions
+  // will be provided as input to the |callback| passed to this function.
+  virtual void GetAllSubscriptions(
+      SubscriptionType type,
+      base::OnceCallback<void(std::vector<CommerceSubscription>)> callback);
+
   // Methods to register or remove SubscriptionsObserver, which will be notified
   // when a (un)subscribe request has finished.
   void AddSubscriptionsObserver(SubscriptionsObserver* observer);
@@ -228,7 +235,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // Checks if a subscription exists from the in-memory cache. Use of the the
   // callback-based version |IsSubscribed| is preferred. Information provided
   // by this API is not guaranteed to be correct.
-  virtual bool IsSubscriptedFromCache(const CommerceSubscription& subscription);
+  virtual bool IsSubscribedFromCache(const CommerceSubscription& subscription);
 
   // Fetch users' pref from server on whether to receive price tracking emails.
   void FetchPriceEmailPref();
