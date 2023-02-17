@@ -164,6 +164,12 @@ void LoadPaper(const wchar_t* printer,
   for (size_t i = 0; i < sizes.size(); ++i) {
     PrinterSemanticCapsAndDefaults::Paper paper;
     paper.size_um.SetSize(sizes[i].x * kToUm, sizes[i].y * kToUm);
+
+    // Skip papers with empty paper sizes.
+    if (paper.size_um.IsEmpty()) {
+      continue;
+    }
+
     if (!names.empty()) {
       const wchar_t* name_start = names[i].chars;
       std::wstring tmp_name(name_start, kMaxPaperName);
@@ -200,10 +206,10 @@ void LoadPaper(const wchar_t* printer,
 
   // Copy paper with the same ID as default paper.
   if (devmode->dmFields & DM_PAPERSIZE) {
-    for (size_t i = 0; i < ids.size(); ++i) {
-      if (ids[i] == devmode->dmPaperSize) {
-        DCHECK_EQ(ids.size(), caps->papers.size());
-        caps->default_paper = caps->papers[i];
+    std::string default_vendor_id = base::NumberToString(devmode->dmPaperSize);
+    for (const PrinterSemanticCapsAndDefaults::Paper& paper : caps->papers) {
+      if (paper.vendor_id == default_vendor_id) {
+        caps->default_paper = paper;
         break;
       }
     }

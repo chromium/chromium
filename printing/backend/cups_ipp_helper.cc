@@ -340,8 +340,7 @@ PrinterSemanticCapsAndDefaults::Paper DefaultPaper(const CupsPrinter& printer) {
     return PrinterSemanticCapsAndDefaults::Paper();
   }
 
-  return ParsePaper(media_name,
-                    printer.GetMediaMarginsByName(std::string(media_name)));
+  return ParsePaper(media_name, printer.GetMediaMarginsByName(media_name));
 }
 
 void CapsAndDefaultsFromPrinter(const CupsPrinter& printer,

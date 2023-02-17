@@ -103,19 +103,13 @@ TEST(PrintBackendUtilsCupsTest, ParsePaperNaNumber10) {
 TEST(PrintBackendUtilsCupsTest, ParsePaperBadUnit) {
   PrinterSemanticCapsAndDefaults::Paper paper_bad =
       ParsePaper("bad_unit_666x666bad", CupsPrinter::CupsMediaMargins());
-  EXPECT_TRUE(paper_bad.size_um.IsEmpty());
-  EXPECT_EQ("bad_unit_666x666bad", paper_bad.vendor_id);
-  EXPECT_EQ("bad unit", paper_bad.display_name);
-  EXPECT_EQ(gfx::Rect(), paper_bad.printable_area_um);
+  EXPECT_EQ(PrinterSemanticCapsAndDefaults::Paper(), paper_bad);
 }
 
 TEST(PrintBackendUtilsCupsTest, ParsePaperBadOneDimension) {
   PrinterSemanticCapsAndDefaults::Paper paper_bad =
       ParsePaper("bad_one_dimension_666mm", CupsPrinter::CupsMediaMargins());
-  EXPECT_TRUE(paper_bad.size_um.IsEmpty());
-  EXPECT_EQ("bad_one_dimension_666mm", paper_bad.vendor_id);
-  EXPECT_EQ("bad one dimension", paper_bad.display_name);
-  EXPECT_EQ(gfx::Rect(), paper_bad.printable_area_um);
+  EXPECT_EQ(PrinterSemanticCapsAndDefaults::Paper(), paper_bad);
 }
 
 TEST(PrintBackendUtilsCupsTest, ParsePaperOutOfBoundsMargins) {
@@ -142,15 +136,13 @@ TEST(PrintBackendUtilsCupsTest, ParsePaperEmptyPrintableArea) {
   EXPECT_EQ(gfx::Rect(0, 0, 210000, 297000), paper.printable_area_um);
 }
 
-TEST(PrintBackendUtilsCupsTest, ParsePaperEmptySize) {
-  // If the paper size is empty, the printable area should also be empty.
+TEST(PrintBackendUtilsCupsTest, ParsePaperEmptySizeWithPrintableArea) {
+  // If the paper size is empty, the Paper should be invalid, even when provided
+  // a printable area.
   constexpr CupsPrinter::CupsMediaMargins kMargins = {1000, 1000, 1000, 1000};
   PrinterSemanticCapsAndDefaults::Paper paper_bad =
       ParsePaper("bad_unit_666x666bad", kMargins);
-  EXPECT_TRUE(paper_bad.size_um.IsEmpty());
-  EXPECT_EQ("bad_unit_666x666bad", paper_bad.vendor_id);
-  EXPECT_EQ("bad unit", paper_bad.display_name);
-  EXPECT_EQ(gfx::Rect(), paper_bad.printable_area_um);
+  EXPECT_EQ(PrinterSemanticCapsAndDefaults::Paper(), paper_bad);
 }
 
 #endif  // BUILDFLAG(USE_CUPS)

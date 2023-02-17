@@ -119,6 +119,9 @@ PrinterSemanticCapsAndDefaults::Paper ParsePaper(
   PrinterSemanticCapsAndDefaults::Paper paper;
   paper.vendor_id = std::string(value);
   paper.size_um = DimensionsToMicrons(dimensions);
+  if (paper.size_um.IsEmpty()) {
+    return PrinterSemanticCapsAndDefaults::Paper();
+  }
 
   // The margins of the printable area are expressed in PWG units (100ths of
   // mm).

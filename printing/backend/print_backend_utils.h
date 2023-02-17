@@ -35,7 +35,8 @@ gfx::Size ParsePaperSize(base::StringPiece value);
 #if BUILDFLAG(USE_CUPS)
 // Parses the media name expressed by `value` into a Paper. Returns an
 // empty Paper if `value` does not contain the display name nor the dimension,
-// or if `value` contains a prefix of media sizes not meant for users' eyes.
+// `value` contains a prefix of media sizes not meant for users' eyes, or if the
+// paper size is empty.
 // `margins` is used to calculate the Paper's printable area.
 // We don't handle l10n here. We do populate the display_name member with the
 // prettified vendor ID, but fully expect the caller to clobber this if a better
