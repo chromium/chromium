@@ -3,12 +3,14 @@ package com.ark.browser.ui.widget.homepage;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import com.ark.browser.core.ArkCompositorViewHolder;
+import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
 import com.ark.browser.ui.widget.BottomControlBar;
@@ -106,8 +108,9 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         Tab tab = mViewHolder.getTab();
         if (tab != null) {
             int color = tab.getThemeColor();
-            setStatusBarColor(color);
-            mBottomController.updatePrimaryColor(color);
+            setThemeColor(color);
+        } else {
+            setThemeColor(AppConfig.isNightMode() ? Color.BLACK : Color.WHITE);
         }
     }
 
@@ -116,7 +119,13 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         StatusBarUtils.setLightMode(ContextUtils.getActivity(mBrowserLayout.getContext()));
     }
 
-    private void setStatusBarColor(int color) {
+    public void setThemeColor(int color) {
+        if (mBrowserLayout.getVisibility() != View.VISIBLE) {
+            return;
+        }
+        mBottomController.updatePrimaryColor(color);
+        mBrowserLayout.setBackgroundColor(color);
+
         boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(color);
         mTabSwitcherLayout.setStatusBarColor(color);
         Log.d("LauncherManager", "setStatusBarColor color=" + color);

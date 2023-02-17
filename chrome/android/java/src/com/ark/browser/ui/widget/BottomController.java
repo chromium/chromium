@@ -323,7 +323,6 @@ public class BottomController {
 
         mPrimaryColor = color;
         int bgColor;
-        Log.d("updatePrimaryColor", "calculateContrast=" + androidx.core.graphics.ColorUtils.calculateContrast(Color.BLACK, Color.WHITE));
         if (color == Color.WHITE) {
             bgColor = Color.parseColor("#f6f6f6");
         } else if (color == Color.BLACK) {
@@ -331,9 +330,6 @@ public class BottomController {
         } else {
             bgColor = ColorUtils.getDarkenedColor(color, 0.97f);
         }
-
-        Log.d("updatePrimaryColor", "calculateContrast22222222="
-                + androidx.core.graphics.ColorUtils.calculateContrast(bgColor, mPrimaryColor));
 
         boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(color);
 //        faviconImg.setBorderColor(useLight ? Color.WHITE : mContext.getResources().getColor(R.color.google_black_400));

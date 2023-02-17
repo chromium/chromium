@@ -338,7 +338,7 @@ public class ArkMainFragment extends BaseFragment implements
 
             @Override
             public void didThemeColorChanged(int color) {
-                mSwitcherManager.getBrowserLayout().setBackgroundColor(color);
+                mSwitcherManager.setThemeColor(color);
             }
 
             @Override
@@ -350,6 +350,7 @@ public class ArkMainFragment extends BaseFragment implements
 //                }
 //                mUrlBar.setText(page.getUrl().getSpec());
                 mSwitcherManager.getBottomController().onPageAttached(page);
+                mSwitcherManager.setThemeColor(page.getThemeColor());
             }
 
             @Override
@@ -467,7 +468,7 @@ public class ArkMainFragment extends BaseFragment implements
     }
 
     public void loadUrl(LoadUrlParams params, boolean incognito) {
-//        mLauncherManager.goToBrowser();
+        mSwitcherManager.goToBrowser();
         TabListManager.getInstance().openNewTab(
                 TabListManager.getInstance().getCurrentPageInfo(),
                 params, TabLaunchType.FROM_CHROME_UI, incognito);
@@ -490,7 +491,7 @@ public class ArkMainFragment extends BaseFragment implements
     }
 
     public void loadUrlInNewTab(PageInfo pageInfo, LoadUrlParams params, boolean incognito) {
-//        mLauncherManager.goToBrowser();
+        mSwitcherManager.goToBrowser();
         TabListManager.getInstance().openNewTab(pageInfo, params, TabLaunchType.FROM_CHROME_UI, incognito);
     }
 
