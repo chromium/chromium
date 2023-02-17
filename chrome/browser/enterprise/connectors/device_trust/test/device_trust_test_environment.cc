@@ -31,4 +31,14 @@ void DeviceTrustTestEnvironment::SetUploadResult(
   upload_response_code_ = upload_response_code;
 }
 
+void DeviceTrustTestEnvironment::SetExpectedDMToken(
+    std::string expected_dm_token) {
+  expected_dm_token_ = expected_dm_token;
+}
+
+void DeviceTrustTestEnvironment::SetExpectedClientID(
+    std::string expected_client_id) {
+  expected_client_id_ = expected_client_id;
+}
+
 }  // namespace enterprise_connectors

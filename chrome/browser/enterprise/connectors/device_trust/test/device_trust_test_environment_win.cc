@@ -42,6 +42,8 @@ constexpr HttpResponseCode kSuccessCode = 200;
 
 HRESULT MockRunGoogleUpdateElevatedCommandFn(
     HttpResponseCode upload_response_code,
+    std::string expected_dm_token,
+    std::string expected_client_id,
     const wchar_t* command,
     const std::vector<std::string>& args,
     absl::optional<DWORD>* return_code) {
@@ -54,9 +56,15 @@ HRESULT MockRunGoogleUpdateElevatedCommandFn(
       std::make_unique<StrictMock<MockKeyNetworkDelegate>>();
   EXPECT_CALL(*mock_network_delegate, SendPublicKeyToDmServer(_, _, _, _))
       .WillOnce(Invoke(
-          [upload_response_code](const GURL& url, const std::string& dm_token,
-                                 const std::string& body,
-                                 base::OnceCallback<void(int)> callback) {
+          [upload_response_code, expected_dm_token, expected_client_id, args](
+              const GURL& url, const std::string& dm_token,
+              const std::string& body, base::OnceCallback<void(int)> callback) {
+            // Check if the DM Server URL contains the correct Client ID
+            CHECK(url.spec().find(expected_client_id) != std::string::npos);
+            // Check if the correct DM Token is being uploaded
+            CHECK_EQ(dm_token, expected_dm_token);
+            // TODO(b/269746642): add a check for the 'body' parameter above
+
             std::move(callback).Run(upload_response_code);
           }));
   const auto result = enterprise_connectors::RotateDeviceTrustKey(
@@ -105,7 +113,8 @@ DeviceTrustTestEnvironmentWin::CreateCommand(
   }
   return std::make_unique<WinKeyRotationCommand>(
       base::BindRepeating(&MockRunGoogleUpdateElevatedCommandFn,
-                          upload_response_code_),
+                          upload_response_code_, expected_dm_token_,
+                          expected_client_id_),
       worker_thread_.task_runner());
 }
 

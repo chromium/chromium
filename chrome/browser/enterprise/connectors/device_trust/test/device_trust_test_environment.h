@@ -36,6 +36,12 @@ class DeviceTrustTestEnvironment {
   // KeyNetworkDelegate.
   void SetUploadResult(HttpResponseCode upload_response_code);
 
+  // Set up an expected DM token, which we will check if it's identical to
+  // the DM token we use when uploading to DM server
+  void SetExpectedDMToken(std::string expected_dm_token);
+
+  void SetExpectedClientID(std::string expected_client_id);
+
   // Check if device trust key exists on the device.
   bool KeyExists();
 
@@ -48,6 +54,12 @@ class DeviceTrustTestEnvironment {
   // Preset response code of key upload, used to test different behaviours of
   // KeyNetworkDelegate.
   HttpResponseCode upload_response_code_;
+
+  // Expected dm token to be used when upload to dm server
+  std::string expected_dm_token_;
+
+  // Expected client ID to be included in dm server URL when upload to dm server
+  std::string expected_client_id_;
 
   // Instance of platform-dependent KeyPersistenceDelegate to interact with
   // Device Trust keys.

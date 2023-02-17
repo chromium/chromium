@@ -450,6 +450,9 @@ class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
 
 #if BUILDFLAG(IS_WIN)
     device_trust_test_environment_win_.emplace();
+    device_trust_test_environment_win_->SetExpectedDMToken(kFakeBrowserDMToken);
+    device_trust_test_environment_win_->SetExpectedClientID(
+        kFakeBrowserClientId);
 #else  // BUILDFLAG(IS_WIN)
     scoped_persistence_delegate_factory_.emplace();
     scoped_rotation_command_factory_.emplace();
