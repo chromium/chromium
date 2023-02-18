@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/policy_constants.h"
@@ -103,7 +104,7 @@ void ArcPolicyHandler::PrepareForDisplaying(policy::PolicyMap* policies) const {
   const base::Value::Dict& arc_policy = json->GetDict();
 
   const base::Value::List* apps =
-      arc_policy.FindList(ArcPolicyBridge::kApplications);
+      arc_policy.FindList(policy_util::kArcPolicyKeyApplications);
   if (!apps)
     return;
 

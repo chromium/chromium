@@ -256,8 +256,9 @@ void PolicyComplianceObserver::OnComplianceReportReceived(
     if (!reason || !settingName)
       continue;
     // Not compliant with ARC applications policy.
-    if (*settingName == ArcPolicyBridge::kApplications)
+    if (*settingName == policy_util::kArcPolicyKeyApplications) {
       return;
+    }
     // android_id is expected to be reset, but still not reset by clouddpc.
     if (*settingName == ArcPolicyBridge::kResetAndroidIdEnabled) {
       is_android_id_reset = false;

@@ -4703,6 +4703,25 @@ Unknown properties are collapsed to zero. -->
   <int value="9" label="Timeout"/>
 </enum>
 
+<enum name="ArcPolicyKey">
+  <summary>Defines the keys ArcPolicy object can contain.</summary>
+  <int value="0" label="unknown"/>
+  <int value="1" label="accountTypesWithManagementDisabled"/>
+  <int value="2" label="alwaysOnVpnPackage"/>
+  <int value="3" label="applications"/>
+  <int value="4" label="availableAppSetPolicy"/>
+  <int value="5" label="complianceRules"/>
+  <int value="6" label="installUnknownSourcesDisabled"/>
+  <int value="7" label="maintenanceWindow"/>
+  <int value="8" label="modifyAccountsDisabled"/>
+  <int value="9" label="permissionGrants"/>
+  <int value="10" label="permittedAccessibilityServices"/>
+  <int value="11" label="playStoreMode"/>
+  <int value="12" label="shortSupportMessage"/>
+  <int value="13" label="statusReportingSettings"/>
+  <int value="14" label="workAccountAppWhitelist"/>
+</enum>
+
 <enum name="ArcProvisioningCheckInError">
   <summary>Defines ARC GMS check-in failure reasons</summary>
   <int value="1" label="Check-in failed"/>

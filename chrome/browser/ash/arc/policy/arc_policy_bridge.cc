@@ -53,7 +53,6 @@ constexpr char kPolicyCompliantJson[] = "{ \"policyCompliant\": true }";
 constexpr char kArcRequiredKeyPairs[] = "requiredKeyPairs";
 constexpr char kPrivateKeySelectionEnabled[] = "privateKeySelectionEnabled";
 constexpr char kChoosePrivateKeyRules[] = "choosePrivateKeyRules";
-constexpr char kPolicyApplications[] = "applications";
 constexpr char kPolicyAppInstallType[] = "installType";
 constexpr char kPolicyAppInstallTypeForceInstalled[] = "FORCE_INSTALLED";
 
@@ -277,7 +276,7 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
                                           base::Value::Dict* arc_policy) {
   // Replace template variables in application managed configuration.
   base::Value::List* applications =
-      arc_policy->FindList(ArcPolicyBridge::kApplications);
+      arc_policy->FindList(policy_util::kArcPolicyKeyApplications);
   if (applications) {
     for (base::Value& entry : *applications) {
       base::Value* config =
@@ -324,7 +323,7 @@ void DisableRequiredAppsIfDataSnapshotUpdateInProgress(
       arc::data_snapshotd::ArcDataSnapshotdManager::Get()
           ->IsSnapshotInProgress()) {
     base::Value::List* applications_value =
-        filtered_policies.FindList(ArcPolicyBridge::kApplications);
+        filtered_policies.FindList(policy_util::kArcPolicyKeyApplications);
     if (applications_value) {
       for (base::Value& entry : *applications_value) {
         auto* installType = entry.FindStringKey("installType");
@@ -405,7 +404,8 @@ void OverrideArcPolicies(base::Value::Dict& filtered_policies,
       ash::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
     // Adds "playStoreMode" policy. The policy value is used to restrict the
     // user from being able to toggle between different accounts in ARC++.
-    filtered_policies.Set("playStoreMode", "SUPERVISED");
+    filtered_policies.Set(policy_util::kArcPolicyKeyPlayStoreMode,
+                          "SUPERVISED");
   }
 }
 
@@ -450,7 +450,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   return policy_json;
 }
 
-void RecordInstallTypesInPolicy(const policy::PolicyMap& policy) {
+void RecordPolicyMetrics(const policy::PolicyMap& policy) {
   const base::Value* const arc_enabled =
       policy.GetValue(policy::key::kArcEnabled, base::Value::Type::BOOLEAN);
   if (!arc_enabled || !arc_enabled->GetBool())
@@ -459,7 +459,7 @@ void RecordInstallTypesInPolicy(const policy::PolicyMap& policy) {
   const base::Value* const arc_policy =
       policy.GetValue(policy::key::kArcPolicy, base::Value::Type::STRING);
   if (arc_policy)
-    policy_util::RecordInstallTypesInPolicy(arc_policy->GetString());
+    policy_util::RecordPolicyMetrics(arc_policy->GetString());
 }
 
 // Singleton factory for ArcPolicyBridge.
@@ -483,9 +483,6 @@ class ArcPolicyBridgeFactory
 };
 
 }  // namespace
-
-// static
-const char ArcPolicyBridge::kApplications[] = "applications";
 
 // static
 const char ArcPolicyBridge::kPackageName[] = "packageName";
@@ -565,7 +562,7 @@ void ArcPolicyBridge::OverrideIsManagedForTesting(bool is_managed) {
 void ArcPolicyBridge::OnConnectionReady() {
   VLOG(1) << "ArcPolicyBridge::OnConnectionReady";
   InitializePolicyService();
-  policy_util::RecordInstallTypesInPolicy(GetCurrentJSONPolicies());
+  policy_util::RecordPolicyMetrics(GetCurrentJSONPolicies());
 
   if (!on_arc_instance_ready_callback_.is_null()) {
     std::move(on_arc_instance_ready_callback_).Run();
@@ -668,7 +665,7 @@ void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
     return;
 
   instance->OnPolicyUpdated();
-  RecordInstallTypesInPolicy(current);
+  RecordPolicyMetrics(current);
 }
 
 void ArcPolicyBridge::OnArcStartDelayed() {
@@ -756,7 +753,8 @@ void ArcPolicyBridge::OnReportComplianceParse(
 void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
     const policy::PolicyMap& policy_map) {
   base::Value::Dict filtered_policies = ParseArcPoliciesToDict(policy_map);
-  base::Value::List* apps = filtered_policies.FindList(kPolicyApplications);
+  base::Value::List* apps =
+      filtered_policies.FindList(policy_util::kArcPolicyKeyApplications);
   if (apps == nullptr) {
     return;
   }

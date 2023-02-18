@@ -1882,6 +1882,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Policy.Keys" enum="ArcPolicyKey"
+    expires_after="2023-05-09">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Record which sub-policies are included in the ArcPolicy object that
+    represents policy restrictions set on ARC. The metric is emitted once when
+    arc_policy_bridge starts and any time the policy is updated.
+  </summary>
+</histogram>
+
 <histogram name="Arc.PrintPreview.PreviewEvent" enum="PrintPreviewHelperEvents"
     expires_after="2023-04-04">
   <owner>bmgordon@chromium.org</owner>

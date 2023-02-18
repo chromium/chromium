@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -35,7 +36,8 @@ constexpr char kUnknownVariable1Pattern[] = "unknown variable: ${%s}";
 
 base::Value BuildArcPolicyFromApplications(base::Value::List applications) {
   base::Value::Dict arc_policy;
-  arc_policy.Set(ArcPolicyBridge::kApplications, std::move(applications));
+  arc_policy.Set(policy_util::kArcPolicyKeyApplications,
+                 std::move(applications));
 
   std::string json;
   JSONStringValueSerializer serializer(&json);

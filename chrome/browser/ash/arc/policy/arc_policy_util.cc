@@ -45,8 +45,13 @@ bool IsArcDisabledForEnterprise() {
 
 std::set<std::string> GetRequestedPackagesFromArcPolicy(
     const std::string& arc_policy) {
+  absl::optional<base::Value> dict = ParsePolicyJson(arc_policy);
+  if (!dict.has_value() || !dict.value().is_dict()) {
+    return {};
+  }
+
   std::map<std::string, std::set<std::string>> install_type_map =
-      CreateInstallTypeMap(arc_policy);
+      CreateInstallTypeMap(dict.value());
   std::set<std::string> required_packages =
       install_type_map[kInstallTypeRequired];
   std::set<std::string> force_installed_packages =
@@ -60,9 +65,19 @@ std::set<std::string> GetRequestedPackagesFromArcPolicy(
   return requested_packages;
 }
 
-void RecordInstallTypesInPolicy(const std::string& arc_policy) {
+void RecordPolicyMetrics(const std::string& arc_policy) {
+  absl::optional<base::Value> dict = ParsePolicyJson(arc_policy);
+  if (!dict.has_value() || !dict.value().is_dict()) {
+    return;
+  }
+
+  for (const auto it : dict.value().DictItems()) {
+    UMA_HISTOGRAM_ENUMERATION("Arc.Policy.Keys",
+                              GetPolicyKeyFromString(it.first));
+  }
+
   std::map<std::string, std::set<std::string>> install_type_map =
-      CreateInstallTypeMap(arc_policy);
+      CreateInstallTypeMap(dict.value());
 
   for (auto& it : install_type_map) {
     InstallType install_type_enum = GetInstallTypeEnumFromString(it.first);
@@ -71,15 +86,15 @@ void RecordInstallTypesInPolicy(const std::string& arc_policy) {
   }
 }
 
-std::map<std::string, std::set<std::string>> CreateInstallTypeMap(
-    const std::string& arc_policy) {
-  absl::optional<base::Value> dict = base::JSONReader::Read(
+absl::optional<base::Value> ParsePolicyJson(const std::string& arc_policy) {
+  return base::JSONReader::Read(
       arc_policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  if (!dict.has_value() || !dict.value().is_dict())
-    return {};
+}
 
+std::map<std::string, std::set<std::string>> CreateInstallTypeMap(
+    const base::Value& dict) {
   const base::Value* const packages =
-      dict.value().FindKeyOfType(kApplicationsKey, base::Value::Type::LIST);
+      dict.FindKeyOfType(kApplicationsKey, base::Value::Type::LIST);
   if (!packages)
     return {};
 
@@ -100,6 +115,41 @@ std::map<std::string, std::set<std::string>> CreateInstallTypeMap(
         package_name->GetString());
   }
   return install_type_map;
+}
+
+ArcPolicyKey GetPolicyKeyFromString(const std::string& policy_key) {
+  if (policy_key == "accountTypesWithManagementDisabled") {
+    return ArcPolicyKey::kAccountTypesWithManagementDisabled;
+  } else if (policy_key == "alwaysOnVpnPackage") {
+    return ArcPolicyKey::kAlwaysOnVpnPackage;
+  } else if (policy_key == "applications") {
+    return ArcPolicyKey::kApplications;
+  } else if (policy_key == "availableAppSetPolicy") {
+    return ArcPolicyKey::kAvailableAppSetPolicy;
+  } else if (policy_key == "complianceRules") {
+    return ArcPolicyKey::kComplianceRules;
+  } else if (policy_key == "installUnknownSourcesDisabled") {
+    return ArcPolicyKey::kInstallUnknownSourcesDisabled;
+  } else if (policy_key == "maintenanceWindow") {
+    return ArcPolicyKey::kMaintenanceWindow;
+  } else if (policy_key == "modifyAccountsDisabled") {
+    return ArcPolicyKey::kModifyAccountsDisabled;
+  } else if (policy_key == "permissionGrants") {
+    return ArcPolicyKey::kPermissionGrants;
+  } else if (policy_key == "permittedAccessibilityServices") {
+    return ArcPolicyKey::kPermittedAccessibilityServices;
+  } else if (policy_key == "playStoreMode") {
+    return ArcPolicyKey::kPlayStoreMode;
+  } else if (policy_key == "shortSupportMessage") {
+    return ArcPolicyKey::kShortSupportMessage;
+  } else if (policy_key == "statusReportingSettings") {
+    return ArcPolicyKey::kStatusReportingSettings;
+  } else if (policy_key == "workAccountAppWhitelist") {
+    return ArcPolicyKey::kWorkAccountAppWhitelist;
+  }
+
+  LOG(WARNING) << "Unknown policy key: " << policy_key;
+  return ArcPolicyKey::kUnknown;
 }
 
 InstallType GetInstallTypeEnumFromString(const std::string& install_type) {

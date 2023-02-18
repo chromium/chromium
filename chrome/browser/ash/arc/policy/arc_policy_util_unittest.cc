@@ -26,11 +26,18 @@ constexpr int kAvailableBucket = 6;
 constexpr int kRequiredForSetupBucket = 7;
 constexpr int kKioskBucket = 8;
 constexpr char kInstallTypeHistogram[] = "Arc.Policy.InstallTypesOnDevice";
+constexpr char kArcPolicyKeyHistogram[] = "Arc.Policy.Keys";
 
 std::map<std::string, std::string> kTestMap = {
     {"testPackage", "FORCE_INSTALLED"}, {"testPackage2", "BLOCKED"},
     {"testPackage3", "BLOCKED"},        {"testPackage4", "AVAILABLE"},
     {"testPackage5", "AVAILABLE"},      {"testPackage6", "REQUIRED"}};
+
+std::string CreatePolicyJson(const base::Value::Dict& arc_policy) {
+  std::string arc_policy_string;
+  base::JSONWriter::Write(arc_policy, &arc_policy_string);
+  return arc_policy_string;
+}
 
 std::string CreatePolicyWithAppInstalls(
     std::map<std::string, std::string> package_map) {
@@ -45,9 +52,17 @@ std::string CreatePolicyWithAppInstalls(
   }
 
   arc_policy.Set("applications", std::move(list));
-  std::string arc_policy_string;
-  base::JSONWriter::Write(arc_policy, &arc_policy_string);
-  return arc_policy_string;
+  return CreatePolicyJson(arc_policy);
+}
+
+std::string CreatePolicyWithKeys(std::set<std::string> keys) {
+  base::Value::Dict arc_policy;
+
+  for (const std::string& key : keys) {
+    arc_policy.Set(key, "value");
+  }
+
+  return CreatePolicyJson(arc_policy);
 }
 
 }  // namespace
@@ -72,7 +87,102 @@ TEST_F(ArcPolicyUtilTest, GetRequestedPackagesFromArcPolicy) {
   EXPECT_EQ(result, expected);
 }
 
-TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyWithOneOfEachType) {
+TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithUnknownKeys) {
+  std::set<std::string> test_keys = {
+      "guid",
+  };
+
+  std::string policy = CreatePolicyWithKeys(test_keys);
+  arc::policy_util::RecordPolicyMetrics(policy);
+
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram, ArcPolicyKey::kUnknown, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kAccountTypesWithManagementDisabled,
+                            0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kAlwaysOnVpnPackage, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram, ArcPolicyKey::kApplications,
+                            0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kAvailableAppSetPolicy, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kComplianceRules, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kInstallUnknownSourcesDisabled, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kMaintenanceWindow, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kModifyAccountsDisabled, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kPermissionGrants, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kPermittedAccessibilityServices, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kPlayStoreMode, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kShortSupportMessage, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kStatusReportingSettings, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kWorkAccountAppWhitelist, 0);
+  tester_.ExpectTotalCount(kArcPolicyKeyHistogram, 1);
+}
+
+TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithKnownKeys) {
+  std::set<std::string> test_keys = {
+      kArcPolicyKeyAccountTypesWithManagementDisabled,
+      kArcPolicyKeyAlwaysOnVpnPackage,
+      kArcPolicyKeyApplications,
+      kArcPolicyKeyAvailableAppSetPolicy,
+      kArcPolicyKeyComplianceRules,
+      kArcPolicyKeyInstallUnknownSourcesDisabled,
+      kArcPolicyKeyMaintenanceWindow,
+      kArcPolicyKeyModifyAccountsDisabled,
+      kArcPolicyKeyPermissionGrants,
+      kArcPolicyKeyPermittedAccessibilityServices,
+      kArcPolicyKeyPlayStoreMode,
+      kArcPolicyKeyShortSupportMessage,
+      kArcPolicyKeyStatusReportingSettings,
+      kArcPolicyKeyWorkAccountAppWhitelist,
+  };
+
+  std::string policy = CreatePolicyWithKeys(test_keys);
+  arc::policy_util::RecordPolicyMetrics(policy);
+
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram, ArcPolicyKey::kUnknown, 0);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kAccountTypesWithManagementDisabled,
+                            1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kAlwaysOnVpnPackage, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram, ArcPolicyKey::kApplications,
+                            1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kAvailableAppSetPolicy, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kComplianceRules, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kInstallUnknownSourcesDisabled, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kMaintenanceWindow, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kModifyAccountsDisabled, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kPermissionGrants, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kPermittedAccessibilityServices, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kPlayStoreMode, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kShortSupportMessage, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kStatusReportingSettings, 1);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kWorkAccountAppWhitelist, 1);
+  tester_.ExpectTotalCount(kArcPolicyKeyHistogram, 14);
+}
+
+TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithOneAppOfEachType) {
   std::map<std::string, std::string> test_map = {
       {"testPackage", "OPTIONAL"},
       {"testPackage2", "REQUIRED"},
@@ -85,7 +195,7 @@ TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyWithOneOfEachType) {
       {"testPackage9", "UNKNOWN"}};
 
   std::string policy = CreatePolicyWithAppInstalls(test_map);
-  arc::policy_util::RecordInstallTypesInPolicy(policy);
+  arc::policy_util::RecordPolicyMetrics(policy);
 
   tester_.ExpectBucketCount(kInstallTypeHistogram, kUnknownBucket, 1);
   tester_.ExpectBucketCount(kInstallTypeHistogram, kOptionalBucket, 1);
@@ -99,9 +209,9 @@ TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyWithOneOfEachType) {
   tester_.ExpectTotalCount(kInstallTypeHistogram, 9);
 }
 
-TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyWithComplexPolicy) {
+TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithComplexPolicy) {
   std::string policy = CreatePolicyWithAppInstalls(kTestMap);
-  arc::policy_util::RecordInstallTypesInPolicy(policy);
+  arc::policy_util::RecordPolicyMetrics(policy);
 
   tester_.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 1);
   tester_.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 1);
@@ -110,11 +220,11 @@ TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyWithComplexPolicy) {
   tester_.ExpectTotalCount(kInstallTypeHistogram, 4);
 }
 
-TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyAfterPolicyUpdate) {
+TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsAfterPolicyUpdate) {
   std::map<std::string, std::string> test_map = {
       {"testPackage", "FORCE_INSTALLED"}};
   std::string policy = CreatePolicyWithAppInstalls(test_map);
-  arc::policy_util::RecordInstallTypesInPolicy(policy);
+  arc::policy_util::RecordPolicyMetrics(policy);
 
   tester_.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 1);
   tester_.ExpectTotalCount(kInstallTypeHistogram, 1);
@@ -122,7 +232,7 @@ TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyAfterPolicyUpdate) {
   test_map["anotherTestPackage"] = "BLOCKED";
   test_map["anotherTestPackage2"] = "KIOSK";
   policy = CreatePolicyWithAppInstalls(test_map);
-  arc::policy_util::RecordInstallTypesInPolicy(policy);
+  arc::policy_util::RecordPolicyMetrics(policy);
   tester_.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 2);
   tester_.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 1);
   tester_.ExpectBucketCount(kInstallTypeHistogram, kKioskBucket, 1);
