@@ -4,6 +4,9 @@
 
 import("//build/config/gclient_args.gni")
 
+# Enables assertions on safety checks in libc++.
+enable_safe_libcxx = true
+
 declare_args() {
   gtest_enable_absl_printers = true
   ignore_elf32_limitations = false
