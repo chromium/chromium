@@ -92,6 +92,7 @@ UnifiedVolumeView::UnifiedVolumeView(
   }
 
   if (features::IsQsRevampEnabled()) {
+    more_button_->SetIconColorId(cros_tokens::kCrosSysSecondary);
     // TODO(b/257151067): Update the a11y name id.
     // Adds the live caption button before `more_button_`.
     a11y_controller_->AddObserver(this);

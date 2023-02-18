@@ -121,7 +121,7 @@ SkColor QuickSettingsSlider::GetThumbColor() const {
           cros_tokens::kCrosSysSystemPrimaryContainer));
     case Style::kRadioInactive:
       return GetColorProvider()->GetColor(
-          static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled));
+          static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase));
     default:
       NOTREACHED();
   }
@@ -142,7 +142,7 @@ SkColor QuickSettingsSlider::GetTroughColor() const {
           static_cast<ui::ColorId>(cros_tokens::kCrosSysHighlightShape));
     case Style::kRadioInactive:
       return GetColorProvider()->GetColor(
-          static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled));
+          static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase));
     default:
       NOTREACHED();
   }

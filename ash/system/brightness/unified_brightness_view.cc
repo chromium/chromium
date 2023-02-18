@@ -91,10 +91,11 @@ UnifiedBrightnessView::UnifiedBrightnessView(
 
     night_light_button_->SetToggled(enabled);
 
-    AddChildView(std::make_unique<IconButton>(
+    auto* more_button = AddChildView(std::make_unique<IconButton>(
         std::move(detailed_button_callback.value()),
         IconButton::Type::kMediumFloating, &kQuickSettingsRightArrowIcon,
         IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
+    more_button->SetIconColorId(cros_tokens::kCrosSysSecondary);
   } else {
     button()->SetEnabled(false);
     // The button is set to disabled but wants to keep the color for an enabled

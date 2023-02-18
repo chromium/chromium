@@ -191,20 +191,22 @@ void FeatureTile::CreateDrillInButton(base::RepeatingCallback<void()> callback,
 void FeatureTile::UpdateColors() {
   ui::ColorId background_color;
   ui::ColorId foreground_color;
+  ui::ColorId foreground_optional_color;
 
   if (GetEnabled()) {
     background_color = toggled_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                                 : cros_tokens::kCrosSysSystemOnBase;
     foreground_color = toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                                 : cros_tokens::kCrosSysOnSurface;
+    foreground_optional_color =
+        toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                 : cros_tokens::kCrosSysSecondary;
 
     if (!features::IsJellyEnabled() && drill_in_arrow_) {
       // TODO(b/262615213): Only the toggled states are interesting here. The
       // un-toggled states are the defaults for `IconButton` so when Jelly
       // launches, this can be deleted safely.
-      drill_in_arrow_->SetIconColorId(
-          toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                   : cros_tokens::kCrosSysSecondary);
+      drill_in_arrow_->SetIconColorId(foreground_optional_color);
       drill_in_arrow_->SetBackgroundColorId(
           toggled_ ? static_cast<ui::ColorId>(kColorAshTileSmallCircle)
                    : kColorAshControlBackgroundColorInactive);
@@ -212,6 +214,7 @@ void FeatureTile::UpdateColors() {
   } else {
     background_color = cros_tokens::kCrosSysDisabledContainer;
     foreground_color = cros_tokens::kCrosSysDisabled;
+    foreground_optional_color = cros_tokens::kCrosSysDisabled;
   }
 
   SetBackground(views::CreateThemedRoundedRectBackground(background_color,
@@ -220,7 +223,7 @@ void FeatureTile::UpdateColors() {
                                                  foreground_color, kIconSize));
   label_->SetEnabledColorId(foreground_color);
   if (sub_label_) {
-    sub_label_->SetEnabledColorId(foreground_color);
+    sub_label_->SetEnabledColorId(foreground_optional_color);
   }
 }
 
