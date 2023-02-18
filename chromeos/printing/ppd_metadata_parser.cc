@@ -35,7 +35,7 @@ absl::optional<base::Value> ParseJsonAndUnnestKey(
     return absl::nullopt;
   }
 
-  absl::optional<base::Value> unnested = parsed->ExtractKey(key);
+  absl::optional<base::Value> unnested = parsed->GetDict().Extract(key);
   if (!unnested || unnested->type() != target_type) {
     return absl::nullopt;
   }
@@ -46,7 +46,7 @@ absl::optional<base::Value> ParseJsonAndUnnestKey(
       unnested_is_empty = unnested->GetList().empty();
       break;
     case base::Value::Type::DICT:
-      unnested_is_empty = unnested->DictEmpty();
+      unnested_is_empty = unnested->GetDict().empty();
       break;
     default:
       NOTREACHED();
@@ -59,11 +59,11 @@ absl::optional<base::Value> ParseJsonAndUnnestKey(
   return unnested;
 }
 
-// Returns a Restrictions struct from a dictionary |value|.
-Restrictions ParseRestrictionsFromValue(const base::Value::Dict& value) {
+// Returns a Restrictions struct from a dictionary `dict`.
+Restrictions ParseRestrictionsFromDict(const base::Value::Dict& dict) {
   Restrictions restrictions;
-  auto min_as_double = value.FindDouble("minMilestone");
-  auto max_as_double = value.FindDouble("maxMilestone");
+  auto min_as_double = dict.FindDouble("minMilestone");
+  auto max_as_double = dict.FindDouble("maxMilestone");
 
   if (min_as_double.has_value()) {
     base::Version min_milestone = base::Version(
@@ -82,15 +82,11 @@ Restrictions ParseRestrictionsFromValue(const base::Value::Dict& value) {
   return restrictions;
 }
 
-// Returns a ParsedPrinter from a leaf |value| from Printers metadata.
-absl::optional<ParsedPrinter> ParsePrinterFromValue(const base::Value& value) {
-  if (!value.is_dict()) {
-    return absl::nullopt;
-  }
-
-  const std::string* const effective_make_and_model =
-      value.GetDict().FindString("emm");
-  const std::string* const name = value.FindStringKey("name");
+// Returns a ParsedPrinter from a leaf `dict` from Printers metadata.
+absl::optional<ParsedPrinter> ParsePrinterFromDict(
+    const base::Value::Dict& dict) {
+  const std::string* const effective_make_and_model = dict.FindString("emm");
+  const std::string* const name = dict.FindString("name");
   if (!effective_make_and_model || effective_make_and_model->empty() || !name ||
       name->empty()) {
     return absl::nullopt;
@@ -99,10 +95,10 @@ absl::optional<ParsedPrinter> ParsePrinterFromValue(const base::Value& value) {
   printer.effective_make_and_model = *effective_make_and_model;
   printer.user_visible_printer_name = *name;
 
-  const base::Value::Dict* const restrictions_value =
-      value.GetDict().FindDict("restriction");
-  if (restrictions_value) {
-    printer.restrictions = ParseRestrictionsFromValue(*restrictions_value);
+  const base::Value::Dict* const restrictions_dict =
+      dict.FindDict("restriction");
+  if (restrictions_dict) {
+    printer.restrictions = ParseRestrictionsFromDict(*restrictions_dict);
   }
   return printer;
 }
@@ -113,21 +109,22 @@ absl::optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
     return absl::nullopt;
   }
 
+  const base::Value::Dict& dict = value.GetDict();
   ParsedIndexLeaf leaf;
 
-  const std::string* const ppd_basename = value.GetDict().FindString("name");
+  const std::string* const ppd_basename = dict.FindString("name");
   if (!ppd_basename) {
     return absl::nullopt;
   }
   leaf.ppd_basename = *ppd_basename;
 
-  const base::Value::Dict* const restrictions_value =
-      value.GetDict().FindDict("restriction");
-  if (restrictions_value) {
-    leaf.restrictions = ParseRestrictionsFromValue(*restrictions_value);
+  const base::Value::Dict* const restrictions_dict =
+      dict.FindDict("restriction");
+  if (restrictions_dict) {
+    leaf.restrictions = ParseRestrictionsFromDict(*restrictions_dict);
   }
 
-  const std::string* const ppd_license = value.GetDict().FindString("license");
+  const std::string* const ppd_license = dict.FindString("license");
   if (ppd_license && !ppd_license->empty()) {
     leaf.license = *ppd_license;
   }
@@ -319,7 +316,7 @@ absl::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
       continue;
     }
     absl::optional<ParsedPrinter> printer =
-        ParsePrinterFromValue(printer_value);
+        ParsePrinterFromDict(printer_value.GetDict());
     if (!printer.has_value()) {
       continue;
     }
@@ -340,14 +337,14 @@ absl::optional<ParsedReverseIndex> ParseReverseIndex(
   }
 
   ParsedReverseIndex parsed;
-  for (const auto kv : makes_and_models->DictItems()) {
+  for (const auto kv : makes_and_models->GetDict()) {
     if (!kv.second.is_dict()) {
       continue;
     }
 
-    const std::string* manufacturer =
-        kv.second.GetDict().FindString("manufacturer");
-    const std::string* model = kv.second.GetDict().FindString("model");
+    const base::Value::Dict& kv_dict = kv.second.GetDict();
+    const std::string* manufacturer = kv_dict.FindString("manufacturer");
+    const std::string* model = kv_dict.FindString("model");
     if (manufacturer && model && !manufacturer->empty() && !model->empty()) {
       parsed.insert_or_assign(kv.first,
                               ReverseIndexLeaf{*manufacturer, *model});
