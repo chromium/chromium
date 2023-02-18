@@ -38,6 +38,13 @@ suite('ShortcutsTest', () => {
     callbackRouterRemote.setMostVisitedSettings(
         customLinksEnabled, shortcutsVisible);
     await callbackRouterRemote.$.flushForTesting();
+    assertTrue(customizeShortcutsElement.$.customLinksButton.hideLabelText);
+    assertTrue(customizeShortcutsElement.$.mostVisitedButton.hideLabelText);
+    assertEquals(
+        customizeShortcutsElement.$.customLinksButton.label, 'My shortcuts');
+    assertEquals(
+        customizeShortcutsElement.$.mostVisitedButton.label,
+        'Most visited sites');
   }
 
   function assertShown(shown: boolean) {
