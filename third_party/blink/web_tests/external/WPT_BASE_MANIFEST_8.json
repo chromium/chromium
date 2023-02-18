@@ -264621,11 +264621,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "43e141867bc1b602435fadf6f6728aafe03cb778",
+     "1e2869ce4b97b1e5a0139fdf79e3c8150833d7e6",
      []
     ],
     "mtime.json": [
-     "2fbc6f0227e27961b88b81d463ce1b64fff52448",
+     "562cf180f36828e10467618c079de90c392ef9c6",
      []
     ]
    },
@@ -280557,6 +280557,10 @@
       "87ddae625a5453d1602be1580264e412f5de21ae",
       []
      ],
+     "background-image-007.html.ini": [
+      "35ae1354e42ee18d7341633afc74913ad7693446",
+      []
+     ],
      "background-image-centered-ref.html": [
       "f52cd963ad25238bafc2081b7024aa5375614f5a",
       []
@@ -284288,6 +284292,10 @@
       ],
       "container-for-cue-ref.html": [
        "48b262236394da747f188c9422cc9364b1cb4271",
+       []
+      ],
+      "container-for-cue.html.ini": [
+       "126aa466d08ad8ecc441b068e315c7ee6013dec2",
        []
       ],
       "container-name-tree-scoped-expected.txt": [
@@ -300512,6 +300520,10 @@
        "081549d40f19af3428724a0a629394bd59a5d779",
        []
       ],
+      "initial-letter-block-position-drop-under-ruby.html.ini": [
+       "4a6b29edc2b68f63d53e7fb571fef891b25157be",
+       []
+      ],
       "initial-letter-block-position-margins-ref.html": [
        "a2c48782707c09ed6b23b7ad4d054db8014cfcbc",
        []
@@ -300520,8 +300532,16 @@
        "00dd32be9a7ae278dfd809a2f8f072e37b389642",
        []
       ],
+      "initial-letter-block-position-margins-rtl.html.ini": [
+       "3b01ae6e7a114fd54233098c811f7034852a0292",
+       []
+      ],
       "initial-letter-block-position-margins-vlr-ref.html": [
        "6bbc5c3b7a620f0f524e1eda22c9940438a77ca0",
+       []
+      ],
+      "initial-letter-block-position-margins-vlr.html.ini": [
+       "f91f961dae0ac27aecea55db774deafd308a4322",
        []
       ],
       "initial-letter-block-position-margins-vrl-ref.html": [
@@ -300544,6 +300564,10 @@
        "ebc409f8130e22d39d8b3f8693dae34ae5cf618e",
        []
       ],
+      "initial-letter-block-position-raise-over-ruby.html.ini": [
+       "ce7dd90343c6de911731c3dcbcc101cbc6ad5eec",
+       []
+      ],
       "initial-letter-block-position-raise-under-ruby-ref.html": [
        "9adde375569332e32890a3b472ff60c7da1efaa2",
        []
@@ -300562,6 +300586,10 @@
       ],
       "initial-letter-drop-initial-rtl-ref.html": [
        "1b55ae05e6bba343d861b037f8e518bd65e62606",
+       []
+      ],
+      "initial-letter-drop-initial-rtl.html.ini": [
+       "cd48b4aa7d10a17c7ce15756d0ba5207eae54853",
        []
       ],
       "initial-letter-drop-initial-vlr-ref.html": [
@@ -300590,6 +300618,10 @@
       ],
       "initial-letter-float-001-rtl-ref.html": [
        "22b93e1a3f142d12c8c059c04a1cc4ba7ca83290",
+       []
+      ],
+      "initial-letter-float-001-rtl.html.ini": [
+       "2d02e024d69ba1cdd52f5e2a779b5f1ef990bdd3",
        []
       ],
       "initial-letter-float-001-vlr-ref.html": [
@@ -300632,6 +300664,10 @@
        "d1e7be2aa2f80651aa1d559274302230b0cf1e56",
        []
       ],
+      "initial-letter-float-005.html.ini": [
+       "00753e2546011ff6428b1e29c1ff0be00ce4453b",
+       []
+      ],
       "initial-letter-indentation-ref.html": [
        "1afceed1a1d7c12dca0543973b884336702d8c67",
        []
@@ -300662,6 +300698,10 @@
       ],
       "initial-letter-raise-initial-rtl-ref.html": [
        "9dce9e6e14c71474909f490881710376a5d21dd6",
+       []
+      ],
+      "initial-letter-raise-initial-rtl.html.ini": [
+       "2fc1d751698affae6b9d68a01f1d3efede516794",
        []
       ],
       "initial-letter-raise-initial-vlr-ref.html": [
@@ -300700,12 +300740,20 @@
        "efdfc61a679ad0e05c60bb102d4cc8752c712dbc",
        []
       ],
+      "initial-letter-short-para-initial-letter-wraps.html.ini": [
+       "fc9efd50feb9c2e3ccebab18a4d827b9196622c0",
+       []
+      ],
       "initial-letter-sunk-initial-ref.html": [
        "9b036a2be38ef38f379df2a7d2ce1fe5dbea109d",
        []
       ],
       "initial-letter-sunk-initial-rtl-ref.html": [
        "3318c7e8bdd2dcaf4aac9c871485234e529e907f",
+       []
+      ],
+      "initial-letter-sunk-initial-rtl.html.ini": [
+       "fce17472d4306b4effd03879b63b5c4c4cc00e56",
        []
       ],
       "initial-letter-sunk-initial-vlr-ref.html": [
@@ -300738,6 +300786,10 @@
       ],
       "initial-letter-with-tab-rtl-ref.html": [
        "0b9a074af70d652f61eacfd206cd8a1dca9cb5ff",
+       []
+      ],
+      "initial-letter-with-tab.html.ini": [
+       "a630d74a740130651dfea6c646396801119f6d66",
        []
       ]
      },
@@ -314100,6 +314152,10 @@
        "a931df9be258c3133380d5914b34a3ec58143a64",
        []
       ],
+      "text-transform-capitalize-018.html.ini": [
+       "be8ba325fbe07e9c6a2af6f40cdeca78f4c9c841",
+       []
+      ],
       "text-transform-capitalize-026.html.ini": [
        "6e52a555638556b0cd1cc16bf167482196479d88",
        []
@@ -319634,6 +319690,10 @@
       []
      ],
      "compute-kind-widget-generated": {
+      "kind-of-widget-fallback-color-input-border-right-width-001.html.ini": [
+       "3bc7206ff029796da08852980f2e65ceb93e446f",
+       []
+      ],
       "kind-of-widget-fallback-input-reset-border-top-color-001.html.ini": [
        "14b26723f548de962341d22594eefaf841cec560",
        []
@@ -319660,6 +319720,10 @@
       ],
       "kind-of-widget-fallback-input-submit-border-top-width-001.html.ini": [
        "268cb3d48ba138d9f23501af4e028ac13e099d09",
+       []
+      ],
+      "kind-of-widget-fallback-input-text-border-bottom-right-radius-001.html.ini": [
+       "8cf94321dc1df346f82158550e4cd2ad2b5b6e3d",
        []
       ],
       "kind-of-widget-fallback-meter-background-attachment-001.html.ini": [
@@ -344141,7 +344205,7 @@
          []
         ],
         "offscreencanvas.resize.html.ini": [
-         "02cd7e706f9770f807c58170e8bba34764c08df4",
+         "3e9fc974c9bebcc283c4b5274bb97969da62d850",
          []
         ],
         "offscreencanvas.transferrable-expected.txt": [
@@ -345216,7 +345280,7 @@
       []
      ],
      "iframe-popup-same-origin-to-unsafe-none.https.html.ini": [
-      "9a0d46c75baeeae076b516c68cb593b8e3b9ed1f",
+      "c07f1822589bfa534828fb542856efedb1eb45d1",
       []
      ],
      "iframe-popup-unsafe-none-to-same-origin.https.html.headers": [
@@ -345236,7 +345300,7 @@
       []
      ],
      "javascript-url.https.html.ini": [
-      "7d21070fb3f0845fda558009e9ac61d6eafc989f",
+      "b28473696ccf46c0f4804edac169447b43ef902d",
       []
      ],
      "navigate-top-to-aboutblank.https.html.ini": [
@@ -351986,6 +352050,10 @@
          "76f3133073a1cd3aed0a837e46342f8869878e18",
          []
         ],
+        "resource-selection-invoke-play.html.ini": [
+         "564df60f70ad3c254503ff0157c4f94d4c6b58a0",
+         []
+        ],
         "resource-selection-pointer-control-expected.txt": [
          "8e2e73a3c47dad4025131218154f1da4ecaee9ce",
          []
@@ -353225,6 +353293,10 @@
        ],
        "image-loading-lazy-data-url-to-https-ref.html": [
         "05a60034ad0683c72db70f659c66075ac52c17bf",
+        []
+       ],
+       "image-loading-lazy-data-url-to-https.html.ini": [
+        "04899f6b8f4c110c47cb0fb16ca0d5c4ebc8b2c2",
         []
        ],
        "image-loading-lazy-expected.txt": [
@@ -380149,7 +380221,7 @@
      []
     ],
     "a-element-xhtml.xhtml.ini": [
-     "37de5fccecf3687bb3925d87428b4285d4f4df2a",
+     "c071e8c5a7171954c068d1f7a2e9adf3e3d400e3",
      []
     ],
     "a-element-xhtml_include=javascript-expected.txt": [
@@ -380161,7 +380233,7 @@
      []
     ],
     "a-element.html.ini": [
-     "8619ed8b92441c533dd6961797afdc052037877d",
+     "dea7ca25ef67eecb92f0b7aac7750b87942b9309",
      []
     ],
     "a-element_include=javascript-expected.txt": [
@@ -380214,7 +380286,7 @@
       []
      ],
      "urltestdata.json": [
-      "94d41c0cb0d270da1493774e4fd3de579ddfe30a",
+      "21604f6de9e2c7796146699b75275117b645a8ce",
       []
      ]
     },
@@ -380233,7 +380305,7 @@
      ]
     },
     "url-constructor.any.js.ini": [
-     "a1f89d858107e99f5b31944482faeba60af01d75",
+     "e88d31e841d5a4edb254a6ebdd51ab95568349e2",
      []
     ],
     "url-constructor.any.worker_include=javascript-expected.txt": [
