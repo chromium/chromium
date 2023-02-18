@@ -683,8 +683,7 @@ class SettingsManageA11yPageElement extends SettingsManageA11yPageElementBase {
    * locales work offline with an icon in the select options.
    */
   private onDictationLocalesChanged_(): void {
-    const currentLocale =
-        this.getPref<string>('settings.a11y.dictation_locale').value;
+    const currentLocale = this.getCurrentLocale_();
     this.dictationLocaleOptions_ =
         this.dictationLocalesList_.map((localeInfo) => {
           return {
@@ -710,8 +709,7 @@ class SettingsManageA11yPageElement extends SettingsManageA11yPageElementBase {
       return this.dictationLocaleSubtitleOverride_;
     }
 
-    const currentLocale =
-        this.getPref<string>('settings.a11y.dictation_locale').value;
+    const currentLocale = this.getCurrentLocale_();
     const locale = this.dictationLocaleOptions_.find(
         (element) => element.value === currentLocale);
     if (!locale) {
@@ -732,6 +730,17 @@ class SettingsManageA11yPageElement extends SettingsManageA11yPageElementBase {
 
     // If we get here, we know a locale is both supported offline and installed.
     return this.i18n('dictationLocaleSubLabelOffline', locale.name);
+  }
+
+  private getCurrentLocale_(): string|undefined {
+    // Note: b/269571551 In kiosk mode, prefs may not be initialized when this
+    // settings page is rendered and runs the first computation of
+    // computeDictationLocaleSubtitle_()
+    if (!this.prefs) {
+      return undefined;
+    }
+
+    return this.getPref<string>('settings.a11y.dictation_locale').value;
   }
 
   private onChangeDictationLocaleButtonClicked_(): void {

@@ -72,6 +72,19 @@ suite('ManageAccessibilityPageTests', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
+  test(
+      'Page loads without crashing when prefs are not yet initialized ' +
+          'in kiosk mode',
+      () => {
+        loadTimeData.overrideValues({isKioskModeActive: true});
+        page = document.createElement('settings-manage-a11y-page');
+        document.body.appendChild(page);
+
+        // Intentionally set prefs after page is appended to DOM to simulate
+        // asynchronicity of initializing prefs
+        page.prefs = getDefaultPrefs();
+      });
+
   test('some parts are hidden in kiosk mode', function() {
     loadTimeData.overrideValues({
       isKioskModeActive: true,
