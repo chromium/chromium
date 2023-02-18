@@ -599,6 +599,11 @@
       "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
     },
     {
+      "channel": "stable",
+      "extension_types": ["extension"],
+      "allowlist": ["DD87C93131FF8D3DE4E483DC1EB298D73C7223A6"]  // http://crbug.com/1328114
+    },
+    {
       "channel": "dev",
       "extension_types": ["extension"]
     }
