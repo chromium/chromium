@@ -306,8 +306,10 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     MakeCredentialOptions request_options) {
   DCHECK(webauthn_api->IsAvailable());
   const int api_version = webauthn_api->Version();
-  DCHECK(request_options.large_blob_support != LargeBlobSupport::kRequired ||
-         api_version >= WEBAUTHN_API_VERSION_3);
+  DCHECK(
+      request_options.large_blob_support != LargeBlobSupport::kRequired ||
+      (api_version >= WEBAUTHN_API_VERSION_3 &&
+       request.authenticator_attachment != AuthenticatorAttachment::kPlatform));
 
   std::u16string rp_id = base::UTF8ToUTF16(request.rp.id);
   std::u16string rp_name = base::UTF8ToUTF16(request.rp.name.value_or(""));
@@ -390,6 +392,12 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     // showing a warning message that platform credentials will out last the
     // Incognito session. Thus, in this case, only external authenticators are
     // enabled.
+    authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
+  } else if (request_options.large_blob_support ==
+             LargeBlobSupport::kRequired) {
+    // The Windows platform authenticator does not have support for large blob,
+    // and will ignore the requirement if the user selects it. Force the request
+    // to be only external authenticators.
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   } else {
     authenticator_attachment =
@@ -569,6 +577,17 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
     flags |= WEBAUTHN_AUTHENTICATOR_HMAC_SECRET_VALUES_FLAG;
   }
 
+  DWORD large_blob_operation = WEBAUTHN_CRED_LARGE_BLOB_OPERATION_NONE;
+  base::span<uint8_t> large_blob;
+  if (api_version >= WEBAUTHN_API_VERSION_3) {
+    if (request_options.large_blob_read) {
+      large_blob_operation = WEBAUTHN_CRED_LARGE_BLOB_OPERATION_GET;
+    } else if (request_options.large_blob_write) {
+      large_blob_operation = WEBAUTHN_CRED_LARGE_BLOB_OPERATION_SET;
+      large_blob = *request_options.large_blob_write;
+    }
+  }
+
   static BOOL kUseAppIdTrue = TRUE;    // const
   static BOOL kUseAppIdFalse = FALSE;  // const
   WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS options{
@@ -595,11 +614,11 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
       opt_app_id16 ? &kUseAppIdTrue : &kUseAppIdFalse,
       &cancellation_id,
       &allow_credential_list,
-      /*dwCredLargeBlobOperation=*/0,
-      /*cbCredLargeBlob=*/0,
-      /*pbCredLargeBlob=*/nullptr,
+      large_blob_operation,
+      base::checked_cast<DWORD>(large_blob.size()),
+      large_blob.data(),
       hmac_salt_values,
-      /*bBrowserInPrivateMode=*/false,
+      request_options.is_off_the_record_context,
   };
 
   WEBAUTHN_ASSERTION* assertion = nullptr;
@@ -624,7 +643,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   }
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion()=" << *assertion;
   absl::optional<AuthenticatorGetAssertionResponse> response =
-      ToAuthenticatorGetAssertionResponse(*assertion, request.allow_list);
+      ToAuthenticatorGetAssertionResponse(*assertion, request_options);
   if (response && !request_options.prf_inputs.empty() &&
       webauthn_api->Version() < WEBAUTHN_API_VERSION_4) {
     // This version of Windows does not yet support passing in inputs for

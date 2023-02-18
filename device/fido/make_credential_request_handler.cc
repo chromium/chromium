@@ -23,6 +23,7 @@
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
 #include "device/fido/make_credential_task.h"
 
@@ -132,7 +133,13 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
   // The largeBlobs extension only works for resident credentials on CTAP 2.1
   // authenticators or on some Windows versions.
   if (options.large_blob_support == LargeBlobSupport::kRequired &&
-      (!auth_options.large_blob_type || !request.resident_key_required)) {
+      (!auth_options.large_blob_type ||
+       !request.resident_key_required
+#if BUILDFLAG(IS_WIN)
+       // Windows only supports large blobs for cross-platform credentials.
+       || request.authenticator_attachment == AuthenticatorAttachment::kPlatform
+#endif
+       )) {
     return MakeCredentialStatus::kAuthenticatorMissingLargeBlob;
   }
 

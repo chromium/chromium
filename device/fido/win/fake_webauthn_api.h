@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -65,6 +66,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
     supports_silent_discovery_ = supports_silent_discovery;
   }
 
+  // Overrides the result of large blob operations to return
+  // |large_blob_result|. Setting this to anything other than
+  // WEBAUTHN_CRED_LARGE_BLOB_STATUS_SUCCESS will prevent large blob operations
+  // from making any changes.
+  void set_large_blob_result(DWORD large_blob_result) {
+    large_blob_result_ = large_blob_result;
+  }
+
   void set_version(int version) { version_ = version; }
 
   // Returns a pointer to a copy of the last get credentials options passed to
@@ -73,8 +82,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
     return last_get_credentials_options_.get();
   }
 
+  // Returns a pointer to a copy of the last make credential options passed to
+  // the fake.
+  WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS*
+  last_make_credential_options() {
+    return last_make_credential_options_.get();
+  }
+
   // Sets the transport to be reported by the API for cross-platform requests.
   void set_transport(int transport) { transport_ = transport; }
+
+  // Sets the attachment to use when servicing a request with
+  // attachment=undefined.
+  void set_preferred_attachment(int preferred_attachment) {
+    preferred_attachment_ = preferred_attachment;
+  }
 
   // WinWebAuthnApi:
   bool IsAvailable() const override;
@@ -121,12 +143,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   bool supports_silent_discovery_ = false;
   int version_ = WEBAUTHN_API_VERSION_2;
   int transport_ = WEBAUTHN_CTAP_TRANSPORT_USB;
+  int large_blob_result_ = WEBAUTHN_CRED_LARGE_BLOB_STATUS_SUCCESS;
+  int preferred_attachment_ = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   HRESULT result_override_ = S_OK;
 
   // Owns a copy of the last get credentials options to have been passed to the
   // fake.
   std::unique_ptr<WEBAUTHN_GET_CREDENTIALS_OPTIONS>
       last_get_credentials_options_;
+
+  // Owns a copy of the last make credential options to have been passed to the
+  // fake.
+  std::unique_ptr<WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS>
+      last_make_credential_options_;
 
   // Owns the attestations returned by AuthenticatorMakeCredential().
   std::vector<std::unique_ptr<WebAuthnAttestation>> returned_attestations_;
@@ -140,6 +169,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   std::
       map<std::vector<uint8_t>, RegistrationData, fido_parsing_utils::RangeLess>
           registrations_;
+
+  // A map of credential IDs to large blobs.
+  base::flat_map<std::vector<uint8_t>, std::vector<uint8_t>> large_blobs_;
 };
 
 }  // namespace device

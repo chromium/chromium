@@ -30,6 +30,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/authenticator_environment.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -63,6 +64,8 @@ class WebAuthnBrowserTest : public CertVerifierBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     CertVerifierBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
@@ -186,6 +189,84 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
 
   EXPECT_EQ("webauthn: OK", result);
 }
+
+#if BUILDFLAG(IS_WIN)
+// Integration test for Large Blob on Windows.
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  device::FakeWinWebAuthnApi fake_api;
+  fake_api.set_version(WEBAUTHN_API_VERSION_3);
+  auto virtual_device_factory =
+      std::make_unique<device::test::VirtualFidoDeviceFactory>();
+  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  content::AuthenticatorEnvironment::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::move(virtual_device_factory));
+
+  constexpr char kMakeCredentialLargeBlob[] = R"(
+    let cred_id;
+    const blob = "blobby volley";
+    navigator.credentials.create({ publicKey: {
+      challenge: new TextEncoder().encode('climb a mountain'),
+      rp: { name: 'Acme' },
+      user: {
+        id: new TextEncoder().encode('1098237235409872'),
+        name: 'avery.a.jones@example.com',
+        displayName: 'Avery A. Jones'},
+      pubKeyCredParams: [{ type: 'public-key', alg: '-257'}],
+      authenticatorSelection: {
+         requireResidentKey: true,
+      },
+      extensions: { largeBlob: { support: 'required' } },
+    }}).then(cred => {
+      cred_id = cred.rawId;
+      if (!cred.getClientExtensionResults().largeBlob ||
+          !cred.getClientExtensionResults().largeBlob.supported) {
+        window.domAutomationController.send('large blob not supported');
+        return;
+      }
+      return navigator.credentials.get({ publicKey: {
+        challenge: new TextEncoder().encode('run a marathon'),
+        allowCredentials: [{type: 'public-key', id: cred_id}],
+        extensions: {
+          largeBlob: {
+            write: new TextEncoder().encode(blob),
+          },
+        },
+      }});
+    }).then(assertion => {
+      if (!assertion.getClientExtensionResults().largeBlob.written) {
+        window.domAutomationController.send('large blob not written to');
+        return;
+      }
+      return navigator.credentials.get({ publicKey: {
+        challenge: new TextEncoder().encode('solve p=np'),
+        allowCredentials: [{type: 'public-key', id: cred_id}],
+        extensions: {
+          largeBlob: {
+            read: true,
+          },
+        },
+      }});
+    }).then(assertion => {
+      if (new TextDecoder().decode(
+          assertion.getClientExtensionResults().largeBlob.blob) != blob) {
+        window.domAutomationController.send('blob does not match');
+        return;
+      }
+      window.domAutomationController.send('webauthn: OK');
+    }).catch(error => window.domAutomationController.send(
+                      'webauthn: ' + error.toString()));)";
+
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      kMakeCredentialLargeBlob, &result));
+  EXPECT_EQ("webauthn: OK", result);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
   class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
