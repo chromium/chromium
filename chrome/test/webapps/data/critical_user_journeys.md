@@ -76,6 +76,8 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install_or_shortcut_windowed | navigate_browser(Standalone) | check_install_icon_not_shown |
 | WMLC | install_or_shortcut_windowed | navigate_browser(Standalone) | check_launch_icon_shown |
 | WMLC | install_or_shortcut_windowed(MinimalUi) | navigate_browser(MinimalUi) | check_launch_icon_shown |
+| WMLC | install_or_shortcut_windowed(Tabbed) | check_app_in_list_windowed(Tabbed) |
+| WMLC | install_or_shortcut_windowed(Tabbed) | navigate_browser(Tabbed) | check_launch_icon_shown | check_install_icon_not_shown |
 | WMLC | install_or_shortcut_windowed(NotPromotable) | check_app_in_list_windowed(NotPromotable) |
 | WMLC | install_or_shortcut_windowed(NotPromotable) | navigate_browser(NotPromotable) | check_create_shortcut_not_shown |
 | WMLC | install_or_shortcut_windowed(NotPromotable) | navigate_browser(NotPromotable) | check_install_icon_not_shown |
