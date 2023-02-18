@@ -175,18 +175,21 @@ bool ExceptionSnapshotIOSIntermediateDump::InitializeFromMachException(
     const std::vector<uint8_t>& bytes = code_dump->bytes();
     const mach_exception_data_type_t* code =
         reinterpret_cast<const mach_exception_data_type_t*>(bytes.data());
-    if (bytes.size() == 0 || !code) {
+    if (bytes.size() == 0 ||
+        bytes.size() % sizeof(mach_exception_data_type_t) != 0 || !code) {
       LOG(ERROR) << "Invalid mach exception code.";
     } else {
-      // TODO: rationalize with the macOS implementation.
       mach_msg_type_number_t code_count =
           bytes.size() / sizeof(mach_exception_data_type_t);
       for (mach_msg_type_number_t code_index = 0; code_index < code_count;
            ++code_index) {
         codes_.push_back(code[code_index]);
       }
+      DCHECK_GE(code_count, 1u);
       exception_info_ = code[0];
-      exception_address_ = code[1];
+      if (code_count >= 2) {
+        exception_address_ = code[1];
+      }
     }
   }
 

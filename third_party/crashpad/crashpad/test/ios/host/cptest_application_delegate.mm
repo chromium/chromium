@@ -38,6 +38,7 @@
 #include "client/crash_report_database.h"
 #include "client/crashpad_client.h"
 #include "client/crashpad_info.h"
+#include "client/ring_buffer_annotation.h"
 #include "client/simple_string_dictionary.h"
 #include "client/simulate_crash.h"
 #include "snapshot/minidump/process_snapshot_minidump.h"
@@ -57,6 +58,9 @@ using OperationStatus = crashpad::CrashReportDatabase::OperationStatus;
 using Report = crashpad::CrashReportDatabase::Report;
 
 namespace {
+
+constexpr crashpad::Annotation::Type kRingBufferType =
+    crashpad::Annotation::UserDefinedType(42);
 
 base::FilePath GetDatabaseDir() {
   base::FilePath database_dir([NSFileManager.defaultManager
@@ -251,7 +255,8 @@ UIWindow* GetAnyWindow() {
   NSDictionary* dict = @{
     @"simplemap" : [@{} mutableCopy],
     @"vector" : [@[] mutableCopy],
-    @"objects" : [@[] mutableCopy]
+    @"objects" : [@[] mutableCopy],
+    @"ringbuffers" : [@[] mutableCopy],
   };
   for (const auto* module : process_snapshot->Modules()) {
     for (const auto& kv : module->AnnotationsSimpleMap()) {
@@ -262,14 +267,18 @@ UIWindow* GetAnyWindow() {
       [dict[@"vector"] addObject:@(annotation.c_str())];
     }
     for (const auto& annotation : module->AnnotationObjects()) {
-      if (annotation.type !=
+      if (annotation.type ==
           static_cast<uint16_t>(crashpad::Annotation::Type::kString)) {
-        continue;
+        std::string value(
+            reinterpret_cast<const char*>(annotation.value.data()),
+            annotation.value.size());
+        [dict[@"objects"]
+            addObject:@{@(annotation.name.c_str()) : @(value.c_str())}];
+      } else if (annotation.type == static_cast<uint16_t>(kRingBufferType)) {
+        NSData* data = [NSData dataWithBytes:annotation.value.data()
+                                      length:annotation.value.size()];
+        [dict[@"ringbuffers"] addObject:@{@(annotation.name.c_str()) : data}];
       }
-      std::string value(reinterpret_cast<const char*>(annotation.value.data()),
-                        annotation.value.size());
-      [dict[@"objects"]
-          addObject:@{@(annotation.name.c_str()) : @(value.c_str())}];
     }
   }
   return [dict passByValue];
@@ -418,12 +427,23 @@ UIWindow* GetAnyWindow() {
       "#TEST# same-name"};
   static crashpad::StringAnnotation<32> test_annotation_four{
       "#TEST# same-name"};
+  static crashpad::RingBufferAnnotation<32> test_ring_buffer_annotation(
+      kRingBufferType, "#TEST# ring_buffer");
+  static crashpad::RingBufferAnnotation<32> test_busy_ring_buffer_annotation(
+      kRingBufferType, "#TEST# busy_ring_buffer");
 
   test_annotation_one.Set("moocow");
   test_annotation_two.Set("this will be cleared");
   test_annotation_three.Set("same-name 3");
   test_annotation_four.Set("same-name 4");
   test_annotation_two.Clear();
+  test_ring_buffer_annotation.Push("hello", 5);
+  test_ring_buffer_annotation.Push("goodbye", 7);
+  test_busy_ring_buffer_annotation.Push("busy", 4);
+  // Take the scoped spin guard on `test_busy_ring_buffer_annotation` to mimic
+  // an in-flight `Push()` so its contents are not included in the dump.
+  auto guard = test_busy_ring_buffer_annotation.TryCreateScopedSpinGuard(
+      /*timeout_nanos=*/0);
   abort();
 }
 

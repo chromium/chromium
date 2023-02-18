@@ -493,6 +493,7 @@ bundle_data("snapshot_test_ios_data") {
     "ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa",
     "ios/testdata/crash-5726011582644224",
     "ios/testdata/crash-6605504629637120",
+    "ios/testdata/crash-c44acfcbccd8c7a8",
   ]
 
   outputs = [ "{{bundle_resources_dir}}/crashpad_test_data/" +

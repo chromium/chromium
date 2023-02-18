@@ -22,12 +22,15 @@
 #include <time.h>
 
 #include <iterator>
+#include <optional>
 
 #include "build/build_config.h"
 #include "snapshot/snapshot_constants.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
 #include "util/ios/raw_logging.h"
+#include "util/ios/scoped_vm_map.h"
 #include "util/ios/scoped_vm_read.h"
+#include "util/synchronization/scoped_spin_guard.h"
 
 namespace crashpad {
 namespace internal {
@@ -1163,6 +1166,13 @@ void InProcessIntermediateDumpHandler::WriteCrashpadAnnotationsList(
   IOSIntermediateDumpWriter::ScopedArray annotations_array(
       writer, IntermediateDumpKey::kAnnotationObjects);
   ScopedVMRead<Annotation> current;
+
+  // Use vm_read() to ensure that the linked-list AnnotationList head (which is
+  // a dummy node of type kInvalid) is valid and copy its memory into a
+  // newly-allocated buffer.
+  //
+  // In the case where the pointer has been clobbered or the memory range is not
+  // readable, skip reading all the Annotations.
   if (!current.Read(annotation_list->head())) {
     CRASHPAD_RAW_LOG("Unable to read annotation");
     return;
@@ -1173,6 +1183,12 @@ void InProcessIntermediateDumpHandler::WriteCrashpadAnnotationsList(
        index < kMaxNumberOfAnnotations;
        ++index) {
     ScopedVMRead<Annotation> node;
+
+    // Like above, use vm_read() to ensure that the node in the linked list is
+    // valid and copy its memory into a newly-allocated buffer.
+    //
+    // In the case where the pointer has been clobbered or the memory range is
+    // not readable, skip reading this and all further Annotations.
     if (!node.Read(current->link_node())) {
       CRASHPAD_RAW_LOG("Unable to read annotation");
       return;
@@ -1185,6 +1201,36 @@ void InProcessIntermediateDumpHandler::WriteCrashpadAnnotationsList(
     if (node->size() > Annotation::kValueMaxSize) {
       CRASHPAD_RAW_LOG("Incorrect annotation length");
       continue;
+    }
+
+    // For Annotations which support guarding reads from concurrent writes, map
+    // their memory read-write using vm_remap(), then declare a ScopedSpinGuard
+    // which lives for the duration of the read.
+    ScopedVMMap<Annotation> mapped_node;
+    std::optional<ScopedSpinGuard> annotation_guard;
+    if (node->concurrent_access_guard_mode() ==
+        Annotation::ConcurrentAccessGuardMode::kScopedSpinGuard) {
+      constexpr vm_prot_t kDesiredProtection = VM_PROT_WRITE | VM_PROT_READ;
+      if (!mapped_node.Map(node.get()) ||
+          (mapped_node.CurrentProtection() & kDesiredProtection) !=
+              kDesiredProtection) {
+        CRASHPAD_RAW_LOG("Unable to map annotation");
+
+        // Skip this annotation rather than giving up entirely, since the linked
+        // node should still be valid.
+        continue;
+      }
+
+      // TODO(https://crbug.com/crashpad/438): Pass down a `params` object into
+      // this method to optionally enable a timeout here.
+      constexpr uint64_t kTimeoutNanoseconds = 0;
+      annotation_guard =
+          mapped_node->TryCreateScopedSpinGuard(kTimeoutNanoseconds);
+      if (!annotation_guard) {
+        // This is expected if the process is writing to the Annotation, so
+        // don't log here and skip the annotation.
+        continue;
+      }
     }
 
     IOSIntermediateDumpWriter::ScopedArrayMap annotation_map(writer);

@@ -70,6 +70,7 @@ source_set("xcuitests") {
   deps = [
     "../../build:ios_enable_arc",
     "../../build:ios_xctest",
+    "../../client:common",
     "../../test/ios/host:app_shared_sources",
     "../../third_party/edo",
     "../../util",

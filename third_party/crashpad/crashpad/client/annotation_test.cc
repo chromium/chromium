@@ -21,10 +21,57 @@
 #include "client/crashpad_info.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
+#include "util/misc/clock.h"
+#include "util/synchronization/scoped_spin_guard.h"
+#include "util/thread/thread.h"
 
 namespace crashpad {
 namespace test {
 namespace {
+
+class SpinGuardAnnotation final : public Annotation {
+ public:
+  SpinGuardAnnotation(Annotation::Type type, const char name[])
+      : Annotation(type,
+                   name,
+                   &value_,
+                   ConcurrentAccessGuardMode::kScopedSpinGuard) {}
+
+  bool Set(bool value, uint64_t spin_guard_timeout_ns) {
+    auto guard = TryCreateScopedSpinGuard(spin_guard_timeout_ns);
+    if (!guard) {
+      return false;
+    }
+    value_ = value;
+    SetSize(sizeof(value_));
+    return true;
+  }
+
+ private:
+  bool value_;
+};
+
+class ScopedSpinGuardUnlockThread final : public Thread {
+ public:
+  ScopedSpinGuardUnlockThread(ScopedSpinGuard scoped_spin_guard,
+                              uint64_t sleep_time_ns)
+      : scoped_spin_guard_(std::move(scoped_spin_guard)),
+        sleep_time_ns_(sleep_time_ns) {}
+
+ private:
+  void ThreadMain() override {
+    SleepNanoseconds(sleep_time_ns_);
+
+    // Move the ScopedSpinGuard member into a local variable which is
+    // destroyed when ThreadMain() returns.
+    ScopedSpinGuard local_scoped_spin_guard(std::move(scoped_spin_guard_));
+
+    // After this point, local_scoped_spin_guard will be destroyed and unlocked.
+  }
+
+  ScopedSpinGuard scoped_spin_guard_;
+  const uint64_t sleep_time_ns_;
+};
 
 class Annotation : public testing::Test {
  public:
@@ -106,6 +153,62 @@ TEST_F(Annotation, StringType) {
 
   EXPECT_EQ(5u, annotation.size());
   EXPECT_EQ("loooo", annotation.value());
+}
+
+TEST_F(Annotation, BaseAnnotationShouldNotSupportSpinGuard) {
+  char buffer[1024];
+  crashpad::Annotation annotation(
+      crashpad::Annotation::Type::kString, "no-spin-guard", buffer);
+  EXPECT_EQ(annotation.concurrent_access_guard_mode(),
+            crashpad::Annotation::ConcurrentAccessGuardMode::kUnguarded);
+#if !DCHECK_IS_ON()
+  // This fails a DCHECK() in debug builds, so only test it when DCHECK()
+  // is not on.
+  EXPECT_EQ(std::nullopt, annotation.TryCreateScopedSpinGuard(0));
+#endif
+}
+
+TEST_F(Annotation, CustomAnnotationShouldSupportSpinGuardAndSet) {
+  constexpr crashpad::Annotation::Type kType =
+      crashpad::Annotation::UserDefinedType(1);
+  SpinGuardAnnotation spin_guard_annotation(kType, "spin-guard");
+  EXPECT_EQ(spin_guard_annotation.concurrent_access_guard_mode(),
+            crashpad::Annotation::ConcurrentAccessGuardMode::kScopedSpinGuard);
+  EXPECT_TRUE(spin_guard_annotation.Set(true, 0));
+  EXPECT_EQ(1U, spin_guard_annotation.size());
+}
+
+TEST_F(Annotation, CustomAnnotationSetShouldFailIfRunConcurrently) {
+  constexpr crashpad::Annotation::Type kType =
+      crashpad::Annotation::UserDefinedType(1);
+  SpinGuardAnnotation spin_guard_annotation(kType, "spin-guard");
+  auto guard = spin_guard_annotation.TryCreateScopedSpinGuard(0);
+  EXPECT_NE(std::nullopt, guard);
+  // This should fail, since the guard is already held and the timeout is 0.
+  EXPECT_FALSE(spin_guard_annotation.Set(true, 0));
+}
+
+TEST_F(Annotation,
+       CustomAnnotationSetShouldSucceedIfSpinGuardUnlockedAsynchronously) {
+  constexpr crashpad::Annotation::Type kType =
+      crashpad::Annotation::UserDefinedType(1);
+  SpinGuardAnnotation spin_guard_annotation(kType, "spin-guard");
+  auto guard = spin_guard_annotation.TryCreateScopedSpinGuard(0);
+  EXPECT_NE(std::nullopt, guard);
+  // Pass the guard off to a background thread which unlocks it after 1 ms.
+  constexpr uint64_t kSleepTimeNs = 1000000;  // 1 ms
+  ScopedSpinGuardUnlockThread unlock_thread(std::move(guard.value()),
+                                            kSleepTimeNs);
+  unlock_thread.Start();
+
+  // Try to set the annotation with a 100 ms timeout.
+  constexpr uint64_t kSpinGuardTimeoutNanos = 100000000;  // 100 ms
+
+  // This should succeed after 1 ms, since the timeout is much larger than the
+  // time the background thread holds the guard.
+  EXPECT_TRUE(spin_guard_annotation.Set(true, kSpinGuardTimeoutNanos));
+
+  unlock_thread.Join();
 }
 
 TEST(StringAnnotation, ArrayOfString) {

@@ -15,8 +15,11 @@
 #import <XCTest/XCTest.h>
 #include <objc/runtime.h>
 
+#include <vector>
+
 #import "Service/Sources/EDOClientService.h"
 #include "build/build_config.h"
+#include "client/length_delimited_ring_buffer.h"
 #import "test/ios/host/cptest_shared_object.h"
 #include "util/mach/exception_types.h"
 #include "util/mach/mach_extensions.h"
@@ -322,6 +325,31 @@
       isEqualToString:@"same-name 3"]);
   XCTAssertTrue([[dict[@"objects"][2] valueForKeyPath:@"#TEST# one"]
       isEqualToString:@"moocow"]);
+  // Ensure `ring_buffer` is present but not `busy_ring_buffer`.
+  XCTAssertEqual(1u, [dict[@"ringbuffers"] count]);
+  NSData* ringBufferNSData =
+      [dict[@"ringbuffers"][0] valueForKeyPath:@"#TEST# ring_buffer"];
+  crashpad::RingBufferData ringBufferData;
+  XCTAssertTrue(ringBufferData.DeserializeFromBuffer(ringBufferNSData.bytes,
+                                                     ringBufferNSData.length));
+  crashpad::LengthDelimitedRingBufferReader reader(ringBufferData);
+
+  std::vector<uint8_t> ringBufferEntry;
+  XCTAssertTrue(reader.Pop(ringBufferEntry));
+  NSString* firstEntry = [[NSString alloc] initWithBytes:ringBufferEntry.data()
+                                                  length:ringBufferEntry.size()
+                                                encoding:NSUTF8StringEncoding];
+  XCTAssertEqualObjects(firstEntry, @"hello");
+  ringBufferEntry.clear();
+
+  XCTAssertTrue(reader.Pop(ringBufferEntry));
+  NSString* secondEntry = [[NSString alloc] initWithBytes:ringBufferEntry.data()
+                                                   length:ringBufferEntry.size()
+                                                 encoding:NSUTF8StringEncoding];
+  XCTAssertEqualObjects(secondEntry, @"goodbye");
+  ringBufferEntry.clear();
+
+  XCTAssertFalse(reader.Pop(ringBufferEntry));
 }
 
 - (void)testDumpWithoutCrash {

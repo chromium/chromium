@@ -43,6 +43,8 @@ struct Annotation {
   typename Traits::Address value;
   uint32_t size;
   uint16_t type;
+  crashpad::Annotation::ConcurrentAccessGuardMode concurrent_access_guard_mode;
+  bool spin_guard_state;
 };
 
 template <class Traits>
