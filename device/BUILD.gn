@@ -347,8 +347,6 @@ test("device_unittests") {
     sources += [
       "bluetooth/bluetooth_classic_win_fake.cc",
       "bluetooth/bluetooth_classic_win_fake.h",
-      "bluetooth/bluetooth_low_energy_win_fake.cc",
-      "bluetooth/bluetooth_low_energy_win_fake.h",
       "bluetooth/test/fake_bluetooth_adapter_winrt.cc",
       "bluetooth/test/fake_bluetooth_adapter_winrt.h",
       "bluetooth/test/fake_bluetooth_le_advertisement_data_section_winrt.cc",

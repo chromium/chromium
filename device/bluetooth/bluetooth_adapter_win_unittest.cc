@@ -62,7 +62,7 @@ class BluetoothAdapterWinTest : public testing::Test {
     adapter_win_->InitForTest(
         base::BindOnce(&BluetoothAdapterWinTest::RunInitCallback,
                        base::Unretained(this)),
-        nullptr, nullptr, ui_task_runner_, bluetooth_task_runner_);
+        nullptr, ui_task_runner_, bluetooth_task_runner_);
   }
 
   void SetUp() override {

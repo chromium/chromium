@@ -19,15 +19,13 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/win/scoped_winrt_initializer.h"
 #include "device/bluetooth/bluetooth_classic_win_fake.h"
-#include "device/bluetooth/bluetooth_low_energy_win_fake.h"
 #include "device/bluetooth/bluetooth_task_manager_win.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
 // Windows implementation of BluetoothTestBase.
-class BluetoothTestWin : public BluetoothTestBase,
-                         public win::BluetoothLowEnergyWrapperFake::Observer {
+class BluetoothTestWin : public BluetoothTestBase {
  public:
   BluetoothTestWin();
   ~BluetoothTestWin() override;
@@ -55,8 +53,6 @@ class BluetoothTestWin : public BluetoothTestBase,
   void SimulateGattCharacteristicRemoved(
       BluetoothRemoteGattService* service,
       BluetoothRemoteGattCharacteristic* characteristic) override;
-  void RememberCharacteristicForSubsequentAction(
-      BluetoothRemoteGattCharacteristic* characteristic) override;
   void SimulateGattCharacteristicRead(
       BluetoothRemoteGattCharacteristic* characteristic,
       const std::vector<uint8_t>& value) override;
@@ -68,7 +64,6 @@ class BluetoothTestWin : public BluetoothTestBase,
   void SimulateGattCharacteristicWriteError(
       BluetoothRemoteGattCharacteristic* characteristic,
       BluetoothGattService::GattErrorCode error_code) override;
-  void RememberDeviceForSubsequentAction(BluetoothDevice* device) override;
   void DeleteDevice(BluetoothDevice* device) override;
   void SimulateGattDescriptor(BluetoothRemoteGattCharacteristic* characteristic,
                               const std::string& uuid) override;
@@ -81,32 +76,12 @@ class BluetoothTestWin : public BluetoothTestBase,
       BluetoothRemoteGattCharacteristic* characteristic,
       const std::vector<uint8_t>& value) override;
 
-  // win::BluetoothLowEnergyWrapperFake::Observer overrides.
-  void OnReadGattCharacteristicValue() override;
-  void OnWriteGattCharacteristicValue(
-      const PBTH_LE_GATT_CHARACTERISTIC_VALUE value) override;
-  void OnStartCharacteristicNotification() override;
-  void OnWriteGattDescriptorValue(const std::vector<uint8_t>& value) override;
-
  private:
   scoped_refptr<base::TestSimpleTaskRunner> ui_task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> bluetooth_task_runner_;
 
-  raw_ptr<win::BluetoothLowEnergyWrapperFake> fake_bt_le_wrapper_;
-
-  // This is used for retaining access to a single deleted device.
-  std::string remembered_device_address_;
-
   void AdapterInitCallback();
-  win::GattService* GetSimulatedService(win::BLEDevice* device,
-                                        BluetoothRemoteGattService* service);
-  win::GattCharacteristic* GetSimulatedCharacteristic(
-      BluetoothRemoteGattCharacteristic* characteristic);
 
-  // Run pending Bluetooth tasks until the first callback that the test fixture
-  // tracks is called.
-  void RunPendingTasksUntilCallback();
-  void ForceRefreshDevice();
   void FinishPendingTasks();
 };
 
@@ -158,6 +133,7 @@ class BluetoothTestWinrt
   void SimulateSpuriousRadioStateChangedEvent();
 
   // BluetoothTestBase:
+  bool PlatformSupportsLowEnergy() override;
   void InitWithDefaultAdapter() override;
   void InitWithoutDefaultAdapter() override;
   void InitWithFakeAdapter() override;

@@ -225,11 +225,9 @@ BluetoothTaskManagerWin::BluetoothTaskManagerWin(
 
 BluetoothTaskManagerWin::BluetoothTaskManagerWin(
     std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
-    std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ui_task_runner_(std::move(ui_task_runner)),
-      classic_wrapper_(std::move(classic_wrapper)),
-      le_wrapper_(std::move(le_wrapper)) {}
+      classic_wrapper_(std::move(classic_wrapper)) {}
 
 BluetoothTaskManagerWin::~BluetoothTaskManagerWin() = default;
 
@@ -237,10 +235,8 @@ BluetoothTaskManagerWin::~BluetoothTaskManagerWin() = default;
 scoped_refptr<BluetoothTaskManagerWin>
 BluetoothTaskManagerWin::CreateForTesting(
     std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
-    std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   return new BluetoothTaskManagerWin(std::move(classic_wrapper),
-                                     std::move(le_wrapper),
                                      std::move(ui_task_runner));
 }
 

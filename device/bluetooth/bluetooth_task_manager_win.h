@@ -123,7 +123,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   static scoped_refptr<BluetoothTaskManagerWin> CreateForTesting(
       std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
-      std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   static BluetoothUUID BluetoothLowEnergyUuidToBluetoothUuid(
@@ -216,7 +215,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   BluetoothTaskManagerWin(
       std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
-      std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
   virtual ~BluetoothTaskManagerWin();
 
