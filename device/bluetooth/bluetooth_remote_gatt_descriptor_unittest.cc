@@ -33,6 +33,17 @@ class BluetoothRemoteGattDescriptorTest :
     public BluetoothTest {
 #endif
  public:
+  void SetUp() override {
+#if BUILDFLAG(IS_WIN)
+    BluetoothTestWinrt::SetUp();
+#else
+    BluetoothTest::SetUp();
+#endif
+    if (!PlatformSupportsLowEnergy()) {
+      GTEST_SKIP() << "Bluetooth Low Energy unavailable.";
+    }
+  }
+
   // Creates adapter_, device_, service_, characteristic_,
   // descriptor1_, & descriptor2_.
   void FakeDescriptorBoilerplate() {
@@ -85,10 +96,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, GetIdentifier) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetIdentifier) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   InitWithFakeAdapter();
   StartLowEnergyDiscoverySession();
   // 2 devices to verify that descriptors on them have distinct IDs.
@@ -178,10 +185,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, GetUUID) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetUUID) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   InitWithFakeAdapter();
   StartLowEnergyDiscoverySession();
   BluetoothDevice* device = SimulateLowEnergyDevice(3);
@@ -234,10 +237,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, ReadRemoteDescriptor_Empty) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Empty) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
@@ -266,10 +265,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, WriteRemoteDescriptor_Empty) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Empty) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   std::vector<uint8_t> empty_vector;
@@ -298,10 +293,6 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Empty) {
 // to nil.
 TEST_F(BluetoothRemoteGattDescriptorTest,
        MAYBE_ReadRemoteDescriptor_AfterDeleted) {
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
@@ -329,10 +320,6 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 // to nil.
 TEST_F(BluetoothRemoteGattDescriptorTest,
        MAYBE_WriteRemoteDescriptor_AfterDeleted) {
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   std::vector<uint8_t> empty_vector;
@@ -359,10 +346,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, ReadRemoteDescriptor) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
@@ -394,10 +377,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, WriteRemoteDescriptor) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   uint8_t values[] = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
@@ -423,10 +402,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, ReadRemoteDescriptor_Twice) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Twice) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
@@ -467,10 +442,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, WriteRemoteDescriptor_Twice) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Twice) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   uint8_t values[] = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
@@ -513,10 +484,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
 TEST_F(BluetoothRemoteGattDescriptorTest,
        MAYBE_ReadRemoteDescriptor_MultipleDescriptors) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
@@ -560,10 +527,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
 TEST_F(BluetoothRemoteGattDescriptorTest,
        MAYBE_WriteRemoteDescriptor_MultipleDescriptors) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   std::vector<uint8_t> test_vector1;
@@ -601,10 +564,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, ReadError) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadError) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
@@ -629,10 +588,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt, WriteError) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteError) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   std::vector<uint8_t> empty_vector;
@@ -658,10 +613,6 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteError) {
 // Test not relevant for macOS since descriptor read cannot generate
 // synchronous error.
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadSynchronousError) {
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   SimulateGattDescriptorReadWillFailSynchronouslyOnce(descriptor1_);
@@ -695,10 +646,6 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadSynchronousError) {
 // Test not relevant for macOS since descriptor write cannot generate
 // synchronous error.
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteSynchronousError) {
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   SimulateGattDescriptorWriteWillFailSynchronouslyOnce(descriptor1_);
@@ -738,10 +685,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
 TEST_F(BluetoothRemoteGattDescriptorTest,
        MAYBE_ReadRemoteDescriptor_ReadPending) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
@@ -780,10 +723,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
 TEST_F(BluetoothRemoteGattDescriptorTest,
        MAYBE_WriteRemoteDescriptor_WritePending) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   std::vector<uint8_t> empty_vector;
@@ -823,10 +762,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
 TEST_F(BluetoothRemoteGattDescriptorTest,
        MAYBE_ReadRemoteDescriptor_WritePending) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   std::vector<uint8_t> empty_vector;
@@ -865,10 +800,6 @@ TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
 TEST_F(BluetoothRemoteGattDescriptorTest,
        MAYBE_WriteRemoteDescriptor_ReadPending) {
 #endif
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   std::vector<uint8_t> empty_vector;
@@ -902,11 +833,6 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 // macOS: Does not apply. All events arrive on the UI Thread.
 // TODO(crbug.com/694102): Enable this test on Windows.
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadDuringDisconnect) {
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
-
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   SimulateGattDisconnection(device_);
@@ -929,11 +855,6 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadDuringDisconnect) {
 // macOS: Does not apply. All events arrive on the UI Thread.
 // TODO(crbug.com/694102): Enable this test on Windows.
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteDuringDisconnect) {
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
-
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   SimulateGattDisconnection(device_);
@@ -951,10 +872,6 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteDuringDisconnect) {
 // Tests NSString for descriptor value for macOS.
 // https://developer.apple.com/reference/corebluetooth/cbdescriptor
 TEST_F(BluetoothRemoteGattDescriptorTest, ReadRemoteDescriptor_NSString) {
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
@@ -973,10 +890,6 @@ TEST_F(BluetoothRemoteGattDescriptorTest, ReadRemoteDescriptor_NSString) {
 // Tests NSNumber for descriptor value for macOS.
 // https://developer.apple.com/reference/corebluetooth/cbdescriptor
 TEST_F(BluetoothRemoteGattDescriptorTest, ReadRemoteDescriptor_NSNumber) {
-  if (!PlatformSupportsLowEnergy()) {
-    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
-    return;
-  }
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
   descriptor1_->ReadRemoteDescriptor(
