@@ -262,12 +262,13 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   // Holds a packet to be written to the wire, and the IO mode that should
   // be used by the mock socket when performing the write.
   struct PacketToWrite {
-    PacketToWrite(IoMode mode, quic::QuicReceivedPacket* packet)
-        : mode(mode), packet(packet) {}
-    PacketToWrite(IoMode mode, int rv) : mode(mode), packet(nullptr), rv(rv) {}
+    PacketToWrite(IoMode mode, std::unique_ptr<quic::QuicReceivedPacket> packet)
+        : mode(mode), packet(std::move(packet)) {}
+    PacketToWrite(IoMode mode, int rv) : mode(mode), rv(rv) {}
+
     IoMode mode;
-    raw_ptr<quic::QuicReceivedPacket> packet;
     int rv;
+    std::unique_ptr<quic::QuicReceivedPacket> packet;
   };
 
   QuicHttpStreamTest()
@@ -307,20 +308,19 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   ~QuicHttpStreamTest() override {
     session_->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
                                   quic::ConnectionCloseBehavior::SILENT_CLOSE);
-    for (auto& write : writes_) {
-      delete write.packet;
-    }
   }
 
   // Adds a packet to the list of expected writes.
   void AddWrite(std::unique_ptr<quic::QuicReceivedPacket> packet) {
-    writes_.emplace_back(SYNCHRONOUS, packet.release());
+    writes_.emplace_back(SYNCHRONOUS, std::move(packet));
   }
 
   void AddWrite(IoMode mode, int rv) { writes_.emplace_back(mode, rv); }
 
   // Returns the packet to be written at position |pos|.
-  quic::QuicReceivedPacket* GetWrite(size_t pos) { return writes_[pos].packet; }
+  quic::QuicReceivedPacket* GetWrite(size_t pos) {
+    return writes_[pos].packet.get();
+  }
 
   bool AtEof() {
     return socket_data_->AllReadDataConsumed() &&
@@ -644,18 +644,21 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   NetLogWithSource net_log_with_source_{
       NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};
   RecordingNetLogObserver net_log_observer_;
-  raw_ptr<quic::test::MockSendAlgorithm> send_algorithm_;
   scoped_refptr<TestTaskRunner> runner_;
   std::unique_ptr<MockWrite[]> mock_writes_;
   quic::MockClock clock_;
-  raw_ptr<TestQuicConnection> connection_;
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   testing::StrictMock<quic::test::MockQuicConnectionVisitor> visitor_;
   std::unique_ptr<UploadDataStream> upload_data_stream_;
   std::unique_ptr<QuicHttpStream> stream_;
   TransportSecurityState transport_security_state_;
+
+  // Must outlive `send_algorithm_` and `connection_`.
   std::unique_ptr<QuicChromiumClientSession> session_;
+  raw_ptr<quic::test::MockSendAlgorithm> send_algorithm_;
+  raw_ptr<TestQuicConnection> connection_;
+
   quic::QuicCryptoClientConfig crypto_config_;
   TestCompletionCallback callback_;
   HttpRequestInfo request_;
