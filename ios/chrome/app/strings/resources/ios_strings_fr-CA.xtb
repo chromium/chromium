@@ -439,6 +439,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4237377247299956313">Touchez <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Entrer la phrase de passe</translation>
 <translation id="4249955472157341256">Trier par Plus récents</translation>
+<translation id="4253168017788158739">Remarque</translation>
 <translation id="4263576668337963058">Afficher les actions de page proposées</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Vous avez ignoré {COUNT} avertissement}one{Vous avez ignoré {COUNT} avertissement}other{Vous avez ignoré {COUNT} avertissements}}</translation>
 <translation id="4272631900155121838">Pour numériser un code QR, activez la caméra dans les paramètres</translation>

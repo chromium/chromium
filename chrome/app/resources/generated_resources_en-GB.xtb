@@ -3953,7 +3953,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4513872120116766993">Predictive writing</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
-<translation id="451515744433878153">Remove</translation>
 <translation id="4515872537870654449">Contact Dell for service. The dock will shut down if the fan isn't working.</translation>
 <translation id="4518840066030486079">Shift key mode style</translation>
 <translation id="4519331665958994620">Sites can ask to use your camera</translation>
@@ -3965,6 +3964,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4522890784888918985">Child accounts are not supported</translation>
 <translation id="4523876148417776526">XML sitelists have not been fetched yet.</translation>
 <translation id="4524832533047962394">The supplied enrolment mode is not supported by this version of the operating system. Please make sure that you are running the newest version.</translation>
+<translation id="4526051299161934899">Hidden saved tab groups</translation>
 <translation id="4526853756266614740">Choose an image to apply the theme instantly</translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4527929807707405172">Enable reverse scrolling. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -4289,6 +4289,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4824037980212326045">Linux backup and restore</translation>
 <translation id="4824958205181053313">Cancel sync?</translation>
 <translation id="4825532258163983651">Can't delete passkey</translation>
+<translation id="4827283332383516812">Delete card</translation>
 <translation id="4827675678516992122">Couldn't connect</translation>
 <translation id="4827784381479890589">Enhanced spell check in Chrome browser (text is sent to Google for spelling suggestions)</translation>
 <translation id="4827904420700932487">Create QR code for this Image</translation>
@@ -5317,6 +5318,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5792295754950501287">More actions for <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Please tap your power button</translation>
 <translation id="5792874008054171483">More actions for <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">This payment method will be deleted from this device</translation>
 <translation id="5793339252089865437">If you download the update over your mobile network, it could result in overage charges.</translation>
 <translation id="5793420564274426163">Pair confirmation</translation>
 <translation id="5793430094159150686">Your password has changed. To restore your local data, you need to enter your old password.</translation>
@@ -7295,6 +7297,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7609148976235050828">Please connect to the Internet and try again.</translation>
 <translation id="7612401678989660900">Allow access for apps and websites with the microphone permission</translation>
 <translation id="7612655942094160088">Connected phone features enable.</translation>
+<translation id="7612989789287281429">Signing you in…</translation>
 <translation id="7614260613810441905">Ask when a site wants to edit files or folders on your device (recommended)</translation>
 <translation id="761530003705945209">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
 <translation id="7615365294369022248">There was an error adding an account</translation>
@@ -8512,6 +8515,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="869884720829132584">Applications menu</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699188901396699995">PPD for <ph name="PRINTER_NAME" /></translation>
+<translation id="8702278591052316269">Menu containing hidden saved tab groups</translation>
 <translation id="8702825062053163569">Your <ph name="DEVICE_TYPE" /> was locked.</translation>
 <translation id="8703346390800944767">Skip ad</translation>
 <translation id="8705331520020532516">Serial Number</translation>

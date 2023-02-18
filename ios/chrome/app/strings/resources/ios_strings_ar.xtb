@@ -441,6 +441,7 @@
 <translation id="4237377247299956313">‏النقر على <ph name="BEGIN_BOLD" />Default Browser App (تطبيق المتصفِّح التلقائي)<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">إدخال عبارة المرور</translation>
 <translation id="4249955472157341256">الترتيب حسب الأحدث</translation>
+<translation id="4253168017788158739">ملاحظة</translation>
 <translation id="4263576668337963058">عرض الإجراءات المتاحة على الصفحة</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{لقد أغلقت تحذيرًا واحدًا ({COUNT}).}zero{لقد أغلقت {COUNT} تحذير.}two{لقد أغلقت تحذيرَين ({COUNT}).}few{لقد أغلقت {COUNT} تحذيرات.}many{لقد أغلقت {COUNT} تحذيرًا.}other{لقد أغلقت {COUNT} تحذير.}}</translation>
 <translation id="4272631900155121838">لمسح رمز الاستجابة السريعة ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات</translation>

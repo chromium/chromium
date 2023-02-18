@@ -699,14 +699,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si no se asigna ningún valor a esta política, todas las funciones de <ph name="PRODUCT_OS_NAME" /> estarán habilitadas de forma predeterminada y el usuario podrá utilizar cualquiera de ellas.
 
       Nota: Actualmente, la función de análisis está inhabilitada mediante una marca de función. Si el usuario la habilita mediante la marca de función, la función se podrá seguir inhabilitando con esta política.</translation>
-<translation id="1642854499667422595">Si se habilita esta política, las extensiones cuya publicación se haya anulado en Chrome Web Store se inhabilitarán en <ph name="PRODUCT_NAME" />.
-Esta política ignorará las extensiones instaladas en modo Desarrollador, las instaladas mediante la línea de comandos y otras extensiones que no se hayan instalado desde Chrome Web Store (por ejemplo, las alojadas en un servidor web privado).
-
-Si se le asigna el valor <ph name="ALLOW_UNPUBLISHED" /> (0) o no se establece, se permitirán las extensiones cuya publicación se haya anulado.
-Si se le asigna el valor <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), las extensiones cuya publicación se haya anulado en Chrome Web Store se inhabilitarán, excepto si se han instalado de manera forzada o se han fijado a una versión mediante una política de empresa (consulta la nota).
-Si se le asigna el valor <ph name="DISABLE_UNPUBLISHED" /> (2), las extensiones cuya publicación se haya anulado en Chrome Web Store se inhabilitarán, aunque se hayan instalado de manera forzada o se hayan fijado a una versión mediante una política de empresa (consulta la nota).
-
-Nota: Las instalaciones forzadas y las versiones fijas se configuran con las políticas <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> y <ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
 <translation id="1647558381546345298">Si se establece la política, se configura el tamaño de caché que utilizará <ph name="PRODUCT_NAME" /> para almacenar archivos multimedia en caché (en el disco), independientemente de si el usuario ha utilizado o no el indicador "--media-cache-size". El valor especificado en esta política no es un límite fijo en el sistema de almacenamiento en caché, sino una sugerencia. Los valores se redondean.
 
@@ -1498,6 +1490,9 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
       Si no se le asigna ningún valor, las cookies de terceros estarán activadas, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
 <translation id="2387469539700985783">Esta política no afecta a los informes realizados por Android.</translation>
+<translation id="2388701318721126001">Si se inhabilita esta política, la imagen de fondo de pantalla del usuario de <ph name="PRODUCT_OS_NAME" /> no se podrá seleccionar desde un álbum de Google Fotos.
+
+El usuario podrá seleccionar una imagen de Google Fotos como fondo de pantalla si esta política se habilita o no se define.</translation>
 <translation id="2393862222659066027">Abrir una lista de URLs y restaurar la última sesión</translation>
 <translation id="2394429297128584919">Impedir que las páginas envíen solicitudes XHR síncronas durante el cierre de la página</translation>
 <translation id="2394674739523870144">Si se define esta política como una lista de cadenas, dichas cadenas se unirán mediante espacios y pasarán de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de línea de comandos. Si un parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> se sustituirá por la URL de la página que se vaya a abrir. Si ningún parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, la URL se añadirá al final de la línea de comandos.
@@ -1644,7 +1639,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
        Si no se asigna ningún valor a esta política, el cambio de alimentación en picos quedará desactivado.</translation>
 <translation id="2502467045153796624">Comportamiento del cambio a una versión inferior</translation>
-<translation id="2505101658854883014">Inhabilitar extensiones cuya publicación se ha anulado, incluidas las de instalación forzada o las de versión fija</translation>
 <translation id="250670737672448119">Habilita la función de accesibilidad de resaltado del símbolo de intercalación de texto.
 
           Esta función resalta la zona que rodea al símbolo de intercalación de texto mientras se está editando texto.
@@ -2866,6 +2860,7 @@ Si no se define esta política o si la lista no contiene ninguna referencia a un
 <translation id="3608206578291537084">Habilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="3608281460204780443">Mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y en la página Nueva pestaña</translation>
 <translation id="3622463490728773174">Permitir la nueva implementación</translation>
+<translation id="3623332696371971798">Impedir el acceso a Google Fotos desde la aplicación de personalización</translation>
 <translation id="3627678165642179114">Habilitar o inhabilitar el servicio web de corrección ortográfica</translation>
 <translation id="3628480121685794414">Habilitar impresión por una cara</translation>
 <translation id="3634125384445314047">Permite acceder a través de la función Mi teléfono a fotos y vídeos recientes hechos con el teléfono.</translation>
@@ -2903,6 +2898,7 @@ Si no se define esta política o si la lista no contiene ninguna referencia a un
 
           Se trata de una política temporal y se prevé que se elimine en la versión 107 de <ph name="PRODUCT_NAME" />. Este plazo puede ampliarse si lo necesitan las empresas.
           </translation>
+<translation id="3678069907945250643">Permitir el acceso a Google Fotos desde la aplicación de personalización</translation>
 <translation id="3685979383016152590">Si se establece esta política, se designará qué política de acceso se utiliza para configurar impresoras en bloque y controlará qué impresoras de la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> están disponibles para los usuarios.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) utiliza <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir el acceso a las impresoras especificadas
@@ -7242,6 +7238,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
       Si esta política se inhabilita o no se establece, es posible que, en función del estado del lanzamiento de la desactivación, no se puedan ejecutar aplicaciones de Chrome.
       En cualquiera de estos casos, las aplicaciones de Chrome cuya instalación sea forzada mediante una política seguirán estando permitidas.</translation>
 <translation id="7774768074957326919">Utilizar configuración de proxy del sistema</translation>
+<translation id="7775077662962729812">Selección de fondo de pantalla desde Google Fotos</translation>
 <translation id="7776848995687565978">Configurar una lista de orígenes que conceden una duración ampliada en segundo plano a las extensiones de conexión.</translation>
 <translation id="777734450201217641">Esta política habilita las combinaciones de teclas para las funciones de accesibilidad en la pantalla de inicio de sesión.
 
@@ -8795,7 +8792,6 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 
       Esta política es una medida temporal y se eliminará en futuras versiones de <ph name="PRODUCT_NAME" />. Cuando se elimine, <ph name="PRODUCT_NAME" /> podrá consultar tipos de DNS adicionales en cualquier momento.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9169161075831670233">Inhabilitar extensiones cuya publicación se ha anulado, excepto las de instalación forzada o las de versión fija</translation>
 <translation id="9172911925443428317">No permitir que se muestre la promoción de valoraciones del App Store</translation>
 <translation id="9180108183162961002">Permitir que se inicie sesión en el navegador con el modo Invitado</translation>
 <translation id="9185963199234034321">Habilitar el contraste alto en la pantalla de inicio de sesión y permitir que el usuario lo inhabilite temporalmente</translation>

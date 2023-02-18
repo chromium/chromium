@@ -1431,6 +1431,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2251809247798634662">Nouvelle fenêtre de navigation privée</translation>
 <translation id="2252017960592955005">Protection anti-regard (bêta)</translation>
 <translation id="225240747099314620">Autoriser les identifiants pour le contenu protégé (le redémarrage de l'ordinateur peut être nécessaire)</translation>
+<translation id="2253318212986772520">Impossible de récupérer le PPD pour <ph name="PRINTER_NAME" />.</translation>
 <translation id="2255077166240162850">Cet appareil a été verrouillé dans un autre mode ou avec un autre domaine.</translation>
 <translation id="2255317897038918278">Enregistrement des informations de date Microsoft</translation>
 <translation id="2256115617011615191">Redémarrer maintenant</translation>
@@ -2899,6 +2900,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3582057310199111521">Saisi sur un site trompeur et détecté lors d'une violation des données</translation>
 <translation id="3582299299336701326">Assombrissez ou éclarcissez l'écran. Appuyez sur Recherche+Ctrl+H pour activer ou désactiver l'inversion des couleurs.</translation>
 <translation id="3584169441612580296">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur et les modifier</translation>
+<translation id="3584527007414070635">Reprenez votre parcours concernant <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">L'appli <ph name="APPLICATION_NAME" /> nécessite que OneDrive soit disponible.</translation>
 <translation id="3586806079541226322">Impossible d'ouvrir ce fichier</translation>
 <translation id="3587438013689771191">En savoir plus sur : <ph name="SUBPAGE_TITLE" /></translation>
@@ -3857,6 +3859,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4443536555189480885">&amp;Aide</translation>
 <translation id="4444304522807523469">Accéder aux scanners de documents connectés via USB ou sur le réseau local</translation>
 <translation id="4444512841222467874">Si vous ne libérez pas de l'espace, sachez que des utilisateurs et des données risquent d'être supprimés automatiquement.</translation>
+<translation id="4445446646109808714">Contrat de licence utilisateur final : <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Écran dupliqué</translation>
 <translation id="4448914100439890108">Masquer le mot de passe de <ph name="USERNAME" /> sur <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Ce nom d'utilisateur appartient au compte d'entreprise de votre organisation. Pour enregistrer des appareils pour ce compte, il vous faut d'abord valider la propriété du domaine dans la console d'administration. Vous devez disposer des droits d'administrateur pour effectuer cette opération.</translation>
@@ -3928,7 +3931,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4513872120116766993">Saisie prédictive</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="451407183922382411">Fourni par <ph name="COMPANY_NAME" /></translation>
-<translation id="451515744433878153">Supprimer</translation>
 <translation id="4515872537870654449">Contactez Dell pour faire réparer votre équipement. La station d'accueil ne peut pas fonctionner si le ventilateur n'est pas en état de marche.</translation>
 <translation id="4518840066030486079">Style du mode de la touche Maj</translation>
 <translation id="4519331665958994620">Les sites peuvent demander à utiliser votre caméra</translation>

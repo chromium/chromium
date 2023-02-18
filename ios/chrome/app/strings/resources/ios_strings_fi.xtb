@@ -101,6 +101,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1608337082864370066">Hae kopioitua kuvaa</translation>
 <translation id="1612730193129642006">Näytä välilehtiruudukko</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> uudelleenkäytettyä salasanaa</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1650222530560417226">Aloita JavaScript-konsolilokien ja kaikilla välilehdillä havaittujen virheiden kerääminen valitsemalla Kirjausten käynnistys. Lokeja kerätään (niitä säilytetään vain muistissa), kunnes suljet tämän sivun tai valitset Kirjauksen lopetus.</translation>
@@ -193,6 +194,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2411749908844615428">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} tallennettu osoite.}other{Näppäimistön yläpuolella on saatavilla {count} tallennettua osoitetta.}}</translation>
 <translation id="2421004566762153674">Kolmannen osapuolen evästeet estetään</translation>
 <translation id="2421044535038393232">Jatka muokkausta</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
 <translation id="2434405374328098816">Olet jo tallentanut salasanan (käyttäjätunnus: <ph name="USERNAME" />) täällä: <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="2451654228769116489">Kiinnitä välilehti</translation>
@@ -336,6 +338,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="345565170154308620">Salasanavalinnat…</translation>
 <translation id="3469166899695866866">Pysäytetäänkö lataus?</translation>
 <translation id="3470502288861289375">Kopioidaan…</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} sivustolta tai sovelluksesta}other{{COUNT} sivustolta tai sovelluksesta}}</translation>
 <translation id="3474624961160222204">Jatka käyttäjänä <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Voimassa (kk)</translation>
 <translation id="3482959374254649722">Synkronoidaan välilehtiä…</translation>
@@ -382,6 +385,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3818293389945649617">Hae seuraava</translation>
 <translation id="3819183753496523827">Olet offline-tilassa. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
 <translation id="3835964409414434850">Siirry seuraavalle välilehdelle</translation>
+<translation id="3838691874161539578">Tarkista tallentamasi salasanat tietoturvan parantamiseksi ja selataksesi turvallisemmin</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="3851938967634752633">Näiden salasanat poistetaan: <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja <ph name="NUMBER_OF_ACCOUNTS" /> muuta. Tilejäsi ei poisteta.</translation>
 <translation id="3858860766373142691">Nimi</translation>
@@ -435,7 +439,9 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4237377247299956313">Valitse <ph name="BEGIN_BOLD" />Oletusselainsovellus<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Anna tunnuslause</translation>
 <translation id="4249955472157341256">Lajittele viimeisimmät ensimmäisiksi</translation>
+<translation id="4253168017788158739">Huomautus</translation>
 <translation id="4263576668337963058">Näytä käytettävissä olevat sivutoiminnot</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{Olet hylännyt {COUNT} varoituksen}other{Olet hylännyt {COUNT} varoitusta}}</translation>
 <translation id="4272631900155121838">Jos haluat skannata QR-koodin, ota kamera käyttöön asetuksissa.</translation>
 <translation id="4277990410970811858">Selaussuoja</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
@@ -482,6 +488,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4630540211544979320">Käännä sivuja</translation>
 <translation id="4634124774493850572">Käytä salasanaa</translation>
 <translation id="4636930964841734540">Tietoja</translation>
+<translation id="4642472735733036929">Hinnan seuranta lopetettu</translation>
 <translation id="4650125387981512669">Jatka tilillä <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Tämä ominaisuus otetaan käyttöön, kun kirjaudut Google-tilillesi.</translation>
 <translation id="4659667755519643272">Avaa välilehtien vaihtaja</translation>
@@ -555,6 +562,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5118764316110575523">Pois päältä</translation>
 <translation id="5119391094379141756">Valitse Chrome</translation>
 <translation id="5132942445612118989">Synkronoi salasanasi, historiasi ja paljon muuta kaikilla laitteilla</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} heikko salasana}other{{COUNT} heikkoa salasanaa}}</translation>
 <translation id="5149188072385105201">Lisää salasana…</translation>
 <translation id="5150492518600715772">Lähetä laitteeseen</translation>
 <translation id="5168414296986405587">Suunniteltu iPadOS:lle</translation>
@@ -638,6 +646,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5812974770859303494">Lisää…</translation>
 <translation id="581659025233126501">Laita synkronointi päälle</translation>
+<translation id="5817176759448082654">Salasanan tarkistus</translation>
 <translation id="5819208479324046259">Ylläpitäjä on <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Tallenna salasanat, maksutavat ja osoitteet Chromen automaattista täyttöä varten.</translation>
 <translation id="5834415013958049700">Kopioimasi Lens-kuva</translation>
@@ -838,6 +847,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Hiljattain suljetut välilehdet</translation>
 <translation id="7006788746334555276">Sisältöasetukset</translation>
+<translation id="7014087399239955356">Tarkistetaan salasanoja…</translation>
 <translation id="7029809446516969842">Salasanat</translation>
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7062545763355031412">Hyväksy ja vaihda tiliä</translation>
@@ -893,6 +903,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7531345132340165516">Nykyinen sivusto</translation>
 <translation id="7537586195939242955">Passiasi ei voi asentaa Passbookiin tällä hetkellä.</translation>
+<translation id="754655535278952384">Tarkistettu <ph name="TIME" /></translation>
 <translation id="7553234618121028547">Jos haluat laittaa ominaisuuden pois päältä, avaa <ph name="BEGIN_LINK" />Asetukset<ph name="END_LINK" /> ja sitten Salasana-asetukset.</translation>
 <translation id="7554645225856321710">Sulje kaikki</translation>
 <translation id="7554791636758816595">Uusi välilehti</translation>

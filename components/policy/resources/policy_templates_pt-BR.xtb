@@ -700,17 +700,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política não for definida, todos os recursos do <ph name="PRODUCT_OS_NAME" /> ficarão ativados por padrão, e o usuário poderá usar qualquer um deles.
 
       Observação: no momento, o recurso de digitalização está desativado por padrão por uma flag de recurso. Se o usuário ativá-lo pela sinalização, o recurso ainda pode estar desativado por esta política.</translation>
-<translation id="1642854499667422595">Se a política for ativada, as extensões não publicadas na Chrome Web
-Store serão desativadas no <ph name="PRODUCT_NAME" />.
-Esta política vai ignorar o modo de desenvolvedor, a linha de comando instalada e outras
-extensões que não são instaladas pela Chrome Web Store (por exemplo, a hospedagem automática).
-
-Se a política for definida como <ph name="ALLOW_UNPUBLISHED" /> (0) ou for deixada sem definição, as extensões não publicadas serão permitidas.
-Se ela for definida como <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), as extensões não publicadas na Chrome Web Store serão desativadas. No entanto, isso não vai acontecer se a extensão tiver instalação forçada ou for fixada em versões pela política da empresa. Consulte a observação.
-Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (2), as extensões não publicadas na Chrome Web Store serão desativadas, mesmo que a instalação seja forçada ou haja fixação em versões pela política da empresa. Consulte a observação.
-
-Observação: a instalação forçada e a fixação em versões são configuradas usando as políticas <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> e
-<ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
 <translation id="1647558381546345298">Definir a política configura o tamanho do cache usado pelo <ph name="PRODUCT_NAME" /> para armazenar arquivos de mídia em cache no disco, independentemente de o usuário ter especificado ou não a sinalização "--media-cache-size". O valor especificado na política não é um limite rígido, mas sim uma sugestão para o sistema de armazenamento em cache. Valores abaixo de alguns megabytes serão arredondados para cima.
 
@@ -1660,7 +1649,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
        Se a política não for definida, a economia de energia no período de pico ficará desativada.</translation>
 <translation id="2502467045153796624">Comportamento de downgrade de canal</translation>
-<translation id="2505101658854883014">Desativar extensões não publicadas, incluindo as com instalação forçada ou fixadas em versões</translation>
 <translation id="250670737672448119">Ativar o recurso de acessibilidade que destaca o cursor.
 
           Este recurso é responsável por destacar a área ao redor do cursor durante a edição.
@@ -8845,7 +8833,6 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Ela é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />. Após a remoção da política, o <ph name="PRODUCT_NAME" /> sempre poderá consultar outros tipos de DNS.</translation>
 <translation id="9167719789236691545">Desativar o Drive no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9169161075831670233">Desativar extensões não publicadas, exceto as com instalação forçada ou fixadas em versões</translation>
 <translation id="9172911925443428317">Não permitir que a promoção de avaliação da App Store seja mostrada</translation>
 <translation id="9180108183162961002">Permitir logins em navegação como visitante</translation>
 <translation id="9185963199234034321">Ativar o alto contraste na tela de login e permitir que o usuário o desative temporariamente</translation>

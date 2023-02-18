@@ -439,6 +439,7 @@
 <translation id="4237377247299956313">点按<ph name="BEGIN_BOLD" />默认浏览器应用<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">请输入密码</translation>
 <translation id="4249955472157341256">按新近度排序</translation>
+<translation id="4253168017788158739">备注</translation>
 <translation id="4263576668337963058">显示可用的网页操作</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{您忽略了 {COUNT} 条警告}other{您忽略了 {COUNT} 条警告}}</translation>
 <translation id="4272631900155121838">要扫描 QR 码，请从设置中启用相机功能</translation>

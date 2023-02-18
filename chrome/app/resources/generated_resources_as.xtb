@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">হাইপাৰটেক্স ট্ৰাঞ্চপ'ৰ্ট প্ৰ’ট’কল (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />'ৰ বাবে <ph name="NUM" /> টা টেব পোৱা গৈছে</translation>
 <translation id="1060292118287751956">স্ক্ৰীনখন আপডে’ট হোৱা সঘনতা নিৰ্দিষ্ট কৰে</translation>
+<translation id="1060570945511946595">টিকেট পৰিচালনা কৰক</translation>
 <translation id="1061130374843955397">আপোনাৰ <ph name="DEVICE_TYPE" />লৈ স্বাগতম</translation>
 <translation id="1061373870045429865">এই লিংকটোৰ বাবে কিউআৰ ক’ড সৃষ্টি কৰক</translation>
 <translation id="1061904396131502319">ডিভাইচ লক হওঁ হওঁ</translation>
@@ -380,6 +381,7 @@
 <translation id="1339009753652684748">"Hey Google" বুলি কৈ আপোনাৰ Assistant এক্সেছ কৰক। বেটাৰী ৰাহি কৰিবলৈ “অন কৰক (চুপাৰিছ কৰা)” বাছনি কৰক। আপোনাৰ ডিভাইচটো প্লাগ ইন অথবা চাৰ্জ হৈ থাকিলেহে আপোনাৰ Assistantএ সঁহাৰি জনাব।</translation>
 <translation id="13392265090583506">সাধ্য সুবিধাৰ ছেটিংসমূহ</translation>
 <translation id="1340527397989195812">এই ডিভাইচৰ বেক আপ মিডিয়াই Files এপ্‌টো ব্যৱহাৰ কৰি আছে।</translation>
+<translation id="1341701348342335220">সুন্দৰকৈ কৰা হৈছে!</translation>
 <translation id="1341871421050612057"><ph name="USERNAME" />ৰ সৈতে ছিংক কৰিব নোৱাৰি</translation>
 <translation id="1343865611738742294">Linux এপক ইউএছবি ডিভাইচ এক্সেছ কৰিবলৈ অনুমতি দিয়ক। কোনো ইউএছবি ডিভাইচ আঁতৰোৱাৰ পাছত Linuxএ সেইটো মনত নাৰাখিব।</translation>
 <translation id="1343920184519992513">আপুনি য’ত এৰিছিল তাৰ পৰা অব্যাহত ৰাখক আৰু পৃষ্ঠাৰ এটা নিৰ্দিষ্ট ছেট খোলক</translation>
@@ -1123,6 +1125,7 @@
 <translation id="1975841812214822307">আঁতৰাওক...</translation>
 <translation id="1976150099241323601">সুৰক্ষা প্ৰদানকাৰী ডিভাইচত ছাইন ইন কৰক</translation>
 <translation id="1977965994116744507">আপোনাৰ <ph name="DEVICE_TYPE" />.আনলক কৰিবলৈ আপোনাৰ ফ’নটো ওচৰলৈ আনক।</translation>
+<translation id="1978666928180318515">Bruschetta আঁতৰাওক</translation>
 <translation id="1979095679518582070">এই সুবিধাটো বন্ধ কৰিলেও আপোনাৰ ডিভাইচটোৱে ছিষ্টেম আপডে’ট আৰু সুৰক্ষাৰ দৰে অত্যাৱশ্যকীয় সেৱাসমূহৰ বাবে দৰকাৰী তথ্য পঠিওৱাৰ ক্ষেত্ৰত কোনো প্ৰভাৱ নপৰে।</translation>
 <translation id="1979280758666859181">আপুনি <ph name="PRODUCT_NAME" />ৰ পুৰণি সংস্কৰণ থকা এটা চেনেললৈ সলনি কৰিবলৈ লৈছে। আপোনাৰ ডিভাইচত বৰ্তমান ইনষ্টল কৰি থোৱা চেনেলৰ সংস্কৰণৰ সৈতে সেই চেনেলৰ সংস্কৰণটো মিলিলে চেনেল সলনি কৰা হ’ব।</translation>
 <translation id="197989455406964291">KDC এ এনক্ৰিপশ্বনৰ প্ৰকাৰসমূহ সমৰ্থন নকৰে</translation>
@@ -1930,6 +1933,7 @@
 <translation id="2672142220933875349">ত্ৰুটিপূৰ্ণ crx ফাইল, আনপেক কৰিব পৰা নগ’ল।</translation>
 <translation id="2673135533890720193">আপোনাৰ ব্ৰাউজিংৰ ইতিহাস পঢ়ক</translation>
 <translation id="2674764818721168631">অফ আছে</translation>
+<translation id="2675570801872027281">Bruschetta আঁতৰাওঁতে আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2676492189600898281">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ বিষয়ে মতামত প্ৰদান কৰক</translation>
 <translation id="2678063897982469759">পুনঃসক্ষম কৰক</translation>
 <translation id="2678100101831051676">কাষ্ট কৰিব পৰা নগ’ল।</translation>
@@ -2928,6 +2932,7 @@
 <translation id="3593965109698325041">প্ৰমাণপত্ৰৰ নামৰ সীমাবদ্ধতা</translation>
 <translation id="3596012367874587041">এপৰ ছেটিং</translation>
 <translation id="3596414637720633074">ইনক'গনিট'ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
+<translation id="3598010454707842106">“Chrome কাষ্টমাইজ কৰক”ত ক্লিক কৰক</translation>
 <translation id="3599221874935822507">উঠঙা</translation>
 <translation id="3600051066689725006">ৱেবৰ অনুৰোধ তথ্য</translation>
 <translation id="360180734785106144">নতুন ফলাফলবোৰ উপলব্ধ হোৱাৰ লগে লগেই আগবঢ়োৱা হ’ব</translation>
@@ -3637,6 +3642,7 @@
 <translation id="4232375817808480934">Kerberos কনফিগাৰ কৰক</translation>
 <translation id="4235965441080806197">ছাইন ইন বাতিল কৰক</translation>
 <translation id="4236163961381003811">অধিক এক্সটেনশ্বন বিচাৰি পাওক</translation>
+<translation id="4237282663517880406">Google Driveৰ পৰামৰ্শসমূহ দেখুৱাওক</translation>
 <translation id="4241182343707213132">প্ৰতিষ্ঠানৰ এপ্‌ আপডে’ট কৰিবলৈ ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="4242145785130247982">একাধিক ক্লায়েণ্টৰ প্ৰমাণপত্ৰ সমৰ্থিত নহয়</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
@@ -3924,6 +3930,7 @@
 <translation id="4497145443434063861">PC আৰু Chromecast দুয়োটা ভিন্ন ৱাই-ফাইল নেটৱৰ্ক (যেনে, ২.৪ গিগাহাৰ্টজ
     বনাম ৫ গিগাহাৰ্টজ) আছে</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ক্ৰেশ্ব হৈছে</translation>
+<translation id="4500647907053779331">&amp;বাছনি কৰা খিনি <ph name="LANGUAGE" />লৈ অনুবাদ কৰক</translation>
 <translation id="450099669180426158">ভাৱবোধক চিহ্নৰ আইকন</translation>
 <translation id="4501530680793980440">আঁতৰোৱাটো নিশ্চিত কৰক</translation>
 <translation id="4502423230170890588">এই ডিভাইচটোৰ পৰা আঁতৰাওক</translation>
@@ -3943,7 +3950,6 @@
 <translation id="4513872120116766993">পূৰ্বানুমানৰ ভিত্তি লিখা</translation>
 <translation id="4513946894732546136">মতামত</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" />ৰ দ্বাৰা সঞ্চালিত</translation>
-<translation id="451515744433878153">আঁতৰ কৰক</translation>
 <translation id="4515872537870654449">ছাৰ্ভিছিঙৰ বাবে Dellৰ সৈতে যোগাযোগ কৰক। ফেনখনে যদি কাম কৰা নাই ড’কটো বন্ধ হৈ যাব।</translation>
 <translation id="4518840066030486079">শ্বিফ্ট কীৰ ম’ডৰ শৈলী</translation>
 <translation id="4519331665958994620">ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
@@ -5742,6 +5748,7 @@
 <translation id="617213288191670920">কোনো ভাষা যোগ দিয়া হোৱা নাই</translation>
 <translation id="6173623053897475761">আপোনাৰ পিন পুনৰ টাইপ কৰক</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
+<translation id="6177412385419165772">আঁতৰাই থকা হৈছে...</translation>
 <translation id="6178664161104547336">এখন প্ৰমাণপত্ৰ বাছনি কৰক</translation>
 <translation id="6178682841350631965">আপোনাৰ ছাইন-ইন ডেটা আপডে’ট কৰা হৈছে</translation>
 <translation id="6180510783007738939">শাৰীৰ সঁজুলি</translation>
@@ -6220,6 +6227,7 @@
 <translation id="6619801788773578757">কিঅ’স্ক এপ্লিকেশ্বন যোগ কৰক</translation>
 <translation id="6619990499523117484">আপোনাৰ পিন নিশ্চিত কৰক</translation>
 <translation id="6620254580880484313">কণ্টেনাৰৰ নাম</translation>
+<translation id="6620927550847360014">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পৰা Bruschetta আঁতৰাবনে?</translation>
 <translation id="6621391692573306628">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, দুয়োটা ডিভাইচতে Chromeত ছাইন ইন কৰক</translation>
 <translation id="6622980291894852883">প্ৰতিচ্ছবি অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="6624036901798307345">টেবলেট ম’ডত, প্ৰতিটো টেবৰ বাবে থাম্বনেইল দেখুওৱা নতুন টেবৰ ষ্ট্ৰিপটো খুলিবলৈ টেব কাউণ্টাৰৰ টুলবাৰৰ বুটামটোত টিপক।</translation>
@@ -6437,6 +6445,7 @@
 <translation id="6818547713623251698">আপোনাৰ ফ’নটোৰ ফট’, মিডিয়া, জাননী আৰু এপ্‌সমূহ চাওক</translation>
 <translation id="6818802132960437751">বিল্ট-ইন ভাইৰাছ সুৰক্ষা</translation>
 <translation id="6818920801736417483">পাছৱৰ্ডসমূহ ছেভ কৰিবনে?</translation>
+<translation id="6820079682647046800">Kerberosৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ কৰিব পৰা নগ’ল</translation>
 <translation id="6823174134746916417">টাচ্‌পেড ক্লিক কৰিবলৈ টিপা সুবিধা</translation>
 <translation id="6824564591481349393">ইমেইল ঠিকনা প্ৰতিলিপি কৰক</translation>
 <translation id="6824584962142919697">উপাদান &amp;পৰীক্ষা কৰক</translation>
@@ -6591,6 +6600,7 @@
 <translation id="6955698182324067397">আপুনি ChromeOSৰ ডিবাগ কৰাৰ সুবিধাসমূহ সক্ষম কৰিবলৈ লৈছে যিয়ে sshd daemon ছেট আপ কৰিব আৰু ইউএছবি ড্ৰাইভৰ পৰা বুট কৰাটো সক্ষম কৰিব।</translation>
 <translation id="6955893174999506273">আৰু ১ টা ছুইচ আবণ্টন কৰক</translation>
 <translation id="6957044667612803194">সুৰক্ষা চাবিটোৱে কোনো পিন সমৰ্থন নকৰে</translation>
+<translation id="6960133692707095572">টিকেটৰ অবিহনে যাওক</translation>
 <translation id="6960507406838246615">Linux আপডে'ট কৰাৰ আৱশ্যক</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" />ৰ কথনৰ ফাইল ডাউনল’ড কৰিব পৰা নগ’ল। পাছত ডাউনল’ড কৰিবলৈ প্ৰয়াস কৰা হ’ব। ডাউনল’ড সম্পূৰ্ণ নোহোৱা পৰ্যন্ত প্ৰক্ৰিয়াকৰণৰ বাবে Googleলৈ কথন পঠিওৱা হয়।</translation>
 <translation id="696103774840402661">এই <ph name="DEVICE_TYPE" />ত থকা আটাইবোৰ ব্যৱহাৰকাৰীৰ আটাইবোৰ ফাইল আৰু স্থানীয় ডেটা স্থায়ীভাৱে মচা হ’ল।</translation>
@@ -8052,6 +8062,7 @@
 <translation id="8272443605911821513">"অধিক সঁজুলি" মেনুৰ অন্তৰ্গত এক্সটেনশ্বন-ত ক্লিক কৰি আপোনাৰ এক্সটেনশ্বনবোৰ পৰিচালনা কৰক।</translation>
 <translation id="8272786333453048167">পুনৰ অনুমতি দিয়ক</translation>
 <translation id="8273905181216423293">এতিয়াই ডাউনল’ড কৰক</translation>
+<translation id="827488840488530039">আপুনি চাবলৈ চেষ্টা কৰি থকা পৃষ্ঠাখনে আপোনাৰ Kerberosৰ টিকেটসমূহ সত্যাপন কৰিব নোৱাৰিলে</translation>
 <translation id="8274921654076766238">বিৱৰ্ধকে কীব’ৰ্ডৰ ফ’কাছ অনুসৰণ কৰে</translation>
 <translation id="8274924778568117936">আপডে’ট সম্পূৰ্ণ নোহোৱালৈকে আপোনাৰ <ph name="DEVICE_TYPE" /> অফ বা বন্ধ নকৰিব। ইনষ্টল সম্পূৰ্ণ হোৱাৰ পাছত আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিষ্টাৰ্ট হ’ব।</translation>
 <translation id="8275038454117074363">আমদানি কৰক</translation>

@@ -1430,6 +1430,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2251809247798634662">Finestra d'incògnit nova</translation>
 <translation id="2252017960592955005">Protecció antimirades (beta)</translation>
 <translation id="225240747099314620">Permet els identificadors per a contingut protegit (és possible que calgui reiniciar l'ordinador)</translation>
+<translation id="2253318212986772520">No es pot recuperar el fitxer PPD per a <ph name="PRINTER_NAME" />.</translation>
 <translation id="2255077166240162850">Aquest dispositiu s'ha bloquejat amb un domini o un mode diferents.</translation>
 <translation id="2255317897038918278">Marques de temps de Microsoft</translation>
 <translation id="2256115617011615191">Reinicia ara</translation>
@@ -2898,6 +2899,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3582057310199111521">S'ha introduït en un lloc web enganyós i s'ha trobat en una violació de les dades</translation>
 <translation id="3582299299336701326">Enfosqueix les pantalles clares i il·lumina'n les fosques. Prem Cerca+Ctrl+H per activar i desactivar la inversió de colors.</translation>
 <translation id="3584169441612580296">Accedeix a fotos, a música i a altres fitxers multimèdia de l'ordinador i modifica'ls</translation>
+<translation id="3584527007414070635">Reprèn el recorregut per a <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">L'aplicació <ph name="APPLICATION_NAME" /> requereix que OneDrive estigui disponible.</translation>
 <translation id="3586806079541226322">No es pot obrir aquest fitxer</translation>
 <translation id="3587438013689771191">Més informació sobre: <ph name="SUBPAGE_TITLE" /></translation>
@@ -3855,6 +3857,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4443536555189480885">&amp;Ajuda</translation>
 <translation id="4444304522807523469">Accedir als escàners del document adjunts mitjançant USB o a la xarxa local</translation>
 <translation id="4444512841222467874">Si no alliberes espai, pot ser que se suprimeixin dades i usuaris automàticament.</translation>
+<translation id="4445446646109808714">Acord de llicència d'usuari final: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Duplicat</translation>
 <translation id="4448914100439890108">Amaga la contrasenya per a <ph name="USERNAME" /> a <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">El teu nom d'usuari pertany al compte d'empresa de la teva organització. Per inscriure dispositius al compte, primer has de verificar la propietat del domini a la consola d'administració. Per verificar-la, hauràs de tenir privilegis administratius al compte.</translation>
@@ -3926,7 +3929,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4513872120116766993">Escriptura predictiva</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="451407183922382411">Amb la tecnologia de: <ph name="COMPANY_NAME" /></translation>
-<translation id="451515744433878153">Suprimeix</translation>
 <translation id="4515872537870654449">Contacta amb Dell per obtenir assistència tècnica. La base s'apagarà si el ventilador no funciona.</translation>
 <translation id="4518840066030486079">Estil del mode de la tecla Maj</translation>
 <translation id="4519331665958994620">Els llocs web poden demanar permís per utilitzar la càmera</translation>

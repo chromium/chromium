@@ -3938,7 +3938,6 @@ Pretende pará-lo?</translation>
 <translation id="4513872120116766993">Escrita preditiva</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="451407183922382411">Com tecnologia da <ph name="COMPANY_NAME" /></translation>
-<translation id="451515744433878153">Remover</translation>
 <translation id="4515872537870654449">Contacte a Dell para obter assistência. A estação de ancoragem será encerrada se a ventoinha não estiver a funcionar.</translation>
 <translation id="4518840066030486079">Estilo do modo com tecla Shift</translation>
 <translation id="4519331665958994620">Os sites podem solicitar a utilização da câmara</translation>
@@ -3950,6 +3949,7 @@ Pretende pará-lo?</translation>
 <translation id="4522890784888918985">As contas secundárias não são suportadas</translation>
 <translation id="4523876148417776526">Ainda não fora obtidas listas de sites XML.</translation>
 <translation id="4524832533047962394">O modo de inscrição fornecido não é suportado por esta versão do sistema operativo. Certifique-se de que está a executar a versão mais recente.</translation>
+<translation id="4526051299161934899">Grupos de separadores guardados ocultos</translation>
 <translation id="4526853756266614740">Escolha uma imagem para aplicar o tema instantaneamente</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
 <translation id="4527929807707405172">Ative o deslocamento inverso. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -8498,6 +8498,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="869884720829132584">Menu Apps</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699188901396699995">PPD para <ph name="PRINTER_NAME" /></translation>
+<translation id="8702278591052316269">Menu com grupos de separadores guardados ocultos</translation>
 <translation id="8702825062053163569">O seu <ph name="DEVICE_TYPE" /> foi bloqueado</translation>
 <translation id="8703346390800944767">Ignorar anúncio</translation>
 <translation id="8705331520020532516">Número de série</translation>

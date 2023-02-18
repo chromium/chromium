@@ -696,14 +696,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, tutte le funzionalità di <ph name="PRODUCT_OS_NAME" /> vengono attivate per impostazione predefinita e l'utente le può utilizzare.
 
       Nota: al momento la funzionalità di scansione è disattivata per impostazione predefinita tramite un flag funzionalità. Se l'utente attiva la funzionalità tramite il flag funzionalità, questa può comunque essere disattivata dal criterio.</translation>
-<translation id="1642854499667422595">Se questo criterio viene attivato, le estensioni non pubblicate sul Chrome Web Store verranno disattivate su <ph name="PRODUCT_NAME" />.
-Questo criterio ignorerà le estensioni in modalità sviluppatore o installate dalla riga di comando e altre estensioni non installate dal Chrome Web Store (ad esempio, self-hosting).
-
-Se il criterio viene impostato su <ph name="ALLOW_UNPUBLISHED" /> (0) o se non viene configurato, le estensioni non pubblicate sono consentite.
-Se il criterio viene impostato su <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), le estensioni non pubblicate sul Chrome Web Store verranno disattivate, tranne quelle con installazione forzata o blocco della versione in base ai criteri aziendali (vedi la nota).
-Se il criterio viene impostato su <ph name="DISABLE_UNPUBLISHED" /> (2), le estensioni non pubblicate sul Chrome Web Store verranno disattivate, incluse quelle con installazione forzata o blocco della versione in base ai criteri aziendali (vedi la nota).
-
-Nota: l'installazione forzata e il blocco della versione vengono configurati utilizzando i criteri <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> e <ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Schema:</translation>
 <translation id="1647558381546345298">La configurazione del criterio consente di impostare le dimensioni della cache utilizzate da <ph name="PRODUCT_NAME" /> per archiviare sul disco i file multimediali memorizzati nella cache, a prescindere dal fatto che gli utenti abbiano specificato o meno il flag --media-cache-size. Il valore specificato in questo criterio non è un limite rigido, ma un suggerimento per il sistema di memorizzazione nella cache. Tutti i valori inferiori ad alcuni megabyte vengono arrotondati.
 
@@ -1636,7 +1628,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
        Se non viene configurato, la variazione dei picchi energetici rimane disattivata.</translation>
 <translation id="2502467045153796624">Comportamento del downgrade del canale</translation>
-<translation id="2505101658854883014">Disattiva le estensioni non pubblicate, incluse quelle con installazione forzata o blocco della versione</translation>
 <translation id="250670737672448119">Consente di attivare la funzione di accessibilità di evidenziazione del cursore di testo.
 
           Questa funzione consente di evidenziare l'area che circonda il cursore di testo durante la modifica.
@@ -8679,7 +8670,6 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 
       Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />. Dopo la rimozione del criterio, <ph name="PRODUCT_NAME" /> potrà sempre eseguire query su tipi DNS aggiuntivi.</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9169161075831670233">Disattiva le estensioni non pubblicate, tranne quelle con installazione forzata o blocco della versione</translation>
 <translation id="9172911925443428317">Non consentire la visualizzazione della promozione di valutazione dell'App Store</translation>
 <translation id="9180108183162961002">Consenti gli accessi come ospite al browser</translation>
 <translation id="9185963199234034321">Attiva l'alto contrasto nella schermata di accesso e consenti all'utente di disattivarlo temporaneamente</translation>

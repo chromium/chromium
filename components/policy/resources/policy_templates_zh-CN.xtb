@@ -693,14 +693,6 @@
       如果您未设置此政策，所有 <ph name="PRODUCT_OS_NAME" />功能都将默认处于启用状态，而且用户可以使用其中的任一功能。
 
       注意：目前，扫描功能的默认状态是已通过功能标志停用。即便用户通过功能标志启用了该功能，它仍能被此政策停用。</translation>
-<translation id="1642854499667422595">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 上停用 Chrome 应用商店中处于未发布状态的扩展程序。
-此政策会忽略在开发者模式下安装的扩展程序、通过命令行安装的扩展程序，以及不是从 Chrome 应用商店安装（例如自托管）的其他扩展程序。
-
-如果此政策设为 <ph name="ALLOW_UNPUBLISHED" /> (0) 或未设置，系统将允许使用处于未发布状态的扩展程序。
-如果此政策设为 <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1)，系统将停用 Chrome 应用商店中处于未发布状态的扩展程序，但由企业政策强制安装或版本固定的扩展程序除外（参见备注）。
-如果此政策设为 <ph name="DISABLE_UNPUBLISHED" /> (2)，系统将停用 Chrome 应用商店中处于未发布状态的扩展程序，即使是由企业政策强制安装或版本固定的扩展程序也不例外（参见备注）。
-
-备注：是否强制安装和是否固定版本是使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 和 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 政策配置的。</translation>
 <translation id="1645793986494086629">架构：</translation>
 <translation id="1647558381546345298">通过设置此政策，您可以配置 <ph name="PRODUCT_NAME" /> 在磁盘上存储缓存媒体文件时使用的缓存大小；无论用户是否指定了 --media-cache-size 标记，Google Chrome 都会使用您在此政策中设定的缓存大小。此政策所指定的值并非硬性限值，而是针对缓存系统提出的建议值。任何低于几兆字节的值都会被向上舍入。
 
@@ -1631,7 +1623,6 @@
 
        如果您未设置此政策，用电高峰期切换电源功能会保持关闭状态。</translation>
 <translation id="2502467045153796624">版本降级行为</translation>
-<translation id="2505101658854883014">停用处于未发布状态的扩展程序，包括强制安装或版本固定的扩展程序</translation>
 <translation id="250670737672448119">启用“插入符号突出显示”无障碍功能。
 
           此功能负责在修改内容时突出显示插入符号周围的区域。
@@ -8632,7 +8623,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       此政策只是一项暂时性措施，会从 <ph name="PRODUCT_NAME" /> 的未来版本中移除。移除此政策后，<ph name="PRODUCT_NAME" /> 将始终都能查询其他 DNS 类型。</translation>
 <translation id="9167719789236691545">在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中停用 Google 云端硬盘</translation>
-<translation id="9169161075831670233">停用处于未发布状态的扩展程序，但强制安装或版本固定的扩展程序除外</translation>
 <translation id="9172911925443428317">不允许显示弹出式提醒“App Store 评分”</translation>
 <translation id="9180108183162961002">允许通过浏览器访客模式登录</translation>
 <translation id="9185963199234034321">为登录屏幕启用高对比度模式，并允许用户暂时停用它</translation>

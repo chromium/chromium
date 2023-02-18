@@ -101,6 +101,7 @@
 <translation id="1608337082864370066">Пошук скапіраванага відарыса</translation>
 <translation id="1612730193129642006">Паказаць сетку ўкладак</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1626771852476987600">Ужытых раней пароляў: <ph name="COUNT" /></translation>
 <translation id="1641113438599504367">Бяспечны прагляд</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1650222530560417226">Каб пачаць збор журналаў кансолі JavaScript і памылак з усіх укладак, націсніце кнопку "Пачаць вядзенне журнала". Журналы будуць збірацца (і захоўвацца толькі ў памяці), пакуль гэта старонка не будзе закрыта або пакуль вы не націснеце "Спыніць вядзенне журнала".</translation>
@@ -193,6 +194,7 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} захаваны адрас паказваецца над клавіятурай.}one{{count} захаваны адрас паказваецца над клавіятурай.}few{{count} захаваныя адрасы паказваюцца над клавіятурай.}many{{count} захаваных адрасоў паказваюцца над клавіятурай.}other{{count} захаванага адраса паказваюцца над клавіятурай.}}</translation>
 <translation id="2421004566762153674">Блакіроўка старонніх файлаў cookie</translation>
 <translation id="2421044535038393232">Працягнуць рэдагаванне</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="2434405374328098816">Вы ўжо захавалі пароль для карыстальніка <ph name="USERNAME" /> на вэб-сайце <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
 <translation id="2451654228769116489">Замацаваць укладку</translation>
@@ -336,6 +338,7 @@
 <translation id="345565170154308620">Кіраваць паролямі...</translation>
 <translation id="3469166899695866866">Спыніць спампоўку?</translation>
 <translation id="3470502288861289375">Ідзе капіраванне...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{для {COUNT} сайта або праграмы}one{для {COUNT} сайта або праграмы}few{для {COUNT} сайтаў або праграм}many{для {COUNT} сайтаў або праграм}other{для {COUNT} сайта або праграмы}}</translation>
 <translation id="3474624961160222204">Працягнуць як <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Месяц заканчэння дзеяння</translation>
 <translation id="3482959374254649722">Ідзе сінхранізацыя ўкладак...</translation>
@@ -382,6 +385,7 @@
 <translation id="3818293389945649617">Знайсці наступнае супадзенне</translation>
 <translation id="3819183753496523827">Вы па-за сеткай. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="3835964409414434850">Перайсці на наступную ўкладку</translation>
+<translation id="3838691874161539578">Праверце захаваныя паролі, каб абараніць уліковы запіс і павысіць сваю бяспеку ў інтэрнэце</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851938967634752633">Паролі для вэб-сайтаў <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і яшчэ <ph name="NUMBER_OF_ACCOUNTS" /> будуць выдалены. Вашы ўліковыя запісы захаваюцца.</translation>
 <translation id="3858860766373142691">Назва</translation>
@@ -435,7 +439,9 @@
 <translation id="4237377247299956313">Націсніце <ph name="BEGIN_BOLD" />Стандартны браўзер<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Увядз. фразу-пароль</translation>
 <translation id="4249955472157341256">Сартаваць па апошняй даце</translation>
+<translation id="4253168017788158739">Нататка</translation>
 <translation id="4263576668337963058">Паказаць даступныя дзеянні са старонкай</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{Вы адхілілі {COUNT} папярэджанне}one{Вы адхілілі {COUNT} папярэджанне}few{Вы адхілілі {COUNT} папярэджанні}many{Вы адхілілі {COUNT} папярэджанняў}other{Вы адхілілі {COUNT} папярэджання}}</translation>
 <translation id="4272631900155121838">Каб сканіраваць QR-код, уключыце камеру ў наладах</translation>
 <translation id="4277990410970811858">Бяспечны прагляд</translation>
 <translation id="4281844954008187215">Умовы выкарыстання</translation>
@@ -482,6 +488,7 @@
 <translation id="4630540211544979320">Перакладаць вэб-старонкі</translation>
 <translation id="4634124774493850572">Выкарыстаць пароль</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
+<translation id="4642472735733036929">Адсочванне цаны прыпынена</translation>
 <translation id="4650125387981512669">Працягнуць як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google.</translation>
 <translation id="4659667755519643272">Перайсці да пераключальніка ўкладак</translation>
@@ -555,6 +562,7 @@
 <translation id="5118764316110575523">Выключана</translation>
 <translation id="5119391094379141756">Выберыце Chrome.</translation>
 <translation id="5132942445612118989">Сінхранізуйце паролі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадзейны пароль}one{{COUNT} ненадзейны пароль}few{{COUNT} ненадзейныя паролі}many{{COUNT} ненадзейных пароляў}other{{COUNT} ненадзейнага пароля}}</translation>
 <translation id="5149188072385105201">Дадаць пароль...</translation>
 <translation id="5150492518600715772">Адправіць на прыладу</translation>
 <translation id="5168414296986405587">Браўзер, створаны для iPadOS</translation>
@@ -638,6 +646,7 @@
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5812974770859303494">Дадаць у...</translation>
 <translation id="581659025233126501">Уключыць сінхранізацыю</translation>
+<translation id="5817176759448082654">Праверка пароляў</translation>
 <translation id="5819208479324046259">Браўзерам кіруе <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Захоўвайце паролі, спосабы аплаты і адрасы, каб пазней выкарыстоўваць іх для аўтазапаўнення ў Chrome.</translation>
 <translation id="5834415013958049700">Пошук скапіраванага відарыса праз Аб'ектыў</translation>
@@ -838,6 +847,7 @@
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Нядаўнія ўкладкі</translation>
 <translation id="7006788746334555276">Налады змесціва</translation>
+<translation id="7014087399239955356">Ідзе праверка пароляў…</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7062545763355031412">Прыняць і пераключыцца на іншы ўліковы запіс</translation>
@@ -893,6 +903,7 @@
 <translation id="7514365320538308">Спампаваць</translation>
 <translation id="7531345132340165516">Бягучы сайт</translation>
 <translation id="7537586195939242955">Зараз усталяваць пароль у Passbook не ўдалося.</translation>
+<translation id="754655535278952384">Праверана <ph name="TIME" /></translation>
 <translation id="7553234618121028547">Каб выключыць аўтазапаўненне, выберыце <ph name="BEGIN_LINK" />Settings ("Налады")<ph name="END_LINK" /> і перайдзіце ў раздзел Password Options ("Параметры пароляў").</translation>
 <translation id="7554645225856321710">Закрыць усе</translation>
 <translation id="7554791636758816595">Новая ўкладка</translation>

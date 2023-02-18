@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">พบ <ph name="NUM" /> แท็บสำหรับ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">กำหนดความถี่ในการอัปเดตหน้าจอ</translation>
+<translation id="1060570945511946595">จัดการตั๋ว</translation>
 <translation id="1061130374843955397">ยินดีต้อนรับสู่ <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">สร้างคิวอาร์โค้ดสำหรับลิงก์นี้</translation>
 <translation id="1061904396131502319">เกือบถึงเวลาพักแล้ว</translation>
@@ -1114,6 +1115,7 @@
 <translation id="1975841812214822307">นำออก...</translation>
 <translation id="1976150099241323601">ลงชื่อเข้าใช้อุปกรณ์รักษาความปลอดภัย</translation>
 <translation id="1977965994116744507">นำโทรศัพท์เข้ามาใกล้ๆ เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
+<translation id="1978666928180318515">นำ Bruschetta ออก</translation>
 <translation id="1979095679518582070">การปิดฟีเจอร์นี้จะไม่ส่งผลต่อความสามารถของอุปกรณ์ในการส่งข้อมูลที่จำเป็นต่อบริการสำคัญ เช่น การอัปเดตระบบและการรักษาความปลอดภัย</translation>
 <translation id="1979280758666859181">คุณกำลังเปลี่ยนเป็นช่องที่มี <ph name="PRODUCT_NAME" /> เวอร์ชันเก่ากว่า การเปลี่ยนช่องจะถูกนำมาใช้เมื่อเวอร์ชันของช่องตรงกับเวอร์ชันที่ติดตั้งอยู่ในอุปกรณ์ของคุณในปัจจุบัน</translation>
 <translation id="197989455406964291">KDC ไม่รองรับการเข้ารหัสประเภทนี้</translation>
@@ -1918,6 +1920,7 @@
 <translation id="2672142220933875349">ไฟล์ crx ใช้ไม่ได้ การคลายการแพ็กล้มเหลว</translation>
 <translation id="2673135533890720193">อ่านประวัติการเข้าชม</translation>
 <translation id="2674764818721168631">ปิด</translation>
+<translation id="2675570801872027281">เกิดข้อผิดพลาดในการนำ Bruschetta ออก โปรดลองอีกครั้ง</translation>
 <translation id="2676492189600898281">แสดงความคิดเห็นเกี่ยวกับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="2678063897982469759">เปิดการใช้งานอีกครั้ง</translation>
 <translation id="2678100101831051676">แคสต์ไม่ได้</translation>
@@ -2916,6 +2919,7 @@
 <translation id="3593965109698325041">ข้อจำกัดของชื่อใบรับรอง</translation>
 <translation id="3596012367874587041">การตั้งค่าแอป</translation>
 <translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
+<translation id="3598010454707842106">คลิก "ปรับแต่ง Chrome"</translation>
 <translation id="3599221874935822507">ยกขึ้น</translation>
 <translation id="3600051066689725006">ข้อมูลคำขอเว็บ</translation>
 <translation id="360180734785106144">นำเสนอฟีเจอร์ใหม่ๆ เมื่อพร้อมให้บริการ</translation>
@@ -3913,6 +3917,7 @@
 <translation id="4495419450179050807">ไม่แสดงในหน้านี้อีก</translation>
 <translation id="4497145443434063861">PC และ Chromecast ใช้เครือข่าย Wi-Fi ต่างกัน (เช่น 2.4 GHz กับ 5 GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ขัดข้อง</translation>
+<translation id="4500647907053779331">แปลรายการที่เลือกเป็นภาษา<ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">ไอคอนเครื่องหมายอัศเจรีย์</translation>
 <translation id="4501530680793980440">ยืนยันการนำออก</translation>
 <translation id="4502423230170890588">นำออกจากอุปกรณ์นี้</translation>
@@ -3932,7 +3937,6 @@
 <translation id="4513872120116766993">การเขียนแบบช่วยคาดเดา</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="451407183922382411">ขับเคลื่อนโดย <ph name="COMPANY_NAME" /></translation>
-<translation id="451515744433878153">นำออก</translation>
 <translation id="4515872537870654449">ติดต่อ Dell เพื่อส่งซ่อม แท่นชาร์จจะปิดหากพัดลมไม่ทำงาน</translation>
 <translation id="4518840066030486079">รูปแบบโหมดแป้น Shift</translation>
 <translation id="4519331665958994620">เว็บไซต์ขอใช้กล้องของคุณได้</translation>
@@ -5728,6 +5732,7 @@
 <translation id="617213288191670920">ไม่ได้เพิ่มภาษา</translation>
 <translation id="6173623053897475761">พิมพ์ PIN อีกครั้ง</translation>
 <translation id="6175314957787328458">โดเมน GUID ของ Microsoft</translation>
+<translation id="6177412385419165772">กำลังนำออก...</translation>
 <translation id="6178664161104547336">เลือกใบรับรอง</translation>
 <translation id="6178682841350631965">อัปเดตข้อมูลการลงชื่อเข้าใช้แล้ว</translation>
 <translation id="6180510783007738939">เครื่องมือขีดเส้น</translation>
@@ -6204,6 +6209,7 @@
 <translation id="6619801788773578757">เพิ่มแอปพลิเคชันคีออสก์</translation>
 <translation id="6619990499523117484">ยืนยัน PIN</translation>
 <translation id="6620254580880484313">ชื่อคอนเทนเนอร์</translation>
+<translation id="6620927550847360014">นำ Bruschetta ออกจาก <ph name="DEVICE_TYPE" /> ไหม</translation>
 <translation id="6621391692573306628">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
 <translation id="6622980291894852883">บล็อกการแสดงภาพ</translation>
 <translation id="6624036901798307345">ในโหมดแท็บเล็ต ให้แตะปุ่มแถบเครื่องมือตัวนับแท็บเพื่อเปิดแนวแท็บใหม่ซึ่งแสดงภาพขนาดย่อของแต่ละแท็บ</translation>
@@ -6421,6 +6427,7 @@
 <translation id="6818547713623251698">ดูรูปภาพ สื่อ การแจ้งเตือน และแอปในโทรศัพท์</translation>
 <translation id="6818802132960437751">ระบบป้องกันไวรัสในตัว</translation>
 <translation id="6818920801736417483">บันทึกรหัสผ่านไหม</translation>
+<translation id="6820079682647046800">การตรวจสอบสิทธิ์ Kerberos ไม่สำเร็จ</translation>
 <translation id="6823174134746916417">การแตะเพื่อคลิกทัชแพด</translation>
 <translation id="6824564591481349393">คัดลอก&amp;ที่อยู่อีเมล</translation>
 <translation id="6824584962142919697">&amp;ตรวจสอบองค์ประกอบ</translation>
@@ -6575,6 +6582,7 @@
 <translation id="6955698182324067397">คุณกำลังเปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่องของ Chrome OS ซึ่งจะตั้งค่า sshd daemon และเปิดใช้การเปิดเครื่องจากไดรฟ์ USB</translation>
 <translation id="6955893174999506273">กำหนดสวิตช์เพิ่มอีก 1 อัน</translation>
 <translation id="6957044667612803194">คีย์ความปลอดภัยนี้ไม่รองรับ PIN</translation>
+<translation id="6960133692707095572">เข้าชมโดยไม่ต้องมีตั๋ว</translation>
 <translation id="6960507406838246615">ต้องอัปเดต Linux</translation>
 <translation id="6960648667961844909">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />ไม่ได้ ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google จนกว่าจะดาวน์โหลดเสร็จ</translation>
 <translation id="696103774840402661">ระบบได้ลบไฟล์ทั้งหมดและข้อมูลในเครื่องสำหรับผู้ใช้ทุกคนใน <ph name="DEVICE_TYPE" /> ออกแล้วอย่างถาวร</translation>
@@ -8037,6 +8045,7 @@
 <translation id="8272443605911821513">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "เครื่องมือเพิ่มเติม"</translation>
 <translation id="8272786333453048167">อนุญาตอีกครั้ง</translation>
 <translation id="8273905181216423293">ดาวน์โหลดเลย</translation>
+<translation id="827488840488530039">หน้าเว็บที่คุณพยายามเข้าชมไม่สามารถยืนยันตั๋ว Kerberos ของคุณได้</translation>
 <translation id="8274921654076766238">แว่นขยายตามโฟกัสของแป้นพิมพ์</translation>
 <translation id="8274924778568117936">อย่าปิดเครื่องหรือปิดฝา <ph name="DEVICE_TYPE" /> จนกว่าการอัปเดตจะเสร็จสิ้น <ph name="DEVICE_TYPE" /> จะรีสตาร์ทหลังติดตั้งเสร็จแล้ว</translation>
 <translation id="8275038454117074363">การนำเข้า</translation>

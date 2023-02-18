@@ -1442,6 +1442,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2251809247798634662">Nytt inkognitofönster</translation>
 <translation id="2252017960592955005">Skydd mot smygtittare (beta)</translation>
 <translation id="225240747099314620">Tillåt identifierare för skyddat innehåll (datorn kan behöva startas om)</translation>
+<translation id="2253318212986772520">Det gick inte att hämta PPD-filen för <ph name="PRINTER_NAME" />.</translation>
 <translation id="2255077166240162850">Enheten är låst till en annan domän eller ett annat läge.</translation>
 <translation id="2255317897038918278">Microsofts tidsstämpling</translation>
 <translation id="2256115617011615191">Starta om nu</translation>
@@ -2913,6 +2914,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3582057310199111521">Har angetts på en bedräglig webbplats och upptäckts i ett dataintrång</translation>
 <translation id="3582299299336701326">Gör ljusa skärmar mörka och mörka skärmar ljusa. Tryck på Sök + Ctrl + H för att aktivera och inaktivera inverterade färger.</translation>
 <translation id="3584169441612580296">Läsa och ändra foton, musik och andra media från datorn</translation>
+<translation id="3584527007414070635">Återuppta sökningen efter <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Appen <ph name="APPLICATION_NAME" /> kräver att OneDrive är tillgängligt.</translation>
 <translation id="3586806079541226322">Det går inte att öppna den här filen</translation>
 <translation id="3587438013689771191">Läs mer om <ph name="SUBPAGE_TITLE" /></translation>
@@ -3871,6 +3873,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4443536555189480885">&amp;Hjälp</translation>
 <translation id="4444304522807523469">Åtkomst till dokumentskannrar som är anslutna via USB eller i det lokala nätverket</translation>
 <translation id="4444512841222467874">Om du inte frigör utrymme kan användare och data tas bort automatiskt.</translation>
+<translation id="4445446646109808714">Licensavtal för slutanvändare: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Speglat</translation>
 <translation id="4448914100439890108">Dölj lösenord för <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Ditt användarnamn tillhör din organisations jobbkonto. Börja med att verifiera domänägare i administratörskonsolen om du vill registrera enheter på kontot. Du behöver ha administratörsbehörighet på kontot för verifieringen.</translation>
@@ -3943,7 +3946,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4513872120116766993">Skrivförslag</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Tekniken kommer från <ph name="COMPANY_NAME" /></translation>
-<translation id="451515744433878153">Ta bort</translation>
 <translation id="4515872537870654449">Kontakta Dell för service. Dockningsstationen stängs av om fläkten inte fungerar.</translation>
 <translation id="4518840066030486079">Format för skifttangentsläget</translation>
 <translation id="4519331665958994620">Webbplatser får begära åtkomst till kameran</translation>

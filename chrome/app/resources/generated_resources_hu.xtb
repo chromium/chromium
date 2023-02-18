@@ -379,6 +379,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1339009753652684748">Az „Ok Google” parancsszó kimondásával hozzáférhet Segédjéhez. Ha a „Be (javasolt)” beállítást választja ki, akkor az akkumulátor üzemidejének növelése érdekében Segédje csak akkor reagál, amikor az eszköz áramforrásra csatlakozik.</translation>
 <translation id="13392265090583506">Kisegítő lehetőségek</translation>
 <translation id="1340527397989195812">Az eszközön található médiafájlok biztonsági mentése a Fájlok alkalmazással.</translation>
+<translation id="1341701348342335220">Szép munka!</translation>
 <translation id="1341871421050612057">Nem lehet szinkronizálni a következővel: <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Engedély megadása a Linux-alkalmazásoknak az USB-eszközökhöz való hozzáférésre. A Linux nem jegyzi meg az USB-eszközt az eszköz eltávolítása után.</translation>
 <translation id="1343920184519992513">Ott folytathatja, ahol abbahagyta, és megnyithatja az oldalak egy adott készletét.</translation>
@@ -3638,6 +3639,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4232375817808480934">A Kerberos konfigurálása</translation>
 <translation id="4235965441080806197">Bejelentkezés megszakítása</translation>
 <translation id="4236163961381003811">További bővítmények felfedezése</translation>
+<translation id="4237282663517880406">Google Drive-javaslatok megjelenítése</translation>
 <translation id="4241182343707213132">Indítsa újra az eszközt a szervezet alkalmazásainak frissítéséhez</translation>
 <translation id="4242145785130247982">Több ügyféltanúsítvány sem támogatott</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
@@ -3944,7 +3946,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4513872120116766993">Prediktív írás</translation>
 <translation id="4513946894732546136">Visszajelzés</translation>
 <translation id="451407183922382411">A(z) <ph name="COMPANY_NAME" /> segítségével</translation>
-<translation id="451515744433878153">Eltávolítás</translation>
 <translation id="4515872537870654449">Szervizelés ügyében vegye fel a kapcsolatot a Dell ügyfélszolgálatával. A dokk leáll, ha a ventilátor nem működik.</translation>
 <translation id="4518840066030486079">Shift billentyűmód stílusa</translation>
 <translation id="4519331665958994620">A webhelyek hozzáférést kérhetnek a kamerához</translation>

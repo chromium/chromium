@@ -159,6 +159,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="21133533946938348">Pin tab</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
 <translation id="2122754583996902531">Your browser is managed. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">Turn on price alerts?</translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="214201757571129614">Sign in…</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
@@ -250,6 +251,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2797029671965852011">Show history</translation>
 <translation id="2800683595868705743">Leave Tab Switcher</translation>
 <translation id="2815198996063984598">2. Tap default browser app</translation>
+<translation id="2822917246944009066">Tab pinned</translation>
 <translation id="2830972654601096923">Manage Addresses…</translation>
 <translation id="2834399722155632105">3. Tap Password options</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -314,6 +316,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3240426699337459095">Link copied</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3272527697863656322">Cancel</translation>
@@ -336,6 +339,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Split View</translation>
 <translation id="345565170154308620">Manage passwords…</translation>
+<translation id="3464194322481586217">Couldn't track the price.</translation>
 <translation id="3469166899695866866">Stop download?</translation>
 <translation id="3470502288861289375">Copying...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
@@ -439,6 +443,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4237377247299956313">Tap <ph name="BEGIN_BOLD" />Default browser app<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Enter Passphrase</translation>
 <translation id="4249955472157341256">Sort by Latest</translation>
+<translation id="4253168017788158739">Note</translation>
 <translation id="4263576668337963058">Show available page actions</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{You dismissed {COUNT} warning}other{You dismissed {COUNT} warnings}}</translation>
 <translation id="4272631900155121838">To scan a QR code, enable the camera from settings</translation>
@@ -762,6 +767,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME" />. Enter i
 <translation id="6464397691496239022">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
 Sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
+<translation id="6476253015009698798">Price tracking isn't available for this page.</translation>
 <translation id="6476800141292307438">Translating the page to <ph name="LANGUAGE" />. Options available near bottom of the screen.</translation>
 <translation id="648164694371393720">Authentication error</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items deleted</translation>
@@ -813,6 +819,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6780034285637185932">Postcode</translation>
 <translation id="6781260999953472352">Turn on Sync?</translation>
 <translation id="6785453220513215166">Sending crash report...</translation>
+<translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="6797885426782475225">Voice Search</translation>
 <translation id="6801927553864092214">To browse privately, open an Incognito tab</translation>
 <translation id="6807889908376551050">Show All...</translation>
@@ -892,6 +899,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7438481509621345350">You'll now see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
+<translation id="7446583256109515732">Tab unpinned</translation>
 <translation id="7454057999980797137">State / County</translation>
 <translation id="7459628154744868585">Enhanced protection is on</translation>
 <translation id="746684838091935575">3. Select Chrome</translation>
@@ -1122,6 +1130,8 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9157836665414082580">Suppress dialogues</translation>
+<translation id="9162432979321511934">Turn on Auto-fill passwords</translation>
+<translation id="9165320910061267720">To get notifications of price drop alerts, you'll need to turn on notifications in your iOS settings.</translation>
 <translation id="9177438225260810839">Search open tabs</translation>
 <translation id="9188680907066685419">Sign out of managed account</translation>
 <translation id="9193147658040604536">Drag here to pin tab</translation>

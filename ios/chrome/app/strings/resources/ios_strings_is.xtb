@@ -439,6 +439,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4237377247299956313">Ýttu á <ph name="BEGIN_BOLD" />Sjálfgefið vafraforrit<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Sláðu inn aðgangsorð</translation>
 <translation id="4249955472157341256">Raða eftir nýjasta</translation>
+<translation id="4253168017788158739">Athugasemd</translation>
 <translation id="4263576668337963058">Sýna tiltækar aðgerðir fyrir síðu</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Þú hunsaðir {COUNT} viðvörun}one{Þú hunsaðir {COUNT} viðvörun}other{Þú hunsaðir {COUNT} viðvaranir}}</translation>
 <translation id="4272631900155121838">Til að skanna QR-kóða skaltu virkja myndavélina í stillingunum</translation>

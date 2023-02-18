@@ -101,6 +101,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1608337082864370066">Nach kopiertem Bild suchen</translation>
 <translation id="1612730193129642006">Tab-Raster anzeigen</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1650222530560417226">Tippe auf die Schaltfläche "Protokollierung starten", um künftig Protokolle und Fehler von allen Tabs der JavaScript-Konsole zu erheben. Protokolle werden erfasst und ausschließlich im Speicher aufbewahrt, bis die Seite geschlossen oder "Protokoll anhalten" angetippt wird.</translation>
@@ -193,6 +194,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2411749908844615428">{count,plural, =1{{count} gespeicherte Adresse oben auf der Tastatur verfügbar.}other{{count} gespeicherte Adressen oben auf der Tastatur verfügbar.}}</translation>
 <translation id="2421004566762153674">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2421044535038393232">Weiter bearbeiten</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
 <translation id="2434405374328098816">Du hast für „<ph name="USERNAME" />“ schon ein Passwort bei <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2451654228769116489">Tab anpinnen</translation>
@@ -336,6 +338,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="345565170154308620">Passwörter verwalten…</translation>
 <translation id="3469166899695866866">Download beenden?</translation>
 <translation id="3470502288861289375">Wird kopiert...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{für {COUNT} Website oder App}other{für {COUNT} Websites oder Apps}}</translation>
 <translation id="3474624961160222204">Als "<ph name="NAME" />" fortfahren</translation>
 <translation id="3478058380795961209">Ablaufmonat</translation>
 <translation id="3482959374254649722">Tabs werden synchronisiert...</translation>
@@ -382,6 +385,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3818293389945649617">Nächste Übereinstimmung suchen</translation>
 <translation id="3819183753496523827">Du bist offline. Prüfe die Internetverbindung und versuche es noch einmal.</translation>
 <translation id="3835964409414434850">Zum nächsten Tab</translation>
+<translation id="3838691874161539578">Du kannst deine gespeicherten Passwörter prüfen lassen, um die Sicherheit deines Kontos zu verbessern und beim Surfen besser geschützt zu sein</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3851938967634752633">Passwörter für <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> und <ph name="NUMBER_OF_ACCOUNTS" /> weitere werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="3858860766373142691">Name</translation>
@@ -435,7 +439,9 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4237377247299956313">Tippe auf <ph name="BEGIN_BOLD" />Standard-Browser-App<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Passphrase eingeben</translation>
 <translation id="4249955472157341256">Neueste zuerst</translation>
+<translation id="4253168017788158739">Notiz</translation>
 <translation id="4263576668337963058">Verfügbare Seitenaktionen anzeigen</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{Du hast {COUNT} Warnung geschlossen}other{Du hast {COUNT} Warnungen geschlossen}}</translation>
 <translation id="4272631900155121838">Um einen QR-Code zu scannen, aktiviere in den Einstellungen die Kamera</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
@@ -482,6 +488,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4630540211544979320">Seiten übersetzen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4642472735733036929">Preisbeobachtung gestoppt</translation>
 <translation id="4650125387981512669">Weiter als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Wenn du dich in deinem Google-Konto anmeldest, ist diese Funktion eingeschaltet.</translation>
 <translation id="4659667755519643272">Tab-Wechsler starten</translation>
@@ -555,6 +562,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5118764316110575523">Aus</translation>
 <translation id="5119391094379141756">Wähle Chrome aus</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
 <translation id="5149188072385105201">Passwort hinzufügen</translation>
 <translation id="5150492518600715772">An mein Gerät senden</translation>
 <translation id="5168414296986405587">Entwickelt für iPadOS</translation>
@@ -638,6 +646,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5812974770859303494">Hinzufügen zu…</translation>
 <translation id="581659025233126501">Synchronisierung aktivieren</translation>
+<translation id="5817176759448082654">Passwortcheck</translation>
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Du kannst Passwörter, Zahlungsmethoden und Adressen in Chrome speichern, um sie später automatisch ausfüllen zu lassen.</translation>
 <translation id="5834415013958049700">Aus Lens kopiertes Bild</translation>
@@ -838,6 +847,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
 <translation id="7006788746334555276">Inhaltseinstellungen</translation>
+<translation id="7014087399239955356">Passwörter werden geprüft…</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7062545763355031412">Akzeptieren und Konto wechseln</translation>
@@ -893,6 +903,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7531345132340165516">Aktuelle Website</translation>
 <translation id="7537586195939242955">Dein Pass kann derzeit nicht in Passbook installiert werden.</translation>
+<translation id="754655535278952384">Vor <ph name="TIME" /> geprüft</translation>
 <translation id="7553234618121028547">Öffne zum Deaktivieren <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> und gehe zu „Passwortoptionen“.</translation>
 <translation id="7554645225856321710">Alle schließen</translation>
 <translation id="7554791636758816595">Neuer Tab</translation>

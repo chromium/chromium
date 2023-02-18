@@ -439,6 +439,7 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ఆటోమేటిక్ బ్రౌజర్ యాప్<ph name="END_BOLD" />‌ను ట్యాప్ చేయండి</translation>
 <translation id="424315890655130736">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="4249955472157341256">ఇటీవలి లేబుల్ టెక్స్ట్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
+<translation id="4253168017788158739">గమనిక</translation>
 <translation id="4263576668337963058">పేజీ కోసం అందుబాటులో ఉన్న చర్యలను చూపించు</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{మీరు {COUNT} హెచ్చరికను విస్మరించారు}other{మీరు {COUNT} హెచ్చరికలను విస్మరించారు}}</translation>
 <translation id="4272631900155121838">QR కోడ్‌ను స్కాన్ చేయడానికి, సెట్టింగ్‌ల్లో కెమెరాను ప్రారంభించండి</translation>
@@ -560,6 +561,7 @@
 <translation id="5118713593561876160">ఆసక్తులు</translation>
 <translation id="5118764316110575523">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="5119391094379141756">Chromeను ఎంచుకోండి</translation>
+<translation id="5121618895923301719">మీరు ఇప్పటికే ఈ ప్రోడక్ట్‌ను ట్రాక్ చేస్తున్నారు. ఈ పేజీ <ph name="BEGIN_LINK" />మొబైల్ బుక్‌మార్క్‌ల<ph name="END_LINK" />‌లో సేవ్ చేయబడింది.</translation>
 <translation id="5132942445612118989">అన్ని పరికరాల్లో మీ పాస్‌వర్డ్‌లు, హిస్టరీ, మరిన్నింటిని సింక్ చేయండి</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} బలహీనమైన పాస్‌వర్డ్}other{{COUNT} బలహీనమైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="5149188072385105201">పాస్‌వర్డ్‌ను జోడించండి...</translation>
@@ -590,6 +592,7 @@
 <translation id="5386314158584363703">మీరు ఫాలో అయ్యే సైట్‌లు మీకు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="5388358297987318779">చిత్రాన్ని తెరువు</translation>
 <translation id="5407969256130905701">మార్పులను విస్మరించు</translation>
+<translation id="5414763847370083940">ఏదైనా సైట్‌లో ధర తగ్గితే మీకు అలర్ట్ వస్తుంది.</translation>
 <translation id="5416022985862681400">గత 7 రోజులు</translation>
 <translation id="5423269318075950257">ధరను ట్రాక్ చేయండి</translation>
 <translation id="543338862236136125">పాస్‌వర్డ్‌ను ఎడిట్ చేయండి</translation>
@@ -1132,6 +1135,7 @@
 <translation id="952704832371081537">రద్దు చేయండి</translation>
 <translation id="953008885340860025">Chrome సైన్ అవుట్ చేయబడింది</translation>
 <translation id="959066944189734975">మీరు <ph name="CHANNEL_NAME" />ను ఫాలో అవుతున్నారు</translation>
+<translation id="973493300226275298">ఆన్‌లైన్ స్టోర్‌లలో ప్రోడక్ట్ ధరను ట్రాక్ చేయండి. ధర తగ్గినప్పుడు మీరు అలర్ట్‌లను పొందుతారు.</translation>
 <translation id="980712131080209571">కొత్త</translation>
 <translation id="981498610235328462">మీ సంస్థ మిమ్మల్ని కొన్ని ఖాతాలతో మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిస్తుంది. అనుమతించబడని ఖాతాలు దాచబడతాయి.</translation>
 <translation id="984509647832111802">సింక్ పని చేయడం లేదు.</translation>

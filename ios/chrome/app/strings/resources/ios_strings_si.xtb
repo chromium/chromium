@@ -101,6 +101,7 @@
 <translation id="1608337082864370066">ඔබ පිටපත් කළ රූපය සොයන්න</translation>
 <translation id="1612730193129642006">පටිති ජාලකය පෙන්වන්න</translation>
 <translation id="1620510694547887537">කැමරාව</translation>
+<translation id="1626771852476987600">යළි භාවිතා කළ මුරපද <ph name="COUNT" />ක්</translation>
 <translation id="1641113438599504367">ආරක්ෂිත බ්‍රවුස් කිරීම</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
 <translation id="1650222530560417226">සියලුම පටිතිවලින් අනාගත ජාවාස්ක්‍රිප්ට් කොන්සෝල ලොග සහ දෝෂ එකතු කිරීමට "ලොග් කිරීම පටන් ගන්න" බොත්තමට තට්ටු කරන්න. මෙම පිටුව වසන තෙක් හෝ "ලොග් කිරීම නවත්වන්න" තට්ටු කරන තෙක් ලොග් කිරීම් රැස් කරනු ලැබේ (සහ මතකය තුළ පමණක් ගබඩා කරනු ලැබේ).</translation>
@@ -193,6 +194,7 @@
 <translation id="2411749908844615428">{count,plural, =1{ඔබේ යතුරු පුවරුවට ඉහළින් {count} සුරැකි ලිපිනයක් ඇත.}one{ඔබේ යතුරු පුවරුවට ඉහළින් සුරැකි ලිපින {count}ක් ඇත.}other{ඔබේ යතුරු පුවරුවට ඉහළින් සුරැකි ලිපින {count}ක් ඇත.}}</translation>
 <translation id="2421004566762153674">තෙවන පාර්ශ්ව කුකී අවහිර කිරීම</translation>
 <translation id="2421044535038393232">සංස්කරණ කර ගෙන යන්න</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{අවදානමට පත් වූ {COUNT} මුරපදයක්}one{අවදානමට පත් වූ මුරපද {COUNT}ක්}other{අවදානමට පත් වූ මුරපද {COUNT}ක්}}</translation>
 <translation id="2434405374328098816">ඔබ දැනටමත් "<ph name="USERNAME" />" සඳහා මුරපදයක් <ph name="WEBSITE" /> හි සුරැක ඇත</translation>
 <translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
 <translation id="2451654228769116489">පටිත්ත අමුණන්න</translation>
@@ -336,6 +338,7 @@
 <translation id="345565170154308620">මුරපද කළමනා කරන්න...</translation>
 <translation id="3469166899695866866">බාගැනීම නවතන්න</translation>
 <translation id="3470502288861289375">පිටපත් කෙරෙමින්...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} අඩවියක් හෝ යෙදුමක් සඳහා}one{අඩවි සහ යෙදුම් {COUNT}ක් සඳහා}other{අඩවි සහ යෙදුම් {COUNT}ක් සඳහා}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> ලෙස කරගෙන යන්න</translation>
 <translation id="3478058380795961209">කල් ඉකුත්වන මාසය</translation>
 <translation id="3482959374254649722">ඔබගේ පටිති සමමුහුර්ත කරමින්...</translation>
@@ -382,6 +385,7 @@
 <translation id="3818293389945649617">මීළඟ සොයන්න</translation>
 <translation id="3819183753496523827">ඔබ නොබැඳිය. ඔබේ අන්තර්ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="3835964409414434850">මීළඟ පටිත්තට යන්න</translation>
+<translation id="3838691874161539578">ඔබේ ආරක්ෂාව ශක්තිමත් කිරීමට සහ සබැඳිව සුරක්ෂිතව සිටීමට ඔබේ සුරැකි මුරපද පරීක්ෂා කරන්න</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, සහ තව<ph name="NUMBER_OF_ACCOUNTS" />ත් සඳහා මුරපද මකනු ඇත. ඔබේ ගිණුම් මකා නොදමනු ඇත.</translation>
 <translation id="3858860766373142691">නම</translation>
@@ -435,7 +439,9 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />පෙරනිමි බ්‍රව්සර යෙදුම<ph name="END_BOLD" /> තට්ටු කරන්න</translation>
 <translation id="424315890655130736">මුර-වැකිකඩ ඇතුළත් කරන්න</translation>
 <translation id="4249955472157341256">නවතම අනුව පිළිවෙලට සකසන්න</translation>
+<translation id="4253168017788158739">සටහන</translation>
 <translation id="4263576668337963058">ලද හැකි පිටු ක්‍රියා පෙන්වන්න</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{ඔබ {COUNT} අනතුරු ඇඟවීමක් අස් කළා}one{ඔබ අනතුරු ඇඟවීම් {COUNT}ක් අස් කළා}other{ඔබ අනතුරු ඇඟවීම් {COUNT}ක් අස් කළා}}</translation>
 <translation id="4272631900155121838">QR කේතය ස්කෑන් කිරීමට සැකසීම් වෙතින් කැමරාව සබල කරන්න</translation>
 <translation id="4277990410970811858">ආරක්ෂිත බ්‍රවුස් කිරීම</translation>
 <translation id="4281844954008187215">සේවා කොන්දේසි</translation>
@@ -482,6 +488,7 @@
 <translation id="4630540211544979320">පිටු පරිවර්තන කරන්න</translation>
 <translation id="4634124774493850572">මුරපදය භාවිත කරන්න</translation>
 <translation id="4636930964841734540">තතු</translation>
+<translation id="4642472735733036929">මිල හඹා යෑම නතර විය</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ලෙස කරගෙන යන්න</translation>
 <translation id="4659126640776004816">ඔබ ඔබේ Google ගිණුමට පුරන විට, මෙම විශේෂාංගය සක්‍රීය කෙරේ.</translation>
 <translation id="4659667755519643272">පටිති මාරුකරවනය වෙත ඇතුළත් වන්න</translation>
@@ -555,6 +562,7 @@
 <translation id="5118764316110575523">අක්‍රිය</translation>
 <translation id="5119391094379141756">Chrome තෝරන්න</translation>
 <translation id="5132942445612118989">ඔබේ මුරපද, ඉතිහාසය සහ තවත් දෑ සියලුම උපාංගවල සමමුහු කරන්න</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} දුර්වල මුරපදයක්}one{දුර්වල මුරපද {COUNT}ක්}other{දුර්වල මුරපද {COUNT}ක්}}</translation>
 <translation id="5149188072385105201">මුරපදය එක් කරන්න...</translation>
 <translation id="5150492518600715772">ඔබේ උපාංගය වෙත යවන්න</translation>
 <translation id="5168414296986405587">iPadOS සඳහා තනා ඇත</translation>
@@ -638,6 +646,7 @@
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5812974770859303494">වෙත එක් කරන්න...</translation>
 <translation id="581659025233126501">සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න</translation>
+<translation id="5817176759448082654">මුරපද පරීක්ෂාව</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">පසුව ස්වයංක්‍රීයව පිරවීම සඳහා Chrome සඳහා මුරපද, ගෙවීම් ක්‍රම සහ ලිපින සුරකින්න.</translation>
 <translation id="5834415013958049700">ඔබ පිටපත් කළ Lens රූපය</translation>
@@ -838,6 +847,7 @@
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">මෑතකාලීන ටැබ</translation>
 <translation id="7006788746334555276">අන්තර්ගත සැකසුම්</translation>
+<translation id="7014087399239955356">මුරපද පරීක්ෂා කරමින්...</translation>
 <translation id="7029809446516969842">මුරපද</translation>
 <translation id="7053983685419859001">අවහිර කරන්න</translation>
 <translation id="7062545763355031412">පිළිගන්න සහ ගිණුම් මාරු කරන්න</translation>
@@ -893,6 +903,7 @@
 <translation id="7514365320538308">බාගන්න</translation>
 <translation id="7531345132340165516">වත්මන් අඩවිය</translation>
 <translation id="7537586195939242955">කනගාටුයි, ඔබේ අවසර පත මේ අවස්ථාවේදී අවසර පොත වෙතට ස්ථාපනය කළ නොහැකිය.</translation>
+<translation id="754655535278952384"><ph name="TIME" /> පරීක්ෂා කර ඇත</translation>
 <translation id="7553234618121028547">ක්‍රියාවිරහිත කිරීම සඳහා, <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> විවෘත කර මුරපද විකල්ප වෙත යන්න.</translation>
 <translation id="7554645225856321710">සියල්ල වසන්න</translation>
 <translation id="7554791636758816595">නව ටැබය</translation>

@@ -704,16 +704,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces la política, se habilitarán todas las funciones de <ph name="PRODUCT_OS_NAME" /> de forma predeterminada, y el usuario podrá usar cualquiera de ellas.
 
       Nota: Por el momento, la función de Análisis está inhabilitada de forma predeterminada mediante una marca de función. Si el usuario habilita la función mediante la marca de función, se podrá inhabilitar a través de la política.</translation>
-<translation id="1642854499667422595">Si habilitas esta política, las extensiones que no estén publicadas en Chrome Web
-Store se inhabilitarán en <ph name="PRODUCT_NAME" />.
-Esta política ignorará las extensiones instaladas en el modo de desarrollador, con una línea de comandos y otras que no se instalen desde Chrome Web Store (p. ej., autohosting).
-
-Si estableces la política como <ph name="ALLOW_UNPUBLISHED" /> (0) o no la estableces, se permitirán las extensiones no publicadas.
-Si estableces la política como <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), se inhabilitarán las extensiones no publicadas de Chrome Web Store, salvo que la extensión esté instalada de manera automática o esté fijada a la versión según la política empresarial (consulta la nota).
-Si estableces la política como <ph name="DISABLE_UNPUBLISHED" /> (2), se inhabilitarán las extensiones no publicadas de Chrome Web Store, incluso las que estén instaladas de manera automática o fijadas a la versión según la política empresarial (consulta la nota).
-
-Nota: La instalación automática y la fijación a la versión se configuran con las políticas <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> y
-<ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
 <translation id="1647558381546345298">Si estableces la política, se configurará el tamaño del almacenamiento en caché que use <ph name="PRODUCT_NAME" /> para guardar en el disco los archivos multimedia almacenados en caché, independientemente de que los usuarios hayan especificado o no la marca --media-cache-size. El valor especificado en esta política no establece un límite estricto, sino una sugerencia para el sistema de almacenamiento en caché. Se podrían redondear hacia arriba los valores por debajo de un gigabyte según las necesidades del navegador.
 
@@ -1658,7 +1648,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
        Si no estableces la política, se mantendrá desactivada la carga fuera del horario de mayor consumo.</translation>
 <translation id="2502467045153796624">Comportamiento del cambio a una versión inferior del canal</translation>
-<translation id="2505101658854883014">Inhabilitar las extensiones no publicadas, incluidas las instaladas de manera automática o fijadas a la versión</translation>
 <translation id="250670737672448119">Habilita la función de accesibilidad de resaltar el signo de intercalación.
 
           Esta función resalta el área que rodea al cursor de texto mientras se está editando texto.
@@ -8868,7 +8857,6 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Esta política es una medida temporal y se eliminará en las futuras versiones de <ph name="PRODUCT_NAME" />. Después de que se elimine la política, <ph name="PRODUCT_NAME" /> podrá seguir haciendo consultas sobre los tipos de DNS adicionales.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9169161075831670233">Inhabilitar las extensiones no publicadas, excepto las que se instalaron de manera automática o las que están fijadas a la versión</translation>
 <translation id="9172911925443428317">No permitir que se muestre la promoción para calificar en la App Store</translation>
 <translation id="9180108183162961002">Permitir los accesos con la navegación como invitado</translation>
 <translation id="9185963199234034321">Habilitar el contraste alto en la pantalla de acceso y permitir que el usuario lo inhabilite temporalmente</translation>

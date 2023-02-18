@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1209796539517632982">เซิร์ฟเวอร์ชื่ออัตโนมัติ</translation>
 <translation id="1210831758834677569">ลาว</translation>
+<translation id="1221555006497674479">มีพื้นที่เก็บข้อมูลน้อย โดยเหลือ <ph name="REMAINING_PERCENTAGE" />% จากพื้นที่เก็บข้อมูลของไดรฟ์ที่แชร์ <ph name="TOTAL_SPACE" /></translation>
 <translation id="1243314992276662751">อัปโหลด</translation>
 <translation id="1249250836236328755">ประเภท</translation>
 <translation id="1254593899333212300">เชื่อมต่ออินเทอร์เน็ตโดยตรง</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">พินอินภาษาจีน</translation>
 <translation id="1646019627374511909">กำลังทำให้ไฟล์ <ph name="NUMBER_OF_ITEMS" /> ไฟล์ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="164969095109328410">อุปกรณ์ Chrome</translation>
+<translation id="1661207570040737402">คุณใช้พื้นที่เก็บข้อมูลใน Google Workspace ของไดรฟ์ที่แชร์หมดแล้ว</translation>
 <translation id="1661867754829461514">ไม่พบ PIN</translation>
 <translation id="166439687370499867">ไม่อนุญาตให้เปลี่ยนการกำหนดค่าเครือข่ายที่ใช้ร่วมกัน</translation>
 <translation id="1665611772925418501">ไม่สามารถแก้ไขไฟล์</translation>

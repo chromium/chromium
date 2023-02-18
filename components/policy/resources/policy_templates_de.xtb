@@ -698,14 +698,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Ist die Richtlinie nicht konfiguriert, sind alle <ph name="PRODUCT_OS_NAME" />-Funktionen standardmäßig aktiviert und können vom Nutzer verwendet werden.
 
       Hinweis: Die Scanfunktion ist derzeit über eine Funktions-Flag standardmäßig deaktiviert. Auch wenn der Nutzer die Funktion über die Funktions-Flag aktiviert, kann sie aufgrund dieser Richtlinie deaktiviert bleiben.</translation>
-<translation id="1642854499667422595">Wenn diese Richtlinie aktiviert ist, werden Erweiterungen, die nicht im Chrome Web Store veröffentlicht sind, für <ph name="PRODUCT_NAME" /> deaktiviert.
-Diese Richtlinie ignoriert im Entwicklermodus oder über die Befehlszeile installierte Erweiterungen sowie andere Erweiterungen, die nicht über den Chrome Web Store installiert wurden (z. B. Selbsthosting).
-
-Wenn die Richtlinie auf „<ph name="ALLOW_UNPUBLISHED" />“ (0) gesetzt oder nicht konfiguriert ist, sind nicht veröffentlichte Erweiterungen zulässig.
-Ist die Richtlinie auf „<ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" />“ (1) gesetzt, werden Erweiterungen deaktiviert, die nicht im Chrome Web Store veröffentlicht sind. Dies gilt jedoch nicht, wenn aufgrund einer Unternehmensrichtlinie die Installation der Erweiterung erzwungen wird oder die Erweiterung an eine bestimmte Version angepinnt ist (siehe Hinweis).
-Ist die Richtlinie auf „<ph name="DISABLE_UNPUBLISHED" />“ (2) gesetzt, werden Erweiterungen deaktiviert, die im Chrome Web Store nicht veröffentlicht sind, auch wenn aufgrund einer Unternehmensrichtlinie die Installation der Erweiterung erzwungen wird oder die Erweiterung an eine bestimmte Version angepinnt ist (siehe Hinweis).
-
-Hinweis: Die erzwungene Installation und das Anpinnen an Versionen werden mit den Richtlinien „<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />“ und „<ph name="EXTENSION_SETTINGS_POLICY_NAME" />“ konfiguriert.</translation>
 <translation id="1645793986494086629">Schema:</translation>
 <translation id="1647558381546345298">Wenn du diese Richtlinie festlegst, wird die Cache-Größe konfiguriert, die <ph name="PRODUCT_NAME" /> zum Speichern von Mediendateien im Cache auf dem Datenträger verwendet, und zwar unabhängig davon, ob der Nutzer den Parameter "--media-cache-size" angegeben hat oder nicht. Der in dieser Richtlinie angegebene Wert ist keine feste Grenze, sondern ein Richtwert für das Caching-System. Werte, die kleiner als einige Megabyte sind, werden aufgerundet.
 
@@ -1635,7 +1627,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
        Wenn die Richtlinie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen immer deaktiviert.</translation>
 <translation id="2502467045153796624">Verhalten zum Versionsdowngrade</translation>
-<translation id="2505101658854883014">Nicht veröffentlichte Erweiterungen deaktivieren, einschließlich solcher mit erzwungener Installation oder solcher, die an eine bestimmte Version angepinnt sind</translation>
 <translation id="250670737672448119">Mit dieser Richtlinie wird die Bedienungshilfe "Textcursor hervorheben" aktiviert.
 
           Dabei wird der Bereich um den Textcursor beim Bearbeiten hervorgehoben.
@@ -8698,7 +8689,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 
       Diese Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt. Nachdem sie entfernt wurde, kann <ph name="PRODUCT_NAME" /> zusätzliche DNS-Typen immer abfragen.</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
-<translation id="9169161075831670233">Nicht veröffentlichte Erweiterungen deaktivieren, mit Ausnahme von solchen mit erzwungener Installation oder solchen, die an eine bestimmte Version angepinnt sind</translation>
 <translation id="9172911925443428317">Werbung für App Store-Bewertungen nicht zulassen</translation>
 <translation id="9180108183162961002">Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="9185963199234034321">Hohen Kontrast auf dem Anmeldebildschirm aktivieren und dem Nutzer erlauben, die Funktion vorübergehend zu deaktivieren</translation>

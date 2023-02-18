@@ -439,6 +439,7 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ডিফ’ল্ট ব্ৰাউজাৰ এপ<ph name="END_BOLD" />ত টিপক</translation>
 <translation id="424315890655130736">পাছফ্ৰেজ লিখক</translation>
 <translation id="4249955472157341256">শেহতীয়া অনুসৰি সজাওক</translation>
+<translation id="4253168017788158739">টোকা</translation>
 <translation id="4263576668337963058">উপলব্ধ পৃষ্ঠাৰ কার্যসমূহ দেখুৱাওক</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{আপুনি {COUNT} টা সকীয়নি অগ্ৰাহ্য কৰিছে}one{আপুনি {COUNT} টা সকীয়নি অগ্ৰাহ্য কৰিছে}other{আপুনি {COUNT} টা সকীয়নি অগ্ৰাহ্য কৰিছে}}</translation>
 <translation id="4272631900155121838">কোনো QR ক'ড স্কেন কৰিবলৈ ছেটিংত কেমেৰা সক্ষম কৰক</translation>
@@ -560,6 +561,7 @@
 <translation id="5118713593561876160">আগ্ৰহ</translation>
 <translation id="5118764316110575523">অফ আছে</translation>
 <translation id="5119391094379141756">Chrome বাছনি কৰক</translation>
+<translation id="5121618895923301719">আপুনি ইতিমধ্যে এই প্ৰ’ডাক্টটো ট্ৰেক কৰি আছে। এই পৃষ্ঠাখন <ph name="BEGIN_LINK" />ম’বাইল বুকমাৰ্ক<ph name="END_LINK" />ত ছেভ কৰা হৈছে।</translation>
 <translation id="5132942445612118989">আপোনাৰ পাছৱর্ড, ইতিহাস আৰু অধিক সকলো ডিভাইচতে ছিংক কৰক</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} টা অবিশ্বস্ত পাছৱৰ্ড}one{{COUNT} টা অবিশ্বস্ত পাছৱৰ্ড}other{{COUNT} টা অবিশ্বস্ত পাছৱৰ্ড}}</translation>
 <translation id="5149188072385105201">পাছৱৰ্ড যোগ দিয়ক...</translation>
@@ -590,6 +592,7 @@
 <translation id="5386314158584363703">আপুনি ইয়াত আপুনি ফ'ল' কৰা ছাইটসমূহ বিচাৰি পাব</translation>
 <translation id="5388358297987318779">প্ৰতিচ্ছবি খোলক</translation>
 <translation id="5407969256130905701">সালসলনিবোৰ অগ্ৰাহ্য কৰক</translation>
+<translation id="5414763847370083940">কোনো ছাইটত মূল্য কমিলে আপুনি এটা সতৰ্কবাৰ্তা পাব।</translation>
 <translation id="5416022985862681400">যোৱা ৭দিনৰ</translation>
 <translation id="5423269318075950257">মূল্য ট্ৰেক কৰক</translation>
 <translation id="543338862236136125">পাছৱৰ্ড সম্পাদনা কৰক</translation>
@@ -1132,6 +1135,7 @@
 <translation id="952704832371081537">বাতিল কৰক</translation>
 <translation id="953008885340860025">Chrome ছাইন আউট হৈ আছে</translation>
 <translation id="959066944189734975">আপুনি <ph name="CHANNEL_NAME" />ক ফ’ল’ কৰি আছে</translation>
+<translation id="973493300226275298">বিভিন্ন অনলাইন ষ্ট’ৰত কোনো প্ৰ’ডাক্টৰ মূল্য ট্ৰেক কৰক। মূল্য কমিলে আপুনি সতৰ্কবাৰ্তা পাব।</translation>
 <translation id="980712131080209571">নতুন</translation>
 <translation id="981498610235328462">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক কেৱল কিছুমান নিৰ্দিষ্ট একাউণ্টৰ জৰিয়তেহে ছাইন ইন কৰিবলৈ দিয়ে। অনুমতি নথকা একাউণ্টসমূহ লুকুৱাই ৰখা হয়।</translation>
 <translation id="984509647832111802">ছিংক কৰাৰ সুবিধাটোৱে কাম কৰি থকা নাই।</translation>

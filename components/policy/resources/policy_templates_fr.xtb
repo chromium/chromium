@@ -701,14 +701,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle n'est pas configurée, toutes les fonctionnalités <ph name="PRODUCT_OS_NAME" /> sont activées par défaut et accessibles à l'utilisateur.
 
       Remarque : la fonctionnalité de numérisation est actuellement désactivée par défaut au moyen d'un flag de fonctionnalité. Si l'utilisateur active la fonctionnalité via ce flag, elle peut toujours être désactivée à l'aide de cette règle.</translation>
-<translation id="1642854499667422595">Si cette règle est activée, les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées sur <ph name="PRODUCT_NAME" />.
-Cette règle ignorera les extensions installées en mode développeur et par ligne de commande, et d'autres qui ne sont pas installées depuis le Chrome Web Store (par exemple, l'auto-hébergement).
-
-Si elle est définie sur <ph name="ALLOW_UNPUBLISHED" /> (0), ou si elle n'est pas configurée, les extensions dont la publication est annulée sont autorisées.
-Si elle est définie sur <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées, sauf celles installées d'office ou dont la version est fixée par une règle d'entreprise (voir la remarque).
-Si elle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (2), les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées, même celles installées d'office ou dont la version est fixée par une règle d'entreprise (voir la remarque).
-
-Remarque : L'installation d'office et l'épinglage de la version sont configurés à l'aide des règles <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> et <ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Schéma :</translation>
 <translation id="1647558381546345298">Cette règle permet de définir la taille du cache utilisé par <ph name="PRODUCT_NAME" /> pour stocker les fichiers multimédias mis en cache sur le disque, que l'utilisateur ait spécifié ou non le flag "--media-cache-size". La valeur définie dans cette règle ne constitue pas une limite absolue. Il s'agit plutôt d'une suggestion pour le système de mise en cache. Toute valeur inférieure à quelques mégaoctets est arrondie.
 
@@ -1643,7 +1635,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
        Si cette règle n'est pas configurée, l'alimentation alternée en heures pleines est désactivée.</translation>
 <translation id="2502467045153796624">Comportement de retour à une version antérieure</translation>
-<translation id="2505101658854883014">Désactiver les extensions dont la publication a été annulée, y compris celles installées d'office ou dont la version est fixe</translation>
 <translation id="250670737672448119">Active la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie.
 
           Cette fonctionnalité permet de mettre en surbrillance la zone autour du curseur de saisie lorsque l'utilisateur effectue une modification.
@@ -8713,7 +8704,6 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 
       Cette règle est une mesure temporaire qui sera supprimée dans les futures versions de <ph name="PRODUCT_NAME" />. Après la suppression de cette règle, il sera toujours possible d'envoyer d'autres types de requêtes DNS avec <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9167719789236691545">Désactiver Drive dans l'application "Fichiers" de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9169161075831670233">Désactiver les extensions dont la publication a été annulée, sauf celles installées d'office ou dont la version est fixe</translation>
 <translation id="9172911925443428317">Ne pas autoriser l'affichage de la promo concernant la note sur l'App Store</translation>
 <translation id="9180108183162961002">Autoriser les connexions en mode Invité dans le navigateur</translation>
 <translation id="9185963199234034321">Activer le contraste élevé sur l'écran de connexion et permettre à l'utilisateur de le désactiver temporairement</translation>

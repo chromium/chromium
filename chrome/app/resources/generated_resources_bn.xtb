@@ -380,6 +380,7 @@
 <translation id="1339009753652684748">"Ok Google" বলে আপনার Assistant-কে অ্যাক্সেস করুন। ব্যাটারির চার্জ বাঁচাতে, "চালু করুন (সাজেস্ট করা)" বিকল্প বেছে নিন। আপনার ডিভাইস প্লাগ-ইন করা অথবা চার্জে বসানো থাকলে শুধুমাত্র তবেই Assistant উত্তর দেবে।</translation>
 <translation id="13392265090583506">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="1340527397989195812">ফাইল অ্যাপ ব্যবহার করে ডিভাইস থেকে মিডিয়া ব্যাক আপ নিন৷</translation>
+<translation id="1341701348342335220">দারুণ হয়েছে!</translation>
 <translation id="1341871421050612057"><ph name="USERNAME" /> ব্যবহার করে সিঙ্ক করা যাচ্ছে না</translation>
 <translation id="1343865611738742294">ইউএসবি ডিভাইস অ্যাক্সেস করার জন্য Linux অ্যাপকে অনুমতি দিন। ইউএসবি ডিভাইস সরিয়ে নিলে, Linux সেটির তথ্য সেভ করে রাখবে না।</translation>
 <translation id="1343920184519992513">আপনি যেখানে ছেড়ে গিয়েছিলেন সেখান থেকেই আবার শুরু করুন এবং পৃষ্ঠার একটি নির্দিষ্ট সেট খুলুন</translation>
@@ -3641,6 +3642,7 @@
 <translation id="4232375817808480934">Kerberos কনফিগার করুন</translation>
 <translation id="4235965441080806197">সাইন-ইন বাতিল করুন</translation>
 <translation id="4236163961381003811">আরও এক্সটেনশন খুঁজুন</translation>
+<translation id="4237282663517880406">Google Drive সম্পর্কিত সাজেশন দেখুন</translation>
 <translation id="4241182343707213132">প্রতিষ্ঠানের অ্যাপ আপডেট করতে রিস্টার্ট করুন</translation>
 <translation id="4242145785130247982">একাধিক ক্লায়েন্ট সার্টিফিকেট কাজ করে না</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
@@ -3947,7 +3949,6 @@
 <translation id="4513872120116766993">লেখার সাজেশন</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> এর দ্বারা চালিত</translation>
-<translation id="451515744433878153">সরান</translation>
 <translation id="4515872537870654449">সার্ভিসিংয়ের জন্য Dell-এর সাথে যোগাযোগ করুন। ফ্যান কাজ না করলে ডকিং স্টেশন বন্ধ হয়ে যাবে।</translation>
 <translation id="4518840066030486079">Shift কী মোড স্টাইল</translation>
 <translation id="4519331665958994620">সাইট আপনার ক্যামেরা ব্যবহার করার অনুমতি চাইতে পারে</translation>

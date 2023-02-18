@@ -439,6 +439,7 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />डिफ़ॉल्ट ब्राउज़र ऐप्लिकेशन<ph name="END_BOLD" /> पर टैप करें</translation>
 <translation id="424315890655130736">पासफ़्रेज़ डालें</translation>
 <translation id="4249955472157341256">'सबसे नए' के मुताबिक क्रम से लगाएं</translation>
+<translation id="4253168017788158739">नोट</translation>
 <translation id="4263576668337963058">उपलब्ध पेज की कार्रवाइयां दिखाएं</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{आपने {COUNT} चेतावनी खारिज कर दी है}one{आपने {COUNT} चेतावनी खारिज कर दी है}other{आपने {COUNT} चेतावनियां खारिज कर दी हैं}}</translation>
 <translation id="4272631900155121838">कोई QR कोड स्कैन करने के लिए, सेटिंग से कैमरा चालू करें</translation>

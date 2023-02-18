@@ -101,6 +101,7 @@
 <translation id="1608337082864370066">ನಕಲಿಸಿದ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="1612730193129642006">ಟ್ಯಾಬ್‌ ಗ್ರಿಡ್‌ ತೋರಿಸಿ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1641113438599504367">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
 <translation id="1650222530560417226">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳಿಂದ JavaScript ಕನ್ಸೋಲ್ ಲಾಗ್‌ಗಳನ್ನು ಮತ್ತು ದೋಷಗಳ ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಲು "ಲಾಗ್ ಮಾಡಲು ಪ್ರಾರಂಭಿಸಿ" ಬಟನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ. ಈ ಪುಟವನ್ನು ಮುಚ್ಚುವವರೆಗೆ ಅಥವಾ "ಲಾಗ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡುವವರೆಗೆ ಲಾಗ್‌ಗಳನ್ನು ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -193,6 +194,7 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} ಉಳಿಸಿದ ವಿಳಾಸ ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}one{{count} ಉಳಿಸಿದ ವಿಳಾಸಗಳು ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}other{{count} ಉಳಿಸಿದ ವಿಳಾಸಗಳು ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}}</translation>
 <translation id="2421004566762153674">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸುವುದು</translation>
 <translation id="2421044535038393232">ಎಡಿಟ್‌ ಮಾಡುತ್ತಿರಿ</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
 <translation id="2434405374328098816">ನೀವು ಈಗಾಗಲೇ <ph name="WEBSITE" /> ನಲ್ಲಿ "<ph name="USERNAME" />" ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಉಳಿಸಿದ್ದೀರಿ</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2451654228769116489">ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
@@ -336,6 +338,7 @@
 <translation id="345565170154308620">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
 <translation id="3469166899695866866">ಡೌನ್‌ಲೋಡ್ ನಿಲ್ಲಿಸಬೇಕೆ?</translation>
 <translation id="3470502288861289375">ನಕಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} ಸೈಟ್‌ಗಾಗಿ ಅಥವಾ ಆ್ಯಪ್‌ಗಾಗಿ}one{{COUNT} ಸೈಟ್‌ಗಳಿಗಾಗಿ ಅಥವಾ ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ}other{{COUNT} ಸೈಟ್‌ಗಳಿಗಾಗಿ ಅಥವಾ ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> ನಂತೆ ಮುಂದುವರಿಸಿ</translation>
 <translation id="3478058380795961209">ಮುಕ್ತಾಯದ ತಿಂಗಳು</translation>
 <translation id="3482959374254649722">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -382,6 +385,7 @@
 <translation id="3818293389945649617">ಮುಂದಿನದು ಹುಡುಕಿ</translation>
 <translation id="3819183753496523827">ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3835964409414434850">ಮುಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
+<translation id="3838691874161539578">ನಿಮ್ಮ ಸುರಕ್ಷತೆಯನ್ನು ಬಲಪಡಿಸಲು ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿರಿ</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ಹಾಗೂ ಇತರೆ <ph name="NUMBER_OF_ACCOUNTS" /> ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
@@ -435,7 +439,9 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆ್ಯಪ್<ph name="END_BOLD" /> ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="424315890655130736">ಪಾಸ್‌ಫ್ರೇಸ್ ನಮೂದಿಸಿ</translation>
 <translation id="4249955472157341256">ಇತ್ತೀಚಿನ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
+<translation id="4253168017788158739">ಟಿಪ್ಪಣಿ</translation>
 <translation id="4263576668337963058">ಲಭ್ಯವಿರುವ ಪುಟದ ಕ್ರಿಯೆಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{ನೀವು {COUNT} ಎಚ್ಚರಿಕೆಯನ್ನು ವಜಾಗೊಳಿಸಿದ್ದೀರಿ}one{ನೀವು {COUNT} ಎಚ್ಚರಿಕೆಗಳನ್ನು ವಜಾಗೊಳಿಸಿದ್ದೀರಿ}other{ನೀವು {COUNT} ಎಚ್ಚರಿಕೆಗಳನ್ನು ವಜಾಗೊಳಿಸಿದ್ದೀರಿ}}</translation>
 <translation id="4272631900155121838">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ ಕ್ಯಾಮರಾವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4277990410970811858">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್</translation>
 <translation id="4281844954008187215">ಸೇವೆಯ ನಿಯಮಗಳು</translation>
@@ -482,6 +488,7 @@
 <translation id="4630540211544979320">ಪುಟಗಳನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="4634124774493850572">ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="4636930964841734540">ಮಾಹಿತಿ</translation>
+<translation id="4642472735733036929">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ನಿಂತುಹೋಗಿದೆ</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ಆಗಿ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4659126640776004816">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ವೈಶಿಷ್ಟ್ಯವು ಆನ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="4659667755519643272">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್ ನಮೂದಿಸಿ</translation>
@@ -555,6 +562,7 @@
 <translation id="5118764316110575523">ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="5119391094379141756">Chrome ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5132942445612118989">ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಇತಿಹಾಸ ಹಾಗೂ ಇನ್ನೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್}one{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="5149188072385105201">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇರಿಸಿ...</translation>
 <translation id="5150492518600715772">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>
 <translation id="5168414296986405587">iPadOS ಗಾಗಿ ನಿರ್ಮಿಸಲಾಗಿದೆ</translation>
@@ -638,6 +646,7 @@
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
 <translation id="5812974770859303494">ಇದಕ್ಕೆ ಸೇರಿಸಿ...</translation>
 <translation id="581659025233126501">ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>
+<translation id="5817176759448082654">ಪಾಸ್‌ವರ್ಡ್ ಪರಿಶೀಲನೆ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">ಆನಂತರ Chrome ಸ್ವಯಂಭರ್ತಿ ಮಾಡುವುದಕ್ಕಾಗಿ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಉಳಿಸಿ.</translation>
 <translation id="5834415013958049700">ನೀವು ನಕಲಿಸಿದ Lens ಚಿತ್ರ</translation>
@@ -838,6 +847,7 @@
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="7006788746334555276">ವಿಷಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="7014087399239955356">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7062545763355031412">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಖಾತೆಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -893,6 +903,7 @@
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="7531345132340165516">ಪ್ರಸ್ತುತ ಸೈಟ್</translation>
 <translation id="7537586195939242955">ಕ್ಷಮಿಸಿ, ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್ ಅನ್ನು ಪಾಸ್‌ಬುಕ್‌ನಲ್ಲಿ ಸ್ಥಾಪಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="754655535278952384"><ph name="TIME" /> ಸಮಯಕ್ಕೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7553234618121028547">ಆಫ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳು<ph name="END_LINK" /> ಎಂಬುದನ್ನು ತೆರೆಯಿರಿ ಹಾಗೂ ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆಗಳು ಎಂಬಲ್ಲಿಗೆ ಹೋಗಿ.</translation>
 <translation id="7554645225856321710">ಎಲ್ಲವನ್ನೂ ಮುಚ್ಚಿರಿ</translation>
 <translation id="7554791636758816595">ಹೊಸ ಟ್ಯಾಬ್</translation>

@@ -101,6 +101,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1608337082864370066">Rechercher l'image copiée</translation>
 <translation id="1612730193129642006">Afficher la grille d'onglets</translation>
 <translation id="1620510694547887537">Caméra</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> mots de passe réutilisés</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1650222530560417226">Appuyez sur le bouton "Débuter la journalisation" pour recueillir les prochains journaux de la console JavaScript et les erreurs à partir de tous les onglets. Les journaux sont recueillis (et stockés uniquement en mémoire) jusqu'à ce que cette page soit fermée ou que vous appuyiez sur "Débuter la journalisation".</translation>
@@ -193,6 +194,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2411749908844615428">{count,plural, =1{{count} adresse enregistrée disponible au-dessus de votre clavier.}one{{count} adresse enregistrée disponible au-dessus de votre clavier.}other{{count} adresses enregistrées disponibles au-dessus de votre clavier.}}</translation>
 <translation id="2421004566762153674">Blocage des cookies tiers</translation>
 <translation id="2421044535038393232">Poursuivre les modifications</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour "<ph name="USERNAME" />" sur <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2451654228769116489">Épingler l'onglet</translation>
@@ -336,6 +338,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="345565170154308620">Gérer les mots de passe…</translation>
 <translation id="3469166899695866866">Arrêter le téléchargement ?</translation>
 <translation id="3470502288861289375">Copie en cours…</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou appli}one{pour {COUNT} site ou appli}other{pour {COUNT} sites ou applis}}</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mois d'expiration</translation>
 <translation id="3482959374254649722">Synchronisation de vos onglets en cours…</translation>
@@ -382,6 +385,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3818293389945649617">Rechercher la suivante</translation>
 <translation id="3819183753496523827">Vous êtes hors connexion. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="3835964409414434850">Onglet suivant</translation>
+<translation id="3838691874161539578">Vérifiez vos mots de passe enregistrés pour renforcer votre sécurité et naviguer en toute tranquillité</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3851938967634752633">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="NUMBER_OF_ACCOUNTS" /> autres seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3858860766373142691">Nom</translation>
@@ -435,7 +439,9 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4237377247299956313">Appuyez sur <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Saisir la phrase secrète</translation>
 <translation id="4249955472157341256">Trier par "Les plus récents"</translation>
+<translation id="4253168017788158739">Remarque</translation>
 <translation id="4263576668337963058">Afficher les actions de page disponibles</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{Vous avez ignoré {COUNT} avertissement}one{Vous avez ignoré {COUNT} avertissement}other{Vous avez ignoré {COUNT} avertissements}}</translation>
 <translation id="4272631900155121838">Pour scanner un code QR, activez l'appareil photo depuis les paramètres</translation>
 <translation id="4277990410970811858">Navigation sécurisée</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
@@ -482,6 +488,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4630540211544979320">Traduire les pages</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
 <translation id="4636930964841734540">Infos</translation>
+<translation id="4642472735733036929">Suivi des prix interrompu</translation>
 <translation id="4650125387981512669">Continuer en tant que <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Lorsque vous vous connectez à votre compte Google, cette fonctionnalité est activée.</translation>
 <translation id="4659667755519643272">Lancer le sélecteur d'onglets</translation>
@@ -555,6 +562,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5119391094379141756">Sélectionnez Chrome</translation>
 <translation id="5132942445612118989">Synchroniser vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} mot de passe peu sécurisé}one{{COUNT} mot de passe peu sécurisé}other{{COUNT} mots de passe peu sécurisés}}</translation>
 <translation id="5149188072385105201">Ajouter un mot de passe</translation>
 <translation id="5150492518600715772">Envoyer sur votre appareil</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
@@ -638,6 +646,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5812974770859303494">Ajouter à…</translation>
 <translation id="581659025233126501">Activer la synchronisation</translation>
+<translation id="5817176759448082654">Check-up Mots de passe</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Enregistrez vos mots de passe, vos modes de paiement et vos adresses pour que la saisie automatique dans Chrome soit effectuée plus tard.</translation>
 <translation id="5834415013958049700">Image Lens que vous avez copiée</translation>
@@ -838,6 +847,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Onglets récents</translation>
 <translation id="7006788746334555276">Paramètres de contenu</translation>
+<translation id="7014087399239955356">Vérification des mots de passe…</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7062545763355031412">Accepter et changer de compte</translation>
@@ -894,6 +904,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7531345132340165516">Site actuel</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
+<translation id="754655535278952384">Vérifié <ph name="TIME" /></translation>
 <translation id="7553234618121028547">Pour désactiver, ouvrez <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Options de mots de passe".</translation>
 <translation id="7554645225856321710">Tout fermer</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>

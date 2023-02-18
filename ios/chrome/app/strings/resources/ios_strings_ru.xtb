@@ -439,6 +439,7 @@
 <translation id="4237377247299956313">Нажмите <ph name="BEGIN_BOLD" />Браузер по умолчанию<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Введите кодовую фразу</translation>
 <translation id="4249955472157341256">Сортировать по дате</translation>
+<translation id="4253168017788158739">Примечание</translation>
 <translation id="4263576668337963058">Показать доступные действия со страницей</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Вы закрыли {COUNT} предупреждение}one{Вы закрыли {COUNT} предупреждение}few{Вы закрыли {COUNT} предупреждения}many{Вы закрыли {COUNT} предупреждений}other{Вы закрыли {COUNT} предупреждения}}</translation>
 <translation id="4272631900155121838">Чтобы отсканировать QR-код, разрешите доступ к камере в настройках.</translation>

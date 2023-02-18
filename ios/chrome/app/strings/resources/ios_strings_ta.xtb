@@ -101,6 +101,7 @@
 <translation id="1608337082864370066">நகலெடுத்த படத்தைத் தேடவும்</translation>
 <translation id="1612730193129642006">தாவல் கட்டத்தைக் காட்டும் பட்டன்</translation>
 <translation id="1620510694547887537">கேமரா</translation>
+<translation id="1626771852476987600">ஏற்கெனவே பயன்படுத்திய <ph name="COUNT" /> கடவுச்சொற்கள்</translation>
 <translation id="1641113438599504367">பாதுகாப்பாக உலாவுதல்</translation>
 <translation id="1644574205037202324">இதுவரை பார்த்தவை</translation>
 <translation id="1650222530560417226">எதிர்காலத்தில் அனைத்து தாவல்களிலிருந்தும் JavaScript கன்சோல் பதிவுகளையும் பிழைகளையும் சேகரிக்க, “பதிவுசெய்யத் தொடங்கு” பட்டனைத் தட்டவும். இந்தப் பக்கம் மூடப்படும் வரை அல்லது “பதிவுசெய்வதை நிறுத்து” பட்டனைத் தட்டும் வரை பதிவுகள் சேகரிக்கப்படும் (அவை நினைவகத்தில் மட்டுமே சேமிக்கப்படும்).</translation>
@@ -193,6 +194,7 @@
 <translation id="2411749908844615428">{count,plural, =1{சேமிக்கப்பட்ட {count} முகவரி உங்கள் கீபோர்டுக்கு மேலே காட்டப்படும்.}other{சேமிக்கப்பட்ட {count} முகவரிகள் உங்கள் கீபோர்டுக்கு மேலே காட்டப்படும்.}}</translation>
 <translation id="2421004566762153674">மூன்றாம் தரப்புக் குக்கீகளைத் தடுக்கிறது</translation>
 <translation id="2421044535038393232">தொடர்ந்து திருத்து</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} களவாடப்பட்ட கடவுச்சொல்}other{{COUNT} களவாடப்பட்ட கடவுச்சொற்கள்}}</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> இணையதளத்தில் "<ph name="USERNAME" />" கணக்கிற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="2451654228769116489">உலாவிப் பக்கத்தைப் பின் செய்</translation>
@@ -336,6 +338,7 @@
 <translation id="345565170154308620">கடவுச்சொற்களை நிர்வகி...</translation>
 <translation id="3469166899695866866">பதிவிறக்கத்தை நிறுத்தவா?</translation>
 <translation id="3470502288861289375">நகலெடுக்கிறது...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} தளம் அல்லது ஆப்ஸுக்கு}other{{COUNT} தளங்கள் அல்லது ஆப்ஸுக்கு}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> கணக்கில் தொடர்க</translation>
 <translation id="3478058380795961209">காலாவதியாகும் மாதம்</translation>
 <translation id="3482959374254649722">உங்கள் தாவல்களை ஒத்திசைக்கிறது...</translation>
@@ -382,6 +385,7 @@
 <translation id="3818293389945649617">அடுத்ததைக் கண்டுபிடி</translation>
 <translation id="3819183753496523827">ஆஃப்லைனில் உள்ளீர்கள். இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
 <translation id="3835964409414434850">அடுத்த பக்கம்</translation>
+<translation id="3838691874161539578">பாதுகாப்பை வலுப்படுத்துவதற்கும் ஆன்லைனில் பாதுகாப்பாக இருப்பதற்கும், நீங்கள் சேமித்துள்ள கடவுச்சொற்களைச் சரிபார்க்கவும்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> மற்றும் <ph name="NUMBER_OF_ACCOUNTS" /> கணக்குகளின் கடவுச்சொற்கள் நீக்கப்படும். உங்கள் கணக்குகள் நீக்கப்படாது.</translation>
 <translation id="3858860766373142691">பெயர்</translation>
@@ -435,7 +439,9 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />இயல்பு உலாவி ஆப்ஸ்<ph name="END_BOLD" /> என்பதைத் தட்டவும்</translation>
 <translation id="424315890655130736">கடவுச்சொற்றொடரை உள்ளிடுக</translation>
 <translation id="4249955472157341256">சமீபத்தியதன்படி வரிசைப்படுத்து</translation>
+<translation id="4253168017788158739">குறிப்பு</translation>
 <translation id="4263576668337963058">இருக்கின்ற பக்கச் செயல்பாடுகளைக் காட்டு</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{{COUNT} எச்சரிக்கையை நிராகரித்துள்ளீர்கள்}other{{COUNT} எச்சரிக்கைகளை நிராகரித்துள்ளீர்கள்}}</translation>
 <translation id="4272631900155121838">QR குறியீட்டை ஸ்கேன் செய்ய, அமைப்புகளிலிருந்து கேமராவை இயக்கவும்</translation>
 <translation id="4277990410970811858">பாதுகாப்பு உலாவல்</translation>
 <translation id="4281844954008187215">சேவை விதிமுறைகள்</translation>
@@ -482,6 +488,7 @@
 <translation id="4630540211544979320">பக்கங்களை மொழிபெயர்த்தல்</translation>
 <translation id="4634124774493850572">கடவுச்சொல்லைப் பயன்படுத்து</translation>
 <translation id="4636930964841734540">தகவல்</translation>
+<translation id="4642472735733036929">விலையைக் கண்காணிப்பது நிறுத்தப்பட்டது</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> கணக்கில் தொடர்க</translation>
 <translation id="4659126640776004816">உங்கள் Google கணக்கில் உள்நுழையும்போது இந்த அம்சம் இயக்கப்படும்.</translation>
 <translation id="4659667755519643272">தாவல் மாற்றியைத் துவக்கு</translation>
@@ -555,6 +562,7 @@
 <translation id="5118764316110575523">ஆஃப் செய்யப்பட்டுள்ளது</translation>
 <translation id="5119391094379141756">Chromeமைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="5132942445612118989">எல்லாச் சாதனங்களிலும் உங்கள் கடவுச்சொற்கள், இதுவரையான செயல்பாடுகள் மற்றும் பலவற்றை ஒத்திசைக்கலாம்</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} வலுவற்ற கடவுச்சொல்}other{{COUNT} வலுவற்ற கடவுச்சொற்கள்}}</translation>
 <translation id="5149188072385105201">கடவுச்சொல்லைச் சேர்...</translation>
 <translation id="5150492518600715772">வேறு சாதனத்திற்கு அனுப்பு</translation>
 <translation id="5168414296986405587">iPadOSஸுக்காக உருவாக்கப்பட்டது</translation>
@@ -638,6 +646,7 @@
 <translation id="5804241973901381774">அனுமதிகள்</translation>
 <translation id="5812974770859303494">இதில் சேர்...</translation>
 <translation id="581659025233126501">ஒத்திசைவை இயக்கு</translation>
+<translation id="5817176759448082654">கடவுச்சொல் சரிபார்ப்பு</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> நிர்வகிக்கிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">வரும்காலங்களில் Chrome தானாக நிரப்பும் வகையில் கடவுச்சொற்கள், பேமெண்ட் முறைகள், முகவரிகள் ஆகியவற்றைச் சேமிக்கலாம்.</translation>
 <translation id="5834415013958049700">நீங்கள் Lens மூலம் நகலெடுத்த படம்</translation>
@@ -838,6 +847,7 @@
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
 <translation id="7006788746334555276">உள்ளடக்க அமைப்புகள்</translation>
+<translation id="7014087399239955356">கடவுச்சொற்களைச் சரிபார்க்கிறது...</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
 <translation id="7053983685419859001">தடு</translation>
 <translation id="7062545763355031412">சரி, கணக்குகளை மாற்று</translation>
@@ -893,6 +903,7 @@
 <translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7531345132340165516">தற்போதைய தளம்</translation>
 <translation id="7537586195939242955">வருந்துகிறோம், இந்த நேரத்தில் உங்கள் பாஸை பாஸ்புக்கில் நிறுவ முடியாது.</translation>
+<translation id="754655535278952384"><ph name="TIME" /> சரிபார்க்கப்பட்டது</translation>
 <translation id="7553234618121028547">முடக்க, <ph name="BEGIN_LINK" />அமைப்புகள்<ph name="END_LINK" /> என்பதைத் திறந்து கடவுச்சொல் விருப்பங்களுக்குச் செல்லவும்.</translation>
 <translation id="7554645225856321710">அனைத்தையும் மூடுக</translation>
 <translation id="7554791636758816595">புதிய தாவல்</translation>

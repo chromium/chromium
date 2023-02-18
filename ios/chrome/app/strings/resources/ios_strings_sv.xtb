@@ -101,6 +101,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1608337082864370066">Sök efter kopierad bild</translation>
 <translation id="1612730193129642006">Visa flikar i rutnät</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1626771852476987600"><ph name="COUNT" /> återanvända lösenord</translation>
 <translation id="1641113438599504367">Säker webbsökning</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1650222530560417226">Tryck på Starta loggning för att registrera loggar och fel från JavaScript-konsoler från alla flikar. Loggar registreras (och sparas bara i minnet) tills den här sidan stängs eller du trycker på Avbryt loggning.</translation>
@@ -193,6 +194,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2411749908844615428">{count,plural, =1{{count} sparad adress visas ovanför tangentbordet.}other{{count} sparade adresser visas ovanför tangentbordet.}}</translation>
 <translation id="2421004566762153674">Cookies från tredje part blockeras</translation>
 <translation id="2421044535038393232">Fortsätt redigera</translation>
+<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="2434405374328098816">Du har redan sparat ett lösenord för <ph name="USERNAME" /> på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2451654228769116489">Fäst flik</translation>
@@ -336,6 +338,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="345565170154308620">Hantera lösenord …</translation>
 <translation id="3469166899695866866">Vill du avbryta nedladdningen?</translation>
 <translation id="3470502288861289375">Kopierar ...</translation>
+<translation id="3474048842645761983">{COUNT,plural, =1{för {COUNT} webbplats eller app}other{för {COUNT} webbplatser och appar}}</translation>
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Sista giltighetsmånad</translation>
 <translation id="3482959374254649722">Flikarna synkroniseras ...</translation>
@@ -382,6 +385,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3818293389945649617">Hitta nästa</translation>
 <translation id="3819183753496523827">Du är offline. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="3835964409414434850">Öppna nästa flik</translation>
+<translation id="3838691874161539578">Kontrollera dina sparade lösenord och öka säkerheten online</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3851938967634752633">Lösenorden för <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> och <ph name="NUMBER_OF_ACCOUNTS" /> till raderas. Dina konton raderas inte.</translation>
 <translation id="3858860766373142691">Namn</translation>
@@ -435,7 +439,9 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4237377247299956313">Tryck på <ph name="BEGIN_BOLD" />Standardwebbläsarapp<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Ange lösenfras</translation>
 <translation id="4249955472157341256">Sortera efter senaste</translation>
+<translation id="4253168017788158739">Kommentar</translation>
 <translation id="4263576668337963058">Visa tillgängliga åtgärder för sida</translation>
+<translation id="4267586310863245665">{COUNT,plural, =1{Du har ignorerat {COUNT} varning}other{Du har ignorerat {COUNT} varningar}}</translation>
 <translation id="4272631900155121838">Om du vill skanna en QR-kod aktiverar du kameran i inställningarna</translation>
 <translation id="4277990410970811858">Säker webbsökning</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
@@ -482,6 +488,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4630540211544979320">Översätt sidor</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4642472735733036929">Prisbevakning har avslutats</translation>
 <translation id="4650125387981512669">Fortsätt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Den här funktionen är aktiverad när du loggar in på Google-kontot.</translation>
 <translation id="4659667755519643272">Öppna funktionen för flikbyte</translation>
@@ -555,6 +562,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5118764316110575523">Av</translation>
 <translation id="5119391094379141756">Välj Chrome</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
+<translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} svagt lösenord}other{{COUNT} svaga lösenord}}</translation>
 <translation id="5149188072385105201">Lägg till lösenord …</translation>
 <translation id="5150492518600715772">Skicka till din enhet</translation>
 <translation id="5168414296986405587">Gjord för iPadOS</translation>
@@ -638,6 +646,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5812974770859303494">Lägg till i …</translation>
 <translation id="581659025233126501">Aktivera synkronisering</translation>
+<translation id="5817176759448082654">Lösenordskontroll</translation>
 <translation id="5819208479324046259">Hanteras av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Spara lösenord, betalningsmetoder och adresser så att Chrome kan fylla i dem automatiskt vid ett senare tillfälle.</translation>
 <translation id="5834415013958049700">Sök efter bilden du kopierade med Lens</translation>
@@ -838,6 +847,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Senaste flikarna</translation>
 <translation id="7006788746334555276">Innehållsinställningar</translation>
+<translation id="7014087399239955356">Kontrollerar lösenord …</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7062545763355031412">Godkänn och byt konto</translation>
@@ -893,6 +903,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7531345132340165516">Nuvarande webbplats</translation>
 <translation id="7537586195939242955">Det går tyvärr inte att installera det här objektet i Passbook just nu.</translation>
+<translation id="754655535278952384">Kontrollerades <ph name="TIME" /></translation>
 <translation id="7553234618121028547">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Lösenordsalternativ.</translation>
 <translation id="7554645225856321710">Stäng alla</translation>
 <translation id="7554791636758816595">Ny flik</translation>

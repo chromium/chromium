@@ -701,14 +701,6 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
       Als je het beleid niet instelt, staan alle <ph name="PRODUCT_OS_NAME" />-functies standaard aan en kan de gebruiker ze allemaal gebruiken.
 
       Opmerking: De scanfunctie staat momenteel standaard uit via een functievlag. Als de gebruiker deze functie aanzet via de functievlag, kan de functie nog altijd worden uitgezet door dit beleid.</translation>
-<translation id="1642854499667422595">Als dit beleid aanstaat, worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet voor <ph name="PRODUCT_NAME" />.
-Dit beleid negeert de ontwikkelaarsmodus, de opdrachtregel en andere extensies die niet zijn geïnstalleerd via de Chrome Web Store (zoals zelfhosting).
-
-Als het beleid is ingesteld op <ph name="ALLOW_UNPUBLISHED" /> (0) of niet is ingesteld, zijn extensies toegestaan waarvan de publicatie ongedaan is gemaakt.
-Als het beleid is ingesteld op <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet, maar niet als de extensie afgedwongen is geïnstalleerd of is vastgezet met een zakelijk beleid (zie de opmerking).
-Als het beleid is ingesteld op <ph name="DISABLE_UNPUBLISHED" /> (2), worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet, zelfs als de extensie afgedwongen is geïnstalleerd of versies zijn vastgezet op basis van het bedrijfsbeleid (zie de opmerking).
-
-Opmerking: Afgedwongen installeren en versie vastzetten worden ingesteld met het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> en <ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Schema:</translation>
 <translation id="1647558381546345298">Als je het beleid instelt, wordt de cachegrootte ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om gecachte mediabestanden op de schijf op te slaan, ongeacht of de gebruiker de markering --media-cache-size heeft opgegeven. De waarde die in dit beleid wordt opgegeven, is geen harde grens maar een suggestie voor het cachesysteem. Een waarde die lager is dan een paar megabytes wordt naar boven afgerond.
 
@@ -1639,7 +1631,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 
        Als je het beleid niet instelt, blijft de stroom voor piekuren uit.</translation>
 <translation id="2502467045153796624">Downgradegedrag voor kanalen</translation>
-<translation id="2505101658854883014">Extensies uitzetten waarvan de publicatie ongedaan is gemaakt, waaronder afgedwongen geïnstalleerde versies of vastgezette versies</translation>
 <translation id="250670737672448119">Zet de toegankelijkheidsfunctie voor markering van het caret-teken aan.
 
           Met deze functie wordt het gebied rondom het caret-teken gemarkeerd tijdens het bewerken.
@@ -8659,7 +8650,6 @@ en 6 optionele leden:
 
       Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />. Na verwijdering van het beleid kan <ph name="PRODUCT_NAME" /> altijd zoekopdrachten voor aanvullende DNS-typen uitvoeren.</translation>
 <translation id="9167719789236691545">Drive in de app Bestanden van <ph name="PRODUCT_OS_NAME" /> uitzetten</translation>
-<translation id="9169161075831670233">Extensies uitzetten waarvan de publicatie ongedaan is gemaakt, behalve afgedwongen geïnstalleerde versies of vastgezette versies</translation>
 <translation id="9172911925443428317">Niet toestaan dat de promotie voor appstore-beoordelingen wordt getoond</translation>
 <translation id="9180108183162961002">Toestaan dat gebruikers als gast inloggen bij de browser</translation>
 <translation id="9185963199234034321">Hoog contrast op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>

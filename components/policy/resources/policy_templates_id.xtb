@@ -703,17 +703,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
        Jika kebijakan tidak disetel, semua fitur <ph name="PRODUCT_OS_NAME" /> akan diaktifkan secara default dan pengguna dapat menggunakan semua fitur tersebut.
 
       Catatan: Fitur pemindaian saat ini dinonaktifkan secara default melalui tombol fitur. Jika pengguna mengaktifkannya melalui tombol fitur, fitur tersebut masih dapat dinonaktifkan dengan kebijakan ini.</translation>
-<translation id="1642854499667422595">Jika kebijakan ini disetel ke aktif, ekstensi yang tidak dipublikasikan di Chrome Web
-Store akan dinonaktifkan pada <ph name="PRODUCT_NAME" />.
-Kebijakan ini akan mengabaikan ekstensi yang diinstal di mode developer atau dari command line dan
-ekstensi lain yang tidak diinstal dari Chrome Web Store (misalnya, di-hosting sendiri).
-
-Jika kebijakan disetel ke <ph name="ALLOW_UNPUBLISHED" /> (0) atau tidak disetel, ekstensi yang tidak dipublikasikan akan diizinkan.
-Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED" /> (1), ekstensi yang tidak dipublikasikan di Chrome Web Store akan dinonaktifkan, tetapi tidak dinonaktifkan jika ekstensi diinstal otomatis atau ditetapkan ke versi tertentu oleh kebijakan perusahaan (Lihat Catatan).
-Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (2), ekstensi yang tidak dipublikasikan di Chrome Web Store akan dinonaktifkan, meskipun ekstensi diinstal otomatis atau ditetapkan ke versi tertentu oleh kebijakan perusahaan (Lihat Catatan).
-
-Catatan: Penginstalan otomatis dan penetapan ke versi tertentu dikonfigurasi menggunakan kebijakan <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> dan
-<ph name="EXTENSION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1645793986494086629">Skema:</translation>
 <translation id="1647558381546345298">Jika kebijakan disetel, ukuran cache yang digunakan <ph name="PRODUCT_NAME" /> untuk menyimpan file media yang di-cache pada disk akan dikonfigurasi, terlepas apakah pengguna menentukan tanda --media-cache-size. Nilai yang ditentukan dalam kebijakan ini bukanlah batas mutlak, melainkan saran untuk sistem penyimpanan dalam cache. Setiap nilai yang kurang dari beberapa megabyte akan dibulatkan ke atas.
 
@@ -1660,7 +1649,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
        Jika kebijakan tidak disetel, pengaktifan daya baterai akan tetap nonaktif.</translation>
 <translation id="2502467045153796624">Perilaku downgrade saluran rilis</translation>
-<translation id="2505101658854883014">Nonaktifkan ekstensi yang tidak dipublikasikan, termasuk ekstensi yang diinstal otomatis atau ditetapkan ke versi tertentu</translation>
 <translation id="250670737672448119">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan.
 
           Fitur ini berfungsi untuk menyoroti area yang dikelilingi tanda sisipan selama mengedit.
@@ -8861,7 +8849,6 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 
       Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang. Setelah kebijakan dihapus, <ph name="PRODUCT_NAME" /> akan dapat mengkueri jenis DNS tambahan kapan saja.</translation>
 <translation id="9167719789236691545">Nonaktifkan Drive di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9169161075831670233">Nonaktifkan ekstensi yang tidak dipublikasikan kecuali ekstensi yang diinstal otomatis atau ditetapkan ke versi tertentu</translation>
 <translation id="9172911925443428317">Jangan izinkan pop-up Rating App Store ditampilkan</translation>
 <translation id="9180108183162961002">Izinkan login browser tamu</translation>
 <translation id="9185963199234034321">Aktifkan kontras tinggi di layar login dan izinkan pengguna menonaktifkannya untuk sementara</translation>

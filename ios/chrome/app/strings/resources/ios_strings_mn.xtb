@@ -439,6 +439,7 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Өгөгдмөл хөтчийн апп<ph name="END_BOLD" />-ыг товшино уу</translation>
 <translation id="424315890655130736">Нэвтрэх үгийг оруулах</translation>
 <translation id="4249955472157341256">Сүүлийн үеийнхээр нь эрэмбэлэх</translation>
+<translation id="4253168017788158739">Тайлбар</translation>
 <translation id="4263576668337963058">Хуудасны боломжтой үйлдлүүдийг харуулах</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Та {COUNT} сануулгыг үл хэрэгссэн}other{Та {COUNT} сануулгыг үл хэрэгссэн}}</translation>
 <translation id="4272631900155121838">QR кодыг скан хийхийн тулд камерыг тохиргоо хэсэгт идэвхжүүлнэ үү</translation>

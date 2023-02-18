@@ -1438,6 +1438,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2251809247798634662">Dirisha fiche jipya</translation>
 <translation id="2252017960592955005">Kutazama kwa usalama (Beta)</translation>
 <translation id="225240747099314620">Ruhusu vitambulishi kwa maudhui yaliyolindwa (huenda ukahitajika kuzima na kuwasha kompyuta)</translation>
+<translation id="2253318212986772520">Imeshindwa kuleta PPD ya <ph name="PRINTER_NAME" />.</translation>
 <translation id="2255077166240162850">Kifaa hiki kilifungwa kwenye kikoa au hali tofauti.</translation>
 <translation id="2255317897038918278">Uwekaji Saa wa Microsoft</translation>
 <translation id="2256115617011615191">Zima na uwashe sasa</translation>
@@ -2910,6 +2911,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3582057310199111521">Liliwekwa kwenye tovuti ya kulaghai na lilipatikana kwenye tukio la ufichuzi haramu wa data</translation>
 <translation id="3582299299336701326">Badilisha skrini angavu kuwa na mwanga hafifu na skrini zenye mwanga hafifu kuwa angavu. Bonyeza kitufe cha Tafuta kisha Ctrl na H kwa wakati mmoja ili uwashe au uzime ugeuzaji rangi.</translation>
 <translation id="3584169441612580296">Kusoma na kubadilisha picha, muziki na maudhui mengine kwenye kompyuta yako</translation>
+<translation id="3584527007414070635">Endelea na ziara yako ya <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Programu ya <ph name="APPLICATION_NAME" /> inahitaji OneDrive ili ipatikane.</translation>
 <translation id="3586806079541226322">Imeshindwa kufungua faili</translation>
 <translation id="3587438013689771191">Pata maelezo zaidi kuhusu: <ph name="SUBPAGE_TITLE" /></translation>
@@ -3866,6 +3868,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4443536555189480885">&amp;Msaada</translation>
 <translation id="4444304522807523469">Fikia vichunguzi vya hati vilivyoambatishwa kupitia USB au kwenye mtandao wa karibu</translation>
 <translation id="4444512841222467874">Ikiwa hakuna nafasi ya kuhifadhi, huenda watumiaji pamoja na data ikaondolewa kiotomatiki.</translation>
+<translation id="4445446646109808714">Makubaliano ya Leseni ya Mtumiaji wa Hatima: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Inayoakisiwa</translation>
 <translation id="4448914100439890108">Ficha nenosiri la <ph name="USERNAME" /> linalotumika kwenye <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Jina lako la mtumiaji linamilikiwa na akaunti ya kazini ya shirika lako. Ili uandikishe vifaa kwenye akaunti, thibitisha kwanza umiliki wa kikoa katika Dashibodi ya Msimamizi. Utahitaji ruhusa za msimamizi kwenye akaunti ili uthibitishe.</translation>
@@ -3938,7 +3941,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4513872120116766993">Utabiri wa maandishi</translation>
 <translation id="4513946894732546136">Mwitiko</translation>
 <translation id="451407183922382411">Inaendeshwa na <ph name="COMPANY_NAME" /></translation>
-<translation id="451515744433878153">Ondoa</translation>
 <translation id="4515872537870654449">Wasiliana na Dell ili upate huduma. Kituo kitajifunga ikiwa feni haifanyi kazi.</translation>
 <translation id="4518840066030486079">Mtindo wa Hali ya Kitufe cha Shift</translation>
 <translation id="4519331665958994620">Tovuti zinaweza kuomba ruhusa ya kutumia kamera yako</translation>

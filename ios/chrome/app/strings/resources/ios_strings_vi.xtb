@@ -439,6 +439,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="4237377247299956313">Nhấn vào <ph name="BEGIN_BOLD" />Ứng dụng trình duyệt mặc định<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Nhập cụm mật khẩu</translation>
 <translation id="4249955472157341256">Sắp xếp theo Mới nhất</translation>
+<translation id="4253168017788158739">Lưu ý</translation>
 <translation id="4263576668337963058">Hiển thị các hành động có thể thực hiện trên trang</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Bạn đã đóng {COUNT} cảnh báo}other{Bạn đã đóng {COUNT} cảnh báo}}</translation>
 <translation id="4272631900155121838">Để quét mã QR, hãy bật máy ảnh từ cài đặt</translation>
@@ -560,6 +561,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5118713593561876160">Sở thích</translation>
 <translation id="5118764316110575523">Đang tắt</translation>
 <translation id="5119391094379141756">Chọn Chrome</translation>
+<translation id="5121618895923301719">Bạn đã theo dõi sản phẩm này rồi. Trang này được lưu trong phần <ph name="BEGIN_LINK" />Dấu trang trên thiết bị di động<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Đồng bộ hóa mật khẩu, nhật ký hoạt động và các thông tin khác của bạn trên tất cả các thiết bị</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} mật khẩu yếu}other{{COUNT} mật khẩu yếu}}</translation>
 <translation id="5149188072385105201">Thêm mật khẩu...</translation>
@@ -590,6 +592,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5386314158584363703">Bạn sẽ thấy các trang đã theo dõi tại đây</translation>
 <translation id="5388358297987318779">Mở hình ảnh</translation>
 <translation id="5407969256130905701">Hủy các thay đổi</translation>
+<translation id="5414763847370083940">Bạn sẽ nhận được thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
 <translation id="5416022985862681400">7 ngày qua</translation>
 <translation id="5423269318075950257">Theo dõi giá</translation>
 <translation id="543338862236136125">Chỉnh sửa mật khẩu</translation>
@@ -1132,6 +1135,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="952704832371081537">Hủy</translation>
 <translation id="953008885340860025">Bạn đã bị đăng xuất khỏi Chrome</translation>
 <translation id="959066944189734975">Bạn đang theo dõi <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Theo dõi giá sản phẩm trên các cửa hàng trực tuyến. Bạn sẽ nhận được thông báo khi có chương trình giảm giá.</translation>
 <translation id="980712131080209571">Mới</translation>
 <translation id="981498610235328462">Tổ chức của bạn chỉ cho phép bạn đăng nhập bằng một số tài khoản nhất định. Các tài khoản không được phép sẽ bị ẩn.</translation>
 <translation id="984509647832111802">Tính năng đồng bộ hóa hiện không hoạt động.</translation>

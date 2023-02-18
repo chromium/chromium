@@ -314,6 +314,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">Não foi possível guardar a alteração.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3268451620468152448">Separadores abertos</translation>
 <translation id="3272527697863656322">Cancelar</translation>
@@ -336,6 +337,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vista dividida</translation>
 <translation id="345565170154308620">Gerir palavras-passe…</translation>
+<translation id="3464194322481586217">Não foi possível acompanhar o preço.</translation>
 <translation id="3469166899695866866">Pretende parar a transferência?</translation>
 <translation id="3470502288861289375">A copiar...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{para {COUNT} site ou app}other{para {COUNT} sites e apps}}</translation>
@@ -439,6 +441,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegador predefinida<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Introduzir frase de acesso</translation>
 <translation id="4249955472157341256">Ordenar por mais recente</translation>
+<translation id="4253168017788158739">Nota</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Ignorou {COUNT} aviso}other{Ignorou {COUNT} avisos}}</translation>
 <translation id="4272631900155121838">Para ler um código QR, ative a câmara nas definições</translation>
@@ -762,6 +765,7 @@ Os dados foram encriptados com a sua frase de acesso de sincronização em <ph n
 <translation id="6464397691496239022">Os sites podem utilizar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras.
 
 Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
+<translation id="6476253015009698798">O acompanhamento de preços não está disponível para esta página.</translation>
 <translation id="6476800141292307438">A traduzir a página para <ph name="LANGUAGE" />. Estão disponíveis opções junto à parte inferior do ecrã.</translation>
 <translation id="648164694371393720">Erro de autenticação</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens eliminados</translation>
@@ -813,6 +817,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6780034285637185932">Código postal</translation>
 <translation id="6781260999953472352">Ativar a sincronização?</translation>
 <translation id="6785453220513215166">A enviar relatório de falha...</translation>
+<translation id="6790502149545262384">Em breve, vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
 <translation id="6797885426782475225">Pesquisa por voz</translation>
 <translation id="6801927553864092214">Para navegar em privado, abra um separador de navegação anónima</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
@@ -1122,6 +1127,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9137526406337347448">Serviços Google</translation>
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
 <translation id="9157836665414082580">Supr. caixas diálogo</translation>
+<translation id="9162432979321511934">Ative o Preenchimento automático de palavras-passe</translation>
 <translation id="9177438225260810839">Procurar nos separadores abertos</translation>
 <translation id="9188680907066685419">Terminar sessão na conta gerida</translation>
 <translation id="9193147658040604536">Arrastar para aqui para fixar o separador</translation>

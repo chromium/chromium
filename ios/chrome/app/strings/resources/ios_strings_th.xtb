@@ -439,6 +439,7 @@
 <translation id="4237377247299956313">แตะ<ph name="BEGIN_BOLD" />แอปเบราว์เซอร์เริ่มต้น<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">ป้อนรหัสผ่าน</translation>
 <translation id="4249955472157341256">จัดเรียงตามล่าสุด</translation>
+<translation id="4253168017788158739">หมายเหตุ</translation>
 <translation id="4263576668337963058">แสดงการทำงานของหน้าเว็บที่ใช้ได้</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{คุณได้ปิดคำเตือน {COUNT} รายการ}other{คุณได้ปิดคําเตือน {COUNT} รายการ}}</translation>
 <translation id="4272631900155121838">หากต้องการสแกนโค้ด QR ให้เปิดใช้กล้องถ่ายรูปจากการตั้งค่า</translation>
@@ -560,6 +561,7 @@
 <translation id="5118713593561876160">ความสนใจ</translation>
 <translation id="5118764316110575523">ปิด</translation>
 <translation id="5119391094379141756">เลือก Chrome</translation>
+<translation id="5121618895923301719">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว บันทึกหน้านี้ไว้ใน<ph name="BEGIN_LINK" />บุ๊กมาร์กอุปกรณ์เคลื่อนที่<ph name="END_LINK" />แล้ว</translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รหัส}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รหัส}}</translation>
 <translation id="5149188072385105201">เพิ่มรหัสผ่าน...</translation>
@@ -590,6 +592,7 @@
 <translation id="5386314158584363703">คุณจะเห็นเว็บไซต์ที่ติดตามที่นี่</translation>
 <translation id="5388358297987318779">เปิดภาพ</translation>
 <translation id="5407969256130905701">ยกเลิกการเปลี่ยนแปลง</translation>
+<translation id="5414763847370083940">คุณจะได้รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="5416022985862681400">7 วันที่ผ่านมา</translation>
 <translation id="5423269318075950257">ติดตามราคา</translation>
 <translation id="543338862236136125">แก้ไขรหัสผ่าน</translation>
@@ -1132,6 +1135,7 @@
 <translation id="952704832371081537">ยกเลิก</translation>
 <translation id="953008885340860025">Chrome ออกจากระบบแล้ว</translation>
 <translation id="959066944189734975">คุณกำลังติดตาม <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">ติดตามราคาของผลิตภัณฑ์ในร้านค้าออนไลน์ต่างๆ คุณจะได้รับการแจ้งเตือนเมื่อราคาลดลง</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">องค์กรอนุญาตให้คุณลงชื่อเข้าใช้ด้วยบัญชีบางบัญชีเท่านั้น ระบบซ่อนบัญชีที่ไม่ได้รับอนุญาตไว้</translation>
 <translation id="984509647832111802">การซิงค์ไม่ทำงาน</translation>

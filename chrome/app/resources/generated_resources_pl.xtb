@@ -379,6 +379,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1339009753652684748">Uruchamiaj Asystenta, mówiąc „OK Google”. Aby oszczędzać baterię, wybierz „Wł. (zalecane)”. Asystent będzie reagować tylko podczas ładowania urządzenia i wtedy, gdy będzie ono podłączone do zasilania.</translation>
 <translation id="13392265090583506">Ustawienia ułatwień dostępu</translation>
 <translation id="1340527397989195812">Wykonaj kopię zapasową multimediów zapisanych na urządzeniu, używając aplikacji Pliki.</translation>
+<translation id="1341701348342335220">Dobra robota!</translation>
 <translation id="1341871421050612057">Nie udało się zsynchronizować z kontem <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Przyznaj aplikacjom na Linuksa dostęp do urządzeń USB. Linux nie będzie pamiętać urządzenia USB po jego odłączeniu.</translation>
 <translation id="1343920184519992513">Kontynuuj od tego samego miejsca i otwórz konkretny zestaw stron</translation>
@@ -3612,6 +3613,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4232375817808480934">Konfigurowanie Kerberos</translation>
 <translation id="4235965441080806197">Anuluj logowanie</translation>
 <translation id="4236163961381003811">Znajdź więcej rozszerzeń</translation>
+<translation id="4237282663517880406">Pokazuj sugestie z Dysku Google</translation>
 <translation id="4241182343707213132">Uruchom ponownie, aby zaktualizować aplikacje organizacji</translation>
 <translation id="4242145785130247982">Funkcja nie obsługuje wielu certyfikatów klienta</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
@@ -3917,7 +3919,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4513872120116766993">Przewidywanie tekstu podczas pisania</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="451407183922382411">Technologia <ph name="COMPANY_NAME" /></translation>
-<translation id="451515744433878153">Usuń</translation>
 <translation id="4515872537870654449">Skontaktuj się z serwisem firmy Dell. Jeśli wentylator nie działa, stacja dokująca się wyłączy.</translation>
 <translation id="4518840066030486079">Styl trybu klawisza Shift</translation>
 <translation id="4519331665958994620">Strony mogą prosić o dostęp do kamery</translation>
