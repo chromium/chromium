@@ -35,13 +35,10 @@ struct IPCZ_ALIGN(8) DataPipeHeader {
   // The size in bytes of an element of this pipe.
   uint32_t element_size;
 
-  RingBuffer::SerializedState ring_buffer_state;
-
-  // Indicates whether the peer is known to be closed.
-  bool is_peer_closed;
-
   // Padding for alignment to an 8-byte boundary.
-  uint8_t padding[7];
+  uint32_t padding;
+
+  RingBuffer::SerializedState ring_buffer_state;
 };
 
 // Attempts to put a single (32-bit) integer into the given `portal`. Returns
@@ -136,8 +133,7 @@ DataPipe::DataPipe(EndpointType endpoint_type,
     : endpoint_type_(endpoint_type),
       element_size_(config.element_size),
       buffer_(std::move(buffer)),
-      data_(std::move(mapping)),
-      is_peer_closed_(config.is_peer_closed) {
+      data_(std::move(mapping)) {
   DCHECK_GT(element_size_, 0u);
   DCHECK_LE(element_size_, std::numeric_limits<uint32_t>::max());
   DCHECK_GT(config.byte_capacity, 0u);
@@ -196,13 +192,22 @@ absl::optional<DataPipe::Pair> DataPipe::CreatePair(const Config& config) {
   return pair;
 }
 
-void DataPipe::AdoptPortal(ScopedIpczHandle portal) {
-  auto wrapper = base::MakeRefCounted<PortalWrapper>(std::move(portal));
-  {
-    base::AutoLock lock(lock_);
-    DCHECK(!portal_);
-    portal_ = wrapper;
+bool DataPipe::AdoptPortal(ScopedIpczHandle portal) {
+  if (!portal.is_valid()) {
+    return false;
   }
+
+  IpczPortalStatus status = {.size = sizeof(status)};
+  if (GetIpczAPI().QueryPortalStatus(portal.get(), IPCZ_NO_FLAGS, nullptr,
+                                     &status) != IPCZ_RESULT_OK) {
+    return false;
+  }
+
+  base::AutoLock lock(lock_);
+  DCHECK(!portal_);
+  portal_ = base::MakeRefCounted<PortalWrapper>(std::move(portal));
+  is_peer_closed_ = (status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) != 0;
+  return true;
 }
 
 scoped_refptr<DataPipe::PortalWrapper> DataPipe::GetPortal() {
@@ -331,9 +336,6 @@ MojoResult DataPipe::ReadData(void* elements,
 
   // Filter for assorted configurations that aren't used in practice and which
   // therefore do not require support here.
-  if (!query && !discard && !elements) {
-    return MOJO_RESULT_INVALID_ARGUMENT;
-  }
   if ((peek && discard) || (query && (peek || discard))) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
@@ -352,6 +354,10 @@ MojoResult DataPipe::ReadData(void* elements,
     }
 
     if (num_bytes % element_size_ != 0 || !portal_) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+
+    if (!discard && !elements && data_size > 0) {
       return MOJO_RESULT_INVALID_ARGUMENT;
     }
 
@@ -494,7 +500,6 @@ bool DataPipe::Serialize(Transport& transmitter,
   header.endpoint_type = endpoint_type_;
   header.element_size = base::checked_cast<uint32_t>(element_size_);
   data_.Serialize(header.ring_buffer_state);
-  header.is_peer_closed = is_peer_closed_;
 
   auto buffer_data = data.subspan(sizeof(DataPipeHeader));
   if (!buffer_->Serialize(transmitter, buffer_data, handles)) {
@@ -540,9 +545,7 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
 
   auto endpoint = base::MakeRefCounted<DataPipe>(
       header.endpoint_type,
-      Config{.element_size = element_size,
-             .byte_capacity = buffer_size,
-             .is_peer_closed = header.is_peer_closed},
+      Config{.element_size = element_size, .byte_capacity = buffer_size},
       std::move(buffer), std::move(mapping));
   if (!endpoint->DeserializeRingBuffer(header.ring_buffer_state)) {
     return nullptr;
@@ -567,7 +570,7 @@ bool DataPipe::GetSignals(MojoHandleSignalsState& signals_state) {
     return false;
   }
 
-  if ((status.flags & IPCZ_PORTAL_STATUS_DEAD) != 0) {
+  if ((status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) != 0) {
     is_peer_closed_ = true;
   }
 

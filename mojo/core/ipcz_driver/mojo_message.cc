@@ -61,13 +61,10 @@ bool FixUpDataPipeHandles(std::vector<IpczHandle>& handles) {
   const size_t first_data_pipe_portal = handles.size() - data_pipes->size();
   for (size_t i = 0; i < data_pipes->size(); ++i) {
     const IpczHandle handle = handles[first_data_pipe_portal + i];
-    IpczPortalStatus status = {.size = sizeof(status)};
-    if (GetIpczAPI().QueryPortalStatus(handle, IPCZ_NO_FLAGS, nullptr,
-                                       &status) != IPCZ_RESULT_OK) {
+    if (!data_pipes[i]->AdoptPortal(ScopedIpczHandle(handle))) {
       // Not a portal, so not a valid MojoMessage parcel.
       return false;
     }
-    data_pipes[i]->AdoptPortal(ScopedIpczHandle(handle));
   }
   handles.resize(first_data_pipe_portal);
   return true;

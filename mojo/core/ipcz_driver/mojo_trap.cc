@@ -493,13 +493,6 @@ IpczResult MojoTrap::ArmTrigger(Trigger& trigger, MojoTrapEvent& event) {
                         trigger.ipcz_context(), IPCZ_NO_FLAGS, nullptr,
                         &satisfied_flags, &status);
   if (result == IPCZ_RESULT_OK) {
-    // A data pipe's state may have already changed since we flushed updates
-    // above, so we need to check again after installing the trap.
-    if (data_pipe &&
-        !CanArmDataPipeTrigger(*data_pipe, trigger.signals, event)) {
-      return MOJO_RESULT_FAILED_PRECONDITION;
-    }
-
     trigger.armed = true;
     return MOJO_RESULT_OK;
   }

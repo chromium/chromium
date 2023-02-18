@@ -109,8 +109,9 @@ class DataPipe : public Object<DataPipe> {
   bool is_consumer() const { return endpoint_type_ == EndpointType::kConsumer; }
 
   // Provides this DataPipe instance with a portal to own and use for I/O. Must
-  // only be called on a DataPipe that does not already have a portal.
-  void AdoptPortal(ScopedIpczHandle portal);
+  // only be called on a DataPipe that does not already have a portal. Returns
+  // true if successful or false if `portal` is not a valid portal handle.
+  bool AdoptPortal(ScopedIpczHandle portal);
 
   // Returns a reference to the underlying portal which can be safely used from
   // any thread. May return null if no portal has been adopted by this DataPipe
@@ -155,10 +156,14 @@ class DataPipe : public Object<DataPipe> {
   // the latter case `signals_state` is zeroed out.
   bool GetSignals(MojoHandleSignalsState& signals_state);
 
+  // Flushes any incoming status updates from the peer. Note that this may
+  // trigger trap events before returning, since it can modify the state of the
+  // control portal.
+  void FlushUpdatesFromPeer() LOCKS_EXCLUDED(lock_);
+
  private:
   ~DataPipe() override;
 
-  void FlushUpdatesFromPeer() LOCKS_EXCLUDED(lock_);
   bool DeserializeRingBuffer(const RingBuffer::SerializedState& state);
 
   const EndpointType endpoint_type_;

@@ -416,6 +416,13 @@ class Router : public RefCounted {
 
   absl::Mutex mutex_;
 
+  // Indicates whether the opposite end of the route has been closed. This is
+  // the source of truth for peer closure status. The status bit
+  // (IPCZ_PORTAL_STATUS_PEER_CLOSED) within `status_`, and the corresponding
+  // trap condition (IPCZ_TRAP_PEER_CLOSED) are only raised when this is true
+  // AND we are not expecting any more in-flight parcels.
+  bool is_peer_closed_ ABSL_GUARDED_BY(mutex_) = false;
+
   // The current computed portal status to be reflected by a portal controlling
   // this router, iff this is a terminal router.
   IpczPortalStatus status_ ABSL_GUARDED_BY(mutex_) = {sizeof(status_)};
