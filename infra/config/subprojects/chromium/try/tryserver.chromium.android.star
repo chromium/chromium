@@ -131,11 +131,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-try_.builder(
-    name = "android-asan",
-    mirrors = ["ci/android-asan"],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
+# TODO(crbug.com/1367523): Reeanble this builder once the reboot issue is resolved.
+# try_.builder(
+#     name = "android-asan",
+#     mirrors = ["ci/android-asan"],
+#     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+# )
 
 try_.builder(
     name = "android-bfcache-rel",
