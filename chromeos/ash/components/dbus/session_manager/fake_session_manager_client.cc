@@ -375,6 +375,9 @@ void FakeSessionManagerClient::StartDeviceWipe() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_start_device_wipe_callback_));
   }
+  for (auto& observer : observers_) {
+    observer.PowerwashRequested(/*admin_requested*/ false);
+  }
 }
 
 void FakeSessionManagerClient::StartRemoteDeviceWipe(
@@ -384,6 +387,9 @@ void FakeSessionManagerClient::StartRemoteDeviceWipe(
   if (!on_start_device_wipe_callback_.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_start_device_wipe_callback_));
+  }
+  for (auto& observer : observers_) {
+    observer.PowerwashRequested(/*admin_requested*/ true);
   }
 }
 

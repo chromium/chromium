@@ -18,6 +18,7 @@
 namespace reporting {
 class MetricReportingManager;
 class UserAddedRemovedReporter;
+class OsUpdatesReporter;
 }  // namespace reporting
 
 namespace ash {
@@ -162,6 +163,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   // Object that reports user lock/unlock events to the server, protected for
   // testing.
   std::unique_ptr<ash::reporting::LockUnlockReporter> lock_unlock_reporter_;
+
+  // Object that handles reporting of ChromeOS updates, protected for
+  // testing.
+  std::unique_ptr<reporting::OsUpdatesReporter> os_updates_reporter_;
 
  private:
   // Saves the state keys received from |session_manager_client_|.

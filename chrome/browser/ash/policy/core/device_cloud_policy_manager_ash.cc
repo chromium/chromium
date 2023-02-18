@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
+#include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"
 #include "chrome/browser/ash/policy/reporting/user_added_removed/user_added_removed_reporter.h"
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
@@ -130,6 +131,7 @@ void DeviceCloudPolicyManagerAsh::RemoveDeviceCloudPolicyManagerObserver(
 
 // Keep clean up order as the reversed creation order.
 void DeviceCloudPolicyManagerAsh::Shutdown() {
+  os_updates_reporter_.reset();
   metric_reporting_manager_.reset();
   lock_unlock_reporter_.reset();
   login_logout_reporter_.reset();
@@ -254,6 +256,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
         install_attributes->GetDeviceId(), task_runner_);
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
+    os_updates_reporter_ = reporting::OsUpdatesReporter::Create();
   }
 
   NotifyConnected();

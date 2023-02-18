@@ -365,6 +365,9 @@ class SessionManagerClientImpl : public SessionManagerClient {
   void StartDeviceWipe() override {
     SimpleMethodCallToSessionManager(
         login_manager::kSessionManagerStartDeviceWipe);
+    for (auto& observer : observers_) {
+      observer.PowerwashRequested(/*admin_requested*/ false);
+    }
   }
 
   void StartRemoteDeviceWipe(
@@ -380,6 +383,9 @@ class SessionManagerClientImpl : public SessionManagerClient {
     session_manager_proxy_->CallMethod(&method_call,
                                        dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                                        base::DoNothing());
+    for (auto& observer : observers_) {
+      observer.PowerwashRequested(/*admin_requested*/ true);
+    }
   }
 
   void ClearForcedReEnrollmentVpd(

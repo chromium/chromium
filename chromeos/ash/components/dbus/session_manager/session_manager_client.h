@@ -106,6 +106,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
     // Called when screen lock state is updated.
     virtual void ScreenLockedStateUpdated() {}
+
+    // Called when a powerwash is requested.
+    virtual void PowerwashRequested(bool admin_requested) {}
   };
 
   // Interface for performing actions on behalf of the stub implementation.
