@@ -149,6 +149,7 @@ source_set("unit_tests") {
     ":grpc_service",
     ":http_connection_client",
     "//base/test:test_support",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:test_support",

@@ -5,7 +5,9 @@
 #include "chromeos/ash/services/libassistant/speaker_id_enrollment_controller.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
@@ -57,6 +59,12 @@ class AssistantSpeakerIdEnrollmentControllerTest : public ::testing::Test {
       const AssistantSpeakerIdEnrollmentControllerTest&) = delete;
   ~AssistantSpeakerIdEnrollmentControllerTest() override = default;
 
+  void SetUp() override {
+    // TODO(b/269803444): Reenable tests for LibAssistantV2.
+    feature_list_.InitAndDisableFeature(
+        assistant::features::kEnableLibAssistantV2);
+  }
+
   mojom::SpeakerIdEnrollmentController& controller() {
     return service_tester_.speaker_id_enrollment_controller();
   }
@@ -79,11 +87,12 @@ class AssistantSpeakerIdEnrollmentControllerTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
+  base::test::ScopedFeatureList feature_list_;
   LibassistantServiceTester service_tester_;
 };
 
 TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
-       StartShouldBeANoopIfLibassistantIsNotStarted) {
+       StartShouldBeANoopIfLibassistantIsNotStarted_V1) {
   StrictMock<SpeakerIdEnrollmentClientMock> client;
 
   controller().StartSpeakerIdEnrollment("user-id",
@@ -104,7 +113,7 @@ TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
 }
 
 TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
-       ShouldBeAbleToStartEnrollment) {
+       ShouldBeAbleToStartEnrollment_V1) {
   service_tester().Start();
   StrictMock<SpeakerIdEnrollmentClientMock> client;
 
@@ -119,7 +128,7 @@ TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
 }
 
 TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
-       ShouldBeAbleToStopEnrollment) {
+       ShouldBeAbleToStopEnrollment_V1) {
   service_tester().Start();
   StrictMock<SpeakerIdEnrollmentClientMock> client;
 
@@ -135,7 +144,7 @@ TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
 }
 
 TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
-       ShouldPassEnrollmentUpdatesToClient) {
+       ShouldPassEnrollmentUpdatesToClient_V1) {
   service_tester().Start();
   StrictMock<SpeakerIdEnrollmentClientMock> client;
 
@@ -175,7 +184,7 @@ TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
 }
 
 TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
-       ShouldStartSecondEnrollmentEvenIfFirstIsOngoing) {
+       ShouldStartSecondEnrollmentEvenIfFirstIsOngoing_V1) {
   service_tester().Start();
 
   StrictMock<SpeakerIdEnrollmentClientMock> first_client;
@@ -209,7 +218,7 @@ TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
 
 TEST_F(
     AssistantSpeakerIdEnrollmentControllerTest,
-    GetSpeakerIdEnrollmentStatusShouldReturnFalseIfLibassistantIsNotStarted) {
+    GetSpeakerIdEnrollmentStatusShouldReturnFalseIfLibassistantIsNotStarted_V1) {
   base::MockCallback<GetSpeakerIdEnrollmentStatusCallback> callback;
 
   EXPECT_CALL(callback, Run).WillOnce([](auto response) {
@@ -222,7 +231,7 @@ TEST_F(
 }
 
 TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
-       ShouldReturnSpeakerIdEnrollmentStatus) {
+       ShouldReturnSpeakerIdEnrollmentStatus_V1) {
   service_tester().Start();
 
   base::MockCallback<GetSpeakerIdEnrollmentStatusCallback> callback;

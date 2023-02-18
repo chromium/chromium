@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
@@ -101,8 +102,12 @@ class AssistantClientV1Test : public testing::Test {
 
 TEST_F(AssistantClientV1Test, ShouldNotifyServicesStarted) {
   MockServicesStatusObserver services_status_observer;
-  EXPECT_CALL(services_status_observer,
-              OnServicesStatusChanged(ServicesStatus::ONLINE_BOOTING_UP));
+
+  // If LibAssistantV2 is enabled, this will no be called.
+  if (!assistant::features::IsLibAssistantV2Enabled()) {
+    EXPECT_CALL(services_status_observer,
+                OnServicesStatusChanged(ServicesStatus::ONLINE_BOOTING_UP));
+  }
 
   StartServices(&services_status_observer);
 }

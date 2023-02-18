@@ -7,6 +7,7 @@
 
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,6 +32,11 @@ class MediaController : public mojom::MediaController,
 
   // AssistantClientObserver implementation:
   void OnAssistantClientRunning(AssistantClient* assistant_client) override;
+
+  void SendGrpcMessageForTesting(
+      const ::assistant::api::OnDeviceStateEventRequest& request);
+  void SendGrpcMessageForTesting(
+      const ::assistant::api::OnMediaActionFallbackEventRequest& request);
 
  private:
   class GrpcEventsObserver;

@@ -70,6 +70,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
 
   ServiceController& service_controller() { return service_controller_; }
 
+  DisplayController& GetDisplayControllerForTesting() {
+    return display_controller_;
+  }
+
  private:
   mojo::Receiver<mojom::LibassistantService> receiver_;
   mojo::Remote<mojom::PlatformDelegate> platform_delegate_;

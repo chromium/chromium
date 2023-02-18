@@ -253,4 +253,14 @@ void MediaController::OnAssistantClientRunning(
   assistant_client->AddMediaActionFallbackEventObserver(events_observer_.get());
 }
 
+void MediaController::SendGrpcMessageForTesting(
+    const ::assistant::api::OnDeviceStateEventRequest& request) {
+  events_observer_->OnGrpcMessage(request);
+}
+
+void MediaController::SendGrpcMessageForTesting(
+    const ::assistant::api::OnMediaActionFallbackEventRequest& request) {
+  events_observer_->OnGrpcMessage(request);
+}
+
 }  // namespace ash::libassistant

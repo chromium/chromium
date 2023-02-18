@@ -5,6 +5,8 @@
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 
 #include "base/base_paths.h"
+#include "chromeos/ash/services/libassistant/display_connection.h"
+#include "chromeos/ash/services/libassistant/display_controller.h"
 #include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/service_controller.h"
 #include "chromeos/ash/services/libassistant/test_support/fake_libassistant_factory.h"
@@ -102,6 +104,11 @@ mojo::PendingReceiver<mojom::NotificationDelegate>
 LibassistantServiceTester::GetNotificationDelegatePendingReceiver() {
   DCHECK(pending_notification_delegate_.is_valid());
   return std::move(pending_notification_delegate_);
+}
+
+DisplayConnection& LibassistantServiceTester::GetDisplayConnection() {
+  return service_->GetDisplayControllerForTesting()
+      .GetDisplayConnectionForTesting();
 }
 
 void LibassistantServiceTester::FlushForTesting() {

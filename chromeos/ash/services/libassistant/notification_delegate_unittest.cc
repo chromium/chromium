@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
@@ -79,6 +81,10 @@ class NotificationDelegateTest : public ::testing::Test {
   ~NotificationDelegateTest() override = default;
 
   void SetUp() override {
+    // TODO(b/269803444): Reenable tests for LibAssistantV2.
+    feature_list_.InitAndDisableFeature(
+        assistant::features::kEnableLibAssistantV2);
+
     delegate_mock_.Bind(
         service_tester_.GetNotificationDelegatePendingReceiver());
     service_tester_.Start();
@@ -104,12 +110,13 @@ class NotificationDelegateTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
+  base::test::ScopedFeatureList feature_list_;
   ::testing::StrictMock<NotificationDelegateMock> delegate_mock_;
   LibassistantServiceTester service_tester_;
   std::unique_ptr<CrosActionModuleHelper> action_module_helper_;
 };
 
-TEST_F(NotificationDelegateTest, ShouldInvokeAddOrUpdateNotification) {
+TEST_F(NotificationDelegateTest, ShouldInvokeAddOrUpdateNotification_V1) {
   chromeos::assistant::action::Notification input_notification{
       /*title=*/"title",
       /*text=*/"text",
@@ -144,7 +151,7 @@ TEST_F(NotificationDelegateTest, ShouldInvokeAddOrUpdateNotification) {
   delegate_mock().FlushForTesting();
 }
 
-TEST_F(NotificationDelegateTest, ShouldInvokeRemoveAllNotifications) {
+TEST_F(NotificationDelegateTest, ShouldInvokeRemoveAllNotifications_V1) {
   EXPECT_CALL(delegate_mock(), RemoveAllNotifications(/*from_server=*/true));
 
   // Pass in empty |grouping_key| should trigger all notifications being
@@ -153,7 +160,8 @@ TEST_F(NotificationDelegateTest, ShouldInvokeRemoveAllNotifications) {
   delegate_mock().FlushForTesting();
 }
 
-TEST_F(NotificationDelegateTest, ShouldInvokeRemoveNotificationByGroupingKey) {
+TEST_F(NotificationDelegateTest,
+       ShouldInvokeRemoveNotificationByGroupingKey_V1) {
   const std::string grouping_id = "grouping-id";
   EXPECT_CALL(delegate_mock(), RemoveNotificationByGroupingKey(
                                    /*id=*/grouping_id, /*from_server=*/true));

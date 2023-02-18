@@ -55,8 +55,17 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
                              public testing::WithParamInterface<bool> {
  public:
   AssistantBrowserTest() {
+    // Disable V2 feature because LibAssistant V2 binary does not run on linux
+    // bot.
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kEnableLibAssistantDlc);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kEnableLibAssistantDlc},
+          /*disabled_features=*/{features::kEnableLibAssistantV2});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kEnableLibAssistantDlc,
+                                 features::kEnableLibAssistantV2});
     }
 
     // Do not log to file in test. Otherwise multiple tests may create/delete

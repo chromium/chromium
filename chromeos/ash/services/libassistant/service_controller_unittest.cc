@@ -10,8 +10,10 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom.h"
@@ -186,14 +188,26 @@ class AssistantServiceControllerTest : public testing::Test {
   void Start() {
     service_controller().Start();
     libassistant_factory_.assistant_manager().SetMediaManager(&media_manager_);
+
+    // Similuate gRPC heartbeat calls.
+    if (assistant::features::IsLibAssistantV2Enabled()) {
+      service_controller().OnServicesStatusChanged(
+          ServicesStatus::ONLINE_BOOTING_UP);
+    }
     RunUntilIdle();
   }
 
   void SendOnStartFinished() {
-    auto* device_state_listener =
-        libassistant_factory_.assistant_manager().device_state_listener();
-    ASSERT_NE(device_state_listener, nullptr);
-    device_state_listener->OnStartFinished();
+    // Similuate gRPC heartbeat calls.
+    if (assistant::features::IsLibAssistantV2Enabled()) {
+      service_controller().OnServicesStatusChanged(
+          ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE);
+    } else {
+      auto* device_state_listener =
+          libassistant_factory_.assistant_manager().device_state_listener();
+      ASSERT_NE(device_state_listener, nullptr);
+      device_state_listener->OnStartFinished();
+    }
     RunUntilIdle();
   }
 
@@ -211,6 +225,9 @@ class AssistantServiceControllerTest : public testing::Test {
   SettingsControllerMock& settings_controller_mock() {
     return settings_controller_;
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory() {
@@ -341,7 +358,11 @@ TEST_F(AssistantServiceControllerTest,
             service_controller().assistant_client()->assistant_manager());
 }
 
-TEST_F(AssistantServiceControllerTest, ShouldBeNoopWhenCallingStartTwice) {
+TEST_F(AssistantServiceControllerTest, ShouldBeNoopWhenCallingStartTwice_V1) {
+  // TODO(b/269803444): Reenable test for LibAssistantV2.
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
   // Note: This is the preferred behavior for services exposed through mojom.
   Initialize();
   Start();
@@ -416,8 +437,13 @@ TEST_F(AssistantServiceControllerTest,
   RunUntilIdle();
 }
 
-TEST_F(AssistantServiceControllerTest,
-       ShouldCreateButNotPublishAssistantManagerInternalWhenCallingInitialize) {
+TEST_F(
+    AssistantServiceControllerTest,
+    ShouldCreateButNotPublishAssistantManagerInternalWhenCallingInitialize_V1) {
+  // TODO(b/269803444): Reenable test for LibAssistantV2.
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
   EXPECT_EQ(nullptr, service_controller().assistant_client());
 
   Initialize();
@@ -428,7 +454,11 @@ TEST_F(AssistantServiceControllerTest,
 }
 
 TEST_F(AssistantServiceControllerTest,
-       ShouldPublishAssistantManagerInternalWhenCallingStart) {
+       ShouldPublishAssistantManagerInternalWhenCallingStart_V1) {
+  // TODO(b/269803444): Reenable test for LibAssistantV2.
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
   Initialize();
   Start();
 
@@ -438,7 +468,11 @@ TEST_F(AssistantServiceControllerTest,
 }
 
 TEST_F(AssistantServiceControllerTest,
-       ShouldDestroyAssistantManagerInternalWhenCallingStop) {
+       ShouldDestroyAssistantManagerInternalWhenCallingStop_V1) {
+  // TODO(b/269803444): Reenable test for LibAssistantV2.
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
   Initialize();
 
   EXPECT_NE(

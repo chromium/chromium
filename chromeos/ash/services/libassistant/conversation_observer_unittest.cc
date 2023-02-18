@@ -131,7 +131,7 @@ class AssistantConversationObserverTest : public ::testing::Test {
 
     action_module_helper_ = std::make_unique<CrosActionModuleHelper>(
         static_cast<chromeos::assistant::action::CrosActionModule*>(
-            service_tester_.assistant_manager_internal().action_module()));
+            controller().action_module()));
   }
 
   assistant_client::ConversationStateListener& conversation_state_listener() {

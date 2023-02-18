@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/libassistant_service.h"
 #include "chromeos/ash/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
@@ -76,6 +78,10 @@ class AuthenticationStateObserverTest : public ::testing::Test {
   ~AuthenticationStateObserverTest() override = default;
 
   void SetUp() override {
+    // TODO(b/269803444): Reenable tests for LibAssistantV2.
+    feature_list_.InitAndDisableFeature(
+        assistant::features::kEnableLibAssistantV2);
+
     service_tester_.service().AddAuthenticationStateObserver(
         observer_mock_.BindNewPipeAndPassRemote());
 
@@ -97,11 +103,12 @@ class AuthenticationStateObserverTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
+  base::test::ScopedFeatureList feature_list_;
   ::testing::StrictMock<AuthenticationStateObserverMock> observer_mock_;
   LibassistantServiceTester service_tester_;
 };
 
-TEST_F(AuthenticationStateObserverTest, ShouldReportAuthenticationErrors) {
+TEST_F(AuthenticationStateObserverTest, ShouldReportAuthenticationErrors_V1) {
   for (int code : GetAuthenticationErrorCodes()) {
     EXPECT_CALL(observer_mock(), OnAuthenticationError());
     assistant_manager_delegate().OnCommunicationError(code);
@@ -112,7 +119,8 @@ TEST_F(AuthenticationStateObserverTest, ShouldReportAuthenticationErrors) {
   }
 }
 
-TEST_F(AuthenticationStateObserverTest, ShouldIgnoreNonAuthenticationErrors) {
+TEST_F(AuthenticationStateObserverTest,
+       ShouldIgnoreNonAuthenticationErrors_V1) {
   std::vector<int> non_authentication_errors = GetNonAuthenticationErrorCodes();
 
   // check to ensure these are not authentication errors.

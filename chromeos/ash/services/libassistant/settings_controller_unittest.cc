@@ -5,7 +5,9 @@
 #include "chromeos/ash/services/libassistant/settings_controller.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/test_support/fake_assistant_client.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
@@ -61,6 +63,9 @@ class AssistantClientMock : public FakeAssistantClient {
   MOCK_METHOD(void, SetDeviceAttributes, (bool dark_mode_enabled));
   MOCK_METHOD(void, EnableListening, (bool listening_enabled));
   MOCK_METHOD(void, SetAuthenticationInfo, (const AuthTokens& tokens));
+  MOCK_METHOD(void,
+              SendDisplayRequest,
+              (const OnDisplayRequestRequest& request));
 };
 
 }  // namespace
@@ -109,6 +114,9 @@ class AssistantSettingsControllerTest : public testing::Test {
   }
 
   AssistantClientMock& assistant_client_mock() { return *assistant_client_; }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
@@ -207,7 +215,9 @@ TEST_F(AssistantSettingsControllerTest,
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   CreateLibassistant();
 
-  EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
+  if (!assistant::features::IsLibAssistantV2Enabled()) {
+    EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
+  }
   EXPECT_NO_CALLS(assistant_client_mock(), SetDeviceAttributes);
 
   controller().SetLocale("locale");
@@ -239,7 +249,10 @@ TEST_F(AssistantSettingsControllerTest,
 }
 
 TEST_F(AssistantSettingsControllerTest,
-       ShouldSetInternalOptionsWhenDarkModeEnabledIsUpdated) {
+       ShouldSetInternalOptionsWhenDarkModeEnabledIsUpdated_V1) {
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
@@ -252,7 +265,27 @@ TEST_F(AssistantSettingsControllerTest,
 }
 
 TEST_F(AssistantSettingsControllerTest,
-       ShouldSetInternalOptionsAndLocaleWhenLibassistantIsStarted) {
+       ShouldSetInternalOptionsWhenDarkModeEnabledIsUpdated_V2) {
+  feature_list_.InitAndEnableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
+  IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
+  controller().SetLocale("locale");
+  controller().SetSpokenFeedbackEnabled(true);
+  CreateLibassistant();
+
+  EXPECT_CALL(assistant_client_mock(), SendDisplayRequest);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
+  EXPECT_NO_CALLS(assistant_client_mock(), SetDeviceAttributes);
+
+  controller().SetDarkModeEnabled(false);
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       ShouldSetInternalOptionsAndLocaleWhenLibassistantIsStarted_V1) {
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
   controller().SetDarkModeEnabled(false);
@@ -261,6 +294,22 @@ TEST_F(AssistantSettingsControllerTest,
   EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
 
   CreateLibassistant();
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       ShouldSetInternalOptionsAndLocaleWhenLibassistantIsRunning_V2) {
+  feature_list_.InitAndEnableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
+  CreateLibassistant();
+  controller().SetLocale("locale");
+  controller().SetSpokenFeedbackEnabled(true);
+  controller().SetDarkModeEnabled(false);
+
+  EXPECT_CALL(assistant_client_mock(), SetLocaleOverride);
+  EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
+
+  CreateAndRunningLibassistant();
 }
 
 TEST_F(AssistantSettingsControllerTest,
@@ -359,12 +408,28 @@ TEST_F(AssistantSettingsControllerTest, ShouldSetListeningEnabled) {
 }
 
 TEST_F(AssistantSettingsControllerTest,
-       ShouldSetListeningEnabledWhenLibassistantIsStarted) {
+       ShouldSetListeningEnabledWhenLibassistantIsStarted_V1) {
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
   controller().SetListeningEnabled(false);
 
   EXPECT_CALL(assistant_client_mock(), EnableListening(false));
 
   CreateLibassistant();
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       ShouldSetListeningEnabledWhenLibassistantIsRunning_V2) {
+  feature_list_.InitAndEnableFeature(
+      assistant::features::kEnableLibAssistantV2);
+
+  CreateLibassistant();
+  controller().SetListeningEnabled(false);
+
+  EXPECT_CALL(assistant_client_mock(), EnableListening(false));
+
+  RunningLibassistant();
 }
 
 TEST_F(AssistantSettingsControllerTest,

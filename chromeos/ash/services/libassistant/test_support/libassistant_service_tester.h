@@ -24,6 +24,7 @@
 namespace ash::libassistant {
 
 class AssistantClient;
+class DisplayConnection;
 class FakeLibassistantFactory;
 
 // Helper class that makes it easier to test |LibassistantService|.
@@ -63,6 +64,8 @@ class LibassistantServiceTester {
 
   mojo::PendingReceiver<mojom::NotificationDelegate>
   GetNotificationDelegatePendingReceiver();
+
+  DisplayConnection& GetDisplayConnection();
 
   void FlushForTesting();
 

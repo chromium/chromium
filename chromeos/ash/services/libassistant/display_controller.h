@@ -62,6 +62,10 @@ class DisplayController
       const std::vector<assistant::AndroidAppInfo>& apps_info,
       const chromeos::assistant::InteractionInfo& interaction) override;
 
+  DisplayConnection& GetDisplayConnectionForTesting() {
+    return *display_connection_.get();
+  }
+
  private:
   class EventObserver;
 
