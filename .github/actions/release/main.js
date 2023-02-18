@@ -2,7 +2,6 @@
 const {
   getLatestRevision,
   sendBuildTestRequest,
-  spawnChecked,
   newTask,
 } = require("../utils");
 

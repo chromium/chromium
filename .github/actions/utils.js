@@ -3,12 +3,8 @@ const http = require("http");
 const https = require("https");
 const { spawnSync } = require("child_process");
 
-const chromium = `${__dirname}/../..`;
-
 function getLatestRevision() {
-  return spawnChecked("git", ["rev-parse", "--short=12", "HEAD"], { cwd: chromium })
-    .stdout.toString()
-    .trim();
+  return process.env.GITHUB_SHA.substring(0, 12);
 }
 
 function sendBuildTestRequest(contents) {

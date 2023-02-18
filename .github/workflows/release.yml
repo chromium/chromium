@@ -13,7 +13,10 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_API_KEY }}
           version: 1.28.0
-      - uses: actions/checkout@v2
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: .github
+          branch: ${{ github.head_ref || github.ref_name }}
       - uses: ./.github/actions/release
         env:
           BUILD_TEST_AUTHORIZATION: ${{ secrets.BUILD_TEST_AUTHORIZATION }}
