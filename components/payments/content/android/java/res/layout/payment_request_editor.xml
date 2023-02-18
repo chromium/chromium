@@ -37,8 +37,8 @@ found in the LICENSE file.
             android:id="@+id/contents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/pref_autofill_content_spacing"
-            android:paddingEnd="@dimen/pref_autofill_content_spacing"
+            android:layout_marginStart="@dimen/pref_autofill_content_spacing"
+            android:layout_marginEnd="@dimen/pref_autofill_content_spacing"
             android:orientation="vertical" />
 
     </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>

@@ -15,6 +15,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         android:text="@string/payments_required_field_message" />
 
@@ -24,6 +26,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
 
     <include layout="@layout/autofill_editor_base_buttons" />
