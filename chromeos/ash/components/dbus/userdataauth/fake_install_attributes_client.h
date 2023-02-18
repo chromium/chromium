@@ -7,8 +7,11 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 
+#include <cstdint>
+
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -46,6 +49,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeInstallAttributesClient
   void SetFirmwareManagementParameters(
       const ::user_data_auth::SetFirmwareManagementParametersRequest& request,
       SetFirmwareManagementParametersCallback callback) override;
+  void GetFirmwareManagementParameters(
+      const ::user_data_auth::GetFirmwareManagementParametersRequest& request,
+      GetFirmwareManagementParametersCallback callback) override;
   absl::optional<::user_data_auth::InstallAttributesGetReply>
   BlockingInstallAttributesGet(
       const ::user_data_auth::InstallAttributesGetRequest& request) override;
@@ -89,6 +95,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeInstallAttributesClient
   bool LoadInstallAttributes();
 
   // FWMP related:
+
+  // Firmware management parameters.
+  absl::optional<uint32_t> fwmp_flags_;
 
   // Number of times RemoveFirmwareManagementParameters() is called.
   int remove_firmware_management_parameters_from_tpm_call_count_ = 0;

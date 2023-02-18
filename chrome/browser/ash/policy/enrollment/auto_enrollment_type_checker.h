@@ -85,9 +85,13 @@ class AutoEnrollmentTypeChecker {
   // is not known yet whether Initial Enrollment should be done because the
   // system clock has not been synchronized yet. In this case, the caller is
   // supposed to call this again after the system clock has been synchronized.
+  //
+  // `dev_disable_boot == true` forces FRE unless explicitly disabled via
+  // commandline flag.
   static CheckType DetermineAutoEnrollmentCheckType(
       bool is_system_clock_synchronized,
-      ash::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider,
+      bool dev_disable_boot);
 
  private:
   // Requirement for initial state determination.
@@ -105,7 +109,8 @@ class AutoEnrollmentTypeChecker {
 
   // Returns requirement for FRE.
   static FRERequirement GetFRERequirement(
-      ash::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider,
+      bool dev_disable_boot);
 
   // Returns requirement for initial state determination.
   static InitialStateDeterminationRequirement

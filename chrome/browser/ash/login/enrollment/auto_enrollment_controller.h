@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
@@ -23,6 +24,40 @@
 namespace ash {
 
 class SystemClockSyncObservation;
+class InstallAttributesClient;
+
+// Helper class to obtain FWMP flags.
+// See b/268267865.
+class EnrollmentFwmpHelper {
+ public:
+  using ResultCallback = base::OnceCallback<void(bool)>;
+
+  // `install_attributes_client` has to be not nullptr. It will be used to
+  // obtain the FWMP flags.
+  explicit EnrollmentFwmpHelper(
+      ash::InstallAttributesClient* install_attributes_client);
+  EnrollmentFwmpHelper(const EnrollmentFwmpHelper&) = delete;
+  EnrollmentFwmpHelper& operator=(const EnrollmentFwmpHelper&) = delete;
+  ~EnrollmentFwmpHelper();
+
+  // Read FWMP.dev_disable_boot (a.k.a. block_devmode) and return the
+  // value asynchronously via result_callback.
+  // Return `false` in case of errors (e.g. `install_attributes_client_` or
+  // FMWP not available).
+  void DetermineDevDisableBoot(ResultCallback result_callback);
+
+ private:
+  void RequestFirmwareManagementParameters(ResultCallback result_callback,
+                                           bool service_is_ready);
+
+  void OnGetFirmwareManagementParametersReceived(
+      ResultCallback result_callback,
+      absl::optional<user_data_auth::GetFirmwareManagementParametersReply>
+          reply);
+
+  base::raw_ptr<ash::InstallAttributesClient> install_attributes_client_;
+  base::WeakPtrFactory<EnrollmentFwmpHelper> weak_ptr_factory_{this};
+};
 
 // Drives the forced re-enrollment check (for historical reasons called
 // auto-enrollment check), running an AutoEnrollmentClient if appropriate to
@@ -88,6 +123,8 @@ class AutoEnrollmentController {
       policy::AutoEnrollmentClient::Factory* auto_enrollment_client_factory);
 
  private:
+  void OnDevDisableBootDetermined(bool dev_disable_boot);
+
   // Determines the FRE and Initial Enrollment requirement and starts initial
   // enrollment if necessary. If Initial Enrollment would be skipped and the
   // system clock has not been synchronized yet, triggers waiting for system
@@ -158,6 +195,8 @@ class AutoEnrollmentController {
   // `AutoEnrollmentClient`.
   policy::AutoEnrollmentClient::Factory* GetAutoEnrollmentClientFactory();
 
+  EnrollmentFwmpHelper enrollment_fwmp_helper_;
+
   // Unowned pointer. If not nullptr, this will be used to create the `client_`.
   // It can be set using `SetAutoEnrollmentClientFactoryForTesting`.
   policy::AutoEnrollmentClient::Factory*
@@ -182,6 +221,8 @@ class AutoEnrollmentController {
   // eventually, which is crucial to not block OOBE forever. See
   // http://crbug.com/433634 for background.
   base::OneShotTimer safeguard_timer_;
+
+  bool dev_disable_boot_ = false;
 
   // Which type of auto-enrollment check is being performed by this
   // `AutoEnrollmentClient`.

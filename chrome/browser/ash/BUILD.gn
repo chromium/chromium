@@ -5210,6 +5210,7 @@ source_set("unit_tests") {
     "login/easy_unlock/easy_unlock_service_regular_unittest.cc",
     "login/easy_unlock/easy_unlock_tpm_key_manager_unittest.cc",
     "login/easy_unlock/smartlock_feature_usage_metrics_unittest.cc",
+    "login/enrollment/auto_enrollment_controller_unittest.cc",
     "login/enrollment/enrollment_screen_unittest.cc",
     "login/enterprise_user_session_metrics_unittest.cc",
     "login/error_screens_histogram_helper_unittest.cc",

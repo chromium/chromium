@@ -163,11 +163,60 @@ void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
 
 }  // namespace
 
+EnrollmentFwmpHelper::EnrollmentFwmpHelper(
+    ash::InstallAttributesClient* install_attributes_client)
+    : install_attributes_client_(install_attributes_client) {}
+
+EnrollmentFwmpHelper::~EnrollmentFwmpHelper() = default;
+
+void EnrollmentFwmpHelper::DetermineDevDisableBoot(
+    ResultCallback result_callback) {
+  // D-Bus services may not be available yet, so we call
+  // WaitForServiceToBeAvailable. See https://crbug.com/841627.
+  install_attributes_client_->WaitForServiceToBeAvailable(base::BindOnce(
+      &EnrollmentFwmpHelper::RequestFirmwareManagementParameters,
+      weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
+}
+
+void EnrollmentFwmpHelper::RequestFirmwareManagementParameters(
+    ResultCallback result_callback,
+    bool service_is_ready) {
+  if (!service_is_ready) {
+    LOG(ERROR) << "Failed waiting for cryptohome D-Bus service availability.";
+    return std::move(result_callback).Run(false);
+  }
+
+  user_data_auth::GetFirmwareManagementParametersRequest request;
+  install_attributes_client_->GetFirmwareManagementParameters(
+      request,
+      base::BindOnce(
+          &EnrollmentFwmpHelper::OnGetFirmwareManagementParametersReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
+}
+
+void EnrollmentFwmpHelper::OnGetFirmwareManagementParametersReceived(
+    ResultCallback result_callback,
+    absl::optional<user_data_auth::GetFirmwareManagementParametersReply>
+        reply) {
+  if (!reply.has_value() ||
+      reply->error() !=
+          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    LOG(ERROR) << "Failed to retrieve firmware management parameters.";
+    return std::move(result_callback).Run(false);
+  }
+
+  const bool dev_disable_boot =
+      (reply->fwmp().flags() & cryptohome::DEVELOPER_DISABLE_BOOT);
+
+  std::move(result_callback).Run(dev_disable_boot);
+}
+
 AutoEnrollmentController::AutoEnrollmentController()
-    : psm_rlwe_client_factory_(
+    : enrollment_fwmp_helper_(ash::InstallAttributesClient::Get()),
+      psm_rlwe_client_factory_(
           base::BindRepeating(&policy::psm::RlweClientImpl::Create)) {}
 
-AutoEnrollmentController::~AutoEnrollmentController() {}
+AutoEnrollmentController::~AutoEnrollmentController() = default;
 
 void AutoEnrollmentController::Start() {
   LOG(WARNING) << "Starting auto-enrollment controller.";
@@ -203,6 +252,16 @@ void AutoEnrollmentController::Start() {
   // The system clock sync state is not known yet, and this
   // `AutoEnrollmentController` could wait for it if requested.
   system_clock_sync_state_ = SystemClockSyncState::kCanWaitForSync;
+
+  enrollment_fwmp_helper_.DetermineDevDisableBoot(
+      base::BindOnce(&AutoEnrollmentController::OnDevDisableBootDetermined,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AutoEnrollmentController::OnDevDisableBootDetermined(
+    bool dev_disable_boot) {
+  dev_disable_boot_ = dev_disable_boot;
+
   StartWithSystemClockSyncState();
 }
 
@@ -210,7 +269,7 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
   auto_enrollment_check_type_ =
       policy::AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
           IsSystemClockSynchronized(system_clock_sync_state_),
-          system::StatisticsProvider::GetInstance());
+          system::StatisticsProvider::GetInstance(), dev_disable_boot_);
   if (auto_enrollment_check_type_ ==
       policy::AutoEnrollmentTypeChecker::CheckType::kNone) {
     UpdateState(policy::AutoEnrollmentState::kNoEnrollment);

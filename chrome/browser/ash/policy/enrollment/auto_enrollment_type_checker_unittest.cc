@@ -368,7 +368,23 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   }
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest,
+// This is parametrized with dev_disable_boot.
+class AutoEnrollmentTypeCheckerTestP
+    : public AutoEnrollmentTypeCheckerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  // Helper function for all situations in which `dev_disable_boot == true` will
+  // be interpreted as `kForcedReEnrollmentExplicitlyRequired`.
+  AutoEnrollmentTypeChecker::CheckType fre_or(
+      AutoEnrollmentTypeChecker::CheckType other) {
+    return dev_disable_boot_ ? AutoEnrollmentTypeChecker::CheckType::
+                                   kForcedReEnrollmentExplicitlyRequired
+                             : other;
+  }
+  const bool dev_disable_boot_ = GetParam();
+};
+
+TEST_P(AutoEnrollmentTypeCheckerTestP,
        AutoEnrollmentCheckNotRequiredWhenDisabled) {
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollment,
@@ -377,17 +393,17 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
       ash::switches::kEnterpriseEnableInitialEnrollment,
       AutoEnrollmentTypeChecker::kInitialEnrollmentNever);
 
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/true,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/false,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::kNone);
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest,
+TEST_P(AutoEnrollmentTypeCheckerTestP,
        AutoEnrollmentCheckNotRequiredWhenGaiaServicesDisabled) {
   SetupFREEnabledAndRequired();
   SetupInitialEnrollmentEnabledAndRequired();
@@ -395,17 +411,17 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   command_line_.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kDisableGaiaServices);
 
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/true,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/false,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::kNone);
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest,
+TEST_P(AutoEnrollmentTypeCheckerTestP,
        AutoEnrollmentCheckNotRequiredWhenFREExplicitlyNotRequired) {
   SetupFREEnabled();
   // Set initial enrollment required. It checks that FRE has priority over
@@ -420,15 +436,17 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
             AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyNotRequired);
   EXPECT_EQ(
       AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination);
+          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_,
+          dev_disable_boot_),
+      fre_or(AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination));
   EXPECT_EQ(
       AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination);
+          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_,
+          dev_disable_boot_),
+      fre_or(AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination));
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest,
+TEST_P(AutoEnrollmentTypeCheckerTestP,
        AutoEnrollmentCheckNotRequiredWhenNoEnrollmentModulusSwitchPresent) {
   SetupFREEnabled();
   SetupInitialEnrollmentEnabledButNotRequired();
@@ -440,17 +458,17 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   command_line_.GetProcessCommandLine()->RemoveSwitch(
       ash::switches::kEnterpriseEnrollmentModulusLimit);
 
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/true,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/false,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::kNone);
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest,
+TEST_P(AutoEnrollmentTypeCheckerTestP,
        AutoEnrollmentCheckRequiredWhenFREExplicitlyRequired) {
   SetupFREEnabled();
   // Set initial enrollment required. It checks that FRE has priority over
@@ -460,19 +478,19 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kCheckEnrollmentKey, "1");
 
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::
-          kForcedReEnrollmentExplicitlyRequired);
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::
-          kForcedReEnrollmentExplicitlyRequired);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/true,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::
+                kForcedReEnrollmentExplicitlyRequired);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/false,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::
+                kForcedReEnrollmentExplicitlyRequired);
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest,
+TEST_P(AutoEnrollmentTypeCheckerTestP,
        AutoEnrollmentCheckRequiredWhenFREImplicitlyRequired) {
   SetupFREEnabled();
   // Set initial enrollment required. It checks that FRE has priority over
@@ -484,19 +502,19 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   fake_statistics_provider_.SetMachineStatistic(ash::system::kActivateDateKey,
                                                 kActivateDateValue);
 
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::
-          kForcedReEnrollmentImplicitlyRequired);
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::
-          kForcedReEnrollmentImplicitlyRequired);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/true,
+                &fake_statistics_provider_, dev_disable_boot_),
+            fre_or(AutoEnrollmentTypeChecker::CheckType::
+                       kForcedReEnrollmentImplicitlyRequired));
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/false,
+                &fake_statistics_provider_, dev_disable_boot_),
+            fre_or(AutoEnrollmentTypeChecker::CheckType::
+                       kForcedReEnrollmentImplicitlyRequired));
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest,
+TEST_P(AutoEnrollmentTypeCheckerTestP,
        AutoEnrollmentCheckNotRequiredWhenInitialEnrollmentDisabled) {
   SetupFREEnabledButNotRequired();
 
@@ -504,18 +522,18 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
       ash::switches::kEnterpriseEnableInitialEnrollment,
       AutoEnrollmentTypeChecker::kInitialEnrollmentNever);
 
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/false,
+                &fake_statistics_provider_, dev_disable_boot_),
+            fre_or(AutoEnrollmentTypeChecker::CheckType::kNone));
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/true,
+                &fake_statistics_provider_, dev_disable_boot_),
+            fre_or(AutoEnrollmentTypeChecker::CheckType::kNone));
 }
 
-TEST_F(
-    AutoEnrollmentTypeCheckerTest,
+TEST_P(
+    AutoEnrollmentTypeCheckerTestP,
     AutoEnrollmentCheckNotRequiredWhenInitialEnrollmentNotRequiredWhenVPDIsBroken) {
   // FRE turns required when it does not find serial number. Disable it
   // altogether.
@@ -525,18 +543,18 @@ TEST_F(
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kSerialNumberKeyForTest, "");
 
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/false,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/true,
+                &fake_statistics_provider_, dev_disable_boot_),
+            AutoEnrollmentTypeChecker::CheckType::kNone);
 }
 
-TEST_F(
-    AutoEnrollmentTypeCheckerTest,
+TEST_P(
+    AutoEnrollmentTypeCheckerTestP,
     AutoEnrollmentCheckNotRequiredWhenInitialEnrollmentNotRequiredWhenBrandCodeIsMissing) {
   SetupFREEnabledButNotRequired();
   SetupInitialEnrollmentEnabled();
@@ -546,18 +564,18 @@ TEST_F(
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 "");
 
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-      AutoEnrollmentTypeChecker::CheckType::kNone);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/false,
+                &fake_statistics_provider_, dev_disable_boot_),
+            fre_or(AutoEnrollmentTypeChecker::CheckType::kNone));
+  EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                /*is_system_clock_synchronized=*/true,
+                &fake_statistics_provider_, dev_disable_boot_),
+            fre_or(AutoEnrollmentTypeChecker::CheckType::kNone));
 }
 
-TEST_F(
-    AutoEnrollmentTypeCheckerTest,
+TEST_P(
+    AutoEnrollmentTypeCheckerTestP,
     AutoEnrollmentCheckUnknownWhenSystemClockNotSynchedAndNotRequiredWhenSynched) {
   SetupFREEnabledButNotRequired();
   SetupInitialEnrollmentEnabled();
@@ -576,15 +594,15 @@ TEST_F(
         ash::system::kEnterpriseManagementEmbargoEndDateKey,
         past_embargo_threshold);
 
-    EXPECT_EQ(
-        AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-            /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-        AutoEnrollmentTypeChecker::CheckType::
-            kUnknownDueToMissingSystemClockSync);
-    EXPECT_EQ(
-        AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-            /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-        AutoEnrollmentTypeChecker::CheckType::kNone);
+    EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                  /*is_system_clock_synchronized=*/false,
+                  &fake_statistics_provider_, dev_disable_boot_),
+              fre_or(AutoEnrollmentTypeChecker::CheckType::
+                         kUnknownDueToMissingSystemClockSync));
+    EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                  /*is_system_clock_synchronized=*/true,
+                  &fake_statistics_provider_, dev_disable_boot_),
+              fre_or(AutoEnrollmentTypeChecker::CheckType::kNone));
   }
 
   {
@@ -596,20 +614,20 @@ TEST_F(
         ash::system::kEnterpriseManagementEmbargoEndDateKey,
         before_embargo_threshold);
 
-    EXPECT_EQ(
-        AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-            /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-        AutoEnrollmentTypeChecker::CheckType::
-            kUnknownDueToMissingSystemClockSync);
-    EXPECT_EQ(
-        AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-            /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-        AutoEnrollmentTypeChecker::CheckType::kNone);
+    EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                  /*is_system_clock_synchronized=*/false,
+                  &fake_statistics_provider_, dev_disable_boot_),
+              fre_or(AutoEnrollmentTypeChecker::CheckType::
+                         kUnknownDueToMissingSystemClockSync));
+    EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+                  /*is_system_clock_synchronized=*/true,
+                  &fake_statistics_provider_, dev_disable_boot_),
+              fre_or(AutoEnrollmentTypeChecker::CheckType::kNone));
   }
 }
 
-TEST_F(
-    AutoEnrollmentTypeCheckerTest,
+TEST_P(
+    AutoEnrollmentTypeCheckerTestP,
     AutoEnrollmentCheckRequiredWhenInitialEnrollmentRequiredWhenEmbargoDateMissingOrPassed) {
   SetupFREEnabledButNotRequired();
   SetupInitialEnrollmentEnabled();
@@ -625,12 +643,16 @@ TEST_F(
         kMalformedEmbargoDateValue);
     EXPECT_EQ(
         AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-            /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-        AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination);
+            /*is_system_clock_synchronized=*/false, &fake_statistics_provider_,
+            dev_disable_boot_),
+        fre_or(
+            AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination));
     EXPECT_EQ(
         AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-            /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-        AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination);
+            /*is_system_clock_synchronized=*/true, &fake_statistics_provider_,
+            dev_disable_boot_),
+        fre_or(
+            AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination));
   }
 
   {
@@ -641,13 +663,21 @@ TEST_F(
         yeasterday_embargo);
     EXPECT_EQ(
         AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-            /*is_system_clock_synchronized=*/false, &fake_statistics_provider_),
-        AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination);
+            /*is_system_clock_synchronized=*/false, &fake_statistics_provider_,
+            dev_disable_boot_),
+        fre_or(
+            AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination));
     EXPECT_EQ(
         AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-            /*is_system_clock_synchronized=*/true, &fake_statistics_provider_),
-        AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination);
+            /*is_system_clock_synchronized=*/true, &fake_statistics_provider_,
+            dev_disable_boot_),
+        fre_or(
+            AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination));
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(AutoEnrollmentTypeCheckerTestSuite,
+                         AutoEnrollmentTypeCheckerTestP,
+                         testing::Bool());
 
 }  // namespace policy
