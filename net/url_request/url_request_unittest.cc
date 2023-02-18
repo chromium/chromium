@@ -17,7 +17,6 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -37,6 +36,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -6193,12 +6193,10 @@ TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
   ASSERT_FALSE(mock_report_sender.latest_report().empty());
   EXPECT_EQ("application/json; charset=utf-8",
             mock_report_sender.latest_content_type());
-  std::unique_ptr<base::Value> value(
-      base::JSONReader::ReadDeprecated(mock_report_sender.latest_report()));
-  ASSERT_TRUE(value);
-  base::Value::Dict* report_dict = value->GetIfDict();
-  ASSERT_TRUE(report_dict);
-  std::string* report_hostname = report_dict->FindString("hostname");
+  base::Value::Dict report_dict =
+      base::test::ParseJsonDict(mock_report_sender.latest_report());
+  ASSERT_FALSE(report_dict.empty());
+  std::string* report_hostname = report_dict.FindString("hostname");
   ASSERT_TRUE(report_hostname);
   EXPECT_EQ(test_server_hostname, *report_hostname);
   EXPECT_EQ(isolation_info.network_anonymization_key(),
