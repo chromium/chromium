@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/key_combo_view.h"
 
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,23 +30,6 @@ namespace ash {
 namespace {
 
 constexpr auto kBetweenKeyItemSpace = 8;
-
-std::vector<ui::KeyboardCode> DecodeModifiers(int modifiers) {
-  std::vector<ui::KeyboardCode> modifier_vector;
-  if (modifiers == 0)
-    return modifier_vector;
-
-  if ((modifiers & ui::EF_COMMAND_DOWN) != 0)
-    modifier_vector.push_back(ui::VKEY_COMMAND);
-  if ((modifiers & ui::EF_CONTROL_DOWN) != 0)
-    modifier_vector.push_back(ui::VKEY_CONTROL);
-  if ((modifiers & ui::EF_ALT_DOWN) != 0)
-    modifier_vector.push_back(ui::VKEY_MENU);
-  if ((modifiers & ui::EF_SHIFT_DOWN) != 0)
-    modifier_vector.push_back(ui::VKEY_SHIFT);
-
-  return modifier_vector;
-}
 
 bool IsAssistantAvailable() {
   AssistantStateBase* state = AssistantState::Get();
@@ -80,9 +64,8 @@ const gfx::VectorIcon* GetVectorIconForDemoTools(ui::KeyboardCode key_code) {
 }
 
 std::unique_ptr<KeyItemView> CreateKeyItemView(ui::KeyboardCode key_code) {
-  std::unique_ptr key_item_view = std::make_unique<KeyItemView>();
+  std::unique_ptr key_item_view = std::make_unique<KeyItemView>(key_code);
   const gfx::VectorIcon* vector_icon = GetVectorIconForDemoTools(key_code);
-
   if (vector_icon) {
     key_item_view->SetIcon(*vector_icon);
   } else {
@@ -91,6 +74,40 @@ std::unique_ptr<KeyItemView> CreateKeyItemView(ui::KeyboardCode key_code) {
     key_item_view->SetText(key_item_string);
   }
   return key_item_view;
+}
+
+ui::KeyboardCode DecodeModifier(int modifier) {
+  switch (modifier) {
+    case ui::EF_CONTROL_DOWN:
+      return ui::VKEY_CONTROL;
+    case ui::EF_ALT_DOWN:
+      return ui::VKEY_MENU;
+    case ui::EF_SHIFT_DOWN:
+      return ui::VKEY_SHIFT;
+    case ui::EF_COMMAND_DOWN:
+      return ui::VKEY_COMMAND;
+    default:
+      return ui::VKEY_UNKNOWN;
+  }
+}
+
+bool operator>(const ui::KeyboardCode lhs, const ui::KeyboardCode rhs) {
+  auto digitize_modifier_key_code = [&](ui::KeyboardCode key_code) {
+    switch (key_code) {
+      case ui::VKEY_CONTROL:
+        return 0;
+      case ui::VKEY_MENU:
+        return 1;
+      case ui::VKEY_SHIFT:
+        return 2;
+      case ui::VKEY_COMMAND:
+        return 3;
+      default:
+        return 1000;
+    }
+  };
+
+  return digitize_modifier_key_code(lhs) > digitize_modifier_key_code(rhs);
 }
 
 }  // namespace
@@ -116,21 +133,58 @@ class ModifiersContainerView : public views::View {
   ModifiersContainerView& operator=(const ModifiersContainerView&) = delete;
   ~ModifiersContainerView() override = default;
 
-  const std::vector<ui::KeyboardCode>& modifier_key_codes() const {
-    return modifier_key_codes_;
-  }
+  void RebuildModifiersContainerView(int new_modifiers) {
+    // Use XOR to filter out the modifiers that changed, i.e. the 1s in the
+    // `diff` bit fields that correspond to the modifiers that changed.
+    const int diff = current_modifiers_ ^ new_modifiers;
+    for (const auto modifier : {ui::EF_CONTROL_DOWN, ui::EF_ALT_DOWN,
+                                ui::EF_SHIFT_DOWN, ui::EF_COMMAND_DOWN}) {
+      if ((modifier & diff) == 0) {
+        continue;
+      }
 
-  // Rebuilds the modifier container view based on the given `modifiers`.
-  void RebuildModifiersContainerView(int modifiers) {
-    RemoveAllChildViews();
-    modifier_key_codes_ = DecodeModifiers(modifiers);
-    for (auto key_code : modifier_key_codes_) {
-      AddChildView((CreateKeyItemView(key_code)));
+      const ui::KeyboardCode key_code = DecodeModifier(modifier);
+
+      // Use AND to decide whether we want to do adding or removal operation. If
+      // this `modifier` is set in the `new_modifiers` that means it has been
+      // recently pressed, which means a new `KeyItemView` needs to be added.
+      // Otherwise, it means a key has been recently released, and we should
+      // remove its reoccoresponding `KeyItemView`.
+      if ((modifier & new_modifiers) != 0) {
+        AddModifier(key_code);
+      } else {
+        RemoveModifier(key_code);
+      }
     }
+
+    current_modifiers_ = new_modifiers;
   }
 
  private:
-  std::vector<ui::KeyboardCode> modifier_key_codes_;
+  void RemoveModifier(ui::KeyboardCode key_code) {
+    for (auto* child : children()) {
+      if (static_cast<KeyItemView*>(child)->key_code() == key_code) {
+        RemoveChildViewT(child);
+        return;
+      }
+    }
+  }
+
+  void AddModifier(ui::KeyboardCode key_code) {
+    // We're trying to find the view whose `key_code()` is greater than the
+    // given `key_code` so that we can insert a new `KeyItemView` at that index,
+    // or at the end if no such view was found. This keeps the modifiers sorted
+    // as `Ctrl < Alt < Shift < Search`.
+    const auto iter =
+        base::ranges::find_if(children(), [key_code](views::View* child) {
+          return static_cast<KeyItemView*>(child)->key_code() > key_code;
+        });
+
+    AddChildViewAt(CreateKeyItemView(key_code),
+                   std::distance(children().begin(), iter));
+  }
+
+  int current_modifiers_ = 0;
 };
 
 BEGIN_METADATA(ModifiersContainerView, views::View)
@@ -178,9 +232,12 @@ void KeyComboView::RefreshView(int modifiers,
 }
 
 std::vector<ui::KeyboardCode> KeyComboView::GetModifierKeycodeVector() const {
-  return modifiers_container_view_
-             ? modifiers_container_view_->modifier_key_codes()
-             : std::vector<ui::KeyboardCode>();
+  std::vector<ui::KeyboardCode> key_codes;
+  base::ranges::for_each(
+      modifiers_container_view_->children(), [&](views::View* view) {
+        key_codes.push_back(static_cast<KeyItemView*>(view)->key_code());
+      });
+  return key_codes;
 }
 
 BEGIN_METADATA(KeyComboView, views::View)

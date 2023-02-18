@@ -42,7 +42,7 @@ SkColor GetColor() {
 
 }  // namespace
 
-KeyItemView::KeyItemView() {
+KeyItemView::KeyItemView(ui::KeyboardCode key_code) : key_code_(key_code) {
   SetPaintToLayer();
   SetBackground(
       views::CreateRoundedRectBackground(GetColor(), kKeyItemHeight / 2));

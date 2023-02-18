@@ -21,7 +21,7 @@ class KeyItemView : public views::View {
  public:
   METADATA_HEADER(KeyItemView);
 
-  KeyItemView();
+  explicit KeyItemView(ui::KeyboardCode key_code);
   KeyItemView(const KeyItemView&) = delete;
   KeyItemView& operator=(const KeyItemView&) = delete;
   ~KeyItemView() override;
@@ -34,9 +34,11 @@ class KeyItemView : public views::View {
   void SetIcon(const gfx::VectorIcon& icon);
   void SetText(const std::u16string& text);
 
+  ui::KeyboardCode key_code() const { return key_code_; }
   views::ImageView* icon() const { return icon_; }
 
  private:
+  const ui::KeyboardCode key_code_;
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;
 };
