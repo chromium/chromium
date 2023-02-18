@@ -594,8 +594,8 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     mock_auto_enrollment_check_screen_view_ =
         std::make_unique<MockAutoEnrollmentCheckScreenView>();
-    mock_auto_enrollment_check_screen_ = MockScreenExpectLifecycle(
-        std::make_unique<MockAutoEnrollmentCheckScreen>(
+    mock_auto_enrollment_check_screen_ = MockScreen(
+        std::make_unique<testing::NiceMock<MockAutoEnrollmentCheckScreen>>(
             mock_auto_enrollment_check_screen_view_.get()->AsWeakPtr(),
             GetErrorScreen(),
             base::BindRepeating(
@@ -671,6 +671,19 @@ class WizardControllerFlowTest : public WizardControllerTest {
     device_disabled_screen_view_.reset();
     test_url_loader_factory_.ClearResponses();
     WizardControllerTest::TearDownOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerTest::SetUpCommandLine(command_line);
+
+    // Default to now showing auto enrollment check screen. If you want to show
+    // this screen, you can override the flags.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableForcedReEnrollment,
+        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentNever);
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableInitialEnrollment,
+        policy::AutoEnrollmentTypeChecker::kInitialEnrollmentNever);
   }
 
   void InitNetworkPortalDetector() {
@@ -798,7 +811,12 @@ class WizardControllerFlowTest : public WizardControllerTest {
   MockEnrollmentScreen* mock_enrollment_screen_ = nullptr;
   std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
 
-  MockAutoEnrollmentCheckScreen* mock_auto_enrollment_check_screen_ = nullptr;
+  // Auto enrollment check screen is a nice mock because it may or may not be
+  // shown depending on when asynchronous auto enrollment check finishes. Only
+  // add expectations for this if you are sure they are not affected by race
+  // conditions.
+  testing::NiceMock<MockAutoEnrollmentCheckScreen>*
+      mock_auto_enrollment_check_screen_ = nullptr;
   std::unique_ptr<MockAutoEnrollmentCheckScreenView>
       mock_auto_enrollment_check_screen_view_;
 
