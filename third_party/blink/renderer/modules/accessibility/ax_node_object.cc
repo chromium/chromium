@@ -1344,75 +1344,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   return RoleFromLayoutObjectOrNode();
 }
 
-namespace {
-
-ax::mojom::blink::Role InferredCSSToggleRole(Node* node) {
-  Element* element = DynamicTo<Element>(node);
-  if (!element) {
-    return ax::mojom::blink::Role::kUnknown;
-  }
-
-  // toggle_inference is null when CSS toggles are not used in the document.
-  CSSToggleInference* toggle_inference =
-      element->GetDocument().GetCSSToggleInference();
-  if (!toggle_inference) {
-    return ax::mojom::blink::Role::kUnknown;
-  }
-
-  DCHECK(RuntimeEnabledFeatures::CSSTogglesEnabled());
-
-  switch (toggle_inference->RoleForElement(element)) {
-    case CSSToggleRole::kNone:
-      break;
-    case CSSToggleRole::kButtonWithPopup:
-      return ax::mojom::blink::Role::kPopUpButton;
-    case CSSToggleRole::kDisclosure:
-      break;
-    case CSSToggleRole::kDisclosureButton:
-      return ax::mojom::blink::Role::kButton;
-    case CSSToggleRole::kTree:
-      return ax::mojom::blink::Role::kTree;
-    case CSSToggleRole::kTreeGroup:
-      return ax::mojom::blink::Role::kGroup;
-    case CSSToggleRole::kTreeItem:
-      return ax::mojom::blink::Role::kTreeItem;
-    case CSSToggleRole::kAccordion:
-      break;
-    case CSSToggleRole::kAccordionItem:
-      return ax::mojom::blink::Role::kRegion;
-    case CSSToggleRole::kAccordionItemButton:
-      return ax::mojom::blink::Role::kButton;
-    case CSSToggleRole::kTabContainer:
-      // TODO(dbaron): We should verify that using kTabList really
-      // works here, since this is a container that has both the tab
-      // list *and* the tab panels.  We should also make sure that
-      // posinset/setsize work correctly for the tabs.
-      return ax::mojom::blink::Role::kTabList;
-    case CSSToggleRole::kTab:
-      return ax::mojom::blink::Role::kTab;
-    case CSSToggleRole::kTabPanel:
-      return ax::mojom::blink::Role::kTabPanel;
-    case CSSToggleRole::kRadioGroup:
-      return ax::mojom::blink::Role::kRadioGroup;
-    case CSSToggleRole::kRadioItem:
-      return ax::mojom::blink::Role::kRadioButton;
-    case CSSToggleRole::kCheckboxGroup:
-      break;
-    case CSSToggleRole::kCheckbox:
-      return ax::mojom::blink::Role::kCheckBox;
-    case CSSToggleRole::kListbox:
-      return ax::mojom::blink::Role::kListBox;
-    case CSSToggleRole::kListboxItem:
-      return ax::mojom::blink::Role::kListBoxOption;
-    case CSSToggleRole::kButton:
-      return ax::mojom::blink::Role::kButton;
-  }
-
-  return ax::mojom::blink::Role::kUnknown;
-}
-
-}  // namespace
-
 ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
 #if DCHECK_IS_ON()
   base::AutoReset<bool> reentrancy_protector(&is_computing_role_, true);
@@ -1440,9 +1371,58 @@ ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
     return aria_role_;
   }
 
-  ax::mojom::blink::Role css_toggle_role = InferredCSSToggleRole(GetNode());
-  if (css_toggle_role != ax::mojom::blink::Role::kUnknown) {
-    return css_toggle_role;
+  if (Element* element = DynamicTo<Element>(GetNode())) {
+    // toggle_inference is null when CSS toggles are not used in the document.
+    if (CSSToggleInference* toggle_inference =
+            element->GetDocument().GetCSSToggleInference()) {
+      DCHECK(RuntimeEnabledFeatures::CSSTogglesEnabled());
+      switch (toggle_inference->RoleForElement(element)) {
+        case CSSToggleRole::kNone:
+          break;
+        case CSSToggleRole::kButtonWithPopup:
+          return ax::mojom::blink::Role::kPopUpButton;
+        case CSSToggleRole::kDisclosure:
+          break;
+        case CSSToggleRole::kDisclosureButton:
+          return ax::mojom::blink::Role::kButton;
+        case CSSToggleRole::kTree:
+          return ax::mojom::blink::Role::kTree;
+        case CSSToggleRole::kTreeGroup:
+          return ax::mojom::blink::Role::kGroup;
+        case CSSToggleRole::kTreeItem:
+          return ax::mojom::blink::Role::kTreeItem;
+        case CSSToggleRole::kAccordion:
+          break;
+        case CSSToggleRole::kAccordionItem:
+          return ax::mojom::blink::Role::kRegion;
+        case CSSToggleRole::kAccordionItemButton:
+          return ax::mojom::blink::Role::kButton;
+        case CSSToggleRole::kTabContainer:
+          // TODO(dbaron): We should verify that using kTabList really
+          // works here, since this is a container that has both the tab
+          // list *and* the tab panels.  We should also make sure that
+          // posinset/setsize work correctly for the tabs.
+          return ax::mojom::blink::Role::kTabList;
+        case CSSToggleRole::kTab:
+          return ax::mojom::blink::Role::kTab;
+        case CSSToggleRole::kTabPanel:
+          return ax::mojom::blink::Role::kTabPanel;
+        case CSSToggleRole::kRadioGroup:
+          return ax::mojom::blink::Role::kRadioGroup;
+        case CSSToggleRole::kRadioItem:
+          return ax::mojom::blink::Role::kRadioButton;
+        case CSSToggleRole::kCheckboxGroup:
+          break;
+        case CSSToggleRole::kCheckbox:
+          return ax::mojom::blink::Role::kCheckBox;
+        case CSSToggleRole::kListbox:
+          return ax::mojom::blink::Role::kListBox;
+        case CSSToggleRole::kListboxItem:
+          return ax::mojom::blink::Role::kListBoxOption;
+        case CSSToggleRole::kButton:
+          return ax::mojom::blink::Role::kButton;
+      }
+    }
   }
 
   return native_role_;
