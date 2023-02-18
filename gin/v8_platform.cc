@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/raw_ptr.h"
-#include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
 #include "base/task/task_traits.h"
@@ -122,71 +121,6 @@ class EnabledStateObserverImpl final
 base::LazyInstance<EnabledStateObserverImpl>::Leaky g_trace_state_dispatcher =
     LAZY_INSTANCE_INITIALIZER;
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-// TODO(skyostil): Deduplicate this with the clamper in Blink.
-class TimeClamper {
- public:
-// As site isolation is enabled on desktop platforms, we can safely provide
-// more timing resolution. Jittering is still enabled everywhere.
-#if BUILDFLAG(IS_ANDROID)
-  static constexpr double kResolutionSeconds = 100e-6;
-#else
-  static constexpr double kResolutionSeconds = 5e-6;
-#endif
-
-  TimeClamper() : secret_(base::RandUint64()) {}
-  TimeClamper(const TimeClamper&) = delete;
-  TimeClamper& operator=(const TimeClamper&) = delete;
-
-  double ClampTimeResolution(double time_seconds) const {
-    bool was_negative = false;
-    if (time_seconds < 0) {
-      was_negative = true;
-      time_seconds = -time_seconds;
-    }
-    // For each clamped time interval, compute a pseudorandom transition
-    // threshold. The reported time will either be the start of that interval or
-    // the next one depending on which side of the threshold |time_seconds| is.
-    double interval = floor(time_seconds / kResolutionSeconds);
-    double clamped_time = interval * kResolutionSeconds;
-    double tick_threshold = ThresholdFor(clamped_time);
-
-    if (time_seconds >= tick_threshold)
-      clamped_time = (interval + 1) * kResolutionSeconds;
-    if (was_negative)
-      clamped_time = -clamped_time;
-    return clamped_time;
-  }
-
- private:
-  inline double ThresholdFor(double clamped_time) const {
-    uint64_t time_hash =
-        MurmurHash3(base::bit_cast<int64_t>(clamped_time) ^ secret_);
-    return clamped_time + kResolutionSeconds * ToDouble(time_hash);
-  }
-
-  static inline double ToDouble(uint64_t value) {
-    // Exponent for double values for [1.0 .. 2.0]
-    static const uint64_t kExponentBits = uint64_t{0x3FF0000000000000};
-    static const uint64_t kMantissaMask = uint64_t{0x000FFFFFFFFFFFFF};
-    uint64_t random = (value & kMantissaMask) | kExponentBits;
-    return base::bit_cast<double>(random) - 1;
-  }
-
-  static inline uint64_t MurmurHash3(uint64_t value) {
-    value ^= value >> 33;
-    value *= uint64_t{0xFF51AFD7ED558CCD};
-    value ^= value >> 33;
-    value *= uint64_t{0xC4CEB9FE1A85EC53};
-    value ^= value >> 33;
-    return value;
-  }
-
-  const uint64_t secret_;
-};
-
-base::LazyInstance<TimeClamper>::Leaky g_time_clamper =
-    LAZY_INSTANCE_INITIALIZER;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 
@@ -480,8 +414,15 @@ double V8Platform::MonotonicallyIncreasingTime() {
 }
 
 double V8Platform::CurrentClockTimeMillis() {
-  double now_seconds = base::Time::Now().ToJsTime() / 1000;
-  return g_time_clamper.Get().ClampTimeResolution(now_seconds) * 1000;
+  return static_cast<double>(time_clamper_.ClampToMillis(base::Time::Now()));
+}
+
+int64_t V8Platform::CurrentClockTimeMilliseconds() {
+  return time_clamper_.ClampToMillis(base::Time::Now());
+}
+
+double V8Platform::CurrentClockTimeMillisecondsHighResolution() {
+  return time_clamper_.ClampToMillisHighResolution(base::Time::Now());
 }
 
 v8::TracingController* V8Platform::GetTracingController() {

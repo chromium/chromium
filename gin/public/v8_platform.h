@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "gin/gin_export.h"
+#include "gin/time_clamper.h"
 #include "gin/v8_platform_page_allocator.h"
 #include "v8/include/v8-platform.h"
 
@@ -49,6 +50,8 @@ class GIN_EXPORT V8Platform : public v8::Platform {
   bool IdleTasksEnabled(v8::Isolate* isolate) override;
   double MonotonicallyIncreasingTime() override;
   double CurrentClockTimeMillis() override;
+  int64_t CurrentClockTimeMilliseconds() override;
+  double CurrentClockTimeMillisecondsHighResolution() override;
   StackTracePrinter GetStackTracePrinter() override;
   v8::TracingController* GetTracingController() override;
 
@@ -60,6 +63,7 @@ class GIN_EXPORT V8Platform : public v8::Platform {
 
   class TracingControllerImpl;
   std::unique_ptr<TracingControllerImpl> tracing_controller_;
+  TimeClamper time_clamper_;
 };
 
 }  // namespace gin
