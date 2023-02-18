@@ -253,6 +253,16 @@ bool DrmWrapper::CloseBufferHandle(uint32_t handle) {
   return !drmIoctl(drm_fd_.get(), DRM_IOCTL_GEM_CLOSE, &close_request);
 }
 
+/**********
+ * Encoders
+ **********/
+
+ScopedDrmEncoderPtr DrmWrapper::GetEncoder(uint32_t encoder_id) const {
+  DCHECK(drm_fd_.is_valid());
+  TRACE_EVENT1("drm", "DrmWrapper::GetEncoder", "encoder", encoder_id);
+  return ScopedDrmEncoderPtr(drmModeGetEncoder(drm_fd_.get(), encoder_id));
+}
+
 /**************
  * Framebuffers
  **************/
@@ -471,7 +481,14 @@ void DrmWrapper::WriteIntoTrace(perfetto::TracedDictionary dict) const {
 }
 
 absl::optional<std::string> DrmWrapper::GetDriverName() const {
-  return GetDrmDriverNameFromFd(drm_fd_.get());
+  DCHECK(drm_fd_.is_valid());
+  ScopedDrmVersionPtr version(drmGetVersion(drm_fd_.get()));
+  if (!version) {
+    LOG(ERROR) << "Failed to query DRM version";
+    return absl::nullopt;
+  }
+
+  return std::string(version->name, version->name_len);
 }
 
 base::ScopedFD DrmWrapper::ToScopedFD(std::unique_ptr<DrmWrapper> drm) {

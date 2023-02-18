@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -280,15 +279,13 @@ DrmDisplayHostManager::DrmDisplayHostManager(
   proxy_->RegisterHandlerForDrmDisplayHostManager(this);
   proxy_->AddGpuThreadObserver(this);
 
-  auto display_infos =
-      GetAvailableDisplayControllerInfos(primary_drm_device_->get_fd());
+  auto display_infos = GetAvailableDisplayControllerInfos(*primary_drm_device_);
   has_dummy_display_ = !display_infos.empty();
   MapEdidIdToDisplaySnapshot edid_id_collision_map;
   for (auto& display_info : display_infos) {
     // Create a dummy DisplaySnapshot and resolve display ID collisions.
     std::unique_ptr<display::DisplaySnapshot> current_display_snapshot =
-        CreateDisplaySnapshot(display_info.get(), primary_drm_device_->get_fd(),
-                              primary_drm_device_->device_path(), 0,
+        CreateDisplaySnapshot(*primary_drm_device_, display_info.get(), 0,
                               gfx::Point(), display::DrmFormatsAndModifiers());
 
     const auto colliding_display_snapshot_iter =

@@ -19,7 +19,6 @@
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
-#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
@@ -149,7 +148,7 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // Receiving a signal that DRM state was updated. Need to reset the plane
     // manager's resource cache since IDs may have changed.
     drm->plane_manager()->ResetConnectorsCache(drm->GetResources());
-    auto display_infos = GetDisplayInfosAndUpdateCrtcs(drm->get_fd());
+    auto display_infos = GetDisplayInfosAndUpdateCrtcs(*drm);
     for (const auto& display_info : display_infos) {
       auto it = base::ranges::find_if(
           old_displays,
@@ -175,10 +174,8 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
       // Create the new DisplaySnapshot and resolve display ID collisions.
       std::unique_ptr<display::DisplaySnapshot> current_display_snapshot =
           CreateDisplaySnapshot(
-              display_info.get(), current_drm_display->drm()->get_fd(),
-              current_drm_display->drm()->device_path(),
-              static_cast<uint8_t>(device_index), current_drm_display->origin(),
-              drm_formats_and_modifiers);
+              *drm, display_info.get(), static_cast<uint8_t>(device_index),
+              current_drm_display->origin(), drm_formats_and_modifiers);
 
       const auto colliding_display_snapshot_iter = edid_id_collision_map.find(
           current_display_snapshot->edid_display_id());

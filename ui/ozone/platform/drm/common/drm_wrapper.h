@@ -146,6 +146,13 @@ class DrmWrapper {
 
   virtual bool CloseBufferHandle(uint32_t handle);
 
+  /**********
+   * Encoders
+   **********/
+
+  // Returns the encoder properties for |encoder_id|.
+  virtual ScopedDrmEncoderPtr GetEncoder(uint32_t encoder_id) const;
+
   /**************
    * Framebuffers
    **************/
@@ -259,7 +266,6 @@ class DrmWrapper {
   static base::ScopedFD ToScopedFD(std::unique_ptr<DrmWrapper> drm);
 
   base::FilePath device_path() const { return device_path_; }
-  int get_fd() const { return drm_fd_.get(); }
   bool allow_addfb2_modifiers() const { return allow_addfb2_modifiers_; }
   int modeset_sequence_id() const { return modeset_sequence_id_; }
   bool is_atomic() const { return is_atomic_; }

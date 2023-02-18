@@ -14,13 +14,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/ozone/platform/drm/common/display_types.h"
+#include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
 typedef struct _drmModeModeInfo drmModeModeInfo;
@@ -115,10 +114,11 @@ using HardwareDisplayControllerInfoList =
 // TODO(markyacoub): Create unit tests that tests the different bits and pieces
 // that this function goes through.
 std::pair<HardwareDisplayControllerInfoList, std::vector<uint32_t>>
-GetDisplayInfosAndInvalidCrtcs(int fd);
+GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm);
 
 // Returns the display infos parsed in |GetDisplayInfosAndInvalidCrtcs|
-HardwareDisplayControllerInfoList GetAvailableDisplayControllerInfos(int fd);
+HardwareDisplayControllerInfoList GetAvailableDisplayControllerInfos(
+    const DrmWrapper& drm);
 
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs);
 
@@ -134,25 +134,24 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
     const display::DisplayMode** out_current_mode,
     const display::DisplayMode** out_native_mode);
 
-// |info| provides the DRM information related to the display, |fd| is the
-// connection to the DRM device.
+// |info| provides the DRM information related to the display, |drm| is the
+// access point to the DRM device to which |info| is related to.
 std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
+    const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info,
-    int fd,
-    const base::FilePath& sys_path,
     uint8_t device_index,
     const gfx::Point& origin,
     const display::DrmFormatsAndModifiers& drm_formats_and_modifiers);
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
 
-gfx::Size GetMaximumCursorSize(int fd);
+gfx::Size GetMaximumCursorSize(const DrmWrapper& drm);
 
-ScopedDrmPropertyPtr FindDrmProperty(int fd,
+ScopedDrmPropertyPtr FindDrmProperty(const DrmWrapper& drm,
                                      drmModeObjectProperties* properties,
                                      const char* name);
 
-bool HasColorCorrectionMatrix(int fd, drmModeCrtc* crtc);
+bool HasColorCorrectionMatrix(const DrmWrapper& drm, drmModeCrtc* crtc);
 
 bool MatchMode(const display::DisplayMode& display_mode,
                const drmModeModeInfo& m);
@@ -163,15 +162,17 @@ float ModeRefreshRate(const drmModeModeInfo& mode);
 
 bool ModeIsInterlaced(const drmModeModeInfo& mode);
 
-bool IsVrrCapable(int fd, drmModeConnector* connector);
+bool IsVrrCapable(const DrmWrapper& drm, drmModeConnector* connector);
 
-bool IsVrrEnabled(int fd, drmModeCrtc* crtc);
+bool IsVrrEnabled(const DrmWrapper& drm, drmModeCrtc* crtc);
 
 display::VariableRefreshRateState GetVariableRefreshRateState(
-    int fd,
+    const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info);
 
-uint64_t GetEnumValueForName(int fd, int property_id, const char* str);
+uint64_t GetEnumValueForName(const DrmWrapper& drm,
+                             int property_id,
+                             const char* str);
 
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
 

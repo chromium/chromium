@@ -449,8 +449,7 @@ void HardwareDisplayPlaneManager::DisableConnectedConnectorsToCrtcs(
     // encoder).
     if (connector->encoder_id &&
         connector->connection == DRM_MODE_DISCONNECTED) {
-      ScopedDrmEncoderPtr encoder(
-          drmModeGetEncoder(drm_->get_fd(), connector->encoder_id));
+      ScopedDrmEncoderPtr encoder = drm_->GetEncoder(connector->encoder_id);
       if (encoder)
         drm_->DisableCrtc(encoder->crtc_id);
     }

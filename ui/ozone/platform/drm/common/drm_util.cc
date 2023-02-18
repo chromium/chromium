@@ -26,7 +26,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
@@ -44,8 +43,8 @@ bool IsCrtcInUse(
     uint32_t crtc,
     const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
         displays) {
-  for (size_t i = 0; i < displays.size(); ++i) {
-    if (crtc == displays[i]->crtc()->crtc_id)
+  for (const auto& display : displays) {
+    if (crtc == display->crtc()->crtc_id)
       return true;
   }
 
@@ -57,7 +56,7 @@ bool IsCrtcInUse(
 // If there are multiple compatible CRTCs, the one that supports the majority of
 // planes will be returned as best CRTC.
 std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
-    int fd,
+    const DrmWrapper& drm,
     drmModeConnector* connector,
     drmModeRes* resources,
     const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>& displays,
@@ -69,7 +68,7 @@ std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
 
   // Try to find an encoder for the connector.
   for (int i = 0; i < connector->count_encoders; ++i) {
-    ScopedDrmEncoderPtr encoder(drmModeGetEncoder(fd, connector->encoders[i]));
+    ScopedDrmEncoderPtr encoder = drm.GetEncoder(connector->encoders[i]);
     if (!encoder)
       continue;
 
@@ -146,12 +145,12 @@ display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
 }
 
 template <typename T>
-int GetDrmProperty(int fd,
+int GetDrmProperty(const DrmWrapper& drm,
                    T* object,
                    const std::string& name,
                    ScopedDrmPropertyPtr* property) {
   for (uint32_t i = 0; i < static_cast<uint32_t>(object->count_props); ++i) {
-    ScopedDrmPropertyPtr tmp(drmModeGetProperty(fd, object->props[i]));
+    ScopedDrmPropertyPtr tmp = drm.GetProperty(object->props[i]);
     if (!tmp)
       continue;
 
@@ -173,30 +172,29 @@ std::string GetNameForEnumValue(drmModePropertyRes* property, uint32_t value) {
   return std::string();
 }
 
-ScopedDrmPropertyBlobPtr GetDrmPropertyBlob(int fd,
+ScopedDrmPropertyBlobPtr GetDrmPropertyBlob(const DrmWrapper& drm,
                                             drmModeConnector* connector,
                                             const std::string& name) {
   ScopedDrmPropertyPtr property;
-  int index = GetDrmProperty(fd, connector, name, &property);
+  int index = GetDrmProperty(drm, connector, name, &property);
   if (index < 0)
     return nullptr;
 
   if (property->flags & DRM_MODE_PROP_BLOB) {
-    return ScopedDrmPropertyBlobPtr(
-        drmModeGetPropertyBlob(fd, connector->prop_values[index]));
+    return drm.GetPropertyBlob(connector->prop_values[index]);
   }
 
   return nullptr;
 }
 
-display::PrivacyScreenState GetPrivacyScreenState(int fd,
+display::PrivacyScreenState GetPrivacyScreenState(const DrmWrapper& drm,
                                                   drmModeConnector* connector) {
   ScopedDrmPropertyPtr sw_property;
   const int sw_index = GetDrmProperty(
-      fd, connector, kPrivacyScreenSwStatePropertyName, &sw_property);
+      drm, connector, kPrivacyScreenSwStatePropertyName, &sw_property);
   ScopedDrmPropertyPtr hw_property;
   const int hw_index = GetDrmProperty(
-      fd, connector, kPrivacyScreenHwStatePropertyName, &hw_property);
+      drm, connector, kPrivacyScreenHwStatePropertyName, &hw_property);
 
   // Both privacy-screen properties (software- and hardware-state) must be
   // present in order for the feature to be supported, but the hardware-state
@@ -213,7 +211,7 @@ display::PrivacyScreenState GetPrivacyScreenState(int fd,
   // legacy privacy screen property.
   ScopedDrmPropertyPtr legacy_property;
   const int legacy_index = GetDrmProperty(
-      fd, connector, kPrivacyScreenPropertyNameLegacy, &legacy_property);
+      drm, connector, kPrivacyScreenPropertyNameLegacy, &legacy_property);
   if (legacy_index >= 0) {
     const std::string legacy_enum_value = GetNameForEnumValue(
         legacy_property.get(), connector->prop_values[legacy_index]);
@@ -225,16 +223,17 @@ display::PrivacyScreenState GetPrivacyScreenState(int fd,
   return display::PrivacyScreenState::kNotSupported;
 }
 
-bool HasContentProtectionKey(int fd, drmModeConnector* connector) {
+bool HasContentProtectionKey(const DrmWrapper& drm,
+                             drmModeConnector* connector) {
   ScopedDrmPropertyPtr content_protection_key_property;
-  int idx = GetDrmProperty(fd, connector, kContentProtectionKey,
+  int idx = GetDrmProperty(drm, connector, kContentProtectionKey,
                            &content_protection_key_property);
   return idx > -1;
 }
 
-std::vector<uint64_t> GetPathTopology(int fd, drmModeConnector* connector) {
-  ScopedDrmPropertyBlobPtr path_blob =
-      GetDrmPropertyBlob(fd, connector, "PATH");
+std::vector<uint64_t> GetPathTopology(const DrmWrapper& drm,
+                                      drmModeConnector* connector) {
+  ScopedDrmPropertyBlobPtr path_blob = drm.GetPropertyBlob(connector, "PATH");
 
   if (!path_blob) {
     DCHECK_GT(connector->connector_id, 0u);
@@ -246,9 +245,9 @@ std::vector<uint64_t> GetPathTopology(int fd, drmModeConnector* connector) {
   return ParsePathBlob(*path_blob);
 }
 
-bool IsAspectPreserving(int fd, drmModeConnector* connector) {
+bool IsAspectPreserving(const DrmWrapper& drm, drmModeConnector* connector) {
   ScopedDrmPropertyPtr property;
-  int index = GetDrmProperty(fd, connector, "scaling mode", &property);
+  int index = GetDrmProperty(drm, connector, "scaling mode", &property);
   if (index < 0)
     return false;
 
@@ -256,10 +255,10 @@ bool IsAspectPreserving(int fd, drmModeConnector* connector) {
           "Full aspect");
 }
 
-display::PanelOrientation GetPanelOrientation(int fd,
+display::PanelOrientation GetPanelOrientation(const DrmWrapper& drm,
                                               drmModeConnector* connector) {
   ScopedDrmPropertyPtr property;
-  int index = GetDrmProperty(fd, connector, "panel orientation", &property);
+  int index = GetDrmProperty(drm, connector, "panel orientation", &property);
   if (index < 0)
     return display::PanelOrientation::kNormal;
 
@@ -274,16 +273,18 @@ display::PanelOrientation GetPanelOrientation(int fd,
   return static_cast<display::PanelOrientation>(connector->prop_values[index]);
 }
 
-bool HasPerPlaneColorCorrectionMatrix(const int fd, drmModeCrtc* crtc) {
-  ScopedDrmPlaneResPtr plane_resources(drmModeGetPlaneResources(fd));
+bool HasPerPlaneColorCorrectionMatrix(const DrmWrapper& drm,
+                                      drmModeCrtc* crtc) {
+  ScopedDrmPlaneResPtr plane_resources = drm.GetPlaneResources();
   DCHECK(plane_resources);
   for (uint32_t i = 0; i < plane_resources->count_planes; ++i) {
-    ScopedDrmObjectPropertyPtr plane_props(drmModeObjectGetProperties(
-        fd, plane_resources->planes[i], DRM_MODE_OBJECT_PLANE));
+    ScopedDrmObjectPropertyPtr plane_props = drm.GetObjectProperties(
+        plane_resources->planes[i], DRM_MODE_OBJECT_PLANE);
     DCHECK(plane_props);
 
-    if (!FindDrmProperty(fd, plane_props.get(), "PLANE_CTM"))
+    if (!FindDrmProperty(drm, plane_props.get(), "PLANE_CTM")) {
       return false;
+    }
   }
 
   // On legacy, if no planes are exposed then the property isn't available.
@@ -303,21 +304,21 @@ absl::optional<std::string> ReadFileAndTrim(const base::FilePath& path) {
 
 }  // namespace
 
-ScopedDrmPropertyPtr FindDrmProperty(int fd,
+ScopedDrmPropertyPtr FindDrmProperty(const DrmWrapper& drm,
                                      drmModeObjectProperties* properties,
                                      const char* name) {
   for (uint32_t i = 0; i < properties->count_props; ++i) {
-    ScopedDrmPropertyPtr property(drmModeGetProperty(fd, properties->props[i]));
+    ScopedDrmPropertyPtr property = drm.GetProperty(properties->props[i]);
     if (property && !strcmp(property->name, name))
       return property;
   }
   return nullptr;
 }
 
-bool HasColorCorrectionMatrix(int fd, drmModeCrtc* crtc) {
-  ScopedDrmObjectPropertyPtr crtc_props(
-      drmModeObjectGetProperties(fd, crtc->crtc_id, DRM_MODE_OBJECT_CRTC));
-  return !!FindDrmProperty(fd, crtc_props.get(), "CTM");
+bool HasColorCorrectionMatrix(const DrmWrapper& drm, drmModeCrtc* crtc) {
+  ScopedDrmObjectPropertyPtr crtc_props =
+      drm.GetObjectProperties(crtc->crtc_id, DRM_MODE_OBJECT_CRTC);
+  return !!FindDrmProperty(drm, crtc_props.get(), "CTM");
 }
 
 const gfx::Size ModeSize(const drmModeModeInfo& mode) {
@@ -332,41 +333,43 @@ bool ModeIsInterlaced(const drmModeModeInfo& mode) {
   return mode.flags & DRM_MODE_FLAG_INTERLACE;
 }
 
-gfx::Size GetMaximumCursorSize(int fd) {
+gfx::Size GetMaximumCursorSize(const DrmWrapper& drm) {
   uint64_t width = 0, height = 0;
   // Querying cursor dimensions is optional and is unsupported on older Chrome
   // OS kernels.
-  if (drmGetCap(fd, DRM_CAP_CURSOR_WIDTH, &width) != 0 ||
-      drmGetCap(fd, DRM_CAP_CURSOR_HEIGHT, &height) != 0) {
+  if (drm.GetCapability(DRM_CAP_CURSOR_WIDTH, &width) != 0 ||
+      drm.GetCapability(DRM_CAP_CURSOR_HEIGHT, &height) != 0) {
     return gfx::Size(kDefaultCursorWidth, kDefaultCursorHeight);
   }
   return gfx::Size(width, height);
 }
 
-bool IsVrrCapable(int fd, drmModeConnector* connector) {
+bool IsVrrCapable(const DrmWrapper& drm, drmModeConnector* connector) {
   ScopedDrmPropertyPtr vrr_capable_property;
   const int vrr_capable_index = GetDrmProperty(
-      fd, connector, kVrrCapablePropertyName, &vrr_capable_property);
+      drm, connector, kVrrCapablePropertyName, &vrr_capable_property);
   return vrr_capable_index >= 0 && connector->prop_values[vrr_capable_index];
 }
 
-bool IsVrrEnabled(int fd, drmModeCrtc* crtc) {
-  ScopedDrmObjectPropertyPtr crtc_props(
-      drmModeObjectGetProperties(fd, crtc->crtc_id, DRM_MODE_OBJECT_CRTC));
+bool IsVrrEnabled(const DrmWrapper& drm, drmModeCrtc* crtc) {
+  ScopedDrmObjectPropertyPtr crtc_props =
+      drm.GetObjectProperties(crtc->crtc_id, DRM_MODE_OBJECT_CRTC);
   ScopedDrmPropertyPtr vrr_enabled_property;
   const int vrr_enabled_index = GetDrmProperty(
-      fd, crtc_props.get(), kVrrEnabledPropertyName, &vrr_enabled_property);
+      drm, crtc_props.get(), kVrrEnabledPropertyName, &vrr_enabled_property);
   return vrr_enabled_index >= 0 && crtc_props->prop_values[vrr_enabled_index];
 }
 
 display::VariableRefreshRateState GetVariableRefreshRateState(
-    int fd,
+    const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info) {
-  if (!IsVrrCapable(fd, info->connector()))
+  if (!IsVrrCapable(drm, info->connector())) {
     return display::kVrrNotCapable;
+  }
 
-  if (IsVrrEnabled(fd, info->crtc()))
+  if (IsVrrEnabled(drm, info->crtc())) {
     return display::kVrrEnabled;
+  }
 
   return display::kVrrDisabled;
 }
@@ -380,8 +383,8 @@ HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
 HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
 
 std::pair<HardwareDisplayControllerInfoList, std::vector<uint32_t>>
-GetDisplayInfosAndInvalidCrtcs(int fd) {
-  ScopedDrmResourcesPtr resources(drmModeGetResources(fd));
+GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
+  ScopedDrmResourcesPtr resources = drm.GetResources();
   DCHECK(resources) << "Failed to get DRM resources";
   std::vector<std::unique_ptr<HardwareDisplayControllerInfo>> displays;
   std::vector<uint32_t> invalid_crtcs;
@@ -397,8 +400,8 @@ GetDisplayInfosAndInvalidCrtcs(int fd) {
       break;
     }
 
-    ScopedDrmConnectorPtr connector(
-        drmModeGetConnector(fd, resources->connectors[i]));
+    ScopedDrmConnectorPtr connector =
+        drm.GetConnector(resources->connectors[i]);
     if (!connector)
       continue;
 
@@ -414,7 +417,7 @@ GetDisplayInfosAndInvalidCrtcs(int fd) {
   for (auto* c : available_connectors) {
     uint32_t possible_crtcs = 0;
     for (int i = 0; i < c->count_encoders; ++i) {
-      ScopedDrmEncoderPtr encoder(drmModeGetEncoder(fd, c->encoders[i]));
+      ScopedDrmEncoderPtr encoder = drm.GetEncoder(c->encoders[i]);
       if (!encoder)
         continue;
       possible_crtcs |= encoder->possible_crtcs;
@@ -434,15 +437,15 @@ GetDisplayInfosAndInvalidCrtcs(int fd) {
                             c1_crtcs != c2_crtcs;
                    });
 
-  ScopedDrmPlaneResPtr plane_resources(drmModeGetPlaneResources(fd));
+  ScopedDrmPlaneResPtr plane_resources = drm.GetPlaneResources();
   std::vector<ScopedDrmPlanePtr> planes;
   for (uint32_t i = 0; i < plane_resources->count_planes; i++)
-    planes.emplace_back(drmModeGetPlane(fd, plane_resources->planes[i]));
+    planes.emplace_back(drm.GetPlane(plane_resources->planes[i]));
 
   for (auto* c : available_connectors) {
     uint32_t best_crtc, connected_crtc;
     std::tie(best_crtc, connected_crtc) =
-        GetCrtcs(fd, c, resources.get(), displays, planes);
+        GetCrtcs(drm, c, resources.get(), displays, planes);
     if (!best_crtc)
       continue;
 
@@ -451,7 +454,7 @@ GetDisplayInfosAndInvalidCrtcs(int fd) {
     if (connected_crtc && connected_crtc != best_crtc)
       invalid_crtcs.push_back((connected_crtc));
 
-    ScopedDrmCrtcPtr crtc(drmModeGetCrtc(fd, best_crtc));
+    ScopedDrmCrtcPtr crtc = drm.GetCrtc(best_crtc);
     auto iter = base::ranges::find(connectors, c, &ScopedDrmConnectorPtr::get);
     DCHECK(iter != connectors.end());
     // |connectors.size()| <= 256, so |index| should be between 0-255.
@@ -464,9 +467,9 @@ GetDisplayInfosAndInvalidCrtcs(int fd) {
   return std::make_pair(std::move(displays), std::move(invalid_crtcs));
 }
 
-std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
-GetAvailableDisplayControllerInfos(int fd) {
-  return GetDisplayInfosAndInvalidCrtcs(fd).first;
+HardwareDisplayControllerInfoList GetAvailableDisplayControllerInfos(
+    const DrmWrapper& drm) {
+  return GetDisplayInfosAndInvalidCrtcs(drm).first;
 }
 
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs) {
@@ -534,9 +537,8 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
 }
 
 std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
+    const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info,
-    int fd,
-    const base::FilePath& sys_path,
     uint8_t device_index,
     const gfx::Point& origin,
     const display::DrmFormatsAndModifiers& drm_formats_and_modifiers) {
@@ -548,30 +550,30 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       gfx::Size(info->connector()->mmWidth, info->connector()->mmHeight);
   const display::DisplayConnectionType type = GetDisplayType(info->connector());
   uint64_t base_connector_id = 0u;
-  std::vector<uint64_t> path_topology = GetPathTopology(fd, info->connector());
+  std::vector<uint64_t> path_topology = GetPathTopology(drm, info->connector());
   if (!path_topology.empty()) {
     base_connector_id = path_topology.front();
     path_topology.erase(path_topology.begin());
   }
   const bool is_aspect_preserving_scaling =
-      IsAspectPreserving(fd, info->connector());
+      IsAspectPreserving(drm, info->connector());
   const display::PanelOrientation panel_orientation =
-      GetPanelOrientation(fd, info->connector());
+      GetPanelOrientation(drm, info->connector());
   const display::PrivacyScreenState privacy_screen_state =
-      GetPrivacyScreenState(fd, info->connector());
+      GetPrivacyScreenState(drm, info->connector());
   const bool has_content_protection_key =
-      HasContentProtectionKey(fd, info->connector());
+      HasContentProtectionKey(drm, info->connector());
   const bool has_color_correction_matrix =
-      HasColorCorrectionMatrix(fd, info->crtc()) ||
-      HasPerPlaneColorCorrectionMatrix(fd, info->crtc());
+      HasColorCorrectionMatrix(drm, info->crtc()) ||
+      HasPerPlaneColorCorrectionMatrix(drm, info->crtc());
   // On rk3399 we can set a color correction matrix that will be applied in
   // linear space. https://crbug.com/839020 to track if it will be possible to
   // disable the per-plane degamma/gamma.
   const bool color_correction_in_linear_space =
-      has_color_correction_matrix && GetDrmDriverNameFromFd(fd) == "rockchip";
-  const gfx::Size maximum_cursor_size = GetMaximumCursorSize(fd);
+      has_color_correction_matrix && drm.GetDriverName() == "rockchip";
+  const gfx::Size maximum_cursor_size = GetMaximumCursorSize(drm);
   const display::VariableRefreshRateState variable_refresh_rate_state =
-      GetVariableRefreshRateState(fd, info);
+      GetVariableRefreshRateState(drm, info);
 
   std::string display_name;
   // Make sure the ID contains non index part.
@@ -588,7 +590,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   absl::optional<gfx::Range> vertical_display_range_limits;
 
   ScopedDrmPropertyBlobPtr edid_blob(
-      GetDrmPropertyBlob(fd, info->connector(), "EDID"));
+      GetDrmPropertyBlob(drm, info->connector(), "EDID"));
   base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.HasEdidBlob",
                             !!edid_blob);
   std::vector<uint8_t> edid;
@@ -633,7 +635,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_content_protection_key, has_color_correction_matrix,
       color_correction_in_linear_space, display_color_space, bits_per_channel,
-      hdr_static_metadata, display_name, sys_path, std::move(modes),
+      hdr_static_metadata, display_name, drm.device_path(), std::move(modes),
       panel_orientation, edid, current_mode, native_mode, product_code,
       year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
       vertical_display_range_limits, drm_formats_and_modifiers);
@@ -668,8 +670,10 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
   }
 }
 
-uint64_t GetEnumValueForName(int fd, int property_id, const char* str) {
-  ScopedDrmPropertyPtr res(drmModeGetProperty(fd, property_id));
+uint64_t GetEnumValueForName(const DrmWrapper& drm,
+                             int property_id,
+                             const char* str) {
+  ScopedDrmPropertyPtr res = drm.GetProperty(property_id);
   for (int i = 0; i < res->count_enums; ++i) {
     if (strcmp(res->enums[i].name, str) == 0) {
       return res->enums[i].value;

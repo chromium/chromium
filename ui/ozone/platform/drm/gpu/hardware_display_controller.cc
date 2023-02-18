@@ -507,7 +507,7 @@ void HardwareDisplayController::OnModesetComplete(
 
 void HardwareDisplayController::AllocateCursorBuffers() {
   TRACE_EVENT0("drm", "HDC::AllocateCursorBuffers");
-  gfx::Size max_cursor_size = GetMaximumCursorSize(GetDrmDevice()->get_fd());
+  gfx::Size max_cursor_size = GetMaximumCursorSize(*GetDrmDevice());
   SkImageInfo info = SkImageInfo::MakeN32Premul(max_cursor_size.width(),
                                                 max_cursor_size.height());
   for (size_t i = 0; i < std::size(cursor_buffers_); ++i) {

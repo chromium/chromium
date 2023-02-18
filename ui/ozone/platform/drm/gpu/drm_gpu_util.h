@@ -41,7 +41,8 @@ std::vector<display::GammaRampRGBEntry> ResampleLut(
 // Returns the display infos parsed in
 // |GetDisplayInfosAndInvalidCrtcs| and disables the invalid CRTCs
 // that weren't picked as preferred CRTCs.
-HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(int fd);
+HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(
+    DrmWrapper& drm);
 
 void DrmWriteIntoTraceHelper(const drmModeModeInfo& mode_info,
                              perfetto::TracedValue context);

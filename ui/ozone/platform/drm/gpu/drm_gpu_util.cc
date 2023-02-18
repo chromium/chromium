@@ -120,13 +120,14 @@ std::vector<display::GammaRampRGBEntry> ResampleLut(
   return result;
 }
 
-HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(int fd) {
-  auto [displays, invalid_crtcs] = GetDisplayInfosAndInvalidCrtcs(fd);
+HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(
+    DrmWrapper& drm) {
+  auto [displays, invalid_crtcs] = GetDisplayInfosAndInvalidCrtcs(drm);
   // Disable invalid CRTCs to allow the preferred CRTCs to be enabled later
   // instead.
   for (uint32_t crtc : invalid_crtcs) {
-    drmModeSetCrtc(fd, crtc, 0, 0, 0, nullptr, 0, nullptr);
-    VLOG(1) << "Disabled unpreferred CRTC " << crtc;
+    drm.DisableCrtc(crtc);
+    VLOG(1) << "Disabled undesired CRTC " << crtc;
   }
   return std::move(displays);
 }

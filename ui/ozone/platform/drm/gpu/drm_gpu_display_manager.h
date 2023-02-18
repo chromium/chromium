@@ -12,8 +12,6 @@
 #include "base/functional/callback.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 
 using drmModeModeInfo = struct _drmModeModeInfo;
