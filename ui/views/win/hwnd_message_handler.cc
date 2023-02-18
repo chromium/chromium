@@ -58,6 +58,8 @@
 #include "ui/events/win/system_event_state_lookup.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/icon_util.h"
 #include "ui/gfx/path_win.h"
@@ -307,6 +309,20 @@ constexpr auto kTouchDownContextResetTimeout = base::Milliseconds(500);
 // same location as the cursor.
 constexpr int kSynthesizedMouseMessagesTimeDifference = 500;
 
+// This is used in headless mode where we have to manually scale window
+// bounds because we cannot rely on the platform window size since it gets
+// clamped to the monitor work area.
+gfx::Rect ScaleWindowBoundsMaybe(HWND hwnd, const gfx::Rect& bounds) {
+  const float scale = display::win::ScreenWin::GetScaleFactorForHWND(hwnd);
+  if (scale > 1.0) {
+    gfx::RectF scaled_bounds(bounds);
+    scaled_bounds.Scale(scale);
+    return gfx::ToEnclosingRect(scaled_bounds);
+  }
+
+  return bounds;
+}
+
 }  // namespace
 
 // A scoping class that prevents a window from being able to redraw in response
@@ -446,11 +462,35 @@ void HWNDMessageHandler::Init(HWND parent,
   initial_bounds_valid_ = !bounds.IsEmpty();
 
   // Provide the headless mode window state container.
-  if (headless_mode)
+  if (headless_mode) {
     headless_mode_window_ = absl::make_optional<HeadlessModeWindow>();
+  }
 
   // Create the window.
   WindowImpl::Init(parent, bounds);
+
+  // In headless mode remember the expected window bounds possibly adjusted
+  // according to the scale factor.
+  if (headless_mode) {
+    if (initial_bounds_valid_) {
+      headless_mode_window_->bounds = bounds;
+    } else {
+      // If initial window bounds were not provided, use the newly created
+      // platform window size or fall back to the default headless window size
+      // as the last resort.
+      RECT window_rect;
+      if (GetWindowRect(hwnd(), &window_rect)) {
+        headless_mode_window_->bounds = gfx::Rect(window_rect);
+      } else {
+        // Even if the window rectangle cannot be retrieved, there is still a
+        // chance that ScreenWin::GetScaleFactorForHWND() will be able to figure
+        // out the scale factor.
+        constexpr gfx::Rect kDefaultHeadlessBounds(800, 600);
+        headless_mode_window_->bounds =
+            ScaleWindowBoundsMaybe(hwnd(), kDefaultHeadlessBounds);
+      }
+    }
+  }
 
   if (!called_enable_non_client_dpi_scaling_ && delegate_->HasFrame()) {
     // Derived signature; not available in headers.
@@ -534,12 +574,48 @@ void HWNDMessageHandler::CloseNow() {
 }
 
 gfx::Rect HWNDMessageHandler::GetWindowBoundsInScreen() const {
+  // In headless mode return the expected window rectangle set in Init() and
+  // updated in SetBounds() and SetSize().
+  if (IsHeadless()) {
+    return headless_mode_window_->bounds;
+  }
+
   RECT r;
   GetWindowRect(hwnd(), &r);
   return gfx::Rect(r);
 }
 
 gfx::Rect HWNDMessageHandler::GetClientAreaBoundsInScreen() const {
+  // In headless mode calculate the client rectangle using the difference
+  // between platform window and client rectangles.
+  if (IsHeadless()) {
+    gfx::Insets client_insets;
+    if (!GetClientAreaInsets(&client_insets, last_monitor_)) {
+      RECT window_rect;
+      if (!GetWindowRect(hwnd(), &window_rect)) {
+        return gfx::Rect();
+      }
+
+      RECT client_rect;
+      if (!GetClientRect(hwnd(), &client_rect)) {
+        return gfx::Rect(window_rect);
+      }
+
+      client_insets.set_left(client_rect.left - window_rect.left);
+      client_insets.set_right(window_rect.right - client_rect.right);
+      client_insets.set_top(client_rect.top - window_rect.top);
+      client_insets.set_bottom(window_rect.bottom - client_rect.bottom);
+    }
+
+    gfx::Rect bounds = headless_mode_window_->bounds;
+    bounds.Inset(client_insets);
+    if (bounds.IsEmpty()) {
+      return headless_mode_window_->bounds;
+    }
+
+    return bounds;
+  }
+
   RECT r;
   GetClientRect(hwnd(), &r);
   POINT point = {r.left, r.top};
@@ -548,10 +624,11 @@ gfx::Rect HWNDMessageHandler::GetClientAreaBoundsInScreen() const {
 }
 
 gfx::Rect HWNDMessageHandler::GetRestoredBounds() const {
-  // Headless mode window never goes fullscreen, so just return an empty
-  // rectangle here.
-  if (IsHeadless())
-    return gfx::Rect();
+  // Headless mode window never goes fullscreen, so just return the expected
+  // bounds rectangle here.
+  if (IsHeadless()) {
+    return headless_mode_window_->bounds;
+  }
 
   // If we're in fullscreen mode, we've changed the normal bounds to the monitor
   // rect, so return the saved bounds instead.
@@ -630,6 +707,17 @@ void HWNDMessageHandler::SetDwmFrameExtension(DwmFrameState state) {
 }
 
 void HWNDMessageHandler::SetSize(const gfx::Size& size) {
+  // In headless mode update the expected window size and pretend the platform
+  // window size was updated.
+  if (IsHeadless()) {
+    bool size_changed = headless_mode_window_->bounds.size() != size;
+    headless_mode_window_->bounds.set_size(size);
+    if (size_changed) {
+      delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
+    }
+    return;
+  }
+
   SetWindowPos(hwnd(), nullptr, 0, 0, size.width(), size.height(),
                SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
 }
@@ -1533,9 +1621,13 @@ void HWNDMessageHandler::TrackMouseEvents(DWORD mouse_tracking_flags) {
 }
 
 void HWNDMessageHandler::ClientAreaSizeChanged() {
-  // Ignore size changes due to fullscreen windows losing activation.
-  if (background_fullscreen_hack_ && !sent_window_size_changing_)
+  // Ignore size changes due to fullscreen windows losing activation and
+  // in headless mode since it maintains expected rather than actual platform
+  // window bounds.
+  if ((background_fullscreen_hack_ && !sent_window_size_changing_) ||
+      IsHeadless()) {
     return;
+  }
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
   delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
   if (!ref)
@@ -3618,6 +3710,17 @@ bool HWNDMessageHandler::HandleMouseInputForCaption(unsigned int message,
 void HWNDMessageHandler::SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
                                            bool force_size_changed) {
   gfx::Size old_size = GetClientAreaBounds().size();
+
+  // In headless update the expected window bounds and notify the delegate
+  // pretending the platform window size has been changed.
+  if (IsHeadless()) {
+    headless_mode_window_->bounds = bounds_in_pixels;
+    if (old_size != bounds_in_pixels.size() || force_size_changed) {
+      delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
+    }
+    return;
+  }
+
   SetWindowPos(hwnd(), nullptr, bounds_in_pixels.x(), bounds_in_pixels.y(),
                bounds_in_pixels.width(), bounds_in_pixels.height(),
                SWP_NOACTIVATE | SWP_NOZORDER);

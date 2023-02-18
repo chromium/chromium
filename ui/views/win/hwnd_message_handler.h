@@ -28,7 +28,9 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/sequential_id_generator.h"
 #include "ui/gfx/win/msg_util.h"
 #include "ui/gfx/win/window_impl.h"
@@ -826,6 +828,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
     bool fullscreen_state = false;
     bool active_state = false;
     enum { kNormal, kMinimized, kMaximized } minmax_state = kNormal;
+
+    gfx::Rect bounds;
   };
 
   // This is present iff the window has been created in headless mode.

@@ -4,9 +4,14 @@
 
 #include "chrome/browser/headless/headless_mode_browsertest.h"
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/display_switches.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
 namespace headless {
@@ -110,6 +115,78 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   ASSERT_FALSE(browser()->window()->IsMaximized());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+}
+
+class HeadlessModeBrowserTestWithWindowSize : public HeadlessModeBrowserTest {
+ public:
+  static constexpr gfx::Size kWindowSize = {4096, 2160};
+
+  HeadlessModeBrowserTestWithWindowSize() = default;
+  ~HeadlessModeBrowserTestWithWindowSize() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModeBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        ::switches::kWindowSize,
+        base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSize, LargeWindowSize) {
+  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
+      static_cast<DesktopWindowTreeHostWinWrapper*>(
+          browser()->window()->GetNativeWindow()->GetHost());
+  HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
+
+  // Expect the platform window size to be smaller than the requested window
+  // size due to Windows clamping the window dimensions to the monitor work
+  // area.
+  RECT platform_window_rect;
+  CHECK(::GetWindowRect(desktop_window_hwnd, &platform_window_rect));
+  EXPECT_LT(gfx::Rect(platform_window_rect).width(), kWindowSize.width());
+  EXPECT_LT(gfx::Rect(platform_window_rect).height(), kWindowSize.height());
+
+  // Expect the reported browser window size to be the same as the requested
+  // window size.
+  gfx::Rect bounds = browser()->window()->GetBounds();
+  EXPECT_EQ(bounds.size(), kWindowSize);
+}
+
+class HeadlessModeBrowserTestWithWindowSizeAndScale
+    : public HeadlessModeBrowserTest {
+ public:
+  static constexpr gfx::Size kWindowSize = {800, 600};
+
+  HeadlessModeBrowserTestWithWindowSizeAndScale() = default;
+  ~HeadlessModeBrowserTestWithWindowSizeAndScale() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModeBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        ::switches::kWindowSize,
+        base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
+    command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "1.5");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSizeAndScale,
+                       WindowSizeWithScale) {
+  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
+      static_cast<DesktopWindowTreeHostWinWrapper*>(
+          browser()->window()->GetNativeWindow()->GetHost());
+  HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
+
+  // Expect the platform window size to be larger than the requested window size
+  // due to scaling.
+  RECT platform_window_rect;
+  CHECK(::GetWindowRect(desktop_window_hwnd, &platform_window_rect));
+  EXPECT_GT(gfx::Rect(platform_window_rect).width(), kWindowSize.width());
+  EXPECT_GT(gfx::Rect(platform_window_rect).height(), kWindowSize.height());
+
+  // Expect the reported browser window size to be the same as the requested
+  // window size.
+  gfx::Rect bounds = browser()->window()->GetBounds();
+  EXPECT_EQ(bounds.size(), kWindowSize);
 }
 
 }  // namespace
