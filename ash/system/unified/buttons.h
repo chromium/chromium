@@ -184,6 +184,17 @@ class ASH_EXPORT SupervisedUserView : public ManagedStateView {
   ~SupervisedUserView() override = default;
 };
 
+// The avatar button shows in the quick setting bubble.
+class ASH_EXPORT UserAvatarButton : public views::Button {
+ public:
+  METADATA_HEADER(UserAvatarButton);
+
+  explicit UserAvatarButton(PressedCallback callback);
+  UserAvatarButton(const UserAvatarButton&) = delete;
+  UserAvatarButton& operator=(const UserAvatarButton&) = delete;
+  ~UserAvatarButton() override = default;
+};
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_UNIFIED_BUTTONS_H_

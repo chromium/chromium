@@ -19,6 +19,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "ash/system/unified/user_chooser_view.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -37,6 +38,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 
@@ -290,8 +292,9 @@ void ManagedStateView::OnThemeChanged() {
 }
 
 void ManagedStateView::PaintButtonContents(gfx::Canvas* canvas) {
-  if (!features::IsQsRevampEnabled())
+  if (!features::IsQsRevampEnabled()) {
     return;
+  }
   // Draw a button outline similar to ChannelIndicatorQuickSettingsView's
   // VersionButton outline.
   cc::PaintFlags flags;
@@ -361,8 +364,9 @@ void EnterpriseManagedView::Update() {
                  !account_domain_manager.empty();
   SetVisible(visible);
 
-  if (!visible)
+  if (!visible) {
     return;
+  }
 
   // Display both device and user management if the feature is enabled.
   std::u16string managed_string;
@@ -407,8 +411,9 @@ SupervisedUserView::SupervisedUserView()
   SetID(VIEW_ID_QS_SUPERVISED_BUTTON);
   bool visible = Shell::Get()->session_controller()->IsUserChild();
   SetVisible(visible);
-  if (visible)
+  if (visible) {
     SetTooltipText(GetSupervisedUserMessage());
+  }
 
   // TODO(crbug/1026821) Add SupervisedUserView::ButtonPress() overload
   // to show a similar ui to enterprise managed accounts. Disable button
@@ -418,6 +423,25 @@ SupervisedUserView::SupervisedUserView()
 }
 
 BEGIN_METADATA(SupervisedUserView, ManagedStateView)
+END_METADATA
+
+////////////////////////////////////////////////////////////////////////////////
+
+UserAvatarButton ::UserAvatarButton(PressedCallback callback)
+    : Button(std::move(callback)) {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetBorder(views::CreateEmptyBorder(features::IsQsRevampEnabled()
+                                         ? gfx::Insets(0)
+                                         : kUnifiedCircularButtonFocusPadding));
+  AddChildView(CreateUserAvatarView(0 /* user_index */));
+  SetTooltipText(GetUserItemAccessibleString(0 /* user_index */));
+  SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+
+  views::InstallCircleHighlightPathGenerator(this);
+}
+
+BEGIN_METADATA(UserAvatarButton, views::Button)
 END_METADATA
 
 }  // namespace ash

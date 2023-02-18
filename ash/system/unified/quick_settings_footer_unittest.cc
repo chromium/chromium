@@ -100,6 +100,11 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
         footer_->GetViewByID(VIEW_ID_QS_POWER_BUTTON));
   }
 
+  views::View* GetUserAvatar() {
+    return static_cast<PowerButton*>(
+        footer_->GetViewByID(VIEW_ID_QS_USER_AVATAR_BUTTON));
+  }
+
   void LayoutFooter() { views::test::RunScheduledLayout(footer_); }
 
  private:
@@ -137,6 +142,9 @@ TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
   EXPECT_EQ(VIEW_ID_QS_BATTERY_BUTTON, GetBatteryButton()->GetID());
 
+  EXPECT_TRUE(GetUserAvatar()->GetVisible());
+  EXPECT_EQ(VIEW_ID_QS_USER_AVATAR_BUTTON, GetUserAvatar()->GetID());
+
   // No menu buttons are visible before showing the menu.
   EXPECT_FALSE(IsMenuShowing());
   EXPECT_EQ(nullptr, GetRestartButton());
@@ -172,10 +180,11 @@ TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
                                       /*expected_count=*/1);
 }
 
-// Settings button is hidden before login.
+// Settings button and avatar button are hidden before login.
 TEST_F(QuickSettingsFooterTest, ButtonStatesNotLoggedIn) {
   SetUpView();
 
+  EXPECT_EQ(nullptr, GetUserAvatar());
   EXPECT_EQ(nullptr, GetSettingsButton());
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
@@ -186,6 +195,7 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesLoggedIn) {
   CreateUserSessions(1);
   SetUpView();
 
+  EXPECT_TRUE(GetUserAvatar()->GetVisible());
   EXPECT_TRUE(GetSettingsButton()->GetVisible());
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
@@ -214,6 +224,7 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesLockScreen) {
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   SetUpView();
 
+  EXPECT_TRUE(GetUserAvatar()->GetVisible());
   EXPECT_EQ(nullptr, GetSettingsButton());
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
@@ -226,6 +237,7 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesAddingUser) {
   SetUserAddingScreenRunning(true);
   SetUpView();
 
+  EXPECT_TRUE(GetUserAvatar()->GetVisible());
   EXPECT_EQ(nullptr, GetSettingsButton());
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_TRUE(GetBatteryButton()->GetVisible());

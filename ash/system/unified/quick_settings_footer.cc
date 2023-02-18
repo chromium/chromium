@@ -13,6 +13,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -20,9 +21,11 @@
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/buttons.h"
+#include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/power_button.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -30,6 +33,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace {
@@ -49,7 +53,28 @@ QuickSettingsFooter::QuickSettingsFooter(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddChildView(std::make_unique<PowerButton>());
+  auto* front_buttons_container = AddChildView(std::make_unique<views::View>());
+  views::BoxLayout* button_container_layout =
+      front_buttons_container->SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kHorizontal));
+  button_container_layout->set_between_child_spacing(16);
+
+  front_buttons_container->AddChildView(std::make_unique<PowerButton>());
+  if (Shell::Get()->session_controller()->login_status() !=
+      LoginStatus::NOT_LOGGED_IN) {
+    auto* user_avatar_button = front_buttons_container->AddChildView(
+        std::make_unique<UserAvatarButton>(base::BindRepeating(
+            [](UnifiedSystemTrayController* controller) {
+              quick_settings_metrics_util::RecordQsButtonActivated(
+                  QsButtonCatalogName::kAvatarButton);
+              controller->ShowUserChooserView();
+            },
+            base::Unretained(controller))));
+    user_avatar_button->SetEnabled(
+        UserChooserDetailedViewController::IsUserChooserEnabled());
+    user_avatar_button->SetID(VIEW_ID_QS_USER_AVATAR_BUTTON);
+  }
 
   // `PowerButton` should start aligned , also battery icons and
   // `settings_button_` should be end aligned, so here adding a empty spacing
@@ -64,8 +89,9 @@ QuickSettingsFooter::QuickSettingsFooter(
             ->adaptive_charging_controller()
             ->is_adaptive_delaying_charge();
 
-    if (use_smart_charging_ui)
+    if (use_smart_charging_ui) {
       AddChildView(std::make_unique<BatteryIconView>(controller));
+    }
     AddChildView(
         std::make_unique<BatteryLabelView>(controller, use_smart_charging_ui));
   }

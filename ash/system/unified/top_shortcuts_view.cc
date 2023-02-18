@@ -21,6 +21,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/unified/buttons.h"
 #include "ash/system/unified/collapse_button.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -42,29 +43,6 @@
 
 namespace ash {
 
-namespace {
-
-class UserAvatarButton : public views::Button {
- public:
-  explicit UserAvatarButton(PressedCallback callback)
-      : Button(std::move(callback)) {
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-    SetBorder(views::CreateEmptyBorder(kUnifiedCircularButtonFocusPadding));
-    AddChildView(CreateUserAvatarView(0 /* user_index */));
-    SetTooltipText(GetUserItemAccessibleString(0 /* user_index */));
-    SetInstallFocusRingOnFocus(true);
-    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-
-    views::InstallCircleHighlightPathGenerator(this);
-  }
-
-  UserAvatarButton(const UserAvatarButton&) = delete;
-  UserAvatarButton& operator=(const UserAvatarButton&) = delete;
-  ~UserAvatarButton() override = default;
-};
-
-}  // namespace
-
 TopShortcutButtonContainer::TopShortcutButtonContainer() = default;
 
 TopShortcutButtonContainer::~TopShortcutButtonContainer() = default;
@@ -79,8 +57,9 @@ void TopShortcutButtonContainer::Layout() {
       children(), std::back_inserter(visible_children), [](const auto* v) {
         return v->GetVisible() && (v->GetPreferredSize().width() > 0);
       });
-  if (visible_children.empty())
+  if (visible_children.empty()) {
     return;
+  }
 
   const int visible_child_width =
       std::accumulate(visible_children.cbegin(), visible_children.cend(), 0,
@@ -117,8 +96,9 @@ void TopShortcutButtonContainer::Layout() {
     child->SetBounds(x, child_y, width, child->GetHeightForWidth(width));
     x += width + spacing;
 
-    if (child == user_avatar_button_)
+    if (child == user_avatar_button_) {
       x -= kUnifiedCircularButtonFocusPadding.right();
+    }
   }
 }
 
@@ -126,11 +106,13 @@ gfx::Size TopShortcutButtonContainer::CalculatePreferredSize() const {
   int total_horizontal_size = 0;
   int num_visible = 0;
   for (const auto* child : children()) {
-    if (!child->GetVisible())
+    if (!child->GetVisible()) {
       continue;
+    }
     int child_horizontal_size = child->GetPreferredSize().width();
-    if (child_horizontal_size == 0)
+    if (child_horizontal_size == 0) {
       continue;
+    }
     total_horizontal_size += child_horizontal_size;
     num_visible++;
   }
@@ -266,8 +248,9 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   // container flex occupying all remaining space.
   layout->SetFlexForView(container_, 1);
 
-  if (features::IsQsRevampEnabled())
+  if (features::IsQsRevampEnabled()) {
     return;
+  }
 
   auto collapse_button_container = std::make_unique<views::View>();
   collapse_button_ = collapse_button_container->AddChildView(
@@ -302,8 +285,9 @@ void TopShortcutsView::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void TopShortcutsView::SetExpandedAmount(double expanded_amount) {
-  if (features::IsQsRevampEnabled())
+  if (features::IsQsRevampEnabled()) {
     return;
+  }
   collapse_button_->SetExpandedAmount(expanded_amount);
 }
 
@@ -312,8 +296,9 @@ const char* TopShortcutsView::GetClassName() const {
 }
 
 void TopShortcutsView::OnChildViewAdded(View* observed_view, View* child) {
-  if (observed_view != this)
+  if (observed_view != this) {
     return;
+  }
 
   if (child->children().empty()) {
     DCHECK(child->GetID() >= VIEW_ID_QS_MIN && child->GetID() <= VIEW_ID_QS_MAX)
