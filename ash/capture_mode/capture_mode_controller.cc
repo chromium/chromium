@@ -1304,6 +1304,7 @@ void CaptureModeController::ShowPreviewNotification(
   optional_fields.buttons.push_back(delete_button);
 
   optional_fields.image = preview_image;
+  optional_fields.image_path = screen_capture_path;
 
   ShowNotification(
       capture_mode_util::GetScreenCaptureNotificationIdForPath(

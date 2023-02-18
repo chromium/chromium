@@ -6,6 +6,9 @@
 
 #include <string>
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/rounded_image_view.h"
@@ -1296,26 +1299,8 @@ TEST_F(AshNotificationViewTest, LeftContentAndTitleRowHeightMatches) {
             GetTitleRow(notification_view())->height());
 }
 
-// The test class that checks the notification drag feature with both mouse drag
-// and gesture drag.
-class AshNotificationViewDragTest
-    : public AshNotificationViewTestBase,
-      public testing::WithParamInterface<std::tuple<
-          /*use_gesture=*/bool,
-          /*is_popup=*/bool,
-          /*use_revamp_feature=*/bool,
-          /*is_image_file_backed=*/bool>> {
+class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
  public:
-  AshNotificationViewDragTest() {
-    std::vector<base::test::FeatureRef> enabled_features{
-        features::kNotificationImageDrag};
-    if (DoesUseQsRevamp()) {
-      enabled_features.push_back(features::kQsRevamp);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
-  }
-
   // Returns the center of drag area of `notification_view` in screen
   // coordinates.
   gfx::Point GetDragAreaCenterInScreen(
@@ -1381,17 +1366,14 @@ class AshNotificationViewDragTest
 
   // Returns true when using gesture drag rather than mouse drag, specified
   // by the test params; otherwise, returns false.
-  bool DoesUseGesture() const { return std::get<0>(GetParam()); }
+  virtual bool DoesUseGesture() const = 0;
 
   // Returns true when using the popup notification rather than the tray
   // notification. specified by the test params; otherwise, returns false.
-  bool IsPopupNotification() const { return std::get<1>(GetParam()); }
+  virtual bool IsPopupNotification() const = 0;
 
   // Returns true if the quick setting revamp feature is enabled.
-  bool DoesUseQsRevamp() const { return std::get<2>(GetParam()); }
-
-  // Returns true if the notification image is backed by a file.
-  bool IsImageFileBacked() const { return std::get<3>(GetParam()); }
+  virtual bool DoesUseQsRevamp() const = 0;
 
   const MockAshNotificationDragDropDelegate& drag_drop_delegate() const {
     return drag_drop_delegate_;
@@ -1404,6 +1386,14 @@ class AshNotificationViewDragTest
  private:
   // AshNotificationViewTestBase:
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features{
+        features::kNotificationImageDrag};
+    if (DoesUseQsRevamp()) {
+      enabled_features.push_back(features::kQsRevamp);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
+
     AshNotificationViewTestBase::SetUp();
     notification_test_api_ =
         std::make_unique<NotificationCenterTestApi>(/*tray=*/nullptr);
@@ -1435,6 +1425,25 @@ class AshNotificationViewDragTest
   MockAshNotificationDragDropDelegate drag_drop_delegate_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The test class that checks the notification drag feature with both mouse drag
+// and gesture drag.
+class AshNotificationViewDragTest
+    : public AshNotificationViewDragTestBase,
+      public testing::WithParamInterface<std::tuple<
+          /*use_gesture=*/bool,
+          /*is_popup=*/bool,
+          /*use_revamp_feature=*/bool,
+          /*is_image_file_backed=*/bool>> {
+ public:
+  // AshNotificationViewDragTestBase:
+  bool DoesUseGesture() const override { return std::get<0>(GetParam()); }
+  bool IsPopupNotification() const override { return std::get<1>(GetParam()); }
+  bool DoesUseQsRevamp() const override { return std::get<2>(GetParam()); }
+
+  // Returns true if the notification image is backed by a file.
+  bool IsImageFileBacked() const { return std::get<3>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1542,6 +1551,58 @@ TEST_P(AshNotificationViewDragTest, GroupedNotification) {
   MessageCenterTargetVisibilityWaiter(/*target_visible=*/false).Wait();
   EXPECT_TRUE(
       message_center::MessageCenter::Get()->GetPopupNotifications().empty());
+}
+
+// Checks drag-and-drop on a screen capture notification view.
+class ScreenCaptureNotificationViewDragTest
+    : public AshNotificationViewDragTestBase,
+      public testing::WithParamInterface<std::tuple<
+          /*use_gesture=*/bool,
+          /*is_popup=*/bool,
+          /*use_revamp_feature=*/bool>> {
+ public:
+  // AshNotificationViewDragTestBase:
+  bool DoesUseGesture() const override { return std::get<0>(GetParam()); }
+  bool IsPopupNotification() const override { return std::get<1>(GetParam()); }
+  bool DoesUseQsRevamp() const override { return std::get<2>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ScreenCaptureNotificationViewDragTest,
+    testing::Combine(/*use_gesture=*/testing::Bool(),
+                     /*is_popup=*/testing::Bool(),
+                     /*use_revamp_feature=*/testing::Bool()));
+
+// Verifies drag-and-drop on a screen capture notification. NOTE: a screen
+// capture notification's image is always file-backed.
+TEST_P(ScreenCaptureNotificationViewDragTest, Basics) {
+  // Take a full screenshot then wait for the file path to the saved image.
+  ash::CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  controller->PerformCapture();
+  const base::FilePath image_file_path = WaitForCaptureFileToBeSaved();
+
+  // Get the notification view.
+  const std::string notification_id =
+      capture_mode_util::GetScreenCaptureNotificationIdForPath(image_file_path);
+
+  if (IsPopupNotification()) {
+    // Wait until the notification popup shows.
+    MessagePopupAnimationWaiter(
+        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+        .Wait();
+    EXPECT_FALSE(
+        message_center::MessageCenter::Get()->GetPopupNotifications().empty());
+  } else {
+    notification_test_api()->ToggleBubble();
+    EXPECT_TRUE(message_center::MessageCenter::Get()->IsMessageCenterVisible());
+  }
+
+  // Drag to the center of `widget` then release. Verify that the screenshot
+  // image carried by the drag data is handled.
+  EXPECT_CALL(drag_drop_delegate(), HandleFilePathData(image_file_path));
+  DragNotificationToWidget(*GetViewForNotificationId(notification_id));
 }
 
 }  // namespace ash
