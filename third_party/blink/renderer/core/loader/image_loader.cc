@@ -572,6 +572,11 @@ void ImageLoader::DoUpdateFromElement(
       params.SetLazyImageNonBlocking();
     }
 
+    recordreplay::Assert(
+        "[RUN-658-1381] ImageLoader::DoUpdateFromElement %d %s",
+        element_->RecordReplayId(),
+        image_source_url.IsNull() ? "(null)" : image_source_url.Utf8().c_str());
+
     new_image_content = ImageResourceContent::Fetch(params, document.Fetcher());
 
     // If this load is starting while navigating away, treat it as an auditing

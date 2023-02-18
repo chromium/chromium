@@ -314,6 +314,11 @@ void HTMLImageElement::ParseAttribute(
     }
   } else if (name == html_names::kSrcAttr || name == html_names::kSrcsetAttr ||
              name == html_names::kSizesAttr) {
+    recordreplay::Assert(
+        "[RUN-658-1381] HTMLImageElement::ParseAttribute %d %s",
+        RecordReplayId(),
+        best_fit_image_url_.IsNull() ? "(null)" : best_fit_image_url_.Utf8().c_str());
+
     SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError);
   } else if (name == html_names::kUsemapAttr) {
     SetIsLink(!params.new_value.IsNull());

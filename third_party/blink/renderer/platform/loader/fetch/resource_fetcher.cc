@@ -800,8 +800,7 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     FetchParameters& params,
     const ResourceFactory& factory,
     WebScopedVirtualTimePauser& virtual_time_pauser) {
-  // https://linear.app/replay/issue/BAC-2424
-  recordreplay::Assert("ResourceFetcher::PrepareRequest Start");
+  recordreplay::Assert("[RUN-749] ResourceFetcher::PrepareRequest Start");
 
   ResourceRequest& resource_request = params.MutableResourceRequest();
   ResourceType resource_type = factory.GetType();
@@ -1038,6 +1037,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   resource_request.SetInspectorId(identifier);
   resource_request.SetFromOriginDirtyStyleSheet(
       params.IsFromOriginDirtyStyleSheet());
+
+  recordreplay::Assert("[RUN-658-1381] ResourceFetcher::RequestResource %s",
+                       params.Url().ElidedString().Utf8().c_str());
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
@@ -1352,7 +1354,7 @@ Resource* ResourceFetcher::CreateResourceForLoading(
                             << params.GetResourceRequest().Url().ElidedString();
 
   // https://linear.app/replay/issue/RUN-820
-  recordreplay::Assert("ResourceFetcher::CreateResourceForLoading #1");
+  recordreplay::Assert("[RUN-820] ResourceFetcher::CreateResourceForLoading #1");
 
   Resource* resource = factory.Create(
       params.GetResourceRequest(), params.Options(), params.DecoderOptions());
