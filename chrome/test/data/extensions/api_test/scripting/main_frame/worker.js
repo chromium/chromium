@@ -308,7 +308,7 @@ chrome.test.runTests([
     let tab = await getSingleTab(query);
     // Double-check that the title is not the one from the script file to be
     // injected.
-    chrome.test.assertFalse(tab.title == NEW_TITLE_FROM_FILE);
+    chrome.test.assertNe(NEW_TITLE_FROM_FILE, tab.title);
     const results = await chrome.scripting.executeScript({
       target: {
         tabId: tab.id,

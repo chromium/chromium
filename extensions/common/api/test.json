@@ -235,6 +235,23 @@
         ]
       },
       {
+        "name": "assertNe",
+        "type": "function",
+        "nocompile": true,
+        "allowAmbiguousOptionalArguments": true,
+        "parameters": [
+          // These need to be optional because they can be null.
+          {"type": "any", "name": "expected", "optional": true},
+          {"type": "any", "name": "actual", "optional": true},
+          {
+            "type": "string",
+            "name": "message",
+            "optional": true,
+            "description": "A custom error message to print out with the test failure, if any."
+          }
+        ]
+      },
+      {
         "name": "assertNoLastError",
         "type": "function",
         "nocompile": true,

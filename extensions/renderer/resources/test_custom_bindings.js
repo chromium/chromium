@@ -263,6 +263,31 @@ apiBridge.registerCustomHook(function(api) {
     }
   });
 
+  apiFunctions.setHandleRequest('assertNe',
+                                function(expected, actual, message) {
+    // Easy case: different types are always inequal.
+    if (typeof expected != typeof actual)
+      return;
+
+    let errorMsg = 'API Test Error in ' + testName(currentTest);
+    if (message)
+      errorMessage += ': ' + message;
+
+    if (typeof expected == 'object') {
+      if (chromeTest.checkDeepEq(expected, actual)) {
+        errorMsg += '\nExpected inequal values, but both are ' +
+                    $JSON.stringify(expected);
+        chromeTest.fail(errorMsg);
+      }
+      return;
+    }
+
+    if (expected == actual) {
+      errorMsg += '\nExpected inequal values, but both are ' + expected;
+      chromeTest.fail(errorMsg);
+    }
+  });
+
   apiFunctions.setHandleRequest('assertNoLastError', function() {
     if (chrome.runtime.lastError != undefined) {
       chromeTest.fail("lastError.message == " +

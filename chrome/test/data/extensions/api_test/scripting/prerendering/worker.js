@@ -73,7 +73,7 @@ chrome.test.getConfig(async config => {
         ((resolve, details) => {
           prerenderingFrameId = details.frameId;
           prerenderingDocumentId = details.documentId;
-          chrome.test.assertTrue(prerenderingFrameId != 0);
+          chrome.test.assertNe(0, prerenderingFrameId);
           chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
           resolve();
         }).bind(this, resolve);

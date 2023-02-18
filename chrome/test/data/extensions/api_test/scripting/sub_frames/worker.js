@@ -70,7 +70,7 @@ chrome.test.runTests([
     chrome.test.assertEq('b.com', url2.hostname);
     // Verify the subframe has any non-main-frame ID. Note: specific frame IDs
     // are exercised more heavily below.
-    chrome.test.assertFalse(results[1].frameId == 0);
+    chrome.test.assertNe(0, results[1].frameId);
     chrome.test.succeed();
   },
 
