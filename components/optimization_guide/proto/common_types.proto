@@ -25,6 +25,10 @@ enum RequestContext {
   // Requesting page load metadata for a user's bookmarks when visiting the
   // bookmarks surface.
   CONTEXT_BOOKMARKS = 7;
+  // Requesting metadata for a user when visiting the Journeys surface.
+  CONTEXT_JOURNEYS = 8;
+  // Requesting metadata for a user when visiting the new tab page.
+  CONTEXT_NEW_TAB_PAGE = 9;
 }
 
 message FieldTrial {

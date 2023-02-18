@@ -143,6 +143,8 @@ chromium-metrics-reviews@google.com.
       summary="Batch update of hints for result links off the Google SRP"/>
   <variant name="BatchUpdateModels" summary="Batch update of models"/>
   <variant name="Bookmarks" summary="Batch update of hints for bookmarks"/>
+  <variant name="Journeys" summary="Journeys surface"/>
+  <variant name="NewTabPage" summary="New tab page"/>
   <variant name="PageNavigation" summary="Page navigation"/>
 </variants>
 

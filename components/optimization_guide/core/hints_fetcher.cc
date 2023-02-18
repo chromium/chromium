@@ -59,6 +59,10 @@ std::string GetStringNameForRequestContext(
       return "BatchUpdateActiveTabs";
     case proto::RequestContext::CONTEXT_BOOKMARKS:
       return "Bookmarks";
+    case proto::RequestContext::CONTEXT_JOURNEYS:
+      return "Journeys";
+    case proto::RequestContext::CONTEXT_NEW_TAB_PAGE:
+      return "NewTabPage";
   }
   NOTREACHED();
   return std::string();
