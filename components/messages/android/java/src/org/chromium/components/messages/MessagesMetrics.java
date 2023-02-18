@@ -139,7 +139,8 @@ public class MessagesMetrics {
         return SystemClock.uptimeMillis();
     }
 
-    static String stackingAnimationActionToHistogramSuffix(@StackingAnimationAction int action) {
+    private static String stackingAnimationActionToHistogramSuffix(
+            @StackingAnimationAction int action) {
         if (action == StackingAnimationAction.INSERT_AT_FRONT) {
             return "InsertAtFront";
         } else if (action == StackingAnimationAction.INSERT_AT_BACK) {
