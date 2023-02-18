@@ -1505,6 +1505,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(ash::file_manager::kChromeUIFileManagerURL),
         GURL(ash::kChromeUIFilesInternalsURL), GURL(chrome::kChromeUIFlagsURL),
         GURL(chrome::kOsUIFlagsURL), GURL(chrome::kOsUIGpuURL),
+        GURL(chrome::kChromeUIHealthdInternalsURL),
         GURL(chrome::kOsUIHistogramsURL),
         GURL(chrome::kChromeUIHumanPresenceInternalsURL),
         GURL(chrome::kChromeUIInternetConfigDialogURL),

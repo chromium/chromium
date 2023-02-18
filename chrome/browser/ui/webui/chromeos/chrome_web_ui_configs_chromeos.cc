@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/webui/ash/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/human_presence_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
@@ -114,6 +115,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::DriveInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::EmojiUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::FirmwareUpdateAppUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::HealthdInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::HumanPresenceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetConfigDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetDetailDialogUIConfig>());

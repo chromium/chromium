@@ -400,6 +400,10 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [2240],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/healthd_internals/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [2250],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_config_dialog/internet_config_dialog_resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2260],

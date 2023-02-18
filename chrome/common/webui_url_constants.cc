@@ -335,6 +335,8 @@ const char kChromeUIDeviceEmulatorHost[] = "device-emulator";
 const char kChromeUIDiagnosticsAppURL[] = "chrome://diagnostics";
 const char kChromeUIEnterpriseReportingHost[] = "enterprise-reporting";
 const char kChromeUIEnterpriseReportingURL[] = "chrome://enterprise-reporting";
+const char kChromeUIHealthdInternalsHost[] = "healthd-internals";
+const char kChromeUIHealthdInternalsURL[] = "chrome://healthd-internals";
 const char kChromeUIInternetConfigDialogURL[] =
     "chrome://internet-config-dialog/";
 const char kChromeUIInternetDetailDialogURL[] =

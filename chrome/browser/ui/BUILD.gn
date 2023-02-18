@@ -2691,6 +2691,8 @@ static_library("ui") {
       "webui/ash/enterprise_reporting/enterprise_reporting_ui.h",
       "webui/ash/guest_os_installer/guest_os_installer_dialog.cc",
       "webui/ash/guest_os_installer/guest_os_installer_dialog.h",
+      "webui/ash/healthd_internals/healthd_internals_ui.cc",
+      "webui/ash/healthd_internals/healthd_internals_ui.h",
       "webui/ash/human_presence_internals_ui.cc",
       "webui/ash/human_presence_internals_ui.h",
       "webui/ash/image_source.cc",
