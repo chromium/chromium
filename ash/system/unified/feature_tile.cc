@@ -79,7 +79,7 @@ FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
   enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
       [](FeatureTile* feature_tile) {
         feature_tile->UpdateColors();
-        if (!feature_tile->drill_in_button()) {
+        if (!feature_tile->drill_in_button_) {
           return;
         }
         feature_tile->drill_in_button_->SetEnabled(feature_tile->GetEnabled());

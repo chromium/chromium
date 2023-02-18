@@ -191,6 +191,11 @@ std::unique_ptr<FeatureTile> NetworkFeaturePodController::CreateTile(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()));
   tile_ = tile.get();
+  tile_->CreateDrillInButton(
+      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP,
+                                 std::u16string()));
   UpdateButtonStateIfExists();
   TrackVisibilityUMA();
   return tile;
@@ -320,12 +325,6 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
   if (is_qs_revamp_enabled) {
     tile_->SetLabel(ComputeButtonLabel(default_network));
     tile_->SetSubLabel(ComputeButtonSubLabel(default_network));
-    if (!tile_->drill_in_button()) {
-      tile_->CreateDrillInButton(
-          base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
-                              weak_ptr_factory_.GetWeakPtr()),
-          tooltip);
-    }
     if (!tile_->GetEnabled()) {
       tile_->SetTooltipText(tooltip);
       tile_->SetDrillInButtonTooltipText(tooltip);

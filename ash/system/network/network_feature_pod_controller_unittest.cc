@@ -295,11 +295,14 @@ class NetworkFeaturePodControllerTest
   }
 
   bool IsButtonEnabled() {
+    return IsQsRevampEnabled() ? feature_tile_->GetEnabled()
+                               : feature_pod_button_->GetEnabled();
+  }
+
+  bool IsDiveInButtonEnabled() {
     return IsQsRevampEnabled()
-               ? feature_tile_->GetEnabled() &&
-                     feature_tile_->drill_in_button()->GetEnabled()
-               : feature_pod_button_->GetEnabled() &&
-                     feature_pod_button_->label_button()->GetEnabled();
+               ? feature_tile_->drill_in_button()->GetEnabled()
+               : feature_pod_button_->label_button()->GetEnabled();
   }
 
   void SetButtonEnabled(bool enabled) {
@@ -484,8 +487,10 @@ TEST_P(NetworkFeaturePodControllerTest,
 
 TEST_P(NetworkFeaturePodControllerTest, CannotBeModifiedWhenScreenIsLocked) {
   EXPECT_TRUE(IsButtonEnabled());
+  EXPECT_TRUE(IsDiveInButtonEnabled());
   LockScreen();
   EXPECT_FALSE(IsButtonEnabled());
+  EXPECT_FALSE(IsDiveInButtonEnabled());
 }
 
 TEST_P(NetworkFeaturePodControllerTest,
