@@ -590,31 +590,31 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
 
   auto [capabilities, printer_status, error] = printer_info_future.Take();
   ASSERT_TRUE(capabilities);
-  const base::Value* capabilities_value = capabilities->FindDictKey("printer");
-  ASSERT_TRUE(capabilities_value);
+  const base::Value::Dict* capabilities_dict =
+      capabilities->GetDict().FindDict("printer");
+  ASSERT_TRUE(capabilities_dict);
 
-  const base::Value* color = capabilities_value->FindDictKey("color");
+  const base::Value::Dict* color = capabilities_dict->FindDict("color");
   ASSERT_TRUE(color);
-  const base::Value* color_options = color->FindListKey("option");
+  const base::Value::List* color_options = color->FindList("option");
   ASSERT_TRUE(color_options);
-  ASSERT_EQ(1u, color_options->GetList().size());
+  ASSERT_EQ(1u, color_options->size());
   const std::string* color_type =
-      color_options->GetList()[0].FindStringKey("type");
+      (*color_options)[0].GetDict().FindString("type");
   ASSERT_TRUE(color_type);
   EXPECT_EQ("STANDARD_MONOCHROME", *color_type);
 
-  const base::Value* page_orientation =
-      capabilities_value->FindDictKey("page_orientation");
+  const base::Value::Dict* page_orientation =
+      capabilities_dict->FindDict("page_orientation");
   ASSERT_TRUE(page_orientation);
-  const base::Value* page_orientation_options =
-      page_orientation->FindListKey("option");
+  const base::Value::List* page_orientation_options =
+      page_orientation->FindList("option");
   ASSERT_TRUE(page_orientation_options);
-  ASSERT_EQ(3u, page_orientation_options->GetList().size());
+  ASSERT_EQ(3u, page_orientation_options->size());
   std::vector<std::string> page_orientation_types;
-  for (const base::Value& page_orientation_option :
-       page_orientation_options->GetList()) {
+  for (const base::Value& page_orientation_option : *page_orientation_options) {
     const std::string* page_orientation_type =
-        page_orientation_option.FindStringKey("type");
+        page_orientation_option.GetDict().FindString("type");
     ASSERT_TRUE(page_orientation_type);
     page_orientation_types.push_back(*page_orientation_type);
   }

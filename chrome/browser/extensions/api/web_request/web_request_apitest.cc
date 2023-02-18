@@ -603,10 +603,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
       get_all_cookies_result->FindList("cookies");
   ASSERT_TRUE(cookies);
   ASSERT_EQ(cookies->size(), 1u);
-  auto* cookie_name = cookies->front().FindStringKey("name");
+  ASSERT_TRUE(cookies->front().is_dict());
+  auto* cookie_name = cookies->front().GetDict().FindString("name");
   ASSERT_TRUE(cookie_name);
   ASSERT_EQ(*cookie_name, "cookieName");
-  auto* cookie_value = cookies->front().FindStringKey("value");
+  auto* cookie_value = cookies->front().GetDict().FindString("value");
   ASSERT_TRUE(cookie_value);
   ASSERT_EQ(*cookie_value, "cookieValue");
 }
@@ -662,10 +663,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   // the extension
   base::Value::List* response_headers =
       request_paused_result.FindListByDottedPath("responseHeaders");
-  auto* header_name = response_headers->back().FindStringKey("name");
+  auto* header_name = response_headers->back().GetDict().FindString("name");
   ASSERT_TRUE(header_name);
   ASSERT_EQ(*header_name, "extensionHeaderName");
-  auto* header_value = response_headers->back().FindStringKey("value");
+  auto* header_value = response_headers->back().GetDict().FindString("value");
   ASSERT_TRUE(header_value);
   ASSERT_EQ(*header_value, "extensionHeaderValue");
 
@@ -710,10 +711,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
       get_all_cookies_result->FindList("cookies");
   ASSERT_TRUE(cookies);
   ASSERT_EQ(cookies->size(), 1u);
-  auto* cookie_name = cookies->front().FindStringKey("name");
+  auto* cookie_name = cookies->front().GetDict().FindString("name");
   ASSERT_TRUE(cookie_name);
   ASSERT_EQ(*cookie_name, "cookieName");
-  auto* cookie_value = cookies->front().FindStringKey("value");
+  auto* cookie_value = cookies->front().GetDict().FindString("value");
   ASSERT_TRUE(cookie_value);
   ASSERT_EQ(*cookie_value, "cookieValue");
 }

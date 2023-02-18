@@ -46,17 +46,16 @@ const char kWebstoreKId[] = "webstore";
 
 // Helper function to iterate over a list of dictionaries, returning the
 // dictionary that has |key| -> |value| in it, if any, or null.
-const base::Value* FindDictionaryWithValue(const base::Value& list,
-                                           const std::string& key,
-                                           const std::string& value) {
-  DCHECK(list.is_list());
-  for (const base::Value& item : list.GetList()) {
+const base::Value::Dict* FindDictionaryWithValue(const base::Value::List& list,
+                                                 const std::string& key,
+                                                 const std::string& value) {
+  for (const base::Value& item : list) {
     if (!item.is_dict())
       continue;
     // Finds a path because the |key| may include '.'.
-    const std::string* found_value = item.FindStringPath(key);
+    const std::string* found_value = item.GetDict().FindStringByDottedPath(key);
     if (found_value && *found_value == value)
-      return &item;
+      return &item.GetDict();
   }
   return nullptr;
 }
@@ -265,29 +264,30 @@ bool VerifiedContents::GetPayload(base::StringPiece contents,
   //     }
   //   }
   // ]
-  const base::Value* dictionary =
-      FindDictionaryWithValue(*top_list, kDescriptionKey, kTreeHashPerFile);
+  const base::Value::Dict* dictionary = FindDictionaryWithValue(
+      top_list->GetList(), kDescriptionKey, kTreeHashPerFile);
   if (!dictionary)
     return false;
 
-  const base::Value* signed_content =
-      dictionary->FindDictKey(kSignedContentKey);
+  const base::Value::Dict* signed_content =
+      dictionary->FindDict(kSignedContentKey);
   if (!signed_content)
     return false;
 
-  const base::Value* signatures = signed_content->FindListKey(kSignaturesKey);
+  const base::Value::List* signatures =
+      signed_content->FindList(kSignaturesKey);
   if (!signatures)
     return false;
 
-  const base::Value* signature_dict =
+  const base::Value::Dict* signature_dict =
       FindDictionaryWithValue(*signatures, kHeaderKidKey, kWebstoreKId);
   if (!signature_dict)
     return false;
 
   const std::string* protected_value =
-      signature_dict->FindStringKey(kProtectedKey);
+      signature_dict->FindString(kProtectedKey);
   const std::string* encoded_signature =
-      signature_dict->FindStringKey(kSignatureKey);
+      signature_dict->FindString(kSignatureKey);
   std::string decoded_signature;
   if (!protected_value || !encoded_signature ||
       !base::Base64UrlDecode(*encoded_signature,
@@ -295,8 +295,7 @@ bool VerifiedContents::GetPayload(base::StringPiece contents,
                              &decoded_signature))
     return false;
 
-  const std::string* encoded_payload =
-      signed_content->FindStringKey(kPayloadKey);
+  const std::string* encoded_payload = signed_content->FindString(kPayloadKey);
   if (!encoded_payload)
     return false;
 

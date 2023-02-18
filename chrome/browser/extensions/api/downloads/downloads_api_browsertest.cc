@@ -1399,8 +1399,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   const base::Value& item1_value = result->GetList()[1];
   ASSERT_TRUE(item0_value.is_dict());
   ASSERT_TRUE(item1_value.is_dict());
-  const std::string* item0_name = item0_value.FindStringKey("filename");
-  const std::string* item1_name = item1_value.FindStringKey("filename");
+  const std::string* item0_name = item0_value.GetDict().FindString("filename");
+  const std::string* item1_name = item1_value.GetDict().FindString("filename");
   ASSERT_TRUE(item0_name);
   ASSERT_TRUE(item1_name);
   ASSERT_GT(items[0]->GetTargetFilePath().value(),
@@ -1429,8 +1429,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   const base::Value& item1_value = result->GetList()[1];
   ASSERT_TRUE(item0_value.is_dict());
   ASSERT_TRUE(item1_value.is_dict());
-  const std::string* item0_name = item0_value.FindStringKey("filename");
-  const std::string* item1_name = item1_value.FindStringKey("filename");
+  const std::string* item0_name = item0_value.GetDict().FindString("filename");
+  const std::string* item1_name = item1_value.GetDict().FindString("filename");
   ASSERT_TRUE(item0_name);
   ASSERT_TRUE(item1_name);
   ASSERT_GT(items[0]->GetTargetFilePath().value(),
@@ -1539,7 +1539,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(1UL, result->GetList().size());
   const base::Value& item_value = result->GetList()[0];
   ASSERT_TRUE(item_value.is_dict());
-  const std::string* item_name = item_value.FindStringKey("filename");
+  const std::string* item_name = item_value.GetDict().FindString("filename");
   ASSERT_TRUE(item_name);
   ASSERT_EQ(items[2]->GetTargetFilePath().AsUTF8Unsafe(), *item_name);
 }

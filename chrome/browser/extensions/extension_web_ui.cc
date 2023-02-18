@@ -295,11 +295,12 @@ const Extension* ValidateOverrideURL(const base::Value* override_url_value,
                                      const extensions::ExtensionSet& extensions,
                                      GURL* override_url) {
   if (!override_url_value || !override_url_value->is_dict() ||
-      !override_url_value->FindBoolKey(kActive).value_or(false) ||
-      !override_url_value->FindStringKey(kEntry)) {
+      !override_url_value->GetDict().FindBool(kActive).value_or(false) ||
+      !override_url_value->GetDict().FindString(kEntry)) {
     return nullptr;
   }
-  const std::string* const_override = override_url_value->FindStringKey(kEntry);
+  const std::string* const_override =
+      override_url_value->GetDict().FindString(kEntry);
   std::string override = *const_override;
   if (!source_url.query().empty())
     override += "?" + source_url.query();
@@ -457,7 +458,7 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     for (const auto& list_iter : dict_iter.second.GetList()) {
       const std::string* override = nullptr;
       if (list_iter.is_dict())
-        override = list_iter.FindStringKey(kEntry);
+        override = list_iter.GetDict().FindString(kEntry);
       if (!override)
         continue;
       if (base::StartsWith(url->spec(), *override,

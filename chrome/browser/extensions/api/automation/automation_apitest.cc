@@ -647,15 +647,15 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
   int renderer_total_dur = 0;
   int automation_total_dur = 0;
   for (const base::Value& event : trace_events->GetList()) {
-    const std::string* cat = event.FindStringKey("cat");
+    const std::string* cat = event.GetDict().FindString("cat");
     if (!cat || *cat != "accessibility")
       continue;
 
-    const std::string* name = event.FindStringKey("name");
+    const std::string* name = event.GetDict().FindString("name");
     if (!name)
       continue;
 
-    absl::optional<int> dur = event.FindIntKey("dur");
+    absl::optional<int> dur = event.GetDict().FindInt("dur");
     if (!dur)
       continue;
 
