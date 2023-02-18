@@ -180,10 +180,26 @@ std::ostream& CheckError::stream() {
 }
 
 CheckError::~CheckError() {
+  // TODO(crbug.com/1409729): Consider splitting out CHECK from DCHECK so that
+  // the destructor can be marked [[noreturn]] and we don't need to check
+  // severity in the destructor.
+  const bool is_fatal = log_message_->severity() == LOGGING_FATAL;
   // Note: This function ends up in crash stack traces. If its full name
   // changes, the crash server's magic signature logic needs to be updated.
   // See cl/306632920.
   delete log_message_;
+
+  // Make sure we crash even if LOG(FATAL) has been overridden.
+  // TODO(crbug.com/1409729): Include Windows and iOS here too. This is done in
+  // steps to prevent backsliding on platforms where this goes through CQ.
+  // Currently iOS is blocked by:
+  //   * ListModelTest.InvalidIndexPath
+  // Windows is blocked by:
+  //   * All/RenderProcessHostWriteableFileDeathTest.
+  //       PassUnsafeWriteableExecutableFile/2
+  if (is_fatal && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)) {
+    base::ImmediateCrash();
+  }
 }
 
 NotReachedError NotReachedError::NotReached(const char* file, int line) {
