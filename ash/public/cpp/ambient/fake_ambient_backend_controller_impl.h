@@ -34,11 +34,6 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   void GetSettings(GetSettingsCallback callback) override;
   void UpdateSettings(const AmbientSettings& settings,
                       UpdateSettingsCallback callback) override;
-  void FetchSettingPreview(const std::string& album_id,
-                           int setting_id,
-                           int preview_width,
-                           int preview_height,
-                           OnSettingPreviewFetchedCallback) override;
   void FetchPersonalAlbums(int banner_width,
                            int banner_height,
                            int num_albums,

@@ -143,18 +143,6 @@ void FakeAmbientBackendControllerImpl::UpdateSettings(
   pending_update_callback_ = std::move(callback);
 }
 
-void FakeAmbientBackendControllerImpl::FetchSettingPreview(
-    const std::string& album_id,
-    int setting_id,
-    int preview_width,
-    int preview_height,
-    OnSettingPreviewFetchedCallback callback) {
-  std::vector<GURL> urls = {GURL(kFakeUrl)};
-  // Pretend to respond asynchronously.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), urls));
-}
-
 void FakeAmbientBackendControllerImpl::FetchPersonalAlbums(
     int banner_width,
     int banner_height,
