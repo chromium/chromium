@@ -499,10 +499,10 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
       blink::mojom::AncestorChainBit::kCrossSite;
   net::SchemefulSite top_level_site =
       net::SchemefulSite(isolation_info.top_frame_origin().value());
-  // If the top_level_site is opaque the ancestor chain bit will be CrossSite.
-  // Otherwise if the top level site matches the new origin and the
+  // If the origin or top_level_site is opaque the ancestor chain bit will be
+  // CrossSite. Otherwise if the top level site matches the new origin and the
   // site for cookies isn't empty it must be SameSite.
-  if (!top_level_site.opaque() &&
+  if (!origin.opaque() && !top_level_site.opaque() &&
       net::SchemefulSite(origin) == top_level_site &&
       !isolation_info.site_for_cookies().IsNull()) {
     ancestor_chain_bit = blink::mojom::AncestorChainBit::kSameSite;
@@ -807,6 +807,18 @@ std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk) {
 }
 
 bool StorageKey::IsValid() const {
+  // If the key's origin is opaque ancestor_chain_bit* is always kCrossSite
+  // no matter the value of the other members.
+  if (origin_.opaque()) {
+    if (ancestor_chain_bit_ != blink::mojom::AncestorChainBit::kCrossSite) {
+      return false;
+    }
+    if (ancestor_chain_bit_if_third_party_enabled_ !=
+        blink::mojom::AncestorChainBit::kCrossSite) {
+      return false;
+    }
+  }
+
   // If this key's "normal" members indicate a 3p key, then the
   // *_if_third_party_enabled counterparts must match them.
   if (!origin_.opaque() &&

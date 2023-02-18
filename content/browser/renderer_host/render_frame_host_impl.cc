@@ -4113,11 +4113,11 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   net::SchemefulSite top_level_site(origin(ancestor_chain.back()));
 
   // Compute the AncestorChainBit. It represents whether every ancestors are
-  // all same-site or not. If `top_level_site` is opaque the bit must be
-  // kCrossSite as this is the default value (which won't be serialized).
+  // all same-site or not. If `origin` or `top_level_site` is opaque the bit
+  // must be kCrossSite as this is the default (which won't be serialized).
   blink::mojom::AncestorChainBit ancestor_chain_bit =
       blink::mojom::AncestorChainBit::kSameSite;
-  if (!top_level_site.opaque()) {
+  if (!new_rfh_origin.opaque() && !top_level_site.opaque()) {
     for (auto* ancestor : ancestor_chain) {
       if (top_level_site != net::SchemefulSite(origin(ancestor))) {
         ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;

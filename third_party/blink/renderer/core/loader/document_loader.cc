@@ -2347,11 +2347,12 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     const auto& storage_key_with_3psp =
         storage_key_.CopyWithForceEnabledThirdPartyStoragePartitioning();
     BlinkSchemefulSite top_level_site = storage_key_with_3psp.GetTopLevelSite();
-    // If `security_origin` does not match `top_level_site` we must ensure
-    // `ancestor_chain_bit` is kCrossSite.
+    // If `security_origin` is opaque or does not match `top_level_site` we
+    // must ensure `ancestor_chain_bit` is kCrossSite.
     mojom::blink::AncestorChainBit ancestor_chain_bit =
         storage_key_with_3psp.GetAncestorChainBit();
-    if (BlinkSchemefulSite(security_origin) != top_level_site) {
+    if (security_origin->IsOpaque() ||
+        BlinkSchemefulSite(security_origin) != top_level_site) {
       ancestor_chain_bit = mojom::blink::AncestorChainBit::kCrossSite;
     }
     // TODO(https://crbug.com/888079): Just use the storage key sent by the

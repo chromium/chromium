@@ -391,6 +391,8 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
        AncestorChainBit::kCrossSite, true},
       {o1, opaque_site, opaque_site, absl::nullopt,
        AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
+      {opaque, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
       // Failing cases:
       // If a 3p key is indicated, the *if_third_party_enabled pieces should
       // match their counterparts.
@@ -420,6 +422,13 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
        AncestorChainBit::kSameSite, false},
       {o1, opaque_site, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, false},
+      // If the origin is opaque, the ancestor_chain_bit* must be cross-site.
+      {opaque, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, false},
+      {opaque, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kCrossSite, AncestorChainBit::kSameSite, false},
+      {opaque, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kSameSite, AncestorChainBit::kCrossSite, false},
   };
 
   const BlinkStorageKey starting_key;
@@ -445,9 +454,11 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
       SecurityOrigin::CreateFromString("https://foo.com");
   scoped_refptr<const SecurityOrigin> other_origin =
       SecurityOrigin::CreateFromString("https://notfoo.com");
+  scoped_refptr<const SecurityOrigin> opaque_origin =
+      SecurityOrigin::CreateUniqueOpaque();
   const BlinkSchemefulSite site(origin);
   const BlinkSchemefulSite other_site(other_origin);
-  const BlinkSchemefulSite opaque_site;
+  const BlinkSchemefulSite opaque_site(opaque_origin);
   const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -534,6 +545,14 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
           BlinkStorageKey::CreateWithNonce(origin, nonce),
           other_origin,
           BlinkStorageKey::CreateWithNonce(other_origin, nonce),
+      },
+      // Change in opaque top_level_site key updated with opaque origin.
+      {
+          BlinkStorageKey::Create(origin, opaque_site,
+                                  mojom::AncestorChainBit::kCrossSite),
+          opaque_origin,
+          BlinkStorageKey::Create(opaque_origin, opaque_site,
+                                  mojom::AncestorChainBit::kCrossSite),
       },
   };
 

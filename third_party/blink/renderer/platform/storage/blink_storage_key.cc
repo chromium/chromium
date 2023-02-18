@@ -222,6 +222,18 @@ std::ostream& operator<<(std::ostream& ostream, const BlinkStorageKey& key) {
 }
 
 bool BlinkStorageKey::IsValid() const {
+  // If the key's origin is opaque ancestor_chain_bit* is always kCrossSite
+  // no matter the value of the other members.
+  if (origin_->IsOpaque()) {
+    if (ancestor_chain_bit_ != mojom::blink::AncestorChainBit::kCrossSite) {
+      return false;
+    }
+    if (ancestor_chain_bit_if_third_party_enabled_ !=
+        mojom::blink::AncestorChainBit::kCrossSite) {
+      return false;
+    }
+  }
+
   // The origin must have been initialized.
   if (!origin_) {
     return false;

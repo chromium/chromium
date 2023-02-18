@@ -1451,7 +1451,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
         origin, top_level_site,
         render_frame_host->ComputeSiteForCookies().IsNull() ||
                 net::SchemefulSite(origin) != top_level_site ||
-                top_level_site.opaque()
+                origin.opaque() || top_level_site.opaque()
             ? blink::mojom::AncestorChainBit::kCrossSite
             : blink::mojom::AncestorChainBit::kSameSite);
   }

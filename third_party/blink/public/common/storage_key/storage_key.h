@@ -29,13 +29,13 @@ namespace blink {
 //
 // When third party storage partitioning is enabled, a storage key additionally
 // contains a top-level site and an ancestor chain bit (see below). This
-// achieves partitioning of an origin by the top-level site that it is embedded
-// in. For example, https://chat.example.net embedded in
+// achieves partitioning of an origin by the top-level site that the frame is
+// embedded in. For example, https://chat.example.net embedded in
 // https://social-example.org is a distinct key from https://chat.example.net
 // embedded in https://news-example.org.
 //
 // A key is a third-party key if its origin is not in its top-level site (or if
-// its ancestor chain bit is `kCrossSite`; see below); otherwise it is a
+// its ancestor chain bit is `kCrossSite`; see below); otherwise the key is a
 // first-party key and the ancestor chain bit is `kSameSite`.
 //
 // A corner-case is a first-party origin embedded in a third-party origin, such
@@ -51,10 +51,16 @@ namespace blink {
 //
 // Storage keys might have an opaque top level site (for example, if an
 // iframe is embedded in a data url). These storage keys always have a
-// `kCrossSite` ancestor chain bit as it provides no additional distinctiveness.
+// `kCrossSite` ancestor chain bit as there is no need to distinguish their
+// partitions based on frame ancestry.
 //
 // Storage keys might have a top level site and origin that don't match. These
 // storage keys always have a `kCrossSite` ancestor chain bit.
+//
+// Storage keys might have an opaque origin (for example, data urls). These
+// storage keys always have a `kCrossSite` ancestor chain bit as there is no
+// need to distinguish their partitions based on frame ancestry. These storage
+// keys cannot be serialized.
 //
 // For more details on the overall design, see
 // https://docs.google.com/document/d/1xd6MXcUhfnZqIe5dt2CTyCn6gEZ7nOezAEWS0W9hwbQ/edit.
@@ -69,7 +75,6 @@ class BLINK_COMMON_EXPORT StorageKey {
   // (1A) Construct with a unique, opaque, origin and top_level_site.
   // This should be used only in tests or where memory must be initialized
   // before the context of some frame is known.
-  // TODO(crbug.com/1410254): Solidify the meaning of opaque storage keys.
   StorageKey() = default;
 
   // (1B) Construct a first-party (origin and top_level_site match) key.

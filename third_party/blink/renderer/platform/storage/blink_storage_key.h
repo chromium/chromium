@@ -32,7 +32,6 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // (1A) Construct with a unique, opaque, origin and top_level_site.
   // This should be used only in tests or where memory must be initialized
   // before the context of some frame is known.
-  // TODO(crbug.com/1410254): Solidify the meaning of opaque storage keys.
   BlinkStorageKey();
 
   // (1B) Construct a first-party (origin and top_level_site match) key.

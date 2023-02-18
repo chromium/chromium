@@ -1134,9 +1134,10 @@ TEST_F(StorageKeyTest, WithOrigin) {
   const url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
   const url::Origin other_origin =
       url::Origin::Create(GURL("https://notfoo.com"));
+  const url::Origin opaque_origin;
   const net::SchemefulSite site(origin);
   const net::SchemefulSite other_site(other_origin);
-  const net::SchemefulSite opaque_site;
+  const net::SchemefulSite opaque_site(opaque_origin);
   const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1224,6 +1225,14 @@ TEST_F(StorageKeyTest, WithOrigin) {
           other_origin,
           blink::StorageKey::CreateWithNonce(other_origin, nonce),
       },
+      // Change in opaque top_level_site key updated with opaque origin.
+      {
+          blink::StorageKey::Create(origin, opaque_site,
+                                    mojom::AncestorChainBit::kCrossSite),
+          opaque_origin,
+          blink::StorageKey::Create(opaque_origin, opaque_site,
+                                    mojom::AncestorChainBit::kCrossSite),
+      },
   };
 
     for (const auto& test_case : kTestCases) {
@@ -1279,6 +1288,8 @@ TEST_F(StorageKeyTest, FromWireReturnValue) {
        AncestorChainBit::kCrossSite, true},
       {o1, opaque_site, opaque_site, absl::nullopt,
        AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
+      {opaque, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
       // Failing cases:
       // If a 3p key is indicated, the *if_third_party_enabled pieces should
       // match their counterparts.
@@ -1308,6 +1319,13 @@ TEST_F(StorageKeyTest, FromWireReturnValue) {
        AncestorChainBit::kSameSite, false},
       {o1, opaque_site, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, false},
+      // If the origin is opaque, the ancestor_chain_bit* must be cross-site.
+      {opaque, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, false},
+      {opaque, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kCrossSite, AncestorChainBit::kSameSite, false},
+      {opaque, opaque_site, opaque_site, absl::nullopt,
+       AncestorChainBit::kSameSite, AncestorChainBit::kCrossSite, false},
   };
 
   const StorageKey starting_key;
@@ -1395,6 +1413,16 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
                 other_origin, net::SiteForCookies::FromOrigin(other_origin),
                 absl::nullopt, &nonce),
             blink::StorageKey::CreateWithNonce(origin, nonce),
+        },
+        // Opaque context.
+        {
+            opaque_origin,
+            net::IsolationInfo::Create(
+                net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+                net::SiteForCookies::FromOrigin(origin), absl::nullopt,
+                nullptr),
+            blink::StorageKey::Create(opaque_origin, site,
+                                      mojom::AncestorChainBit::kCrossSite),
         },
     };
 
