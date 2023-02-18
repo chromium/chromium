@@ -23,7 +23,8 @@ absl::optional<FirstPartySetParser::SingleSet> CanonicalizeSet(
   std::istringstream stream(use_first_party_set_flag_value);
 
   FirstPartySetParser::SetsAndAliases parsed =
-      FirstPartySetParser::ParseSetsFromStream(stream, /*emit_errors=*/true);
+      FirstPartySetParser::ParseSetsFromStream(stream, /*emit_errors=*/true,
+                                               /*emit_metrics*/ false);
 
   FirstPartySetParser::SetsMap entries = std::move(parsed.first);
   FirstPartySetParser::Aliases aliases = std::move(parsed.second);

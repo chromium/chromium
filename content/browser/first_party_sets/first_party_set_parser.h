@@ -68,7 +68,8 @@ class CONTENT_EXPORT FirstPartySetParser {
   // Returns an empty map if parsing or validation of any set failed. Must not
   // be called before field trial state has been initialized.
   static SetsAndAliases ParseSetsFromStream(std::istream& input,
-                                            bool emit_errors);
+                                            bool emit_errors,
+                                            bool emit_metrics);
 
   // Canonicalizes the passed in origin to a registered domain. In particular,
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered

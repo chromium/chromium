@@ -87,7 +87,8 @@ void FirstPartySetsLoader::OnReadSetsFile(base::Version version,
 
   std::istringstream stream(raw_sets);
   FirstPartySetParser::SetsAndAliases public_sets =
-      FirstPartySetParser::ParseSetsFromStream(stream, /*emit_errors=*/false);
+      FirstPartySetParser::ParseSetsFromStream(stream, /*emit_errors=*/false,
+                                               /*emit_metrics=*/true);
   sets_ = net::GlobalFirstPartySets(std::move(version),
                                     std::move(public_sets.first),
                                     std::move(public_sets.second));

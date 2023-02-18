@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/json/json_reader.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
@@ -37,23 +38,35 @@ const char kAssociatedSitesField[] = "associatedSites";
 const char kCctldsField[] = "ccTLDs";
 const char kReplacementsField[] = "replacements";
 const char kAdditionsField[] = "additions";
+constexpr char kParsedSuccessfullyHistogram[] =
+    "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully";
+constexpr char kNonfatalErrorsHistogram[] =
+    "Cookie.FirstPartySets.ComponentSetsNonfatalErrors";
 
 }  // namespace
 
 FirstPartySetParser::SetsAndAliases ParseSets(const std::string& sets) {
   std::istringstream stream(sets);
-  return FirstPartySetParser::ParseSetsFromStream(stream, false);
+  return FirstPartySetParser::ParseSetsFromStream(stream, false, true);
 }
 
 TEST(FirstPartySetParser, RejectsNonemptyMalformed) {
   // If the input isn't valid JSON, we should
   // reject it.
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(ParseSets("certainly not valid JSON"),
               Pair(IsEmpty(), IsEmpty()));
+  EXPECT_EQ(histogram_tester.GetTotalSum(kParsedSuccessfullyHistogram), 0);
+  EXPECT_EQ(histogram_tester.GetTotalSum(kNonfatalErrorsHistogram), 0);
 }
 
 TEST(FirstPartySetParser, AcceptsTrivial) {
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(ParseSets(""), Pair(IsEmpty(), IsEmpty()));
+  histogram_tester.ExpectUniqueSample(
+      kParsedSuccessfullyHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsSingletonSet) {
@@ -96,6 +109,7 @@ TEST(FirstPartySetParser, AcceptsMinimal_Service) {
 }
 
 TEST(FirstPartySetParser, AcceptsMinimal_AllSubsets_WithCcTLDs) {
+  base::HistogramTester histogram_tester;
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite example_cctld(GURL("https://example.cctld"));
   net::SchemefulSite a(GURL("https://a.test"));
@@ -123,6 +137,10 @@ TEST(FirstPartySetParser, AcceptsMinimal_AllSubsets_WithCcTLDs) {
                                                absl::nullopt))),
            UnorderedElementsAre(Pair(example_cctld, example), Pair(a_cctld, a),
                                 Pair(b_cctld, b))));
+  histogram_tester.ExpectUniqueSample(
+      kParsedSuccessfullyHistogram, /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsMissingPrimary) {
@@ -150,6 +168,7 @@ TEST(FirstPartySetParser, RejectsNonOriginPrimary) {
 }
 
 TEST(FirstPartySetParser, SkipsSetOnNonOriginPrimary) {
+  base::HistogramTester histogram_tester;
   net::SchemefulSite example2(GURL("https://example2.test"));
   net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
   net::SchemefulSite example(GURL("https://example.test"));
@@ -176,12 +195,21 @@ TEST(FirstPartySetParser, SkipsSetOnNonOriginPrimary) {
                Pair(aaaa, net::FirstPartySetEntry(
                               example, net::SiteType::kAssociated, 0))),
            IsEmpty()));
+  histogram_tester.ExpectUniqueSample(
+      kParsedSuccessfullyHistogram, /*sample=*/2, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsPrimaryWithoutRegisteredDomain) {
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(ParseSets(R"({"primary": "https://example.test..", )"
                         R"("associatedSites": ["https://aaaa.test"]})"),
               Pair(IsEmpty(), IsEmpty()));
+  histogram_tester.ExpectUniqueSample(
+      kParsedSuccessfullyHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsMissingAssociatedSites) {
@@ -274,6 +302,7 @@ TEST(FirstPartySetParser, TruncatesSubdomain_AssociatedSite) {
 }
 
 TEST(FirstPartySetParser, AcceptsMultipleSets) {
+  base::HistogramTester histogram_tester;
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
   net::SchemefulSite example(GURL("https://example.test"));
@@ -295,9 +324,14 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
                Pair(associated2, net::FirstPartySetEntry(
                                      foo, net::SiteType::kAssociated, 0))),
            IsEmpty()));
+  histogram_tester.ExpectUniqueSample(
+      kParsedSuccessfullyHistogram, /*sample=*/2, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, AcceptsMultipleSetsWithWhitespace) {
+  base::HistogramTester histogram_tester;
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
   net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
@@ -321,15 +355,21 @@ TEST(FirstPartySetParser, AcceptsMultipleSetsWithWhitespace) {
                Pair(associated2, net::FirstPartySetEntry(
                                      foo, net::SiteType::kAssociated, 0))),
            IsEmpty()));
+  histogram_tester.ExpectUniqueSample(
+      kParsedSuccessfullyHistogram, /*sample=*/2, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsInvalidSets_InvalidPrimary) {
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(
       ParseSets(
           R"({"primary": 3, "associatedSites": ["https://associatedsite1.test"]}
     {"primary": "https://foo.test",)"
           R"("associatedSites": ["https://associatedsite2.test"]})"),
       Pair(IsEmpty(), IsEmpty()));
+  EXPECT_EQ(histogram_tester.GetTotalSum(kParsedSuccessfullyHistogram), 0);
 }
 
 TEST(FirstPartySetParser, RejectsInvalidSets_InvalidAssociatedSite) {

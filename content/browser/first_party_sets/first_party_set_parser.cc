@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -433,18 +434,23 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
 }
 
 SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
-                                                        bool emit_errors) {
+                                                        bool emit_errors,
+                                                        bool emit_metrics) {
   std::vector<SetsMap::value_type> sets;
   std::vector<Aliases::value_type> aliases;
   base::flat_set<SetsMap::key_type> elements;
+  int successfully_parsed_sets = 0;
+  int nonfatal_errors = 0;
   for (std::string line; std::getline(input, line);) {
     base::StringPiece trimmed = base::TrimWhitespaceASCII(line, base::TRIM_ALL);
-    if (trimmed.empty())
+    if (trimmed.empty()) {
       continue;
+    }
     absl::optional<base::Value> maybe_value = base::JSONReader::Read(
         trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-    if (!maybe_value.has_value())
+    if (!maybe_value.has_value()) {
       return {};
+    }
     base::expected<SetsAndAliases, ParseError> parsed = ParseSet(
         *maybe_value, /*exempt_from_limits=*/false, emit_errors, elements,
         /*warnings=*/nullptr);
@@ -452,6 +458,7 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
       if (parsed.error().type() == ParseErrorType::kInvalidDomain) {
         // Ignore sets that include an invalid domain (which might have been
         // caused by a PSL update), but don't let that break other sets.
+        nonfatal_errors++;
         continue;
       }
       // Abort, something is wrong with the component.
@@ -460,7 +467,16 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
 
     base::ranges::move(parsed.value().first, std::back_inserter(sets));
     base::ranges::move(parsed.value().second, std::back_inserter(aliases));
+    successfully_parsed_sets++;
   }
+  if (emit_metrics) {
+    base::UmaHistogramCounts1000(
+        "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully",
+        successfully_parsed_sets);
+    base::UmaHistogramCounts1000(
+        "Cookie.FirstPartySets.ComponentSetsNonfatalErrors", nonfatal_errors);
+  }
+
   return std::make_pair(sets, aliases);
 }
 

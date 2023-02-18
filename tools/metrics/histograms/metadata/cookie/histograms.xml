@@ -334,6 +334,43 @@ chromium-metrics-reviews@google.com.
   <summary>Number of minutes until Secure cookie expires when set.</summary>
 </histogram>
 
+<histogram name="Cookie.FirstPartySets.ComponentSetsNonfatalErrors"
+    units="sets" expires_after="M124">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chrome-first-party-sets@chromium.org</owner>
+  <summary>
+    This histogram keeps count of how many First-Party Sets are not successfully
+    parsed while initializing the First-Party Sets component, but do not cause a
+    fatal error.
+
+    This metric is recorded by the FirstPartySetParser when it has successfully
+    finished processing all sets from its input stream, as passed by the
+    FirstPartySetsLoader.
+
+    The metric is recorded during the startup of each client if it was able to
+    process the whole component without encountering a fatal error. It will be
+    recorded at most once each time the client starts up.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.FirstPartySets.ComponentSetsParsedSuccessfully"
+    units="sets" expires_after="M124">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chrome-first-party-sets@chromium.org</owner>
+  <summary>
+    This histogram keeps count of how many First-Party Sets are successfully
+    parsed while initializing the First-Party Sets component.
+
+    This metric is recorded by the FirstPartySetParser when it has succesfully
+    finished processing all sets from its input stream, as passed by the
+    FirstPartySetsLoader.
+
+    The metric is recorded during the startup of each client if it was able to
+    process the whole component without encountering a fatal error. It will be
+    recorded at most once each time the client starts up.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.FirstPartySets.ComputeContext.Latency"
     units="microseconds" expires_after="M115">
   <owner>cfredric@chromium.org</owner>
