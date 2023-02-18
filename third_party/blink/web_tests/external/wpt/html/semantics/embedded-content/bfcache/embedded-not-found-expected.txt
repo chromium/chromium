@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Page with <embed type=image/png src=/404.png>
-NOTRUN Page with <object type=image/png data=/404.png> Could have been BFCached but actually wasn't
-Harness: the test ran to completion.
-

@@ -940,8 +940,11 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
         RenderFrameHostImpl* rfh,
         RequestedFeatures requested_features) {
   DCHECK_NE(requested_features, RequestedFeatures::kOnlySticky);
-  if (!rfh->IsDOMContentLoaded())
+  // The DOM content must have finished loading, except when there is
+  // no DOM content to load when the RFH has not committed any navigation.
+  if (!rfh->IsDOMContentLoaded() && rfh->has_committed_any_navigation()) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kLoading);
+  }
 
   // Check for non-sticky features that are present at the moment.
   WebSchedulerTrackedFeatures banned_features =

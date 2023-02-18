@@ -52,6 +52,12 @@ MATCHER(Deleted, "") {
 std::initializer_list<RenderFrameHostImpl*> Elements(
     std::initializer_list<RenderFrameHostImpl*> t);
 
+enum class TestFrameType {
+  kMainFrame,
+  kSubFrame,
+  kSubFrameOfSubframe,
+};
+
 // Test about the BackForwardCache.
 class BackForwardCacheBrowserTest
     : public ContentBrowserTest,

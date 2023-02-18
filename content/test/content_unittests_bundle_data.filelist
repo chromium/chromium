@@ -130,6 +130,7 @@
 //content/test/data/back_forward_cache/controllable_subframe_of_subframe.html
 //content/test/data/back_forward_cache/dedicated_worker_in_subframe.html
 //content/test/data/back_forward_cache/disallowed_path.html
+//content/test/data/back_forward_cache/dom_content_loaded_promise.js
 //content/test/data/back_forward_cache/empty.html
 //content/test/data/back_forward_cache/empty.js
 //content/test/data/back_forward_cache/page_with_broadcastchannel.html

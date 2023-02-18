@@ -9,7 +9,9 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "components/content_capture/browser/content_capture_test_helper.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -371,6 +373,9 @@ TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
 #define MAYBE_ChildFrameCaptureContentFirst ChildFrameCaptureContentFirst
 #endif
 TEST_P(ContentCaptureReceiverTest, MAYBE_ChildFrameCaptureContentFirst) {
+  // This test performs navigations, expecting the frames to be destroyed.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // Simulate add child frame.
   SetupChildFrame();
   // Simulate to capture the content from child frame.
