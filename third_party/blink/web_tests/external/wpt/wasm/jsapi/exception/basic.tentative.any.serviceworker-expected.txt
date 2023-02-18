@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Wasm function throws argument promise_test: Unhandled rejection with value: object "TypeError: builder.addException is not a function"
-FAIL Wasm function throws null promise_test: Unhandled rejection with value: object "TypeError: builder.addException is not a function"
-FAIL Wasm function throws integer promise_test: Unhandled rejection with value: object "TypeError: builder.addException is not a function"
-FAIL Imported JS function throws promise_test: Unhandled rejection with value: object "TypeError: builder.addException is not a function"
-PASS Imported JS function throws, Wasm catches and rethrows
-Harness: the test ran to completion.
-
