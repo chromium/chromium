@@ -159,6 +159,7 @@ if (current_cpu == "x86") {
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",
       "//components/browser_watcher:browser_watcher_client",
+      "//components/crash/core/common",
       "//components/flags_ui:switches",
       "//components/policy:generated",
       "//content/public/common:static_switches",

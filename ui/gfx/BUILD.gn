@@ -381,7 +381,7 @@ component("gfx") {
       "dwmapi.lib",
       "dwrite.lib",
     ]
-    deps += [ "//components/crash/core/common" ]
+    public_deps += [ "//components/crash/core/common" ]
   } else {
     sources -= [
       "gdi_util.cc",

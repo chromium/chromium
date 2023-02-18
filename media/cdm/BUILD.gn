@@ -125,8 +125,8 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_type_conversion",
-      "//components/crash/core/common:crash_key",
     ]
+    public_deps += [ "//components/crash/core/common:crash_key" ]
   }
 
   if (is_win) {
