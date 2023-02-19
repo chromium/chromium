@@ -6,12 +6,15 @@
 
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace file_manager {
 
 namespace io_task {
+
+constexpr auto kThrottleInterval = base::Milliseconds(200);
 
 IOTaskController::IOTaskController() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -21,15 +24,27 @@ IOTaskController::~IOTaskController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void IOTaskController::MaybeNotifyIOTaskObservers(
+    const ProgressStatus& status) {
+  auto last_update = tasks_last_update_[status.task_id];
+
+  if (base::Time::Now() - last_update < kThrottleInterval) {
+    return;
+  }
+
+  NotifyIOTaskObservers(status);
+}
+
 void IOTaskController::NotifyIOTaskObservers(const ProgressStatus& status) {
   for (IOTaskController::Observer& observer : observers_) {
     observer.OnIOTaskStatus(status);
   }
+  tasks_last_update_[status.task_id] = base::Time::Now();
 }
 
 void IOTaskController::OnIOTaskProgress(const ProgressStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyIOTaskObservers(status);
+  MaybeNotifyIOTaskObservers(status);
 }
 
 void IOTaskController::OnIOTaskComplete(IOTaskId task_id,
@@ -58,6 +73,10 @@ IOTaskId IOTaskController::Add(std::unique_ptr<IOTask> task) {
 
   // Notify observers that the task has been queued.
   NotifyIOTaskObservers(task->progress());
+
+  // Make sure the first "in progress" event after "queued" is always sent.
+  // Some listeners require at least one in progress event.
+  tasks_last_update_[task_id] -= kThrottleInterval;
 
   // TODO(b/199807189): Queue the task.
   PutIOTask(task_id, std::move(task))
@@ -98,9 +117,9 @@ void IOTaskController::Cancel(IOTaskId task_id) {
 void IOTaskController::ProgressPausedTasks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(b/255264604): TaskId order is potentially racey when mutliple files
-  // app windows open. Fix this: develop a concept of the current PAUSED task
-  // in this code, and always progress that task.
+  // TODO(b/255264604): TaskId order is potentially racey when multiple
+  // files app windows open. Fix this: develop a concept of the current
+  // PAUSED task in this code, and always progress that task.
   for (auto it = tasks_.begin(); it != tasks_.end(); ++it) {
     IOTask* task = it->second.get();
     if (task->progress().IsPaused()) {
@@ -138,6 +157,7 @@ IOTask* IOTaskController::PutIOTask(const IOTaskId task_id,
 }
 
 void IOTaskController::RemoveIOTask(const IOTaskId task_id) {
+  tasks_last_update_.erase(task_id);
   tasks_.erase(task_id);
 
   // TODO(b/255264604): fix me: PAUSED tasks can hold the wake lock and

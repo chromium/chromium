@@ -82,17 +82,7 @@ TEST_F(IOTaskControllerTest, SimpleQueueing) {
       std::make_unique<DummyIOTask>(source_urls, dest, OperationType::kCopy));
   EXPECT_EQ(1, io_task_controller_.wake_lock_counter_for_tests());
 
-  // Wait for the two callbacks posted to the main sequence to finish.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(observer,
-                OnIOTaskStatus(AllOf(
-                    Field(&ProgressStatus::state, State::kInProgress),
-                    Field(&ProgressStatus::task_id, task_id), base_matcher)))
-        .WillOnce(RunClosure(run_loop.QuitClosure()));
-    run_loop.Run();
-  }
-
+  // Wait for the callbacks posted to the main sequence to finish.
   {
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnIOTaskStatus(AllOf(
