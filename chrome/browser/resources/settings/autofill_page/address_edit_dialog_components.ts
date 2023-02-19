@@ -147,7 +147,7 @@ export class ArrayStringComponentUi extends
   }
 
   protected setValue(value: string|undefined, address: AddressEntry): void {
-    address[this.property] = isValueNonEmpty(value) ? [value!] : undefined;
+    address[this.property] = isValueNonEmpty(value) ? [value!] : [];
   }
 }
 
