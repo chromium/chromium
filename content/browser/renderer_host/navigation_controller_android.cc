@@ -435,8 +435,18 @@ void NavigationControllerAndroid::SetUseDesktopUserAgentInternal(
     bool reload_on_state_change) {
   // Make sure the navigation entry actually exists.
   NavigationEntry* entry = navigation_controller_->GetLastCommittedEntry();
-  if (!entry)
+  // TODO(crbug.com/1414625): Early return for initial NavigationEntries as a
+  // workaround. Currently, doing a reload while on the initial NavigationEntry
+  // might result in committing an unrelated pending NavigationEntry and
+  // mistakenly marking that entry as an initial NavigationEntry. That will
+  // cause problems, such as the URL bar showing about:blank instead of the URL
+  // of the NavigationEntry. To prevent that happening in this case, skip
+  // reloading initial NavigationEntries entirely. This is a short-term fix,
+  // while we work on a long-term fix to no longer mistakenly mark the unrelated
+  // pending NavigationEntry as the initial NavigationEntry.
+  if (!entry || entry->IsInitialEntry()) {
     return;
+  }
 
   // Set the flag in the NavigationEntry.
   entry->SetIsOverridingUserAgent(enabled);
