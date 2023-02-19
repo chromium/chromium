@@ -618,9 +618,12 @@ bool EventTarget::RemoveEventListenerInternal(
   wtf_size_t index_of_removed_listener;
   RegisteredEventListener registered_listener;
 
-  recordreplay::Assert(
-      "[RUN-1260-1332] EventTarget::RemoveEventListenerInternal %s",
-      event_type.GetString().Utf8().c_str());
+  if (!recordreplay::AreEventsDisallowed()) {
+    // don't Assert during GC
+    recordreplay::Assert(
+        "[RUN-1260-1332] EventTarget::RemoveEventListenerInternal %s",
+        event_type.GetString().Utf8().c_str());
+  }
 
   if (!d->event_listener_map.Remove(event_type, listener, options,
                                     &index_of_removed_listener,
@@ -977,7 +980,11 @@ void EventTarget::RemoveAllEventListeners() {
   if (!d)
     return;
 
-  recordreplay::Assert("[RUN-1260-1332] EventTarget::RemoveAllEventListeners");
+  if (!recordreplay::AreEventsDisallowed()) {
+    // don't Assert during GC
+    recordreplay::Assert("[RUN-1260-1332] EventTarget::RemoveAllEventListeners");
+  }
+
   d->event_listener_map.Clear();
 
   // Notify firing events planning to invoke the listener at 'index' that
