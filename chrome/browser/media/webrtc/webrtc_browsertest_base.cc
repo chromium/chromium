@@ -569,8 +569,8 @@ scoped_refptr<content::TestStatsReportDictionary>
 WebRtcTestBase::GetStatsReportDictionary(content::WebContents* tab) const {
   std::string result = ExecuteJavascript("getStatsReportDictionary()", tab);
   EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
-  std::unique_ptr<base::Value> parsed_json =
-      base::JSONReader::ReadDeprecated(result.substr(3));
+  absl::optional<base::Value> parsed_json =
+      base::JSONReader::Read(result.substr(3));
   CHECK(parsed_json);
   base::Value::Dict* dictionary = parsed_json->GetIfDict();
   CHECK(dictionary);

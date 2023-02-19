@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,13 +47,8 @@ const char kTestStatsReportJson[] =
 class TestStatsDictionaryTest : public testing::Test {
  public:
   TestStatsDictionaryTest() {
-    std::unique_ptr<base::Value> value =
-        base::JSONReader::ReadDeprecated(kTestStatsReportJson);
-    CHECK(value);
-    base::Value::Dict* dictionary = value->GetIfDict();
-    CHECK(dictionary);
-    report_ =
-        base::MakeRefCounted<TestStatsReportDictionary>(std::move(*dictionary));
+    base::Value::Dict dict = base::test::ParseJsonDict(kTestStatsReportJson);
+    report_ = base::MakeRefCounted<TestStatsReportDictionary>(std::move(dict));
   }
 
  protected:
