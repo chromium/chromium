@@ -197458,6 +197458,19 @@
        {}
       ]
      ],
+     "preserve3d-pseudo-element.html": [
+      "f3a4441e991ad57fb1459c1ebb0a9b3a810620a1",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/preserve3d-pseudo-element-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "rotate": {
       "svg-rotate-3args-002.html": [
        "5906a2f4041319143b926f75af321b714f66d39b",
@@ -264619,16 +264632,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "1e2869ce4b97b1e5a0139fdf79e3c8150833d7e6",
-     []
-    ],
-    "mtime.json": [
-     "562cf180f36828e10467618c079de90c392ef9c6",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -317087,6 +317090,10 @@
      ],
      "preserve3d-nested-perspective-ref.html": [
       "df0bfc417df08d4e23eaa0107f4ed298abd72f0f",
+      []
+     ],
+     "preserve3d-pseudo-element-ref.html": [
+      "8b3c3b08af40ee08869366e5465adafb45d98bcc",
       []
      ],
      "reference": {
