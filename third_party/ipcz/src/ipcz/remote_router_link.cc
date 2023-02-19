@@ -146,6 +146,7 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
   msg::AcceptParcel accept;
   accept.params().sublink = sublink_;
   accept.params().sequence_number = parcel.sequence_number();
+  accept.params().padding = 0;
 
   size_t num_portals = 0;
   absl::InlinedVector<DriverObject, 2> driver_objects;
@@ -332,8 +333,10 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
 
   // Copy all the serialized router descriptors into the message. Our local
   // copy will supply inputs for BeginProxyingToNewRouter() calls below.
-  memcpy(new_routers.data(), descriptors.data(),
-         new_routers.size() * sizeof(new_routers[0]));
+  if (!descriptors.empty()) {
+    memcpy(new_routers.data(), descriptors.data(),
+           new_routers.size() * sizeof(new_routers[0]));
+  }
 
   if (must_split_parcel) {
     msg::AcceptParcelDriverObjects accept_objects;

@@ -40,6 +40,7 @@ struct IPCZ_ALIGN(8) DataPipeHeader {
 
   RingBuffer::SerializedState ring_buffer_state;
 };
+static_assert(sizeof(DataPipeHeader) == 24, "Invalid DataPipeHeader size");
 
 // Attempts to put a single (32-bit) integer into the given `portal`. Returns
 // true if successful, or false to indicate that the peer portal is closed.
@@ -521,7 +522,7 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
 
   const auto& header = *reinterpret_cast<const DataPipeHeader*>(data.data());
   const size_t header_size = header.size;
-  if (header_size < sizeof(header)) {
+  if (header_size < sizeof(header) || header_size % 8 != 0) {
     return nullptr;
   }
 

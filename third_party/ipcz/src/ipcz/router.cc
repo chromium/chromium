@@ -429,7 +429,9 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
       const bool ok = inbound_parcels_.Pop(consumed_parcel);
       ABSL_ASSERT(ok);
     } else {
-      memcpy(data, p.data_view().data(), data_size);
+      if (data_size > 0) {
+        memcpy(data, p.data_view().data(), data_size);
+      }
       if (consuming_whole_parcel) {
         const bool ok = inbound_parcels_.Pop(consumed_parcel);
         ABSL_ASSERT(ok);

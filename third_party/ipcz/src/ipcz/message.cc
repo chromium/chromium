@@ -13,6 +13,7 @@
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/safe_math.h"
@@ -133,6 +134,10 @@ DriverObject DeserializeDriverObject(
                       object_data.num_driver_handles));
 }
 
+bool IsAligned(size_t n) {
+  return n % 8 == 0;
+}
+
 }  // namespace
 
 Message::ReceivedDataBuffer::ReceivedDataBuffer() = default;
@@ -164,6 +169,8 @@ Message::Message(uint8_t message_id, size_t params_size)
   h.version = 0;
   h.message_id = message_id;
   h.driver_object_data_array = 0;
+
+  ABSL_ASSERT(IsAligned(inlined_data_->size()));
 }
 
 Message::~Message() = default;
@@ -335,8 +342,8 @@ bool Message::CopyDataAndValidateHeader(absl::Span<const uint8_t> data) {
   }
 
   // The header's stated size (and thus the start of the parameter payload)
-  // must not run over the edge of the message.
-  if (header.size > data_.size()) {
+  // must not run over the edge of the message and must be 8-byte-aligned.
+  if (header.size > data_.size() || !IsAligned(header.size)) {
     return false;
   }
 
@@ -363,6 +370,11 @@ bool Message::ValidateParameters(
   // The param struct's header claims to consist of more data than is present in
   // the message. Not good.
   if (params_data.size() < params_header.size) {
+    return false;
+  }
+
+  // Parameter struct sizes must be 8-byte-aligned.
+  if (!IsAligned(params_header.size)) {
     return false;
   }
 

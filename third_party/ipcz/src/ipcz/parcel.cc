@@ -87,7 +87,8 @@ void Parcel::AllocateData(size_t num_bytes,
 
 bool Parcel::AdoptDataFragment(Ref<NodeLinkMemory> memory,
                                const Fragment& fragment) {
-  if (!fragment.is_addressable() || fragment.size() <= sizeof(FragmentHeader)) {
+  if (!fragment.is_addressable() || fragment.size() <= sizeof(FragmentHeader) ||
+      fragment.offset() % 8 != 0) {
     return false;
   }
 

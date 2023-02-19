@@ -42,7 +42,8 @@ namespace {
 template <typename T>
 FragmentRef<T> MaybeAdoptFragmentRef(NodeLinkMemory& memory,
                                      const FragmentDescriptor& descriptor) {
-  if (descriptor.is_null() || descriptor.size() < sizeof(T)) {
+  if (descriptor.is_null() || descriptor.size() < sizeof(T) ||
+      descriptor.offset() % 8 != 0) {
     return {};
   }
 
@@ -203,6 +204,7 @@ void NodeLink::AcceptIntroduction(const NodeName& name,
   accept.params().name = name;
   accept.params().link_side = side;
   accept.params().remote_node_type = remote_node_type;
+  accept.params().padding = 0;
   accept.params().remote_protocol_version = remote_protocol_version;
   accept.params().transport =
       accept.AppendDriverObject(transport->TakeDriverObject());
@@ -270,6 +272,7 @@ void NodeLink::RequestMemory(size_t size, RequestMemoryCallback callback) {
 
   msg::RequestMemory request;
   request.params().size = size32;
+  request.params().padding = 0;
   Transmit(request);
 }
 
@@ -280,6 +283,7 @@ void NodeLink::RelayMessage(const NodeName& to_node, Message& message) {
   relay.params().destination = to_node;
   relay.params().data =
       relay.AllocateArray<uint8_t>(message.data_view().size());
+  relay.params().padding = 0;
   memcpy(relay.GetArrayData(relay.params().data), message.data_view().data(),
          message.data_view().size());
   relay.params().driver_objects =

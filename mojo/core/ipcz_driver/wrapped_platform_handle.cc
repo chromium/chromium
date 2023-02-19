@@ -60,6 +60,8 @@ struct IPCZ_ALIGN(8) WrappedPlatformHandleHeader {
   // Indicates what specific type of handle is wrapped.
   WrapperType type;
 };
+static_assert(sizeof(WrappedPlatformHandleHeader) == 8,
+              "Invalid WrappedPlatformHandleHeader size");
 
 #if BUILDFLAG(IS_FUCHSIA)
 PlatformHandle MakeFDTransmissible(base::ScopedFD fd) {
@@ -169,7 +171,8 @@ scoped_refptr<WrappedPlatformHandle> WrappedPlatformHandle::Deserialize(
 
   const auto& header =
       *reinterpret_cast<const WrappedPlatformHandleHeader*>(data.data());
-  if (header.size < sizeof(header)) {
+  const size_t header_size = header.size;
+  if (header_size < sizeof(header) || header_size % 8 != 0) {
     return nullptr;
   }
 

@@ -62,6 +62,7 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
         checked_cast<uint32_t>(num_portals());
     connect.params().buffer = connect.AppendDriverObject(
         link_memory_allocation_.memory.TakeDriverObject());
+    connect.params().padding = 0;
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
 
@@ -430,6 +431,7 @@ class NodeConnectorForBrokerToBroker : public NodeConnector {
         checked_cast<uint32_t>(num_portals());
     connect.params().buffer = connect.AppendDriverObject(
         link_memory_allocation_.memory.TakeDriverObject());
+    connect.params().padding = 0;
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
 

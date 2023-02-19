@@ -5,6 +5,8 @@
 #ifndef IPCZ_SRC_IPCZ_ROUTER_DESCRIPTOR_H_
 #define IPCZ_SRC_IPCZ_ROUTER_DESCRIPTOR_H_
 
+#include <type_traits>
+
 #include "ipcz/fragment_descriptor.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node_name.h"
@@ -21,11 +23,6 @@ namespace ipcz {
 // NOTE: This is a wire structure and must remain backwards-compatible across
 // changes.
 struct IPCZ_ALIGN(8) RouterDescriptor {
-  RouterDescriptor();
-  RouterDescriptor(const RouterDescriptor&);
-  RouterDescriptor& operator=(const RouterDescriptor&);
-  ~RouterDescriptor();
-
   // If the other end of the route is already known to be closed when this
   // router is serialized, this is the total number of parcels sent from that
   // end.
@@ -99,6 +96,9 @@ struct IPCZ_ALIGN(8) RouterDescriptor {
   NodeName proxy_peer_node_name;
   SublinkId proxy_peer_sublink;
 };
+
+static_assert(std::is_trivially_copyable_v<RouterDescriptor>,
+              "RouterDescriptor must be trivially copyable");
 
 }  // namespace ipcz
 

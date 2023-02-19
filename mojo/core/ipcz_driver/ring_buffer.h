@@ -152,6 +152,7 @@ class MOJO_SYSTEM_IMPL_EXPORT RingBuffer {
     uint32_t offset = 0;
     uint32_t size = 0;
   };
+  static_assert(sizeof(SerializedState) == 8, "Invalid SerializedState size");
   void Serialize(SerializedState& state);
   bool Deserialize(const SerializedState& state);
 

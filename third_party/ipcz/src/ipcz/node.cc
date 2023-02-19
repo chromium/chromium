@@ -451,6 +451,7 @@ bool Node::RelayMessage(const NodeName& from_node, msg::RelayMessage& relay) {
   msg::AcceptRelayedMessage accept;
   accept.params().source = from_node;
   accept.params().data = accept.AllocateArray<uint8_t>(data.size());
+  accept.params().padding = 0;
   memcpy(accept.GetArrayData(accept.params().data), data.data(), data.size());
   accept.params().driver_objects =
       accept.AppendDriverObjects(relay.driver_objects());

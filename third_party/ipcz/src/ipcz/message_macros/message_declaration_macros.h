@@ -14,6 +14,7 @@
   class name : public MessageWithParams<name##_Params> {         \
    public:                                                       \
     using ParamsType = name##_Params;                            \
+    static_assert(sizeof(ParamsType) % 8 == 0, "Invalid size");  \
     id_decl;                                                     \
     version_decl;                                                \
     name();                                                      \
