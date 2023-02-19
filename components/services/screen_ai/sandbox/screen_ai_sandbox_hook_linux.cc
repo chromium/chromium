@@ -20,15 +20,7 @@ namespace {
 
 NO_SANITIZE("cfi-icall")
 void CallPresandboxInitFunction(void* presandbox_init_function) {
-  // TODO(crbug.com/1278249): Replace this with DCHECK after library is updated
-  // to 112.0. OCR function will not work without presandbox init but main
-  // content extraction does not require it.
-  if (!presandbox_init_function) {
-    VLOG(0) << "Screen AI library is outdated. Current version does not "
-               "support OCR.";
-    return;
-  }
-
+  DCHECK(presandbox_init_function);
   typedef void (*PresandboxInitFn)();
   (*reinterpret_cast<PresandboxInitFn>(presandbox_init_function))();
 }
@@ -38,19 +30,26 @@ void CallPresandboxInitFunction(void* presandbox_init_function) {
 bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   base::FilePath library_path = screen_ai::GetLatestComponentBinaryPath();
   if (library_path.empty()) {
-    VLOG(1) << "Screen AI component binary not found.";
+    VLOG(0) << "Screen AI component binary not found.";
   } else {
     void* screen_ai_library = dlopen(library_path.value().c_str(),
                                      RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
-    // The library is delivered by the component updater. If it is not available
-    // we cannot do anything about it here. The requests to the service will
-    // fail later as the library does not exist.
-    if (!screen_ai_library) {
-      VLOG(1) << dlerror();
+    // The library is delivered by the component updater or DLC. If it is not
+    // available or has loading or syntax problems, we cannot do anything about
+    // them here. The requests to the service will fail later as the library
+    // does not exist or does not initialize.
+    if (screen_ai_library == nullptr) {
+      VLOG(0) << dlerror();
       library_path.clear();
     } else {
-      VLOG(2) << "Screen AI library loaded pre-sandboxing:" << library_path;
-      CallPresandboxInitFunction(dlsym(screen_ai_library, "PresandboxInit"));
+      void* presandbox_init = dlsym(screen_ai_library, "PresandboxInit");
+      if (presandbox_init == nullptr) {
+        VLOG(0) << "PresandboxInit function of Screen AI library not found.";
+        library_path.clear();
+      } else {
+        VLOG(2) << "Screen AI library loaded pre-sandboxing: " << library_path;
+        CallPresandboxInitFunction(presandbox_init);
+      }
     }
   }
 
