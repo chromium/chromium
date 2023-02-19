@@ -8,6 +8,8 @@ source_set("screen_ai") {
   sources = [
     "screen_ai_ax_tree_serializer.cc",
     "screen_ai_ax_tree_serializer.h",
+    "screen_ai_library_wrapper.cc",
+    "screen_ai_library_wrapper.h",
     "screen_ai_service_impl.cc",
     "screen_ai_service_impl.h",
   ]
@@ -21,6 +23,7 @@ source_set("screen_ai") {
     "//mojo/public/cpp/bindings",
     "//sandbox/policy",
     "//services/metrics/public/cpp:ukm_builders",
+    "//skia",
     "//ui/accessibility:accessibility",
   ]
 }

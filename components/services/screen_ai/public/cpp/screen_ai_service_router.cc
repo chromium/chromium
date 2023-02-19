@@ -109,7 +109,7 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
              std::unique_ptr<ComponentModelFiles> model_files) {
             if (!service_router)
               return;
-            service_router->screen_ai_service_->LoadLibrary(
+            service_router->screen_ai_service_->LoadAndInitializeLibrary(
                 std::move(model_files->screen2x_model_config_),
                 std::move(model_files->screen2x_model_),
                 model_files->library_binary_path_);

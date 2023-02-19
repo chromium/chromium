@@ -4,6 +4,7 @@ include_rules = [
   "+content/public/browser",
   "+sandbox/policy",
   "+services/metrics/public/cpp",
+  "+third_party/skia/include/core/SkBitmap.h",
   "+ui/accessibility/accessibility_features.h",
   "+ui/accessibility/ax_enum_util.h",
   "+ui/accessibility/ax_enums.mojom.h",

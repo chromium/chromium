@@ -69,7 +69,7 @@ interface ScreenAIService {
   // read from |library_path| folder.
   // This should be called from the browser process.
   // TODO(https://crbug.com/1278249): Read all model files from file handles.
-  LoadLibrary(
+  LoadAndInitializeLibrary(
     mojo_base.mojom.ReadOnlyFile screen2x_model_config,
     mojo_base.mojom.ReadOnlyFile screen2x_model,
     mojo_base.mojom.FilePath library_path);
