@@ -48,7 +48,11 @@ std::unique_ptr<ScreenAILibraryWrapper> LoadAndInitializeLibraryInternal(
     const base::FilePath& library_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   std::unique_ptr<ScreenAILibraryWrapper> library =
-      std::make_unique<ScreenAILibraryWrapper>(library_path);
+      std::make_unique<ScreenAILibraryWrapper>();
+
+  // TODO(crbug.com/1413983): Replace CHECK with an UMA and a process
+  // termination similar to below cases when the bug is fixed.
+  CHECK(library->Init(library_path));
 
   uint32_t version_major;
   uint32_t version_minor;

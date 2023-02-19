@@ -19,10 +19,12 @@ namespace screen_ai {
 // Wrapper class for Chrome Screen AI library.
 class ScreenAILibraryWrapper {
  public:
-  explicit ScreenAILibraryWrapper(const base::FilePath& library_path);
+  ScreenAILibraryWrapper();
   ScreenAILibraryWrapper(const ScreenAILibraryWrapper&) = delete;
   ScreenAILibraryWrapper& operator=(const ScreenAILibraryWrapper&) = delete;
   ~ScreenAILibraryWrapper() = default;
+
+  bool Init(const base::FilePath& library_path);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetLogger();

@@ -45,19 +45,49 @@ std::vector<char> LoadModelFile(base::File& model_file) {
   return buffer;
 }
 
+// TODO(crbug.com/1413983): Remove this function when the bug is fixed.
+// This function is added only to get a better stack trace in the crash dump.
+void CheckLibraryIsLoaded(base::ScopedNativeLibrary& library) {
+  CHECK_NE(library.GetError(), nullptr);
+#if BUILDFLAG(IS_WIN)
+  CHECK_EQ(library.GetError()->code, 0u);
+#else
+  CHECK(library.GetError()->message.empty());
+#endif
+}
+
 }  // namespace
 
-ScreenAILibraryWrapper::ScreenAILibraryWrapper(
-    const base::FilePath& library_path) {
+ScreenAILibraryWrapper::ScreenAILibraryWrapper() = default;
+
+bool ScreenAILibraryWrapper::Init(const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
-  DCHECK(library_.GetError());
+  CheckLibraryIsLoaded(library_);
+
+  if (library_.GetError() == nullptr) {
+    VLOG(0) << "Library load state cannot be read.";
+    return false;
+  }
 #if BUILDFLAG(IS_WIN)
-  DCHECK_EQ(0u, library_.GetError()->code)
-      << "Library load error: " << library_.GetError()->code;
+  if (library_.GetError()->code != 0u) {
+    VLOG(0) << "Library load error: " << library_.GetError()->code;
+    return false;
+  }
 #else
-  DCHECK(library_.GetError()->message.empty())
-      << "Library load error: " << library_.GetError()->message;
+  if (!library_.GetError()->message.empty()) {
+    VLOG(0) << "Library load error: " << library_.GetError()->message;
+    return false;
+  }
 #endif
+
+// Loads a library function with name N, type T, and puts it in variable V.
+// If the function is not loaded, returns false.
+#define LOAD_FUNCTION(V, T, N)                             \
+  V = reinterpret_cast<T>(library_.GetFunctionPointer(N)); \
+  if (V == nullptr) {                                      \
+    VLOG(0) << "Could not load function: " << N;           \
+    return false;                                          \
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   set_logger_ =
@@ -66,49 +96,35 @@ ScreenAILibraryWrapper::ScreenAILibraryWrapper(
 #endif
 
   // General functions.
-  get_library_version_ = reinterpret_cast<GetLibraryVersionFn>(
-      library_.GetFunctionPointer("GetLibraryVersion"));
-  DCHECK(get_library_version_);
-  enable_debug_mode_ = reinterpret_cast<EnableDebugModeFn>(
-      library_.GetFunctionPointer("EnableDebugMode"));
-  DCHECK(enable_debug_mode_);
-  read_buffered_int32_array_ = reinterpret_cast<ReadBufferedInt32ArrayFn>(
-      library_.GetFunctionPointer("ReadBufferedInt32Array"));
-  DCHECK(read_buffered_int32_array_);
-  read_buffered_char_array_ = reinterpret_cast<ReadBufferedCharArrayFn>(
-      library_.GetFunctionPointer("ReadBufferedCharArray"));
-  DCHECK(read_buffered_char_array_);
+  LOAD_FUNCTION(get_library_version_, GetLibraryVersionFn, "GetLibraryVersion");
+  LOAD_FUNCTION(enable_debug_mode_, EnableDebugModeFn, "EnableDebugMode");
+  LOAD_FUNCTION(read_buffered_int32_array_, ReadBufferedInt32ArrayFn,
+                "ReadBufferedInt32Array");
+  LOAD_FUNCTION(read_buffered_char_array_, ReadBufferedCharArrayFn,
+                "ReadBufferedCharArray");
 
-  // Layout Extraction.
+  // Layout Extraction functions.
   if (features::IsLayoutExtractionEnabled()) {
-    init_layout_extraction_ = reinterpret_cast<InitLayoutExtractionFn>(
-        library_.GetFunctionPointer("InitLayoutExtraction"));
-    DCHECK(init_layout_extraction_);
-    extract_layout_ = reinterpret_cast<ExtractLayoutFn>(
-        library_.GetFunctionPointer("ExtractLayout"));
-    DCHECK(extract_layout_);
+    LOAD_FUNCTION(init_layout_extraction_, InitLayoutExtractionFn,
+                  "InitLayoutExtraction");
+    LOAD_FUNCTION(extract_layout_, ExtractLayoutFn, "ExtractLayout");
   }
 
-  // OCR.
+  // OCR functions.
   if (features::IsPdfOcrEnabled()) {
-    init_ocr_ =
-        reinterpret_cast<InitOCRFn>(library_.GetFunctionPointer("InitOCR"));
-    DCHECK(init_ocr_);
-    perform_ocr_ = reinterpret_cast<PerformOcrFn>(
-        library_.GetFunctionPointer("PerformOCR"));
-    DCHECK(perform_ocr_);
+    LOAD_FUNCTION(init_ocr_, InitOCRFn, "InitOCR");
+    LOAD_FUNCTION(perform_ocr_, PerformOcrFn, "PerformOCR");
   }
 
   // Main Content Extraction functions.
   if (features::IsReadAnythingWithScreen2xEnabled()) {
-    init_main_content_extraction_ =
-        reinterpret_cast<InitMainContentExtractionFn>(
-            library_.GetFunctionPointer("InitMainContentExtraction"));
-    DCHECK(init_main_content_extraction_);
-    extract_main_content_ = reinterpret_cast<ExtractMainContentFn>(
-        library_.GetFunctionPointer("ExtractMainContent"));
-    DCHECK(extract_main_content_);
+    LOAD_FUNCTION(init_main_content_extraction_, InitMainContentExtractionFn,
+                  "InitMainContentExtraction");
+    LOAD_FUNCTION(extract_main_content_, ExtractMainContentFn,
+                  "ExtractMainContent");
   }
+
+  return true;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
