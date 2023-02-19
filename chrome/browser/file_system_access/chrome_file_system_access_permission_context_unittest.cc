@@ -10,7 +10,6 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -19,6 +18,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -577,9 +577,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyReadAskForUrls) {
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultFileSystemReadGuardSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
-  prefs->SetManagedPref(prefs::kManagedFileSystemReadAskForUrls,
-                        base::JSONReader::ReadDeprecated(
-                            "[\"" + kTestOrigin.Serialize() + "\"]"));
+  prefs->SetManagedPref(
+      prefs::kManagedFileSystemReadAskForUrls,
+      base::test::ParseJsonList("[\"" + kTestOrigin.Serialize() + "\"]"));
 
   EXPECT_TRUE(permission_context()->CanObtainReadPermission(kTestOrigin));
   EXPECT_FALSE(permission_context()->CanObtainReadPermission(kTestOrigin2));
@@ -587,9 +587,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyReadAskForUrls) {
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyReadBlockedForUrls) {
   auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedFileSystemReadBlockedForUrls,
-                        base::JSONReader::ReadDeprecated(
-                            "[\"" + kTestOrigin.Serialize() + "\"]"));
+  prefs->SetManagedPref(
+      prefs::kManagedFileSystemReadBlockedForUrls,
+      base::test::ParseJsonList("[\"" + kTestOrigin.Serialize() + "\"]"));
 
   EXPECT_FALSE(permission_context()->CanObtainReadPermission(kTestOrigin));
   EXPECT_TRUE(permission_context()->CanObtainReadPermission(kTestOrigin2));
@@ -600,9 +600,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyWriteAskForUrls) {
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultFileSystemWriteGuardSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
-  prefs->SetManagedPref(prefs::kManagedFileSystemWriteAskForUrls,
-                        base::JSONReader::ReadDeprecated(
-                            "[\"" + kTestOrigin.Serialize() + "\"]"));
+  prefs->SetManagedPref(
+      prefs::kManagedFileSystemWriteAskForUrls,
+      base::test::ParseJsonList("[\"" + kTestOrigin.Serialize() + "\"]"));
 
   EXPECT_TRUE(permission_context()->CanObtainWritePermission(kTestOrigin));
   EXPECT_FALSE(permission_context()->CanObtainWritePermission(kTestOrigin2));
@@ -610,9 +610,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyWriteAskForUrls) {
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyWriteBlockedForUrls) {
   auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedFileSystemWriteBlockedForUrls,
-                        base::JSONReader::ReadDeprecated(
-                            "[\"" + kTestOrigin.Serialize() + "\"]"));
+  prefs->SetManagedPref(
+      prefs::kManagedFileSystemWriteBlockedForUrls,
+      base::test::ParseJsonList("[\"" + kTestOrigin.Serialize() + "\"]"));
 
   EXPECT_FALSE(permission_context()->CanObtainWritePermission(kTestOrigin));
   EXPECT_TRUE(permission_context()->CanObtainWritePermission(kTestOrigin2));
