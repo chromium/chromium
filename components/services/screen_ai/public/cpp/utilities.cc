@@ -44,10 +44,11 @@ base::FilePath GetComponentBinaryFileName() {
 
 base::FilePath GetComponentDir() {
   base::FilePath components_dir;
-  base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                         &components_dir);
-  if (components_dir.empty())
+  if (!base::PathService::Get(component_updater::DIR_COMPONENT_USER,
+                              &components_dir) ||
+      components_dir.empty()) {
     return base::FilePath();
+  }
 
   return components_dir.Append(kScreenAISubDirName);
 }
@@ -71,6 +72,10 @@ base::FilePath GetLatestComponentBinaryPath() {
         latest_version_dir < version_dir ? version_dir : latest_version_dir;
   }
 #endif
+
+  if (latest_version_dir.empty()) {
+    return base::FilePath();
+  }
 
   base::FilePath component_path =
       latest_version_dir.Append(kScreenAIComponentBinaryName);
