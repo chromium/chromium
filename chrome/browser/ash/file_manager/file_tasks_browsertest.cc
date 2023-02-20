@@ -1146,8 +1146,10 @@ class FakeWebAppPublisher : public apps::AppPublisher {
     RegisterPublisher(apps::AppType::kWeb);
 
     std::vector<apps::AppPtr> apps;
-    apps.push_back(std::make_unique<apps::App>(apps::AppType::kWeb,
-                                               web_app::kMicrosoftOfficeAppId));
+    auto ms_web_app = std::make_unique<apps::App>(
+        apps::AppType::kWeb, web_app::kMicrosoftOfficeAppId);
+    ms_web_app->readiness = apps::Readiness::kReady;
+    apps.push_back(std::move(ms_web_app));
     Publish(std::move(apps), apps::AppType::kWeb,
             /*should_notify_initialized=*/true);
   }

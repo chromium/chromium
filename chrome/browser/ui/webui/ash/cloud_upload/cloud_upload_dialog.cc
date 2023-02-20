@@ -373,8 +373,8 @@ bool OpenFilesWithCloudProvider(
 
   if (ShouldFixUpOffice(profile, cloud_provider)) {
     // TODO(cassycc): Use page specifically for fix up.
-    CloudUploadDialog::SetUpAndShowDialog(profile, file_urls,
-                                          mojom::DialogPage::kOneDriveSetup);
+    return CloudUploadDialog::SetUpAndShowDialog(
+        profile, file_urls, mojom::DialogPage::kOneDriveSetup);
   }
   OpenOrMoveFiles(profile, file_urls, cloud_provider);
   return true;
