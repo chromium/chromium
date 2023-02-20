@@ -101,6 +101,10 @@ HelpAppProvider::HelpAppProvider(Profile* profile,
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
   Observe(&app_service_proxy_->AppRegistryCache());
   LoadIcon();
+
+  // TODO(b/261867385): We manually load the icon from the local codebase as
+  // the icon load from proxy is flaky. When the flakiness if solved, we can
+  // safely remove this.
   icon_ = gfx::CreateVectorIcon(app_list::kHelpAppIcon, kAppIconDimension,
                                 SK_ColorTRANSPARENT);
 

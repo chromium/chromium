@@ -80,6 +80,9 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
   StartObservingCalculators();
   chromeos::PowerManagerClient::Get()->AddObserver(this);
 
+  // TODO(b/261867385): We manually load the icon from the local codebase as
+  // the icon load from proxy is flaky. When the flakiness if solved, we can
+  // safely remove this and add the logic to load icons from proxy.
   os_settings_icon_ = gfx::CreateVectorIcon(
       app_list::kOsSettingsIcon, kAppIconDimension, SK_ColorTRANSPARENT);
   diagnostics_icon_ = gfx::CreateVectorIcon(
