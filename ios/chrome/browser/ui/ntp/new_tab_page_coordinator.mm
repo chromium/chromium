@@ -453,7 +453,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
-  self.discoverFeedService->RefreshFeed();
+  self.discoverFeedService->RefreshFeed(/*feed_visible=*/true);
   [self reloadContentSuggestions];
 }
 
