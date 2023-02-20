@@ -238,6 +238,7 @@ const CGFloat kButtonLength = 44;
       _resultsCountLabel.font = [UIFont systemFontOfSize:kFontSize];
     }
     _resultsCountLabel.accessibilityElementsHidden = YES;
+    _resultsCountLabel.accessibilityIdentifier = kFindInPageResultsCountLabelId;
   }
 
   return _resultsCountLabel;

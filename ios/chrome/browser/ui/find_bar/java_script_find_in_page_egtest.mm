@@ -8,6 +8,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/find_in_page/features.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/find_bar/java_script_find_in_page_controller_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -15,11 +16,10 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -31,13 +31,27 @@ namespace {
 // Test web page content.
 const std::string kFindInPageResponse = "Find in page. Find in page.";
 
+// Test web page URL.
+const std::string kFindInPageTestURL = "/findinpage.html";
+
+// Response handler that serves a test page for Find in Page.
+std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != kFindInPageTestURL) {
+    return nullptr;
+  }
+  std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content(kFindInPageResponse);
+  http_response->set_content_type("text/html");
+  return std::move(http_response);
+}
+
 }  // namespace
 
-// Tests for Find in Page.
-@interface FindInPageTestCase : WebHttpServerChromeTestCase
-
-// URL for a test page with `kFindInPageResponse`.
-@property(nonatomic, assign) GURL testURL;
+// Tests for JavaScript Find in Page.
+@interface JavaScriptFindInPageTestCase : ChromeTestCase
 
 // Opens Find in Page.
 - (void)openFindInPage;
@@ -54,15 +68,20 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 - (void)advanceToNextResult;
 // Taps Previous button in Find in page.
 - (void)advanceToPreviousResult;
-// Navigates to `self.testURL` and waits for the page to load.
+// Navigates to `kFindInPageTestURL` and waits for the page to load.
 - (void)navigateToTestPage;
 
 @end
 
-@implementation FindInPageTestCase
-@synthesize testURL = _testURL;
+@implementation JavaScriptFindInPageTestCase
 
 #pragma mark - XCTest.
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(kNativeFindInPage);
+  return config;
+}
 
 // After setup, a page with `kFindInPageResponse` is displayed and Find In Page
 // bar is opened.
@@ -72,17 +91,15 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
   // Clear saved search term.
   [JavaScriptFindInPageControllerAppInterface clearSearchTerm];
 
-  // Setup find in page test URL.
-  std::map<GURL, std::string> responses;
-  self.testURL = web::test::HttpServer::MakeUrl("http://findinpage");
-  responses[self.testURL] = kFindInPageResponse;
-  web::test::SetUpSimpleHttpServer(responses);
+  // Setup find in page test server.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&FindInPageTestPageHttpResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   [self navigateToTestPage];
 
   // Open Find in Page view.
   [self openFindInPage];
-
 }
 
 - (void)tearDown {
@@ -233,7 +250,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 - (void)navigateToTestPage {
   // Navigate to a page with some text.
-  [ChromeEarlGrey loadURL:self.testURL];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kFindInPageTestURL)];
 
   // Verify web page finished loading.
   [ChromeEarlGrey waitForWebStateContainingText:kFindInPageResponse];

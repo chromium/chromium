@@ -113,7 +113,7 @@ void FindInPageManagerImpl::StartSearch(NSString* query)
     // query is different.
     if (!find_interaction.isFindNavigatorVisible ||
         ![query isEqualToString:current_query_]) {
-      // For some reason, in automated tests, presenting the Find navigator
+      // For some reason, in some cases, presenting the Find navigator
       // synchronously results in inability to type in the Find navigator input
       // field. Presenting asynchronously instead solves this issue.
       dispatch_async(dispatch_get_main_queue(), ^{

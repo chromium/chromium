@@ -43,6 +43,10 @@ NSString* gSearchTerm;
       _findInPageDelegateBridge;
 }
 
++ (void)clearSearchTerm {
+  gSearchTerm = nil;
+}
+
 - (instancetype)initWithWebState:(web::WebState*)webState {
   self = [super init];
   if (self) {

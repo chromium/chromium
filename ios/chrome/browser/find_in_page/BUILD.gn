@@ -58,3 +58,29 @@ source_set("features") {
   ]
   public_deps = [ "//base:base" ]
 }
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "find_in_page_app_interface.h",
+    "find_in_page_app_interface.mm",
+  ]
+  deps = [ ":find_in_page" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "find_in_page_app_interface.h",
+    "find_in_page_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+}
