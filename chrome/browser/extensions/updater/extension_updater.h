@@ -24,6 +24,7 @@
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
+#include "extensions/browser/updater/extension_update_data.h"
 #include "extensions/browser/updater/update_service.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
@@ -83,6 +84,10 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
     // task. When the value of |fetch_priority| is FOREGROUND, the update
     // request was initiated by a user.
     DownloadFetchPriority fetch_priority = DownloadFetchPriority::kBackground;
+
+    // If set, will be called when an update is found and before an attempt to
+    // download and install it is made.
+    UpdateFoundCallback update_found_callback;
 
     // Callback to call when the update check is complete. Can be null, if
     // you're not interested in when this happens.
@@ -198,6 +203,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
 
     bool install_immediately = false;
     bool awaiting_update_service = false;
+    UpdateFoundCallback update_found_callback;
     FinishedCallback callback;
     // Prevents the destruction of the Profile* while an update check is in
     // progress.
@@ -241,6 +247,9 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   // Implementation of ExtensionDownloaderDelegate.
   void OnExtensionDownloadStageChanged(const ExtensionId& id,
                                        Stage stage) override;
+  void OnExtensionUpdateFound(const ExtensionId& id,
+                              const std::set<int>& request_ids,
+                              const base::Version& version) override;
   void OnExtensionDownloadCacheStatusRetrieved(const ExtensionId& id,
                                                CacheStatus status) override;
   void OnExtensionDownloadFailed(const ExtensionId& id,

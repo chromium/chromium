@@ -8,12 +8,23 @@
 #include <map>
 #include <string>
 
+#include "base/functional/callback_forward.h"
+
+namespace base {
+class Version;
+}
+
 namespace extensions {
 
 struct ExtensionUpdateData;
 struct ExtensionUpdateCheckParams;
 
 using ExtensionUpdateDataMap = std::map<std::string, ExtensionUpdateData>;
+
+// Called with the extension id and version of the update that was
+// found.
+using UpdateFoundCallback =
+    base::RepeatingCallback<void(const std::string&, const base::Version&)>;
 
 // This struct contains update information for a specific extension.
 struct ExtensionUpdateData {

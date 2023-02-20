@@ -11,8 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 #include "extensions/browser/extension_registry.h"
@@ -25,8 +23,6 @@ class TimeTicks;
 
 namespace content {
 class BrowserContext;
-class NotificationDetails;
-class NotificationSource;
 }
 
 namespace extensions {
@@ -35,7 +31,6 @@ class UpdateObserver;
 }
 
 class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
-                                 public content::NotificationObserver,
                                  public extensions::ExtensionRegistryObserver {
  public:
   explicit ChromeRuntimeAPIDelegate(content::BrowserContext* context);
@@ -63,23 +58,18 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   bool OpenOptionsPage(const extensions::Extension* extension,
                        content::BrowserContext* browser_context) override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // ExtensionRegistryObserver implementation.
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const extensions::Extension* extension,
                             bool is_update) override;
 
+  void OnExtensionUpdateFound(const std::string& id,
+                              const base::Version& version);
   void UpdateCheckComplete(const std::string& extension_id);
   void CallUpdateCallbacks(const std::string& extension_id,
                            const UpdateCheckResult& result);
 
   raw_ptr<content::BrowserContext> browser_context_;
-
-  content::NotificationRegistrar registrar_;
 
   // Whether the API registered with the ExtensionService to receive
   // update notifications.

@@ -30,7 +30,6 @@
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
 #include "extensions/common/api/runtime.h"
@@ -125,9 +124,6 @@ struct ChromeRuntimeAPIDelegate::UpdateCheckInfo {
 ChromeRuntimeAPIDelegate::ChromeRuntimeAPIDelegate(
     content::BrowserContext* context)
     : browser_context_(context), registered_for_updates_(false) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
-                 content::NotificationService::AllSources());
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(browser_context_));
 }
@@ -247,6 +243,9 @@ bool ChromeRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
 
     extensions::ExtensionUpdater::CheckParams params;
     params.ids = {extension_id};
+    params.update_found_callback =
+        base::BindRepeating(&ChromeRuntimeAPIDelegate::OnExtensionUpdateFound,
+                            base::Unretained(this));
     params.callback =
         base::BindOnce(&ChromeRuntimeAPIDelegate::UpdateCheckComplete,
                        base::Unretained(this), extension_id);
@@ -346,15 +345,9 @@ bool ChromeRuntimeAPIDelegate::OpenOptionsPage(
                                                               browser_context);
 }
 
-void ChromeRuntimeAPIDelegate::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND, type);
-  using UpdateDetails = const std::pair<std::string, base::Version>;
-  const std::string& id = content::Details<UpdateDetails>(details)->first;
-  const base::Version& version =
-      content::Details<UpdateDetails>(details)->second;
+void ChromeRuntimeAPIDelegate::OnExtensionUpdateFound(
+    const std::string& id,
+    const base::Version& version) {
   if (version.IsValid()) {
     UpdateCheckResult result = UpdateCheckResult(
         extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_UPDATE_AVAILABLE,

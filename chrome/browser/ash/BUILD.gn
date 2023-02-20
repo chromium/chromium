@@ -6068,6 +6068,7 @@ source_set("unit_tests") {
     "//extensions/browser/api/lock_screen_data",
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/updater",
+    "//extensions/browser/updater:test_support",
     "//extensions/common",
     "//extensions/common:common_constants",
     "//extensions/common:mojom",

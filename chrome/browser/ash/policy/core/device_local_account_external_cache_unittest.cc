@@ -30,13 +30,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/browser/updater/extension_update_found_test_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -164,8 +163,11 @@ class DeviceLocalAccountExternalCacheTest : public testing::Test {
   void TearDown() override;
 
   void VerifyAndResetVisitorCallExpectations();
-  base::FilePath SimulateExtensionDownload(const std::string& id,
-                                           const std::string& manifest_file);
+  base::FilePath SimulateExtensionDownload(
+      const std::string& id,
+      const std::string& manifest_file,
+      extensions::ExtensionUpdateFoundTestObserver&
+          extension_update_found_observer);
 
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
@@ -235,7 +237,9 @@ void DeviceLocalAccountExternalCacheTest::
 
 base::FilePath DeviceLocalAccountExternalCacheTest::SimulateExtensionDownload(
     const std::string& id,
-    const std::string& manifest_file) {
+    const std::string& manifest_file,
+    extensions::ExtensionUpdateFoundTestObserver&
+        extension_update_found_observer) {
   // Return a manifest to the downloader.
   std::string manifest;
   EXPECT_TRUE(base::ReadFileToString(test_dir_.Append(kExtensionUpdateManifest),
@@ -246,10 +250,7 @@ base::FilePath DeviceLocalAccountExternalCacheTest::SimulateExtensionDownload(
                                        manifest);
 
   // Wait for the manifest to be parsed.
-  content::WindowedNotificationObserver(
-      extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
-      content::NotificationService::AllSources())
-      .Wait();
+  extension_update_found_observer.Wait();
 
   // Verify that the downloader is attempting to download a CRX file.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
@@ -299,6 +300,7 @@ TEST_F(DeviceLocalAccountExternalCacheTest, ForceInstallListEmpty) {
 // set and the cache is started, the loader downloads, caches and serves the
 // extension.
 TEST_F(DeviceLocalAccountExternalCacheTest, ForceInstallListSet) {
+  extensions::ExtensionUpdateFoundTestObserver extension_update_found_observer;
   base::Value::Dict dict;
   AddExtensionToDictionary(kExtensionId,
                            extension_urls::GetWebstoreUpdateUrl().spec(), dict);
@@ -318,8 +320,8 @@ TEST_F(DeviceLocalAccountExternalCacheTest, ForceInstallListSet) {
   // update manifest.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
-  const base::FilePath cached_crx_path =
-      SimulateExtensionDownload(kExtensionId, kExtensionUpdateManifest);
+  const base::FilePath cached_crx_path = SimulateExtensionDownload(
+      kExtensionId, kExtensionUpdateManifest, extension_update_found_observer);
 
   base::RunLoop cache_run_loop;
   EXPECT_CALL(

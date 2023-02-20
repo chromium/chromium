@@ -38,6 +38,10 @@ class MockExtensionDownloaderDelegate
                     const FailureData&));
   MOCK_METHOD2(OnExtensionDownloadStageChanged,
                void(const ExtensionId&, Stage));
+  MOCK_METHOD(void,
+              OnExtensionUpdateFound,
+              (const ExtensionId&, const std::set<int>&, const base::Version&),
+              (override));
   MOCK_METHOD2(OnExtensionDownloadCacheStatusRetrieved,
                void(const ExtensionId&, CacheStatus));
   // Gmock doesn't have good support for move-only types like

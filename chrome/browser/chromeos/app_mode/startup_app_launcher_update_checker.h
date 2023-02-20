@@ -8,24 +8,26 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class Profile;
+
+namespace base {
+class Version;
+}
 
 namespace ash {
 
 // Used by StartupAppLauncher to check for available extension updates for
 // extensions other than the primary kiosk app - in particular for the secondary
 // extensions and imports defined by the primary app.
-class StartupAppLauncherUpdateChecker : public content::NotificationObserver {
+class StartupAppLauncherUpdateChecker {
  public:
   explicit StartupAppLauncherUpdateChecker(Profile* profile);
   StartupAppLauncherUpdateChecker(const StartupAppLauncherUpdateChecker&) =
       delete;
   StartupAppLauncherUpdateChecker& operator=(
       const StartupAppLauncherUpdateChecker&) = delete;
-  ~StartupAppLauncherUpdateChecker() override;
+  virtual ~StartupAppLauncherUpdateChecker();
 
   using UpdateCheckCallback = base::OnceCallback<void(bool updates_found)>;
   // Runs the extension update check.
@@ -37,12 +39,8 @@ class StartupAppLauncherUpdateChecker : public content::NotificationObserver {
   // the callback will never run.
   bool Run(UpdateCheckCallback callback);
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
  private:
+  void MarkUpdateFound(const std::string& id, const base::Version& version);
   // Callback for extension updater check.
   void OnExtensionUpdaterDone();
 
@@ -52,8 +50,6 @@ class StartupAppLauncherUpdateChecker : public content::NotificationObserver {
   bool update_found_ = false;
 
   UpdateCheckCallback callback_;
-
-  content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<StartupAppLauncherUpdateChecker> weak_ptr_factory_{this};
 };

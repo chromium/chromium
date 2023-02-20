@@ -67,6 +67,11 @@ void ExtensionDownloaderDelegate::OnExtensionDownloadStageChanged(
     const ExtensionId& id,
     Stage stage) {}
 
+void ExtensionDownloaderDelegate::OnExtensionUpdateFound(
+    const ExtensionId& id,
+    const std::set<int>& request_ids,
+    const base::Version& version) {}
+
 void ExtensionDownloaderDelegate::OnExtensionDownloadCacheStatusRetrieved(
     const ExtensionId& id,
     CacheStatus cache_status) {}

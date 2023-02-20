@@ -396,6 +396,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   DCHECK(alive_);
 
   InProgressCheck& request = requests_in_progress_[request_id];
+  request.update_found_callback = params.update_found_callback;
   request.callback = std::move(params.callback);
   request.install_immediately = params.install_immediately;
   request.profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
@@ -548,7 +549,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
             : ExtensionUpdateCheckParams::UpdateCheckPriority::FOREGROUND;
     update_check_params.install_immediately = params.install_immediately;
     update_service_->StartUpdateCheck(
-        update_check_params,
+        update_check_params, params.update_found_callback,
         base::BindOnce(&ExtensionUpdater::OnUpdateServiceFinished,
                        base::Unretained(this), request_id));
   } else if (empty_downloader) {
@@ -559,6 +560,17 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
 void ExtensionUpdater::OnExtensionDownloadStageChanged(const ExtensionId& id,
                                                        Stage stage) {
   InstallStageTracker::Get(profile_)->ReportDownloadingStage(id, stage);
+}
+
+void ExtensionUpdater::OnExtensionUpdateFound(const ExtensionId& id,
+                                              const std::set<int>& request_ids,
+                                              const base::Version& version) {
+  for (const int request_id : request_ids) {
+    InProgressCheck& request = requests_in_progress_[request_id];
+    if (request.update_found_callback) {
+      request.update_found_callback.Run(id, version);
+    }
+  }
 }
 
 void ExtensionUpdater::OnExtensionDownloadCacheStatusRetrieved(

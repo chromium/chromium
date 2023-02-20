@@ -31,12 +31,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/browser/updater/extension_update_found_test_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -451,6 +451,7 @@ TEST_F(DemoExtensionsExternalLoaderTest,
 }
 
 TEST_F(DemoExtensionsExternalLoaderTest, LoadApp) {
+  extensions::ExtensionUpdateFoundTestObserver extension_update_found_observer;
   demo_mode_test_helper_->InitializeSession();
 
   // Create a temporary cache directory.
@@ -489,10 +490,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, LoadApp) {
       manifest);
 
   // Wait for the manifest to be parsed.
-  content::WindowedNotificationObserver(
-      extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
-      content::NotificationService::AllSources())
-      .Wait();
+  extension_update_found_observer.Wait();
 
   // Verify that the downloader is attempting to download a CRX file.
   task_environment_.RunUntilIdle();

@@ -38,7 +38,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/fake_crx_installer.h"
@@ -55,11 +54,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/update_client/update_query_params.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -162,52 +156,6 @@ int kExpectedLoadFlagsForDownloadWithCookies = net::LOAD_DISABLE_CACHE;
 // Fake authentication constants
 const char kFakeOAuth2Token[] = "ce n'est pas un jeton";
 
-// A class that observes the notifications sent by the ExtensionUpdater and
-// the ExtensionDownloader.
-class NotificationsObserver : public content::NotificationObserver {
- public:
-  NotificationsObserver() {
-    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
-                   content::NotificationService::AllSources());
-  }
-  NotificationsObserver(const NotificationsObserver&) = delete;
-  NotificationsObserver& operator=(const NotificationsObserver&) = delete;
-
-  ~NotificationsObserver() override {
-    registrar_.Remove(this, extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
-                      content::NotificationService::AllSources());
-  }
-
-  size_t UpdatedCount() { return updated_count_; }
-
-  bool Updated(const std::string& id) {
-    return updated_.find(id) != updated_.end();
-  }
-
-  void Wait() {
-    scoped_refptr<content::MessageLoopRunner> runner =
-        new content::MessageLoopRunner;
-    quit_closure_ = runner->QuitClosure();
-    runner->Run();
-  }
-
- private:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    if (!quit_closure_.is_null())
-      std::move(quit_closure_).Run();
-    DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND, type);
-    ++updated_count_;
-    updated_.insert(content::Details<UpdateDetails>(details)->id);
-  }
-
-  content::NotificationRegistrar registrar_;
-  size_t updated_count_ = 0;
-  std::set<std::string> updated_;
-  base::OnceClosure quit_closure_;
-};
-
 // Extracts the integer value of the |authuser| query parameter. Returns 0 if
 // the parameter is not set.
 int GetAuthUserQueryValue(const GURL& url) {
@@ -235,9 +183,12 @@ class MockUpdateService : public UpdateService {
                void(const std::string& id,
                     const base::Version& version,
                     int reason));
-  MOCK_METHOD2(StartUpdateCheck,
-               void(const ExtensionUpdateCheckParams& params,
-                    base::OnceClosure callback));
+  MOCK_METHOD(void,
+              StartUpdateCheck,
+              (const ExtensionUpdateCheckParams& params,
+               UpdateFoundCallback update_found_callback,
+               base::OnceClosure callback),
+              (override));
 };
 
 }  // namespace
@@ -654,7 +605,6 @@ class ExtensionUpdaterTest : public testing::Test {
     ServiceForManifestTests service(prefs_.get(), helper.url_loader_factory());
     std::string update_url("http://foo.com/bar");
     ExtensionList extensions;
-    NotificationsObserver observer;
     PendingExtensionManager* pending_extension_manager =
         service.pending_extension_manager();
     if (pending) {
@@ -1250,7 +1200,6 @@ class ExtensionUpdaterTest : public testing::Test {
       helper.StartUpdateCheck(std::move(fetch4));
       RunUntilIdle();
       // The last fetcher has an update.
-      NotificationsObserver observer;
       const std::string kUpdateAvailable = CreateUpdateManifest(
           {UpdateManifestItem("4444")
                .version("4.0.42.0")
@@ -1261,12 +1210,14 @@ class ExtensionUpdaterTest : public testing::Test {
       EXPECT_CALL(delegate, IsExtensionPending("4444")).WillOnce(Return(false));
       EXPECT_CALL(delegate, GetExtensionExistingVersion("4444", _))
           .WillOnce(DoAll(SetArgPointee<1>("4.0.0.0"), Return(true)));
-      observer.Wait();
-      Mock::VerifyAndClearExpectations(&delegate);
 
       // Verify that the downloader decided to update this extension.
-      EXPECT_EQ(1u, observer.UpdatedCount());
-      EXPECT_TRUE(observer.Updated("4444"));
+      EXPECT_CALL(delegate,
+                  OnExtensionUpdateFound("4444", _, base::Version("4.0.42.0")))
+          .WillOnce([&delegate]() { delegate.Quit(); });
+      delegate.Wait();
+      Mock::VerifyAndClearExpectations(&delegate);
+
       fetch4_url = GURL();
     }
     if (helper.downloader().HasActiveManifestRequestForTesting())
@@ -2584,7 +2535,7 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingDisabledExtensions) {
               StartUpdateCheck(
                   ::testing::Field(&ExtensionUpdateCheckParams::update_info,
                                    ::testing::SizeIs(2)),
-                  _));
+                  _, _));
 
   service.set_extensions(enabled_extensions, disabled_extensions);
   updater.Start();
@@ -2627,7 +2578,7 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
               StartUpdateCheck(
                   ::testing::Field(&ExtensionUpdateCheckParams::update_info,
                                    ::testing::SizeIs(2)),
-                  _));
+                  _, _));
 
   service.set_extensions(enabled_extensions, ExtensionList(),
                          blocklisted_extensions);

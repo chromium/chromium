@@ -219,6 +219,12 @@ class ExtensionDownloaderDelegate {
   virtual void OnExtensionDownloadStageChanged(const ExtensionId& id,
                                                Stage stage);
 
+  // Invoked when an update is found for an extension, but before any attempt
+  // to download it is made.
+  virtual void OnExtensionUpdateFound(const ExtensionId& id,
+                                      const std::set<int>& request_ids,
+                                      const base::Version& version);
+
   // Invoked once during downloading, after fetching and parsing update
   // manifest, |cache_status| contains information about what have we found in
   // local cache about the extension.

@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/update_client/update_client.h"
+#include "extensions/browser/updater/extension_update_data.h"
 
 namespace base {
 class Version;
@@ -41,8 +42,7 @@ class UpdateServiceFactory;
 
 // An UpdateService provides functionality to update extensions.
 // Some methods are virtual for testing purposes.
-class UpdateService : public KeyedService,
-                      update_client::UpdateClient::Observer {
+class UpdateService : public KeyedService {
  public:
   UpdateService(const UpdateService&) = delete;
   UpdateService& operator=(const UpdateService&) = delete;
@@ -62,10 +62,8 @@ class UpdateService : public KeyedService,
   // integrity, unpacked, and then passed off to the
   // ExtensionSystem::InstallUpdate method for install completion.
   virtual void StartUpdateCheck(const ExtensionUpdateCheckParams& update_params,
+                                UpdateFoundCallback update_found_callback,
                                 base::OnceClosure callback);
-
-  // Overriden from |update_client::UpdateClient::Observer|.
-  void OnEvent(Events event, const std::string& id) override;
 
  protected:
   UpdateService(content::BrowserContext* context,
@@ -97,16 +95,19 @@ class UpdateService : public KeyedService,
   void UpdateCheckComplete(InProgressUpdate update);
 
   // Adds/Removes observer to/from |update_client::UpdateClient|.
-  // Mainly used for browser tests.
+  // Used by browser tests.
   void AddUpdateClientObserver(update_client::UpdateClient::Observer* observer);
   void RemoveUpdateClientObserver(
       update_client::UpdateClient::Observer* observer);
+
+  void OnCrxStateChange(UpdateFoundCallback update_found_callback,
+                        update_client::CrxUpdateItem item);
+
   void HandleComponentUpdateErrorEvent(const std::string& extension_id) const;
-  void HandleComponentUpdateFoundEvent(const std::string& extension_id) const;
 
   // Get the extension Omaha attributes sent from update config.
   base::Value::Dict GetExtensionOmahaAttributes(
-      const std::string& extension_id);
+      update_client::CrxUpdateItem& update_item);
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;

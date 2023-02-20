@@ -37,13 +37,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174734): Remove.
   NOTIFICATION_EXTENSION_INSTALL_ERROR,
 
-  // The extension updater found an update and will attempt to download and
-  // install it. The source is a BrowserContext*, and the details are an
-  // extensions::UpdateDetails object with the extension id and version of the
-  // found update.
-  // TODO(https://crbug.com/1174754): Remove.
-  NOTIFICATION_EXTENSION_UPDATE_FOUND,
-
   NOTIFICATION_EXTENSIONS_END
 };
 

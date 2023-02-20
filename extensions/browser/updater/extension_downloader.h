@@ -60,14 +60,6 @@ struct DownloadFailure {
   ExtensionDownloaderDelegate::FailureData failure_data;
 };
 
-struct UpdateDetails {
-  UpdateDetails(const std::string& id, const base::Version& version);
-  ~UpdateDetails();
-
-  std::string id;
-  base::Version version;
-};
-
 class ExtensionCache;
 class ExtensionDownloaderTestDelegate;
 class ExtensionUpdaterTest;
@@ -133,6 +125,26 @@ class ExtensionDownloader {
   bool HasActiveManifestRequestForTesting();
 
   ManifestFetchData* GetActiveManifestFetchForTesting();
+
+  // An observer class that can be used by test code.
+  class TestObserver {
+   public:
+    TestObserver();
+    virtual ~TestObserver();
+
+    // Invoked when an update is found for an extension, but before any attempt
+    // to download it is made.
+    // Will be invoked right before its namesake in ExtensionDownloaderDelegate.
+    virtual void OnExtensionUpdateFound(const ExtensionId& id,
+                                        const std::set<int>& request_ids,
+                                        const base::Version& version) = 0;
+  };
+  // Sets a test observer to be used by any instances of this class.
+  // The |observer| should outlive all ExtensionDownloader instances.
+  static void set_test_observer(TestObserver* observer);
+  // Returns the currently set TestObserver, if any.
+  // Useful for sanity-checking test code.
+  static TestObserver* test_observer();
 
   // Sets a test delegate to use by any instances of this class. The |delegate|
   // should outlive all instances.
@@ -361,10 +373,6 @@ class ExtensionDownloader {
   void NotifyExtensionsDownloadFailedWithList(
       std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> errors,
       std::set<int> request_ids);
-
-  // Send a notification that an update was found for |id| that we'll
-  // attempt to download.
-  void NotifyUpdateFound(const std::string& id, const std::string& version);
 
   // Helper method to populate lists of manifest fetch requests.
   void AddToFetches(std::map<FetchDataGroupKey,

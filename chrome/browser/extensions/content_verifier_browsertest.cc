@@ -67,9 +67,12 @@ class MockUpdateService : public UpdateService {
                void(const std::string& id,
                     const base::Version& version,
                     int reason));
-  MOCK_METHOD2(StartUpdateCheck,
-               void(const ExtensionUpdateCheckParams& params,
-                    base::OnceClosure callback));
+  MOCK_METHOD(void,
+              StartUpdateCheck,
+              (const ExtensionUpdateCheckParams& params,
+               UpdateFoundCallback update_found_callback,
+               base::OnceClosure callback),
+              (override));
 };
 
 void ExtensionUpdateComplete(base::OnceClosure callback,
@@ -109,15 +112,17 @@ class ContentVerifierTest : public ExtensionBrowserTest {
 
   void AssertIsCorruptBitSetOnUpdateCheck(
       const ExtensionUpdateCheckParams& params,
+      UpdateFoundCallback update_found_callback,
       base::OnceClosure callback) {
     ASSERT_FALSE(params.update_info.empty());
     for (auto element : params.update_info) {
       ASSERT_TRUE(element.second.is_corrupt_reinstall);
     }
-    OnUpdateCheck(params, std::move(callback));
+    OnUpdateCheck(params, update_found_callback, std::move(callback));
   }
 
   virtual void OnUpdateCheck(const ExtensionUpdateCheckParams& params,
+                             UpdateFoundCallback update_found_callback,
                              base::OnceClosure callback) {
     scoped_refptr<CrxInstaller> installer(
         CrxInstaller::CreateSilent(extension_service()));
@@ -504,6 +509,7 @@ class UserInstalledContentVerifierTest : public ContentVerifierTest {
 
  protected:
   void OnUpdateCheck(const ExtensionUpdateCheckParams& params,
+                     UpdateFoundCallback update_found_callback,
                      base::OnceClosure callback) override {
     scoped_refptr<CrxInstaller> installer(
         CrxInstaller::CreateSilent(extension_service()));

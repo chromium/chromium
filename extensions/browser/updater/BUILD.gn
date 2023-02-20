@@ -62,3 +62,15 @@ source_set("keepalive") {
     "scoped_extension_updater_keep_alive.h",
   ]
 }
+
+source_set("test_support") {
+  sources = [
+    "extension_update_found_test_observer.cc",
+    "extension_update_found_test_observer.h",
+  ]
+
+  deps = [
+    ":updater",
+    "//base:base",
+  ]
+}
