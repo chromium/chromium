@@ -377,6 +377,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1339009753652684748">Activeer je Assistent als je 'Hey Google' zegt. Als je de batterij wilt sparen, kies je Aan (aanbevolen). De Assistent reageert dan alleen als je apparaat is aangesloten op een voedingsbron of wordt opgeladen.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Back-ups van media op het apparaat maken via de app Bestanden.</translation>
+<translation id="1341701348342335220">Goed bezig!</translation>
 <translation id="1341871421050612057">Kan niet synchroniseren met <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Geef Linux-apps rechten tot USB-apparaten. Linux onthoudt een USB-apparaat niet nadat dit is verwijderd.</translation>
 <translation id="1343920184519992513">Ga verder waar je gebleven was en open een specifieke set pagina's.</translation>
@@ -1577,7 +1578,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2356070529366658676">Vragen</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> verwijderen</translation>
 <translation id="2358561147588818967">Sites kunnen JavaScript gebruiken</translation>
-<translation id="2358703245148663432">Een ander apparaat</translation>
 <translation id="2358777858338503863">Klik om toe te staan op <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Linux-apps reageren misschien niet meer.</translation>
 <translation id="2359345697448000899">Je kunt je extensies beheren door in het gereedschapsmenu te klikken op 'Extensies'.</translation>
@@ -3624,6 +3624,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4232375817808480934">Kerberos configureren</translation>
 <translation id="4235965441080806197">Inloggen annuleren</translation>
 <translation id="4236163961381003811">Meer extensies bekijken</translation>
+<translation id="4237282663517880406">Google Drive-suggesties tonen</translation>
 <translation id="4241182343707213132">Start opnieuw op om de apps van je organisatie te updaten</translation>
 <translation id="4242145785130247982">Meerdere clientcertificaten worden niet ondersteund</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>

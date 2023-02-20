@@ -377,6 +377,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1339009753652684748">Accedeix a l'Assistent dient "Hey Google". Per estalviar bateria, escull “Activat (opció recomanada)”. El teu Assistent respondrà només quan el dispositiu estigui connectat o s'estigui carregant.</translation>
 <translation id="13392265090583506">Accessibilitat</translation>
 <translation id="1340527397989195812">Feu una còpia de seguretat dels fitxers multimèdia del dispositiu mitjançant l'aplicació Fitxers.</translation>
+<translation id="1341701348342335220">Ben fet!</translation>
 <translation id="1341871421050612057">No es pot sincronitzar amb <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Concedeix permís a les aplicacions de Linux per accedir als dispositius USB. Linux no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="1343920184519992513">Continua des d'on ho vas deixar i obre un conjunt de pàgines específic</translation>
@@ -1577,7 +1578,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2356070529366658676">Pregunta-ho</translation>
 <translation id="2357330829548294574">Suprimeix <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Els llocs web poden utilitzar JavaScript</translation>
-<translation id="2358703245148663432">Un altre dispositiu</translation>
 <translation id="2358777858338503863">Fes clic per permetre-ho a <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Pot ser que les aplicacions de Linux no responguin.</translation>
 <translation id="2359345697448000899">Per gestionar les extensions, feu clic a Extensions al menú Eines.</translation>
@@ -3624,6 +3624,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4232375817808480934">Configura Kerberos</translation>
 <translation id="4235965441080806197">Cancel·la l'inici de sessió</translation>
 <translation id="4236163961381003811">Descobreix més extensions</translation>
+<translation id="4237282663517880406">Mostra suggeriments de Google Drive</translation>
 <translation id="4241182343707213132">Reinicia per actualitzar les aplicacions de l'organització</translation>
 <translation id="4242145785130247982">No s'admet l'ús de diversos certificats de client</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>

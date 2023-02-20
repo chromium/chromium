@@ -377,6 +377,7 @@
 <translation id="1339009753652684748">只需说“Ok Google”即可使用您的 Google 助理。为了省电，请选择“开启（推荐）”。选择这一选项后，只有当您的设备已接通电源或正在充电时，Google 助理才会做出响应。</translation>
 <translation id="13392265090583506">无障碍设置</translation>
 <translation id="1340527397989195812">使用“文件”应用备份设备上的媒体。</translation>
+<translation id="1341701348342335220">太棒了，全部完成！</translation>
 <translation id="1341871421050612057">无法与 <ph name="USERNAME" /> 同步</translation>
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
@@ -1570,7 +1571,6 @@
 <translation id="2356070529366658676">询问</translation>
 <translation id="2357330829548294574">移除<ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">网站可以使用 JavaScript</translation>
-<translation id="2358703245148663432">另一部设备</translation>
 <translation id="2358777858338503863">点击即可允许访问 <ph name="ORIGIN" />：</translation>
 <translation id="2359071692152028734">Linux 应用可能会变得无响应。</translation>
 <translation id="2359345697448000899">您可以通过点击“工具”菜单中的“扩展程序”，管理您的扩展程序。</translation>
@@ -3616,6 +3616,7 @@
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4235965441080806197">取消登录</translation>
 <translation id="4236163961381003811">探索更多扩展程序</translation>
+<translation id="4237282663517880406">显示 Google 云端硬盘建议</translation>
 <translation id="4241182343707213132">重启即可更新贵单位的应用</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -3930,6 +3931,7 @@
 <translation id="4522890784888918985">子帐号不受支持</translation>
 <translation id="4523876148417776526">尚未提取 XML 站点列表。</translation>
 <translation id="4524832533047962394">此版本的操作系统不支持所提供的注册模式。请确保您运行的是最新版本。</translation>
+<translation id="4526051299161934899">隐藏的已存标签页分组</translation>
 <translation id="4526853756266614740">只需选择一张图片，便可立即将它作为主题付诸应用</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4527929807707405172">启用反向滚动。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -8469,6 +8471,7 @@
 <translation id="869884720829132584">应用菜单</translation>
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8699188901396699995">“<ph name="PRINTER_NAME" />”的 PPD</translation>
+<translation id="8702278591052316269">包含隐藏的已存标签页分组的菜单</translation>
 <translation id="8702825062053163569">您的 <ph name="DEVICE_TYPE" /> 已锁定。</translation>
 <translation id="8703346390800944767">跳过广告</translation>
 <translation id="8705331520020532516">序列号</translation>

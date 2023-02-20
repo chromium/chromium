@@ -564,6 +564,7 @@
 <translation id="5118713593561876160">الاهتمامات</translation>
 <translation id="5118764316110575523">غير مفعَّل</translation>
 <translation id="5119391094379141756">‏اختيار Chrome</translation>
+<translation id="5121618895923301719">يتم تتبُّع هذا المنتج حاليًا. تم حفظ هذه الصفحة في قائمة <ph name="BEGIN_LINK" />الإشارات المرجعية على الجوّال<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">مزامنة كلمات المرور والسجلّ والمزيد على جميع الأجهزة</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{كلمة مرور واحدة ضعيفة ({COUNT})}zero{‫{COUNT} كلمة مرور ضعيفة}two{كلِمتا مرور ضعيفتان ({COUNT})}few{‫{COUNT} كلمات مرور ضعيفة}many{‫{COUNT} كلمة مرور ضعيفة}other{‫{COUNT} كلمة مرور ضعيفة}}</translation>
 <translation id="5149188072385105201">إضافة كلمة مرور…</translation>
@@ -594,6 +595,7 @@
 <translation id="5386314158584363703">ستظهر لك هنا المواقع الإلكترونية التي تتابعها</translation>
 <translation id="5388358297987318779">فتح الصورة</translation>
 <translation id="5407969256130905701">تجاهل التغييرات</translation>
+<translation id="5414763847370083940">ستتلقَّى تنبيهًا في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="5416022985862681400">آخر 7 أيام</translation>
 <translation id="5423269318075950257">تتبُّع السعر</translation>
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
@@ -1136,6 +1138,7 @@
 <translation id="952704832371081537">إلغاء</translation>
 <translation id="953008885340860025">‏تم تسجيل الخروج من Chrome</translation>
 <translation id="959066944189734975">تتم حاليًا متابعة <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">يمكنك تتبُّع سعر منتج معيَّن في المتاجر على الإنترنت. وستتلقّى تنبيهات عند انخفاض السعر.</translation>
 <translation id="980712131080209571">جديدة</translation>
 <translation id="981498610235328462">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها.</translation>
 <translation id="984509647832111802">المزامنة لا تعمل.</translation>

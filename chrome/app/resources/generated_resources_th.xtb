@@ -1580,7 +1580,6 @@
 <translation id="2356070529366658676">ถาม</translation>
 <translation id="2357330829548294574">นำ <ph name="USER_NAME" /> ออก</translation>
 <translation id="2358561147588818967">เว็บไซต์ใช้ JavaScript ได้</translation>
-<translation id="2358703245148663432">อุปกรณ์อื่น</translation>
 <translation id="2358777858338503863">คลิกเพื่ออนุญาตบน <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">แอป Linux อาจไม่ตอบสนอง</translation>
 <translation id="2359345697448000899">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "เครื่องมือ"</translation>
@@ -3948,6 +3947,7 @@
 <translation id="4522890784888918985">ไม่รองรับบัญชีย่อย</translation>
 <translation id="4523876148417776526">ยังไม่ได้ดึงข้อมูลรายการเว็บไซต์ XML</translation>
 <translation id="4524832533047962394">ระบบปฏิบัติการเวอร์ชันนี้ไม่รองรับโหมดการลงทะเบียนที่กำหนด โปรดตรวจสอบว่าคุณใช้เวอร์ชันล่าสุดอยู่</translation>
+<translation id="4526051299161934899">กลุ่มแท็บที่บันทึกไว้ซึ่งซ่อนอยู่</translation>
 <translation id="4526853756266614740">เลือกรูปภาพเพื่อใช้ธีมในทันที</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4527929807707405172">เปิดใช้การเลื่อนแบบ "กลับด้าน" <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -4272,6 +4272,7 @@
 <translation id="4824037980212326045">การสำรองและกู้คืนข้อมูลใน Linux</translation>
 <translation id="4824958205181053313">ยกเลิกการซิงค์ใช่ไหม</translation>
 <translation id="4825532258163983651">ลบพาสคีย์ไม่ได้</translation>
+<translation id="4827283332383516812">ลบบัตร</translation>
 <translation id="4827675678516992122">เชื่อมต่อไม่ได้</translation>
 <translation id="4827784381479890589">การตรวจตัวสะกดที่ผ่านการเพิ่มประสิทธิภาพในเบราว์เซอร์ Chrome (ระบบจะส่งข้อความไปยัง Google เพื่อรับคำแนะนำในการสะกด)</translation>
 <translation id="4827904420700932487">สร้างคิวอาร์โค้ดสำหรับรูปภาพนี้</translation>
@@ -5298,6 +5299,7 @@
 <translation id="5792295754950501287">การดำเนินการเพิ่มเติมสำหรับ<ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">โปรดแตะปุ่มเปิด/ปิด</translation>
 <translation id="5792874008054171483">การดำเนินการเพิ่มเติมสำหรับ <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">ระบบจะลบวิธีการชำระเงินนี้ออกจากอุปกรณ์</translation>
 <translation id="5793339252089865437">หากดาวน์โหลดอัปเดตผ่านเครือข่ายมือถือ อาจทำให้มีค่าบริการเน็ตมือถือเพิ่มเติม</translation>
 <translation id="5793420564274426163">การยืนยันการจับคู่</translation>
 <translation id="5793430094159150686">เปลี่ยนรหัสผ่านแล้ว คุณต้องป้อนรหัสผ่านเก่าหากต้องการกู้คืนข้อมูลในเครื่อง</translation>
@@ -7275,6 +7277,7 @@
 <translation id="7609148976235050828">โปรดเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
 <translation id="7612401678989660900">อนุญาตให้เข้าถึงสำหรับแอปและเว็บไซต์ที่มีสิทธิ์เข้าถึงไมโครโฟน</translation>
 <translation id="7612655942094160088">เปิดใช้ฟีเจอร์ของโทรศัพท์ที่เชื่อมต่ออยู่</translation>
+<translation id="7612989789287281429">กำลังลงชื่อเข้าใช้…</translation>
 <translation id="7614260613810441905">ถามเมื่อเว็บไซต์ต้องการแก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ (แนะนำ)</translation>
 <translation id="761530003705945209">สำรองข้อมูลไปที่ Google ไดรฟ์ กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะมีข้อมูลแอปอยู่ด้วย ข้อมูลสำรองดังกล่าวจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google</translation>
 <translation id="7615365294369022248">เกิดข้อผิดพลาดในการเพิ่มบัญชี</translation>
@@ -8492,6 +8495,7 @@
 <translation id="869884720829132584">เมนูของแอปพลิเคชัน</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699188901396699995">PPD ของ <ph name="PRINTER_NAME" /></translation>
+<translation id="8702278591052316269">เมนูมีกลุ่มแท็บที่บันทึกไว้ซึ่งซ่อนอยู่</translation>
 <translation id="8702825062053163569">ล็อก <ph name="DEVICE_TYPE" /> แล้ว</translation>
 <translation id="8703346390800944767">ข้ามโฆษณา</translation>
 <translation id="8705331520020532516">หมายเลขซีเรียล</translation>

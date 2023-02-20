@@ -378,6 +378,7 @@
 <translation id="1339009753652684748">તમે "Ok Google" બોલો છો, ત્યારે તમારા Assistantને ઍક્સેસ કરો છો. બૅટરીની બચત કરવા માટે, “ચાલુ (સુઝાવ આપવામાં આવે છે)” પસંદ કરો. જ્યારે તમારું ડિવાઇસ પ્લગ-ઇન કરેલું હશે અથવા ચાર્જ થઈ રહ્યું હશે, માત્ર ત્યારે જ Assistant જવાબ આપશે.</translation>
 <translation id="13392265090583506">ઍક્સેસિબિલિટી</translation>
 <translation id="1340527397989195812">Files ઍપનો ઉપયોગ કરીને ડિવાઇસથી મીડિયાનો બૅકઅપ લો.</translation>
+<translation id="1341701348342335220">સરસ રીતે પૂર્ણ કર્યું!</translation>
 <translation id="1341871421050612057"><ph name="USERNAME" /> સાથે સિંક કરી શકાતું નથી</translation>
 <translation id="1343865611738742294">Linux ઍપ પરવાનગીને USB ડિવાઇસ ઍક્સેસ કરવાની પરવાનગી આપો. USB ડિવાઇસ કાઢી નાખવામાં આવે પછી Linux તેને યાદ રાખશે નહીં.</translation>
 <translation id="1343920184519992513">તમે જ્યાંથી છોડ્યું હોય, ત્યાંથી ફરી શરૂ કરો અને કોઈ ચોક્કસ પેજ ખોલો</translation>
@@ -1575,7 +1576,6 @@
 <translation id="2356070529366658676">કહો</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> કાઢી નાખો</translation>
 <translation id="2358561147588818967">સાઇટ Javascriptનો ઉપયોગ કરી શકે છે</translation>
-<translation id="2358703245148663432">કોઈ અલગ ડિવાઇસ</translation>
 <translation id="2358777858338503863"><ph name="ORIGIN" /> પર મંજૂરી આપવા માટે ક્લિક કરો:</translation>
 <translation id="2359071692152028734">Linux ઍપ નિષ્ક્રિય બની શકે છે.</translation>
 <translation id="2359345697448000899">ટૂલ્સ મેનૂમાં એક્સટેંશનને ક્લિક કરીને તમારા એક્સ્ટેંશન્સને મેનેજ કરો.</translation>
@@ -3623,6 +3623,7 @@
 <translation id="4232375817808480934">Kerberosની ગોઠવણી કરો</translation>
 <translation id="4235965441080806197">સાઇન ઇન રદ કરો</translation>
 <translation id="4236163961381003811">વધુ એક્સ્ટેન્શન વિશે શોધખોળ કરો</translation>
+<translation id="4237282663517880406">Google Driveના સૂચનો બતાવો</translation>
 <translation id="4241182343707213132">સંસ્થાની ઍપ અપડેટ કરવા માટે, ફરી શરૂ કરો</translation>
 <translation id="4242145785130247982">એકથી વધુ ક્લાયન્ટ પ્રમાણપત્રોને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>

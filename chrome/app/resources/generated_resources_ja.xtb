@@ -377,6 +377,7 @@
 <translation id="1339009753652684748">「OK Google」と話すとアシスタントにアクセスできます。バッテリー消費を抑えるには [オン（推奨）] を選択してください。オンにすると、デバイスが電源または充電器に接続されている場合にのみアシスタントが反応します。</translation>
 <translation id="13392265090583506">ユーザー補助設定</translation>
 <translation id="1340527397989195812">ファイルアプリを使用してデバイスからメディアをバックアップします。</translation>
+<translation id="1341701348342335220">おつかれさまでした！</translation>
 <translation id="1341871421050612057"><ph name="USERNAME" /> と同期できません</translation>
 <translation id="1343865611738742294">Linux アプリに USB デバイスへのアクセスを許可します。USB デバイスを取り外した後は、Linux にデバイスのデータは残りません。</translation>
 <translation id="1343920184519992513">前回中断したところから再開して、特定のページを開く</translation>
@@ -1572,7 +1573,6 @@
 <translation id="2356070529366658676">確認する</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> を削除</translation>
 <translation id="2358561147588818967">サイトが JavaScript を使用できるようにする</translation>
-<translation id="2358703245148663432">別のデバイス</translation>
 <translation id="2358777858338503863">クリックして <ph name="ORIGIN" /> で許可:</translation>
 <translation id="2359071692152028734">Linux アプリが応答しなくなる可能性があります。</translation>
 <translation id="2359345697448000899">[ツール] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
@@ -3618,6 +3618,7 @@
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
 <translation id="4236163961381003811">他の拡張機能を見る</translation>
+<translation id="4237282663517880406">Google ドライブの検索候補を表示する</translation>
 <translation id="4241182343707213132">再起動して組織のアプリを更新してください</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
 <translation id="4242533952199664413">設定を開く</translation>

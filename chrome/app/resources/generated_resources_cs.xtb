@@ -379,6 +379,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1339009753652684748">Aktivovat Asistenta, když řeknete „Ok Google“. Pokud chcete ušetřit baterii, vyberte výchozí možnost Zapnout (doporučeno). Asistent vám odpoví jen v případě, že je zařízení připojené ke zdroji napájení nebo se nabíjí.</translation>
 <translation id="13392265090583506">Přístupnost</translation>
 <translation id="1340527397989195812">Zálohujte média ze zařízení pomocí aplikace Soubory.</translation>
+<translation id="1341701348342335220">Výborně!</translation>
 <translation id="1341871421050612057">Účet <ph name="USERNAME" /> nelze synchronizovat</translation>
 <translation id="1343865611738742294">Udělte linuxovým aplikacím oprávnění k používání zařízení USB. Po odebrání si Linux nebude zařízení USB pamatovat.</translation>
 <translation id="1343920184519992513">Pokračujte, kde jste skončili, a otevírejte vybrané stránky</translation>
@@ -1579,7 +1580,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2356070529366658676">Zeptat se</translation>
 <translation id="2357330829548294574">Odstranit uživatele <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Weby mohou používat JavaScript</translation>
-<translation id="2358703245148663432">Jiné zařízení</translation>
 <translation id="2358777858338503863">Kliknutím povolíte přístup k webu <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Aplikace pro Linux mohou přestat reagovat.</translation>
 <translation id="2359345697448000899">Chcete-li spravovat rozšíření, klikněte v nabídce Nástroje na příkaz Rozšíření.</translation>
@@ -3626,6 +3626,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4232375817808480934">Nakonfigurovat Kerberos</translation>
 <translation id="4235965441080806197">Zrušit přihlášení</translation>
 <translation id="4236163961381003811">Objevit další rozšíření</translation>
+<translation id="4237282663517880406">Zobrazovat návrhy z Disku Google</translation>
 <translation id="4241182343707213132">Pokud chcete aktualizovat aplikace organizace, restartujte zařízení</translation>
 <translation id="4242145785130247982">Více certifikátů klientů není podporováno</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
@@ -3942,6 +3943,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4522890784888918985">Podřízené účty nejsou podporovány</translation>
 <translation id="4523876148417776526">Seznamy webů ve formátu XML zatím nebyly načteny.</translation>
 <translation id="4524832533047962394">Uvedený režim registrace v této verzi operačního systému není podporován. Zkontrolujte, zda máte spuštěnou nejnovější verzi.</translation>
+<translation id="4526051299161934899">Skupiny uložených karet byly skryty</translation>
 <translation id="4526853756266614740">Pokud chcete okamžite použít motiv, vyberte obrázek</translation>
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4527929807707405172">Zapnout opačné posouvání. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -4266,6 +4268,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4824037980212326045">Zálohování a obnovení Linuxu</translation>
 <translation id="4824958205181053313">Zrušit synchronizaci?</translation>
 <translation id="4825532258163983651">Přístupový klíč nelze smazat</translation>
+<translation id="4827283332383516812">Smazat kartu</translation>
 <translation id="4827675678516992122">Nelze se připojit</translation>
 <translation id="4827784381479890589">Vylepšená kontrola pravopisu v prohlížeči Chrome (text je odesílán do Googlu a zobrazují se návrhy)</translation>
 <translation id="4827904420700932487">Vytvořit QR kód pro tento obrázek</translation>
@@ -5292,6 +5295,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5792295754950501287">Další akce pro <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Klepněte na vypínač</translation>
 <translation id="5792874008054171483">Další akce pro <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Tato platební metoda bude z tohoto zařízení smazána</translation>
 <translation id="5793339252089865437">Stažení této aktualizace prostřednictvím mobilní sítě může to vést k tomu, že vám budou naúčtovány poplatky za překročení limitu dat.</translation>
 <translation id="5793420564274426163">Potvrzení spárování</translation>
 <translation id="5793430094159150686">Heslo bylo změněno. Pokud chcete obnovit místní data, zadejte staré heslo.</translation>
@@ -7269,6 +7273,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7609148976235050828">Připojte se k internetu a zkuste to znovu</translation>
 <translation id="7612401678989660900">Povolit přístup pro aplikace a weby s oprávněním k mikrofonu</translation>
 <translation id="7612655942094160088">Aktivace funkcí připojeného telefonu.</translation>
+<translation id="7612989789287281429">Přihlašování…</translation>
 <translation id="7614260613810441905">Zeptat se, když chce web upravit soubory nebo složky v zařízení (doporučeno)</translation>
 <translation id="761530003705945209">Zálohování na Disk Google. Snadno obnovte svá data nebo kdykoliv přejděte na jiné zařízení. Záloha zahrnuje data aplikací. Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google.</translation>
 <translation id="7615365294369022248">Při přidávání účtu došlo k chybě</translation>
@@ -8485,6 +8490,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="869884720829132584">Nabídka Aplikace</translation>
 <translation id="869891660844655955">Datum vypršení platnosti</translation>
 <translation id="8699188901396699995">Soubor PPD pro: <ph name="PRINTER_NAME" /></translation>
+<translation id="8702278591052316269">Nabídka obsahuje skryté skupiny uložených karet</translation>
 <translation id="8702825062053163569">Zařízení <ph name="DEVICE_TYPE" /> bylo uzamknuto.</translation>
 <translation id="8703346390800944767">Přeskočit reklamu</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>

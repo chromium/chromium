@@ -354,6 +354,7 @@
 <translation id="3971140002794351170">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="3973925058222872294">英语（英国）</translation>
 <translation id="3975895378829046965">孟加拉语注音</translation>
+<translation id="3999574733850440202">最近打开的 Microsoft 文件已移至 OneDrive</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4017788180641807848">英语（美国）Workman 键盘</translation>
 <translation id="4019998208269143058">固定到“快捷文件”空间</translation>
@@ -900,6 +901,7 @@
 <translation id="8300849813060516376">OTASP 失败</translation>
 <translation id="8312871300878166382">粘贴到文件夹中</translation>
 <translation id="8329978297633540474">纯文本</translation>
+<translation id="8332007959299458842">最近打开的 Microsoft 文件已移至 Google 云端硬盘</translation>
 <translation id="8335587457941836791">取消固定到任务栏</translation>
 <translation id="8335837413233998004">白俄罗斯语</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>

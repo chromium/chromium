@@ -356,6 +356,7 @@
 <translation id="3971140002794351170">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">อังกฤษ (สหราชอาณาจักร)</translation>
 <translation id="3975895378829046965">บังกลา (ตามการออกเสียง)</translation>
+<translation id="3999574733850440202">ไฟล์ Microsoft ที่เปิดล่าสุดได้ย้ายไปยัง OneDrive แล้ว</translation>
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4017788180641807848">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman</translation>
 <translation id="4019998208269143058">ปักหมุดไว้ที่ไฟล์ด่วน</translation>
@@ -907,6 +908,7 @@
 <translation id="8300849813060516376">OTASP ล้มเหลว</translation>
 <translation id="8312871300878166382">วางลงในโฟลเดอร์</translation>
 <translation id="8329978297633540474">ข้อความล้วน</translation>
+<translation id="8332007959299458842">ไฟล์ Microsoft ที่เปิดล่าสุดได้ย้ายไปยัง Google ไดรฟ์แล้ว</translation>
 <translation id="8335587457941836791">เลิกปักหมุดในชั้นวาง</translation>
 <translation id="8335837413233998004">เบลารุส</translation>
 <translation id="8336153091935557858">เมื่อวานนี้ <ph name="YESTERDAY_DAYTIME" /></translation>

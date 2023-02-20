@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1209796539517632982">خوادم الأسماء التلقائية</translation>
 <translation id="1210831758834677569">اللاوية</translation>
+<translation id="1221555006497674479">مساحة التخزين منخفضة. يتبقى %<ph name="REMAINING_PERCENTAGE" /> من إجمالي مساحة التخزين السحابي المشتركة التي تبلغ <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">تحميل</translation>
 <translation id="1249250836236328755">النوع</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">‏الصينية باستخدام لوحة مفاتيح Pinyin</translation>
 <translation id="1646019627374511909">جارٍ إتاحة <ph name="NUMBER_OF_ITEMS" /> ملف بلا إنترنت</translation>
 <translation id="164969095109328410">‏جهاز Chrome</translation>
+<translation id="1661207570040737402">‏لقد استهلكت كل مساحة التخزين السحابي المشتركة في Google Workspace.</translation>
 <translation id="1661867754829461514">رقم التعريف الشخصي غير موجود</translation>
 <translation id="166439687370499867">لا يُسمح بتغيير عمليات ضبط الشبكة المشتركة.</translation>
 <translation id="1665611772925418501">تعذر تعديل على الملف.</translation>

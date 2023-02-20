@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">‏تأمين بروتوكول نقل الروابط النصية (HTTPS)</translation>
 <translation id="1059944192885972544">تم العثور على <ph name="NUM" /> علامات تبويب حول "<ph name="SEARCH_TEXT" />".</translation>
 <translation id="1060292118287751956">تحدّد معدّل تحديثات الشاشة</translation>
+<translation id="1060570945511946595">إدارة التذاكر</translation>
 <translation id="1061130374843955397">مرحبًا بك في <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">إنشاء رمز الاستجابة السريعة لهذا الرابط</translation>
 <translation id="1061904396131502319">سيتم قفل الجهاز بعد قليل</translation>
@@ -1118,6 +1119,7 @@
 <translation id="1975841812214822307">إزالة...</translation>
 <translation id="1976150099241323601">تسجيل الدخول إلى جهاز الأمان</translation>
 <translation id="1977965994116744507">اجعل هاتفك قريبًا منك لإلغاء قفل جهاز <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1978666928180318515">‏إزالة الجهاز الافتراضي Bruschetta</translation>
 <translation id="1979095679518582070">لن يؤثر إيقاف هذه الميزة في قدرة هذا الجهاز على إرسال المعلومات اللازمة للحصول على خدمات ضرورية مثل تحديثات النظام والأمان.</translation>
 <translation id="1979280758666859181">أنت الآن تُجري تغييرًا إلى قناة ذات إصدار سابق من <ph name="PRODUCT_NAME" />. وسيسري تغيير القناة عند تطابق إصدار القناة مع الإصدار المثبت حاليًا على الجهاز.</translation>
 <translation id="197989455406964291">‏لا يدعم KDC (مركز توزيع المفاتيح) نوع التشفير</translation>
@@ -1582,7 +1584,6 @@
 <translation id="2356070529366658676">طلب</translation>
 <translation id="2357330829548294574">إزالة <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">‏السماح للمواقع الإلكترونية باستخدام JavaScript</translation>
-<translation id="2358703245148663432">جهاز مختلف</translation>
 <translation id="2358777858338503863">انقر للسماح بوصول الإضافة إلى الموقع الإلكتروني <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">‏قد لا تستجيب تطبيقات Linux.</translation>
 <translation id="2359345697448000899">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "الأدوات".</translation>
@@ -1923,6 +1924,7 @@
 <translation id="2672142220933875349">‏ملف CRX غير صالح. تعذر فك الحزمة.</translation>
 <translation id="2673135533890720193">قراءة سجل التصفح التابع لك</translation>
 <translation id="2674764818721168631">غير مفعَّل</translation>
+<translation id="2675570801872027281">‏حدث خطأ أثناء إزالة الجهاز الافتراضي Bruschetta. يُرجى إعادة المحاولة.</translation>
 <translation id="2676492189600898281">تقديم الملاحظات بشأن ميزة "الملء التلقائي"</translation>
 <translation id="2678063897982469759">إعادة تفعيل</translation>
 <translation id="2678100101831051676">تعذَّر البث</translation>
@@ -2922,6 +2924,7 @@
 <translation id="3593965109698325041">قيود اسم الشهادة</translation>
 <translation id="3596012367874587041">إعدادات التطبيق</translation>
 <translation id="3596414637720633074">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفّح المتخفي</translation>
+<translation id="3598010454707842106">‏انقر على "تخصيص Chrome"</translation>
 <translation id="3599221874935822507">مرتفعة</translation>
 <translation id="3600051066689725006">معلومات طلب الويب</translation>
 <translation id="360180734785106144">عرض ميزات جديدة عندما تصبح متاحة</translation>
@@ -3917,6 +3920,7 @@
 <translation id="4495419450179050807">عدم الظهور في هذه الصفحة</translation>
 <translation id="4497145443434063861">‏جهاز الكمبيوتر الشخصي وجهاز Chromecast متصلان بشبكتَي Wi-Fi مختلفتَين (على سبيل المثال، واحدة بتردد 2.4 غيغا هرتز والأخرى بتردد 5 غيغا هرتز)</translation>
 <translation id="4500114933761911433">تعطّل <ph name="PLUGIN_NAME" />.</translation>
+<translation id="4500647907053779331">ترجمة النص المُحدَّد إلى اللغة <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">رمز علامة التعجب</translation>
 <translation id="4501530680793980440">تأكيد الإزالة</translation>
 <translation id="4502423230170890588">إزالة من هذا الجهاز</translation>
@@ -5734,6 +5738,7 @@
 <translation id="617213288191670920">لم تتمّ إضافة أيّ لغة.</translation>
 <translation id="6173623053897475761">كتابة رقم التعريف الشخصي مرة أخرى</translation>
 <translation id="6175314957787328458">‏المعرّف الفريد العمومي لنطاق Microsoft</translation>
+<translation id="6177412385419165772">جارٍ الإزالة…</translation>
 <translation id="6178664161104547336">تحديد شهادة</translation>
 <translation id="6178682841350631965">تم تعديل بيانات تسجيل الدخول.</translation>
 <translation id="6180510783007738939">أداة رسم الخطوط</translation>
@@ -6218,6 +6223,7 @@
 <translation id="6619801788773578757">إضافة تطبيق الكشك</translation>
 <translation id="6619990499523117484">تأكيد رقم التعريف الشخصي</translation>
 <translation id="6620254580880484313">اسم الحاوية</translation>
+<translation id="6620927550847360014">‏هل تريد إزالة الجهاز الافتراضي Bruschetta من <ph name="DEVICE_TYPE" />؟</translation>
 <translation id="6621391692573306628">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على كلا الجهازين.</translation>
 <translation id="6622980291894852883">متابعة منع عرض الصور</translation>
 <translation id="6624036901798307345">في وضع الجهاز اللوحي، انقر على زر شريط أدوات عدّاد علامات التبويب لفتح شريط علامات التبويب الجديد الذي يعرض الصور المصغّرة لكل علامة تبويب.</translation>
@@ -6435,6 +6441,7 @@
 <translation id="6818547713623251698">عرض الصور والوسائط والإشعارات والتطبيقات من هاتفك</translation>
 <translation id="6818802132960437751">حماية مُدمَجة من الفيروسات</translation>
 <translation id="6818920801736417483">هل تريد حفظ كلمات المرور؟</translation>
+<translation id="6820079682647046800">‏تعذّرت مصادقة Kerberos</translation>
 <translation id="6823174134746916417">الضغط للنقر على لوحة اللمس</translation>
 <translation id="6824564591481349393">نسخ عنوان البريد الإل&amp;كتروني</translation>
 <translation id="6824584962142919697">وعناصر الفحص</translation>
@@ -6589,6 +6596,7 @@
 <translation id="6955698182324067397">‏يتم حاليًا تفعيل ميزات تصحيح الأخطاء لنظام التشغيل Chrome التي ستثبِّت البرنامج الخفي لبروتوكول النقل الآمن (SSHD) وتتيح تشغيل النظام من محرّكات أقراص USB.</translation>
 <translation id="6955893174999506273">تخصيص مفتاح تحكّم إضافي واحد</translation>
 <translation id="6957044667612803194">لا يوفّر مفتاح الأمان هذا أرقام التعريف الشخصية</translation>
+<translation id="6960133692707095572">الانتقال إلى الصفحة بدون تذكرة</translation>
 <translation id="6960507406838246615">‏يجب تحديث نظام التشغيل Linux.</translation>
 <translation id="6960648667961844909">‏تعذّر تنزيل ملفات التعرّف على الكلام باللغة <ph name="LANGUAGE" />. ستتم إعادة محاولة التنزيل لاحقًا. ويتم إرسال ملفات التعرّف على الكلام إلى Google لمعالجتها إلى حين اكتمال عملية التنزيل.</translation>
 <translation id="696103774840402661">تم حذف جميع الملفات والبيانات المحلّية لكلّ المستخدمين على الجهاز <ph name="DEVICE_TYPE" /> نهائيًا.</translation>
@@ -8053,6 +8061,7 @@
 <translation id="8272443605911821513">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "المزيد من الأدوات".</translation>
 <translation id="8272786333453048167">السماح مرة أخرى</translation>
 <translation id="8273905181216423293">تنزيل الآن</translation>
+<translation id="827488840488530039">‏يتعذّر على الصفحة التي تحاول الانتقال إليها التحقّق من تذاكر Kerberos.</translation>
 <translation id="8274921654076766238">المكبِّر يتبع تركيز لوحة المفاتيح.</translation>
 <translation id="8274924778568117936">لا توقف تشغيل جهاز <ph name="DEVICE_TYPE" /> أو تُغلقه لحين الانتهاء من التحديث. ستتم إعادة تشغيل جهاز <ph name="DEVICE_TYPE" /> بعد اكتمال التثبيت.</translation>
 <translation id="8275038454117074363">الاستيراد</translation>

@@ -799,6 +799,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Politika ayarlanmadan bırakıldığında kullanıcı ekran kontrolleri veya otomatik parlaklık özellikleri etkilenmez.
 
       Not: Politika değerleri 0-100 aralığında yüzde olarak belirtilmelidir.</translation>
+<translation id="1733092875104864334">Google hizmetlerinden WebRTC olay günlüğü toplanmasına izin verme</translation>
 <translation id="1733768596873041559">Varsayılan olarak SAML IdP'ye yönlendir (<ph name="PRODUCT_NAME" /> 99 sürümünden önce kullanıcı onayı gerekir)</translation>
 <translation id="1733939382419067578">Politikayı ayarlamak bildirimleri görüntüleyebilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
 
@@ -1347,6 +1348,7 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 
       Bu politika ayarlanmadan bırakılırsa "DisabledPlugins"teki kalıplarla eşleşen eklentiler kilitlenip devre dışı bırakılır ve kullanıcı bunları etkinleştiremez.</translation>
 <translation id="2236488539271255289">Hiçbir sitenin yerel verileri ayarlamasına izin verme</translation>
+<translation id="2236593201136596376">Google hizmetlerinden WebRTC metin günlüklerinin toplanmasına izin ver</translation>
 <translation id="2241498944622759244">Bu özellik hiç kullanıma sunulmadı dolayısıyla politika kullanımdan kaldırıldı. Bu politika true (doğru) değerine ayarlanırsa veya ayarlanmadan bırakılırsa, <ph name="PRODUCT_NAME" /> geçerli sayfayla ilgili sayfalar önerir.
       Bu öneriler uzaktaki Google sunucularından getirilir.
 
@@ -1497,6 +1499,9 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
       Politika ayarlanmadan bırakılırsa üçüncü taraf çerezlerine izin verilir, ancak kullanıcılar bu ayarı değiştirebilir.</translation>
 <translation id="2386362615870139244">Ekran uyandırma kilitlerine izin ver</translation>
 <translation id="2387469539700985783">Bu politikanın Android tarafından gerçekleştirilen raporlama işlemi üzerinde hiçbir etkisi yoktur.</translation>
+<translation id="2388701318721126001">Bu politika devre dışı bırakılırsa kullanıcının <ph name="PRODUCT_OS_NAME" /> duvar kağıdı resmi, Google Fotoğraflar albümünden seçilemez.
+
+Bu politika etkinleştirilir veya ayarlanmazsa kullanıcı, bir Google Fotoğraflar resmini duvar kağıdı olarak seçebilir.</translation>
 <translation id="2393862222659066027">Bir URL listesi açıp son oturumu geri yükle</translation>
 <translation id="2394429297128584919">Sayfa kapatma işlemi sırasında sayfaların eş zamanlı XHR istekleri göndermesine izin verme</translation>
 <translation id="2394674739523870144">Bu politika bir dize listesine ayarlanırsa dizeler boşluklarla birleştirilir ve <ph name="IE_PRODUCT_NAME" /> tarayıcısından <ph name="PRODUCT_NAME" /> tarayıcısına komut satırı parametreleri olarak aktarılır. Bir parametre <ph name="URL_PLACEHOLDER" /> içeriyorsa <ph name="URL_PLACEHOLDER" />, açılacak sayfanın URL'siyle değiştirilir. Hiçbir öğe <ph name="URL_PLACEHOLDER" /> içermiyorsa URL, komut satırının sonuna eklenir.
@@ -2861,6 +2866,7 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
 <translation id="3608206578291537084">Şifrelenmiş Raporlama Ardışık Düzeni'ni etkinleştir</translation>
 <translation id="3608281460204780443"><ph name="PRODUCT_OS_NAME" /> başlatıcıda ve yeni sekme sayfasında Chrome Web Mağazası simgesini göster</translation>
 <translation id="3622463490728773174">Yeni uygulamaya izin ver</translation>
+<translation id="3623332696371971798">Google Fotoğraflar'ın, kişiselleştirme uygulamasından erişmesini engelle</translation>
 <translation id="3627678165642179114">Yazım denetimi Web hizmetini etkinleştir veya devre dışı bırak</translation>
 <translation id="3628480121685794414">Tek yönlü yazdırmayı etkinleştir</translation>
 <translation id="3634125384445314047">Telefonda çekilen son fotoğraflara ve videolara Telefon Merkezi aracılığıyla erişime izin ver.</translation>
@@ -2898,6 +2904,7 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
 
           Bu politika geçicidir ve <ph name="PRODUCT_NAME" /> 107 sürümünde kaldırılması planlanmaktadır. Kuruluşların ihtiyaç duyması halinde bu süre uzatılabilir.
           </translation>
+<translation id="3678069907945250643">Google Fotoğraflar'ın, kişiselleştirme uygulamasından erişmesine izin ver</translation>
 <translation id="3685979383016152590">Politika ayarlanırsa toplu yazıcı yapılandırması için hangi erişim politikasının geçerli olacağı belirlenerek <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> içerisinden hangi yazıcıların kullanılabileceği kontrol edilir.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (0 değeri) ayarlanırsa belirtilen yazıcılara erişimi kısıtlamak için <ph name="PRINTERS_BULK_BLOCKLIST" /> kullanılır.
@@ -7214,6 +7221,7 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
       Bu politika devre dışı bırakılır veya ayarlanmazsa, kullanımdan kaldırma durumuna bağlı olarak Chrome Uygulamalarının çalışmasına izin verilmeyebilir.
       Her iki durumda da, politika gereği zorunlu yüklenmiş Chrome Uygulamalarına izin verilmeye devam edilir.</translation>
 <translation id="7774768074957326919">Sistem proxy ayarlarını kullan</translation>
+<translation id="7775077662962729812">Google Fotoğraflar'dan duvar kağıdı seçimi</translation>
 <translation id="7776848995687565978">Bağlı uzantıların arka planda ömrünü uzatan kaynakların listesini yapılandır.</translation>
 <translation id="777734450201217641">Giriş ekranında erişilebilirlik özellikleri kısayollarını etkinleştirin.
 
@@ -8047,6 +8055,7 @@ Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğin
 
           Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript JIT site için etkinleştirilir.</translation>
 <translation id="8543108307976719751">Bu makineye uzaktan erişim bağlantılarını engelle</translation>
+<translation id="8543639085146778837">Google hizmetlerinden WebRTC olay günlüğü toplanmasına izin ver</translation>
 <translation id="8543975123557636331">Ses çıkışını etkinleştir</translation>
 <translation id="8544375438507658205"><ph name="PRODUCT_FRAME_NAME" /> için varsayılan HTML oluşturucusu</translation>
 <translation id="8544465954173828789">SMS Mesajlarının telefondan Chromebook'a senkronize edilmesine izin ver</translation>
@@ -8554,6 +8563,9 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
 
       Politika değeri milisaniye olarak belirtilmelidir. Değerler 30 saniye ile 24 saat arasında olabilir.</translation>
 <translation id="9040042535845939426">Giriş ekranında gizlilik ekranının durumunu belirle</translation>
+<translation id="9046248916118130378">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ürünü, Google Meet gibi Google hizmetlerinden WebRTC olay günlüklerini toplayıp bu günlükleri Google'a yükleyebilir. Bu günlükler, <ph name="PRODUCT_NAME" /> ürünündeki sesli veya görüntülü toplantılarla ilgili sorunlarda hata ayıklamada kullanılacak teşhis bilgileri içerir. Bunlar, gelen ve giden WebRTC akışlarını açıklayan metin meta verileri, WebRTC'ye özgü günlük girişleri ve ek sistem bilgileri olabilir. Bu günlükler toplantıya ait ses veya video içeriği barındırmaz.
+Politika, Devre Dışı değerine ayarlanırsa bu tür günlükler Google'a yüklenmez. Günlükler, kullanıcının cihazında yerel olarak birikmeye devam eder.
+Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> varsayılan olarak bu günlükleri toplayıp yükleyebilir.</translation>
 <translation id="9050853837490399534">Bu politika, cihazın bir Hızlı Düzeltme Derlemesi'ne güncellenmesinin gerekip gerekmediğini kontrol eder.
 
       Politika değeri bir Hızlı Düzeltme Derlemesi'ne eşlenen bir belirtece ayarlanırsa ve güncelleme başka bir politika tarafından engellenmemişse cihaz, ilgili Hızlı Düzeltme Derlemesi'ne güncellenir.

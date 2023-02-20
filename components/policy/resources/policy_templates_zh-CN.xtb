@@ -1477,6 +1477,9 @@
       如果此政策未设置，系统会开启第三方 Cookie，但用户可以更改此设置。</translation>
 <translation id="2386362615870139244">允许使用屏幕唤醒锁定</translation>
 <translation id="2387469539700985783">此政策对 Android 完成的报告没有任何影响。</translation>
+<translation id="2388701318721126001">如果此政策处于停用状态，用户将无法从 Google 相册中的影集选择<ph name="PRODUCT_OS_NAME" />壁纸图片。
+
+如果此政策处于启用状态或未设置，用户可以选择 Google 相册中的图片作为壁纸。</translation>
 <translation id="2393862222659066027">打开一系列网址并恢复上次的会话</translation>
 <translation id="2394429297128584919">不允许页面在关闭期间发送同步 XHR 请求</translation>
 <translation id="2394674739523870144">如果此政策设为一系列字符串，这些字符串会以空格连接，并作为命令行参数从 <ph name="IE_PRODUCT_NAME" /> 传递到 <ph name="PRODUCT_NAME" />。如果有参数包含 <ph name="URL_PLACEHOLDER" />，系统会将 <ph name="URL_PLACEHOLDER" /> 替换成要打开的网页对应的网址。如果没有参数包含 <ph name="URL_PLACEHOLDER" />，系统会将网址附加到命令行的末尾。
@@ -2828,6 +2831,7 @@
 <translation id="3608206578291537084">启用加密报告管道</translation>
 <translation id="3608281460204780443">在 <ph name="PRODUCT_OS_NAME" /> 启动器和新标签页中显示 Chrome 应用商店的图标</translation>
 <translation id="3622463490728773174">允许使用新实现</translation>
+<translation id="3623332696371971798">禁止通过个性化设置应用访问 Google 相册</translation>
 <translation id="3627678165642179114">启用或停用拼写检查网络服务</translation>
 <translation id="3628480121685794414">启用单面打印</translation>
 <translation id="3634125384445314047">允许通过 Phone Hub 访问手机上近期拍摄的照片和视频。</translation>
@@ -2865,6 +2869,7 @@
 
           这是一项暂时性政策，我们计划在 <ph name="PRODUCT_NAME" /> 107 中将其移除。若有很多企业需要此政策，这个期限可能会延长。
           </translation>
+<translation id="3678069907945250643">允许通过个性化设置应用访问 Google 相册</translation>
 <translation id="3685979383016152590">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
 
       * 如果您选择 <ph name="PRINTERS_BLOCKLIST" />（值为 0），系统会使用 <ph name="PRINTERS_BULK_BLOCKLIST" /> 来限制用户对指定打印机的访问权
@@ -7121,6 +7126,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用或未设置，Chrome 应用可能会无法运行，具体取决于弃用安排的状态。
       无论在哪种情况下，系统都允许由政策强制安装的 Chrome 应用继续运行。</translation>
 <translation id="7774768074957326919">使用系统代理设置</translation>
+<translation id="7775077662962729812">从 Google 相册中选择壁纸</translation>
 <translation id="7776848995687565978">配置源列表，以向这些源所连接的扩展程序授予更长的后台生命周期。</translation>
 <translation id="777734450201217641">在登录屏幕上启用无障碍功能快捷方式。
 

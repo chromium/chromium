@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">შემდეგი</translation>
 <translation id="1209796539517632982">ავტომატური სახელის სერვერები</translation>
 <translation id="1210831758834677569">ლაოსური</translation>
+<translation id="1221555006497674479">მეხსიერება იწურება. საზიარო დისკზე <ph name="TOTAL_SPACE" /> მეხსიერებიდან <ph name="REMAINING_PERCENTAGE" />% დაგრჩათ.</translation>
 <translation id="1243314992276662751">ატვირთვა</translation>
 <translation id="1249250836236328755">ჟანრი</translation>
 <translation id="1254593899333212300">პირდაპირი ინტერნეტ კავშირი</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">ჩინური პინ-ინი</translation>
 <translation id="1646019627374511909">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ფაილის ხაზგარეშე ხელმისაწვდომად გარდაქმნა</translation>
 <translation id="164969095109328410">Chrome მოწყობილობა</translation>
+<translation id="1661207570040737402">საზიარო დისკზე მთლიანად გამოყენებული გაქვთ Google Workspace მეხსიერება.</translation>
 <translation id="1661867754829461514">PIN არ არის</translation>
 <translation id="166439687370499867">ზიარი ქსელების კონფიგურაციების შეცვლა დაუშვებელია</translation>
 <translation id="1665611772925418501">ფაილის შეცვლა შეუძლებელია.</translation>
@@ -354,6 +356,7 @@
 <translation id="3971140002794351170">მობილური პროფილის ჩამოტვირთვა, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ინგლისური (გაერთიანებული სამეფო)</translation>
 <translation id="3975895378829046965">ბენგალური ფონეტიკური</translation>
+<translation id="3999574733850440202">ბოლო დროს გახსნილი Microsoft-ის ფაილები გადატანილია OneDrive-ზე</translation>
 <translation id="4002066346123236978">სათაური</translation>
 <translation id="4017788180641807848">ინგლისური (აშშ) Workman კლავიატურით</translation>
 <translation id="4019998208269143058">სწრაფ ფაილებში ჩამაგრება</translation>
@@ -904,6 +907,7 @@
 <translation id="8300849813060516376">OTASP ვერ შესრულდა</translation>
 <translation id="8312871300878166382">ჩასმა საქაღალდეში</translation>
 <translation id="8329978297633540474">ჩვეულებრივი ტექსტი</translation>
+<translation id="8332007959299458842">ბოლო დროს გახსნილი Microsoft-ის ფაილები გადატანილია Google Drive-ზე</translation>
 <translation id="8335587457941836791">მოხსენით თაროდან</translation>
 <translation id="8335837413233998004">ბელარუსული</translation>
 <translation id="8336153091935557858">გუშინ <ph name="YESTERDAY_DAYTIME" /></translation>

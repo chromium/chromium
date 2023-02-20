@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1209796539517632982">Samodejni imenski strežniki</translation>
 <translation id="1210831758834677569">laoščina</translation>
+<translation id="1221555006497674479">Primanjkuje prostora za shranjevanje, še <ph name="REMAINING_PERCENTAGE" /> % od <ph name="TOTAL_SPACE" /> v deljenem prostoru za shranjevanje v Googlu Drive.</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1249250836236328755">Zvrst</translation>
 <translation id="1254593899333212300">Neposredna internetna povezava</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">kitajščina (pinjin)</translation>
 <translation id="1646019627374511909">Omogočanje datotek (<ph name="NUMBER_OF_ITEMS" />) za dostop brez povezave</translation>
 <translation id="164969095109328410">Naprava Chrome</translation>
+<translation id="1661207570040737402">Porabili ste ves deljeni prostor za shranjevanje v Googlu Drive za Google Workspace.</translation>
 <translation id="1661867754829461514">Manjka PIN</translation>
 <translation id="166439687370499867">Spreminjanje omrežnih konfiguracij v skupni rabi ni dovoljeno</translation>
 <translation id="1665611772925418501">Datoteke ni bilo mogoče spremeniti.</translation>
@@ -354,6 +356,7 @@
 <translation id="3971140002794351170">Profil za prenos v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">angleščina (Združeno kraljestvo)</translation>
 <translation id="3975895378829046965">bengalščina (fonetična)</translation>
+<translation id="3999574733850440202">Nedavno odprte datoteke Microsoftove zbirke programov so bile premaknjene v OneDrive.</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4017788180641807848">angleščina (ZDA) s tipkovnico Workman</translation>
 <translation id="4019998208269143058">Pripni na hitre datoteke</translation>
@@ -905,6 +908,7 @@
 <translation id="8300849813060516376">Storitev OTASP ni uspela</translation>
 <translation id="8312871300878166382">Prilepi v mapo</translation>
 <translation id="8329978297633540474">Golo besedilo</translation>
+<translation id="8332007959299458842">Nedavno odprte datoteke Microsoftove zbirke programov so bile premaknjene v Google Drive.</translation>
 <translation id="8335587457941836791">Odpenjanje s police</translation>
 <translation id="8335837413233998004">beloruščina</translation>
 <translation id="8336153091935557858">Včeraj <ph name="YESTERDAY_DAYTIME" /></translation>

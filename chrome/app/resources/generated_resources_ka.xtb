@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">ჰიპერტექსტის გადაცემის პროტოკოლი (HTTPS)</translation>
 <translation id="1059944192885972544">მოთხოვნაზე „<ph name="SEARCH_TEXT" />“ მოიძებნა <ph name="NUM" /> ჩანართი</translation>
 <translation id="1060292118287751956">განსაზღვრავს ეკრანის განახლების სიხშირეს</translation>
+<translation id="1060570945511946595">ბილეთების მართვა</translation>
 <translation id="1061130374843955397">მოგესალმებათ თქვენი <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">ამ ბმულისთვის QR კოდის შექმნა</translation>
 <translation id="1061904396131502319">შესვენების დრო ახლოვდება</translation>
@@ -1114,6 +1115,7 @@
 <translation id="1975841812214822307">ამოშლა…</translation>
 <translation id="1976150099241323601">შედით უსაფრთხოების მოწყობილობაში</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />-ის განსაბლოკად მოაახლოვეთ თქვენი ტელეფონი.</translation>
+<translation id="1978666928180318515">Bruschetta-ს ამოშლა</translation>
 <translation id="1979095679518582070">ამ ფუნქციის გამორთვა არ შეუშლის ხელს ამ მოწყობილობას, გააგზავნოს ის საჭირო ინფორმაცია, რომელიც ისეთი არსებითი სერვისებისთვის არის აუცილებელი, როგორიცაა სისტემის განახლებები და უსაფრთხოება.</translation>
 <translation id="1979280758666859181">მიმდინარეობს არხის შეცვლა <ph name="PRODUCT_NAME" />-ის ძველი ვერსიით. არხის ცვლილება გააქტიურდება, როდესაც არხის ვერსია დაემთხვევა მოწყობილობაში ამჟამად დაინსტალირებულ ვერსიას.</translation>
 <translation id="197989455406964291">დაშიფვრის ტიპი მხარდაუჭერელია KDC-ის მიერ</translation>
@@ -1578,7 +1580,6 @@
 <translation id="2356070529366658676">მკითხე</translation>
 <translation id="2357330829548294574">გსურთ <ph name="USER_NAME" />-ის ამოშლა?</translation>
 <translation id="2358561147588818967">საიტებს შეუძლია JavaScript-ის გამოყენება</translation>
-<translation id="2358703245148663432">განსხვავებული მოწყობილობა</translation>
 <translation id="2358777858338503863">დააწკაპუნეთ, რომ <ph name="ORIGIN" />-ზე დაშვებული იყოს:</translation>
 <translation id="2359071692152028734">შესაძლოა, Linux აპებმა შეწყვიტოს რეაგირება.</translation>
 <translation id="2359345697448000899">მართეთ თქვენი გაფართოებები: დააწკაპუნეთ „გაფართოებებზე“ ხელსაწყოების მენიუში.</translation>
@@ -1918,6 +1919,7 @@
 <translation id="2672142220933875349">crx ფაილი დაზიანებულია, ამოღება ვერ მოხერხდა.</translation>
 <translation id="2673135533890720193">დათვალიერების ისტორიის წაკითხვა</translation>
 <translation id="2674764818721168631">გამორთული</translation>
+<translation id="2675570801872027281">Bruschetta-ს ამოშლისას მოხდა შეცდომა. ცადეთ ხელახლა.</translation>
 <translation id="2676492189600898281">ავტომატურ შევსებასთან დაკავშირებით გამოხმაურება</translation>
 <translation id="2678063897982469759">ხელახლა ჩართვა</translation>
 <translation id="2678100101831051676">ტრანსლირება ვერ ხერხდება.</translation>
@@ -2916,6 +2918,7 @@
 <translation id="3593965109698325041">სერტიფიკატის სახელის შეზღუდვები</translation>
 <translation id="3596012367874587041">აპის პარამეტრები</translation>
 <translation id="3596414637720633074">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა ინკოგნიტო რეჟიმში</translation>
+<translation id="3598010454707842106">დაწკაპუნებით აირჩიეთ „Chrome-ის მორგება“</translation>
 <translation id="3599221874935822507">ამოწეული</translation>
 <translation id="3600051066689725006">ვებ-მოთხოვნის ინფორმაცია</translation>
 <translation id="360180734785106144">ახალი ფუნქციების შემოთავაზება მათი ხელმისაწვდომობისთანავე</translation>
@@ -3913,6 +3916,7 @@
 <translation id="4495419450179050807">არ აჩვენო ამ გვერდზე</translation>
 <translation id="4497145443434063861">კომპიუტერი და Chromecast სხვადასხვა Wi-Fi ქსელშია (მაგ. 2,4 გჰც და 5 გჰც)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ავარიულად გაითიშა</translation>
+<translation id="4500647907053779331">არჩეულის <ph name="LANGUAGE" /> ვერსიაზე თა&amp;რგმნა</translation>
 <translation id="450099669180426158">ძახილის ნიშნის ხატულა</translation>
 <translation id="4501530680793980440">დაადასტურეთ წაშლა</translation>
 <translation id="4502423230170890588">ამ მოწყობილობიდან ამოშლა</translation>
@@ -3943,6 +3947,7 @@
 <translation id="4522890784888918985">ბავშვის ანგარიშები მხარდაუჭერელია</translation>
 <translation id="4523876148417776526">საიტების XML სიები, რომლებიც ჯერ არ ჩატვირთულა.</translation>
 <translation id="4524832533047962394">რეგისტრაციის უზრუნველყოფილი რეჟიმი მხარდაუჭერელია ოპერაციული სისტემის ამ ვერსიაში. დარწმუნდით, რომ გაშვებული გაქვთ უახლესი ვერსია.</translation>
+<translation id="4526051299161934899">დამალული შენახული ჩანართების ჯგუფები</translation>
 <translation id="4526853756266614740">თემის მყისიერად მისასადაგებლად აირჩიეთ სურათი</translation>
 <translation id="452750746583162491">სინქრონიზებული მონაცემების გადახედვა</translation>
 <translation id="4527929807707405172">უკუგადაადგილების ჩართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -5730,6 +5735,7 @@
 <translation id="617213288191670920">ენები დამატებული არ არის</translation>
 <translation id="6173623053897475761">ხელახლა აკრიფეთ PIN-კოდი</translation>
 <translation id="6175314957787328458">Microsoft დომენის GUID</translation>
+<translation id="6177412385419165772">მიმდინარეობს ამოშლა…</translation>
 <translation id="6178664161104547336">აირჩიეთ სერტიფიკატი</translation>
 <translation id="6178682841350631965">თქვენი სისტემაში შესვლის მონაცემები განახლდა</translation>
 <translation id="6180510783007738939">ხაზის ხელსაწყო</translation>
@@ -6206,6 +6212,7 @@
 <translation id="6619801788773578757">kiosk აპლიკაციის დამატება</translation>
 <translation id="6619990499523117484">დაადასტურეთ თქვენი PIN-კოდი</translation>
 <translation id="6620254580880484313">კონტეინერის სახელი</translation>
+<translation id="6620927550847360014">გსურთ, ამოშალოთ Bruschetta თქვენი <ph name="DEVICE_TYPE" />-იდან?</translation>
 <translation id="6621391692573306628">ეს ჩანართი სხვა მოწყობილობაზე რომ გაგზავნოთ, შედით Chrome-ში ორივე მოწყობილობიდან</translation>
 <translation id="6622980291894852883">გააგრძელეთ გამოსახულებების დაბლოკვა</translation>
 <translation id="6624036901798307345">ტაბლეტის რეჟიმში ხელსაწყოთა ზოლზე ჩანართების მთვლელის ღილაკზე შეხებისას გაიხსნება ჩანართების ახალი ზოლი, რომელზეც ნაჩვენები იქნება თითოეული ჩანართის მინიატურული ვერსია.</translation>
@@ -6423,6 +6430,7 @@
 <translation id="6818547713623251698">ნახეთ თქვენი ტელეფონის ფოტოები, მედია, შეტყობინებები და აპები</translation>
 <translation id="6818802132960437751">ვირუსებისგან ჩაშენებული დაცვა</translation>
 <translation id="6818920801736417483">გსურთ, შეინახოთ პაროლები?</translation>
+<translation id="6820079682647046800">Kerberos ავტორიზაცია ვერ მოხერხდა</translation>
 <translation id="6823174134746916417">სენსორული პანელზე შეხებით დაწკაპუნება</translation>
 <translation id="6824564591481349393">&amp;ელფოსტის მისამართის კოპირება</translation>
 <translation id="6824584962142919697">ელემენტების შ&amp;ემოწმება</translation>
@@ -6577,6 +6585,7 @@
 <translation id="6955698182324067397">თქვენ აპირებთ, ჩართოთ ChromeOS-ის გამართვის ფუნქციები, რომელთა მიერაც დაყენდება sshd daemon და გააქტიურდება ჩატვირთვა USB დისკებიდან.</translation>
 <translation id="6955893174999506273">კიდევ 1 გადამრთველის მიკუთვნება</translation>
 <translation id="6957044667612803194">უსაფრთხოების ამ გასაღების მიერ მხარდაუჭერელია PIN-კოდები</translation>
+<translation id="6960133692707095572">ბილეთის გარეშე მონახულება</translation>
 <translation id="6960507406838246615">საჭიროა Linux-ის განახლება</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> მეტყველების ფაილები ვერ ჩამოიტვირთა. ჩამოტვირთვას მოგვიანებით შევეცდებით. ჩამოტვირთვის დასრულებამდე მეტყველება გაეგზავნება Google-ს დასამუშავებლად.</translation>
 <translation id="696103774840402661">ამ <ph name="DEVICE_TYPE" />-ზე შენახული ყველა მომხმარებლის ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშალა.</translation>
@@ -8038,6 +8047,7 @@
 <translation id="8272443605911821513">მართეთ თქვენი გაფართოებები ღილაკზე „გაფართოებები“ დაწკაპუნებით მენიუში „სხვა ხელსაწყოები“.</translation>
 <translation id="8272786333453048167">ხელახლა დაშვება</translation>
 <translation id="8273905181216423293">ახლავე ჩამოტვირთვა</translation>
+<translation id="827488840488530039">გვერდი, რომლის მონახულებასაც ცდილობთ, ვერ ახერხებს თქვენი Kerberos ბილეთების დადასტურებას</translation>
 <translation id="8274921654076766238">ლუპა იმეორებს კლავიატურით ფოკუსში მოქცეულს</translation>
 <translation id="8274924778568117936">არ გამორთოთ და არ დახუროთ თქვენი <ph name="DEVICE_TYPE" /> განახლების დასრულებამდე. ინსტალაციის დასრულების შემდეგ <ph name="DEVICE_TYPE" /> გადაიტვირთება.</translation>
 <translation id="8275038454117074363">იმპორტი</translation>
@@ -8484,6 +8494,7 @@
 <translation id="869884720829132584">პროგრამის მენიუ</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
 <translation id="8699188901396699995">PPD „<ph name="PRINTER_NAME" />“-ისთვის</translation>
+<translation id="8702278591052316269">დამალული შენახული ჩანართების ჯგუფების შემცველი მენიუ</translation>
 <translation id="8702825062053163569">თქვენი <ph name="DEVICE_TYPE" /> ჩაიკეტა.</translation>
 <translation id="8703346390800944767">რეკლამის გამოტოვება</translation>
 <translation id="8705331520020532516">სერიული ნომერი</translation>

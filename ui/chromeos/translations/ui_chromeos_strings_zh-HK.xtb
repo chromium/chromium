@@ -354,6 +354,7 @@
 <translation id="3971140002794351170">下載流動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">英文 (英國)</translation>
 <translation id="3975895378829046965">孟加拉文 (拼音)</translation>
+<translation id="3999574733850440202">最近開啟的 Microsoft 檔案已移動至 OneDrive</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4017788180641807848">英文 (美國)，Workman 鍵盤</translation>
 <translation id="4019998208269143058">固定至快速檔案</translation>
@@ -905,6 +906,7 @@
 <translation id="8300849813060516376">OTASP 失敗</translation>
 <translation id="8312871300878166382">貼入資料夾</translation>
 <translation id="8329978297633540474">純文字</translation>
+<translation id="8332007959299458842">最近開啟的 Microsoft 檔案已移動至 Google 雲端硬碟</translation>
 <translation id="8335587457941836791">從捷徑列中取消固定</translation>
 <translation id="8335837413233998004">白俄羅斯文</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>

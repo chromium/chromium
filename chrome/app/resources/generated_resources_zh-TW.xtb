@@ -377,6 +377,7 @@
 <translation id="1339009753652684748">只要說出「Ok Google」就能存取 Google 助理。如要節省電力，請選擇「啟用 (建議設定)」。這樣一來，你的 Google 助理就只會在裝置插上電源或充電時回應你的指令。</translation>
 <translation id="13392265090583506">無障礙設定</translation>
 <translation id="1340527397989195812">使用「檔案」應用程式備份裝置上的媒體。</translation>
+<translation id="1341701348342335220">太厲害了！</translation>
 <translation id="1341871421050612057">無法與 <ph name="USERNAME" /> 同步</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住這部 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
@@ -1577,7 +1578,6 @@
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2357330829548294574">移除「<ph name="USER_NAME" />」</translation>
 <translation id="2358561147588818967">網站可以使用 JavaScript</translation>
-<translation id="2358703245148663432">不同裝置</translation>
 <translation id="2358777858338503863">按一下即可允許存取 <ph name="ORIGIN" />：</translation>
 <translation id="2359071692152028734">Linux 應用程式可能會沒有回應。</translation>
 <translation id="2359345697448000899">如要管理擴充功能，只要按一下 [工具] 選單裡的 [擴充功能] 即可。</translation>
@@ -3624,6 +3624,7 @@
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235965441080806197">取消登入</translation>
 <translation id="4236163961381003811">探索其他擴充功能</translation>
+<translation id="4237282663517880406">顯示 Google 雲端硬碟建議</translation>
 <translation id="4241182343707213132">重新啟動即可更新機構的應用程式</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>

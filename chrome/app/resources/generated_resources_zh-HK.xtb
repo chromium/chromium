@@ -379,6 +379,7 @@
 <translation id="1339009753652684748">只要說出「Ok Google」，就能存取「Google 助理」。如要節省電力，請選擇「啟用 (建議設定)」。這樣，「Google 助理」只會在裝置連接電源或充電時才會回應。</translation>
 <translation id="13392265090583506">無障礙設定</translation>
 <translation id="1340527397989195812">透過「檔案」應用程式備份裝置中的媒體。</translation>
+<translation id="1341701348342335220">做得好！</translation>
 <translation id="1341871421050612057">無法與 <ph name="USERNAME" /> 同步</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
@@ -1592,7 +1593,6 @@
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2357330829548294574">移除「<ph name="USER_NAME" />」</translation>
 <translation id="2358561147588818967">網站可使用 JavaScript</translation>
-<translation id="2358703245148663432">不同的裝置</translation>
 <translation id="2358777858338503863">按一下即可允許存取 <ph name="ORIGIN" />：</translation>
 <translation id="2359071692152028734">Linux 應用程式可能會無法回應。</translation>
 <translation id="2359345697448000899">如要管理擴充功能，只需按一下 [工具] 選單裡的 [擴充功能] 即可。</translation>
@@ -3640,6 +3640,7 @@
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235965441080806197">取消登入</translation>
 <translation id="4236163961381003811">探索更多擴充程式</translation>
+<translation id="4237282663517880406">顯示「Google 雲端硬碟」建議</translation>
 <translation id="4241182343707213132">重新啟動即可更新機構的應用程式</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -3957,6 +3958,7 @@
 <translation id="4522890784888918985">不支援子帳戶</translation>
 <translation id="4523876148417776526">尚未擷取的 XML 網站清單。</translation>
 <translation id="4524832533047962394">此版本的作業系統不支援目前提供的註冊模式。請確保您使用的是最新版本。</translation>
+<translation id="4526051299161934899">已隱藏的已儲存分頁群組</translation>
 <translation id="4526853756266614740">選取圖片以立即套用主題</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4527929807707405172">啟用反向捲動功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -8497,6 +8499,7 @@
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699188901396699995">「<ph name="PRINTER_NAME" />」的 PPD</translation>
+<translation id="8702278591052316269">選單包含已隱藏的已儲存分頁群組</translation>
 <translation id="8702825062053163569">系統已鎖定您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="8703346390800944767">略過廣告</translation>
 <translation id="8705331520020532516">序號</translation>

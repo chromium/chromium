@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1209796539517632982">Automatyczny wybór serwerów nazw</translation>
 <translation id="1210831758834677569">Laotański</translation>
+<translation id="1221555006497674479">Mało miejsca na dane – pozostało <ph name="REMAINING_PERCENTAGE" />% z <ph name="TOTAL_SPACE" /> miejsca na dysku współdzielonym.</translation>
 <translation id="1243314992276662751">Prześlij</translation>
 <translation id="1249250836236328755">Gatunek</translation>
 <translation id="1254593899333212300">Bezpośrednie połączenie internetowe</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chiński pinyin</translation>
 <translation id="1646019627374511909">Udostępniam pliki (<ph name="NUMBER_OF_ITEMS" />) offline</translation>
 <translation id="164969095109328410">Urządzenie z Chrome</translation>
+<translation id="1661207570040737402">Skończyło Ci się miejsce na dysku współdzielonym w Google Workspace.</translation>
 <translation id="1661867754829461514">Brak kodu PIN</translation>
 <translation id="166439687370499867">Wprowadzanie zmian w konfiguracjach sieci współdzielonych jest niedozwolone.</translation>
 <translation id="1665611772925418501">Nie można zmodyfikować pliku.</translation>
