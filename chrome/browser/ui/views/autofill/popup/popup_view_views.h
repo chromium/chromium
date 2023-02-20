@@ -35,13 +35,14 @@ class PopupSeparatorView;
 class PopupWarningView;
 
 // Views implementation for the autofill and password suggestion.
-class PopupViewViews : public PopupBaseView, public AutofillPopupView {
+class PopupViewViews : public PopupBaseView,
+                       public AutofillPopupView,
+                       public PopupRowView::SelectionDelegate {
  public:
   METADATA_HEADER(PopupViewViews);
 
   using RowPointer =
       absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
-  using CellIndex = std::pair<size_t, PopupRowView::CellType>;
 
   PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
                  views::Widget* parent_widget);
@@ -52,8 +53,8 @@ class PopupViewViews : public PopupBaseView, public AutofillPopupView {
   base::WeakPtr<AutofillPopupController> controller() { return controller_; }
   // Gets and sets the currently selected cell. If an invalid `cell_index` is
   // passed, `GetSelectedCell()` will return `absl::nullopt` afterwards.
-  absl::optional<CellIndex> GetSelectedCell() const;
-  void SetSelectedCell(absl::optional<CellIndex> cell_index);
+  absl::optional<CellIndex> GetSelectedCell() const override;
+  void SetSelectedCell(absl::optional<CellIndex> cell_index) override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

@@ -8784,6 +8784,7 @@ test("unit_tests") {
       "../browser/ui/views/apps/app_info_dialog/app_info_permissions_panel_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_cell_view_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_row_strategy_unittest.cc",
+      "../browser/ui/views/autofill/popup/popup_row_view_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_separator_view_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_view_utils_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_view_views_unittest.cc",

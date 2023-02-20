@@ -9,13 +9,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace autofill {
 
+class AutofillPopupController;
+class PopupCellView;
 class PopupRowStrategy;
 class PopupViewViews;
 
@@ -33,10 +36,34 @@ class PopupRowView : public views::View {
     kControl = 1
   };
 
+  // Interface used to announce changes in selected cells to accessibility
+  // frameworks.
+  class AccessibilitySelectionDelegate {
+   public:
+    virtual ~AccessibilitySelectionDelegate() = default;
+
+    // Notify accessibility that an item represented by `view` has been
+    // selected.
+    virtual void NotifyAXSelection(views::View& view) = 0;
+  };
+
+  // Interface used to keep track of cell selection. This may be needed if the
+  // parent needs to keep state of which row is currently in order to process
+  // keyboard events.
+  class SelectionDelegate {
+   public:
+    using CellIndex = std::pair<size_t, PopupRowView::CellType>;
+
+    virtual ~SelectionDelegate() = default;
+
+    virtual absl::optional<CellIndex> GetSelectedCell() const = 0;
+    virtual void SetSelectedCell(absl::optional<CellIndex> cell_index) = 0;
+  };
+
   METADATA_HEADER(PopupRowView);
-  // TODO(crbug.com/1411172): Consider passing an interface instead of an
-  // implementation to allow for separate testing of this class.
-  PopupRowView(PopupViewViews& popup_view,
+  PopupRowView(AccessibilitySelectionDelegate& a11y_selection_delegate,
+               SelectionDelegate& selection_delegate,
+               base::WeakPtr<AutofillPopupController> controller,
                std::unique_ptr<PopupRowStrategy> strategy);
   PopupRowView(const PopupRowView&) = delete;
   PopupRowView& operator=(const PopupRowView&) = delete;
@@ -60,10 +87,16 @@ class PopupRowView : public views::View {
   PopupCellView& GetContentView() { return *content_view_; }
 
  private:
-  PopupViewViews& GetPopupView() { return popup_view_.get(); }
+  AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
+    return a11y_selection_delegate_.get();
+  }
 
-  // The parent view containing this row.
-  const raw_ref<PopupViewViews> popup_view_;
+  // The delegate used for accessibility announcements (implemented by the
+  // parent).
+  const raw_ref<AccessibilitySelectionDelegate> a11y_selection_delegate_;
+  // The controller for the parent view.
+  const base::WeakPtr<AutofillPopupController> controller_;
+  // The strategy from which the actual view content of this row is created.
   const std::unique_ptr<PopupRowStrategy> strategy_;
 
   // Which (if any) cell of this row is currently selected.

@@ -12,9 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -63,21 +63,29 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
       break;
   }
 
-  return std::make_unique<PopupRowView>(popup_view, std::move(strategy));
+  return std::make_unique<PopupRowView>(
+      /*a11y_selection_delegate=*/popup_view, /*selection_delegate=*/popup_view,
+      controller, std::move(strategy));
 }
 
-PopupRowView::PopupRowView(PopupViewViews& popup_view,
-                           std::unique_ptr<PopupRowStrategy> strategy)
-    : popup_view_(popup_view), strategy_(std::move(strategy)) {
+PopupRowView::PopupRowView(
+    AccessibilitySelectionDelegate& a11y_selection_delegate,
+    SelectionDelegate& selection_delegate,
+    base::WeakPtr<AutofillPopupController> controller,
+    std::unique_ptr<PopupRowStrategy> strategy)
+    : a11y_selection_delegate_(a11y_selection_delegate),
+      controller_(controller),
+      strategy_(std::move(strategy)) {
   DCHECK(strategy_);
   // TODO(crbug.com/1411172): Use a BoxLayout once controls are supported.
   SetUseDefaultFillLayout(true);
   content_view_ = AddChildView(strategy_->CreateContent());
-  content_view_->SetOnExitedCallback(
-      base::BindRepeating(&PopupViewViews::SetSelectedCell,
-                          base::Unretained(&popup_view), absl::nullopt));
+  content_view_->SetOnExitedCallback(base::BindRepeating(
+      &SelectionDelegate::SetSelectedCell,
+      base::Unretained(&selection_delegate), absl::nullopt));
   content_view_->SetOnEnteredCallback(base::BindRepeating(
-      &PopupViewViews::SetSelectedCell, base::Unretained(&popup_view),
+      &SelectionDelegate::SetSelectedCell,
+      base::Unretained(&selection_delegate),
       PopupViewViews::CellIndex{strategy_->GetLineNumber(),
                                 PopupRowView::CellType::kContent}));
 }
@@ -109,7 +117,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
 
   if (PopupCellView* new_view = view_from_type(selected_cell_)) {
     new_view->SetSelected(true);
-    GetPopupView().NotifyAXSelection(*new_view);
+    GetA11ySelectionDelegate().NotifyAXSelection(*new_view);
   } else {
     // Set the selected cell to none in case an invalid choice was made (e.g.
     // selecting a control cell when none exists).
@@ -117,11 +125,13 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
   }
 }
 
+// TODO(crbug.com/1411172): Move to `PopupViewViews` class.
 void PopupRowView::MaybeShowIphPromo() {
-  std::string feature_name = GetPopupView()
-                                 .controller()
-                                 ->GetSuggestionAt(strategy_->GetLineNumber())
-                                 .feature_for_iph;
+  if (!controller_) {
+    return;
+  }
+  std::string feature_name =
+      controller_->GetSuggestionAt(strategy_->GetLineNumber()).feature_for_iph;
   if (feature_name.empty()) {
     return;
   }
@@ -129,8 +139,10 @@ void PopupRowView::MaybeShowIphPromo() {
   if (feature_name == "IPH_AutofillVirtualCardSuggestion") {
     SetProperty(views::kElementIdentifierKey,
                 kAutofillCreditCardSuggestionEntryElementId);
-    Browser* browser = GetPopupView().browser();
-    DCHECK(browser);
+    Browser* browser = chrome::FindLastActive();
+    if (!browser) {
+      return;
+    }
     browser->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   }

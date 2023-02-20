@@ -51,6 +51,7 @@ class PopupCellViewTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     view_ = nullptr;
+    generator_.reset();
     widget_.reset();
     ChromeViewsTestBase::TearDown();
   }

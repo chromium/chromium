@@ -46,6 +46,35 @@
 
 namespace autofill {
 
+namespace {
+
+// The maximum number of pixels the suggestions dialog is shifted towards the
+// center the focused field.
+constexpr int kMaximumPixelsToMoveSuggestionToCenter = 120;
+
+// The maximum width percentage the suggestion dialog is shifted towards the
+// center of the focused field.
+constexpr int kMaximumWidthPercentageToMoveTheSuggestionToCenter = 50;
+
+}  // namespace
+
+// static
+int PopupBaseView::GetCornerRadius() {
+  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMedium);
+}
+
+// static
+int PopupBaseView::GetHorizontalMargin() {
+  return views::MenuConfig::instance().item_horizontal_padding +
+         GetCornerRadius();
+}
+
+// static
+int PopupBaseView::GetHorizontalPadding() {
+  return GetHorizontalMargin();
+}
+
 // The widget that the PopupBaseView will be attached to.
 class PopupBaseView::Widget : public views::Widget {
  public:
@@ -68,21 +97,23 @@ class PopupBaseView::Widget : public views::Widget {
 
   // views::Widget:
   const ui::ThemeProvider* GetThemeProvider() const override {
-    if (!autofill_popup_base_view_ || !autofill_popup_base_view_->browser()) {
+    if (!autofill_popup_base_view_ ||
+        !autofill_popup_base_view_->GetBrowser()) {
       return nullptr;
     }
 
     return &ThemeService::GetThemeProviderForProfile(
-        autofill_popup_base_view_->browser()->profile());
+        autofill_popup_base_view_->GetBrowser()->profile());
   }
 
   views::Widget* GetPrimaryWindowWidget() override {
-    if (!autofill_popup_base_view_ || !autofill_popup_base_view_->browser()) {
+    if (!autofill_popup_base_view_ ||
+        !autofill_popup_base_view_->GetBrowser()) {
       return nullptr;
     }
 
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
-        autofill_popup_base_view_->browser());
+        autofill_popup_base_view_->GetBrowser());
     if (!browser_view) {
       return nullptr;
     }
@@ -94,31 +125,9 @@ class PopupBaseView::Widget : public views::Widget {
   const raw_ptr<PopupBaseView, DanglingUntriaged> autofill_popup_base_view_;
 };
 
-// static
-int PopupBaseView::GetCornerRadius() {
-  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMedium);
-}
-
-// static
-int PopupBaseView::GetHorizontalMargin() {
-  return views::MenuConfig::instance().item_horizontal_padding +
-         GetCornerRadius();
-}
-
-// static
-int PopupBaseView::GetHorizontalPadding() {
-  return GetHorizontalMargin();
-}
-
 PopupBaseView::PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
                              views::Widget* parent_widget)
-    : delegate_(delegate), parent_widget_(parent_widget) {
-  // GetWebContents() may return nullptr in some tests.
-  if (GetWebContents()) {
-    browser_ = chrome::FindBrowserWithWebContents(GetWebContents());
-  }
-}
+    : delegate_(delegate), parent_widget_(parent_widget) {}
 
 PopupBaseView::~PopupBaseView() {
   if (delegate_) {
@@ -128,6 +137,13 @@ PopupBaseView::~PopupBaseView() {
   }
 
   CHECK(!IsInObserverList());
+}
+
+Browser* PopupBaseView::GetBrowser() {
+  if (content::WebContents* web_contents = GetWebContents()) {
+    return chrome::FindBrowserWithWebContents(web_contents);
+  }
+  return nullptr;
 }
 
 bool PopupBaseView::DoShow() {
@@ -202,7 +218,7 @@ void PopupBaseView::DoHide() {
   }
 }
 
-void PopupBaseView::NotifyAXSelection(View& selected_view) {
+void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
   if (!is_ax_menu_start_event_fired_) {
     // Fire the menu start event once, right before the first item is selected.
     // By firing these and the matching kMenuEnd events, we are telling screen
@@ -321,7 +337,7 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
   int maximum_pixel_offset_to_center =
       base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)
           ? features::kAutofillMoreProminentPopupMaxOffsetToCenterParam.Get()
-          : kMaximumPixelsToMoveSuggstionToCenter;
+          : kMaximumPixelsToMoveSuggestionToCenter;
 
   // Deduce the arrow and the position.
   views::BubbleBorder::Arrow arrow = GetOptimalPopupPlacement(

@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/focus/widget_focus_manager.h"
@@ -23,24 +25,17 @@ namespace autofill {
 
 // Class that deals with the event handling for Autofill-style popups. This
 // class should only be instantiated by sub-classes.
-class PopupBaseView : public views::WidgetDelegateView,
+class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
+                      public views::WidgetDelegateView,
                       public views::WidgetFocusChangeListener,
                       public views::WidgetObserver {
  public:
-  METADATA_HEADER(PopupBaseView);
-
-  // Consider the input element is |kElementBorderPadding| pixels larger at the
+  // Consider the input element is `kElementBorderPadding` pixels larger at the
   // top and at the bottom in order to reposition the dropdown, so that it
   // doesn't look too close to the element.
   static constexpr int kElementBorderPadding = 1;
 
-  // The maximum number of pixels the suggestions dialog is shifted towards the
-  // center the focused field..
-  static constexpr int kMaximumPixelsToMoveSuggstionToCenter = 120;
-
-  // The maximum width percentage the suggestion dialog is shifted towards the
-  // center of the focused field.
-  static constexpr int kMaximumWidthPercentageToMoveTheSuggestionToCenter = 50;
+  METADATA_HEADER(PopupBaseView);
 
   PopupBaseView(const PopupBaseView&) = delete;
   PopupBaseView& operator=(const PopupBaseView&) = delete;
@@ -53,9 +48,10 @@ class PopupBaseView : public views::WidgetDelegateView,
   static int GetHorizontalPadding();
 
   // Notify accessibility that an item has been selected.
-  void NotifyAXSelection(View& view);
+  void NotifyAXSelection(views::View& view) override;
 
-  Browser* browser() { return browser_; }
+  // Returns the browser in which this popup is shown.
+  Browser* GetBrowser();
 
  protected:
   PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
@@ -131,10 +127,7 @@ class PopupBaseView : public views::WidgetDelegateView,
   base::WeakPtr<AutofillPopupViewDelegate> delegate_;
 
   // The widget of the window that triggered this popup. Weak reference.
-  raw_ptr<views::Widget> parent_widget_;
-
-  // The browser this popup is shown in.
-  raw_ptr<Browser> browser_;
+  raw_ptr<views::Widget> parent_widget_ = nullptr;
 
   // Ensures that the menu start event is not fired redundantly.
   bool is_ax_menu_start_event_fired_ = false;
