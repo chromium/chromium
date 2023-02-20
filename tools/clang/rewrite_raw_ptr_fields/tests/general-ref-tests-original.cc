@@ -93,6 +93,8 @@ int main() {
     int& in;
     // Expected rewrite: const raw_ref<int> out;
     int& out;
+    // Expected rewrite:
+    // report_lists[]{{raw_ref(a), raw_ref(b)}, {raw_ref(a), raw_ref(b)}};
   } report_lists[]{{a, b}, {a, b}};
 
   // Reference members of nested anonymous structs declared in a
@@ -103,13 +105,38 @@ int main() {
     } member;
   };
 
+  // Expected rewrite:  A obj{raw_ref(a)};
   A obj{a};
   obj.member.i++;
+
+  // Expected rewrite:  A obj{.member = {raw_ref(a)}};
+  A obj2{.member = {a}};
+  obj2.member.i++;
 
   static struct {
     // Expected rewrite: const raw_ref<int> member;
     int& member;
+    // Expected rewrite: st{raw_ref(a)};
   } st{a};
+
+  struct Temp {
+    Temp(int& ref) : member(ref) {}
+    // Expected rewrite: const raw_ref<int> member;
+    int& member;
+  };
+  // No need to add raw_ref() around `a` here because the constructor will be
+  // called.
+  Temp tmp{a};
+  tmp.member++;
+
+  struct StringRefObj {
+    const std::string& member;
+  };
+
+  // No need to add raw_ref() around "abcde" here because it results in a
+  // temporary string object. A manual fix need to be applied.
+  StringRefObj r{"abcde"};
+  (void)r;
 }
 
 struct B {

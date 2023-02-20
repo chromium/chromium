@@ -1086,6 +1086,8 @@ class RawRefRewriter {
         affected_expr_rewriter(output_helper, affectedMemberExprFct_),
         affected_expr_rewriter_withParentheses(output_helper,
                                                affectedMemberExprWithParenFct_),
+        affected_initializer_expr_rewriter(output_helper,
+                                           affectedInitializerExprFct_),
         global_scope_rewriter(output_helper, "global-scope"),
         overlapping_field_decl_writer(output_helper, "overlapping"),
         constexpr_ctor_field_initializer_writer(
@@ -1191,6 +1193,22 @@ class RawRefRewriter {
 
     match_finder.addMatcher(affected_member_expr_withParentheses,
                             &affected_expr_rewriter_withParentheses);
+
+    // for structs/class that don't define a constructor and are initialized
+    // using braced list initialization, we need to add raw_ref around the
+    // initializing expression since raw_ref's constructor is explicit.
+    // Example:
+    // struct A{ int& member; }; => struct A{ const raw_ref<int> member;};
+    // int num = x;
+    // A a{num}; => A a{raw_ref(num)};
+    auto init_list_expr_with_raw_ref = initListExpr(
+        forEachInitExprWithFieldDecl(
+            expr(unless(materializeTemporaryExpr())).bind("initializer_expr"),
+            hasExplicitFieldDecl(field_decl_matcher)),
+        unless(hasParent(cxxConstructExpr())));
+
+    match_finder.addMatcher(init_list_expr_with_raw_ref,
+                            &affected_initializer_expr_rewriter);
 
     // See the doc comment for the overlapsOtherDeclsWithinRecordDecl
     // matcher and the testcases in tests/gen-overlapping-test.cc.
@@ -1334,11 +1352,36 @@ class RawRefRewriter {
     return {replacement_range, "->"};
   };
 
+  std::function<std::pair<clang::SourceRange, std::string>(
+      const MatchFinder::MatchResult&)>
+      affectedInitializerExprFct_ = [](const MatchFinder::MatchResult& result)
+      -> std::pair<clang::SourceRange, std::string> {
+    const clang::SourceManager& source_manager = *result.SourceManager;
+
+    const clang::Expr* initializer_expr =
+        result.Nodes.getNodeAs<clang::Expr>("initializer_expr");
+    auto source_text = clang::Lexer::getSourceText(
+        clang::CharSourceRange::getTokenRange(
+            initializer_expr->getSourceRange()),
+        source_manager, result.Context->getLangOpts());
+
+    clang::SourceLocation endLoc =
+        initializer_expr->getBeginLoc().getLocWithOffset(source_text.size());
+
+    clang::SourceRange replacement_range(initializer_expr->getBeginLoc(),
+                                         endLoc);
+
+    return {replacement_range,
+            llvm::formatv("raw_ref({0})",
+                          std::string(source_text.begin(), source_text.end()))};
+  };
+
   MatchFinder& match_finder;
   RawRefFieldDeclRewriter field_decl_rewriter;
   AffectedExprRewriter affected_expr_operator_rewriter;
   AffectedExprRewriter affected_expr_rewriter;
   AffectedExprRewriter affected_expr_rewriter_withParentheses;
+  AffectedExprRewriter affected_initializer_expr_rewriter;
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter overlapping_field_decl_writer;
   FilteredExprWriter constexpr_ctor_field_initializer_writer;
