@@ -61580,6 +61580,7 @@ from previous Chrome versions.
   <int value="-82328138"
       label="AutofillEnableRemadeDownstreamMetrics:disabled"/>
   <int value="-82266557" label="SafeBrowsingSecuritySectionUIAndroid:disabled"/>
+  <int value="-82023851" label="PageInfoAboutThisSiteNewIcon:enabled"/>
   <int value="-81940476"
       label="OverrideSimilarLanguagesForHrefTranslate:disabled"/>
   <int value="-81292879" label="EcheSWAMeasureLatency:enabled"/>
@@ -63994,6 +63995,7 @@ from previous Chrome versions.
   <int value="1292091029" label="OmniboxOneClickUnelide:disabled"/>
   <int value="1292482533" label="EnableTabMuting:disabled"/>
   <int value="1292763218" label="SystemTrayUnified:disabled"/>
+  <int value="1293473298" label="PageInfoAboutThisSiteNewIcon:disabled"/>
   <int value="1293697921" label="RequestDesktopSiteExceptions:enabled"/>
   <int value="1294131571" label="disable-winrt-midi-api"/>
   <int value="1294306055" label="FeedInteractiveRefresh:disabled"/>

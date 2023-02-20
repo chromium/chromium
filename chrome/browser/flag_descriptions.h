@@ -1310,6 +1310,9 @@ extern const char kPageContentAnnotationsDescription[];
 extern const char kPageEntitiesPageContentAnnotationsName[];
 extern const char kPageEntitiesPageContentAnnotationsDescription[];
 
+extern const char kPageInfoAboutThisSiteNewIconName[];
+extern const char kPageInfoAboutThisSiteNewIconDescription[];
+
 extern const char kPageInfoAboutThisSiteNonEnName[];
 extern const char kPageInfoAboutThisSiteNonEnDescription[];
 

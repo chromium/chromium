@@ -5538,6 +5538,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "page-info-about-this-site-new-icon",
+    "owners": [ "dullweber", "fsenra@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "page-info-about-this-site-non-en",
     "owners": [ "dullweber" ],
     "expiry_milestone": 115

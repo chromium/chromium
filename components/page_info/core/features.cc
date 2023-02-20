@@ -28,6 +28,10 @@ extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
   }
 }
 
+BASE_FEATURE(kPageInfoAboutThisSiteNewIcon,
+             "PageInfoAboutThisSiteNewIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPageInfoAboutThisSiteEn,
              "PageInfoAboutThisSiteEn",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -2353,6 +2353,11 @@ const char kPageEntitiesPageContentAnnotationsName[] =
 const char kPageEntitiesPageContentAnnotationsDescription[] =
     "Enables annotating the page entities model for each page load on-device.";
 
+const char kPageInfoAboutThisSiteNewIconName[] = "'About this site' new icon";
+const char kPageInfoAboutThisSiteNewIconDescription[] =
+    "Shows the 'About this site' section in the page info UI with a new google "
+    "branded icon.";
+
 const char kPageInfoAboutThisSiteNonEnName[] =
     "'About this site' section in page info in all languages";
 const char kPageInfoAboutThisSiteNonEnDescription[] =
