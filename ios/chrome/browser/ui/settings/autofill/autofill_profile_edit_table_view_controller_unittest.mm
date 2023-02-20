@@ -68,7 +68,6 @@ static NSArray* FindTextFieldDescendants(UIView* root) {
 
 @interface AutofillProfileEditTableViewControllerTestDelegate
     : NSObject <AutofillProfileEditTableViewControllerDelegate>
-@property(nonatomic, assign) BOOL isAnyRequiredFieldEmpty;
 @end
 
 @implementation AutofillProfileEditTableViewControllerTestDelegate
