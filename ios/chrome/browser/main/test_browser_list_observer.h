@@ -24,11 +24,11 @@ class TestBrowserListObserver : public BrowserListObserver {
   // A weak pointer to the last Browser that was observed being added to the
   // BrowserList's regular browsers.
   Browser* GetLastAddedBrowser() { return last_added_browser_; }
-  // A weak pointer to the last Browser that was observed being added to the
-  // BrowserList's incognito browsers.
-  Browser* GetLastRemovedBrowser() { return last_removed_browser_; }
   // A weak pointer to the last Browser that was observed being removed from the
   // BrowserList's regular browsers.
+  Browser* GetLastRemovedBrowser() { return last_removed_browser_; }
+  // A weak pointer to the last Browser that was observed being added to the
+  // BrowserList's incognito browsers.
   Browser* GetLastAddedIncognitoBrowser() {
     return last_added_incognito_browser_;
   }
