@@ -16,6 +16,7 @@
  */
 
 import {BrowsingContext, Message} from '../../../protocol/protocol.js';
+import {LogType, LoggerFn} from '../../../utils/log.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
 import {Deferred} from '../../../utils/deferred.js';
@@ -52,6 +53,7 @@ export class BrowsingContextImpl {
   #cdpClient: CdpClient;
   #maybeDefaultRealm: Realm | undefined;
   #browsingContextStorage: BrowsingContextStorage;
+  #logger?: LoggerFn;
 
   get #defaultRealm(): Realm {
     if (this.#maybeDefaultRealm === undefined) {
@@ -70,7 +72,8 @@ export class BrowsingContextImpl {
     cdpSessionId: string,
     cdpBrowserContextId: string | null,
     eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    logger?: LoggerFn
   ) {
     this.#realmStorage = realmStorage;
     this.#contextId = contextId;
@@ -80,6 +83,7 @@ export class BrowsingContextImpl {
     this.#eventManager = eventManager;
     this.#cdpSessionId = cdpSessionId;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#logger = logger;
 
     this.#initListeners();
 
@@ -93,7 +97,8 @@ export class BrowsingContextImpl {
     cdpClient: CdpClient,
     cdpSessionId: string,
     eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    logger?: LoggerFn
   ): Promise<void> {
     const context = new BrowsingContextImpl(
       realmStorage,
@@ -103,7 +108,8 @@ export class BrowsingContextImpl {
       cdpSessionId,
       null,
       eventManager,
-      browsingContextStorage
+      browsingContextStorage,
+      logger
     );
     context.#targetDefers.targetUnblocked.resolve();
 
@@ -124,7 +130,8 @@ export class BrowsingContextImpl {
     cdpSessionId: string,
     cdpBrowserContextId: string | null,
     eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    logger?: LoggerFn
   ): Promise<void> {
     const context = new BrowsingContextImpl(
       realmStorage,
@@ -134,7 +141,8 @@ export class BrowsingContextImpl {
       cdpSessionId,
       cdpBrowserContextId,
       eventManager,
-      browsingContextStorage
+      browsingContextStorage,
+      logger
     );
 
     // No need in waiting for target to be unblocked.
@@ -199,10 +207,14 @@ export class BrowsingContextImpl {
   }
 
   #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
-    if (!this.#targetDefers.targetUnblocked.isFinished) {
-      this.#targetDefers.targetUnblocked.reject('OOPiF');
+    if (this.#targetDefers.targetUnblocked.isFinished) {
+      this.#targetDefers.targetUnblocked = new Deferred<void>();
+    } else {
+      this.#logger?.(
+        LogType.browsingContexts,
+        'targetUnblocked postponed because of OOPiF'
+      );
     }
-    this.#targetDefers.targetUnblocked = new Deferred<void>();
 
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
@@ -445,24 +457,25 @@ export class BrowsingContextImpl {
       return;
     }
 
-    if (!this.#targetDefers.documentInitialized.isFinished) {
-      this.#targetDefers.documentInitialized.reject('Document changed');
+    if (this.#targetDefers.documentInitialized.isFinished) {
+      this.#targetDefers.documentInitialized = new Deferred<void>();
+    } else {
+      this.#logger?.(LogType.browsingContexts, 'Document changed');
     }
-    this.#targetDefers.documentInitialized = new Deferred<void>();
 
-    if (!this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
-      this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.reject(
-        'Document changed'
-      );
+    if (this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
+      this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded =
+        new Deferred<Protocol.Page.LifecycleEventEvent>();
+    } else {
+      this.#logger?.(LogType.browsingContexts, 'Document changed');
     }
-    this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded =
-      new Deferred<Protocol.Page.LifecycleEventEvent>();
 
-    if (!this.#targetDefers.Page.lifecycleEvent.load.isFinished) {
-      this.#targetDefers.Page.lifecycleEvent.load.reject('Document changed');
+    if (this.#targetDefers.Page.lifecycleEvent.load.isFinished) {
+      this.#targetDefers.Page.lifecycleEvent.load =
+        new Deferred<Protocol.Page.LifecycleEventEvent>();
+    } else {
+      this.#logger?.(LogType.browsingContexts, 'Document changed');
     }
-    this.#targetDefers.Page.lifecycleEvent.load =
-      new Deferred<Protocol.Page.LifecycleEventEvent>();
 
     this.#loaderId = loaderId;
   }

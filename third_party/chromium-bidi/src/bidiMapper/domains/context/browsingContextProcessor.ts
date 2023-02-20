@@ -104,7 +104,8 @@ export class BrowsingContextProcessor {
           sessionCdpClient,
           sessionId,
           this.#eventManager,
-          this.#browsingContextStorage
+          this.#browsingContextStorage,
+          this.#logger
         );
       }
     );
@@ -152,7 +153,8 @@ export class BrowsingContextProcessor {
         sessionId,
         params.targetInfo.browserContextId ?? null,
         this.#eventManager,
-        this.#browsingContextStorage
+        this.#browsingContextStorage,
+        this.#logger
       );
     }
   }
