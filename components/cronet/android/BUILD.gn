@@ -1342,14 +1342,54 @@ if (!is_component_build) {
   }
 
   _test_package_dir = "$root_out_dir/cronet/test"
+  _tests_java_jars_without_jni_path =
+      "$target_out_dir/cronet_tests_java_without_jni.jar"
+  _test_deps = cronet_javatests_deps_to_package + [
+                 ":cronet_javatests",
+                 "//third_party/netty4:netty_all_java",
+               ]
 
+  # First, generate an intermediate jar with the various source GEN_JNI classes
+  # removed to avoid conflicts...
+  repackage_jars("repackage_test_jars_without_jni") {
+    output = _tests_java_jars_without_jni_path
+    testonly = true
+    deps = _test_deps
+    remove_gen_jni = true
+  }
+
+  # This target exists to provide :repackage_test_jars with a suitable target to
+  # depend on (since dist_aar only pulls in deps of type "java_library").
+  android_java_prebuilt("repackage_test_jars_without_jni_java") {
+    jar_path = _tests_java_jars_without_jni_path
+    testonly = true
+
+    # Since only the unprocessed jar is used, no need to complete the bytecode
+    # processing step.
+    enable_bytecode_checks = false
+    deps = [ ":repackage_test_jars_without_jni" ]
+  }
+
+  # ...then, generate the final, merged GEN_JNI class...
+  generate_jni_registration("cronet_tests_jni_registration") {
+    targets = _test_deps
+    manual_jni_registration = true
+    testonly = true
+  }
+  android_library("cronet_tests_jni_registration_java") {
+    srcjar_deps = [ ":cronet_tests_jni_registration" ]
+    testonly = true
+  }
+
+  # ...and finally, generate the test jar with the final GEN_JNI class.
   repackage_jars("repackage_test_jars") {
     output = "$_test_package_dir/cronet_tests_java.jar"
     testonly = true
-    deps = cronet_javatests_deps_to_package + [
-             ":cronet_javatests",
-             "//third_party/netty4:netty_all_java",
-           ]
+    deps = [
+      ":cronet_tests_jni_registration_java",
+      ":repackage_test_jars_without_jni_java",
+    ]
+    remove_gen_jni = false
   }
 
   zip("jar_cronet_sample_source") {
