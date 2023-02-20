@@ -28,9 +28,6 @@ class TrustedVaultAccessTokenFetcher {
     // Used when requested account is not primary or became not primary during
     // the fetching.
     kNotPrimaryAccount,
-    // Used when fetching attempt is not possible, because required dependencies
-    // were already destroyed during the browser shutdown.
-    kShutdown,
   };
 
   using AccessTokenInfoOrError =

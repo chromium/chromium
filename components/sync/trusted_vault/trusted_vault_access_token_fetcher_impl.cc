@@ -24,12 +24,11 @@ void FetchAccessTokenOnUIThread(
     const CoreAccountId& account_id,
     TrustedVaultAccessTokenFetcher::TokenCallback callback) {
   if (!frontend) {
-    // This is likely to happen during the browser shutdown.
-    std::move(callback).Run(base::unexpected(
-        TrustedVaultAccessTokenFetcher::FetchingError::kShutdown));
-  } else {
-    frontend->FetchAccessToken(account_id, std::move(callback));
+    // This is likely to happen during the browser shutdown, leave request
+    // hanging.
+    return;
   }
+  frontend->FetchAccessToken(account_id, std::move(callback));
 }
 
 }  // namespace

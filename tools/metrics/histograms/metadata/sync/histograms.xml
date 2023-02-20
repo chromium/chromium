@@ -1466,6 +1466,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultDeviceRegistrationOutcome"
+    enum="TrustedVaultDeviceRegistrationOutcome" expires_after="2023-08-08">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the outcome of device registration attempt upon request completion
+    or failure.
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultDeviceRegistrationState"
     enum="TrustedVaultDeviceRegistrationState" expires_after="2023-08-08">
   <owner>mmoskvitin@google.com</owner>

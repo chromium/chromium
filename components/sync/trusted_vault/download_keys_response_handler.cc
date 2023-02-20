@@ -159,7 +159,10 @@ DownloadKeysResponseHandler::ProcessResponse(
     case TrustedVaultRequest::HttpStatus::kNotFound:
       return ProcessedResponse(
           /*status=*/TrustedVaultDownloadKeysStatus::kMemberNotFound);
-    case TrustedVaultRequest::HttpStatus::kAccessTokenFetchingFailure:
+    case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
+    case TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError:
+    case TrustedVaultRequest::HttpStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
       return ProcessedResponse(
           /*status=*/TrustedVaultDownloadKeysStatus::
               kAccessTokenFetchingFailure);

@@ -819,6 +819,10 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess);
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"Sync.TrustedVaultDeviceRegistrationOutcome",
+      /*sample=*/TrustedVaultDeviceRegistrationOutcomeForUMA::kSuccess,
+      /*expected_bucket_count=*/1);
 
   // Now the device should be registered.
   sync_pb::LocalDeviceRegistrationInfo registration_info =
@@ -1160,9 +1164,18 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ASSERT_FALSE(device_registration_callback.is_null());
   Mock::VerifyAndClearExpectations(connection());
 
+  base::HistogramTester histogram_tester;
+
   // Mimic access token fetching failure.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure);
+      .Run(TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError);
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"Sync.TrustedVaultDeviceRegistrationOutcome",
+      /*sample=*/
+      TrustedVaultDeviceRegistrationOutcomeForUMA::
+          kTransientAccessTokenFetchError,
+      /*expected_bucket_count=*/1);
 
   // Mimic a restart to trigger device registration attempt, which should not be
   // throttled.

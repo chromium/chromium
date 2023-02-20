@@ -70,6 +70,21 @@ std::string GetHttpMethodString(TrustedVaultRequest::HttpMethod http_method) {
   return std::string();
 }
 
+TrustedVaultRequest::HttpStatus AccessTokenFetchingErrorToRequestHttpStatus(
+    TrustedVaultAccessTokenFetcher::FetchingError access_token_error) {
+  switch (access_token_error) {
+    case TrustedVaultAccessTokenFetcher::FetchingError::kTransientAuthError:
+      return TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError;
+    case TrustedVaultAccessTokenFetcher::FetchingError::kPersistentAuthError:
+      return TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError;
+    case TrustedVaultAccessTokenFetcher::FetchingError::kNotPrimaryAccount:
+      return TrustedVaultRequest::HttpStatus::
+          kPrimaryAccountChangeAccessTokenFetchError;
+  }
+  NOTREACHED();
+  return TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError;
+}
+
 }  // namespace
 
 TrustedVaultRequest::TrustedVaultRequest(
@@ -111,7 +126,8 @@ void TrustedVaultRequest::OnAccessTokenFetched(
     // TODO(crbug.com/1413179): expose persistent auth errors to the higher
     // level as a dedicated status.
     RunCompletionCallbackAndMaybeDestroySelf(
-        HttpStatus::kAccessTokenFetchingFailure,
+        /*status=*/AccessTokenFetchingErrorToRequestHttpStatus(
+            access_token_info_or_error.error()),
         /*response_body=*/std::string());
     return;
   }

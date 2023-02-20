@@ -102998,6 +102998,17 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Degraded"/>
 </enum>
 
+<enum name="TrustedVaultDeviceRegistrationOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already registered"/>
+  <int value="2" label="Local data obsolete"/>
+  <int value="3" label="Transient access token fetching error"/>
+  <int value="4" label="Persistent access token fetching error"/>
+  <int value="5" label="Primary account changed access token fetching error"/>
+  <int value="6" label="Network error"/>
+  <int value="7" label="Other error"/>
+</enum>
+
 <enum name="TrustedVaultDeviceRegistrationState">
   <int value="0" label="Already registered V0"/>
   <int value="1" label="Local keys are stale"/>

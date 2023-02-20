@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/sync/base/time.h"
@@ -47,6 +48,12 @@ void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationState",
                                 registration_state);
+}
+
+void RecordTrustedVaultDeviceRegistrationOutcome(
+    TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome) {
+  base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationOutcome",
+                                registration_outcome);
 }
 
 void RecordTrustedVaultURLFetchResponse(

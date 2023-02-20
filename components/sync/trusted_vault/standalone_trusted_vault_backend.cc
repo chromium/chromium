@@ -35,6 +35,7 @@
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -169,6 +170,35 @@ base::flat_set<std::string> GetGaiaIDs(
     result.insert(listed_account.gaia_id);
   }
   return result;
+}
+
+TrustedVaultDeviceRegistrationOutcomeForUMA
+GetDeviceRegistrationOutcomeForUMAFromResponse(
+    TrustedVaultRegistrationStatus response_status) {
+  switch (response_status) {
+    case TrustedVaultRegistrationStatus::kSuccess:
+      return TrustedVaultDeviceRegistrationOutcomeForUMA::kSuccess;
+    case TrustedVaultRegistrationStatus::kAlreadyRegistered:
+      return TrustedVaultDeviceRegistrationOutcomeForUMA::kAlreadyRegistered;
+    case TrustedVaultRegistrationStatus::kLocalDataObsolete:
+      return TrustedVaultDeviceRegistrationOutcomeForUMA::kLocalDataObsolete;
+    case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:
+      return TrustedVaultDeviceRegistrationOutcomeForUMA::
+          kTransientAccessTokenFetchError;
+    case TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError:
+      return TrustedVaultDeviceRegistrationOutcomeForUMA::
+          kPersistentAccessTokenFetchError;
+    case TrustedVaultRegistrationStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+      return TrustedVaultDeviceRegistrationOutcomeForUMA::
+          kPrimaryAccountChangeAccessTokenFetchError;
+    case TrustedVaultRegistrationStatus::kNetworkError:
+      return TrustedVaultDeviceRegistrationOutcomeForUMA::kNetworkError;
+    case TrustedVaultRegistrationStatus::kOtherError:
+      return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
+  }
+  NOTREACHED();
+  return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
 }
 
 // Version 0 may contain corrupted data: missing constant key if the client
@@ -897,7 +927,8 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   // `kAlreadyRegistered`.
   DCHECK(!per_user_vault->local_device_registration_info()
               .last_registration_returned_local_data_obsolete());
-
+  RecordTrustedVaultDeviceRegistrationOutcome(
+      GetDeviceRegistrationOutcomeForUMAFromResponse(status));
   switch (status) {
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
@@ -914,7 +945,10 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
           ->set_last_registration_returned_local_data_obsolete(true);
       WriteDataToDisk();
       return;
-    case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
+    case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:
+    case TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError:
+    case TrustedVaultRegistrationStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
     case TrustedVaultRegistrationStatus::kNetworkError:
       // Request wasn't sent to the server, so there is no need for throttling.
       return;
@@ -963,7 +997,10 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
         // WriteToDisk() will be called by OnDeviceRegistered().
       }
       break;
-    case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
+    case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:
+    case TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError:
+    case TrustedVaultRegistrationStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
     case TrustedVaultRegistrationStatus::kNetworkError:
     case TrustedVaultRegistrationStatus::kOtherError:
