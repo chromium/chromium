@@ -106,6 +106,8 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
 
   using TriggerOutcome = TouchToFillCreditCardTriggerOutcome;
 
+  void SetShouldSuppressKeyboard(bool suppress);
+
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 
   // The form is considered perfectly filled if all non-empty fields are
@@ -119,6 +121,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;
+  bool keyboard_is_suppressed_ = false;
   FormData query_form_;
   FormFieldData query_field_;
   bool dismissed_by_user_;

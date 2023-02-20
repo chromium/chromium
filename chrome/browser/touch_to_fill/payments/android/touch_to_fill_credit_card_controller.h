@@ -53,9 +53,6 @@ class TouchToFillCreditCardController
       base::android::JavaParamRef<jstring> unique_id) override;
 
  private:
-  // Called after the surface gets shown or hidden.
-  void SetShouldSuppressKeyboard(bool suppress);
-
   // Gets or creates the Java counterpart.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 

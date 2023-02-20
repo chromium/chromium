@@ -35,7 +35,6 @@ bool TouchToFillCreditCardController::Show(
 
   view_ = std::move(view);
   delegate_ = std::move(delegate);
-  SetShouldSuppressKeyboard(/*suppress=*/true);
   return true;
 }
 
@@ -44,15 +43,8 @@ void TouchToFillCreditCardController::Hide() {
     view_->Hide();
 }
 
-void TouchToFillCreditCardController::SetShouldSuppressKeyboard(bool suppress) {
-  if (delegate_) {
-    delegate_->GetManager()->SetShouldSuppressKeyboard(suppress);
-  }
-}
-
 void TouchToFillCreditCardController::OnDismissed(JNIEnv* env,
                                                   bool dismissed_by_user) {
-  SetShouldSuppressKeyboard(/*suppress=*/false);
   if (delegate_) {
     delegate_->OnDismissed(dismissed_by_user);
   }

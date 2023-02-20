@@ -29,6 +29,14 @@ TouchToFillDelegateImpl::~TouchToFillDelegateImpl() {
   HideTouchToFill();
 }
 
+void TouchToFillDelegateImpl::SetShouldSuppressKeyboard(bool suppress) {
+  if (keyboard_is_suppressed_ == suppress) {
+    return;
+  }
+  manager_->SetShouldSuppressKeyboard(suppress);
+  keyboard_is_suppressed_ = suppress;
+}
+
 bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
                                                    const FormFieldData& field) {
   // TODO(crbug.com/1386143): store only FormGlobalId and FieldGlobalId instead
@@ -82,15 +90,20 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
     outcome = TriggerOutcome::kCannotShowAutofillUi;
   }
   // Finally try showing the surface
-  if (outcome == TriggerOutcome::kShown &&
-      !manager_->client()->ShowTouchToFillCreditCard(
-          GetWeakPtr(), std::move(cards_to_suggest))) {
-    outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
+  if (outcome == TriggerOutcome::kShown) {
+    SetShouldSuppressKeyboard(true);
+    if (manager_->client()->ShowTouchToFillCreditCard(
+            GetWeakPtr(), std::move(cards_to_suggest))) {
+      // Success.
+    } else {
+      outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
+    }
   }
   base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
                                 outcome);
   // Return if didn't show the sheet
   if (outcome != TriggerOutcome::kShown) {
+    SetShouldSuppressKeyboard(false);
     return false;
   }
 
@@ -163,6 +176,7 @@ void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
 }
 
 void TouchToFillDelegateImpl::OnDismissed(bool dismissed_by_user) {
+  SetShouldSuppressKeyboard(false);
   if (IsShowingTouchToFill()) {
     ttf_credit_card_state_ = TouchToFillState::kWasShown;
     dismissed_by_user_ = dismissed_by_user;
