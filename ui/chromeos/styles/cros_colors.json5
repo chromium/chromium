@@ -558,25 +558,25 @@
     },
     illustration_secondary_color: {
       light: "$google_grey_200",
-      dark: "blend(rgba($google_grey_200.rgb, 0.3), $google_grey_900)",
+      dark: "blend(rgba($google_grey_200.rgb, 0.3), $illustration_base_color)",
     },
     illustration_color_1_shade_1: {
       light: "$google_blue_300",
-      dark: "blend(rgba($google_blue_600.rgb, 0.3), $google_grey_900)",
+      dark: "blend(rgba($google_blue_600.rgb, 0.3), $illustration_base_color)",
     },
     illustration_color_1_shade_2: {
       light: "$google_blue_100",
-      dark: "blend(rgba($google_blue_300.rgb, 0.3), $google_grey_900)",
+      dark: "blend(rgba($google_blue_300.rgb, 0.3), $illustration_base_color)",
     },
     /* Elevated variants of dark mode colors for illustrations. These are only
        used in dark mode, and so do not need a light mode variant. */
     illustration_elevation_color_1_shade_1: {
       light: "$illustration_color_1_shade_1",
-      dark: "blend(rgba($google_blue_300.rgb, 0.3), $google_grey_900)",
+      dark: "blend(rgba($google_blue_600.rgb, 0.4), $illustration_elevation_base_color)",
     },
     illustration_elevation_color_1_shade_2: {
       light: "$illustration_color_1_shade_2",
-      dark: "blend(rgba($google_blue_300.rgb, 0.3), $google_grey_900)",
+      dark: "blend(rgba($google_blue_300.rgb, 0.4), $illustration_elevation_base_color)",
     },
     illustration_elevation_base_color: {
       light: "$illustration_base_color",
