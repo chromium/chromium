@@ -23,6 +23,10 @@ NSTextCheckingType GetHandledIntentTypes(web::WebState* web_state) {
   return 0;
 }
 
+NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state) {
+  return 0;
+}
+
 NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
     web::WebState* web_state,
     NSTextCheckingResult* match,
