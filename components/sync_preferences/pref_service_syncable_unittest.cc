@@ -235,17 +235,17 @@ class PrefServiceSyncableTest : public testing::Test {
     return *preference->GetValue();
   }
 
-  std::unique_ptr<base::Value> FindValue(const std::string& name,
-                                         const syncer::SyncChangeList& list) {
+  absl::optional<base::Value> FindValue(const std::string& name,
+                                        const syncer::SyncChangeList& list) {
     auto it = list.begin();
     for (; it != list.end(); ++it) {
       if (it->sync_data().GetClientTagHash() ==
           syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, name)) {
-        return base::JSONReader::ReadDeprecated(
+        return base::JSONReader::Read(
             it->sync_data().GetSpecifics().preference().value());
       }
     }
-    return nullptr;
+    return absl::nullopt;
   }
 
   bool IsRegistered(const std::string& pref_name) {
@@ -275,8 +275,7 @@ TEST_F(PrefServiceSyncableTest, CreatePrefSyncData) {
       sync_data.GetSpecifics().preference());
   EXPECT_EQ(std::string(kStringPrefName), specifics.name());
 
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(specifics.value());
+  absl::optional<base::Value> value = base::JSONReader::Read(specifics.value());
   EXPECT_EQ(*pref->GetValue(), *value);
 }
 
@@ -288,7 +287,7 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationDoNotSyncDefaults) {
 
   EXPECT_TRUE(IsRegistered(kStringPrefName));
   EXPECT_TRUE(pref->IsDefaultValue());
-  EXPECT_FALSE(FindValue(kStringPrefName, out).get());
+  EXPECT_FALSE(FindValue(kStringPrefName, out));
 }
 
 TEST_F(PrefServiceSyncableTest, ModelAssociationEmptyCloud) {
@@ -301,11 +300,11 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationEmptyCloud) {
   syncer::SyncChangeList out;
   InitWithSyncDataTakeOutput(syncer::SyncDataList(), &out);
 
-  std::unique_ptr<base::Value> value(FindValue(kStringPrefName, out));
-  ASSERT_TRUE(value.get());
+  absl::optional<base::Value> value(FindValue(kStringPrefName, out));
+  ASSERT_TRUE(value);
   EXPECT_EQ(GetPreferenceValue(kStringPrefName), *value);
   value = FindValue(kListPrefName, out);
-  ASSERT_TRUE(value.get());
+  ASSERT_TRUE(value);
   EXPECT_EQ(GetPreferenceValue(kListPrefName), *value);
 }
 
@@ -326,8 +325,8 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationCloudHasData) {
                       base::Value(kNonDefaultCharsetValue), &in);
   InitWithSyncDataTakeOutput(in, &out);
 
-  ASSERT_FALSE(FindValue(kStringPrefName, out).get());
-  ASSERT_FALSE(FindValue(kDefaultCharsetPrefName, out).get());
+  ASSERT_FALSE(FindValue(kStringPrefName, out));
+  ASSERT_FALSE(FindValue(kDefaultCharsetPrefName, out));
 
   EXPECT_EQ(kExampleUrl1, prefs_.GetString(kStringPrefName));
 
@@ -485,17 +484,17 @@ class PrefServiceSyncableMergeTest : public testing::Test {
     return *preference->GetValue();
   }
 
-  std::unique_ptr<base::Value> FindValue(const std::string& name,
-                                         const syncer::SyncChangeList& list) {
+  absl::optional<base::Value> FindValue(const std::string& name,
+                                        const syncer::SyncChangeList& list) {
     auto it = list.begin();
     for (; it != list.end(); ++it) {
       if (it->sync_data().GetClientTagHash() ==
           syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, name)) {
-        return base::JSONReader::ReadDeprecated(
+        return base::JSONReader::Read(
             it->sync_data().GetSpecifics().preference().value());
       }
     }
-    return nullptr;
+    return absl::nullopt;
   }
 
  protected:
@@ -534,8 +533,8 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
   expected_urls.Append(kExampleUrl1);
   expected_urls.Append(kExampleUrl2);
   expected_urls.Append(kExampleUrl0);
-  std::unique_ptr<base::Value> value(FindValue(kListPrefName, out));
-  ASSERT_TRUE(value.get());
+  absl::optional<base::Value> value(FindValue(kListPrefName, out));
+  ASSERT_TRUE(value);
   EXPECT_EQ(*value, expected_urls) << *value;
   EXPECT_EQ(GetPreferenceValue(kListPrefName), expected_urls);
 }
@@ -562,13 +561,13 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   InitWithSyncDataTakeOutput(in, &out);
 
   // Start sync and verify the synced value didn't get merged.
-  EXPECT_FALSE(FindValue(kListPrefName, out).get());
+  EXPECT_FALSE(FindValue(kListPrefName, out));
 
   // Changing the user-controlled value should sync as usual.
   base::Value::List user_value;
   user_value.Append("http://chromium.org");
   prefs_.SetList(kListPrefName, user_value.Clone());
-  std::unique_ptr<base::Value> actual = FindValue(kListPrefName, out);
+  absl::optional<base::Value> actual = FindValue(kListPrefName, out);
   ASSERT_TRUE(actual);
   // The user-controlled value should be synced, not the managed one!
   EXPECT_EQ(*actual, user_value);
@@ -610,8 +609,8 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedDictionaryValues) {
   expected_dict.Set("my_key1", base::Value("my_value1"));
   expected_dict.Set("my_key2", base::Value("my_value2"));
   expected_dict.Set("my_key3", base::Value("my_value3"));
-  std::unique_ptr<base::Value> value(FindValue(kDictPrefName, out));
-  ASSERT_TRUE(value.get());
+  absl::optional<base::Value> value(FindValue(kDictPrefName, out));
+  ASSERT_TRUE(value);
   EXPECT_EQ(*value, expected_dict);
   EXPECT_EQ(GetPreferenceValue(kDictPrefName), expected_dict);
 }
@@ -673,8 +672,8 @@ TEST_F(PrefServiceSyncableTest, UpdatedPreferenceWithDefaultValue) {
   base::Value expected(kExampleUrl0);
   GetPrefs()->Set(kStringPrefName, expected);
 
-  std::unique_ptr<base::Value> actual(FindValue(kStringPrefName, out));
-  ASSERT_TRUE(actual.get());
+  absl::optional<base::Value> actual(FindValue(kStringPrefName, out));
+  ASSERT_TRUE(actual);
   EXPECT_EQ(expected, *actual);
 }
 
@@ -687,8 +686,8 @@ TEST_F(PrefServiceSyncableTest, UpdatedPreferenceWithValue) {
   base::Value expected(kExampleUrl1);
   GetPrefs()->Set(kStringPrefName, expected);
 
-  std::unique_ptr<base::Value> actual(FindValue(kStringPrefName, out));
-  ASSERT_TRUE(actual.get());
+  absl::optional<base::Value> actual(FindValue(kStringPrefName, out));
+  ASSERT_TRUE(actual);
   EXPECT_EQ(expected, *actual);
 }
 
@@ -759,7 +758,7 @@ TEST_F(PrefServiceSyncableTest, ManagedPreferences) {
   // usual.
   base::Value user_value("http://chromium.org");
   prefs_.SetUserPref(kStringPrefName, user_value.Clone());
-  std::unique_ptr<base::Value> actual = FindValue(kStringPrefName, out);
+  absl::optional<base::Value> actual = FindValue(kStringPrefName, out);
   ASSERT_TRUE(actual);
   // The user-controlled value should be synced, not the managed one!
   EXPECT_EQ(*actual, user_value);
@@ -782,8 +781,8 @@ TEST_F(PrefServiceSyncableTest, DynamicManagedPreferences) {
   out.clear();
   base::Value initial_value("http://example.com/initial");
   GetPrefs()->Set(kStringPrefName, initial_value);
-  std::unique_ptr<base::Value> actual(FindValue(kStringPrefName, out));
-  ASSERT_TRUE(actual.get());
+  absl::optional<base::Value> actual(FindValue(kStringPrefName, out));
+  ASSERT_TRUE(actual);
   EXPECT_EQ(initial_value, *actual);
 
   // Switch kHomePage to managed and set a different value.
@@ -808,7 +807,7 @@ TEST_F(PrefServiceSyncableTest, DynamicManagedPreferencesWithSyncChange) {
 
   base::Value initial_value("http://example.com/initial");
   GetPrefs()->Set(kStringPrefName, initial_value);
-  std::unique_ptr<base::Value> actual(FindValue(kStringPrefName, out));
+  absl::optional<base::Value> actual(FindValue(kStringPrefName, out));
   EXPECT_EQ(initial_value, *actual);
 
   // Switch kHomePage to managed and set a different value.
@@ -841,7 +840,7 @@ TEST_F(PrefServiceSyncableTest, DynamicManagedDefaultPreferences) {
 
   EXPECT_TRUE(IsRegistered(kStringPrefName));
   EXPECT_TRUE(pref->IsDefaultValue());
-  EXPECT_FALSE(FindValue(kStringPrefName, out).get());
+  EXPECT_FALSE(FindValue(kStringPrefName, out));
   out.clear();
 
   // Switch kHomePage to managed and set a different value.
@@ -852,13 +851,13 @@ TEST_F(PrefServiceSyncableTest, DynamicManagedDefaultPreferences) {
   EXPECT_EQ(managed_value, GetPreferenceValue(kStringPrefName));
   EXPECT_FALSE(pref->IsDefaultValue());
   // There should be no synced value.
-  EXPECT_FALSE(FindValue(kStringPrefName, out).get());
+  EXPECT_FALSE(FindValue(kStringPrefName, out));
   // Switch kHomePage back to unmanaged.
   GetTestingPrefService()->RemoveManagedPref(kStringPrefName);
   // The original value should be picked up.
   EXPECT_TRUE(pref->IsDefaultValue());
   // There should still be no synced value.
-  EXPECT_FALSE(FindValue(kStringPrefName, out).get());
+  EXPECT_FALSE(FindValue(kStringPrefName, out));
 }
 
 TEST_F(PrefServiceSyncableTest, DeletePreference) {
