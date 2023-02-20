@@ -857,9 +857,6 @@ ci.builder(
         short_name = "m",
     ),
     notifies = ["cronet"],
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
