@@ -59,8 +59,8 @@ enum class AutofillSuggestionMethod {
   // The suggestion origin is not set.
   kUnknown = 0,
   // The suggestion comes from the payments bottom sheet.
-  KTouchToFillCreditCard = 1,
-  kMaxValue = KTouchToFillCreditCard
+  kTouchToFillCreditCard = 1,
+  kMaxValue = kTouchToFillCreditCard
 };
 
 // The structure of forms and fields, represented by their signatures, on a

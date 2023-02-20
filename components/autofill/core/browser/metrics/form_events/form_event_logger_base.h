@@ -75,7 +75,7 @@ class FormEventLoggerBase {
   // logging of funnel and key metrics.
   // The function must not be called from the destructor, since this makes it
   // impossible to dispatch virtual functions into the derived classes.
-  void OnDestoryed();
+  void OnDestroyed();
 
   // See BrowserAutofillManager::SuggestionContext for the definitions of the
   // AblationGroup parameters.

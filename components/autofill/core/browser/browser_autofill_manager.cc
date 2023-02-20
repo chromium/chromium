@@ -560,8 +560,8 @@ BrowserAutofillManager::~BrowserAutofillManager() {
 
   single_field_form_fill_router_->CancelPendingQueries(this);
 
-  address_form_event_logger_->OnDestoryed();
-  credit_card_form_event_logger_->OnDestoryed();
+  address_form_event_logger_->OnDestroyed();
+  credit_card_form_event_logger_->OnDestroyed();
 
   // We don't flush the `queued_vote_uploads_` here because that would trigger
   // network requests in the AutofillDownloadManager, which are managed with
@@ -2033,9 +2033,9 @@ void BrowserAutofillManager::Reset() {
   // is needed for constructing the new *form_event_logger_ instances which is
   // why calling AutofillManager::Reset() after constructing *form_event_logger_
   // instances is not an option.
-  address_form_event_logger_->OnDestoryed();
+  address_form_event_logger_->OnDestroyed();
   address_form_event_logger_.reset();
-  credit_card_form_event_logger_->OnDestoryed();
+  credit_card_form_event_logger_->OnDestroyed();
   credit_card_form_event_logger_.reset();
   AutofillManager::Reset();
   address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(

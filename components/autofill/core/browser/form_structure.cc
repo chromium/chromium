@@ -1331,7 +1331,7 @@ void FormStructure::LogQualityMetrics(
                                                    perfect_filling);
       }
       if (autofill_suggestion_method ==
-          AutofillSuggestionMethod::KTouchToFillCreditCard) {
+          AutofillSuggestionMethod::kTouchToFillCreditCard) {
         AutofillMetrics::LogTouchToFillCreditCardPerfectFilling(
             perfect_filling);
       }

@@ -82,7 +82,7 @@ FieldFillingStatus GetFieldFillingStatus(const AutofillField& field) {
 
 std::string GetMetricsSuffixByAutofillMethod(AutofillSuggestionMethod method) {
   switch (method) {
-    case AutofillSuggestionMethod::KTouchToFillCreditCard:
+    case AutofillSuggestionMethod::kTouchToFillCreditCard:
       return "TouchToFill";
     case AutofillSuggestionMethod::kUnknown:
       NOTREACHED();

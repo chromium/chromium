@@ -195,7 +195,7 @@ void FormEventLoggerBase::OnEditedAutofilledField() {
   has_logged_edited_autofilled_field_ = true;
 }
 
-void FormEventLoggerBase::OnDestoryed() {
+void FormEventLoggerBase::OnDestroyed() {
   DCHECK(!has_called_on_destoryed_);
   has_called_on_destoryed_ = true;
   // Don't record Funnel and Key metrics for the ablation group as they don't
