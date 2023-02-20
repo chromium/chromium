@@ -32,8 +32,6 @@ namespace digital_asset_links {
 // be bad.
 class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  // Inherited classes must not define member variables since the
-  // |weak_factory_| needs to be the last member.
   class OriginVerificationSchedulerBridge {
    public:
     using OriginVerifierCallback = base::OnceCallback<void(bool /*verified*/)>;
@@ -58,6 +56,18 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   ~BrowserURLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle implementation.
+
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override;
+
+  void WillRedirectRequest(
+      net::RedirectInfo* redirect_info,
+      const network::mojom::URLResponseHead& response_head,
+      bool* defer,
+      std::vector<std::string>* to_be_removed_request_headers,
+      net::HttpRequestHeaders* modified_request_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
+
   void WillProcessResponse(const GURL& response_url,
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
@@ -66,9 +76,15 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  private:
   explicit BrowserURLLoaderThrottle(OriginVerificationSchedulerBridge* bridge);
 
-  void OnCompleteCheck(std::string url, bool verified);
+  void OnCompleteCheck(std::string url,
+                       bool header_verification_result,
+                       bool dal_verified);
+
+  bool VerifyHeader(const network::mojom::URLResponseHead& response_head);
 
   raw_ptr<OriginVerificationSchedulerBridge> bridge_;
+
+  GURL url_;
 
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };

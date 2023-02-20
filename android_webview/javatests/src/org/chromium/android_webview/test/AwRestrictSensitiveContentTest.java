@@ -72,6 +72,12 @@ public class AwRestrictSensitiveContentTest {
         mAwContents = mTestContainerView.getAwContents();
 
         mWebServer = TestWebServer.start();
+
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> AwOriginVerificationScheduler.init(context.getPackageName(),
+                                mActivityTestRule.getAwBrowserContext(), context));
     }
 
     @After
@@ -80,15 +86,23 @@ public class AwRestrictSensitiveContentTest {
     }
 
     private String addPageToTestServer(TestWebServer webServer, String httpPath, String html) {
+        return addPageToTestServer(
+                webServer, httpPath, html, new ArrayList<Pair<String, String>>());
+    }
+
+    private String addPageToTestServer(TestWebServer webServer, String httpPath, String html,
+            List<Pair<String, String>> additionalHeaders) {
         List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
         headers.add(Pair.create("Content-Type", "text/html"));
         headers.add(Pair.create("Cache-Control", "no-store"));
+        headers.addAll(additionalHeaders);
         return webServer.setResponse(httpPath, html, headers);
     }
 
-    private String addAboutPageToTestServer(TestWebServer webServer) {
-        return addPageToTestServer(
-                webServer, "/" + CommonResources.ABOUT_FILENAME, CommonResources.ABOUT_HTML);
+    private String addAboutPageToTestServer(
+            TestWebServer webServer, List<Pair<String, String>> additionalHeaders) {
+        return addPageToTestServer(webServer, "/" + CommonResources.ABOUT_FILENAME,
+                CommonResources.ABOUT_HTML, additionalHeaders);
     }
 
     private String addAssetListToTestServer(TestWebServer webServer, String fingerprint) {
@@ -100,14 +114,10 @@ public class AwRestrictSensitiveContentTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=WebViewRestrictSensitiveContent"})
-    public void disablingFeatureDoesValidatePendingOrigins() throws Throwable {
-        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AwOriginVerificationScheduler.init(context.getPackageName(),
-                                mActivityTestRule.getAwBrowserContext(), context));
+    public void disablingFeatureDoesBlockOrRunValidation() throws Throwable {
+        List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(Pair.create("X-Embedder-Ancestors", "none"));
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer, headers);
 
         AwOriginVerificationScheduler scheduler = AwOriginVerificationScheduler.getInstance();
 
@@ -118,6 +128,7 @@ public class AwRestrictSensitiveContentTest {
                 () -> mTestContainerView.getAwContents().loadUrl(aboutPageUrl, null));
         mContentsClient.waitForFullLoad();
 
+        Assert.assertEquals(CommonResources.ABOUT_TITLE, mAwContents.getTitle());
         Assert.assertEquals(2, scheduler.getPendingOriginsForTesting().size());
         Assert.assertTrue(
                 scheduler.getPendingOriginsForTesting().contains(Origin.create(aboutPageUrl)));
@@ -147,19 +158,17 @@ public class AwRestrictSensitiveContentTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
-    public void testDoesNotBlockVerifiedContent() throws Throwable {
-        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
+    public void doesNotBlockDALVerifiedContent() throws Throwable {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+
+        List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(Pair.create("X-Embedder-Ancestors", "none"));
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer, headers);
 
         List<String> mSignatureFingerprints =
                 PackageUtils.getCertificateSHA256FingerprintForPackage(context.getPackageName());
         final String assetLinksUrl =
                 addAssetListToTestServer(mWebServer, mSignatureFingerprints.get(0));
-
-        mActivityTestRule.runOnUiThread(
-                ()
-                        -> AwOriginVerificationScheduler.init(context.getPackageName(),
-                                mActivityTestRule.getAwBrowserContext(), context));
 
         AwOriginVerificationScheduler scheduler = AwOriginVerificationScheduler.getInstance();
 
@@ -184,15 +193,81 @@ public class AwRestrictSensitiveContentTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
-    public void doesBlockAccessForFailedValidation() throws Throwable {
+    public void doesNotBlockHeaderVerifiedContent() throws Throwable {
+        final String webpageNotAvailable = "Webpage not available";
+        List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(Pair.create("X-Embedder-Ancestors", "*"));
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer, headers);
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> mTestContainerView.getAwContents().loadUrl(aboutPageUrl, null));
+        mContentsClient.waitForFullLoad();
+
+        Assert.assertEquals(CommonResources.ABOUT_TITLE, mAwContents.getTitle());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
+    public void headerCanBlockRedirects() throws Throwable {
         final String webpageNotAvailable = "Webpage not available";
 
-        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
+        List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(Pair.create("X-Embedder-Ancestors", "*"));
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer, headers);
+
+        String redirect_path = "/redirect.html";
+        List<Pair<String, String>> blocking_headers = new ArrayList<Pair<String, String>>();
+        blocking_headers.add(Pair.create("X-Embedder-Ancestors", "none"));
+        final String initialUrl =
+                mWebServer.setRedirect(redirect_path, aboutPageUrl, blocking_headers);
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> mTestContainerView.getAwContents().loadUrl(initialUrl, null));
+        mContentsClient.waitForFullLoad();
+        Assert.assertEquals(webpageNotAvailable, mAwContents.getTitle());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
+    public void allowDALVerifiedRedirects() throws Throwable {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        mActivityTestRule.runOnUiThread(
-                ()
-                        -> AwOriginVerificationScheduler.init(context.getPackageName(),
-                                mActivityTestRule.getAwBrowserContext(), context));
+
+        List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(Pair.create("X-Embedder-Ancestors", "*"));
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer, headers);
+
+        List<String> mSignatureFingerprints =
+                PackageUtils.getCertificateSHA256FingerprintForPackage(context.getPackageName());
+        final String assetLinksUrl =
+                addAssetListToTestServer(mWebServer, mSignatureFingerprints.get(0));
+
+        String redirect_path = "/redirect.html";
+        List<Pair<String, String>> blocking_headers = new ArrayList<Pair<String, String>>();
+        blocking_headers.add(Pair.create("X-Embedder-Ancestors", "none"));
+        final String initialUrl =
+                mWebServer.setRedirect(redirect_path, aboutPageUrl, blocking_headers);
+        AwOriginVerificationScheduler.getInstance().addPendingOriginForTesting(
+                Origin.create(initialUrl));
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> mTestContainerView.getAwContents().loadUrl(initialUrl, null));
+        mContentsClient.waitForFullLoad();
+        Assert.assertEquals(CommonResources.ABOUT_TITLE, mAwContents.getTitle());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
+    public void doesBlockForNotVerifiedContent() throws Throwable {
+        final String webpageNotAvailable = "Webpage not available";
+        List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(Pair.create("X-Embedder-Ancestors", "none"));
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer, headers);
 
         Set<Origin> pendingOrigins =
                 AwOriginVerificationScheduler.getInstance().getPendingOriginsForTesting();

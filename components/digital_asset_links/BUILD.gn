@@ -4,8 +4,6 @@
 
 source_set("digital_asset_links") {
   sources = [
-    "browser_url_loader_throttle.cc",
-    "browser_url_loader_throttle.h",
     "digital_asset_links_constants.cc",
     "digital_asset_links_constants.h",
     "digital_asset_links_handler.cc",
@@ -25,6 +23,8 @@ source_set("digital_asset_links") {
   ]
   if (is_android) {
     sources += [
+      "browser_url_loader_throttle.cc",
+      "browser_url_loader_throttle.h",
       "origin_verifier.cc",
       "origin_verifier.h",
     ]
