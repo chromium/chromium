@@ -70,8 +70,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // Imports URN to URL mappings from passed in mapping. Generally only called
   // once per PendingAdComponentsMap, on the mapping associated with a frame
   // being navigated to a URN. Calling this twice with the same
-  // PendingAdComponentsMap on the same FencedFrameURLMapping will assert,
-  // since it will result in adding the same URNs twice to the same mapping.
+  // PendingAdComponentsMap on the same FencedFrameURLMapping will do nothing.
   void ImportPendingAdComponents(
       const std::vector<std::pair<GURL, FencedFrameConfig>>& components);
 

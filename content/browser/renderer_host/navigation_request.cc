@@ -2284,11 +2284,6 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   common_params_->url = mapped_url_value;
   commit_params_->original_url = mapped_url_value;
 
-  // Create a view of the fenced frame properties from the perspective of the
-  // fenced frame content, which will be sent to its renderer.
-  commit_params_->fenced_frame_properties =
-      properties->RedactFor(content::FencedFrameEntity::kContent);
-
   // Store the browser's view of the fenced frame properties in the
   // `NavigationRequest`. Upon commit, it will be stored in the fenced frame
   // root `FrameTreeNode`.
@@ -6826,6 +6821,39 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     if (entry && entry->IsViewSourceMode()) {
       // Put the renderer in view source mode.
       render_frame_host_->GetAssociatedLocalFrame()->EnableViewSourceMode();
+    }
+  }
+
+  // For fenced frames, update the mapped URL to be the URL from navigation
+  // commit (after redirects), because we want future same-origin checks to be
+  // performed with respect to the first origin committed in the fenced frame.
+  if (is_embedder_initiated_fenced_frame_navigation_) {
+    // In certain circumstances, the FencedFrameProperties will not have a
+    // mapped url.
+    // * The initial about:blank navigation in a fenced frame.
+    // * Embedder-initiated FF root navigations to transparent (non-urn) urls.
+    // In those cases, we skip this step.
+    if (fenced_frame_properties_->mapped_url_.has_value()) {
+      fenced_frame_properties_->UpdateMappedURL(GetURL());
+    }
+  }
+
+  // Create a view of the fenced frame properties from the perspective of the
+  // fenced frame content, which will be sent to its renderer.
+  // On each navigation commit within the fenced frame tree, if the committed
+  // origin is same-origin to the urn's mapped_url (after redirects), the
+  // browser sends the `RedactedFencedFrameProperties` to the renderer for that
+  // frame. This is because we want to make fenced frame APIs available only
+  // in same-origin contexts.
+  const auto& computed_fenced_frame_properties = ComputeFencedFrameProperties();
+  if (computed_fenced_frame_properties.has_value()) {
+    if (computed_fenced_frame_properties->mapped_url_.has_value() &&
+        url::Origin::Create(common_params_->url)
+            .IsSameOriginWith(computed_fenced_frame_properties->mapped_url_
+                                  ->GetValueIgnoringVisibility())) {
+      commit_params_->fenced_frame_properties =
+          computed_fenced_frame_properties->RedactFor(
+              content::FencedFrameEntity::kContent);
     }
   }
 

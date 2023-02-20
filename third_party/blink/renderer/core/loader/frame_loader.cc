@@ -1056,42 +1056,6 @@ void FrameLoader::CommitNavigation(
     extra_data = document_loader_->TakeExtraData();
   }
 
-  // Fenced frame reporting metadata persists across same-origin navigations
-  // initiated from inside the fenced frame. Embedder-initiated navigations
-  // use a unique origin (in `FencedFrame::Navigate`), so the requestor is
-  // always considered cross-origin by the check (in MPArch).
-  // TODO(crbug.com/1381158): Move the checks for whether fenced frame reporting
-  // metadata should be copied or not, to the browser process.
-  bool is_requestor_same_origin =
-      !navigation_params->requestor_origin.IsNull() &&
-      navigation_params->requestor_origin.IsSameOriginWith(
-          WebSecurityOrigin::Create(navigation_params->url));
-  if (is_requestor_same_origin) {
-    // Check if all redirects are same origin with `requestor_origin`.
-    // If there is a cross-origin redirect, renderer will mark the fenced frame
-    // having no associated reporting metadata.
-    auto has_same_origin_with_requestor =
-        [&requestor_origin = std::as_const(
-             navigation_params->requestor_origin)](const auto& redirect) {
-          return requestor_origin.IsSameOriginWith(
-              WebSecurityOrigin::Create(redirect.new_url));
-        };
-    is_requestor_same_origin = base::ranges::all_of(
-        navigation_params->redirects, has_same_origin_with_requestor);
-  }
-  if (is_requestor_same_origin) {
-    if (navigation_params->has_fenced_frame_reporting) {
-      // In urn iframes, embedder-initiated navigations may be same-origin, so
-      // this isn't true.
-      DCHECK(!frame_->IsFencedFrameRoot() &&
-             blink::features::IsAllowURNsInIframeEnabled());
-    } else if (document_loader_->HasFencedFrameReporting()) {
-      // Fenced frame reporting metadata persists across same-origin navigations
-      // initiated from inside the fenced frame.
-      navigation_params->has_fenced_frame_reporting = true;
-    }
-  }
-
   // Create the OldDocumentInfoForCommit for the old document (that might be in
   // another FrameLoader) and save it in ScopedOldDocumentInfoForCommitCapturer,
   // so that the old document can access it and fill in the information as it

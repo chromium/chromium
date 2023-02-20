@@ -917,7 +917,17 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
   if (!properties || !properties->fenced_frame_reporter_) {
     mojo::ReportBadMessage(
         "Automatic beacon data can only be set in fenced frames or iframes "
-        "loaded with a URN.");
+        "loaded from a config with a fenced frame reporter.");
+    return;
+  }
+  // This metadata should only be present in the renderer in frames that are
+  // same-origin to the mapped url.
+  if (!properties->mapped_url_.has_value() ||
+      !current_origin().IsSameOriginWith(url::Origin::Create(
+          properties->mapped_url_->GetValueIgnoringVisibility()))) {
+    mojo::ReportBadMessage(
+        "Automatic beacon data can only be set from documents that are same-"
+        "origin to the mapped url from the fenced frame config.");
     return;
   }
   properties->fenced_frame_reporter_->UpdateAutomaticBeaconData(event_data,

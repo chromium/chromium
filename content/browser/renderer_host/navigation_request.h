@@ -983,15 +983,6 @@ class CONTENT_EXPORT NavigationRequest
     return prerender_frame_tree_node_id_.value();
   }
 
-  // Return the `FencedFrameProperties` attached to this `NavigationRequest`,
-  // if present. This will only return a non-null value during
-  // embedder-initiated fenced frame navigations of a fenced frame root (or
-  // urn iframe).
-  const absl::optional<FencedFrameProperties>& GetFencedFrameProperties()
-      const {
-    return fenced_frame_properties_;
-  }
-
   // Compute and return the `FencedFrameProperties` that this
   // `NavigationRequest` acts under, i.e. the properties attached to this
   // `NavigationRequest` if present, or the properties attached to the fenced

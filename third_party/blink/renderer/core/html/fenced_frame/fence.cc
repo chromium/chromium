@@ -49,41 +49,6 @@ void Fence::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-LocalFrame* Fence::GetAssociatedFencedFrameForReporting() {
-  LocalFrame* frame = DomWindow()->GetFrame();
-  DCHECK(frame);
-
-  if (blink::features::IsAllowURNsInIframeEnabled() &&
-      !frame->IsInFencedFrameTree()) {
-    DCHECK(frame->GetDocument());
-    return frame;
-  }
-
-  // We can only reach this point if we are in a fenced frame tree. If we were
-  // not in a fenced frame tree and `IsAllowURNsInIframeEnabled()` were
-  // disabled, then `this` would not have been constructed in the first place.
-  DCHECK(frame->IsInFencedFrameTree());
-
-  if (frame->GetFencedFrameMode() !=
-      mojom::blink::FencedFrameMode::kOpaqueAds) {
-    AddConsoleMessage(
-        "Fenced event reporting is only available in the 'opaque-ads' mode.");
-    return nullptr;
-  }
-
-  Frame* top_frame = frame->Top();
-  if (!frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-          top_frame->GetSecurityContext()->GetSecurityOrigin())) {
-    AddConsoleMessage(
-        "Fenced event reporting is only available in same-origin subframes.");
-    return nullptr;
-  }
-
-  LocalFrame* fenced_frame = DynamicTo<LocalFrame>(top_frame);
-  DCHECK(fenced_frame);
-  return fenced_frame;
-}
-
 void Fence::reportEvent(ScriptState* script_state,
                         const FenceEvent* event,
                         ExceptionState& exception_state) {
@@ -100,13 +65,10 @@ void Fence::reportEvent(ScriptState* script_state,
     return;
   }
 
-  LocalFrame* fenced_frame = GetAssociatedFencedFrameForReporting();
-  if (!fenced_frame) {
-    return;
-  }
-
+  LocalFrame* frame = DomWindow()->GetFrame();
+  DCHECK(frame->GetDocument());
   bool has_fenced_frame_reporting =
-      fenced_frame->GetDocument()->Loader()->HasFencedFrameReporting();
+      frame->GetDocument()->Loader()->HasFencedFrameReporting();
   if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
@@ -114,7 +76,7 @@ void Fence::reportEvent(ScriptState* script_state,
 
   for (const V8FenceReportingDestination& web_destination :
        event->destination()) {
-    fenced_frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
+    frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
         event->eventData(), event->eventType(),
         ToPublicDestination(web_destination));
   }
@@ -130,10 +92,6 @@ void Fence::setReportEventDataForAutomaticBeacons(
         "fully active");
     return;
   }
-  LocalFrame* fenced_frame = GetAssociatedFencedFrameForReporting();
-  if (!fenced_frame) {
-    return;
-  }
   if (event->eventType() != blink::kFencedFrameTopNavigationBeaconType) {
     AddConsoleMessage(event->eventType() +
                       " is not a valid automatic beacon event type.");
@@ -145,8 +103,10 @@ void Fence::setReportEventDataForAutomaticBeacons(
         "the maximum length, which is 64KB.");
     return;
   }
+  LocalFrame* frame = DomWindow()->GetFrame();
+  DCHECK(frame->GetDocument());
   bool has_fenced_frame_reporting =
-      fenced_frame->GetDocument()->Loader()->HasFencedFrameReporting();
+      frame->GetDocument()->Loader()->HasFencedFrameReporting();
   if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
@@ -156,9 +116,8 @@ void Fence::setReportEventDataForAutomaticBeacons(
        event->destination()) {
     destination_vector.push_back(ToPublicDestination(web_destination));
   }
-  fenced_frame->GetLocalFrameHostRemote()
-      .SetFencedFrameAutomaticBeaconReportEventData(event->eventData(),
-                                                    destination_vector);
+  frame->GetLocalFrameHostRemote().SetFencedFrameAutomaticBeaconReportEventData(
+      event->eventData(), destination_vector);
 }
 
 HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(

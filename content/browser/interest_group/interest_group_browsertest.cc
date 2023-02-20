@@ -5724,6 +5724,79 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   EXPECT_EQ(0u, GetAllInterestGroups().size());
 }
 
+// Runs ad auction with fenced frames enabled. The auction should succeed and
+// be loaded in a fenced frame. Then the fenced frame content performs a
+// cross-origin navigation on itself, and the new document loads an iframe that
+// is same-origin to the interest group. We leave the interest group from the
+// iframe, and it should succeed.
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupFencedFrameBrowserTest,
+    RunAdAuctionWithWinnerLeaveGroupAfterRendererInitiatedNavigation) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url =
+      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  AttachInterestGroupObserver();
+
+  // First, load an ad urn-mapped to `test_url`.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test", "/interest_group/bidding_logic.js"))
+              .SetTrustedBiddingSignalsUrl(https_server_->GetURL(
+                  "a.test", "/interest_group/trusted_bidding_signals.json"))
+              .SetTrustedBiddingSignalsKeys({{"key1"}})
+              .SetAds({{{test_url, R"({"ad":"metadata","here":[1,2]})"}}})
+              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      test_url, JsReplace(
+                    R"({
+seller: $1,
+decisionLogicUrl: $2,
+interestGroupBuyers: [$1],
+auctionSignals: {x: 1},
+sellerSignals: {yet: 'more', info: 1},
+perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+                  })",
+                    test_origin,
+                    https_server_->GetURL(
+                        "a.test", "/interest_group/decision_logic.js"))));
+
+  // Now perform a fenced frame content-initiated navigation to a cross-origin
+  // document that will load a same-origin (to the mapped url) iframe that will
+  // leave the interest group.
+  GURL inner_url = https_server_->GetURL(
+      "a.test", "/fenced_frames/ad_that_leaves_interest_group.html");
+  GURL ad_url = https_server_->GetURL(
+      "b.test", "/fenced_frames/outer_inner_frame_as_param.html");
+  GURL::Replacements rep;
+  std::string query = "innerFrame=" + base::EscapeUrlEncodedData(
+                                          inner_url.spec(), /*use_plus=*/false);
+  rep.SetQueryStr(query);
+  ad_url = ad_url.ReplaceComponents(rep);
+
+  RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
+  TestFrameNavigationObserver observer(ad_frame);
+  EXPECT_TRUE(ExecJs(ad_frame, JsReplace("document.location = $1;", ad_url)));
+  observer.Wait();
+
+  // Wait for the interest group to disappear.
+  WaitForInterestGroupsSatisfying(
+      test_origin,
+      base::BindLambdaForTesting(
+          [](const std::vector<StorageInterestGroup>& groups) -> bool {
+            return groups.empty();
+          }));
+}
+
 // Creates a Fenced Frame and then tries to use the leaveAdInterestGroup API.
 // Leaving the interest group should silently fail.
 IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,

@@ -7983,6 +7983,9 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
     return;
   }
 
+  // Treat the automatic beacon as if it's being sent by the document that
+  // initiated the top-level navigation. (You can think of it like a
+  // reportEvent call from that document.)
   RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
       navigation_request.GetInitiatorProcessID(),
       navigation_request.GetInitiatorFrameToken().value());
@@ -7990,26 +7993,33 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
     return;
   }
 
-  RenderFrameHostImpl* initiator_main_rfh = initiator_rfh->GetMainFrame();
-
+  // Beacons can only be sent from inside a fenced frame/urn iframe tree, where
+  // there is a fenced frame reporter.
   const absl::optional<FencedFrameProperties>& properties =
-      initiator_main_rfh->frame_tree_node()->GetFencedFrameProperties();
-  // Navigations that initiate from a fenced frame or iframe loaded with a urn
-  // and target either a new window or `_unfencedTop` should send an automatic
-  // beacon.
+      initiator_rfh->frame_tree_node()->GetFencedFrameProperties();
   if (!properties.has_value() || !properties->fenced_frame_reporter_) {
     return;
   }
 
+  // If there is no automatic beacon declared, there is nothing to send.
   absl::optional<AutomaticBeaconInfo> info =
       properties->fenced_frame_reporter_->automatic_beacon_info();
   if (!info) {
     return;
   }
 
+  // Beacons can only be sent when the initiator frame is same-origin with the
+  // fenced frame config's mapped url.
+  if (!properties->mapped_url_.has_value() ||
+      !initiator_rfh->GetLastCommittedOrigin().IsSameOriginWith(
+          url::Origin::Create(
+              properties->mapped_url_->GetValueIgnoringVisibility()))) {
+    return;
+  }
+
   for (blink::FencedFrame::ReportingDestination destination :
        info->destination) {
-    initiator_main_rfh->SendFencedFrameReportingBeaconInternal(
+    initiator_rfh->SendFencedFrameReportingBeaconInternal(
         info->data, blink::kFencedFrameTopNavigationBeaconType, destination,
         /*from_renderer=*/false);
   }
@@ -8030,11 +8040,20 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     // This implies there is an inconsistency between the browser and the
     // renderer.
     mojo::ReportBadMessage(
-        "This frame had reporting metadata registered in its renderer process "
-        "but not in its browser process. The reporting metadata should be "
-        "consistent between the two.");
+        "This frame has no fenced frame reporter registered in the browser.");
     return;
   }
+
+  if (!fenced_frame_properties->mapped_url_.has_value() ||
+      !GetLastCommittedOrigin().IsSameOriginWith(
+          url::Origin::Create(fenced_frame_properties->mapped_url_
+                                  ->GetValueIgnoringVisibility()))) {
+    mojo::ReportBadMessage(
+        "This frame is cross-origin to the mapped url of its fenced frame "
+        "config, so the renderer should not be able to call reportEvent.");
+    return;
+  }
+
   if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
     mojo::ReportBadMessage(
         "The data provided to SendFencedFrameReportingBeacon() exceeds the "
@@ -12099,12 +12118,22 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     }
 
     const absl::optional<FencedFrameProperties>& fenced_frame_properties =
-        navigation_request->GetFencedFrameProperties();
-    if (fenced_frame_properties) {
-      // This may only be done after creating the DocumentAssociatedData for the
-      // new document, if appropriate, since `fenced_frame_urls_map` hangs off
-      // of that.
+        navigation_request->ComputeFencedFrameProperties();
+    // On navigations of fenced frame/urn iframe roots initiated within the
+    // fenced frame/urn iframe tree, store document-scoped and page-scoped
+    // metadata again.
+    // TODO(crbug.com/1347953): Remove this metadata, and access the metadata
+    // directly in the FencedFrameProperties.
+    if (fenced_frame_properties &&
+        (frame_tree_node()->IsFencedFrameRoot() ||
+         !frame_tree_node()->IsInFencedFrameTree())) {
       if (fenced_frame_properties->nested_urn_config_pairs_.has_value()) {
+        // Store nested ad components in the fenced frame's url map.
+        // This may only be done after creating the DocumentAssociatedData for
+        // the new document, if appropriate, since `fenced_frame_urls_map` hangs
+        // off of that. In urn iframes, unlike in fenced frames, navigations of
+        // the urn iframe root don't create a new Page (because the root of the
+        // Page is the top-level frame). So this operation is a no-op.
         GetPage().fenced_frame_urls_map().ImportPendingAdComponents(
             fenced_frame_properties->nested_urn_config_pairs_
                 ->GetValueIgnoringVisibility());

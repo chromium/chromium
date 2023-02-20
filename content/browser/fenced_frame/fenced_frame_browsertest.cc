@@ -4938,8 +4938,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
         return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
       };
   console_observer.SetFilter(base::BindRepeating(filter));
-  console_observer.SetPattern(
-      GetConsoleWarningPattern(Step::Result::kModeNotOpaque));
+  console_observer.SetPattern(GetConsoleWarningPattern(Step::Result::kNoMeta));
 
   // Perform the reportEvent call, with a unique body.
   const char report_event_script[] = R"(
@@ -5022,7 +5021,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   RunTest(config);
 }
 
-// reportEvent should work in same-origin subframes.
+// reportEvent should work in subframes that are same-origin to the most recent
+// embedder-initiated committed url in the fenced frame, regardless of the
+// fenced frame root's current url.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventNestedIframeSameOriginNavigation) {
   std::vector<Step> config = {
@@ -5037,11 +5038,22 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .destination = {"a.test", "/fenced_frames/title1.html"},
           .report_event_result = Step::Result::kSuccess,
       },
+      {
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
   };
   RunTest(config);
 }
 
-// reportEvent shouldn't work in cross-origin subframes.
+// reportEvent shouldn't work in subframes that are cross-origin to the most
+// recent embedder-initiated committed url in the fenced frame, regardless of
+// the fenced frame root's current url.
 IN_PROC_BROWSER_TEST_F(
     FencedFrameReportEventBrowserTest,
     FencedFrameReportEventNestedIframeCrossOriginNavigation) {
@@ -5055,7 +5067,16 @@ IN_PROC_BROWSER_TEST_F(
       {
           .is_target_nested_iframe = true,
           .destination = {"b.test", "/fenced_frames/title1.html"},
-          .report_event_result = Step::Result::kCrossOrigin,
+          .report_event_result = Step::Result::kNoMeta,
+      },
+      {
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
       },
   };
   RunTest(config);
@@ -5146,7 +5167,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 }
 
 // Cross-origin redirects in the initial URN navigation shouldn't affect
-// reporting metadata either.
+// reporting metadata either. The final URL in the redirect chain should be the
+// one used for subsequent same- or cross- origin checks.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventEmbedderCrossOriginRedirect) {
   std::vector<Step> config = {
@@ -5161,14 +5183,26 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
               },
           .report_event_result = Step::Result::kSuccess,
       },
+      {
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
+      },
+      {
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoMeta,
+      },
+      {
+          .destination = {"c.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
   };
   RunTest(config);
 }
 
-// Metadata should be preserved if all URLs in an FF-initiated redirect chain
-// are same-origin.
+// Metadata should be preserved as long as the final URL in a FF-initiated
+// redirect chain is same-origin.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
-                       FencedFrameReportEventFFSameOriginRedirect) {
+                       FencedFrameReportEventFFSameOriginInterveningRedirect) {
   std::vector<Step> config = {
       {
           .is_embedder_initiated = true,
@@ -5189,10 +5223,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   RunTest(config);
 }
 
-// Metadata should be dropped if any URLs in an FF-initiated redirect chain
-// are cross-origin.
+// Metadata should be preserved as long as the final URL in an FF-initiated
+// redirect chain is same-origin.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
-                       FencedFrameReportEventFFCrossOriginRedirect) {
+                       FencedFrameReportEventFFCrossOriginInterveningRedirect) {
   std::vector<Step> config = {
       {
           .is_embedder_initiated = true,
@@ -5207,7 +5241,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                   {"b.test", "/fenced_frames/redirect2.html"},
                   {"a.test", "/fenced_frames/title1.html"},
               },
-          .report_event_result = Step::Result::kNoMeta,
+          .report_event_result = Step::Result::kSuccess,
       },
   };
   RunTest(config);

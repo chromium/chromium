@@ -80,7 +80,18 @@ FencedFrameURLMapping::SharedStorageURNMappingResult::
 void FencedFrameURLMapping::ImportPendingAdComponents(
     const std::vector<std::pair<GURL, FencedFrameConfig>>& components) {
   for (const auto& component_ad : components) {
-    DCHECK(!IsMapped(component_ad.first));
+    // If this is called redundantly, do nothing.
+    // This happens in urn iframes, because the FencedFrameURLMapping is
+    // attached to the Page. In fenced frames, the Page is rooted at the fenced
+    // frame root, so a new FencedFrameURLMapping is created when the root is
+    // navigated. In urn iframes, the Page is rooted at the top-level frame, so
+    // the same FencedFrameURLMapping exists after "urn iframe root"
+    // navigations.
+    // TODO(crbug.com/1415475): Change this to a CHECK when we remove urn
+    // iframes.
+    if (IsMapped(component_ad.first)) {
+      return;
+    }
 
     UrnUuidToUrlMap::iterator it =
         urn_uuid_to_url_map_.emplace(component_ad.first, component_ad.second)

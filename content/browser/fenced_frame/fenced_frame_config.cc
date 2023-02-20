@@ -252,4 +252,9 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   return redacted_properties;
 }
 
+void FencedFrameProperties::UpdateMappedURL(GURL url) {
+  CHECK(mapped_url_.has_value());
+  mapped_url_->value_ = url;
+}
+
 }  // namespace content
