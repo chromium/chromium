@@ -75,10 +75,6 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
 
   void AddPreferredPackage(const std::string& package_name) override;
 
-  void AddPreferredApp(const std::string& package_name,
-                       IntentFilter intent_filter,
-                       mojom::IntentInfoPtr intent) override;
-
   void SetVerifiedLinks(const std::vector<std::string>& package_names,
                         bool always_open) override;
 

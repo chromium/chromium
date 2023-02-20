@@ -129,11 +129,6 @@ class ArcApps : public KeyedService,
                     MenuType menu_type,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
-  void OnPreferredAppSet(
-      const std::string& app_id,
-      IntentFilterPtr intent_filter,
-      IntentPtr intent,
-      ReplacedAppPreferences replaced_app_preferences) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;
 
   void PauseApp(const std::string& app_id) override;

@@ -196,17 +196,6 @@ class AppPublisher {
   // available in App Management.
   virtual void OpenNativeSettings(const std::string& app_id);
 
-  // Indicates that the app identified by |app_id| has been set as a preferred
-  // app for |intent_filter|, and the |replaced_app_preferences| is the apps
-  // that are no longer preferred apps for their corresponding |intent_filters|.
-  // This method is used by the App Service to sync the change to publishers.
-  // |intent| is needed to set the preferred app in ARC.
-  virtual void OnPreferredAppSet(
-      const std::string& app_id,
-      IntentFilterPtr intent_filter,
-      IntentPtr intent,
-      ReplacedAppPreferences replaced_app_preferences) {}
-
   // Indicates that the app identified by |app_id| has had its supported links
   // preference changed, so that all supported link filters are either preferred
   // (|open_in_app| is true) or not preferred (|open_in_app| is false). This

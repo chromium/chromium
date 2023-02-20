@@ -403,7 +403,7 @@ interface IntentHelperHost {
 };
 
 // Sends intents to ARC on behalf of Chrome.
-// Deprecated method ID: 0, 7, 11, 12, 14, 18
+// Deprecated method ID: 0, 7, 11, 12, 14, 17, 18
 // Next method ID: 22
 interface IntentHelperInstance {
   // Sets the given package as a preferred package. The next time an ACTION_VIEW
@@ -411,16 +411,6 @@ interface IntentHelperInstance {
   // the ResolverActivity, this package will be picked if it is on the list.
   // When multiple packages are set as preferred, the most recent setting wins.
   [MinVersion=7] AddPreferredPackage@8(string package_name);
-
-  // Sets the given package as a preferred app for the given |intent_filter|
-  // and |intent_info|.
-  // The |package_name| is selected by the user on Chrome-side to remember the
-  // user preference. The |intent_info| is used to generate the components set
-  // and match for setting the preferred activity.
-  // This is used to sync the preferred app setting from Chrome OS.
-  [MinVersion=32] AddPreferredApp@17(string package_name,
-                                     IntentFilter intent_filter,
-                                     IntentInfo intent_info);
 
   // Set the verified link domain status to either always open (|always_open| is
   // true) or always ask (|always_open| is false) for the |package_names|.

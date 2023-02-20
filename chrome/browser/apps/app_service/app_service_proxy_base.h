@@ -109,11 +109,6 @@ class AppServiceProxyBase : public KeyedService,
   void UnregisterPublisher(AppType app_type);
 
   // PreferredAppsImpl::Host overrides.
-  void OnPreferredAppSet(
-      const std::string& app_id,
-      IntentFilterPtr intent_filter,
-      IntentPtr intent,
-      ReplacedAppPreferences replaced_app_preferences) override;
   void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                          bool open_in_app) override;
 
@@ -245,8 +240,12 @@ class AppServiceProxyBase : public KeyedService,
       std::vector<apps::IntentFilePtr> files);
 
   // Adds a preferred app for |url|.
+  // Deprecated, prefer calling SetSupportedLinksPreference() instead.
+  // TODO(crbug.com/1416434): Migrate existing users.
   void AddPreferredApp(const std::string& app_id, const GURL& url);
-  // Adds a preferred app for |intent|.
+  // Adds a preferred app for |intent|. Only supports link intents.
+  // Deprecated, prefer calling SetSupportedLinksPreference() instead.
+  // TODO(crbug.com/1416434): Migrate existing users.
   void AddPreferredApp(const std::string& app_id, const IntentPtr& intent);
 
   // Sets |app_id| as the preferred app for all of its supported links ('view'

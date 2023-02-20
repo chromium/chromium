@@ -196,19 +196,6 @@ void AppServiceProxyBase::UnregisterPublisher(AppType app_type) {
   publishers_.erase(app_type);
 }
 
-void AppServiceProxyBase::OnPreferredAppSet(
-    const std::string& app_id,
-    IntentFilterPtr intent_filter,
-    IntentPtr intent,
-    ReplacedAppPreferences replaced_app_preferences) {
-  for (const auto& iter : publishers_) {
-    iter.second->OnPreferredAppSet(
-        app_id, intent_filter ? intent_filter->Clone() : nullptr,
-        intent ? intent->Clone() : nullptr,
-        CloneIntentFiltersMap(replaced_app_preferences));
-  }
-}
-
 void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
     const std::string& app_id,
     bool open_in_app) {
@@ -572,14 +559,11 @@ void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
     return;
   }
 
-  if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
-    SetSupportedLinksPreference(app_id);
-    return;
-  }
+  // AddPreferredApp currently only supports adding preferences for link
+  // intents.
+  DCHECK(apps_util::IsSupportedLinkForApp(app_id, intent_filter));
 
-  preferred_apps_impl_->AddPreferredApp(
-      app_registry_cache_.GetAppType(app_id), app_id, std::move(intent_filter),
-      intent->Clone(), /*from_publisher=*/false);
+  SetSupportedLinksPreference(app_id);
 }
 
 void AppServiceProxyBase::SetSupportedLinksPreference(

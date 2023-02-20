@@ -48,12 +48,6 @@ class PreferredAppsImpl {
     // PreferredAppsList.
     virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes) {}
 
-    virtual void OnPreferredAppSet(
-        const std::string& app_id,
-        IntentFilterPtr intent_filter,
-        IntentPtr intent,
-        ReplacedAppPreferences replaced_app_preferences) = 0;
-
     // Notifies the host that the supported links preference for a particular
     // `app_id` was enabled/disabled. Used by the host to notify the app
     // publisher (if any) of the change.
@@ -72,11 +66,6 @@ class PreferredAppsImpl {
 
   ~PreferredAppsImpl();
 
-  void AddPreferredApp(AppType app_type,
-                       const std::string& app_id,
-                       IntentFilterPtr intent_filter,
-                       IntentPtr intent,
-                       bool from_publisher);
   void RemovePreferredApp(const std::string& app_id);
   void SetSupportedLinksPreference(const std::string& app_id,
                                    IntentFilters all_link_filters);
@@ -107,11 +96,6 @@ class PreferredAppsImpl {
   // be run immediately if preferred apps are already initialized.
   void RunAfterPreferredAppsReady(base::OnceClosure task);
 
-  void AddPreferredAppImpl(AppType app_type,
-                           const std::string& app_id,
-                           IntentFilterPtr intent_filter,
-                           IntentPtr intent,
-                           bool from_publisher);
   void RemovePreferredAppImpl(const std::string& app_id);
   void SetSupportedLinksPreferenceImpl(const std::string& app_id,
                                        IntentFilters all_link_filters);

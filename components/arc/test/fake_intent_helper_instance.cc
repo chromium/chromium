@@ -55,10 +55,6 @@ FakeIntentHelperInstance::~FakeIntentHelperInstance() {}
 void FakeIntentHelperInstance::AddPreferredPackage(
     const std::string& package_name) {}
 
-void FakeIntentHelperInstance::AddPreferredApp(const std::string& package_name,
-                                               IntentFilter intent_filter,
-                                               mojom::IntentInfoPtr intent) {}
-
 void FakeIntentHelperInstance::SetVerifiedLinks(
     const std::vector<std::string>& package_names,
     bool always_open) {

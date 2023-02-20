@@ -96,17 +96,6 @@ PreferredAppsImpl::PreferredAppsImpl(
 
 PreferredAppsImpl::~PreferredAppsImpl() = default;
 
-void PreferredAppsImpl::AddPreferredApp(AppType app_type,
-                                        const std::string& app_id,
-                                        IntentFilterPtr intent_filter,
-                                        IntentPtr intent,
-                                        bool from_publisher) {
-  RunAfterPreferredAppsReady(base::BindOnce(
-      &PreferredAppsImpl::AddPreferredAppImpl, weak_ptr_factory_.GetWeakPtr(),
-      app_type, app_id, std::move(intent_filter), std::move(intent),
-      from_publisher));
-}
-
 void PreferredAppsImpl::RemovePreferredApp(const std::string& app_id) {
   RunAfterPreferredAppsReady(
       base::BindOnce(&PreferredAppsImpl::RemovePreferredAppImpl,
@@ -237,37 +226,6 @@ void PreferredAppsImpl::RunAfterPreferredAppsReady(base::OnceClosure task) {
   } else {
     pending_preferred_apps_tasks_.push(std::move(task));
   }
-}
-
-void PreferredAppsImpl::AddPreferredAppImpl(AppType app_type,
-                                            const std::string& app_id,
-                                            IntentFilterPtr intent_filter,
-                                            IntentPtr intent,
-                                            bool from_publisher) {
-  DCHECK(!app_id.empty());
-
-  auto replaced_apps =
-      preferred_apps_list_.AddPreferredApp(app_id, intent_filter);
-
-  WriteToJSON(profile_dir_, preferred_apps_list_);
-
-  auto changes = std::make_unique<PreferredAppChanges>();
-  changes->added_filters[app_id].push_back(intent_filter->Clone());
-  changes->removed_filters = CloneIntentFiltersMap(replaced_apps);
-  host_->OnPreferredAppsChanged(std::move(changes));
-
-  if (from_publisher || !intent) {
-    return;
-  }
-
-  // Sync the change to publishers. Because |replaced_app_preference| can
-  // be any app type, we should run this for all publishers. Currently
-  // only implemented in ARC publisher.
-  // TODO(crbug.com/1322000): The |replaced_app_preference| can be really big,
-  // update this logic to only call the relevant publisher for each app after
-  // updating the storage structure.
-  host_->OnPreferredAppSet(app_id, std::move(intent_filter), std::move(intent),
-                           std::move(replaced_apps));
 }
 
 void PreferredAppsImpl::RemovePreferredAppImpl(const std::string& app_id) {
