@@ -224,7 +224,13 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlSwitchToGaia) {
 }
 
 // Tests the cancel button in Verify Screen.
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, VerifyScreenCancel) {
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_VerifyScreenCancel DISABLED_VerifyScreenCancel
+#else
+#define MAYBE_VerifyScreenCancel VerifyScreenCancel
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_VerifyScreenCancel) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   Login();
@@ -357,7 +363,13 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedDynamic) {
 }
 
 // Tests the multiple password scraped flow.
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedMultiple) {
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ScrapedMultiple DISABLED_ScrapedMultiple
+#else
+#define MAYBE_ScrapedMultiple ScrapedMultiple
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedMultiple) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
 
   Login();
@@ -394,7 +406,13 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedMultiple) {
 }
 
 // Test when no password is scraped.
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedNone) {
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ScrapedNone DISABLED_ScrapedNone
+#else
+#define MAYBE_ScrapedNone ScrapedNone
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedNone) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_no_passwords.html");
 
   Login();
@@ -430,7 +448,13 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedNone) {
 
 // Tests another account is authenticated other than the one used in sign
 // in.
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, VerifyAgainFlow) {
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_VerifyAgainFlow DISABLED_VerifyAgainFlow
+#else
+#define MAYBE_VerifyAgainFlow VerifyAgainFlow
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_VerifyAgainFlow) {
   fake_gaia_mixin()->fake_gaia()->SetFakeMergeSessionParams(
       FakeGaiaMixin::kEnterpriseUser2, kTestAuthSIDCookie1,
       kTestAuthLSIDCookie1);
@@ -465,7 +489,13 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, VerifyAgainFlow) {
   ASSERT_TRUE(session_manager::SessionManager::Get()->IsScreenLocked());
 }
 
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ShowNetworkDialog) {
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ShowNetworkDialog DISABLED_ShowNetworkDialog
+#else
+#define MAYBE_ShowNetworkDialog ShowNetworkDialog
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ShowNetworkDialog) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -486,7 +516,13 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ShowNetworkDialog) {
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_TriggerDialogOnNetworkOff DISABLED_TriggerDialogOnNetworkOff
+#else
+#define MAYBE_TriggerDialogOnNetworkOff TriggerDialogOnNetworkOff
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_TriggerDialogOnNetworkOff) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -596,7 +632,16 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
   reauth_dialog_helper->ExpectNetworkDialogHidden();
 }
 
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_TriggerAndHideCaptivePortalDialog \
+  DISABLED_TriggerAndHideCaptivePortalDialog
+#else
+#define MAYBE_TriggerAndHideCaptivePortalDialog \
+  TriggerAndHideCaptivePortalDialog
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest,
+                       MAYBE_TriggerAndHideCaptivePortalDialog) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -650,7 +695,13 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, LoadAbort) {
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_LoadAbort DISABLED_LoadAbort
+#else
+#define MAYBE_LoadAbort LoadAbort
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_LoadAbort) {
   Login();
 
   // Make gaia landing page unreachable
@@ -802,8 +853,8 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
   ScreenLockerTester().WaitForUnlock();
 }
 
-// TODO(crbug.com/1415984): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ProxyAuthCanBeCancelled DISABLED_ProxyAuthCanBeCancelled
 #else
 #define MAYBE_ProxyAuthCanBeCancelled ProxyAuthCanBeCancelled
