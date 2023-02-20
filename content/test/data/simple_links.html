@@ -56,7 +56,11 @@
   }
 
   function clickLinkToSelf() {
-    return simulateClick(document.getElementById("linkToSelf"));
+    return simulateClick(document.getElementById("link_to_self_opener"));
+  }
+
+  function clickLinkToSelfNoOpener() {
+    return simulateClick(document.getElementById("link_to_self_no_opener"));
   }
 
   function clickGoogleChromeLink() {
@@ -73,9 +77,11 @@
 <a href="title2.html" id="same_site_new_window_with_opener_link" rel="opener" target="_blank">same-site new window with opener</a>
 <a href="http://foo.com/title2.html" id="cross_site_new_window_link" rel="opener" target="_blank">cross-site new window</a>
 <a href="http://foo.com/title2.html" id="cross_site_new_window_no_opener_link" rel="noopener" target="_blank">cross-site new window no opener</a>
-<a href="" id="linkToSelf" rel="opener" target="_blank">self new window</a>
+<a href="" id="link_to_self_opener" rel="opener" target="_blank">self new window_opener</a>
+<a href="" id="link_to_self_no_opener" rel="noopener" target="_blank">self new window_noopener</a>
 <script>
-  document.getElementById("linkToSelf").href = window.location.toString();
+  document.getElementById("link_to_self_opener").href = window.location.toString();
+  document.getElementById("link_to_self_no_opener").href = window.location.toString();
 </script>
 <a href="googlechrome://" id="google_chrome_link">googlechrome:</a></br>
 </html>

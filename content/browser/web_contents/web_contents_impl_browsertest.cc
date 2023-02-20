@@ -3656,11 +3656,53 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       SuppressedPopupWindowBrowserNavResumeLoad) {
+  // This test verifies a suppressed pop up that requires navigation from
+  // browser side works with a delegate that delays navigations of pop ups.
+  base::FilePath test_data_dir;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  base::FilePath simple_links_path =
+      test_data_dir.Append(GetTestDataFilePath())
+          .Append(FILE_PATH_LITERAL("simple_links.html"));
+  GURL url("file://" + simple_links_path.AsUTF8Unsafe());
+
+  shell()->set_delay_popup_contents_delegate_for_testing(true);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  Shell* new_shell = nullptr;
+  WebContents* new_contents = nullptr;
+  {
+    ShellAddedObserver new_shell_observer;
+    bool success = false;
+    EXPECT_TRUE(ExecuteScriptAndExtractBool(
+        shell(),
+        "window.domAutomationController.send(clickLinkToSelfNoOpener());",
+        &success));
+    new_shell = new_shell_observer.GetShell();
+    new_contents = new_shell->web_contents();
+    // Delaying popup holds the initial load of |url|.
+    EXPECT_TRUE(WaitForLoadStop(new_contents));
+    EXPECT_TRUE(new_contents->GetController()
+                    .GetLastCommittedEntry()
+                    ->IsInitialEntry());
+    EXPECT_NE(url, new_contents->GetLastCommittedURL());
+  }
+
+  EXPECT_FALSE(new_contents->GetDelegate());
+  new_contents->SetDelegate(new_shell);
+  EXPECT_TRUE(
+      static_cast<WebContentsImpl*>(new_contents)->delayed_load_url_params_);
+  new_contents->ResumeLoadingCreatedWebContents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_EQ(url, new_contents->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        PopupWindowBrowserNavResumeLoad) {
   // This test verifies a pop up that requires navigation from browser side
   // works with a delegate that delays navigations of pop ups.
-  // Create a file: scheme pop up from a file: scheme page, which requires
-  // requires an OpenURL IPC to the browser process.
+  // Create a file: scheme non-suppressed pop up from a file: scheme page will
+  // be blocked and wait for the renderer to signal.
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
   base::FilePath simple_links_path =
@@ -3691,6 +3733,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   EXPECT_FALSE(new_contents->GetDelegate());
   new_contents->SetDelegate(new_shell);
+  EXPECT_FALSE(
+      static_cast<WebContentsImpl*>(new_contents)->delayed_load_url_params_);
+  EXPECT_FALSE(
+      static_cast<WebContentsImpl*>(new_contents)->delayed_open_url_params_);
+  EXPECT_TRUE(static_cast<WebContentsImpl*>(new_contents)->is_resume_pending_);
   new_contents->ResumeLoadingCreatedWebContents();
   EXPECT_TRUE(WaitForLoadStop(new_contents));
   EXPECT_EQ(url, new_contents->GetLastCommittedURL());
