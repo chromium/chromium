@@ -2338,7 +2338,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .Offline(),
         TestCase("openOfficeWordFromDriveOffline")
             .EnableUploadOfficeToCloud()
-            .Offline()));
+            .Offline(),
+        TestCase("officeShowNudgeGoogleDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GuestOs, /* guest_os.js */

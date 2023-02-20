@@ -2947,6 +2947,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "setPrefOfficeFileMovedToGoogleDrive") {
+    absl::optional<int64_t> timestamp = value.FindDouble("timestamp");
+    ASSERT_TRUE(timestamp.has_value());
+    profile()->GetPrefs()->SetTime(prefs::kOfficeFileMovedToGoogleDrive,
+                                   base::Time::FromJsTime(timestamp.value()));
+    return;
+  }
+
   if (name == "setCrostiniEnabled") {
     absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());

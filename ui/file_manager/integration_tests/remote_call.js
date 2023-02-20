@@ -1012,4 +1012,29 @@ export class RemoteCallFilesApp extends RemoteCall {
       path,
     });
   }
+
+  /**
+   * Wait for the nudge with the given text to be visible.
+   *
+   * @param {string} appId app window ID.
+   * @param {string} expectedText Text that should be displayed in the Nudge.
+   * @return {!Promise<boolean>}
+   */
+  async waitNudge(appId, expectedText) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const nudgeDot = await this.waitForElementStyles(
+          appId, ['xf-nudge', '#dot'], ['left']);
+      if (nudgeDot.renderedLeft < 0) {
+        return pending(caller, 'Wait nudge to appear');
+      }
+
+      const actualText =
+          await this.waitForElement(appId, ['xf-nudge', '#text']);
+      console.log(actualText);
+      chrome.test.assertEq(actualText.text, expectedText);
+
+      return true;
+    });
+  }
 }
