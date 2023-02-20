@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// DISCLAIMER: Please keep messages and enums in this file in sync with
+// chrome/cros/dpanel/data/devices/proto/requests.proto file in google3
+// repository.
+
 syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
