@@ -331,9 +331,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     hiddenNodes.insert(self.folder);
   }
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
-      initWithNavigationController:self.navigationController
-                           browser:_browser
-                       hiddenNodes:hiddenNodes];
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser
+                           hiddenNodes:hiddenNodes];
   _folderChooserCoordinator.selectedFolder = self.parentFolder;
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];

@@ -140,9 +140,9 @@
 
   std::set<const bookmarks::BookmarkNode*> hiddenNodes{[_mediator bookmark]};
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
-      initWithNavigationController:_navigationController
-                           browser:self.browser
-                       hiddenNodes:hiddenNodes];
+      initWithBaseNavigationController:_navigationController
+                               browser:self.browser
+                           hiddenNodes:hiddenNodes];
   _folderChooserCoordinator.selectedFolder = [_mediator folder];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];

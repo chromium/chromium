@@ -24,13 +24,11 @@ class BookmarkNode;
 // Coordinator's delegate.
 @property(nonatomic, weak) id<BookmarksFolderChooserCoordinatorDelegate>
     delegate;
-
 // The current nodes (bookmarks or folders) that are considered for a move.
 // Will be set right before this coordinator sends a confirm selection signal
 // through it's delegate.
 @property(nonatomic, assign, readonly)
     const std::set<const bookmarks::BookmarkNode*>& editedNodes;
-
 // The folder that has a blue check mark beside it in the UI. This property has
 // 2 functionality.
 // - It can be set while initializing this coordinator to already have a blue
@@ -46,12 +44,12 @@ class BookmarkNode;
 // `hiddenNodes` is a list of nodes to hide in the chooser view. This is to
 // make sure a folder cannot be moved into one of its children.
 - (instancetype)
-    initWithNavigationController:(UINavigationController*)navigationController
-                         browser:(Browser*)browser
-                     hiddenNodes:
-                         (const std::set<const bookmarks::BookmarkNode*>&)
-                             hiddenNodes;
-
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                         hiddenNodes:
+                             (const std::set<const bookmarks::BookmarkNode*>&)
+                                 hiddenNodes;
 // Initializes BookmarksFolderChooserCoordinator. A navigation controller is
 // created, with the chooser folder view as the root view controller.
 // `selectedFolder` will be the folder with check mark in the UI.
@@ -62,7 +60,6 @@ class BookmarkNode;
                        browser:(Browser*)browser
                    hiddenNodes:(const std::set<const bookmarks::BookmarkNode*>&)
                                    hiddenNodes NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 

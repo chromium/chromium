@@ -20,7 +20,6 @@ class BookmarkNode;
 }  // namespace bookmarks
 
 // A folder selector view controller.
-//
 // This controller monitors the state of the bookmark model, so changes to the
 // bookmark model can affect this controller's state.
 // The bookmark model is assumed to be loaded, thus also not to be NULL.
@@ -29,10 +28,8 @@ class BookmarkNode;
 @property(nonatomic, weak)
     id<BookmarksFolderChooserViewControllerPresentationDelegate>
         delegate;
-
 // Handler for Snackbar Commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
-
 // The current nodes (bookmarks or folders) that are considered for a move.
 @property(nonatomic, assign, readonly)
     const std::set<const bookmarks::BookmarkNode*>& editedNodes;
@@ -55,9 +52,10 @@ class BookmarkNode;
 // This method changes the currently selected folder and updates the UI. The
 // delegate is not notified of the change.
 - (void)changeSelectedFolder:(const bookmarks::BookmarkNode*)selectedFolder;
-
-// Whether the bookmark folder chooser can be dismissed.
-- (BOOL)canDismiss;
+// TODO(crbug.com/1402758): Remove this method after model code is moved to the
+// mediator.
+// Notifies the view controller that a new `folder` was added.
+- (void)notifyFolderNodeAdded:(const bookmarks::BookmarkNode*)folder;
 
 @end
 

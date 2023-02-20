@@ -17,8 +17,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller_presentation_delegate.h"
-#import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -52,11 +50,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 using bookmarks::BookmarkNode;
 
-@interface BookmarksFolderChooserViewController () <
-    BookmarksFolderEditorViewControllerDelegate,
-    BookmarkModelBridgeObserver,
-    UITableViewDataSource,
-    UITableViewDelegate> {
+@interface BookmarksFolderChooserViewController () <BookmarkModelBridgeObserver,
+                                                    UITableViewDataSource,
+                                                    UITableViewDelegate> {
   std::set<const BookmarkNode*> _editedNodes;
   std::vector<const BookmarkNode*> _folders;
   std::unique_ptr<BookmarkModelBridge> _modelBridge;
@@ -73,10 +69,6 @@ using bookmarks::BookmarkNode;
 
 // The currently selected folder.
 @property(nonatomic, readonly) const BookmarkNode* selectedFolder;
-
-// The view controller to present when creating a new folder.
-@property(nonatomic, strong)
-    BookmarksFolderEditorViewController* folderAddController;
 
 // A linear list of folders.
 @property(nonatomic, assign, readonly)
@@ -107,7 +99,6 @@ using bookmarks::BookmarkNode;
 @synthesize allowsNewFolders = _allowsNewFolders;
 @synthesize bookmarkModel = _bookmarkModel;
 @synthesize editedNodes = _editedNodes;
-@synthesize folderAddController = _folderAddController;
 @synthesize delegate = _delegate;
 @synthesize folders = _folders;
 @synthesize selectedFolder = _selectedFolder;
@@ -147,15 +138,11 @@ using bookmarks::BookmarkNode;
   [self reloadModel];
 }
 
-- (void)dealloc {
-  _folderAddController.delegate = nil;
-}
-
-- (BOOL)canDismiss {
-  if (self.folderAddController && ![self.folderAddController canDismiss]) {
-    return NO;
-  }
-  return YES;
+- (void)notifyFolderNodeAdded:(const BookmarkNode*)folder {
+  DCHECK(folder);
+  [self reloadModel];
+  [self changeSelectedFolder:folder];
+  [self delayedNotifyDelegateOfSelection];
 }
 
 #pragma mark - View lifecycle
@@ -269,33 +256,6 @@ using bookmarks::BookmarkNode;
       break;
     }
   }
-}
-
-#pragma mark - BookmarksFolderEditorViewControllerDelegate
-
-- (void)bookmarksFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
-       didFinishEditingFolder:(const BookmarkNode*)folder {
-  DCHECK(folder);
-  [self reloadModel];
-  [self changeSelectedFolder:folder];
-  [self delayedNotifyDelegateOfSelection];
-}
-
-- (void)bookmarksFolderEditorDidDeleteEditedFolder:
-    (BookmarksFolderEditorViewController*)folderEditor {
-  NOTREACHED();
-}
-
-- (void)bookmarksFolderEditorDidCancel:
-    (BookmarksFolderEditorViewController*)folderEditor {
-  [self.navigationController popViewControllerAnimated:YES];
-  self.folderAddController.delegate = nil;
-  self.folderAddController = nil;
-}
-
-- (void)bookmarksFolderEditorWillCommitTitleChange:
-    (BookmarksFolderEditorViewController*)controller {
-  // Do nothing.
 }
 
 #pragma mark - BookmarkModelBridgeObserver
@@ -432,15 +392,7 @@ using bookmarks::BookmarkNode;
 
 - (void)pushFolderAddViewController {
   DCHECK(self.allowsNewFolders);
-  BookmarksFolderEditorViewController* folderCreator =
-      [BookmarksFolderEditorViewController
-          folderCreatorWithBookmarkModel:self.bookmarkModel
-                            parentFolder:self.selectedFolder
-                                 browser:self.browser];
-  folderCreator.delegate = self;
-  folderCreator.snackbarCommandsHandler = self.snackbarCommandsHandler;
-  [self.navigationController pushViewController:folderCreator animated:YES];
-  self.folderAddController = folderCreator;
+  [self.delegate showBookmarksFolderEditor];
 }
 
 - (void)delayedNotifyDelegateOfSelection {

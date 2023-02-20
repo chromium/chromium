@@ -16,6 +16,7 @@ source_set("coordinator_headers") {
   visibility = [
     ":coordinator_impl",
     ":folder_editor",
+    "//ios/chrome/browser/ui/bookmarks/folder_chooser:coordinator_impl",
   ]
   sources = [
     "bookmarks_folder_editor_coordinator.h",
@@ -47,13 +48,7 @@ source_set("coordinator_impl") {
 # Contains folder editor ui implementation.
 source_set("ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
-
-  # TODO(crbug.com/1409488): This target should only be in the deps of :coordinator_impl.
-  # The other targets should be removed after folder editor view controller use cases are replaced with coordinator.
-  visibility = [
-    ":coordinator_impl",
-    "//ios/chrome/browser/ui/bookmarks/folder_chooser:ui",
-  ]
+  visibility = [ ":coordinator_impl" ]
   sources = [
     "bookmarks_folder_editor_view_controller.h",
     "bookmarks_folder_editor_view_controller.mm",

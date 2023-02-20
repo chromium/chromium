@@ -15,6 +15,9 @@ class BookmarkNode;
 // BookmarksFolderChooserViewController.
 @protocol BookmarksFolderChooserViewControllerPresentationDelegate <NSObject>
 
+// Called when user taps on the "New Folder" row on the top of the screen
+// (shown only if `allowsNewFolders` is true).
+- (void)showBookmarksFolderEditor;
 // Called when a bookmark folder is selected. `folder` is the newly selected
 // folder.
 - (void)bookmarksFolderChooserViewController:
