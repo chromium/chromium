@@ -13643,6 +13643,27 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="App provided items"/>
 </enum>
 
+<enum name="BrowserDataBackMigratorFinalStatus">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="PreMigrationCleanUpDeleteTmpDirFailed"/>
+  <int value="2" label="MergeSplitItemsCreateTmpDirFailed"/>
+  <int value="3" label="MergeSplitItemsCopyExtensionsFailed"/>
+  <int value="4" label="MergeSplitItemsCopyExtensionStorageFailed"/>
+  <int value="5" label="MergeSplitItemsCreateDirFailed"/>
+  <int value="6" label="MergeSplitItemsMergeIndexedDBFailed"/>
+  <int value="7" label="MergeSplitItemsMergePrefsFailed"/>
+  <int value="8" label="MergeSplitItemsMergeLocalStorageLevelDBFailed"/>
+  <int value="9" label="MergeSplitItemsMergeStateStoreLevelDBFailed"/>
+  <int value="10" label="MergeSplitItemsMergeSyncDataFailed"/>
+  <int value="11" label="DeleteAshItemsDeleteExtensionsFailed"/>
+  <int value="12" label="DeleteAshItemsDeleteLacrosItemFailed"/>
+  <int value="13" label="DeleteTmpDirDeleteFailed"/>
+  <int value="14" label="DeleteLacrosDirDeleteFailed"/>
+  <int value="15" label="MoveLacrosItemsToAshDirFailed"/>
+  <int value="16" label="MoveMergedItemsBackToAshMoveFileFailed"/>
+  <int value="17" label="MoveMergedItemsBackToAshCopyDirectoryFailed"/>
+</enum>
+
 <enum name="BrowserDataMigratorFinalStatus">
   <int value="0" label="Skipped"/>
   <int value="1" label="Success"/>

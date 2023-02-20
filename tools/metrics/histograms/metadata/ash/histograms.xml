@@ -447,6 +447,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataBackMigrator.FinalStatus"
+    enum="BrowserDataBackMigratorFinalStatus" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The final status of browser data backward migration. Recorded once at the
+    end of the migration process. It is collected to monitor whether backward
+    migration is working, and if it is not to determine which step is failing.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataBackMigrator.PosixErrno.{TaskStatus}"
+    enum="PopularOSErrno" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    Recorded when browser data backward migration fails. Records the errno set
+    by the operation that caused the migration to fail. `TaskStatus` is used to
+    determine the step in which the error occurred.
+  </summary>
+  <token key="TaskStatus">
+    <variant name="DeleteAshItemsDeleteExtensionsFailed"/>
+    <variant name="DeleteAshItemsDeleteLacrosItemFailed"/>
+    <variant name="DeleteLacrosDirDeleteFailed"/>
+    <variant name="DeleteTmpDirDeleteFailed"/>
+    <variant name="MergeSplitItemsCopyExtensionsFailed"/>
+    <variant name="MergeSplitItemsCopyExtensionStorageFailed"/>
+    <variant name="MergeSplitItemsCreateDirFailed"/>
+    <variant name="MergeSplitItemsCreateTmpDirFailed"/>
+    <variant name="MergeSplitItemsMergeIndexedDBFailed"/>
+    <variant name="MergeSplitItemsMergeLocalStorageLevelDBFailed"/>
+    <variant name="MergeSplitItemsMergePrefsFailed"/>
+    <variant name="MergeSplitItemsMergeStateStoreLevelDBFailed"/>
+    <variant name="MergeSplitItemsMergeSyncDataFailed"/>
+    <variant name="MoveLacrosItemsToAshDirFailed"/>
+    <variant name="MoveMergedItemsBackToAshCopyDirectoryFailed"/>
+    <variant name="MoveMergedItemsBackToAshMoveFileFailed"/>
+    <variant name="PreMigrationCleanUpDeleteTmpDirFailed"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.BrowserDataMigrator.AshDataSizeMB" units="MB"
     expires_after="M121">
   <owner>ythjkt@chromium.org</owner>

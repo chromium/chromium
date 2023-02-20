@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 
+#include <errno.h>
+
 #include "ash/constants/ash_features.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -751,6 +754,55 @@ TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledAfterInit) {
 
   EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
       crosapi::browser_util::PolicyInitState::kAfterInit));
+}
+
+TEST(BrowserDataBackMigratorUMATest, RecordFinalStatus) {
+  base::HistogramTester histogram_tester;
+
+  BrowserDataBackMigrator::TaskResult success = {
+      BrowserDataBackMigrator::TaskStatus::kSucceeded};
+  BrowserDataBackMigrator::RecordFinalStatus(success);
+
+  histogram_tester.ExpectUniqueSample(
+      kFinalStatusUMA,
+      static_cast<base::HistogramBase::Sample>(
+          BrowserDataBackMigrator::TaskStatus::kSucceeded),
+      1);
+  histogram_tester.ExpectTotalCount(kFinalStatusUMA, 1);
+
+  BrowserDataBackMigrator::TaskResult failure = {
+      BrowserDataBackMigrator::TaskStatus::kDeleteTmpDirDeleteFailed, EPERM};
+  BrowserDataBackMigrator::RecordFinalStatus(failure);
+
+  histogram_tester.ExpectBucketCount(
+      kFinalStatusUMA,
+      static_cast<base::HistogramBase::Sample>(
+          BrowserDataBackMigrator::TaskStatus::kDeleteTmpDirDeleteFailed),
+      1);
+  histogram_tester.ExpectTotalCount(kFinalStatusUMA, 2);
+}
+
+TEST(BrowserDataBackMigratorUMATest, RecordPosixErrnoIfAvailable) {
+  base::HistogramTester histogram_tester;
+  auto task_status =
+      BrowserDataBackMigrator::TaskStatus::kDeleteTmpDirDeleteFailed;
+  std::string uma_name =
+      kPosixErrnoUMA + BrowserDataBackMigrator::TaskStatusToString(task_status);
+
+  BrowserDataBackMigrator::TaskResult failure_without_errno = {task_status};
+  BrowserDataBackMigrator::RecordPosixErrnoIfAvailable(failure_without_errno);
+  histogram_tester.ExpectTotalCount(uma_name, 0);
+
+  BrowserDataBackMigrator::TaskResult failure_with_errno = {task_status, EPERM};
+  BrowserDataBackMigrator::RecordPosixErrnoIfAvailable(failure_with_errno);
+  histogram_tester.ExpectTotalCount(uma_name, 1);
+  histogram_tester.ExpectUniqueSample(uma_name, EPERM, 1);
+}
+
+TEST(BrowserDataBackMigratorUMATest, TaskStatusToString) {
+  EXPECT_EQ(BrowserDataBackMigrator::TaskStatusToString(
+                BrowserDataBackMigrator::TaskStatus::kSucceeded),
+            "Succeeded");
 }
 
 }  // namespace ash
