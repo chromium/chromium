@@ -48,14 +48,9 @@
       }
 
       #notices {
-        display: none;
         margin-bottom: 4px;
         margin-top: 20px;
         white-space: initial;
-      }
-
-      #notices:has(:not([hidden])) {
-        display: block;
       }
 
       #validationError {
@@ -114,11 +109,11 @@
             </template>
           </div>
         </template>
-        <div id="notices">
-          <div id="validationError" hidden="[[!validationError_]]">
-            [[validationError_]]
+        <div id="notices" hidden="[[!isAccountAddress_]]">
+          <div id="validationError">
+            [[validationError_]]<wbr>
           </div>
-          <div id="accountSourceNotice" hidden="[[!isAccountAddress_]]">
+          <div id="accountSourceNotice">
             [[i18n('editAccountAddressSourceNotice', accountInfo.email)]]
           </div>
         </div>
