@@ -144,6 +144,13 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
     }
 
     @Override
+    public boolean hasCustomLifecycle() {
+        // Declare a custom lifecycle to prevent the bottom sheet from being
+        // dismissed by the start screen.
+        return true;
+    }
+
+    @Override
     public int getSheetContentDescriptionStringId() {
         return R.string.privacy_sandbox_notice_sheet_title;
     }
