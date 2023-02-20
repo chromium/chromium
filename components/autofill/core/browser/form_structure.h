@@ -317,6 +317,9 @@ class FormStructure {
   AutofillField* field(size_t index);
   size_t field_count() const;
 
+  const AutofillField* GetFieldById(FieldGlobalId field_id) const;
+  AutofillField* GetFieldById(FieldGlobalId field_id);
+
   // Returns the number of fields that are part of the form signature and that
   // are included in queries to the Autofill server.
   size_t active_field_count() const;

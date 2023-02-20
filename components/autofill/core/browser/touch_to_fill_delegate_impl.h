@@ -42,7 +42,14 @@ enum class TouchToFillCreditCardTriggerOutcome {
   kFailedToDisplayBottomSheet = 6,
   // The sheet was not shown because the payment form was incomplete.
   kIncompleteForm = 7,
-  kMaxValue = kIncompleteForm
+  // The form or field is not known to the form cache.
+  kUnknownForm = 8,
+  // The form is known to the form cache, but it doesn't contain the field.
+  kUnknownField = 9,
+  // TouchToFill is not supported for this field type. This value is not logged
+  // to UMA.
+  kUnsupportedFieldType = 9,
+  kMaxValue = kUnsupportedFieldType
 };
 
 constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
@@ -106,6 +113,28 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
 
   using TriggerOutcome = TouchToFillCreditCardTriggerOutcome;
 
+  struct DryRunResult {
+    DryRunResult(TriggerOutcome outcome,
+                 std::vector<CreditCard*> cards_to_suggest);
+    DryRunResult(DryRunResult&&);
+    DryRunResult& operator=(DryRunResult&&);
+    ~DryRunResult();
+
+    TriggerOutcome outcome;
+    std::vector<CreditCard*> cards_to_suggest;
+  };
+
+  // Checks all preconditions for showing the TTF, that is, for calling
+  // AutofillClient::ShowTouchToFillCreditCard().
+  //
+  // If the DryRunResult::outcome is TriggerOutcome::kShow, the
+  // DryRun::cards_to_suggest contains the cards; otherwise it is empty.
+  DryRunResult DryRun(FormGlobalId form_id, FieldGlobalId field_id);
+
+  // Sets whether or not to suppress the on-screen keyboard in following
+  // requests that would usually display the keyboard.
+  //
+  // No-op if `suppress` if the previous call had the same value as `suppress`.
   void SetShouldSuppressKeyboard(bool suppress);
 
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;

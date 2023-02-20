@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 
 #include <stdint.h>
+#include <utility>
 
 #include <algorithm>
 #include <deque>
@@ -1475,17 +1476,26 @@ const AutofillField* FormStructure::field(size_t index) const {
     NOTREACHED();
     return nullptr;
   }
-
   return fields_[index].get();
 }
 
 AutofillField* FormStructure::field(size_t index) {
-  return const_cast<AutofillField*>(
-      static_cast<const FormStructure*>(this)->field(index));
+  return const_cast<AutofillField*>(std::as_const(*this).field(index));
 }
 
 size_t FormStructure::field_count() const {
   return fields_.size();
+}
+
+const AutofillField* FormStructure::GetFieldById(FieldGlobalId field_id) const {
+  auto it = base::ranges::find(
+      fields_, field_id, [](const auto& field) { return field->global_id(); });
+  return it != fields_.end() ? it->get() : nullptr;
+}
+
+AutofillField* FormStructure::GetFieldById(FieldGlobalId field_id) {
+  return const_cast<AutofillField*>(
+      std::as_const(*this).GetFieldById(field_id));
 }
 
 size_t FormStructure::active_field_count() const {
