@@ -78,7 +78,7 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ios::provider::ExtractDataElementsFromText, text,
-                     ios::provider::GetHandledIntentTypes(web_state),
+                     ios::provider::GetHandledIntentTypesForOneTap(web_state),
                      std::move(model_path)),
       base::BindOnce(&AnnotationsTabHelper::ApplyDeferredProcessing,
                      weak_factory_.GetWeakPtr()));
