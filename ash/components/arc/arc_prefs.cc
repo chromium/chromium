@@ -151,6 +151,11 @@ const char kArcSnapshotHours[] = "arc.snapshot_hours";
 // A preferece to keep ARC snapshot related info in dictionary.
 const char kArcSnapshotInfo[] = "arc.snapshot";
 
+// A time pref indicating the time in microseconds when ARCVM success executed
+// vmm swap out. If it never swapped out, the pref holds the default value
+// base::Time().
+const char kArcVmmSwapOutTime[] = "arc_vmm_swap_out_time";
+
 // A preference to keep track of whether or not Android WebView was used in the
 // current ARC session.
 const char kWebViewProcessStarted[] = "arc.webview.started";
@@ -161,6 +166,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kArcSerialNumberSalt, std::string());
   registry->RegisterDictionaryPref(kArcSnapshotHours);
   registry->RegisterDictionaryPref(kArcSnapshotInfo);
+  registry->RegisterTimePref(kArcVmmSwapOutTime, base::Time());
   registry->RegisterDictionaryPref(kStabilityMetrics);
 
   registry->RegisterIntegerPref(kAnrPendingCount, 0);

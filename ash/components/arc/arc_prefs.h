@@ -55,6 +55,7 @@ ARC_EXPORT extern const char kAnrPendingDuration[];
 ARC_EXPORT extern const char kArcSerialNumberSalt[];
 ARC_EXPORT extern const char kArcSnapshotHours[];
 ARC_EXPORT extern const char kArcSnapshotInfo[];
+ARC_EXPORT extern const char kArcVmmSwapOutTime[];
 ARC_EXPORT extern const char kStabilityMetrics[];
 ARC_EXPORT extern const char kWebViewProcessStarted[];
 
