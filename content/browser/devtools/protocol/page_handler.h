@@ -120,6 +120,10 @@ class PageHandler : public DevToolsDomainHandler,
                                const GURL& prefetch_url,
                                PreloadingTriggeringOutcome status);
 
+  void DidUpdatePrerenderStatus(const std::string& initiating_frame_id,
+                                const GURL& prerender_url,
+                                PreloadingTriggeringOutcome status);
+
   Response Enable() override;
   Response Disable() override;
 

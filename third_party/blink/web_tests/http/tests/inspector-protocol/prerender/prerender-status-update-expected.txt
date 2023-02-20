@@ -1,0 +1,38 @@
+Test that prerender navigations receives the status updates
+{
+    method : Page.prerenderStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        status : Pending
+    }
+    sessionId : <string>
+}
+{
+    method : Page.prerenderStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Page.prerenderStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Page.prerenderStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        status : Success
+    }
+    sessionId : <string>
+}
+

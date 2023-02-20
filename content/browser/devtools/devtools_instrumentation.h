@@ -204,6 +204,10 @@ void DidUpdatePrefetchStatus(FrameTreeNode* ftn,
                              const GURL& prefetch_url,
                              PreloadingTriggeringOutcome status);
 
+void DidUpdatePrerenderStatus(int initiator_frame_tree_node_id,
+                              const GURL& prerender_url,
+                              PreloadingTriggeringOutcome status);
+
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
     absl::optional<const base::UnguessableToken> devtools_navigation_token,

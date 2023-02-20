@@ -444,6 +444,19 @@ void DidUpdatePrefetchStatus(FrameTreeNode* ftn,
                    initiating_frame_id, prefetch_url, status);
 }
 
+void DidUpdatePrerenderStatus(int initiator_frame_tree_node_id,
+                              const GURL& prerender_url,
+                              PreloadingTriggeringOutcome status) {
+  auto* ftn = FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id);
+  // ftn will be null if this is browser-initiated, which has no initiator.
+  if (ftn) {
+    std::string initiating_frame_id =
+        ftn->current_frame_host()->devtools_frame_token().ToString();
+    DispatchToAgents(ftn, &protocol::PageHandler::DidUpdatePrerenderStatus,
+                     initiating_frame_id, prerender_url, status);
+  }
+}
+
 namespace {
 
 protocol::String BuildBlockedByResponseReason(

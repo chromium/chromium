@@ -8555,14 +8555,16 @@ domain Page
       # that is incompatible with prerender and has caused the cancellation of the attempt
       optional string disallowedApiMethod
 
-  # List of Prefetch status, which refers to PreloadingTriggeringOutcome.
-  type PrefetchStatus extends string
+  # Preloading status values, see also PreloadingTriggeringOutcome. This
+  # status is shared by prefetchStatusUpdated and prerenderStatusUpdated.
+  type PreloadingStatus extends string
     enum
+      Pending
       Running
       Ready
       Success
       Failure
-      # PreloadingTriggeringOutcome which not used by prefetch.
+      # PreloadingTriggeringOutcome which not used by prefetch nor prerender.
       NotSupported
 
   # TODO(crbug/1384419): Create a dedicated domain for preloading.
@@ -8572,7 +8574,16 @@ domain Page
       # The frame id of the frame initiating prefetch.
       FrameId initiatingFrameId
       string prefetchUrl
-      PrefetchStatus status
+      PreloadingStatus status
+
+  # TODO(crbug/1384419): Create a dedicated domain for preloading.
+  # Fired when a prerender attempt is updated.
+  experimental event prerenderStatusUpdated
+    parameters
+      # The frame id of the frame initiating prerender.
+      FrameId initiatingFrameId
+      string prerenderingUrl
+      PreloadingStatus status
 
   event loadEventFired
     parameters
