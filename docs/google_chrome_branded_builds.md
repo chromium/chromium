@@ -13,11 +13,16 @@ a trademark which we don't want to release under Chromium's open source
 license.
 
 Therefore, if you want to add a trademarked resource, check it into an internal
-repository (see section below), and pick a resource based on the branding
-(`is_chrome_branded` in GN, `#if BUILDFLAG(GOOGLE_CHROME_BRANDING)` in cpp, `<if
-expr="_google_chrome">` in grit preprocessing). If possible, check an open
-source version into Chromium, so the feature continues to work as expected in
-the open source build.
+repository (see section below), and pick a resource based on the branding.  To
+query in code whether the current build is branded, use:
+
+- GN: `is_chrome_branded`
+- C++: `#if BUILDFLAG(GOOGLE_CHROME_BRANDING)`
+- Java: `BuildConfig.IS_CHROME_BRANDED`
+- Grit: `<if expr="_google_chrome">`
+
+If possible, check an open source version into Chromium, so the feature
+continues to work as expected in the open source build.
 
 E.g.
 [`//components/resources/default_100_percent/chromium`](../components/resources/default_100_percent/chromium)
