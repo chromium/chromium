@@ -282,12 +282,13 @@ enum class ChromeType {
 // Preferences's keys that have to be split between Ash and Lacros
 // based on extension id.
 constexpr const char* kSplitPreferencesKeys[] = {
-    "app_list.local_state",  "extensions.pinned_extensions",
-    "extensions.settings",   "extensions.toolbar",
-    "updateclientdata.apps", "web_apps.web_app_ids",
+    "extensions.pinned_extensions", "extensions.settings",
+    "extensions.toolbar",           "updateclientdata.apps",
+    "web_apps.web_app_ids",
 };
 // Preferences's keys that should not be migrated to Lacros.
 constexpr const char* kAshOnlyPreferencesKeys[] = {
+    "app_list.local_state",
     "fcm.invalidation.client_id_cache",
     "invalidation.active_registration_token",
     "invalidation.per_sender_active_registration_tokens",
