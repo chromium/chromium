@@ -73,7 +73,6 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
             const base::FilePath& crx_file)
       : client_(client),
         crx_file_(crx_file),
-        success_(false),
         task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
@@ -165,7 +164,7 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
 
   base::WeakPtr<KioskAppData> client_;
   base::FilePath crx_file_;
-  bool success_;
+  bool success_ = false;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::ScopedTempDir temp_dir_;

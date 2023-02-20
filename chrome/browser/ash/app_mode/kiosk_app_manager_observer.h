@@ -38,7 +38,7 @@ class KioskAppManagerObserver {
   virtual void OnKioskSessionInitialized() {}
 
  protected:
-  virtual ~KioskAppManagerObserver() {}
+  virtual ~KioskAppManagerObserver() = default;
 };
 
 }  // namespace ash

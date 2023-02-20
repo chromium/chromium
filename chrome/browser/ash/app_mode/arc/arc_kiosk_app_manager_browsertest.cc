@@ -80,7 +80,7 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
   ArcKioskAppManagerTest() : settings_helper_(false) {}
   ArcKioskAppManagerTest(const ArcKioskAppManagerTest&) = delete;
   ArcKioskAppManagerTest& operator=(const ArcKioskAppManagerTest&) = delete;
-  ~ArcKioskAppManagerTest() override {}
+  ~ArcKioskAppManagerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     arc::SetArcAvailableCommandLineForTesting(command_line);

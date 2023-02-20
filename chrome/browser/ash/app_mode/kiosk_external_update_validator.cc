@@ -24,7 +24,7 @@ KioskExternalUpdateValidator::KioskExternalUpdateValidator(
       crx_unpack_dir_(crx_unpack_dir),
       delegate_(delegate) {}
 
-KioskExternalUpdateValidator::~KioskExternalUpdateValidator() {}
+KioskExternalUpdateValidator::~KioskExternalUpdateValidator() = default;
 
 void KioskExternalUpdateValidator::Start() {
   auto unpacker = base::MakeRefCounted<extensions::SandboxedUnpacker>(

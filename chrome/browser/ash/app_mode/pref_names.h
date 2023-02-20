@@ -5,14 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_PREF_NAMES_H_
 #define CHROME_BROWSER_ASH_APP_MODE_PREF_NAMES_H_
 
-namespace ash {
-namespace prefs {
+namespace ash::prefs {
 
 // ---------------------------------------------------------------------------
 // Prefs related to kiosk mode.
 // ---------------------------------------------------------------------------
 extern const char kAllKioskUsersToRemove[];
 
-}  // namespace prefs
-}  // namespace ash
+}  // namespace ash::prefs
 #endif  // CHROME_BROWSER_ASH_APP_MODE_PREF_NAMES_H_

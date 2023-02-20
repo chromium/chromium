@@ -46,6 +46,9 @@ class ArcKioskAppService : public KeyedService,
   static ArcKioskAppService* Create(Profile* profile);
   static ArcKioskAppService* Get(content::BrowserContext* context);
 
+  ArcKioskAppService(const ArcKioskAppService&) = delete;
+  ArcKioskAppService& operator=(const ArcKioskAppService&) = delete;
+
   void SetNetworkDelegate(NetworkDelegate* network_delegate);
 
   // KeyedService overrides
@@ -97,8 +100,6 @@ class ArcKioskAppService : public KeyedService,
 
  private:
   explicit ArcKioskAppService(Profile* profile);
-  ArcKioskAppService(const ArcKioskAppService&) = delete;
-  ArcKioskAppService& operator=(const ArcKioskAppService&) = delete;
   ~ArcKioskAppService() override;
 
   std::string GetAppId();

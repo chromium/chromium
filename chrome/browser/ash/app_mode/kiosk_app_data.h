@@ -27,11 +27,9 @@ namespace gfx {
 class Image;
 }
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class URLLoaderFactory;
-}
-}  // namespace network
+}  // namespace network::mojom
 
 namespace ash {
 

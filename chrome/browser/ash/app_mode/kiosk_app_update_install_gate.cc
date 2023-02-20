@@ -16,7 +16,7 @@ KioskAppUpdateInstallGate::KioskAppUpdateInstallGate(Profile* profile)
     : profile_(profile),
       registry_(extensions::ExtensionRegistry::Get(profile)) {}
 
-KioskAppUpdateInstallGate::~KioskAppUpdateInstallGate() {}
+KioskAppUpdateInstallGate::~KioskAppUpdateInstallGate() = default;
 
 extensions::InstallGate::Action KioskAppUpdateInstallGate::ShouldDelay(
     const extensions::Extension* extension,

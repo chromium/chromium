@@ -127,8 +127,8 @@ class AppWindowCloser : public BrowserListObserver {
 
 class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
  public:
-  WebKioskAppLauncherTest() : BrowserWithTestWindowTest() {}
-  ~WebKioskAppLauncherTest() override {}
+  WebKioskAppLauncherTest() = default;
+  ~WebKioskAppLauncherTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

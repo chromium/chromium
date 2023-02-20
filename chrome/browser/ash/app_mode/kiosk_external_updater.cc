@@ -80,12 +80,12 @@ bool ShouldUpdateForHigherVersion(const std::string& version_1,
 
 }  // namespace
 
-KioskExternalUpdater::ExternalUpdate::ExternalUpdate() {}
+KioskExternalUpdater::ExternalUpdate::ExternalUpdate() = default;
 
 KioskExternalUpdater::ExternalUpdate::ExternalUpdate(
     const ExternalUpdate& other) = default;
 
-KioskExternalUpdater::ExternalUpdate::~ExternalUpdate() {}
+KioskExternalUpdater::ExternalUpdate::~ExternalUpdate() = default;
 
 KioskExternalUpdater::KioskExternalUpdater(
     const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner,

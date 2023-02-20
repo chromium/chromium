@@ -67,11 +67,10 @@ constexpr int kFailedMountRetries = 3;
 class KioskProfileLoader::CryptohomedChecker
     : public base::SupportsWeakPtr<CryptohomedChecker> {
  public:
-  explicit CryptohomedChecker(KioskProfileLoader* loader)
-      : loader_(loader), retry_count_(0) {}
+  explicit CryptohomedChecker(KioskProfileLoader* loader) : loader_(loader) {}
   CryptohomedChecker(const CryptohomedChecker&) = delete;
   CryptohomedChecker& operator=(const CryptohomedChecker&) = delete;
-  ~CryptohomedChecker() {}
+  ~CryptohomedChecker() = default;
 
   void StartCheck() {
     UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
@@ -131,7 +130,7 @@ class KioskProfileLoader::CryptohomedChecker
   }
 
   KioskProfileLoader* loader_;
-  int retry_count_;
+  int retry_count_ = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +144,7 @@ KioskProfileLoader::KioskProfileLoader(const AccountId& app_account_id,
       delegate_(delegate),
       failed_mount_attempts_(0) {}
 
-KioskProfileLoader::~KioskProfileLoader() {}
+KioskProfileLoader::~KioskProfileLoader() = default;
 
 void KioskProfileLoader::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -37,7 +37,7 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
         std::unique_ptr<UserContext> user_context) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   KioskProfileLoader(const AccountId& app_account_id,

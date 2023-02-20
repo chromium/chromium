@@ -71,7 +71,7 @@ class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
   void Start() { app_launcher_->Initialize(); }
 
  private:
-  ~AppLaunchManager() override {}
+  ~AppLaunchManager() override = default;
 
   void Cleanup() { delete this; }
 

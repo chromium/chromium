@@ -527,9 +527,9 @@ void KioskAppManager::AddApp(const std::string& app_id,
   }
 
   // Add the new account.
-  device_local_accounts.push_back(policy::DeviceLocalAccount(
-      policy::DeviceLocalAccount::TYPE_KIOSK_APP,
-      GenerateKioskAppAccountId(app_id), app_id, std::string()));
+  device_local_accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+                                     GenerateKioskAppAccountId(app_id), app_id,
+                                     std::string());
 
   policy::SetDeviceLocalAccounts(service, device_local_accounts);
 }
@@ -563,8 +563,8 @@ void KioskAppManager::RemoveApp(const std::string& app_id,
 
 void KioskAppManager::GetApps(Apps* apps) const {
   apps->clear();
-  for (size_t i = 0; i < apps_.size(); ++i) {
-    const KioskAppData& app_data = *apps_[i];
+  for (const auto& app : apps_) {
+    const KioskAppData& app_data = *app;
     if (app_data.status() != KioskAppData::Status::kError) {
       apps->push_back(ConstructApp(app_data));
     }
@@ -612,9 +612,9 @@ void KioskAppManager::UpdateAppDataFromProfile(
 }
 
 void KioskAppManager::RetryFailedAppDataFetch() {
-  for (size_t i = 0; i < apps_.size(); ++i) {
-    if (apps_[i]->status() == KioskAppData::Status::kError) {
-      apps_[i]->Load();
+  for (const auto& app : apps_) {
+    if (app->status() == KioskAppData::Status::kError) {
+      app->Load();
     }
   }
 }
@@ -786,32 +786,32 @@ void KioskAppManager::UpdateAppsFromPolicy() {
   // Re-populates |apps_| and reuses existing KioskAppData when possible.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
-           device_local_accounts.begin();
-       it != device_local_accounts.end(); ++it) {
-    if (it->type != policy::DeviceLocalAccount::TYPE_KIOSK_APP) {
+  for (const auto& device_local_account : device_local_accounts) {
+    if (device_local_account.type !=
+        policy::DeviceLocalAccount::TYPE_KIOSK_APP) {
       continue;
     }
 
-    if (it->account_id == auto_login_account_id) {
-      auto_launch_app_id_ = it->kiosk_app_id;
+    if (device_local_account.account_id == auto_login_account_id) {
+      auto_launch_app_id_ = device_local_account.kiosk_app_id;
     }
 
     // Note that app ids are not canonical, i.e. they can contain upper
     // case letters.
-    const AccountId account_id(AccountId::FromUserEmail(it->user_id));
-    auto old_it = old_apps.find(it->kiosk_app_id);
+    const AccountId account_id(
+        AccountId::FromUserEmail(device_local_account.user_id));
+    auto old_it = old_apps.find(device_local_account.kiosk_app_id);
     if (old_it != old_apps.end()) {
       apps_.push_back(std::move(old_it->second));
       old_apps.erase(old_it);
     } else {
       base::FilePath cached_crx;
       std::string version;
-      GetCachedCrx(it->kiosk_app_id, &cached_crx, &version);
+      GetCachedCrx(device_local_account.kiosk_app_id, &cached_crx, &version);
 
       apps_.push_back(std::make_unique<KioskAppData>(
-          this, it->kiosk_app_id, account_id, GURL(it->kiosk_app_update_url),
-          cached_crx));
+          this, device_local_account.kiosk_app_id, account_id,
+          GURL(device_local_account.kiosk_app_update_url), cached_crx));
       apps_.back()->Load();
     }
     KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);

@@ -33,7 +33,7 @@ CertificateManagerDialog::CertificateManagerDialog(Profile* profile,
                      std::u16string(),
                      GURL(chrome::kChromeUICertificateManagerDialogURL)) {}
 
-CertificateManagerDialog::~CertificateManagerDialog() {}
+CertificateManagerDialog::~CertificateManagerDialog() = default;
 
 std::u16string CertificateManagerDialog::GetDialogTitle() const {
   return l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE);

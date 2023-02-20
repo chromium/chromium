@@ -196,10 +196,10 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
 // A class to wait for ExternalCache to finish putting the extension crx.
 class ExternalCachePutWaiter {
  public:
-  ExternalCachePutWaiter() {}
+  ExternalCachePutWaiter() = default;
   ExternalCachePutWaiter(const ExternalCachePutWaiter&) = delete;
   ExternalCachePutWaiter& operator=(const ExternalCachePutWaiter&) = delete;
-  ~ExternalCachePutWaiter() {}
+  ~ExternalCachePutWaiter() = default;
 
   void Wait() {
     if (quit_) {
@@ -235,7 +235,7 @@ class KioskAppManagerTest : public InProcessBrowserTest {
         verifier_format_override_(crx_file::VerifierFormat::CRX3) {}
   KioskAppManagerTest(const KioskAppManagerTest&) = delete;
   KioskAppManagerTest& operator=(const KioskAppManagerTest&) = delete;
-  ~KioskAppManagerTest() override {}
+  ~KioskAppManagerTest() override = default;
 
   // InProcessBrowserTest overrides:
   void SetUp() override {

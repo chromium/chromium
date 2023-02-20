@@ -29,7 +29,7 @@ class KioskAppDataDelegate {
   virtual void OnExternalCacheDamaged(const std::string& app_id) = 0;
 
  protected:
-  virtual ~KioskAppDataDelegate() {}
+  virtual ~KioskAppDataDelegate() = default;
 };
 
 }  // namespace ash

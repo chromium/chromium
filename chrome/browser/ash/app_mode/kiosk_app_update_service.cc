@@ -37,7 +37,7 @@ KioskAppUpdateService::KioskAppUpdateService(
     system::AutomaticRebootManager* automatic_reboot_manager)
     : profile_(profile), automatic_reboot_manager_(automatic_reboot_manager) {}
 
-KioskAppUpdateService::~KioskAppUpdateService() {}
+KioskAppUpdateService::~KioskAppUpdateService() = default;
 
 void KioskAppUpdateService::Init(const std::string& app_id) {
   DCHECK(app_id_.empty());
@@ -157,7 +157,7 @@ KioskAppUpdateServiceFactory::KioskAppUpdateServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-KioskAppUpdateServiceFactory::~KioskAppUpdateServiceFactory() {}
+KioskAppUpdateServiceFactory::~KioskAppUpdateServiceFactory() = default;
 
 // static
 KioskAppUpdateService* KioskAppUpdateServiceFactory::GetForProfile(

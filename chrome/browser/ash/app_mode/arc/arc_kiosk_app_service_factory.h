@@ -22,13 +22,14 @@ class ArcKioskAppServiceFactory : public ProfileKeyedServiceFactory {
 
   static ArcKioskAppServiceFactory* GetInstance();
 
+  ArcKioskAppServiceFactory(const ArcKioskAppServiceFactory&) = delete;
+  ArcKioskAppServiceFactory& operator=(const ArcKioskAppServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ArcKioskAppServiceFactory>;
 
   ArcKioskAppServiceFactory();
-  ArcKioskAppServiceFactory(const ArcKioskAppServiceFactory&) = delete;
-  ArcKioskAppServiceFactory& operator=(const ArcKioskAppServiceFactory&) =
-      delete;
   ~ArcKioskAppServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
