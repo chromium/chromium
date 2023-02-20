@@ -7,12 +7,14 @@
  * 'settings-safety-passwords-child' is the settings page containing the
  * safety check child showing the password status.
  */
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordCheckReferrer, PasswordManagerImpl} from '../autofill_page/password_manager_proxy.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
@@ -67,6 +69,13 @@ export class SettingsSafetyCheckPasswordsChildElement extends
           SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST,
         ]),
       },
+
+      enableNewPasswordManagerPage_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableNewPasswordManagerPage');
+        },
+      },
     };
   }
 
@@ -75,6 +84,7 @@ export class SettingsSafetyCheckPasswordsChildElement extends
   private rowClickableStatuses: Set<SafetyCheckPasswordsStatus>;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private enableNewPasswordManagerPage_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -149,11 +159,18 @@ export class SettingsSafetyCheckPasswordsChildElement extends
   }
 
   private openPasswordCheckPage_() {
+    PasswordManagerImpl.getInstance().recordPasswordCheckReferrer(
+        PasswordCheckReferrer.SAFETY_CHECK);
+    if (this.enableNewPasswordManagerPage_) {
+      // TODO(crbug.com/1416887): It will always open a new tab with Password
+      // Manager. Find a way to use chrome::ShowPasswordCheck instead.
+      OpenWindowProxyImpl.getInstance().openUrl(
+          'chrome://password-manager/checkup');
+      return;
+    }
     Router.getInstance().navigateTo(
         routes.CHECK_PASSWORDS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
-    PasswordManagerImpl.getInstance().recordPasswordCheckReferrer(
-        PasswordCheckReferrer.SAFETY_CHECK);
   }
 }
 

@@ -501,4 +501,30 @@ suite('PasswordsUITest', function() {
         assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
         assertFalse(!!autofillSection.credential);
       });
+
+  test('New Password Manager UI enabled', async function() {
+    // Enable new Password Manager UI.
+    loadTimeData.overrideValues({enableNewPasswordManagerPage: true});
+    Router.resetInstanceForTesting(buildRouter());
+
+    const autofillSection = createAutofillPageSection();
+    assertTrue(autofillSection.$.passwordManagerButton.external);
+
+    autofillSection.$.passwordManagerButton.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, 'chrome://password-manager');
+  });
+
+  test('New Password Manager UI disabled', async function() {
+    // Enable new Password Manager UI.
+    loadTimeData.overrideValues({enableNewPasswordManagerPage: false});
+    Router.resetInstanceForTesting(buildRouter());
+
+    const autofillSection = createAutofillPageSection();
+
+    assertFalse(autofillSection.$.passwordManagerButton.external);
+
+    autofillSection.$.passwordManagerButton.click();
+    assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
+  });
 });

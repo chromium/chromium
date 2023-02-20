@@ -304,6 +304,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
+  html_source->AddBoolean(
+      "enableNewPasswordManagerPage",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign));
+
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   html_source->AddBoolean("changePriceEmailNotificationsEnabled",
