@@ -303,6 +303,11 @@ const char kCrosRegion[] = "cros-region";
 // flow.
 const char kCryptohomeRecoveryReauthUrl[] = "cryptohome-recovery-reauth-url";
 
+// Forces cryptohome recovery process to use test environment (test keys /
+// URLs).
+const char kCryptohomeRecoveryUseTestEnvironment[] =
+    "cryptohome-recovery-use-test-env";
+
 // Controls if AuthSession API should be used when interacting with cryptohomed.
 const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
 
