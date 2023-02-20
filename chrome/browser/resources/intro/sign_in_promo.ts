@@ -85,6 +85,11 @@ export class SignInPromoElement extends SignInPromoElementBase {
         type: Boolean,
         value: loadTimeData.getBoolean('isDeviceManaged'),
       },
+
+      anyButtonClicked_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -94,6 +99,7 @@ export class SignInPromoElement extends SignInPromoElementBase {
   private divisionLineResizeObserver_: ResizeObserver|null = null;
   private managedDeviceDisclaimer_: string;
   private isDeviceManaged_: boolean;
+  private anyButtonClicked_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -106,6 +112,8 @@ export class SignInPromoElement extends SignInPromoElementBase {
           'managed-device-disclaimer-updated',
           this.handleManagedDeviceDisclaimerUpdate_.bind(this));
     }
+
+    this.addWebUiListener('reset-intro-buttons', this.resetButtons_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -133,6 +141,10 @@ export class SignInPromoElement extends SignInPromoElementBase {
     this.divisionLineResizeObserver_.observe(safeZone);
   }
 
+  private resetButtons_() {
+    this.anyButtonClicked_ = false;
+  }
+
   private handleManagedDeviceDisclaimerUpdate_(disclaimer: string) {
     this.managedDeviceDisclaimer_ = disclaimer;
     this.$.managedDeviceDisclaimer.classList.remove('temporarily-hidden');
@@ -141,10 +153,12 @@ export class SignInPromoElement extends SignInPromoElementBase {
 
   /**
    * Disable buttons if the device is managed until the management
-   * disclaimer is loaded.
+   * disclaimer is loaded or if a button was clicked.
    */
   private areButtonsDisabled_() {
-    return this.isDeviceManaged_ && this.managedDeviceDisclaimer_.length === 0;
+    return (this.isDeviceManaged_ &&
+            this.managedDeviceDisclaimer_.length === 0) ||
+        this.anyButtonClicked_;
   }
 
   // At the start of the signInPromo animation, the product logo should be at
@@ -171,10 +185,12 @@ export class SignInPromoElement extends SignInPromoElementBase {
   }
 
   private onContinueWithAccountClick_() {
+    this.anyButtonClicked_ = true;
     this.browserProxy_.continueWithAccount();
   }
 
   private onContinueWithoutAccountClick_() {
+    this.anyButtonClicked_ = true;
     this.browserProxy_.continueWithoutAccount();
   }
 

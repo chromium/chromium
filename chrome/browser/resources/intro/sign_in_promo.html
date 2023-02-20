@@ -371,11 +371,13 @@
 <div class="fade-in" id="buttonRow">
   <div id="buttonContainer">
     <cr-button id="declineSignInButton"
-      disabled="[[areButtonsDisabled_(isDeviceManaged_, managedDeviceDisclaimer_)]]"
+      disabled="[[areButtonsDisabled_(isDeviceManaged_, managedDeviceDisclaimer_
+                  ,anyButtonClicked_)]]"
       on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
     </cr-button>
     <cr-button class="action-button" id="acceptSignInButton"
-      disabled="[[areButtonsDisabled_(isDeviceManaged_, managedDeviceDisclaimer_)]]"
+      disabled="[[areButtonsDisabled_(isDeviceManaged_, managedDeviceDisclaimer_
+                  ,anyButtonClicked_)]]"
       on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}</cr-button>
   </div>
 </div>

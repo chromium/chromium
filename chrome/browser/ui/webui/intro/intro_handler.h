@@ -25,6 +25,9 @@ class IntroHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void ResetIntroButtons();
+#endif
 
  private:
   // Handles "continueWithAccount" message from the page. No arguments.

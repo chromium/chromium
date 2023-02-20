@@ -163,9 +163,11 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #endif
 
   // Unretained ok: `this` owns the handler.
-  web_ui->AddMessageHandler(std::make_unique<IntroHandler>(
+  auto intro_handler = std::make_unique<IntroHandler>(
       base::BindRepeating(&IntroUI::HandleSigninChoice, base::Unretained(this)),
-      is_device_managed));
+      is_device_managed);
+  intro_handler_ = intro_handler.get();
+  web_ui->AddMessageHandler(std::move(intro_handler));
 }
 
 IntroUI::~IntroUI() {
@@ -177,14 +179,16 @@ IntroUI::~IntroUI() {
 void IntroUI::SetSigninChoiceCallback(IntroSigninChoiceCallback callback) {
   DCHECK(!callback->is_null());
   signin_choice_callback_ = std::move(callback);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  intro_handler_->ResetIntroButtons();
+#endif
 }
 
 void IntroUI::HandleSigninChoice(IntroChoice choice) {
   if (signin_choice_callback_->is_null()) {
     LOG(WARNING) << "Unexpected signin choice event";
   } else {
-    // TODO(crbug.com/1347507): Reflect in the UI that the actions are not
-    // available, with a spinner and/or disabled buttons.
     std::move(signin_choice_callback_.value()).Run(choice);
   }
 }

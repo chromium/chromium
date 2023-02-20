@@ -198,6 +198,12 @@ void IntroHandler::HandleContinueWithoutAccount(const base::Value::List& args) {
   CHECK(args.empty());
   callback_.Run(IntroChoice::kContinueWithoutAccount);
 }
+
+void IntroHandler::ResetIntroButtons() {
+  if (IsJavascriptAllowed()) {
+    FireWebUIListener("reset-intro-buttons");
+  }
+}
 #endif
 
 void IntroHandler::HandleInitializeMainView(const base::Value::List& args) {

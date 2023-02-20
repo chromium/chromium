@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
@@ -23,9 +24,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/accelerators/accelerator.h"
 
 class FirstRunFlowControllerDiceBrowserTest : public ProfilePickerTestBase {
  public:
@@ -108,6 +111,61 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
   LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(
       LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 
+  WaitForPickerClosed();
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest,
+                       ButtonsAreDisabledOnClickAndEnabledOnNavigateBack) {
+  const char kAreButtonsDisabledJSString[] =
+      "(() => {"
+      "  const introApp = document.querySelector('intro-app');"
+      "  const signInPromo = "
+      "introApp.shadowRoot.querySelector('sign-in-promo');"
+      "  return "
+      "signInPromo.shadowRoot.querySelector('#acceptSignInButton').disabled;"
+      "})();";
+
+  const char kClickSignInButtonJSString[] =
+      "(() => {"
+      "  const introApp = document.querySelector('intro-app');"
+      "  const signInPromo = "
+      "introApp.shadowRoot.querySelector('sign-in-promo');"
+      "signInPromo.shadowRoot.querySelector('#acceptSignInButton').click();"
+      "return true;"
+      "})();";
+
+  base::RunLoop run_loop;
+  Profile* profile = browser()->profile();
+
+  ProfilePicker::Show(ProfilePicker::Params::ForFirstRun(
+      profile->GetPath(), base::IgnoreArgs<ProfilePicker::FirstRunExitStatus>(
+                              run_loop.QuitClosure())));
+
+  WaitForPickerWidgetCreated();
+  WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
+
+  EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
+                                  kClickSignInButtonJSString));
+
+  WaitForLoadStop(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
+                                  kAreButtonsDisabledJSString));
+
+  // Navigate back from the sign in step.
+  // Use "Command [" for Mac and "Alt Left" for the other operating systems.
+#if BUILDFLAG(IS_MAC)
+  view()->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN));
+#else
+  view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN));
+#endif
+
+  EXPECT_EQ(false, content::EvalJs(view()->GetPickerContents(),
+                                   kAreButtonsDisabledJSString));
+
+  web_contents()->GetWebUI()->ProcessWebUIMessage(
+      web_contents()->GetURL(), "continueWithoutAccount", base::Value::List());
   WaitForPickerClosed();
   run_loop.Run();
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_INTRO_INTRO_UI_H_
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -42,6 +43,7 @@ class IntroUI : public content::WebUIController {
   void HandleSigninChoice(IntroChoice choice);
 
   IntroSigninChoiceCallback signin_choice_callback_;
+  raw_ptr<IntroHandler> intro_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

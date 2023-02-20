@@ -23,8 +23,8 @@ class DiceAppBrowserTest extends PolymerTest {
 }
 
 /**
- * Test that the Sign in and Don't sign in buttons send the correct callback
- * when clicked in chrome/browser/resources/intro/dice_app.html
+ * Test that the Sign in and Don't sign in buttons behave correctly when clicked
+ * in chrome/browser/resources/intro/sign_in_promo.html
  */
 var SignInPromoTest = class extends DiceAppBrowserTest {
   /** @override */
