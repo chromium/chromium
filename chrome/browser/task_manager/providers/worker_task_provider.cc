@@ -13,12 +13,7 @@ namespace task_manager {
 
 WorkerTaskProvider::WorkerTaskProvider() = default;
 
-WorkerTaskProvider::~WorkerTaskProvider() {
-  // Because the TaskManagerImpl is a LazyInstance destroyed by the
-  // AtExitManager, the global browser process instance may already be gone.
-  if (g_browser_process && g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->RemoveObserver(this);
-}
+WorkerTaskProvider::~WorkerTaskProvider() = default;
 
 Task* WorkerTaskProvider::GetTaskOfUrlRequest(int child_id, int route_id) {
   return nullptr;
@@ -42,6 +37,10 @@ void WorkerTaskProvider::OnProfileAdded(Profile* profile) {
           .emplace(profile, std::move(per_profile_worker_task_tracker))
           .second;
   DCHECK(inserted);
+}
+
+void WorkerTaskProvider::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 void WorkerTaskProvider::OnOffTheRecordProfileCreated(Profile* off_the_record) {
@@ -80,9 +79,8 @@ void WorkerTaskProvider::OnWorkerTaskRemoved(Task* worker_task) {
 void WorkerTaskProvider::StartUpdating() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager) {
-    profile_manager->AddObserver(this);
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
+    profile_manager_observation_.Observe(profile_manager);
 
     auto loaded_profiles = profile_manager->GetLoadedProfiles();
     for (auto* profile : loaded_profiles) {
@@ -100,8 +98,7 @@ void WorkerTaskProvider::StopUpdating() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Stop observing profile creation and destruction.
-  if (g_browser_process && g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->RemoveObserver(this);
+  profile_manager_observation_.Reset();
   observed_profiles_.RemoveAllObservations();
 
   // Clear all ProfileWorkerTaskProvider instances to remove existing tasks.
