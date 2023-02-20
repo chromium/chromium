@@ -43,12 +43,18 @@ namespace {
 class MockDiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptor::Delegate {
  public:
+  bool IsSigninInterceptionSupported(
+      const content::WebContents& web_contents) override {
+    return true;
+  }
+
   MOCK_METHOD(std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>,
               ShowSigninInterceptionBubble,
               (content::WebContents * web_contents,
                const BubbleParameters& bubble_parameters,
                base::OnceCallback<void(SigninInterceptionResult)> callback),
               (override));
+
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,

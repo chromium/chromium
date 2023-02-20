@@ -42,6 +42,12 @@ class TestDiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptor::Delegate {
  public:
   ~TestDiceWebSigninInterceptorDelegate() override = default;
+
+  bool IsSigninInterceptionSupported(
+      const content::WebContents& web_contents) override {
+    return false;
+  }
+
   std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
   ShowSigninInterceptionBubble(
       content::WebContents* web_contents,

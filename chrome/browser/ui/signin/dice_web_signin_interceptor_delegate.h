@@ -23,6 +23,8 @@ class DiceWebSigninInterceptorDelegate
   ~DiceWebSigninInterceptorDelegate() override;
 
   // DiceWebSigninInterceptor::Delegate
+  bool IsSigninInterceptionSupported(
+      const content::WebContents& web_contents) override;
   std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
   ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
@@ -43,6 +45,7 @@ class DiceWebSigninInterceptorDelegate
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   // Implemented in profile_customization_bubble_view.cc
+  static bool IsSigninInterceptionSupportedInternal(const Browser& Browser);
   void ShowProfileCustomizationBubbleInternal(Browser* browser);
 };
 

@@ -31,6 +31,9 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -82,7 +85,7 @@ class FakeBubbleHandle : public ScopedDiceWebSigninInterceptionBubbleHandle,
 // Dummy interception delegate that automatically accepts multi user
 // interception.
 class FakeDiceWebSigninInterceptorDelegate
-    : public DiceWebSigninInterceptor::Delegate {
+    : public DiceWebSigninInterceptorDelegate {
  public:
   std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
   ShowSigninInterceptionBubble(
@@ -585,6 +588,58 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       GURL("chrome://newtab/"));
+}
+
+// WebApps do not trigger interception. Regression test for
+// https://crbug.com/1414988
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
+                       WebAppNoInterception) {
+  base::HistogramTester histogram_tester;
+  // Setup profile for interception.
+  identity_test_env()->MakeAccountAvailable("alice@example.com");
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = kNoHostedDomainFound;
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  SetupGaiaResponses();
+
+  // Install web app
+  Profile* profile = browser()->profile();
+  const GURL kWebAppURL("http://www.webapp.com");
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  web_app_info->start_url = kWebAppURL;
+  web_app_info->scope = kWebAppURL.GetWithoutFilename();
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+  web_app_info->title = u"A Web App";
+  web_app::AppId app_id =
+      web_app::test::InstallWebApp(profile, std::move(web_app_info));
+
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  ASSERT_NE(app_browser, nullptr);
+  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
+
+  // Trigger signin interception in the web app.
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(profile);
+  interceptor->MaybeInterceptWebSignin(
+      app_browser->tab_strip_model()->GetActiveWebContents(),
+      account_info.account_id,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+
+  // Check that the interception was aborted.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortNoSupportedBrowser, 1);
 }
 
 class DiceWebSigninInterceptorEnterpriseBrowserTest
