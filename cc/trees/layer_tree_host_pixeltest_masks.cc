@@ -28,12 +28,15 @@ namespace {
 
 // TODO(penghuang): Fix vulkan with one copy or zero copy
 // https://crbug.com/979703
+// TODO(crbug.com/1417268): Fix SkiaGL with zero copy
 std::vector<RasterTestConfig> const kTestCases = {
     {viz::RendererType::kSoftware, TestRasterType::kBitmap},
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
     {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
     {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
+#if !BUILDFLAG(IS_IOS)
     {viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
+#endif  // !BUILDFLAG(IS_IOS)
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
@@ -854,9 +857,10 @@ class LayerTreeHostMaskAsBlendingPixelTest
   bool force_shaders_;
 };
 
+// TODO(crbug.com/1417268): Fix SkiaGL with zero copy
 MaskTestConfig const kTestConfigs[] = {
     MaskTestConfig{{viz::RendererType::kSoftware, TestRasterType::kBitmap}, 0},
-#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS) && !BUILDFLAG(IS_IOS)
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
@@ -864,7 +868,7 @@ MaskTestConfig const kTestConfigs[] = {
                    kForceShaders},
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing | kForceShaders},
-#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS) && !BUILDFLAG(IS_IOS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
