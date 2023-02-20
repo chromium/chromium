@@ -1436,6 +1436,9 @@
       <message name="IDS_NETWORK_LIST_NOT_CONNECTED" desc="Text in the network list element when there is a network for the type, but it is not connected or connecting.">
         Not connected
       </message>
+      <message name="IDS_NETWORK_LIST_ACTIVATE_AFTER_DEVICE_SETUP" desc="Text in the network list element in OOBE when a Cellular network's SIM card is locked. Used to inform the user they can activate this SIM after device setup.">
+        Activate after device setup
+      </message>
       <message name="IDS_NETWORK_LIST_NO_NETWORK" desc="Text in the network list element when there is no network for the type.">
         No network
       </message>
@@ -1528,6 +1531,18 @@
       </message>
       <message name="IDS_NETWORK_LIST_ITEM_LABEL_ESIM_PENDING_PROFILE_WITH_PROVIDER_NAME_INSTALLING" desc="A11y label for an eSIM profile that is currently installing, shown in a list in settings and oobe. Includes the provider name.">
         Installing mobile profile, Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="NETWORK_PROVIDER_NAME">$4<ex>Verizon LTE</ex></ph>
+      </message>
+      <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_MANAGED_ACTIVATE_AFTER_SETUP_WITH_PROVIDER_NAME" desc="A11y label for an enterprise managed cellular network in a list in oobe. Includes provider name. Informs the user to activate the network after device setup.">
+        Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="NETWORK_PROVIDER_NAME">$4<ex>Verizon LTE</ex></ph>, Activate after device setup, Managed by your Administrator
+      </message>
+      <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_MANAGED_ACTIVATE_AFTER_SETUP" desc="A11y label for an enterprise managed cellular network in a list in oobe. Informs the user to activate the network after device setup.">
+        Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, Activate after device setup, Managed by your Administrator
+      </message>
+      <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_ACTIVATE_AFTER_SETUP" desc="A11y label for a cellular network in a list in oobe. Informs the user to activate the network after device setup.">
+        Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, Activate after device setup
+      </message>
+       <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_ACTIVATE_AFTER_SETUP_WITH_PROVIDER_NAME" desc="A11y label for a cellular network in a list in oobe. Includes provider name. Informs the user to activate the network after device setup.">
+        Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="NETWORK_PROVIDER_NAME">$4<ex>Verizon LTE</ex></ph>, Activate after device setup
       </message>
       <message name="IDS_NETWORK_LIST_ITEM_ACTIVATE" desc="Text for the button displayed for SIM networks that haven't been setup that opens the SIM setup dialog when clicked.">
         Activate

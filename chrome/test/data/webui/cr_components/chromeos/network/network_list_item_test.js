@@ -29,6 +29,9 @@ suite('NetworkListItemTest', function() {
   let eventTriggered;
 
   setup(function() {
+    loadTimeData.overrideValues({
+      'isUserLoggedIn': true,
+    });
     mojoApi_ = new FakeNetworkConfig();
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     eSimManagerRemote = new FakeESimManagerRemote();
@@ -194,9 +197,9 @@ suite('NetworkListItemTest', function() {
   test('Pending activation pSIM UI visibility', async () => {
     init();
 
-    const networkStateText = listItem.$.networkStateText;
-    assertTrue(!!networkStateText);
-    assertTrue(networkStateText.hidden);
+    const sublabel = listItem.$.sublabel;
+    assertTrue(!!sublabel);
+    assertTrue(sublabel.hidden);
     assertFalse(!!listItem.$$('#activateButton'));
 
     // Set item to an activated pSIM network first.
@@ -216,7 +219,7 @@ suite('NetworkListItemTest', function() {
     // Activate button should not be showing.
     assertFalse(!!listItem.$$('#activateButton'));
     // Network state text should not be showing.
-    assertTrue(networkStateText.hidden);
+    assertTrue(sublabel.hidden);
 
     // Set item to an unactivated eSIM network with a payment URL.
     const managedPropertiesESimNotActivated =
@@ -235,7 +238,7 @@ suite('NetworkListItemTest', function() {
 
     // Activate button should not be showing.
     assertFalse(!!listItem.$$('#activateButton'));
-    assertFalse(networkStateText.hidden);
+    assertFalse(sublabel.hidden);
 
     // Set item to an unactivated pSIM network with a payment URL.
     const managedPropertiesNotActivated =
@@ -257,7 +260,7 @@ suite('NetworkListItemTest', function() {
     const activateButton = listItem.$$('#activateButton');
     assertTrue(!!activateButton);
     // Network state text should not be showing.
-    assertTrue(networkStateText.hidden);
+    assertTrue(sublabel.hidden);
 
     // Arrow button should also be visible.
     const arrow = listItem.$$('#subpageButton');
@@ -288,9 +291,9 @@ suite('NetworkListItemTest', function() {
   test('Unavailable cellular network UI visibility', async () => {
     init();
 
-    const networkStateText = listItem.$.networkStateText;
-    assertTrue(!!networkStateText);
-    assertTrue(networkStateText.hidden);
+    const sublabel = listItem.$.sublabel;
+    assertTrue(!!sublabel);
+    assertTrue(sublabel.hidden);
     assertFalse(!!listItem.$$('#activateButton'));
 
     // Set item to an unactivated eSIM network without a payment URL.
@@ -311,10 +314,10 @@ suite('NetworkListItemTest', function() {
     // Activate button should not be showing.
     assertFalse(!!listItem.$$('#activateButton'));
     // Network state text should be showing.
-    assertFalse(networkStateText.hidden);
-    assertTrue(networkStateText.classList.contains('warning'));
+    assertFalse(sublabel.hidden);
+    assertTrue(sublabel.classList.contains('warning'));
     assertEquals(
-        networkStateText.textContent.trim(),
+        sublabel.textContent.trim(),
         listItem.i18n('networkListItemUnavailableSimNetwork'));
 
     // Selecting the row should fire the show-detail event.
@@ -339,10 +342,10 @@ suite('NetworkListItemTest', function() {
     // Activate button should not be showing.
     assertFalse(!!listItem.$$('#activateButton'));
     // Network state text should be showing.
-    assertFalse(networkStateText.hidden);
-    assertTrue(networkStateText.classList.contains('warning'));
+    assertFalse(sublabel.hidden);
+    assertTrue(sublabel.classList.contains('warning'));
     assertEquals(
-        networkStateText.textContent.trim(),
+        sublabel.textContent.trim(),
         listItem.i18n('networkListItemUnavailableSimNetwork'));
 
     // Arrow button should still be visible.
@@ -506,10 +509,9 @@ suite('NetworkListItemTest', function() {
     assertTrue(!!arrow);
 
     assertFalse(!!unlockBtn);
-    let networkStateText = listItem.$$('#networkStateText');
-    assertTrue(!!networkStateText);
-    assertNotEquals(
-        networkStateLockedText, networkStateText.textContent.trim());
+    let sublabel = listItem.$$('#sublabel');
+    assertTrue(!!sublabel);
+    assertNotEquals(networkStateLockedText, sublabel.textContent.trim());
 
     listItem.set('networkState.typeState.cellular.simLocked', true);
     await flushAsync();
@@ -528,9 +530,9 @@ suite('NetworkListItemTest', function() {
 
     simLockDialog = listItem.$$('sim-lock-dialogs');
     assertTrue(!!simLockDialog);
-    networkStateText = listItem.$$('#networkStateText');
-    assertTrue(!!networkStateText);
-    assertEquals(networkStateLockedText, networkStateText.textContent.trim());
+    sublabel = listItem.$$('#sublabel');
+    assertTrue(!!sublabel);
+    assertEquals(networkStateLockedText, sublabel.textContent.trim());
 
     // Setting showButtons to false should hide unlock button.
     listItem.showButtons = false;
@@ -659,9 +661,9 @@ suite('NetworkListItemTest', function() {
     listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
 
     await flushAsync();
-    const networkStateText = listItem.$$('#networkStateText');
-    assertTrue(!!networkStateText);
-    assertEquals(networkStateLockedText, networkStateText.textContent.trim());
+    const sublabel = listItem.$$('#sublabel');
+    assertTrue(!!sublabel);
+    assertEquals(networkStateLockedText, sublabel.textContent.trim());
   });
 
   test(
@@ -679,10 +681,9 @@ suite('NetworkListItemTest', function() {
         listItem.deviceState = {scanning: true};
 
         await flushAsync();
-        const networkStateText = listItem.$$('#networkStateText');
-        assertTrue(!!networkStateText);
-        assertEquals(
-            networkStateLockedText, networkStateText.textContent.trim());
+        const sublabel = listItem.$$('#sublabel');
+        assertTrue(!!sublabel);
+        assertEquals(networkStateLockedText, sublabel.textContent.trim());
       });
 
   test('computeIsBlockedNetwork()_ should return expected value', async () => {
@@ -736,6 +737,46 @@ suite('NetworkListItemTest', function() {
         assertEquals(showDetailEvent.detail, networkState);
       });
 
+  [true, false].forEach(isUserLoggedIn => {
+    test('pSIM Network unactivated', async () => {
+      loadTimeData.overrideValues({
+        'isUserLoggedIn': isUserLoggedIn,
+      });
+      init();
+
+      const managedPropertiesNotActivated = OncMojo.getDefaultManagedProperties(
+          NetworkType.kCellular, 'cellular');
+      managedPropertiesNotActivated.typeProperties.cellular.activationState =
+          ActivationStateType.kNotActivated;
+      managedPropertiesNotActivated.typeProperties.cellular.paymentPortal = {
+        url: 'url',
+      };
+      mojoApi_.setManagedPropertiesForTest(managedPropertiesNotActivated);
+
+      const networkState = OncMojo.managedPropertiesToNetworkState(
+          managedPropertiesNotActivated);
+      listItem.item = networkState;
+
+      await flushAsync();
+
+      const sublabel = listItem.$.sublabel;
+      const activateButton = listItem.$$('#activateButton');
+      const arrow = listItem.$$('#subpageButton');
+      assertTrue(!!arrow);
+
+      if (isUserLoggedIn) {
+        assertTrue(!!activateButton);
+        assertTrue(sublabel.hidden);
+      } else {
+        assertFalse(!!activateButton);
+        assertFalse(sublabel.hidden);
+        assertEquals(
+            listItem.i18n('networkListItemActivateAfterDeviceSetup'),
+            sublabel.textContent.trim());
+      }
+    });
+  });
+
   suite('Portal', function() {
     function initWithPortalState(portalState) {
       const managedProperties =
@@ -754,29 +795,25 @@ suite('NetworkListItemTest', function() {
     test('kPortal portalState show sign in description', async () => {
       init();
       initWithPortalState(PortalState.kPortal);
-      const getNetworkStateText = () => {
-        const element = listItem.$$('#networkStateText');
+      const getSublabel = () => {
+        const element = listItem.$$('#sublabel');
         return element ? element.textContent.trim() : '';
       };
-      assertEquals(
-          getNetworkStateText(), listItem.i18n('networkListItemSignIn'));
-      assertTrue(
-          listItem.$$('#networkStateText').classList.contains('warning'));
-      assertFalse(!!listItem.$$('#networkStateText').hasAttribute('active'));
+      assertEquals(getSublabel(), listItem.i18n('networkListItemSignIn'));
+      assertTrue(listItem.$$('#sublabel').classList.contains('warning'));
+      assertFalse(!!listItem.$$('#sublabel').hasAttribute('active'));
     });
 
     test('kPortalProxyAuth portalState show sign in description', async () => {
       init();
       initWithPortalState(PortalState.kProxyAuthRequired);
-      const getNetworkStateText = () => {
-        const element = listItem.$$('#networkStateText');
+      const getSublabel = () => {
+        const element = listItem.$$('#sublabel');
         return element ? element.textContent.trim() : '';
       };
-      assertEquals(
-          getNetworkStateText(), listItem.i18n('networkListItemSignIn'));
-      assertTrue(
-          listItem.$$('#networkStateText').classList.contains('warning'));
-      assertFalse(!!listItem.$$('#networkStateText').hasAttribute('active'));
+      assertEquals(getSublabel(), listItem.i18n('networkListItemSignIn'));
+      assertTrue(listItem.$$('#sublabel').classList.contains('warning'));
+      assertFalse(!!listItem.$$('#sublabel').hasAttribute('active'));
     });
 
     test(
@@ -784,17 +821,14 @@ suite('NetworkListItemTest', function() {
         async () => {
           init();
           initWithPortalState(PortalState.kPortalSuspected);
-          const getNetworkStateText = () => {
-            const element = listItem.$$('#networkStateText');
+          const getSublabel = () => {
+            const element = listItem.$$('#sublabel');
             return element ? element.textContent.trim() : '';
           };
           assertEquals(
-              getNetworkStateText(),
-              listItem.i18n('networkListItemConnectedLimited'));
-          assertTrue(
-              listItem.$$('#networkStateText').classList.contains('warning'));
-          assertFalse(
-              !!listItem.$$('#networkStateText').hasAttribute('active'));
+              getSublabel(), listItem.i18n('networkListItemConnectedLimited'));
+          assertTrue(listItem.$$('#sublabel').classList.contains('warning'));
+          assertFalse(!!listItem.$$('#sublabel').hasAttribute('active'));
         });
 
     test(
@@ -802,17 +836,15 @@ suite('NetworkListItemTest', function() {
         async () => {
           init();
           initWithPortalState(PortalState.kNoInternet);
-          const getNetworkStateText = () => {
-            const element = listItem.$$('#networkStateText');
+          const getSublabel = () => {
+            const element = listItem.$$('#sublabel');
             return element ? element.textContent.trim() : '';
           };
           assertEquals(
-              getNetworkStateText(),
+              getSublabel(),
               listItem.i18n('networkListItemConnectedNoConnectivity'));
-          assertTrue(
-              listItem.$$('#networkStateText').classList.contains('warning'));
-          assertFalse(
-              !!listItem.$$('#networkStateText').hasAttribute('active'));
+          assertTrue(listItem.$$('#sublabel').classList.contains('warning'));
+          assertFalse(!!listItem.$$('#sublabel').hasAttribute('active'));
         });
   });
 });

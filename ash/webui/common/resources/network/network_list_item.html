@@ -18,7 +18,7 @@
 
   :host([disabled_]) cr-policy-indicator,
   :host([disabled_]) #networkIconContainer,
-  :host([disabled_]) #networkStateText,
+  :host([disabled_]) #sublabel,
   :host([disabled_]) #divText,
   :host([is-e-sim-pending-profile_]) #divText,
   :host([is-e-sim-pending-profile_]) #divIcon,
@@ -58,11 +58,11 @@
     margin-inline-start: 20px;
   }
 
-  #networkStateText {
+  #sublabel {
     font-size: inherit;
   }
 
-  #networkStateText[active] {
+  #sublabel[active] {
     color: var(--cros-text-color-positive);
   }
 
@@ -127,15 +127,18 @@
       <div id="itemTitle" aria-hidden="true">
         [[itemTitle_]]
       </div>
-      <div id="networkStateText"
-          class$="[[getNetworkStateTextClass_(networkState.*,
+      <div id="sublabel"
+          class$="[[getSublabelClass_(networkState.*,
               isPSimUnavailableNetwork_, isESimUnactivatedProfile_)]]"
-          hidden$="[[!isStateTextVisible_(networkState.*,
-              isPSimUnavailableNetwork_, isESimUnactivatedProfile_)]]"
-          active$="[[isStateTextActive_(networkState.*,
-                        activationUnavailable, isESimUnactivatedProfile_)]]">
-        [[getNetworkStateText_(networkState.*, activationUnavailable,
+          hidden$="[[!isSublabelVisible_(networkState.*,
+              isPSimUnavailableNetwork_, isUserLoggedIn_,
+              isESimUnactivatedProfile_, isPSimPendingActivationNetwork_)]]"
+          active$="[[isSublabelActive_(networkState.*,
+              isUserLoggedIn_, isPSimPendingActivationNetwork_,
+              activationUnavailable, isESimUnactivatedProfile_)]]">
+        [[getSublabelText_(networkState.*, activationUnavailable,
             deviceState.*, isPSimUnavailableNetwork_,
+            isPSimPendingActivationNetwork_, isUserLoggedIn_,
             isESimUnactivatedProfile_)]]
       </div>
     </div>
@@ -146,7 +149,7 @@
     </template>
     <template is="dom-if"
         if="[[shouldShowActivateButton_(isPSimPendingActivationNetwork_,
-          showButtons)]]" restamp>
+          showButtons, isUserLoggedIn_)]]" restamp>
       <cr-button id="activateButton"
           aria-label$="[[getActivateBtnA11yLabel_(item)]]"
           on-click="onActivateButtonClick_"
