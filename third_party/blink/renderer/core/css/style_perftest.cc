@@ -59,32 +59,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
   int num_sheets = 0;
   int num_bytes = 0;
 
-  // If --pre-tokenize is given, we do all the tokenization outside of
-  // the timer (simulating the case where it's already tokenized for us
-  // on a different thread).
-  const bool pre_tokenize =
-      base::CommandLine::ForCurrentProcess()->HasSwitch("pre-tokenize");
-  std::vector<std::unique_ptr<CachedCSSTokenizer>> tokenizers;
-  base::ElapsedTimer tokenize_timer;
-  for (const base::Value& sheet_json : *dict.FindList("stylesheets")) {
-    const base::Value::Dict& sheet_dict = sheet_json.GetDict();
-    if (pre_tokenize) {
-      tokenizers.push_back(CSSTokenizer::CreateCachedTokenizer(
-          WTF::String(*sheet_dict.FindString("text"))));
-      // Extra tokenizers are just a copy of the first.
-      for (int i = 1; i < parse_iterations; ++i) {
-        tokenizers.push_back(tokenizers.back()->DuplicateForTesting());
-      }
-    } else {
-      for (int i = 0; i < parse_iterations; ++i) {
-        tokenizers.push_back(nullptr);
-      }
-    }
-  }
-  base::TimeDelta tokenize_time = tokenize_timer.Elapsed();
-
   base::ElapsedTimer parse_timer;
-  int tokenizer_idx = 0;
   for (const base::Value& sheet_json : *dict.FindList("stylesheets")) {
     const base::Value::Dict& sheet_dict = sheet_json.GetDict();
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(
@@ -92,8 +67,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 
     for (int i = 0; i < parse_iterations; ++i) {
       sheet->ParseString(WTF::String(*sheet_dict.FindString("text")),
-                         /*allow_import_rules=*/true,
-                         std::move(tokenizers[tokenizer_idx++]));
+                         /*allow_import_rules=*/true);
     }
     if (*sheet_dict.FindString("type") == "user") {
       engine.InjectSheet("", sheet, WebCssOrigin::kUser);
@@ -111,11 +85,6 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 
     reporter->RegisterFyiMetric("SheetSize", "kB");
     reporter->AddResult("SheetSize", static_cast<double>(num_bytes / 1024));
-
-    if (pre_tokenize) {
-      reporter->RegisterImportantMetric("TokenizeTime", "us");
-      reporter->AddResult("TokenizeTime", tokenize_time);
-    }
 
     reporter->RegisterImportantMetric("ParseTime", "us");
     reporter->AddResult("ParseTime", parse_time);

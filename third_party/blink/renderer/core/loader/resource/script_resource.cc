@@ -375,12 +375,8 @@ void ScriptResource::ResponseBodyReceived(
 
 void ScriptResource::DidReceiveDecodedData(
     const String& data,
-    std::unique_ptr<DecodedDataInfo> info) {
-  if (!info)
-    return;
-
-  source_text_ = ParkableString(
-      data.Impl(), std::move(To<ScriptDecodedDataInfo>(info.get())->digest_));
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+  source_text_ = ParkableString(data.Impl(), std::move(digest));
   SetDecodedSize(source_text_.CharactersSizeInBytes());
 }
 

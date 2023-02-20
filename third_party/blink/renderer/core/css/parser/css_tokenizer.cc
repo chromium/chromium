@@ -23,43 +23,6 @@ constexpr wtf_size_t kEstimatedCharactersPerToken = 3;
 
 }  // namespace
 
-// static
-std::unique_ptr<CachedCSSTokenizer> CSSTokenizer::CreateCachedTokenizer(
-    const String& input) {
-  CSSTokenizer tokenizer(input);
-
-  Vector<CSSParserToken> tokens;
-
-  // This holds offsets into the source text for each token.
-  Vector<wtf_size_t> offsets;
-
-  wtf_size_t reserved_size = (tokenizer.input_.length() - tokenizer.Offset()) /
-                             kEstimatedCharactersPerToken;
-  tokens.ReserveInitialCapacity(reserved_size);
-  offsets.ReserveInitialCapacity(reserved_size);
-
-  offsets.push_back(0);
-  while (true) {
-    const CSSParserToken token =
-        tokenizer.NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
-    tokens.push_back(token);
-    offsets.push_back(tokenizer.Offset());
-    if (token.GetType() == kEOFToken) {
-      break;
-    }
-  }
-  return std::make_unique<CachedCSSTokenizer>(
-      input, std::move(tokens), std::move(offsets),
-      std::move(tokenizer.string_pool_));
-}
-
-std::unique_ptr<CachedCSSTokenizer> CachedCSSTokenizer::DuplicateForTesting()
-    const {
-  return std::make_unique<CachedCSSTokenizer>(
-      input_.RangeAt(0, input_.length()).ToString(), tokens_, offsets_,
-      string_pool_);
-}
-
 CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
     : input_(string) {
   // According to the spec, we should perform preprocessing here.

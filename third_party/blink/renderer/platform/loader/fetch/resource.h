@@ -262,18 +262,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   virtual void ResponseBodyReceived(
       ResponseBodyLoaderDrainableInterface& body_loader,
       scoped_refptr<base::SingleThreadTaskRunner> loader_task_runner) {}
-
-  // A class Resource subclasses can use to hold ResourceType specific info
-  // related to DidReceiveDecodedData().
-  class DecodedDataInfo {
-   public:
-    virtual ~DecodedDataInfo() = default;
-
-    virtual ResourceType GetType() const = 0;
-  };
-  virtual void DidReceiveDecodedData(const String& data,
-                                     std::unique_ptr<DecodedDataInfo> info) {}
-
+  virtual void DidReceiveDecodedData(
+      const String& data,
+      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {}
   void SetResponse(const ResourceResponse&);
   const ResourceResponse& GetResponse() const { return response_; }
 

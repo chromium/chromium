@@ -127,15 +127,6 @@ bool PrecompileInlineScriptsEnabled(
   return kEnabled;
 }
 
-bool PretokenizeCSSEnabled() {
-  // Cache the feature value since checking for each parser regresses some micro
-  // benchmarks.
-  static const bool kEnabled =
-      base::FeatureList::IsEnabled(features::kPretokenizeCSS) &&
-      features::kPretokenizeInlineSheets.Get();
-  return kEnabled;
-}
-
 NonMainThread* GetPreloadScannerThread() {
   DCHECK(ThreadedPreloadScannerEnabled());
 
@@ -198,7 +189,7 @@ base::TimeDelta GetDefaultTimedBudget() {
 }
 
 base::TimeDelta GetTimedBudget(int times_yielded) {
-  static const base::FeatureParam<int> kNumYieldsWithDefaultBudgetParam{
+  static const base::FeatureParam<int> kNumYieldsWithDefaultBudgetParam {
     &features::kTimedHTMLParserBudget, "num-yields-with-default-budget",
     // These constants were chosen using experiment data from the field to
     // optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
@@ -214,7 +205,7 @@ base::TimeDelta GetTimedBudget(int times_yielded) {
   static const int kNumYieldsWithDefaultBudgetValue =
       kNumYieldsWithDefaultBudgetParam.Get();
 
-  static const base::FeatureParam<base::TimeDelta> kLongParserBudgetParam{
+  static const base::FeatureParam<base::TimeDelta> kLongParserBudgetParam {
     &features::kTimedHTMLParserBudget, "long-parser-budget",
     // These constants were chosen using experiment data from the field to
     // optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
@@ -1042,8 +1033,9 @@ bool HTMLDocumentParser::IsWaitingForScripts() const {
   if (IsParsingFragment()) {
     // HTMLTreeBuilder may have a parser blocking script element, but we
     // ignore it during fragment parsing.
-    DCHECK(!(tree_builder_->HasParserBlockingScript() || (script_runner_ &&
-    script_runner_->HasParserBlockingScript()) || reentry_permit_->ParserPauseFlag()));
+    DCHECK(!(tree_builder_->HasParserBlockingScript() ||
+             (script_runner_ && script_runner_->HasParserBlockingScript()) ||
+             reentry_permit_->ParserPauseFlag()));
     return false;
   }
 
@@ -1333,7 +1325,8 @@ void HTMLDocumentParser::ProcessPreloadData(
 
 void HTMLDocumentParser::FetchQueuedPreloads() {
   DCHECK(preloader_);
-  TRACE_EVENT0("blink,devtools.timeline", "HTMLDocumentParser::FetchQueuedPreloads");
+  TRACE_EVENT0("blink,devtools.timeline",
+               "HTMLDocumentParser::FetchQueuedPreloads");
 
   if (!queued_preloads_.empty()) {
     base::ElapsedTimer timer;
@@ -1400,8 +1393,9 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
     return;
   }
 
-  if (!PrecompileInlineScriptsEnabled() && !PretokenizeCSSEnabled())
+  if (!PrecompileInlineScriptsEnabled()) {
     return;
+  }
 
   DCHECK(!background_scanner_);
   if (!background_script_scanner_)

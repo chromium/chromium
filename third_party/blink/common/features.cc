@@ -1490,14 +1490,6 @@ BASE_FEATURE(kPrecompileInlineScripts,
              "PrecompileInlineScripts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPretokenizeCSS,
-             "PretokenizeCSS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kPretokenizeInlineSheets = {
-    &kPretokenizeCSS, "pretokenize_inline_sheets", true};
-const base::FeatureParam<bool> kPretokenizeExternalSheets = {
-    &kPretokenizeCSS, "pretokenize_external_sheets", true};
-
 BASE_FEATURE(kSimulateClickOnAXFocus,
              "SimulateClickOnAXFocus",
 #if BUILDFLAG(IS_WIN)

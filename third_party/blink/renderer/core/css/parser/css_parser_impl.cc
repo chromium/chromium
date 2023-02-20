@@ -339,8 +339,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
     const CSSParserContext* context,
     StyleSheetContents* style_sheet,
     CSSDeferPropertyParsing defer_property_parsing,
-    bool allow_import_rules,
-    std::unique_ptr<CachedCSSTokenizer> cached_tokenizer) {
+    bool allow_import_rules) {
   absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer;
   if (context->GetDocument() && context->GetDocument()->View()) {
     if (auto* metrics_aggregator =
@@ -355,15 +354,8 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
 
   TRACE_EVENT_BEGIN0("blink,blink_style",
                      "CSSParserImpl::parseStyleSheet.parse");
-  absl::optional<CSSTokenizerWrapper> tokenizer;
-  absl::optional<CSSTokenizer> uncached_tokenizer;
-  if (cached_tokenizer) {
-    tokenizer.emplace(*cached_tokenizer);
-  } else {
-    uncached_tokenizer.emplace(string);
-    tokenizer.emplace(*uncached_tokenizer);
-  }
-  CSSParserTokenStream stream(*tokenizer);
+  CSSTokenizer tokenizer(string);
+  CSSParserTokenStream stream(tokenizer);
   CSSParserImpl parser(context, style_sheet);
   if (defer_property_parsing == CSSDeferPropertyParsing::kYes) {
     parser.lazy_state_ = MakeGarbageCollected<CSSLazyParsingState>(
@@ -389,7 +381,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
   TRACE_EVENT_END0("blink,blink_style", "CSSParserImpl::parseStyleSheet.parse");
 
   TRACE_EVENT_END2("blink,blink_style", "CSSParserImpl::parseStyleSheet",
-                   "tokenCount", tokenizer->TokenCount(), "length",
+                   "tokenCount", tokenizer.TokenCount(), "length",
                    string.length());
   return result;
 }

@@ -461,20 +461,17 @@ void StyleSheetContents::ParseAuthorStyleSheet(
 
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(ParserContext(), this);
-  CSSParser::ParseSheet(
-      context, this, sheet_text, CSSDeferPropertyParsing::kYes, true,
-      sheet_text.IsNull() ? nullptr : cached_style_sheet->TakeTokenizer());
+  CSSParser::ParseSheet(context, this, sheet_text,
+                        CSSDeferPropertyParsing::kYes);
 }
 
-ParseSheetResult StyleSheetContents::ParseString(
-    const String& sheet_text,
-    bool allow_import_rules,
-    std::unique_ptr<CachedCSSTokenizer> tokenizer) {
+ParseSheetResult StyleSheetContents::ParseString(const String& sheet_text,
+                                                 bool allow_import_rules) {
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(ParserContext(), this);
   return CSSParser::ParseSheet(context, this, sheet_text,
-                               CSSDeferPropertyParsing::kNo, allow_import_rules,
-                               std::move(tokenizer));
+                               CSSDeferPropertyParsing::kNo,
+                               allow_import_rules);
 }
 
 bool StyleSheetContents::IsLoading() const {

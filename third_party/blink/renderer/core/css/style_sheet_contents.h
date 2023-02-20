@@ -70,10 +70,7 @@ class CORE_EXPORT StyleSheetContents final
   const AtomicString& NamespaceURIFromPrefix(const AtomicString& prefix) const;
 
   void ParseAuthorStyleSheet(const CSSStyleSheetResource*);
-  ParseSheetResult ParseString(
-      const String&,
-      bool allow_import_rules = true,
-      std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
+  ParseSheetResult ParseString(const String&, bool allow_import_rules = true);
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;

@@ -96,11 +96,8 @@ class CORE_EXPORT CSSParserTokenStream {
   // only needed for declarations which are easier to think about?
   static constexpr int kInitialBufferSize = 128;
 
-  explicit CSSParserTokenStream(CSSTokenizerWrapper tokenizer)
-      : tokenizer_(std::move(tokenizer)), next_(kEOFToken) {}
-
   explicit CSSParserTokenStream(CSSTokenizer& tokenizer)
-      : CSSParserTokenStream(CSSTokenizerWrapper(tokenizer)) {}
+      : tokenizer_(tokenizer), next_(kEOFToken) {}
 
   CSSParserTokenStream(CSSParserTokenStream&&) = default;
   CSSParserTokenStream(const CSSParserTokenStream&) = delete;
@@ -234,7 +231,7 @@ class CORE_EXPORT CSSParserTokenStream {
   void UncheckedSkipToEndOfBlock();
 
   Vector<CSSParserToken, kInitialBufferSize> buffer_;
-  CSSTokenizerWrapper tokenizer_;
+  CSSTokenizer& tokenizer_;
   CSSParserToken next_;
   wtf_size_t offset_ = 0;
   bool has_look_ahead_ = false;

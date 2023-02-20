@@ -285,8 +285,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BaseFeatures.ALWAYS_ABANDON_SCHEDULED_TASK,
                     "Controls whether or not the scheduled task is always abandoned when a timer "
                             + "is stopped or resets."),
-            Flag.baseFeature(BlinkFeatures.PRETOKENIZE_CSS,
-                    "If enabled, CSS will be tokenized in a background thread when possible."),
             Flag.baseFeature(BlinkFeatures.VIEW_TRANSITION,
                     "Enables the experimental View Transitions API."
                             + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),

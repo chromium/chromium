@@ -716,13 +716,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrefetchFontLookupTables);
 // scanner.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrecompileInlineScripts);
 
-// If enabled, CSS will be tokenized in a background thread when possible.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPretokenizeCSS);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPretokenizeInlineSheets;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPretokenizeExternalSheets;
-
 // TODO(accessibility): This flag is set to accommodate JAWS on Windows so they
 // can adjust to us not simulating click events on a focus action. It should be
 // disabled by default (and removed) before 5/17/2023.

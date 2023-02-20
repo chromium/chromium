@@ -5714,21 +5714,6 @@ TEST_F(StyleEngineSimTest,
       fourth->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
-TEST_F(StyleEngineTest, UsesCachedTokenizer) {
-  // Make sure the parser exists.
-  GetDocument().write("<body></body>");
-
-  GetDocument().GetScriptableDocumentParser()->AddCSSTokenizer(
-      ".foo{}", CSSTokenizer::CreateCachedTokenizer(".foo{} .bar{}"));
-  GetDocument().body()->setInnerHTML("<style id=style>.foo{}</style>");
-
-  // If the cached tokenizer is used, the resulting sheet should have 2 rules
-  // (.foo and .bar).
-  auto& style_element =
-      To<HTMLStyleElement>(*GetDocument().getElementById("style"));
-  EXPECT_EQ(style_element.sheet()->length(), 2u);
-}
-
 TEST_F(StyleEngineTest, StyleElementTypeAttrChange) {
   Element* style = GetDocument().CreateElementForBinding("style");
   style->setAttribute("type", "invalid");
