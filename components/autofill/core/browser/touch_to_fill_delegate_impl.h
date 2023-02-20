@@ -108,6 +108,14 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
 
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 
+  // The form is considered perfectly filled if all non-empty fields are
+  // autofilled without further edits.
+  bool IsFillingPerfect(const FormStructure& submitted_form) const;
+
+  // The form is considered correctly filled if all autofilled fields were not
+  // edited by user afterwards.
+  bool IsFillingCorrect(const FormStructure& submitted_form) const;
+
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;

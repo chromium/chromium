@@ -80,18 +80,6 @@ FieldFillingStatus GetFieldFillingStatus(const AutofillField& field) {
   return FieldFillingStatus::kManuallyFilledToDifferentType;
 }
 
-std::string GetMetricsSuffixByAutofillMethod(AutofillSuggestionMethod method) {
-  switch (method) {
-    case AutofillSuggestionMethod::kTouchToFillCreditCard:
-      return "TouchToFill";
-    case AutofillSuggestionMethod::kUnknown:
-      NOTREACHED();
-      break;
-  }
-  NOTREACHED();
-  return "";
-}
-
 AutofillProfileSourceCategory GetCategoryOfProfile(
     const AutofillProfile& profile) {
   switch (profile.source()) {

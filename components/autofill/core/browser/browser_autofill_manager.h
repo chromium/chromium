@@ -312,10 +312,6 @@ class BrowserAutofillManager : public AutofillManager,
                                           const FormData& form,
                                           const FormFieldData& field);
 
-  // Sets where the accepted autofill suggestion came from: touch to fill,
-  // keyboard accessory, etc.
-  virtual void SetAutofillSuggestionMethod(AutofillSuggestionMethod state);
-
   // Set Fast Checkout run ID on the corresponding form event logger.
   virtual void SetFastCheckoutRunId(FieldTypeGroup field_type_group,
                                     int64_t run_id);
@@ -815,13 +811,6 @@ class BrowserAutofillManager : public AutofillManager,
   // value="6" label="Phone Collected, WebOTP Used, OTC Not Used"
   // value="7" label="Phone Collected, WebOTP Used, OTC Used"
   uint32_t phone_collection_metric_state_ = 0;
-
-  // Used to record metrics. It is supposed to be set right after the user
-  // selects an autofill suggestions and reflects 'and reflects the method how
-  // the accepted suggestion was offered to the user:: touch to fill, keyboard
-  // accessory, etc.
-  AutofillSuggestionMethod autofill_suggestion_method_ =
-      AutofillSuggestionMethod::kUnknown;
 
   // List of callbacks to be called for sending blur votes. Only one callback is
   // stored per FormSignature. We rely on FormSignatures rather than

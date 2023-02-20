@@ -1093,10 +1093,6 @@ class AutofillMetrics {
   // If |is_address| an address was filled, otherwise it was a credit card.
   static void LogAutofillPerfectFilling(bool is_address, bool perfect_filling);
 
-  // Logs if every non-empty field in a submitted credit card form was filled by
-  // Touch To Fill bottom sheet suggestion selected by user.
-  static void LogTouchToFillCreditCardPerfectFilling(bool perfect_filling);
-
   struct LogCreditCardSeamlessnessParam {
     const raw_ref<FormEventLoggerBase> event_logger;
     const raw_ref<const FormStructure> form;

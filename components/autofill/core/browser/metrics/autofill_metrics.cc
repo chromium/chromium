@@ -1822,12 +1822,6 @@ void AutofillMetrics::LogAutofillPerfectFilling(bool is_address,
   }
 }
 
-void AutofillMetrics::LogTouchToFillCreditCardPerfectFilling(
-    bool perfect_filling) {
-  base::UmaHistogramBoolean("Autofill.TouchToFill.CreditCard.PerfectFilling",
-                            perfect_filling);
-}
-
 AutofillMetrics::CreditCardSeamlessness::CreditCardSeamlessness(
     const ServerFieldTypeSet& filled_types)
     : name_(filled_types.contains(CREDIT_CARD_NAME_FULL) ||

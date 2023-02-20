@@ -386,8 +386,6 @@ void FormEventLoggerBase::RecordFillingCorrectness(LogBuffer& logs) const {
       !has_logged_edited_autofilled_field_);
   LOG_AF(logs) << Tr{} << "FillingCorrectness"
                << !has_logged_edited_autofilled_field_;
-  LogFillingCorrectnessByFillingMethod(autofill_suggestion_method_,
-                                       form_type_name_);
 }
 
 void FormEventLoggerBase::RecordFillingAssistance(LogBuffer& logs) const {
@@ -514,21 +512,6 @@ void FormEventLoggerBase::OnTextFieldDidChange(
 
 void FormEventLoggerBase::UpdateFlowId() {
   flow_id_ = client_->GetCurrentFormInteractionsFlowId();
-}
-
-void FormEventLoggerBase::LogFillingCorrectnessByFillingMethod(
-    AutofillSuggestionMethod method,
-    const std::string& form_type) const {
-  if (method == AutofillSuggestionMethod::kUnknown) {
-    return;
-  }
-
-  // Log the correctness metric by autofill suggestion method (touch to fill,
-  // keyboard accessory, etc) and the form type (credit card, address, etc.)
-  const std::string method_name = GetMetricsSuffixByAutofillMethod(method);
-  base::UmaHistogramBoolean(
-      "Autofill.FillingCorrectnessByMethod." + form_type + "." + method_name,
-      !has_logged_edited_autofilled_field_);
 }
 
 AutofillMetrics::FormEventSet FormEventLoggerBase::GetFormEvents(

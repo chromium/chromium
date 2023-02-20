@@ -1970,8 +1970,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     submitted_form->LogQualityMetrics(
         submitted_form->form_parsed_timestamp(), interaction_time,
         submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
-        observed_submission, form_interaction_counts,
-        autofill_suggestion_method_);
+        observed_submission, form_interaction_counts);
 
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
@@ -2060,7 +2059,6 @@ void BrowserAutofillManager::Reset() {
   last_unlocked_credit_card_cvc_.clear();
   credit_card_action_ = mojom::RendererFormDataAction::kPreview;
   initial_interaction_timestamp_ = TimeTicks();
-  autofill_suggestion_method_ = AutofillSuggestionMethod::kUnknown;
   external_delegate_->Reset();
   touch_to_fill_delegate_->Reset();
   filling_context_.clear();
@@ -3388,12 +3386,6 @@ void BrowserAutofillManager::OnSeePromoCodeOfferDetailsSelected(
     const FormFieldData& field) {
   client()->OpenPromoCodeOfferDetailsURL(offer_details_url);
   OnSingleFieldSuggestionSelected(value, frontend_id, form, field);
-}
-
-void BrowserAutofillManager::SetAutofillSuggestionMethod(
-    AutofillSuggestionMethod method) {
-  autofill_suggestion_method_ = method;
-  credit_card_form_event_logger_->set_autofill_suggestion_method(method);
 }
 
 void BrowserAutofillManager::ProcessFieldLogEventsInForm(

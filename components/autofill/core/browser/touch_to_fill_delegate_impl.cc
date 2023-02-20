@@ -160,8 +160,6 @@ void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
   CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
   manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
                                         query_form_, query_field_, card);
-  manager_->SetAutofillSuggestionMethod(
-      AutofillSuggestionMethod::kTouchToFillCreditCard);
 }
 
 void TouchToFillDelegateImpl::OnDismissed(bool dismissed_by_user) {
@@ -181,6 +179,14 @@ void TouchToFillDelegateImpl::LogMetricsAfterSubmission(
     base::UmaHistogramBoolean(
         "Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal",
         dismissed_by_user_);
+    if (!dismissed_by_user_) {
+      base::UmaHistogramBoolean(
+          "Autofill.TouchToFill.CreditCard.PerfectFilling",
+          IsFillingPerfect(submitted_form));
+      base::UmaHistogramBoolean(
+          "Autofill.TouchToFill.CreditCard.FillingCorrectness",
+          IsFillingCorrect(submitted_form));
+    }
   }
 }
 
@@ -188,6 +194,20 @@ bool TouchToFillDelegateImpl::HasAnyAutofilledFields(
     const FormStructure& submitted_form) const {
   return base::ranges::any_of(
       submitted_form, [](const auto& field) { return field->is_autofilled; });
+}
+
+bool TouchToFillDelegateImpl::IsFillingPerfect(
+    const FormStructure& submitted_form) const {
+  return base::ranges::all_of(submitted_form, [](const auto& field) {
+    return field->value.empty() || field->is_autofilled;
+  });
+}
+
+bool TouchToFillDelegateImpl::IsFillingCorrect(
+    const FormStructure& submitted_form) const {
+  return !base::ranges::any_of(submitted_form, [](const auto& field) {
+    return field->previously_autofilled();
+  });
 }
 
 base::WeakPtr<TouchToFillDelegateImpl> TouchToFillDelegateImpl::GetWeakPtr() {

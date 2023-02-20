@@ -53,11 +53,6 @@ struct FormGroupFillingStats {
 AutofillMetrics::FieldFillingStatus GetFieldFillingStatus(
     const AutofillField& field);
 
-// Returns the suffix for metrics histogram name depending on the autofill
-// suggestions method used to fill in the value and the form type.
-// E. g. "CreditCard.TouchToFill".
-std::string GetMetricsSuffixByAutofillMethod(AutofillSuggestionMethod method);
-
 // kAccount profiles are synced from an external source and have potentially
 // originated from outside of Autofill. In order to determine the added value
 // for Autofill, the `AutofillProfile::Source` is further resolved in some

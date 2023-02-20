@@ -1777,26 +1777,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.FillingCorrectnessByMethod.{FormType}.{Method}"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2023-06-01">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <summary>
-    Tracks whether or not the user has edited at least one of the autofilled
-    fields before submitting the form. This metric is tracked whenever the value
-    to autofill the {FormType} is provided by the {Method}. The metric is
-    recorded on form submission.
-  </summary>
-  <token key="FormType">
-    <variant name="Address" summary="Address form"/>
-    <variant name="CreditCard" summary="Credit card form"/>
-  </token>
-  <token key="Method">
-    <variant name="TouchToFill" summary="Bottom sheet"/>
-  </token>
-</histogram>
-
 <histogram name="Autofill.FindFormControlElementByUniqueRendererIdDuration"
     units="microseconds" expires_after="2022-10-30">
   <obsolete>
@@ -4320,6 +4300,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.CreditCard.FillingCorrectness"
+    enum="BooleanAutofillFillingCorrectness" expires_after="2023-06-01">
+  <owner>atsvirhckova@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    For the Payments bottom sheet (Touch To Fill for credit cards), tracks
+    whether or not the user has edited at least one of the autofilled fields
+    before submitting the form. The metric is recorded on form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TouchToFill.CreditCard.NumberOfCardsShown"
     units="cards" expires_after="2023-06-01">
   <owner>atsvirhckova@google.com</owner>
@@ -4352,10 +4344,10 @@ chromium-metrics-reviews@google.com.
   <owner>izuzic@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
-    For credit card forms, logs at submission time if the filling experience was
-    perfect or not. In a perfect filling experience, all non-empty fields have
-    been autofilled without subsequent corrections. The metric is logged only if
-    the filled suggestion comes from the payments bottom sheet.
+    For the Payments bottom sheet (Touch To Fill for credit cards), logs at
+    submission time if the filling experience was perfect or not. In a perfect
+    filling experience, all non-empty fields have been autofilled without
+    subsequent corrections. The metric is logged on form submission.
   </summary>
 </histogram>
 
