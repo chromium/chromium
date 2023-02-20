@@ -116,10 +116,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void StopRendering();
   void ReplaceCurrentFrameWithACopy();
 
-  // Tell |video_frame_provider_client_| to stop using this instance in
-  // preparation for dtor.
-  void StopUsingProvider();
-
   // Sets a hook to be notified when a new frame is presented, to fulfill a
   // prending video.requestAnimationFrame() request.
   // Can be called from any thread.
@@ -202,7 +198,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   void StartRenderingInternal();
   void StopRenderingInternal();
-  void StopUsingProviderInternal();
   void ReplaceCurrentFrameWithACopyInternal();
 
   void SetAlgorithmEnabledForTesting(bool algorithm_enabled);
