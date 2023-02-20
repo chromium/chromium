@@ -3,48 +3,54 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
 import("./new_tab_page.gni")
-import("./preprocess_if_expr_sourcemaps.gni")
-import("./ts_library_sourcemaps.gni")
+
+import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(!is_android)
 
 grd_prefix = "new_tab_page"
-preprocess_folder = "preprocessed"
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
-}
+build_webui("build") {
+  static_files = [
+    "new_tab_page.html",
+    "shared_vars.css",
+    "modules/chromefetti.svg",
+    "untrusted/background_image.html",
+    "untrusted/background_image.js",
+    "untrusted/image.html",
+    "untrusted/one_google_bar.html",
+    "untrusted/one_google_bar.js",
+  ]
 
-preprocess_if_expr_sourcemaps("preprocess") {
-  defines = [ "is_official_build=$is_official_build" ]
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
+  extra_grdp_files = [
+    "$target_gen_dir/icons/resources.grdp",
+    "$target_gen_dir/modules/cart/icons/resources.grdp",
+    "$target_gen_dir/modules/feed/icons/resources.grdp",
+    "$target_gen_dir/modules/photos/icons/resources.grdp",
+    "$target_gen_dir/modules/photos/images/resources.grdp",
+    "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
+  ]
 
-preprocess_if_expr("preprocess_html") {
-  defines = [ "is_official_build=$is_official_build" ]
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_files
-}
+  extra_grdp_deps = [
+    "icons:build_grdp",
+    "modules/cart/icons:build_grdp",
+    "modules/feed/icons:build_grdp",
+    "modules/photos/icons:build_grdp",
+    "modules/photos/images:build_grdp",
+    "modules/recipes_v2/icons:build_grdp",
+  ]
 
-html_to_wrapper("html_wrapper_files") {
-  deps = [ ":preprocess_html" ]
-  in_folder = "$target_gen_dir/$preprocess_folder"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_files
-  minify = optimize_webui
-}
+  if (optimize_webui) {
+    extra_grdp_files += [ "$target_gen_dir/mojo_resources.grdp" ]
+    extra_grdp_deps += [ ":build_mojo_grdp" ]
+  }
 
-# Copy all Mojom generated JS files used by the NTP to a common location so that
-# TS compiler can find them when resolving relative paths.
-copy("copy_mojom") {
-  deps = [
+  web_component_files = all_web_component_files
+  non_web_component_files = all_non_web_component_files
+
+  mojo_files_deps = [
     "//chrome/browser/cart:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_ts__generator",
@@ -52,7 +58,7 @@ copy("copy_mojom") {
     "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
   ]
-  sources = [
+  mojo_files = [
     "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.ts",
@@ -62,80 +68,18 @@ copy("copy_mojom") {
   ]
 
   if (!is_official_build) {
-    deps += [
+    mojo_files_deps += [
       "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_ts__generator",
     ]
-    sources += [ "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/foo/foo.mojom-webui.ts" ]
+    mojo_files += [ "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/foo/foo.mojom-webui.ts" ]
   }
 
-  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
-}
-
-if (optimize_webui) {
-  # Register all mojo files to their own grdp, since they are excluded from the
-  # bundle on optimized builds and need to be registered separately.
-  generate_grd("build_mojo_grdp") {
-    grd_prefix = grd_prefix
-    out_grd = "$target_gen_dir/mojo_resources.grdp"
-    input_files = mojo_js_files
-    input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    deps = [ ":build_ts" ]
-  }
-}
-
-grit("resources") {
-  defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
-
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/new_tab_page_resources.h",
-    "grit/new_tab_page_resources_map.cc",
-    "grit/new_tab_page_resources_map.h",
-    "new_tab_page_resources.pak",
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
   ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-if (optimize_webui) {
-  optimize_webui("optimized_js") {
-    host = "new-tab-page"
-    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    deps = [ ":build_ts" ]
-    js_module_in_files = [
-      "new_tab_page.js",
-      "lazy_load.js",
-    ]
-    out_manifest = "$target_gen_dir/$build_manifest"
-    excludes = [
-                 "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
-                 "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
-                 "chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js",
-                 "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
-                 "chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js",
-                 "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
-                 "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
-                 "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
-                 "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
-                 "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
-                 "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
-                 "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
-               ] + mojo_js_files
-  }
-}
-
-ts_library_sourcemaps("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  enable_source_maps = enable_webui_inline_sourcemaps
-  in_files = ts_files + html_wrapper_files + mojo_ts_files
-
-  deps = [
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
@@ -148,65 +92,40 @@ ts_library_sourcemaps("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
 
-  definitions = [
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/pending.d.ts",
-  ]
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "new-tab-page"
+    optimize_webui_in_files = [
+      "new_tab_page.js",
+      "lazy_load.js",
+    ]
+    optimize_webui_excludes = [
+                                "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
+                                "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
+                                "chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js",
+                                "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
+                                "chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js",
+                                "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
+                                "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
+                                "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
+                                "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
+                                "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+                                "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+                                "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+                              ] + mojo_js_files
+  }
 
-  extra_deps = [
-    ":copy_mojom",
-    ":html_wrapper_files",
-    ":preprocess",
-  ]
+  enable_source_maps = enable_webui_inline_sourcemaps
 }
 
-generate_grd("build_grd") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
-    "new_tab_page.html",
-    "shared_vars.css",
-    "modules/chromefetti.svg",
-    "untrusted/background_image.html",
-    "untrusted/background_image.js",
-    "untrusted/image.html",
-    "untrusted/one_google_bar.html",
-    "untrusted/one_google_bar.js",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  grdp_files = [
-    "$target_gen_dir/icons/resources.grdp",
-    "$target_gen_dir/modules/cart/icons/resources.grdp",
-    "$target_gen_dir/modules/feed/icons/resources.grdp",
-    "$target_gen_dir/modules/photos/icons/resources.grdp",
-    "$target_gen_dir/modules/photos/images/resources.grdp",
-    "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
-  ]
-
-  deps = [
-    "icons:build_grdp",
-    "modules/cart/icons:build_grdp",
-    "modules/feed/icons:build_grdp",
-    "modules/photos/icons:build_grdp",
-    "modules/photos/images:build_grdp",
-    "modules/recipes_v2/icons:build_grdp",
-  ]
-
-  if (optimize_webui) {
-    deps += [
-      ":build_mojo_grdp",
-      ":optimized_js",
-    ]
-    resource_path_rewrites = [
-      "new_tab_page.rollup.js|new_tab_page.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    grdp_files += [ "$target_gen_dir/mojo_resources.grdp" ]
-  } else {
-    deps += [ ":build_ts" ]
-    manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+if (optimize_webui) {
+  # Register all mojo files to their own grdp, since they are excluded from the
+  # bundle on optimized builds and need to be registered separately.
+  generate_grd("build_mojo_grdp") {
+    grd_prefix = grd_prefix
+    out_grd = "$target_gen_dir/mojo_resources.grdp"
+    input_files = mojo_js_files
+    input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    deps = [ ":build_ts" ]
   }
 }
