@@ -36,6 +36,9 @@ BASE_DECLARE_FEATURE(kEnableFeedCardMenuSignInPromo);
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
 
+// Feature flag to enable feed experiment tagging.
+BASE_DECLARE_FEATURE(kEnableFeedExperimentTagging);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
@@ -140,5 +143,8 @@ bool IsFeedCardMenuSignInPromoEnabled();
 
 // Whether the feed is disabled.
 bool IsFeedAblationEnabled();
+
+// Whether the feed experiment tagging is enabled.
+bool IsFeedExperimentTaggingEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

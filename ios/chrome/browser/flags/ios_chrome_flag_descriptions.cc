@@ -387,6 +387,10 @@ const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
+const char kFeedExperimentTaggingName[] = "Enable Feed experiment tagging";
+const char kFeedExperimentTaggingDescription[] =
+    "Makes server experiments visible as client-side experiments.";
+
 const char kFeedForegroundRefreshName[] = "Enable feed foreground refresh";
 const char kFeedForegroundRefreshDescription[] =
     "Foreground refresh has two variations. The first is when the Feed is "

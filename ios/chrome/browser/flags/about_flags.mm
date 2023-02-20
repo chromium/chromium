@@ -1358,6 +1358,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"password-notes", flag_descriptions::kPasswordNotesWithBackupName,
      flag_descriptions::kPasswordNotesWithBackupDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kPasswordNotesWithBackup)},
+    {"feed-experiment-tagging-ios",
+     flag_descriptions::kFeedExperimentTaggingName,
+     flag_descriptions::kFeedExperimentTaggingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableFeedExperimentTagging)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
