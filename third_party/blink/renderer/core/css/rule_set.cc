@@ -302,6 +302,9 @@ static const CSSSelector* ExtractBestSelectorValues(
 template <class Func>
 static void MarkAsCoveredByBucketing(CSSSelector& selector,
                                      Func&& should_mark_func) {
+  if (!RuntimeEnabledFeatures::CSSEasySelectorsEnabled()) {
+    return;
+  }
   for (CSSSelector* s = &selector;;
        ++s) {  // Termination condition within loop.
     if (should_mark_func(*s)) {
@@ -767,7 +770,9 @@ void RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
     rules.bucket_number = num_buckets++;
   }
   RuleData rule_data_copy = rule_data;
-  rule_data_copy.ComputeEntirelyCoveredByBucketing();
+  if (RuntimeEnabledFeatures::CSSEasySelectorsEnabled()) {
+    rule_data_copy.ComputeEntirelyCoveredByBucketing();
+  }
   rule_data_copy.SetBucketInformation(rules.bucket_number,
                                       /*order_in_bucket=*/rules.length++);
   backing.push_back(std::move(rule_data_copy));
