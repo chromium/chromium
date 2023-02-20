@@ -74,6 +74,8 @@ class PasswordsGrouper {
                               sort_key_to_password_forms,
                           const std::vector<GroupedFacets>& groups);
 
+  void InitializePSLExtensionList(std::vector<std::string> psl_extension_list);
+
   raw_ptr<AffiliationService> affiliation_service_;
 
   // Structure used to keep track of the mapping between the credential's
@@ -92,6 +94,9 @@ class PasswordsGrouper {
   // Structure to keep track of the blocked sites by user. They are not grouped
   // into affiliated groups.
   std::vector<PasswordForm> blocked_sites;
+
+  // The set of domains that the server uses as an extension to the PSL.
+  base::flat_set<std::string> psl_extensions_;
 
   base::WeakPtrFactory<PasswordsGrouper> weak_ptr_factory_{this};
 };

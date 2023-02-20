@@ -450,8 +450,10 @@ void AffiliationDatabase::UpdatePslExtensions(
     const std::vector<std::string>& domains) {
   DCHECK(!domains.empty());
 
-  sql::Statement clear_table_statement(sql_connection_->GetUniqueStatement("DELETE FROM psl_extensions"));
-  sql::Statement statement(sql_connection_->GetUniqueStatement("INSERT INTO psl_extensions(domain) VALUES (?)"));
+  sql::Statement clear_table_statement(
+      sql_connection_->GetUniqueStatement("DELETE FROM psl_extensions"));
+  sql::Statement statement(sql_connection_->GetUniqueStatement(
+      "INSERT INTO psl_extensions(domain) VALUES (?)"));
   sql::Transaction transaction(sql_connection_.get());
 
   if (!transaction.Begin()) {
@@ -459,7 +461,7 @@ void AffiliationDatabase::UpdatePslExtensions(
   }
 
   // Clear all the records first.
-  if(!clear_table_statement.Run()) {
+  if (!clear_table_statement.Run()) {
     return;
   }
 

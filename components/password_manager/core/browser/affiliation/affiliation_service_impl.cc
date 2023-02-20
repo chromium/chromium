@@ -292,4 +292,15 @@ void AffiliationServiceImpl::GetAllGroups(GroupsCallback callback) const {
       std::move(callback));
 }
 
+void AffiliationServiceImpl::GetPSLExtensions(
+    base::OnceCallback<void(std::vector<std::string>)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::GetPSLExtensions,
+                     base::Unretained(backend_)),
+      std::move(callback));
+}
+
 }  // namespace password_manager

@@ -4,16 +4,18 @@
 
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
 
+#include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/url_formatter/elide_url.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace password_manager {
 
@@ -104,16 +106,11 @@ class DisjointSet {
   std::vector<size_t> ranks_;
 };
 
-// TODO(crbug.com/1354196): Use extended PSL list to get main domain.
-std::string eTLDPlusOne(std::string url) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
-      GURL(url), net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
 // This functions merges groups together if:
 // * the same facet is present in both groups
 // * main domain of the facets matches
 std::vector<GroupedFacets> MergeRelatedGroups(
+    const base::flat_set<std::string>& psl_extensions,
     const std::vector<GroupedFacets>& groups) {
   DisjointSet unions(groups.size());
   std::map<std::string, int> main_domain_to_group;
@@ -124,10 +121,13 @@ std::vector<GroupedFacets> MergeRelatedGroups(
         continue;
       }
 
+      // If domain is empty - compute it manually.
       std::string main_domain =
           facet.main_domain.empty()
-              ? eTLDPlusOne(facet.uri.potentially_invalid_spec())
+              ? password_manager_util::GetExtendedTopLevelDomain(
+                    GURL(facet.uri.potentially_invalid_spec()), psl_extensions)
               : facet.main_domain;
+
       if (main_domain.empty()) {
         continue;
       }
@@ -180,8 +180,10 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
 PasswordsGrouper::PasswordsGrouper(AffiliationService* affiliation_service)
     : affiliation_service_(affiliation_service) {
   DCHECK(affiliation_service_);
+  affiliation_service_->GetPSLExtensions(
+      base::BindOnce(&PasswordsGrouper::InitializePSLExtensionList,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
-
 PasswordsGrouper::~PasswordsGrouper() = default;
 
 void PasswordsGrouper::GroupPasswords(
@@ -193,9 +195,10 @@ void PasswordsGrouper::GroupPasswords(
 
   // Before grouping passwords merge related groups. After grouping is finished
   // invoke |callback|.
-  affiliation_service_->GetAllGroups(base::BindOnce(&MergeRelatedGroups)
-                                         .Then(std::move(groups_callback))
-                                         .Then(std::move(callback)));
+  affiliation_service_->GetAllGroups(
+      base::BindOnce(&MergeRelatedGroups, psl_extensions_)
+          .Then(std::move(groups_callback))
+          .Then(std::move(callback)));
 }
 
 std::vector<AffiliatedGroup>
@@ -352,7 +355,7 @@ PasswordsGrouper::MapFacetsToGroupId(
   for (const GroupedFacets& grouped_facets : groups) {
     GroupId unique_group_id(group_id_int);
     for (const Facet& facet : grouped_facets.facets) {
-      std::string facet_uri_str = facet.uri.canonical_spec() + "/";
+      std::string facet_uri_str = facet.uri.potentially_invalid_spec() + "/";
       map_facet_to_group_id[facet_uri_str] = unique_group_id;
 
       // Keep track of facet URI (sign-on realm) that are already in a group.
@@ -380,6 +383,12 @@ PasswordsGrouper::MapFacetsToGroupId(
   }
 
   return map_facet_to_group_id;
+}
+
+void PasswordsGrouper::InitializePSLExtensionList(
+    std::vector<std::string> psl_extension_list) {
+  psl_extensions_ =
+      base::MakeFlatSet<std::string>(std::move(psl_extension_list));
 }
 
 }  // namespace password_manager

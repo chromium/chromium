@@ -207,6 +207,16 @@ bool IsCredentialProviderEnabledOnStartup(const PrefService* prefs);
 void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled);
 #endif
 
+// Retrieves the extended top level domain for a given |url|
+// ("https://www.facebook.com/" => "facebook.com"). If the calculated top
+// private domain matches an entry from the |psl_extensions| (e.g. "app.link"),
+// the domain is extended by one level ("https://facebook.app.link/" =>
+// "facebook.app.link"). If the |url| is not a valid URI or has an unsupported
+// schema (e.g. "android://"), empty string is returned.
+std::string GetExtendedTopLevelDomain(
+    const GURL& url,
+    const base::flat_set<std::string>& psl_extensions);
+
 // Contains all special symbols considered for password-generation.
 constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 

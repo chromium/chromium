@@ -165,6 +165,10 @@ std::vector<GroupedFacets> AffiliationBackend::GetAllGroups() const {
   return cache_->GetAllGroups();
 }
 
+std::vector<std::string> AffiliationBackend::GetPSLExtensions() const {
+  return cache_->GetPSLExtensions();
+}
+
 // static
 void AffiliationBackend::DeleteCache(const base::FilePath& db_path) {
   AffiliationDatabase::Delete(db_path);

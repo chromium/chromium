@@ -39,5 +39,9 @@ void FakeAffiliationService::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
 void FakeAffiliationService::GetAllGroups(GroupsCallback callback) const {
   std::move(callback).Run({});
 }
+void FakeAffiliationService::GetPSLExtensions(
+    base::OnceCallback<void(std::vector<std::string>)> callback) const {
+  std::move(callback).Run({});
+}
 
 }  // namespace password_manager

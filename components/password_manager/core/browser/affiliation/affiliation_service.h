@@ -98,6 +98,11 @@ class AffiliationService : public KeyedService {
   // Retrieves all stored facet groups from the cache. This information can be
   // used to group passwords together.
   virtual void GetAllGroups(GroupsCallback callback) const = 0;
+
+  // Retrieves psl extension list. This list includes domain which shouldn't be
+  // considered as PSL match.
+  virtual void GetPSLExtensions(
+      base::OnceCallback<void(std::vector<std::string>)> callback) const = 0;
 };
 
 }  // namespace password_manager

@@ -101,6 +101,8 @@ class AffiliationServiceImpl : public AffiliationService,
   void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris) override;
   void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
   void GetAllGroups(GroupsCallback callback) const override;
+  void GetPSLExtensions(base::OnceCallback<void(std::vector<std::string>)>
+                            callback) const override;
 
   AffiliationBackend* GetBackendForTesting() { return backend_; }
 

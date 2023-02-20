@@ -45,6 +45,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/url_util.h"
 
 using autofill::password_generation::PasswordGenerationType;
@@ -66,6 +67,20 @@ std::tuple<int, base::Time, int> GetPriorityProperties(
 // 3. Account vs. profile store. Account is better.
 bool IsBetterMatch(const PasswordForm* lhs, const PasswordForm* rhs) {
   return GetPriorityProperties(lhs) > GetPriorityProperties(rhs);
+}
+
+// Appends a new level to the |main_domain| from |full_domain|.
+// |main_domain| must be a suffix of |full_domain|.
+void IncreaseDomainLevel(const std::string& full_domain,
+                         std::string& main_domain) {
+  DCHECK_GT(full_domain.size(), main_domain.size());
+  auto starting_pos = full_domain.rbegin() + main_domain.size();
+  // Verify that we are at '.' and move to the next character.
+  DCHECK_EQ(*starting_pos, '.');
+  starting_pos++;
+  // Find next '.' from |starting_pos|
+  auto ending_pos = std::find(starting_pos, full_domain.rend(), '.');
+  main_domain = std::string(ending_pos.base(), full_domain.end());
 }
 
 }  // namespace
@@ -480,6 +495,36 @@ void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled) {
       password_manager::prefs::kCredentialProviderEnabledOnStartup, enabled);
 }
 #endif
+
+std::string GetExtendedTopLevelDomain(
+    const GURL& url,
+    const base::flat_set<std::string>& psl_extensions) {
+  std::string main_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  if (main_domain.empty()) {
+    return main_domain;
+  }
+
+  std::string full_domain = url.host();
+
+  // Something went wrong, and it shouldn't happen. Return early in this case to
+  // avoid undefined behaviour.
+  if (!base::EndsWith(full_domain, main_domain)) {
+    return main_domain;
+  }
+
+  // If a domain is contained within the PSL extension list, an additional
+  // subdomain is added to that domain. This is done until the domain is not
+  // contained within the PSL extension list or fully shown. For multi-level
+  // extension, this approach only works if all sublevels are included in the
+  // PSL extension list.
+  while (main_domain != full_domain && psl_extensions.contains(main_domain)) {
+    IncreaseDomainLevel(full_domain, main_domain);
+  }
+  return main_domain;
+}
 
 bool IsNumeric(char16_t c) {
   return '0' <= c && c <= '9';

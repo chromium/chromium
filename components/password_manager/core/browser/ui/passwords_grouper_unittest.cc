@@ -243,4 +243,50 @@ TEST_F(PasswordsGrouperTest, GroupsWithMatchingMainDomainsMerged) {
           AffiliatedGroup({credential4}, {GetShownOrigin(credential4)})));
 }
 
+TEST_F(PasswordsGrouperTest, MainDomainComputationUsesPSLExtensions) {
+  std::vector<PasswordForm> forms = {CreateForm("https://m.a.com/", u"test1"),
+                                     CreateForm("https://b.a.com/", u"test2"),
+                                     CreateForm("https://c.b.a.com/", u"test3"),
+                                     CreateForm("https://a.com/", u"test4")};
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<0>(std::vector<std::string>{"a.com"}));
+  PasswordsGrouper grouper(&affiliation_service());
+
+  // Create an individual group for each form.
+  std::vector<password_manager::GroupedFacets> grouped_facets;
+  for (const auto& form : forms) {
+    GroupedFacets group;
+    group.facets.emplace_back(
+        FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
+    grouped_facets.push_back(std::move(group));
+  }
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+
+  grouper.GroupPasswords(
+      {
+          std::make_pair("key1", forms[0]),
+          std::make_pair("key2", forms[1]),
+          std::make_pair("key3", forms[2]),
+          std::make_pair("key4", forms[3]),
+      },
+      base::DoNothing());
+
+  CredentialUIEntry credential1(forms[0]), credential2(forms[1]),
+      credential3(forms[2]), credential4(forms[3]);
+
+  // a.com is considered eTLD+1 but since a.com is present in PSL Extension List
+  // main domains for |forms| would be m.a.com, b.a.com, b.a.com and a.com, thus
+  // only forms for b.a.com are grouped.
+  EXPECT_THAT(
+      grouper.GetAffiliatedGroupsWithGroupingInfo(),
+      UnorderedElementsAre(
+          AffiliatedGroup({credential1}, {GetShownOrigin(credential1)}),
+          AffiliatedGroup({credential2, credential3},
+                          {GetShownOrigin(credential2)}),
+          AffiliatedGroup({credential4}, {GetShownOrigin(credential4)})));
+}
+
 }  // namespace password_manager
