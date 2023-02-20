@@ -220,9 +220,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  // TODO(crbug.com/1408790): Use a different icon for the notes to match the
-  // mocks.
-  row->AddChildView(CreateWrappedView(CreateIconView(kAccountCircleIcon)));
+  row->AddChildView(CreateWrappedView(CreateIconView(kNotesIcon)));
 
   *textarea = row->AddChildView(std::make_unique<views::Textarea>());
   (*textarea)->SetText(
@@ -494,15 +492,13 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView() {
       base::BindRepeating(&WriteToClipboard,
                           currently_selected_password_->password_value)));
 
-  // TODO(crbug.com/1408790): Use a different icon for the notes to match the
-  // mocks.
   // TODO(crbug.com/1408790): use internationalized string for the note action
   // button tooltip text.
   // Add two rows: one for displaying the note which is visible by default, and
   // another to edit the note, which is hidden by default. Clicking the Edit
   // icon next to the note row will hide the display row, and show the edit row.
   display_note_row_ = container_view->AddChildView(CreateDetailsRow(
-      kAccountCircleIcon, CreateNoteLabel(*currently_selected_password_),
+      kNotesIcon, CreateNoteLabel(*currently_selected_password_),
       vector_icons::kEditIcon, u"Edit Note",
       base::BindRepeating(&ManagePasswordsView::SwitchToEditNoteMode,
                           base::Unretained(this))));
