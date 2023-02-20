@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @protocol BadgeItem;
 class GURL;
