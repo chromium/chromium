@@ -78,7 +78,6 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
 
  private:
   class Impl;
-  friend class RTCVideoEncoder::Impl;
 
   void UpdateEncoderInfo(
       media::VideoEncoderInfo encoder_info,
