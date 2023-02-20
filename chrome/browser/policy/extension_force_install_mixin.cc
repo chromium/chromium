@@ -142,7 +142,7 @@ bool ForceInstallPrefObserver::IsForceInstallPrefSet() const {
     return false;
   }
   DCHECK_EQ(pref->GetType(), base::Value::Type::DICT);
-  return pref->GetValue()->FindKey(extension_id_) != nullptr;
+  return pref->GetValue()->GetDict().contains(extension_id_);
 }
 
 // Implements waiting for the mixin's specified event.
