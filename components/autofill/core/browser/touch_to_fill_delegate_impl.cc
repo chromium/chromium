@@ -43,26 +43,25 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   if (!manager_->client()->IsTouchToFillCreditCardSupported())
     return false;
 
-  TouchToFillCreditCardTriggerOutcome outcome =
-      TouchToFillCreditCardTriggerOutcome::kShown;
+  TriggerOutcome outcome = TriggerOutcome::kShown;
   // Trigger only for complete forms (contining the fields for the card number
   // and the card expiration date).
   FormStructure* form_structure =
       manager_->FindCachedFormById(form.global_id());
   if (form_structure && !FormHasAllCreditCardFields(*form_structure)) {
-    outcome = TouchToFillCreditCardTriggerOutcome::kIncompleteForm;
+    outcome = TriggerOutcome::kIncompleteForm;
   }
   // Trigger only if not shown before.
   if (ttf_credit_card_state_ != TouchToFillState::kShouldShow) {
-    outcome = TouchToFillCreditCardTriggerOutcome::kShownBefore;
+    outcome = TriggerOutcome::kShownBefore;
   }
   // Trigger only if the client and the form are not insecure.
   if (IsFormOrClientNonSecure(manager_->client(), form)) {
-    outcome = TouchToFillCreditCardTriggerOutcome::kFormOrClientNotSecure;
+    outcome = TriggerOutcome::kFormOrClientNotSecure;
   }
   // Trigger only on focusable empty field.
   if (!field.is_focusable || !SanitizedFieldIsEmpty(field.value)) {
-    outcome = TouchToFillCreditCardTriggerOutcome::kFieldNotEmptyOrNotFocusable;
+    outcome = TriggerOutcome::kFieldNotEmptyOrNotFocusable;
   }
   // Trigger only if there is at least 1 complete valid credit card on file.
   // Complete = contains number, expiration date and name on card.
@@ -76,22 +75,22 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   // Not showing the sheet if all the cards are incomplete or invalid.
   if (base::ranges::none_of(cards_to_suggest,
                             &CreditCard::IsCompleteValidCard)) {
-    outcome = TouchToFillCreditCardTriggerOutcome::kNoValidCards;
+    outcome = TriggerOutcome::kNoValidCards;
   }
   // Trigger only if the UI is available.
   if (!manager_->CanShowAutofillUi()) {
-    outcome = TouchToFillCreditCardTriggerOutcome::kCannotShowAutofillUi;
+    outcome = TriggerOutcome::kCannotShowAutofillUi;
   }
   // Finally try showing the surface
-  if (outcome == TouchToFillCreditCardTriggerOutcome::kShown &&
+  if (outcome == TriggerOutcome::kShown &&
       !manager_->client()->ShowTouchToFillCreditCard(
           GetWeakPtr(), std::move(cards_to_suggest))) {
-    outcome = TouchToFillCreditCardTriggerOutcome::kFailedToDisplayBottomSheet;
+    outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
   }
   base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
                                 outcome);
   // Return if didn't show the sheet
-  if (outcome != TouchToFillCreditCardTriggerOutcome::kShown) {
+  if (outcome != TriggerOutcome::kShown) {
     return false;
   }
 

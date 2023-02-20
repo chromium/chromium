@@ -104,6 +104,8 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
     kWasShown,
   };
 
+  using TriggerOutcome = TouchToFillCreditCardTriggerOutcome;
+
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
