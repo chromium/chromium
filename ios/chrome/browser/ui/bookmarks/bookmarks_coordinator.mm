@@ -666,6 +666,8 @@ enum class PresentedState {
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  base::RecordAction(
+      base::UserMetricsAction("IOSBookmarkManagerCloseWithSwipe"));
   self.currentPresentedState = PresentedState::NONE;
   [self bookmarkBrowserDismissed];
 }
