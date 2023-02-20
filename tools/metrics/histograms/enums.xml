@@ -2641,7 +2641,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Default">
     The SamplingHeapProfiler uses the default unwind tables.
   </int>
-  <int value="2" label="CFIBackTrace">
+  <int value="2" label="CFIBackTrace (obsolete)">
     The SamplingHeapProfiler uses the trace_event::CFIBacktraceAndroid class.
   </int>
   <int value="3" label="Unavailable">
