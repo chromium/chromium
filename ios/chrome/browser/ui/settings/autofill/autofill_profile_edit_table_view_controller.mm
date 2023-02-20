@@ -355,17 +355,31 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns true if the itemType belongs to a required field.
 - (BOOL)isItemTypeRequiredField:(ItemType)itemType {
-  return (itemType == ItemTypeLine1 && self.line1Required) ||
-         (itemType == ItemTypeCity && self.cityRequired) ||
-         (itemType == ItemTypeState && self.stateRequired) ||
-         (itemType == ItemTypeZip && self.zipRequired);
+  switch (itemType) {
+    case ItemTypeLine1:
+      return self.line1Required;
+    case ItemTypeCity:
+      return self.cityRequired;
+    case ItemTypeState:
+      return self.stateRequired;
+    case ItemTypeZip:
+      return self.zipRequired;
+    case ItemTypeField:
+    case ItemTypeCountry:
+    case ItemTypeError:
+    case ItemTypeFooter:
+      break;
+  }
+  return NO;
 }
 
 // Computes whether the `tableViewItem` is a required field and empty.
 - (void)computeErrorIfRequiredTextField:(TableViewTextEditItem*)tableViewItem {
   ItemType itemType = static_cast<ItemType>(tableViewItem.type);
-  if (![self isItemTypeRequiredField:itemType]) {
-    // Early return if the text field is not a required field.
+  if (![self isItemTypeRequiredField:itemType] ||
+      [self requiredFieldWasEmptyOnProfileLoadForItemType:itemType]) {
+    // Early return if the text field is not a required field or contained an
+    // empty value when the profile was loaded.
     tableViewItem.hasValidText = YES;
     return;
   }
@@ -391,19 +405,58 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
+// Returns YES if the profile contained an empty value for the required
+// `itemType`.
+- (BOOL)requiredFieldWasEmptyOnProfileLoadForItemType:(ItemType)itemType {
+  DCHECK([self isItemTypeRequiredField:itemType]);
+
+  return _autofillProfile
+      ->GetInfo([self serverFieldTypeCorrespondingToRequiredItemType:itemType],
+                GetApplicationContext() -> GetApplicationLocale())
+      .empty();
+}
+
+// Returns `autofill::ServerFieldType` corresponding to the `itemType`.
+- (autofill::ServerFieldType)serverFieldTypeCorrespondingToRequiredItemType:
+    (ItemType)itemType {
+  switch (itemType) {
+    case ItemTypeLine1:
+      return autofill::ADDRESS_HOME_LINE1;
+    case ItemTypeCity:
+      return autofill::ADDRESS_HOME_CITY;
+    case ItemTypeState:
+      return autofill::ADDRESS_HOME_STATE;
+    case ItemTypeZip:
+      return autofill::ADDRESS_HOME_ZIP;
+    case ItemTypeField:
+    case ItemTypeCountry:
+    case ItemTypeError:
+    case ItemTypeFooter:
+      break;
+  }
+  NOTREACHED();
+  return autofill::UNKNOWN_TYPE;
+}
+
 // Returns the label corresponding to the item type for a required field.
 - (NSString*)labelCorrespondingToRequiredItemType:(ItemType)itemType {
-  DCHECK([self isItemTypeRequiredField:itemType]);
-  if (itemType == ItemTypeLine1) {
-    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ADDRESS1);
+  switch (itemType) {
+    case ItemTypeLine1:
+      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ADDRESS1);
+    case ItemTypeCity:
+      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_CITY);
+    case ItemTypeState:
+      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_STATE);
+    case ItemTypeZip:
+      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ZIP);
+    case ItemTypeField:
+    case ItemTypeCountry:
+    case ItemTypeError:
+    case ItemTypeFooter:
+      break;
   }
-  if (itemType == ItemTypeCity) {
-    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_CITY);
-  }
-  if (itemType == ItemTypeState) {
-    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_STATE);
-  }
-  return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ZIP);
+  NOTREACHED();
+  return @"";
 }
 
 // Removes the given section if it exists.
