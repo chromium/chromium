@@ -200,7 +200,7 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   if (shill_dict) {
     for (const auto* property :
          {shill::kStaticIPConfigProperty, shill::kSavedIPConfigProperty}) {
-      AddIpConfiguration(mojo.get(), shill_dict->FindKey(property));
+      AddIpConfiguration(mojo.get(), shill_dict->GetDict().Find(property));
     }
   }
 
