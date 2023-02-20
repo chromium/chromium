@@ -321,15 +321,15 @@ enum class PresentedState {
     [self openUrls:urlsToOpen inIncognito:inIncognito newTab:newTab];
   }
 
+  __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^{
-    [self bookmarkBrowserDismissed];
-
+    [weakSelf bookmarkBrowserDismissed];
     if (!openUrlsAfterDismissal) {
       return;
     }
-    [self openUrls:urlsToOpenAfterDismissal
-        inIncognito:inIncognito
-             newTab:newTab];
+    [weakSelf openUrls:urlsToOpenAfterDismissal
+           inIncognito:inIncognito
+                newTab:newTab];
   };
 
   if (self.baseViewController.presentedViewController) {
@@ -342,6 +342,12 @@ enum class PresentedState {
 }
 
 - (void)bookmarkBrowserDismissed {
+  for (UIViewController* controller in self.bookmarkNavigationController
+           .viewControllers) {
+    BookmarksHomeViewController* bookmarksHomeViewController =
+        base::mac::ObjCCast<BookmarksHomeViewController>(controller);
+    [bookmarksHomeViewController shutdown];
+  }
   // TODO(crbug.com/940856): Make sure navigaton
   // controller doesn't keep any controllers. Without
   // this there's a memory leak of (almost) every BHVC
@@ -656,6 +662,12 @@ enum class PresentedState {
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
   return [self canDismiss];
+}
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  self.currentPresentedState = PresentedState::NONE;
+  [self bookmarkBrowserDismissed];
 }
 
 @end

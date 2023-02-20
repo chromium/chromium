@@ -855,6 +855,38 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                                      newFolderEnabled:YES];
 }
 
+// Test to swipe down the bookmark view twice..
+- (void)testBookmarksSwipeDownTwice {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  // Check that the TableView is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Check that the TableView has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Repeat a second time.
+  [BookmarkEarlGreyUI openBookmarks];
+  // Check that the TableView is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Check that the TableView has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
 // TODO(crbug.com/695749): Add egtests for:
 // 1. Spinner background.
 // 2. Reorder bookmarks. (make sure it won't clear the row selection on table)
