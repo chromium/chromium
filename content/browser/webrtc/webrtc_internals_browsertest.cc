@@ -256,11 +256,11 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     for (size_t i = 0; i < requests.size(); ++i) {
       const base::Value& value = list_request[i];
       ASSERT_TRUE(value.is_dict());
-      absl::optional<int> rid = value.FindIntKey("rid");
-      absl::optional<int> pid = value.FindIntKey("pid");
+      const base::Value::Dict& dict = value.GetDict();
+      absl::optional<int> rid = dict.FindInt("rid");
+      absl::optional<int> pid = dict.FindInt("pid");
       ASSERT_TRUE(rid);
       ASSERT_TRUE(pid);
-      const base::Value::Dict& dict = value.GetDict();
       const std::string* origin = dict.FindString("origin");
       const std::string* audio = dict.FindString("audio");
       const std::string* video = dict.FindString("video");
@@ -470,14 +470,16 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
       ASSERT_EQ(base::Value::Type::DICT, pc_dump.type());
 
       // Verifies the number of updates.
-      const base::Value* value = pc_dump.FindListKey("updateLog");
-      ASSERT_TRUE(value);
-      EXPECT_EQ(static_cast<size_t>(update_number), value->GetList().size());
+      const base::Value::List* updates_value =
+          pc_dump.GetDict().FindList("updateLog");
+      ASSERT_TRUE(updates_value);
+      EXPECT_EQ(static_cast<size_t>(update_number), updates_value->size());
 
       // Verifies the number of stats tables.
-      value = pc_dump.FindDictKey("stats");
-      ASSERT_TRUE(value);
-      EXPECT_EQ(static_cast<size_t>(stats_number), value->DictSize());
+      const base::Value::Dict* stats_value =
+          pc_dump.GetDict().FindDict("stats");
+      ASSERT_TRUE(stats_value);
+      EXPECT_EQ(static_cast<size_t>(stats_number), stats_value->size());
     }
   }
 
