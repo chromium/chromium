@@ -51,6 +51,8 @@ static_library("exo") {
     "extended_drag_source.h",
     "frame_sink_resource_manager.cc",
     "frame_sink_resource_manager.h",
+    "frame_timing_history.cc",
+    "frame_timing_history.h",
     "gamepad.cc",
     "gamepad.h",
     "gamepad_observer.h",
@@ -216,6 +218,8 @@ source_set("test_support") {
     "test/mock_security_delegate.h",
     "test/shell_surface_builder.cc",
     "test/shell_surface_builder.h",
+    "test/surface_tree_host_test_util.cc",
+    "test/surface_tree_host_test_util.h",
     "test/test_security_delegate.cc",
     "test/test_security_delegate.h",
   ]

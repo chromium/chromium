@@ -32,6 +32,7 @@
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/test/surface_tree_host_test_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -256,7 +257,7 @@ TEST_F(PointerTest, SetCursor) {
 
   // Set pointer surface.
   pointer->SetCursor(pointer_surface.get(), gfx::Point(5, 5));
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFramePresentation(pointer.get());
 
   const viz::CompositorRenderPass* last_render_pass;
   {
@@ -272,7 +273,7 @@ TEST_F(PointerTest, SetCursor) {
 
   // Adjust hotspot.
   pointer->SetCursor(pointer_surface.get(), gfx::Point());
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFramePresentation(pointer.get());
 
   // Verify that adjustment to hotspot resulted in new frame.
   {
@@ -426,7 +427,7 @@ TEST_F(PointerTest, SetCursorAndSetCursorType) {
   // Set pointer surface.
   pointer->SetCursor(pointer_surface.get(), gfx::Point());
   EXPECT_EQ(1u, pointer->GetActivePresentationCallbacksForTesting().size());
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFramePresentation(pointer.get());
 
   {
     viz::SurfaceId surface_id = pointer->host_window()->GetSurfaceId();
@@ -447,15 +448,7 @@ TEST_F(PointerTest, SetCursorAndSetCursorType) {
   // Set the same pointer surface again.
   pointer->SetCursor(pointer_surface.get(), gfx::Point());
   EXPECT_EQ(1u, pointer->GetActivePresentationCallbacksForTesting().size());
-  auto& list =
-      pointer->GetActivePresentationCallbacksForTesting().begin()->second;
-  base::RunLoop runloop;
-  list.push_back(base::BindRepeating(
-      [](base::RepeatingClosure callback, const gfx::PresentationFeedback&) {
-        callback.Run();
-      },
-      runloop.QuitClosure()));
-  runloop.Run();
+  test::WaitForLastFramePresentation(pointer.get());
 
   {
     viz::SurfaceId surface_id = pointer->host_window()->GetSurfaceId();

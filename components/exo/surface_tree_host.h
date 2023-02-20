@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/surface.h"
@@ -89,6 +90,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
     return active_presentation_callbacks_;
   }
 
+  uint32_t GenerateNextFrameToken() { return ++next_token_; }
+
   // SurfaceDelegate:
   void OnSurfaceCommit() override;
   bool IsSurfaceSynchronized() const override;
@@ -136,6 +139,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   void SetSecurityDelegate(SecurityDelegate* security_delegate);
 
+  void SubmitCompositorFrameForTesting(viz::CompositorFrame frame);
+
  protected:
   void UpdateDisplayOnTree();
 
@@ -168,6 +173,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // the host window's layer's scale factor.
   float GetScaleFactor();
 
+  void CleanUpCallbacks();
+
   Surface* root_surface_ = nullptr;
 
   // Position of root surface relative to topmost, leftmost sub-surface. The
@@ -177,11 +184,14 @@ class SurfaceTreeHost : public SurfaceDelegate,
   std::unique_ptr<aura::Window> host_window_;
   std::unique_ptr<LayerTreeFrameSinkHolder> layer_tree_frame_sink_holder_;
 
-  // This list contains the callbacks to notify the client when it is a good
-  // time to start producing a new frame. These callbacks move to
-  // |frame_callbacks_| when Commit() is called. They fire when the effect
-  // of the Commit() is scheduled to be drawn.
-  std::list<Surface::FrameCallback> frame_callbacks_;
+  // This queue contains lists the callbacks to notify the client when it is a
+  // good time to start producing a new frame. Each list corresponds to a
+  // compositor frame, in the order of submission to
+  // `layer_tree_frame_sink_holder_`.
+  //
+  // These callbacks move to |frame_callbacks_| when Commit() is called. They
+  // fire when the effect of the Commit() is scheduled to be drawn.
+  base::queue<std::list<Surface::FrameCallback>> frame_callbacks_;
 
   // These lists contains the callbacks to notify the client when surface
   // contents have been presented.

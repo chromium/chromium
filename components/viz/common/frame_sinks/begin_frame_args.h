@@ -259,6 +259,9 @@ struct VIZ_COMMON_EXPORT BeginFrameAck {
                 bool has_damage,
                 int64_t trace_id = -1);
 
+  BeginFrameAck(const BeginFrameAck& other) = default;
+  BeginFrameAck& operator=(const BeginFrameAck& other) = default;
+
   // Creates a BeginFrameAck for a manual BeginFrame. Used when clients produce
   // a CompositorFrame without prior BeginFrame, e.g. for synchronous drawing.
   static BeginFrameAck CreateManualAckWithDamage();

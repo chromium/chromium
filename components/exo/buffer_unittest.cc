@@ -256,7 +256,7 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
     frame.metadata.begin_frame_ack.frame_id.sequence_number =
         viz::BeginFrameArgs::kStartingFrameNumber;
     frame.metadata.begin_frame_ack.has_damage = true;
-    frame.metadata.frame_token = 1;
+    frame.metadata.frame_token = surface_tree_host->GenerateNextFrameToken();
     frame.metadata.device_scale_factor = 1;
     auto pass = viz::CompositorRenderPass::Create();
     pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
@@ -264,7 +264,7 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
     frame.render_pass_list.push_back(std::move(pass));
     frame.resource_list.push_back(resource);
     VerifySyncTokensInCompositorFrame(&frame);
-    frame_sink_holder->SubmitCompositorFrame(std::move(frame));
+    surface_tree_host->SubmitCompositorFrameForTesting(std::move(frame));
   }
 
   buffer->OnDetach();
@@ -313,7 +313,7 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
         viz::BeginFrameId(viz::BeginFrameArgs::kManualSourceId,
                           viz::BeginFrameArgs::kStartingFrameNumber);
     frame.metadata.begin_frame_ack.has_damage = true;
-    frame.metadata.frame_token = 1;
+    frame.metadata.frame_token = surface_tree_host->GenerateNextFrameToken();
     frame.metadata.device_scale_factor = 1;
     auto pass = viz::CompositorRenderPass::Create();
     pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
@@ -321,7 +321,7 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
     frame.render_pass_list.push_back(std::move(pass));
     frame.resource_list.push_back(resource);
     VerifySyncTokensInCompositorFrame(&frame);
-    frame_sink_holder->SubmitCompositorFrame(std::move(frame));
+    surface_tree_host->SubmitCompositorFrameForTesting(std::move(frame));
 
     // Try to release buffer in last frame. This can happen during a resize
     // when frame sink id changes.
@@ -346,13 +346,13 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
         viz::BeginFrameId(viz::BeginFrameArgs::kManualSourceId,
                           viz::BeginFrameArgs::kStartingFrameNumber);
     frame.metadata.begin_frame_ack.has_damage = true;
-    frame.metadata.frame_token = 1;
+    frame.metadata.frame_token = surface_tree_host->GenerateNextFrameToken();
     frame.metadata.device_scale_factor = 1;
     auto pass = viz::CompositorRenderPass::Create();
     pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
                  gfx::Rect(buffer_size), gfx::Transform());
     frame.render_pass_list.push_back(std::move(pass));
-    frame_sink_holder->SubmitCompositorFrame(std::move(frame));
+    surface_tree_host->SubmitCompositorFrameForTesting(std::move(frame));
   }
 
   base::RunLoop().RunUntilIdle();

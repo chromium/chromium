@@ -928,6 +928,54 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Graphics.Exo.Smoothness.DidNotProduceToFrameArrival"
+    units="microseconds" expires_after="2023-12-31">
+  <owner>jonross@chromium.org</owner>
+  <owner>yzshen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Measures the time duration between Exo sending a DidNotProduceFrame response
+    and the next frame arrival, if the next frame arrives before a new
+    BeginFrame request. Reported for clients with high-resolution clocks.
+
+    This metric is used to measure whether the deadline Exo uses to wait for
+    frames is reasonable. Please note that a value is reported for each
+    DidNotProduceFrame. If (1) DidNotProduceFrame is issued when there are
+    already queued BeginFrame requests; or (2) a new BeginFrame request arrives
+    before the next frame, then the value reported is 0.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Exo.Smoothness.PercentDidNotProduceFrame" units="%"
+    expires_after="2023-12-31">
+  <owner>jonross@chromium.org</owner>
+  <owner>yzshen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of BeginFrame requests that Exo receives and responds
+    with DidNotProduceFrame.
+
+    A new value is reported for every 100 BeginFrame requests that a shell
+    surface receives. Note that this metric is reported only when there are
+    sufficient number of BeginFrame requests (&gt;= 100).
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Exo.Smoothness.PercentFrameDiscarded" units="%"
+    expires_after="2023-12-31">
+  <owner>jonross@chromium.org</owner>
+  <owner>yzshen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of compositor frames that are submitted from Exo clients
+    and directly discarded without being sent to the GPU process.
+
+    A new value is reported for every 100 frames that a shell surface submits.
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100).
+  </summary>
+</histogram>
+
 <histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
     units="%" expires_after="2023-07-02">
   <owner>jonross@chromium.org</owner>
