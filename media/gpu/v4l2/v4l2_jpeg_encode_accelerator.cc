@@ -1585,6 +1585,10 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
           std::move(output_gmb_handle), output_gmb_buffer_size,
           gfx::BufferFormat::R_8, gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
           base::DoNothing());
+  if (!output_gmb_buffer) {
+    VLOGF(1) << "Failed to import gmb buffer";
+    return 0;
+  }
 
   bool isMapped = output_gmb_buffer->Map();
   if (!isMapped) {
