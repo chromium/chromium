@@ -501,7 +501,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                             LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof PrivacyGuideFragment) {
-            ((PrivacyGuideFragment) fragment).setBottomSheetController(mBottomSheetController);
+            PrivacyGuideFragment pgFragment = (PrivacyGuideFragment) fragment;
+            pgFragment.setBottomSheetController(mBottomSheetController);
+            pgFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
+            pgFragment.setSettingsLauncher(mSettingsLauncher);
         }
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)

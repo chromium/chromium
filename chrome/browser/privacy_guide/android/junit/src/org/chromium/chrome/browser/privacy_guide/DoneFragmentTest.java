@@ -44,6 +44,7 @@ public class DoneFragmentTest {
     private IdentityManager mIdentityManager;
 
     private FragmentScenario mScenario;
+    private DoneFragment mFragment;
     private View mPsButton;
     private View mWaaButton;
 
@@ -52,6 +53,7 @@ public class DoneFragmentTest {
         mScenario = FragmentScenario.launchInContainer(
                 DoneFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
         mScenario.onFragment(fragment -> {
+            mFragment = (DoneFragment) fragment;
             mPsButton = fragment.getView().findViewById(R.id.ps_button);
             mWaaButton = fragment.getView().findViewById(R.id.waa_button);
         });

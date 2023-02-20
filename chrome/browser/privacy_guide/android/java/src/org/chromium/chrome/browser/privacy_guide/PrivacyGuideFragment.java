@@ -23,7 +23,9 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
@@ -50,6 +52,8 @@ public class PrivacyGuideFragment extends Fragment {
     }
 
     private BottomSheetController mBottomSheetController;
+    private CustomTabIntentHelper mCustomTabHelper;
+    private SettingsLauncher mSettingsLauncher;
     private PrivacyGuidePagerAdapter mPagerAdapter;
     private View mView;
     private ViewPager2 mViewPager;
@@ -177,6 +181,11 @@ public class PrivacyGuideFragment extends Fragment {
         if (childFragment instanceof SafeBrowsingFragment) {
             ((SafeBrowsingFragment) childFragment).setBottomSheetController(mBottomSheetController);
         }
+        if (childFragment instanceof DoneFragment) {
+            DoneFragment doneFragment = (DoneFragment) childFragment;
+            doneFragment.setCustomTabIntentHelper(mCustomTabHelper);
+            doneFragment.setSettingsLauncher(mSettingsLauncher);
+        }
     }
 
     @Override
@@ -198,6 +207,14 @@ public class PrivacyGuideFragment extends Fragment {
 
     public void setBottomSheetController(BottomSheetController bottomSheetController) {
         mBottomSheetController = bottomSheetController;
+    }
+
+    public void setCustomTabIntentHelper(CustomTabIntentHelper tabHelper) {
+        mCustomTabHelper = tabHelper;
+    }
+
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

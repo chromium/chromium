@@ -253,6 +253,25 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /**
+     * A method to record metrics on the Privacy Sandbox link click on the privacy guide done page.
+     */
+    static void recordMetricsForPsLink() {
+        RecordUserAction.record("Settings.PrivacyGuide.CompletionPSClick");
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.EntryExit",
+                PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK,
+                PrivacyGuideInteractions.MAX_VALUE);
+    }
+
+    /**
+     * A method to record metrics on the WAA link click on the privacy guide done page.
+     */
+    static void recordMetricsForWaaLink() {
+        RecordUserAction.record("Settings.PrivacyGuide.CompletionSWAAClick");
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.EntryExit",
+                PrivacyGuideInteractions.SWAA_COMPLETION_LINK, PrivacyGuideInteractions.MAX_VALUE);
+    }
+
+    /**
      * A method to record metrics on MSBB toggle change of the Privacy Guide's {@link MSBBFragment}.
      */
     static void recordMetricsOnMSBBChange(boolean isMSBBOn) {
