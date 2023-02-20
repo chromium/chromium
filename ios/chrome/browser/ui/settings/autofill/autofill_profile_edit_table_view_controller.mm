@@ -408,13 +408,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the error message item as a footer.
 - (TableViewAttributedStringHeaderFooterItem*)errorMessageItem {
-  NSString* error = nil;
-  // TODO(crbug.com/1407666): Add string compatible with i18n.
-  if ([self.requiredFieldsWithEmptyValue count] > 1) {
-    error = @"Test Some required fields are empty. Fill them before saving.";
-  } else {
-    error = @"Test A required field is empty. Fill it before saving.";
-  }
+  DCHECK([self.requiredFieldsWithEmptyValue count] > 0);
+  NSString* error = l10n_util::GetPluralNSStringF(
+      IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR,
+      (int)[self.requiredFieldsWithEmptyValue count]);
 
   NSString* finalErrorString = error;
   if (_userEmail != nil) {
@@ -448,12 +445,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the footer message.
 - (NSString*)footerMessage {
-  // TODO(crbug.com/1407666): Add footer string compatible with i18n.
-  return [NSString
-      stringWithFormat:
-          @"Test The address is saved in your Google Account(%@). "
-          @"You can use the address across Google products on any device",
-          _userEmail];
+  return l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+      base::SysNSStringToUTF16(_userEmail));
 }
 
 // Creates and returns the `TableViewLinkHeaderFooterItem` footer item.

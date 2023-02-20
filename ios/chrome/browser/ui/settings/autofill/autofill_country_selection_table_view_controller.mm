@@ -79,8 +79,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // TODO(crbug.com/1167099): Replace with proper i18n string.
-  self.title = @"Test Edit Address";
+  self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS);
   self.shouldHideDoneButton = YES;
 
   // Search controller.

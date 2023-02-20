@@ -22,10 +22,12 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -216,11 +218,8 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestFooterTextWithEmail) {
 
   TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
 
-  NSString* expected_footer_text = [NSString
-      stringWithFormat:
-          @"Test The address is saved in your Google Account(%@). You can "
-          @"use the address across Google products on any device",
-          base::SysUTF16ToNSString(kTestEmail)];
+  NSString* expected_footer_text = l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT, kTestEmail);
   TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:1];
   EXPECT_NSEQ(expected_footer_text, footer.text);
 }

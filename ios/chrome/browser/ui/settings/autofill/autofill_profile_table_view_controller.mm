@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 
 #import "base/check.h"
+#import "base/i18n/message_formatter.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -664,9 +665,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.deletionSheetCoordinator.popoverArrowDirection =
       UIPopoverArrowDirectionAny;
   __weak AutofillProfileTableViewController* weakSelf = self;
-  // TODO(crbug.com/1407666): Add i18n string.
   [self.deletionSheetCoordinator
-      addItemWithTitle:@"Test Delete Address"
+      addItemWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON)
                 action:^{
                   [weakSelf willDeleteItemsAtIndexPaths:indexPaths];
                   // TODO(crbug.com/650390) Generalize removing empty sections
@@ -684,7 +686,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL hasAccountProfiles = NO;
   BOOL hasSyncProfiles = NO;
 
-  NSInteger profileCount = 0;
+  int profileCount = 0;
 
   for (NSIndexPath* indexPath in indexPaths) {
     if (![self isItemTypeForIndexPathAddress:indexPath]) {
@@ -705,15 +707,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  BOOL hasMultipleProfiles = profileCount > 1;
-
   if (hasAccountProfiles) {
-    return hasMultipleProfiles ? @"These GAS address" : @"This GAS address";
-  } else if (hasSyncProfiles) {
-    return hasMultipleProfiles ? @"These Sync address" : @"This Sync address";
-  } else if (profileCount > 0) {
-    return hasMultipleProfiles ? @"These Local address" : @"This Local address";
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE);
+    std::u16string confirmationString =
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            pattern, "email", base::SysNSStringToUTF16(self.syncingUserEmail),
+            "count", profileCount);
+    return base::SysUTF16ToNSString(confirmationString);
   }
+  if (hasSyncProfiles) {
+    return l10n_util::GetPluralNSStringF(
+        IDS_IOS_SETTINGS_AUTOFILL_DELETE_SYNC_ADDRESS_CONFIRMATION_TITLE,
+        profileCount);
+  }
+  if (profileCount > 0) {
+    return l10n_util::GetPluralNSStringF(
+        IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ADDRESS_CONFIRMATION_TITLE,
+        profileCount);
+  }
+
   // Can happen if user presses delete in quick succesion.
   return nil;
 }

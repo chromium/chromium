@@ -104,6 +104,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state",

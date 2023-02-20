@@ -183,9 +183,11 @@ id<GREYMatcher> SearchBarScrim() {
 
 // Returns the delete button on the deletion confirmation action sheet.
 - (id<GREYMatcher>)confirmDeleteAddressButton {
-  return grey_allOf(grey_accessibilityLabel(@"Test Delete Address"),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton),
-                    grey_userInteractionEnabled(), nil);
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON)),
+      grey_accessibilityTrait(UIAccessibilityTraitButton),
+      grey_userInteractionEnabled(), nil);
 }
 
 // Test that the page for viewing Autofill profile details is as expected.

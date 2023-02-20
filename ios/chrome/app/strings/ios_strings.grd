@@ -2569,6 +2569,32 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON" desc="Label of a confirmation dialog button which allows the user to cancel passwords export. [Length: 22em] [iOS only]">
         Cancel
       </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT" desc="Footer text of an account address profile when it is viewed in settings. [iOS only]">
+          This address is saved in your Google Account(<ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>). You can use this address across Google products on any device.
+      </message>
+      <message name="IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR" desc="Error shown when the address is edited in settings and one of the required fields is empty. [iOS only]">
+          {count, plural,
+          =1 {A required field is empty. Fill it before saving.}
+          other {Some required fields are empty. Fill them before saving.}}
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON" desc="Confirmation button title shown to the user when the address is deleted. [iOS only]">
+          Delete Address
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE" desc="Title of the confirmation shown to the user when an account address is deleted. [iOS only]">
+          {count, plural,
+          =1 {This address will be deleted from your Google Account(<ph name="USER_EMAIL">{email}<ex>janedoe@google.com</ex></ph>) and from this device.}
+          other {These addresses will be deleted from your Google Account(<ph name="USER_EMAIL">{email}<ex>janedoe@google.com</ex></ph>) and from this device.}}
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_SYNC_ADDRESS_CONFIRMATION_TITLE" desc="Title of the confirmation shown to the user when a sync address is deleted. [iOS only]">
+          {count, plural,
+          =1 {This address will be deleted from this and your other signed-in devices.}
+          other {These addresses will be deleted from this and your other signed-in devices.}}
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ADDRESS_CONFIRMATION_TITLE" desc="Title of the confirmation shown to the user when a local address is deleted. [iOS only]">
+          {count, plural,
+          =1 {This address will be deleted from this device.}
+          other {These addresses will be deleted from this device.}}
+      </message>
       <message name="IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to export the passwords, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to view or copy the password from a settings page. [Length: about two lines]">
         To export passwords, you must first set a passcode on your device.
       </message>
