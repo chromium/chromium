@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -536,18 +535,16 @@ TEST_F(WebRequestRulesRegistryTest, IgnoreRulesByTag) {
       "  \"priority\": 300                                               \n"
       "}                                                                 ";
 
-  absl::optional<base::Value> value1 = base::JSONReader::Read(kRule1);
-  ASSERT_TRUE(value1);
-  absl::optional<base::Value> value2 = base::JSONReader::Read(kRule2);
-  ASSERT_TRUE(value2);
+  base::Value value1 = base::test::ParseJson(kRule1);
+  base::Value value2 = base::test::ParseJson(kRule2);
 
   std::vector<const api::events::Rule*> rules;
   api::events::Rule rule1;
   api::events::Rule rule2;
   rules.push_back(&rule1);
   rules.push_back(&rule2);
-  ASSERT_TRUE(api::events::Rule::Populate(value1.value(), &rule1));
-  ASSERT_TRUE(api::events::Rule::Populate(value2.value(), &rule2));
+  ASSERT_TRUE(api::events::Rule::Populate(value1, &rule1));
+  ASSERT_TRUE(api::events::Rule::Populate(value2, &rule2));
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));
@@ -697,11 +694,10 @@ TEST(WebRequestRulesRegistrySimpleTest, StageChecker) {
       "  \"priority\": 200                                                \n"
       "}                                                                  ";
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(kRule);
-  ASSERT_TRUE(value);
+  base::Value value = base::test::ParseJson(kRule);
 
   api::events::Rule rule;
-  ASSERT_TRUE(api::events::Rule::Populate(*value, &rule));
+  ASSERT_TRUE(api::events::Rule::Populate(value, &rule));
 
   std::string error;
   URLMatcher matcher;
@@ -730,11 +726,10 @@ TEST(WebRequestRulesRegistrySimpleTest, HostPermissionsChecker) {
       "  \"instanceType\": \"declarativeWebRequest.RedirectRequest\",\n"
       "  \"redirectUrl\": \"http://bar.com\"                         \n"
       "}                                                             ";
-  absl::optional<base::Value> action_value = base::JSONReader::Read(kAction);
-  ASSERT_TRUE(action_value);
+  base::Value action_value = base::test::ParseJson(kAction);
 
   WebRequestActionSet::Values actions;
-  actions.push_back(std::move(*action_value));
+  actions.push_back(std::move(action_value));
 
   std::string error;
   bool bad_message = false;
@@ -785,13 +780,12 @@ TEST_F(WebRequestRulesRegistryTest, CheckOriginAndPathRegEx) {
       "  \"priority\": 200                                               \n"
       "}                                                                 ";
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(kRule);
-  ASSERT_TRUE(value.get());
+  base::Value value = base::test::ParseJson(kRule);
 
   std::vector<const api::events::Rule*> rules;
   api::events::Rule rule;
   rules.push_back(&rule);
-  ASSERT_TRUE(api::events::Rule::Populate(*value, &rule));
+  ASSERT_TRUE(api::events::Rule::Populate(value, &rule));
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));
