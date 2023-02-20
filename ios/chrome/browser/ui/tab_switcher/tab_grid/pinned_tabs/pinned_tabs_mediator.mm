@@ -338,7 +338,8 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 }
 
-- (void)preloadSnapshotsForVisibleGridSize:(int)gridSize {
+- (void)preloadSnapshotsForVisibleGridItems:
+    (NSSet<NSString*>*)visibleGridItems {
   // TODO (crbug.com/1406524): Implement or remove.
 }
 

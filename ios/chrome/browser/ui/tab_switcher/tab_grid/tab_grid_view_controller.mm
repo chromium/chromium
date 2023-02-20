@@ -481,20 +481,28 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Public Methods
 
 - (void)prepareForAppearance {
-  int gridSize = [self approximateVisibleGridCount];
+  NSSet<NSString*>* visibleGridItems = [self visibleGridItemsForActivePage];
+
   switch (self.activePage) {
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsImageDataSource
-          preloadSnapshotsForVisibleGridSize:gridSize];
+          preloadSnapshotsForVisibleGridItems:visibleGridItems];
       break;
     case TabGridPageRegularTabs:
       [self.regularTabsImageDataSource
-          preloadSnapshotsForVisibleGridSize:gridSize];
+          preloadSnapshotsForVisibleGridItems:visibleGridItems];
       break;
     case TabGridPageRemoteTabs:
       // Nothing to do.
       break;
   }
+}
+
+- (NSSet<NSString*>*)visibleGridItemsForActivePage {
+  GridViewController* activeGridViewController =
+      [self gridViewControllerForPage:self.activePage];
+
+  return [activeGridViewController visibleGridItems];
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
@@ -2114,21 +2122,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       (self.currentPage == TabGridPageIncognitoTabs &&
        !self.incognitoTabsViewController.gridEmpty);
   [self.handler setIncognitoContentVisible:incognitoContentVisible];
-}
-
-// Returns the approximate number of grid cells that will be visible on this
-// device.
-- (int)approximateVisibleGridCount {
-  if (IsRegularXRegularSizeClass(self)) {
-    // A 12" iPad Pro can show 30 cells in the tab grid.
-    return 30;
-  }
-  if (IsCompactWidth(self)) {
-    // A portrait phone shows up to four rows of two cells.
-    return 8;
-  }
-  // A landscape phone shows up to three rows of four cells.
-  return 12;
 }
 
 - (void)setupSearchUI {

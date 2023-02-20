@@ -45,6 +45,11 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
 // can be handled by the provider, for the given `web_state`.
 NSTextCheckingType GetHandledIntentTypes(web::WebState* web_state);
 
+// Returns set of `NSTextCheckingType` representing the intent types that can be
+// handled by the provider in case of one tap experience, for the given
+// `web_state`.
+NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state);
+
 // Returns `CRWContextMenuItem` items for the given `match`, for the given
 // `web_state`.
 NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(

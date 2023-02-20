@@ -19,9 +19,10 @@
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion;
 
-// Asks the receiver to pre-fetch all of the snapshots for tabs that are likely
-// to be visible, given that `gridSize` tabs can be displayed at once.
-- (void)preloadSnapshotsForVisibleGridSize:(int)gridSize;
+// Asks the receiver to pre-fetch all of the snapshots for tabs that are
+// currently visible. Visible tabs identifiers are provided via
+// `visibleGridItems` array.
+- (void)preloadSnapshotsForVisibleGridItems:(NSSet<NSString*>*)visibleGridItems;
 
 // Tells the receiver to dispose of any pre-loaded snapshots it may have cached.
 - (void)clearPreloadedSnapshots;

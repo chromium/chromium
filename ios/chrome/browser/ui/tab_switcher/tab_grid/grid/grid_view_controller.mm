@@ -320,6 +320,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return self.items.count == 0;
 }
 
+- (NSSet<NSString*>*)visibleGridItems {
+  NSArray<NSIndexPath*>* visibleItemsIndexPaths =
+      [self.collectionView indexPathsForVisibleItems];
+  return [self itemIdentifiersFromIndexPaths:visibleItemsIndexPaths];
+}
+
 - (void)setMode:(TabGridMode)mode {
   if (_mode == mode) {
     return;
@@ -1797,6 +1803,22 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   headerView.value =
       l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                               base::SysNSStringToUTF16(resultsCount));
+}
+
+// Converts `indexPaths` into corresponding item identifiers.
+- (NSSet<NSString*>*)itemIdentifiersFromIndexPaths:
+    (NSArray<NSIndexPath*>*)indexPaths {
+  NSMutableSet<NSString*>* itemIdentifiers = [NSMutableSet set];
+
+  [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath* indexPath,
+                                           NSUInteger index, BOOL* stop) {
+    NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
+    if (itemIndex < self.items.count) {
+      [itemIdentifiers addObject:self.items[itemIndex].identifier];
+    }
+  }];
+
+  return [itemIdentifiers copy];
 }
 
 #pragma mark Suggested Actions Section

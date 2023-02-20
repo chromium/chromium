@@ -25,6 +25,7 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view_class_properties.h"
 
@@ -77,17 +78,29 @@ PopupRowView::PopupRowView(
       controller_(controller),
       strategy_(std::move(strategy)) {
   DCHECK(strategy_);
-  // TODO(crbug.com/1411172): Use a BoxLayout once controls are supported.
-  SetUseDefaultFillLayout(true);
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>());
+
+  auto add_exit_enter_callbacks = [&](CellType type, PopupCellView& cell) {
+    cell.SetOnExitedCallback(base::BindRepeating(
+        &SelectionDelegate::SetSelectedCell,
+        base::Unretained(&selection_delegate), absl::nullopt));
+    cell.SetOnEnteredCallback(base::BindRepeating(
+        &SelectionDelegate::SetSelectedCell,
+        base::Unretained(&selection_delegate),
+        PopupViewViews::CellIndex{strategy_->GetLineNumber(), type}));
+  };
+
   content_view_ = AddChildView(strategy_->CreateContent());
-  content_view_->SetOnExitedCallback(base::BindRepeating(
-      &SelectionDelegate::SetSelectedCell,
-      base::Unretained(&selection_delegate), absl::nullopt));
-  content_view_->SetOnEnteredCallback(base::BindRepeating(
-      &SelectionDelegate::SetSelectedCell,
-      base::Unretained(&selection_delegate),
-      PopupViewViews::CellIndex{strategy_->GetLineNumber(),
-                                PopupRowView::CellType::kContent}));
+  add_exit_enter_callbacks(CellType::kContent, *content_view_);
+  layout->SetFlexForView(content_view_.get(), 1);
+
+  if (std::unique_ptr<PopupCellView> control_view =
+          strategy_->CreateControl()) {
+    control_view_ = AddChildView(std::move(control_view));
+    add_exit_enter_callbacks(CellType::kControl, *control_view_);
+    layout->SetFlexForView(control_view_.get(), 0);
+  }
 }
 
 PopupRowView::~PopupRowView() = default;

@@ -386,7 +386,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '4739f48e50d41025aba3c2af94e61cc3069aa563',
+  'devtools_frontend_revision': 'b0a07c88b47635a275b74a73a61c73511d38c5eb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1212,7 +1212,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + 'b45147e664223acf55050baf882247d83e9acf17',
+      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + '2548a7562b07c9822d7b7d57480683e5b7a6ae40',
     'condition': 'checkout_src_internal',
   },
 
@@ -1724,7 +1724,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'EzD88AUfNs2DWG8ytv86PmRrgkNmeLLaiQOrNNLUWwAC',
+              'version': 'zPOmDMk4QXwcUPUy6oi9KUfzwEIlk0aIB0fl0KQWCGAC',
           },
       ],
       'condition': 'checkout_android',
@@ -1869,7 +1869,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '6c8361e98f1daba65902f5e2fc1297893ac14b67',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'dc8a49abd8ce56bf33acea13c618c7947f84639d',
+    Var('webrtc_git') + '/src.git' + '@' + '8ad4924936dea2bd97990b0a951df93f7526f0ff',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -1939,7 +1939,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@800514208c0421c02d475898b176f811e1538dbd',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@5954eccec822de2912423edcc1aa909d32fb9e0d',
     'condition': 'checkout_src_internal',
   },
 

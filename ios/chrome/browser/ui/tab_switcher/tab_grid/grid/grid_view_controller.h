@@ -102,6 +102,8 @@
 @property(nonatomic, strong) UIView<GridEmptyView>* emptyStateView;
 // Returns YES if the grid has no items.
 @property(nonatomic, readonly, getter=isGridEmpty) BOOL gridEmpty;
+// Currently visible items in the grid.
+@property(nonatomic, readonly) NSSet<NSString*>* visibleGridItems;
 // The visual look of the grid.
 @property(nonatomic, assign) GridTheme theme;
 // The current mode for the grid.
