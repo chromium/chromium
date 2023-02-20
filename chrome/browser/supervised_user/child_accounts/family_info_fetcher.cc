@@ -369,8 +369,7 @@ void FamilyInfoFetcher::ParseProfile(const base::Value::Dict& dict,
 }
 
 void FamilyInfoFetcher::FamilyProfileFetched(const std::string& response) {
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(response);
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (!value || !value->is_dict()) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
