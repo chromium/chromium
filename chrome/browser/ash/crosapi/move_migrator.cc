@@ -850,7 +850,7 @@ MoveMigrator::ToBrowserDataMigratorMigrationResult(TaskResult result) {
               {BrowserDataMigratorImpl::ResultKind::kSucceeded}};
     case TaskStatus::kCancelled:
       return {BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-              {BrowserDataMigratorImpl::ResultKind::kSkipped}};
+              {BrowserDataMigratorImpl::ResultKind::kCancelled}};
     case TaskStatus::kPreMigrationCleanUpDeleteLacrosDirFailed:
     case TaskStatus::kPreMigrationCleanUpDeleteTmpDirFailed:
     case TaskStatus::kPreMigrationCleanUpDeleteTmpSplitDirFailed:

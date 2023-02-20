@@ -55,7 +55,6 @@ class BrowserDataMigrator {
  public:
   // Represents a kind of the result status.
   enum class ResultKind {
-    kSkipped,
     kSucceeded,
     kFailed,
     kCancelled,

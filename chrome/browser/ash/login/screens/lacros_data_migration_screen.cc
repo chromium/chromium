@@ -208,7 +208,6 @@ void LacrosDataMigrationScreen::OnDestroyingOobeUI() {
 
 void LacrosDataMigrationScreen::OnMigrated(BrowserDataMigrator::Result result) {
   switch (result.kind) {
-    case BrowserDataMigrator::ResultKind::kSkipped:
     case BrowserDataMigrator::ResultKind::kSucceeded:
     case BrowserDataMigrator::ResultKind::kCancelled:
       attempt_restart_.Run();
