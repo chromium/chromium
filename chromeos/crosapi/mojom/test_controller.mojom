@@ -9,6 +9,7 @@ import "chromeos/crosapi/mojom/extension_keeplist.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/range/mojom/range.mojom";
 
 // The enum of possible states for a shelf item.
 // Each value must be a power of 2.
@@ -158,8 +159,8 @@ struct KeyEvent {
 
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to send commands as an input method.
-// Next version: 4
-// Next method id: 5
+// Next version: 5
+// Next method id: 6
 [Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
@@ -196,6 +197,21 @@ interface InputMethodTestInterface {
   // Handle the pending key event with ID `key_event_id` with result of
   // `handled`.
   [MinVersion=3] KeyEventHandled@4(uint64 key_event_id, bool handled) => ();
+
+  // Waits for the next surrounding text change since the last
+  // WaitForNextSurroundingTextChange call (or since InputMethodTestInterface
+  // was instantiated if there are no previous calls to
+  // WaitForNextSurroundingTextChange).
+  //
+  // In other words, starting from when InputMethodTestInterface is created, any
+  // surrounding text changes are queued. WaitForNextSurroundingTextChange
+  // pops the front of the queue, or waits for a new surrounding text change if
+  // the queue is empty.
+  //
+  // This avoids timing issues so that calling WaitForNextSurroundingTextChange
+  // always returns the same set of values for the same set of operations.
+  [MinVersion=4] WaitForNextSurroundingTextChange@5() =>
+      (string surrounding_text, gfx.mojom.Range selection_range);
 };
 
 // This interface is implemented by Ash-Chrome.

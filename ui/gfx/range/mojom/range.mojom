@@ -4,11 +4,13 @@
 
 module gfx.mojom;
 
+[Stable]
 struct Range {
   uint32 start;
   uint32 end;
 };
 
+[Stable]
 struct RangeF {
   float start;
   float end;

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_ash.h"
@@ -63,6 +64,25 @@ void FakeTextInputMethod::ProcessKeyEvent(const ui::KeyEvent& key_event,
   ++current_key_event_id_;
   pending_key_event_callbacks_.emplace(current_key_event_id_,
                                        std::move(callback));
+}
+
+void FakeTextInputMethod::SetSurroundingText(const std::u16string& text,
+                                             const gfx::Range selection_range,
+                                             uint32_t offset_pos) {
+  // TODO(b/238838841): Handle `offset_pos`.
+  // Don't send surrounding text changed event if the surrounding text hasn't
+  // changed.
+  if (previous_surrounding_text_ == text &&
+      previous_selection_range_ == selection_range) {
+    return;
+  }
+
+  previous_surrounding_text_ = text;
+  previous_selection_range_ = selection_range;
+
+  for (auto& observer : observers_) {
+    observer.OnSurroundingTextChanged(text, selection_range);
+  }
 }
 
 void FakeTextInputMethod::AddObserver(Observer* observer) {
@@ -149,8 +169,46 @@ void InputMethodTestInterfaceAsh::KeyEventHandled(
   std::move(callback).Run();
 }
 
+void InputMethodTestInterfaceAsh::WaitForNextSurroundingTextChange(
+    WaitForNextSurroundingTextChangeCallback callback) {
+  // If there are no queued surrounding text changes, then save the callback to
+  // be called by the next surrounding text change. Otherwise, pop the first
+  // pending surrounding text and pass it to the callback.
+  if (surrounding_text_changes_.empty()) {
+    DCHECK(surrounding_text_change_callback_.is_null());
+    // `callback` is assumed to outlive this class.
+    surrounding_text_change_callback_ = std::move(callback);
+    return;
+  }
+  const auto& [text, selection_range] = surrounding_text_changes_.front();
+  surrounding_text_changes_.pop();
+  std::move(callback).Run(text, selection_range);
+}
+
 void InputMethodTestInterfaceAsh::OnFocus() {
   focus_callbacks_.Notify();
+}
+
+void InputMethodTestInterfaceAsh::OnSurroundingTextChanged(
+    const std::u16string& text,
+    const gfx::Range& selection_range) {
+  std::vector<size_t> offsets = {selection_range.start(),
+                                 selection_range.end()};
+  const std::string text_utf8 =
+      base::UTF16ToUTF8AndAdjustOffsets(text, &offsets);
+  const gfx::Range selection_range_utf8(offsets[0], offsets[1]);
+
+  // If there is no pending WaitForNextSurroundingTextChange callback, queue the
+  // surrounding text change to be returned by the next
+  // WaitForNextSurroundingTextChange call. Otherwise, resolve the pending
+  // callback with the current surrounding text change.
+  if (surrounding_text_change_callback_.is_null()) {
+    surrounding_text_changes_.push({text_utf8, selection_range_utf8});
+    return;
+  }
+
+  std::move(surrounding_text_change_callback_)
+      .Run(text_utf8, selection_range_utf8);
 }
 
 }  // namespace crosapi

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_INPUT_METHOD_TEST_INTERFACE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_INPUT_METHOD_TEST_INTERFACE_ASH_H_
 
+#include <queue>
 #include <string>
 
 #include "base/callback_list.h"
@@ -20,6 +21,9 @@ class FakeTextInputMethod : public ash::TextInputMethod {
   class Observer {
    public:
     virtual void OnFocus() = 0;
+    virtual void OnSurroundingTextChanged(
+        const std::u16string& text,
+        const gfx::Range& selection_range) = 0;
   };
 
   FakeTextInputMethod();
@@ -35,7 +39,7 @@ class FakeTextInputMethod : public ash::TextInputMethod {
                        KeyEventDoneCallback callback) override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range selection_range,
-                          uint32_t offset_pos) override {}
+                          uint32_t offset_pos) override;
   void SetCaretBounds(const gfx::Rect& caret_bounds) override {}
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
   void PropertyActivate(const std::string& property_name) override {}
@@ -55,6 +59,10 @@ class FakeTextInputMethod : public ash::TextInputMethod {
  private:
   uint64_t current_key_event_id_ = 0;
   std::map<uint64_t, KeyEventDoneCallback> pending_key_event_callbacks_;
+
+  std::u16string previous_surrounding_text_;
+  gfx::Range previous_selection_range_;
+
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
@@ -79,16 +87,26 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
   void KeyEventHandled(uint64_t key_event_id,
                        bool handled,
                        KeyEventHandledCallback callback) override;
+  void WaitForNextSurroundingTextChange(
+      WaitForNextSurroundingTextChangeCallback callback) override;
 
   // FakeTextInputMethod::Observer:
   void OnFocus() override;
+  void OnSurroundingTextChanged(const std::u16string& text,
+                                const gfx::Range& selection_range) override;
 
  private:
+  struct SurroundingText {
+    std::string text;
+    gfx::Range selection_range;
+  };
   ash::InputMethodAsh* text_input_target_;
   FakeTextInputMethod fake_text_input_method_;
   base::ScopedObservation<FakeTextInputMethod, FakeTextInputMethod::Observer>
       text_input_method_observation_{this};
   base::OnceClosureList focus_callbacks_;
+  std::queue<SurroundingText> surrounding_text_changes_;
+  WaitForNextSurroundingTextChangeCallback surrounding_text_change_callback_;
 };
 
 }  // namespace crosapi

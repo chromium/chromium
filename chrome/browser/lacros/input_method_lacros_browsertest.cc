@@ -396,6 +396,32 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       CommitTextUpdatesSurroundingText) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kWaitForNextSurroundingTextChangeMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  input_method_async_waiter.CommitText("abc");
+  std::string surrounding_text;
+  gfx::Range selection_range;
+  input_method_async_waiter.WaitForNextSurroundingTextChange(&surrounding_text,
+                                                             &selection_range);
+
+  EXPECT_EQ(surrounding_text, "abc");
+  EXPECT_EQ(selection_range, gfx::Range(3));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                        CommitTextReplacesCompositionText) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
@@ -702,6 +728,32 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                            CompositionState::kComposing));
   EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionEndEvent());
   EXPECT_FALSE(event_listener.HasMessages());
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       SetCompositionUpdatesSurroundingText) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kWaitForNextSurroundingTextChangeMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  input_method_async_waiter.SetComposition("abc", 3);
+  std::string surrounding_text;
+  gfx::Range selection_range;
+  input_method_async_waiter.WaitForNextSurroundingTextChange(&surrounding_text,
+                                                             &selection_range);
+
+  EXPECT_EQ(surrounding_text, "abc");
+  EXPECT_EQ(selection_range, gfx::Range(3));
 }
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
