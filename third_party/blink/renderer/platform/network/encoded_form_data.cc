@@ -19,6 +19,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "base/hash/md5.h"
+#include "base/strings/string_piece_forward.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,7 +35,14 @@ namespace blink {
 FormDataElement::FormDataElement() : type_(kData) {}
 
 FormDataElement::FormDataElement(const Vector<char>& array)
-    : type_(kData), data_(array) {}
+    : type_(kData), data_(array)
+{
+  if (recordreplay::IsRecordingOrReplaying("values")) {
+    std::string md5 = base::MD5String(base::StringPiece(data_.data(), data_.size()));
+    recordreplay::Assert("[RUN-1350-1386] FormDataElement::FormDataElement len=%u md5=%s",
+      (unsigned) data_.size(), md5.c_str());
+  }
+}
 
 FormDataElement::FormDataElement(
     const String& filename,
@@ -160,6 +169,13 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
 void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
   if (elements_.empty() || elements_.back().type_ != FormDataElement::kData)
     elements_.push_back(FormDataElement());
+
+  if (recordreplay::IsRecordingOrReplaying("values")) {
+    std::string md5 = base::MD5String(base::StringPiece(reinterpret_cast<const char*>(data), size));
+    recordreplay::Assert("[RUN-1350-1386] EncodedFormData::AppendData len=%u md5=%s",
+      (unsigned) size, md5.c_str());
+  }
+
   FormDataElement& e = elements_.back();
   wtf_size_t old_size = e.data_.size();
   e.data_.Grow(old_size + size);
