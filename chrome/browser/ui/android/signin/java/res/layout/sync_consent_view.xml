@@ -134,7 +134,6 @@ found in the LICENSE file.
         android:id="@+id/sync_consent_details_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         app:leading="@dimen/text_size_small_leading" />

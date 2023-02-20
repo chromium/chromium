@@ -869,13 +869,22 @@ const FeatureEntry::FeatureVariation kQueryTilesVariations[] = {
 const FeatureEntry::FeatureParam kTangibleSyncGroupA[] = {{"group_id", "1"}};
 const FeatureEntry::FeatureParam kTangibleSyncGroupB[] = {{"group_id", "2"}};
 const FeatureEntry::FeatureParam kTangibleSyncGroupC[] = {{"group_id", "3"}};
+const FeatureEntry::FeatureParam kTangibleSyncGroupD[] = {{"group_id", "4"}};
+const FeatureEntry::FeatureParam kTangibleSyncGroupE[] = {{"group_id", "5"}};
+const FeatureEntry::FeatureParam kTangibleSyncGroupF[] = {{"group_id", "6"}};
 const FeatureEntry::FeatureVariation kTangibleSyncVariations[] = {
-    {"(turn on sync and back up)", kTangibleSyncGroupA,
+    {"(pick up where you left off)", kTangibleSyncGroupA,
      std::size(kTangibleSyncGroupA), nullptr},
-    {"(sync and back up)", kTangibleSyncGroupB, std::size(kTangibleSyncGroupB),
-     nullptr},
-    {"(turn on sync and sync data)", kTangibleSyncGroupC,
-     std::size(kTangibleSyncGroupC), nullptr}};
+    {"(browse across devices)", kTangibleSyncGroupB,
+     std::size(kTangibleSyncGroupB), nullptr},
+    {"(save time and type less)", kTangibleSyncGroupC,
+     std::size(kTangibleSyncGroupC), nullptr},
+    {"(get better suggestions)", kTangibleSyncGroupD,
+     std::size(kTangibleSyncGroupD), nullptr},
+    {"(sync your tabs and history)", kTangibleSyncGroupE,
+     std::size(kTangibleSyncGroupE), nullptr},
+    {"(Turn on sync?)", kTangibleSyncGroupF, std::size(kTangibleSyncGroupF),
+     nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {

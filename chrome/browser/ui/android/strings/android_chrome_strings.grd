@@ -3048,13 +3048,32 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_TITLE" desc="Title for the screen that asks users to sign-in and turn on Sync. [CHAR_LIMIT=27]">
         Turn on sync?
       </message>
-      <!-- TODO(https://crbug.com/1412453): Update when variation strings are known. -->
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. 'Sync' is short for 'synchronization'. The tone should be informative and inviting. [CHAR_LIMIT=35]" translateable="false">
+      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_A" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. The value proposition of sync here is to allow a user to proceed their web navigation on a different device. The tone should be informative and inviting. [CHAR_LIMIT=35]">
+        Pick up where you left off
+      </message>
+      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_B" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Devices include phones, tables and computers. The tone should be informative and inviting. [CHAR_LIMIT=35]">
         Browse across devices
       </message>
-      <!-- TODO(https://crbug.com/1412453): Update when variation strings are known. -->
-      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on history sync. This string explains to users that they can back up their Chrome history data and use it on all their computers, phones, and other devices. Maintain the level of formality that your language generally uses in the Chrome app. The tone should be informative and inviting. [CHAR_LIMIT=100]" translateable="false">
-        To easily pick up where you left off on any device, turn on history sync.
+      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_C" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Typing refers to typing urls in the address bar. The tone should be informative and inviting. [CHAR_LIMIT=35]">
+        Save time and type less
+      </message>
+      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_D" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Suggestions refers to suggested entries in the address bar. The tone should be informative and inviting. [CHAR_LIMIT=35]">
+        Get better suggestions
+      </message>
+      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_E" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. The tone should be informative and inviting. [CHAR_LIMIT=35]">
+        Sync your tabs and history
+      </message>
+      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_A" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. Devices include phones, tablets and computers. The tone should be informative and inviting. [CHAR_LIMIT=100]">
+        To continue browsing on another device, sync your tabs and history
+      </message>
+      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_C" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. The tone should be informative and inviting. [CHAR_LIMIT=100]">
+        To quickly get back to sites you’ve visited, sync your tabs and history
+      </message>
+      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_D" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. The tone should be informative and inviting. [CHAR_LIMIT=100]">
+        To see better suggestions in your address bar, sync your tabs and history
+      </message>
+      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_E" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. Devices include phones, tablets and computers. The tone should be informative and inviting. [CHAR_LIMIT=100]">
+        To get back to the sites you’ve visited on other devices, sync your tabs and history
       </message>
       <message name="IDS_SIGNIN_SYNC_TITLE" desc="Title of Sync feature for the screen that asks users to sign-in and turn on Sync.">
         Sync your passwords, history &amp; more on all devices
@@ -3065,8 +3084,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_DETAILS_DESCRIPTION" desc="Message with a link to customize Sync settings. Shown on the screen that asks the user to turn on Sync.">
         You can always choose what to sync in <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>settings<ph name="END_LINK1">&lt;/LINK1&gt;</ph>.
       </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_DETAILS_DESCRIPTION" desc="This string appears in the footer on a full-page screen that asks users if they want to turn on history sync. 'Sync' is short for 'synchronization'. It informs the user where they can go to change their mind. [CHAR_LIMIT=200]." translateable = "false">
-        You can always change your preference in <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>settings<ph name="END_LINK1">&lt;/LINK1&gt;</ph>.
+      <message name="IDS_SYNC_CONSENT_DETAILS_DESCRIPTION" desc="This string appears in the footer on a full-page screen that asks users if they want to turn on sync. 'Sync' is short for 'synchronization'. The first sentence informs the user where they can go to change their mind or to customize what Chrome data types they choose to sync (a user's Chrome data includes their bookmarks, passwords, history, settings, and more). The second sentence informs the user that if they choose to sync, then their history may be used to personalize Search and other services. Translate 'history' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c3162. [CHAR_LIMIT=200].">
+        You can always choose what to sync in <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>settings<ph name="END_LINK1">&lt;/LINK1&gt;</ph>. Google may personalize Search and other services based on your history.
       </message>
       <message name="IDS_SIGNIN_ACCEPT_BUTTON" desc="Text for the confirmation button in the sign-in screen. By clicking this button users signs in and turns on Sync. [CHAR_LIMIT=20]">
         Yes, I'm in

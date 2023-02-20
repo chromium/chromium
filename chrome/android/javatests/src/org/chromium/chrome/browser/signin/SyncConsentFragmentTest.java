@@ -222,6 +222,91 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/2"})
+    public void testTangibleSyncConsentFragmentVariantBDefaultAccount() throws IOException {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
+                });
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "tangible_sync_consent_fragment_variant_b_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/3"})
+    public void testTangibleSyncConsentFragmentVariantCDefaultAccount() throws IOException {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
+                });
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "tangible_sync_consent_fragment_variant_c_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/4"})
+    public void testTangibleSyncConsentFragmentVariantDDefaultAccount() throws IOException {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
+                });
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "tangible_sync_consent_fragment_variant_d_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/5"})
+    public void testTangibleSyncConsentFragmentVariantEDefaultAccount() throws IOException {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
+                });
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "tangible_sync_consent_fragment_variant_e_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/6"})
+    public void testTangibleSyncConsentFragmentVariantFDefaultAccount() throws IOException {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
+                });
+        mRenderTestRule.render(mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "tangible_sync_consent_fragment_variant_f_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testSyncConsentFragmentNewAccount() throws IOException {
         mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
@@ -770,6 +855,33 @@ public class SyncConsentFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals(HISTORY_SYNC_DATA_TYPES, SyncService.get().getSelectedTypes());
             assertFalse(SyncService.get().hasKeepEverythingSynced());
+        });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC + ":group_id/6"})
+    public void testTangibleSyncConsentFragmentGroupFEnablesAllDataTypes() {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForTangibleSyncFlow(
+                            mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
+                            accountInfo.getEmail());
+                });
+        onView(withId(R.id.positive_button)).perform(click());
+        // Wait for sync opt-in process to finish.
+        CriteriaHelper.pollUiThread(() -> {
+            return IdentityServicesProvider.get()
+                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                    .getIdentityManager()
+                    .hasPrimaryAccount(ConsentLevel.SYNC);
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
+            assertTrue(SyncService.get().hasKeepEverythingSynced());
         });
     }
 

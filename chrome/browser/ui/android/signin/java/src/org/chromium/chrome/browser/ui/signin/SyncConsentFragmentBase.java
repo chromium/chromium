@@ -103,12 +103,16 @@ public abstract class SyncConsentFragmentBase
     }
 
     /** Group name for different UIs in tangible sync experiment. */
-    @IntDef({TangibleSyncGroup.GROUP_A, TangibleSyncGroup.GROUP_B, TangibleSyncGroup.GROUP_C})
+    @IntDef({TangibleSyncGroup.GROUP_A, TangibleSyncGroup.GROUP_B, TangibleSyncGroup.GROUP_C,
+            TangibleSyncGroup.GROUP_D, TangibleSyncGroup.GROUP_E, TangibleSyncGroup.GROUP_F})
     @Retention(RetentionPolicy.SOURCE)
     @interface TangibleSyncGroup {
         int GROUP_A = 1;
         int GROUP_B = 2;
         int GROUP_C = 3;
+        int GROUP_D = 4;
+        int GROUP_E = 5;
+        int GROUP_F = 6;
     }
 
     private final AccountManagerFacade mAccountManagerFacade;
@@ -268,7 +272,9 @@ public abstract class SyncConsentFragmentBase
                         public void onSignInComplete() {
                             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                                     Profile.getLastUsedRegularProfile(), true);
-                            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
+                            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)
+                                    && getTangibleSyncGroup() != TangibleSyncGroup.GROUP_F) {
+                                // Groups A-E are only for enabling History and Tab Sync
                                 SyncService.get().setSelectedTypes(false,
                                         Set.of(UserSelectableType.HISTORY,
                                                 UserSelectableType.TABS));
@@ -497,7 +503,7 @@ public abstract class SyncConsentFragmentBase
                 new SpanApplier.SpanInfo(SETTINGS_LINK_OPEN, SETTINGS_LINK_CLOSE, settingsLinkSpan);
         if (mSyncConsentView != null) {
             mConsentTextTracker.setText(mSyncConsentView.getDetailsDescriptionView(),
-                    R.string.history_sync_consent_details_description,
+                    R.string.sync_consent_details_description,
                     input -> SpanApplier.applySpans(input.toString(), spanInfo));
         } else {
             mConsentTextTracker.setText(mSigninView.getDetailsDescriptionView(),
@@ -508,14 +514,14 @@ public abstract class SyncConsentFragmentBase
 
     /** Sets texts for immutable elements. Accept button text is set by {@link #setHasAccounts}. */
     private void updateConsentText() {
-        final @StringRes int refuseButtonTextId =
-                mSigninAccessPoint == SigninAccessPoint.SIGNIN_PROMO
-                        || mSigninAccessPoint == SigninAccessPoint.START_PAGE
-                ? R.string.no_thanks
-                : R.string.cancel;
         if (mSyncConsentView != null) {
             updateSyncConsentViewText(R.string.no_thanks);
         } else {
+            final @StringRes int refuseButtonTextId =
+                    mSigninAccessPoint == SigninAccessPoint.SIGNIN_PROMO
+                            || mSigninAccessPoint == SigninAccessPoint.START_PAGE
+                    ? R.string.no_thanks
+                    : R.string.cancel;
             updateSigninViewText(refuseButtonTextId);
         }
     }
@@ -528,23 +534,37 @@ public abstract class SyncConsentFragmentBase
     private static @StringRes int getSyncConsentViewTitleText() {
         switch (getTangibleSyncGroup()) {
             case TangibleSyncGroup.GROUP_A:
-                return R.string.history_sync_consent_title;
+                return R.string.history_sync_consent_title_a;
             case TangibleSyncGroup.GROUP_B:
+                return R.string.history_sync_consent_title_b;
             case TangibleSyncGroup.GROUP_C:
+                return R.string.history_sync_consent_title_c;
+            case TangibleSyncGroup.GROUP_D:
+                return R.string.history_sync_consent_title_d;
+            case TangibleSyncGroup.GROUP_E:
+                return R.string.history_sync_consent_title_e;
+            case TangibleSyncGroup.GROUP_F:
+                return R.string.signin_title;
             default:
-                // TODO(https://crbug.com/1412453): Update when variation strings are known.
                 throw new IllegalStateException("Invalid group id");
         }
     }
 
     private static @StringRes int getSyncConsentViewSubtitleText() {
         switch (getTangibleSyncGroup()) {
+            // Groups A and B share the same subtitle.
             case TangibleSyncGroup.GROUP_A:
-                return R.string.history_sync_consent_subtitle;
             case TangibleSyncGroup.GROUP_B:
+                return R.string.history_sync_consent_subtitle_a;
             case TangibleSyncGroup.GROUP_C:
+                return R.string.history_sync_consent_subtitle_c;
+            case TangibleSyncGroup.GROUP_D:
+                return R.string.history_sync_consent_subtitle_d;
+            case TangibleSyncGroup.GROUP_E:
+                return R.string.history_sync_consent_subtitle_e;
+            case TangibleSyncGroup.GROUP_F:
+                return R.string.signin_sync_title;
             default:
-                // TODO(https://crbug.com/1412453): Update when variation strings are known.
                 throw new IllegalStateException("Invalid group id");
         }
     }
