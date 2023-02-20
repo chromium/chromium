@@ -790,7 +790,7 @@ repackage_jars("repackage_native") {
 }
 
 _native_without_jni_jar_path =
-    "$target_out_dir/cronet_impl_native_without_jni_java.jar"
+    "$_package_dir/cronet_impl_native_without_jni_java.jar"
 
 # Use :repackage_native unless you explicitly require a package without GEN_JNI
 # (this is required by downstream testing, see crbug.com/1401015).
