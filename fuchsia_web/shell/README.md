@@ -17,7 +17,7 @@ $ ffx test run fuchsia-pkg://fuchsia.com/web_engine_shell#meta/web_engine_shell.
 
 Local files can be deployed with the WebEngine Shell and accessed via the
 URL `fuchsia-dir://data/PATH/TO/FILE`. Files may be added to the directory
-by placing them under the path `//fuchsia_web/webengine/data`.
+by placing them under the path `//fuchsia_web/shell/data`.
 
 Here is an example command line which loads a local file:
 ```
