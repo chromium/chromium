@@ -15,12 +15,14 @@
 /// *******
 
 // Custom symbol names.
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+extern NSString* const kGoogleIconSymbol;
+extern NSString* const kGoogleShieldSymbol;
+extern NSString* const kChromeSymbol;
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kPrivacySymbol;
 extern NSString* const kSyncDisabledSymbol;
 extern NSString* const kSafetyCheckSymbol;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-extern NSString* const kGoogleIconSymbol;
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
@@ -43,9 +45,6 @@ extern NSString* const kMulticolorPasswordSymbol;
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-extern NSString* const kGoogleShieldSymbol;
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kShieldSymbol;
 extern NSString* const kCloudSlashSymbol;
 extern NSString* const kCloudAndArrowUpSymbol;

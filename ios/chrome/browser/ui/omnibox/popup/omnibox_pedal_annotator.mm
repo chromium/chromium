@@ -258,7 +258,7 @@ const char kChromeUIScheme[] = "chrome";
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
         symbolView.backgroundColor = UIColor.whiteColor;
         [symbolView setSymbol:MakeSymbolMulticolor(CustomSymbolWithPointSize(
-                                  kGoogleIconSymbol, 22))];
+                                  kChromeSymbol, 22))];
         symbolView.borderColor = [UIColor colorNamed:kGrey200Color];
 #else
         [symbolView setSymbolName:kDefaultBrowserSymbol systemSymbol:YES];
