@@ -136,8 +136,11 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
 
   void SetSinceAndVerify(browsing_data::TimePeriod since_pref) {
     PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
-                      static_cast<int>(since_pref));
+    browsing_data::ClearBrowsingDataTab tab =
+        static_cast<browsing_data::ClearBrowsingDataTab>(
+            prefs->GetInteger(browsing_data::prefs::kLastClearBrowsingDataTab));
+    auto* time_period_pref = browsing_data::GetTimePeriodPreferenceName(tab);
+    prefs->SetInteger(time_period_pref, static_cast<int>(since_pref));
 
     scoped_refptr<BrowsingDataSettingsFunction> function =
         new BrowsingDataSettingsFunction();
@@ -519,6 +522,7 @@ TEST_F(BrowsingDataApiTest, ShortcutFunctionRemovalMask) {
 // Test the processing of the 'delete since' preference.
 TEST_F(BrowsingDataApiTest, SettingsFunctionSince) {
   SetSinceAndVerify(browsing_data::TimePeriod::ALL_TIME);
+  SetSinceAndVerify(browsing_data::TimePeriod::LAST_15_MINUTES);
   SetSinceAndVerify(browsing_data::TimePeriod::LAST_HOUR);
   SetSinceAndVerify(browsing_data::TimePeriod::LAST_DAY);
   SetSinceAndVerify(browsing_data::TimePeriod::LAST_WEEK);

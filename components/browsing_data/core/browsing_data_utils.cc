@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
 #include "components/browsing_data/core/counters/passwords_counter.h"
@@ -53,6 +54,9 @@ base::Time CalculateBeginDeleteTime(TimePeriod time_period) {
   base::TimeDelta diff;
   base::Time delete_begin_time = base::Time::Now();
   switch (time_period) {
+    case TimePeriod::LAST_15_MINUTES:
+      diff = base::Minutes(15);
+      break;
     case TimePeriod::LAST_HOUR:
       diff = base::Hours(1);
       break;
@@ -82,6 +86,10 @@ base::Time CalculateEndDeleteTime(TimePeriod time_period) {
 
 void RecordDeletionForPeriod(TimePeriod period) {
   switch (period) {
+    case TimePeriod::LAST_15_MINUTES:
+      base::RecordAction(
+          base::UserMetricsAction("ClearBrowsingData_Last15Minutes"));
+      break;
     case TimePeriod::LAST_HOUR:
       base::RecordAction(base::UserMetricsAction("ClearBrowsingData_LastHour"));
       break;
@@ -108,6 +116,10 @@ void RecordDeletionForPeriod(TimePeriod period) {
 
 void RecordTimePeriodChange(TimePeriod period) {
   switch (period) {
+    case TimePeriod::LAST_15_MINUTES:
+      base::RecordAction(base::UserMetricsAction(
+          "ClearBrowsingData_TimePeriodChanged_Last15Minutes"));
+      break;
     case TimePeriod::LAST_HOUR:
       base::RecordAction(base::UserMetricsAction(
           "ClearBrowsingData_TimePeriodChanged_LastHour"));

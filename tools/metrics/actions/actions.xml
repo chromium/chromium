@@ -5958,8 +5958,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClearBrowsingData_Everything" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for all time.</description>
 </action>
 
 <action name="ClearBrowsingData_History" not_user_triggered="true">
@@ -5967,24 +5968,36 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ClearBrowsingData_Last15Minutes" not_user_triggered="true">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    Browsing data has been cleared for the last 15 minutes.
+  </description>
+</action>
+
 <action name="ClearBrowsingData_LastDay" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for the last day.</description>
 </action>
 
 <action name="ClearBrowsingData_LastHour" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for the last hour.</description>
 </action>
 
 <action name="ClearBrowsingData_LastMonth" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for the last month.</description>
 </action>
 
 <action name="ClearBrowsingData_LastWeek" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for the last week.</description>
 </action>
 
 <action name="ClearBrowsingData_LSOData">
@@ -6096,6 +6109,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClearBrowsingData_TimePeriodChanged_Everything">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Time period in CBD was changed.</description>
+</action>
+
+<action name="ClearBrowsingData_TimePeriodChanged_Last15Minutes">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <description>Time period in CBD was changed.</description>

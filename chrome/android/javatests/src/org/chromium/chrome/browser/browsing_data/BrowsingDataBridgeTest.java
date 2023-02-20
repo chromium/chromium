@@ -339,7 +339,7 @@ public class BrowsingDataBridgeTest {
                     new int[] {
                             org.chromium.chrome.browser.browsing_data.BrowsingDataType.COOKIES,
                     },
-                    TimePeriod.LAST_WEEK);
+                    TimePeriod.LAST_15_MINUTES);
         });
 
         Assert.assertTrue(WebappRegistry.getRegisteredWebappIdsForTesting().isEmpty());
