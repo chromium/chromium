@@ -9,6 +9,8 @@
 
 #include <xdg-output-unstable-v1-client-protocol.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace remoting {
 
 // Collection of parameters for each Wayland Display object available on the
@@ -43,8 +45,8 @@ struct DisplayInfo {
   int physical_height = -1;
   int subpixel = -1;
 
-  struct wl_output* output = nullptr;
-  struct zxdg_output_v1* xdg_output = nullptr;
+  raw_ptr<struct wl_output> output = nullptr;
+  raw_ptr<struct zxdg_output_v1> xdg_output = nullptr;
 
   // Whether last write to x, y was done by an event emitted from the xdg_output
   // interface. If yes, we would to preserve these writes over the ones from

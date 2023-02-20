@@ -1270,8 +1270,8 @@ MetricsReporter::GoodVisitState::GoodVisitState(PersistentMetricsData& data)
 
 void MetricsReporter::GoodVisitState::OnScroll() {
   ExtendOrStartNewVisit();
-  data_.did_scroll_in_visit = true;
-  if (data_.time_in_feed_for_good_visit >= kGoodTimeInFeed) {
+  data_->did_scroll_in_visit = true;
+  if (data_->time_in_feed_for_good_visit >= kGoodTimeInFeed) {
     MaybeReportGoodVisit();
   }
 }
@@ -1292,13 +1292,14 @@ void MetricsReporter::GoodVisitState::ExtendOrStartNewVisit() {
   const base::Time now = base::Time::Now();
 
   // Reset visit state if enough time has passed since visit_end_.
-  if (now - data_.visit_end >= kVisitTimeout) {
+  if (now - data_->visit_end >= kVisitTimeout) {
     Reset();
   }
 
-  if (data_.visit_start == base::Time())
-    data_.visit_start = now;
-  data_.visit_end = now;
+  if (data_->visit_start == base::Time()) {
+    data_->visit_start = now;
+  }
+  data_->visit_end = now;
 }
 
 void MetricsReporter::GoodVisitState::AddTimeInFeed(base::TimeDelta time) {
@@ -1312,26 +1313,27 @@ void MetricsReporter::GoodVisitState::AddTimeInFeed(base::TimeDelta time) {
 
   ExtendOrStartNewVisit();
 
-  data_.time_in_feed_for_good_visit += time;
-  if (data_.did_scroll_in_visit &&
-      data_.time_in_feed_for_good_visit >= kGoodTimeInFeed) {
+  data_->time_in_feed_for_good_visit += time;
+  if (data_->did_scroll_in_visit &&
+      data_->time_in_feed_for_good_visit >= kGoodTimeInFeed) {
     MaybeReportGoodVisit();
   }
 }
 
 void MetricsReporter::GoodVisitState::MaybeReportGoodVisit() {
-  if (data_.did_report_good_visit)
+  if (data_->did_report_good_visit) {
     return;
+  }
   ReportCombinedEngagementTypeHistogram(FeedEngagementType::kGoodVisit);
-  data_.did_report_good_visit = true;
+  data_->did_report_good_visit = true;
 }
 
 void MetricsReporter::GoodVisitState::Reset() {
-  data_.visit_start = base::Time();
-  data_.visit_end = base::Time();
-  data_.did_report_good_visit = false;
-  data_.time_in_feed_for_good_visit = base::Seconds(0);
-  data_.did_scroll_in_visit = false;
+  data_->visit_start = base::Time();
+  data_->visit_end = base::Time();
+  data_->did_report_good_visit = false;
+  data_->time_in_feed_for_good_visit = base::Seconds(0);
+  data_->did_scroll_in_visit = false;
 }
 
 void MetricsReporter::ReportContentDuplication(

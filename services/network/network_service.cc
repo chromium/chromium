@@ -264,7 +264,7 @@ class RestrictedCookieManagerMetrics
 
   SEQUENCE_CHECKER(sequence_checker_);
   uint64_t get_cookies_string_count_{0};
-  base::HistogramBase* histogram_;
+  raw_ptr<base::HistogramBase> histogram_;
   base::RepeatingTimer timer_;
 };
 

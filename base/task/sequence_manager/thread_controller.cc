@@ -270,7 +270,7 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
     // Flow emission is found at
     // ThreadController::RunLevelTracker::RecordScheduleWork.
     TRACE_EVENT_BEGIN("base", "ThreadController active",
-                      terminating_wakeup_flow_lambda_);
+                      *terminating_wakeup_flow_lambda_);
     // Overriding the annotation from the previous RunLevel is intentional. Only
     // the top RunLevel is ever updated, which holds the relevant state.
     thread_controller_sample_metadata_.Set(

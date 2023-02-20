@@ -414,7 +414,7 @@ class BASE_EXPORT ThreadController {
       SampleMetadata thread_controller_sample_metadata_;
       size_t thread_controller_active_id_ = 0;
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-      TerminatingFlowLambda& terminating_wakeup_flow_lambda_;
+      const raw_ref<TerminatingFlowLambda> terminating_wakeup_flow_lambda_;
 #endif
 
       // Toggles to true when used as RunLevel&& input to construct another

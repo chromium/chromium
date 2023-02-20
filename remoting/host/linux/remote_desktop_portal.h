@@ -143,7 +143,8 @@ class RemoteDesktopPortal
   std::unique_ptr<ClipboardPortal> clipboard_portal_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  GMainContext* context_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  raw_ptr<GMainContext> context_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

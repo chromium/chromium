@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
@@ -153,12 +154,12 @@ class MojoIpczTransportTest : public test::MojoTestBase {
 class TransportListener {
  public:
   explicit TransportListener(Transport& transport) : transport_(transport) {
-    transport_.Activate(reinterpret_cast<IpczHandle>(this),
-                        &TransportListener::OnActivity);
+    transport_->Activate(reinterpret_cast<IpczHandle>(this),
+                         &TransportListener::OnActivity);
   }
 
   ~TransportListener() {
-    transport_.Deactivate();
+    transport_->Deactivate();
     deactivation_event_.Wait();
   }
 
@@ -214,7 +215,7 @@ class TransportListener {
     have_messages_.Signal();
   }
 
-  Transport& transport_;
+  const raw_ref<Transport> transport_;
 
   base::Lock lock_;
   base::ConditionVariable have_messages_{&lock_};

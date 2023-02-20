@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -96,7 +97,7 @@ class CircleBadgeImageSource : public gfx::CanvasImageSource {
 
  private:
   // Pointee may be modified to change the text color upon painting.
-  gfx::RenderText* const render_text_ = nullptr;
+  const raw_ptr<gfx::RenderText> render_text_ = nullptr;
   const SkColor text_color_;
   const SkColor background_color_;
 };

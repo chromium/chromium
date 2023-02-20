@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -105,7 +106,8 @@ class PlatformAuthNavigationThrottleTest : public testing::Test {
   std::unique_ptr<::testing::StrictMock<MockPlatformAuthProvider>>
       owned_provider_{
           std::make_unique<::testing::StrictMock<MockPlatformAuthProvider>>()};
-  ::testing::StrictMock<MockPlatformAuthProvider>* mock_provider_ = nullptr;
+  raw_ptr<::testing::StrictMock<MockPlatformAuthProvider>> mock_provider_ =
+      nullptr;
 };
 
 // The manager is disabled, so no origins or data are fetched.

@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -57,13 +58,13 @@ class PolicyUpdateObserver : public policy::PolicyService::Observer {
       : policy_service_(policy_service),
         policy_updated_callback_(std::move(policy_updated_callback)) {
     DCHECK(policy_updated_callback_);
-    policy_service_.AddObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
-                                this);
+    policy_service_->AddObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
+                                 this);
   }
 
   ~PolicyUpdateObserver() override {
-    policy_service_.RemoveObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
-                                   this);
+    policy_service_->RemoveObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
+                                    this);
   }
 
   void OnPolicyUpdated(const policy::PolicyNamespace& ns,
@@ -73,12 +74,12 @@ class PolicyUpdateObserver : public policy::PolicyService::Observer {
       return;
     }
 
-    policy_service_.RemoveObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
-                                   this);
+    policy_service_->RemoveObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
+                                    this);
     std::move(policy_updated_callback_).Run();
   }
 
-  policy::PolicyService& policy_service_;
+  const raw_ref<policy::PolicyService> policy_service_;
   base::OnceClosure policy_updated_callback_;
 };
 

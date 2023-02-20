@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -134,11 +135,11 @@ class ScopedSwapImplForTesting {
 
   ScopedSwapImplForTesting(T& receiver, ImplPointerType new_impl)
       : receiver_(receiver) {
-    old_impl_ = receiver_.SwapImplForTesting(new_impl);
+    old_impl_ = receiver_->SwapImplForTesting(new_impl);
   }
 
   ~ScopedSwapImplForTesting() {
-    std::ignore = receiver_.SwapImplForTesting(old_impl_);
+    std::ignore = receiver_->SwapImplForTesting(old_impl_);
   }
 
   ImplPointerType old_impl() const { return old_impl_; }
@@ -147,7 +148,7 @@ class ScopedSwapImplForTesting {
   ScopedSwapImplForTesting& operator=(const ScopedSwapImplForTesting&) = delete;
 
  private:
-  T& receiver_;
+  const raw_ref<T> receiver_;
   ImplPointerType old_impl_;
 };
 

@@ -612,7 +612,7 @@ base::TimeTicks WebmMuxer::MonotonicTimestampSequence::UpdateAndGetNext(
   DLOG_IF(WARNING, timestamp < last_timestamp_)
       << "Encountered a non-monotonically increasing timestamp. Was: "
       << last_timestamp_ << ", timestamp: " << timestamp;
-  did_adjust_timestamp_ |= (timestamp < last_timestamp_);
+  *did_adjust_timestamp_ |= (timestamp < last_timestamp_);
   last_timestamp_ = std::max(last_timestamp_, timestamp);
   return last_timestamp_;
 }

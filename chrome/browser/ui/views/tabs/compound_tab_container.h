@@ -219,7 +219,7 @@ class CompoundTabContainer : public TabContainer,
 
   // The sub-container that handled the last drag/drop update, if any. Used to
   // ensure HandleDragExited is called when necessary.
-  TabContainer* current_text_drop_target_ = nullptr;
+  raw_ptr<TabContainer> current_text_drop_target_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMPOUND_TAB_CONTAINER_H_

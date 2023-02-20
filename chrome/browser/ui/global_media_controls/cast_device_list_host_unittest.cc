@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_device_list_host.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
@@ -79,7 +80,7 @@ class CastDeviceListHostTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<CastDeviceListHost> host_;
-  MockCastDialogController* dialog_controller_ = nullptr;
+  raw_ptr<MockCastDialogController> dialog_controller_ = nullptr;
   mojo::PendingReceiver<global_media_controls::mojom::DeviceListClient>
       client_receiver_;
 };

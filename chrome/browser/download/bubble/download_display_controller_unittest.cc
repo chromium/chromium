@@ -362,7 +362,7 @@ class DownloadDisplayControllerTest : public testing::Test {
   raw_ptr<Profile> profile_;
   std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
-  MockDownloadCoreService* mock_download_core_service_;
+  raw_ptr<MockDownloadCoreService> mock_download_core_service_;
   std::unique_ptr<ChromeDownloadManagerDelegate> delegate_;
 };
 

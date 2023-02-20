@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -288,20 +289,20 @@ const FormStructure* WaitForMatchingForm(
 
    private:
     void OnAutofillManagerDestroyed(AutofillManager& manager) override {
-      DCHECK_EQ(&manager, &manager_);
+      DCHECK_EQ(&manager, &manager_.get());
       run_loop_.Quit();
       observation_.Reset();
     }
 
     void OnAutofillManagerReset(AutofillManager& manager) override {
-      DCHECK_EQ(&manager, &manager_);
+      DCHECK_EQ(&manager, &manager_.get());
       run_loop_.Quit();
       observation_.Reset();
     }
 
     void OnAfterFormsSeen(AutofillManager& manager,
                           base::span<const FormGlobalId> forms) override {
-      DCHECK_EQ(&manager, &manager_);
+      DCHECK_EQ(&manager, &manager_.get());
       if (const auto* form = FindForm()) {
         matching_form_ = form;
         run_loop_.Quit();
@@ -310,15 +311,15 @@ const FormStructure* WaitForMatchingForm(
 
     FormStructure* FindForm() const {
       auto it = base::ranges::find_if(
-          manager_.form_structures(),
+          manager_->form_structures(),
           [&](const auto& p) { return pred_.Run(*p.second); });
-      return it != manager_.form_structures().end() ? it->second.get()
-                                                    : nullptr;
+      return it != manager_->form_structures().end() ? it->second.get()
+                                                     : nullptr;
     }
 
     base::ScopedObservation<AutofillManager, AutofillManager::Observer>
         observation_{this};
-    AutofillManager& manager_;
+    const raw_ref<AutofillManager> manager_;
     base::RepeatingCallback<bool(const FormStructure&)> pred_;
     base::RunLoop run_loop_;
     raw_ptr<const FormStructure> matching_form_ = nullptr;

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ref.h"
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -155,7 +156,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
 
    private:
     base::TimeTicks last_timestamp_;
-    bool& did_adjust_timestamp_;
+    const raw_ref<bool> did_adjust_timestamp_;
   };
 
   // Methods for creating and adding video and audio tracks, called upon

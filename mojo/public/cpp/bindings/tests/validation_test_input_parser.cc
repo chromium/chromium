@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -109,7 +110,7 @@ class ValidationTestInputParser {
   static const DataType kDataTypes[];
   static const size_t kDataTypeCount;
 
-  const std::string& input_;
+  const raw_ref<const std::string> input_;
   size_t input_cursor_;
 
   raw_ptr<std::vector<uint8_t>> data_;
@@ -198,23 +199,23 @@ bool ValidationTestInputParser::GetNextItem(Range* range) {
     // Skip leading whitespaces.
     // If there are no non-whitespace characters left, |input_cursor_| will be
     // set to std::npos.
-    input_cursor_ = input_.find_first_not_of(kWhitespaceChars, input_cursor_);
+    input_cursor_ = input_->find_first_not_of(kWhitespaceChars, input_cursor_);
 
-    if (input_cursor_ >= input_.size())
+    if (input_cursor_ >= input_->size()) {
       return false;
+    }
 
-    if (StartsWith(
-            Range(&input_[0] + input_cursor_, &input_[0] + input_.size()),
-            "//",
-            2)) {
+    if (StartsWith(Range(&(*input_)[0] + input_cursor_,
+                         &(*input_)[0] + input_->size()),
+                   "//", 2)) {
       // Skip contents until the end of the line.
-      input_cursor_ = input_.find_first_of(kEndOfLineChars, input_cursor_);
+      input_cursor_ = input_->find_first_of(kEndOfLineChars, input_cursor_);
     } else {
-      range->first = &input_[0] + input_cursor_;
-      input_cursor_ = input_.find_first_of(kItemDelimiters, input_cursor_);
-      range->second = input_cursor_ >= input_.size()
-                          ? &input_[0] + input_.size()
-                          : &input_[0] + input_cursor_;
+      range->first = &(*input_)[0] + input_cursor_;
+      input_cursor_ = input_->find_first_of(kItemDelimiters, input_cursor_);
+      range->second = input_cursor_ >= input_->size()
+                          ? &(*input_)[0] + input_->size()
+                          : &(*input_)[0] + input_cursor_;
       return true;
     }
   }

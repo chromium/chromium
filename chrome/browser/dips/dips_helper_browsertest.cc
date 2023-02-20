@@ -752,8 +752,8 @@ class DIPSPrepopulateTest : public PlatformBrowserTest {
         ->FlushLossyWebsiteSettings();
   }
 
-  DIPSService* dips_service;
-  base::SequenceBound<DIPSStorage>* storage;
+  raw_ptr<DIPSService> dips_service;
+  raw_ptr<base::SequenceBound<DIPSStorage>> storage;
 
  private:
   base::test::ScopedFeatureList feature_list_;

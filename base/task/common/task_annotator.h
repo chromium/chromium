@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
@@ -183,7 +184,7 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
   // known. Note that this will not compile in the Native client.
   uint32_t (*ipc_method_info_)();
   bool is_response_ = false;
-  PendingTask& pending_task_;
+  const raw_ref<PendingTask> pending_task_;
   raw_ptr<TaskAnnotator> task_annotator_;
 };
 

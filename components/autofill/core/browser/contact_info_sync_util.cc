@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 
 #include "base/guid.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -64,13 +65,13 @@ class EntryDataSetter {
 
   void Set(ContactInfoSpecifics::StringToken* token,
            ServerFieldType type) const {
-    token->set_value(base::UTF16ToUTF8(profile_.GetRawInfo(type)));
+    token->set_value(base::UTF16ToUTF8(profile_->GetRawInfo(type)));
     SetMetadata(token->mutable_metadata(), type);
   }
 
   void Set(ContactInfoSpecifics::IntegerToken* token,
            ServerFieldType type) const {
-    token->set_value(profile_.GetRawInfoAsInt(type));
+    token->set_value(profile_->GetRawInfoAsInt(type));
     SetMetadata(token->mutable_metadata(), type);
   }
 
@@ -78,10 +79,10 @@ class EntryDataSetter {
   void SetMetadata(ContactInfoSpecifics::TokenMetadata* metadata,
                    ServerFieldType type) const {
     metadata->set_status(ConvertProfileToSpecificsVerificationStatus(
-        profile_.GetVerificationStatus(type)));
+        profile_->GetVerificationStatus(type)));
   }
 
-  const AutofillProfile& profile_;
+  const raw_ref<const AutofillProfile> profile_;
 };
 
 // Helper class to set the info and verification status of an AutofillProfile
@@ -92,20 +93,20 @@ class ProfileSetter {
 
   void Set(const ContactInfoSpecifics::StringToken& token,
            ServerFieldType type) {
-    profile_.SetRawInfoWithVerificationStatus(
+    profile_->SetRawInfoWithVerificationStatus(
         type, base::UTF8ToUTF16(token.value()),
         ConvertSpecificsToProfileVerificationStatus(token.metadata().status()));
   }
 
   void Set(const ContactInfoSpecifics::IntegerToken& token,
            ServerFieldType type) {
-    profile_.SetRawInfoAsIntWithVerificationStatus(
+    profile_->SetRawInfoAsIntWithVerificationStatus(
         type, token.value(),
         ConvertSpecificsToProfileVerificationStatus(token.metadata().status()));
   }
 
  private:
-  AutofillProfile& profile_;
+  const raw_ref<AutofillProfile> profile_;
 };
 
 }  // namespace

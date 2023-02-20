@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "components/segmentation_platform/internal/selection/client_result_prefs.h"
 #include "components/segmentation_platform/public/result.h"
 
@@ -42,7 +43,7 @@ class CachedResultProvider {
 
  private:
   // Configs for all registered clients.
-  const std::vector<std::unique_ptr<Config>>& configs_;
+  const raw_ref<const std::vector<std::unique_ptr<Config>>> configs_;
 
   // The underlying pref backed store to read the pref values from.
   std::unique_ptr<ClientResultPrefs> result_prefs_;

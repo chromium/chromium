@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -503,7 +504,7 @@ std::vector<std::string> FlattenGroupsAndFeatures(
 // the provided items with parsed data. If any field is null, then it won't be
 // parsed.
 struct ConfigParseOutput {
-  uint32_t& parse_errors;
+  const raw_ref<uint32_t> parse_errors;
   raw_ptr<Comparator> session_rate = nullptr;
   raw_ptr<SessionRateImpact> session_rate_impact = nullptr;
   raw_ptr<Blocking> blocking = nullptr;
@@ -540,7 +541,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseEventConfig(param_value, &event_config)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_USED_EVENT_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.used = event_config;
@@ -549,7 +550,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseEventConfig(param_value, &event_config)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_TRIGGER_EVENT_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.trigger = event_config;
@@ -558,7 +559,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseComparator(param_value, &comparator)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SESSION_RATE_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.session_rate = comparator;
@@ -568,7 +569,7 @@ void ParseConfigFields(const base::Feature* feature,
                                   feature, all_features, all_groups)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SESSION_RATE_IMPACT_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.session_rate_impact = parsed_session_rate_impact;
@@ -577,7 +578,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseBlocking(param_value, &parsed_blocking)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_BLOCKING_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.blocking = parsed_blocking;
@@ -587,7 +588,7 @@ void ParseConfigFields(const base::Feature* feature,
                           all_features, all_groups)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_BLOCKED_BY_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.blocked_by = parsed_blocked_by;
@@ -596,7 +597,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseTrackingOnly(param_value, &parsed_tracking_only)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_TRACKING_ONLY_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.tracking_only = parsed_tracking_only;
@@ -605,7 +606,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseComparator(param_value, &comparator)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_AVAILABILITY_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.availability = comparator;
@@ -614,7 +615,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseSnoozeParams(param_value, &parsed_snooze_params)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SNOOZE_PARAMS_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.snooze_params = parsed_snooze_params;
@@ -626,7 +627,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseGroups(param_value, &groups, feature, all_groups)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_GROUPS_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       *output.groups = groups;
@@ -637,7 +638,7 @@ void ParseConfigFields(const base::Feature* feature,
       if (!ParseEventConfig(param_value, &event_config)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_OTHER_EVENT_PARSE);
-        ++output.parse_errors;
+        ++*output.parse_errors;
         continue;
       }
       output.event_configs->insert(event_config);

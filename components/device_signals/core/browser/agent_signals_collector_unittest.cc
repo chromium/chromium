@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -112,7 +113,7 @@ class AgentSignalsCollectorTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  StrictMock<MockCrowdStrikeClient>* mocked_crowdstrike_client_;
+  raw_ptr<StrictMock<MockCrowdStrikeClient>> mocked_crowdstrike_client_;
   std::unique_ptr<AgentSignalsCollector> collector_;
   base::HistogramTester histogram_tester_;
 };

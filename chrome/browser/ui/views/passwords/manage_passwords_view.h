@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -69,12 +70,12 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   // currently selected password.
   absl::optional<password_manager::PasswordForm> currently_selected_password_;
 
-  views::View* display_username_row_ = nullptr;
-  views::View* edit_username_row_ = nullptr;
+  raw_ptr<views::View> display_username_row_ = nullptr;
+  raw_ptr<views::View> edit_username_row_ = nullptr;
   views::Textfield* username_textfield_ = nullptr;
 
-  views::View* display_note_row_ = nullptr;
-  views::View* edit_note_row_ = nullptr;
+  raw_ptr<views::View> display_note_row_ = nullptr;
+  raw_ptr<views::View> edit_note_row_ = nullptr;
   views::Textarea* note_textarea_ = nullptr;
 
   ItemsBubbleController controller_;

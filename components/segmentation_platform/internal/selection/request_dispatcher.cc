@@ -29,7 +29,7 @@ void RequestDispatcher::OnPlatformInitialized(
 
   // Only set request handlers if it has not been set for testing already.
   if (request_handlers_.empty()) {
-    for (const auto& config : configs_) {
+    for (const auto& config : *configs_) {
       request_handlers_[config->segmentation_key] = RequestHandler::Create(
           *config, std::move(result_providers[config->segmentation_key]),
           execution_service);

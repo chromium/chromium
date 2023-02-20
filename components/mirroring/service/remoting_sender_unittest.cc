@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
@@ -225,7 +226,7 @@ class RemotingSenderTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   const scoped_refptr<media::cast::CastEnvironment> cast_environment_;
 
-  testing::StrictMock<FakeSender>* sender_;
+  raw_ptr<testing::StrictMock<FakeSender>> sender_;
   bool expecting_error_callback_run_ = false;
 
   std::unique_ptr<MojoSenderWrapper> mojo_sender_wrapper_;
