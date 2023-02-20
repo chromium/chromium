@@ -78,7 +78,7 @@
 
 - (UIAction*)actionToPinTabWithBlock:(ProceduralBlock)block {
   UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
-                                      kLocationSymbol, kSymbolActionPointSize)
+                                      kPinSymbol, kSymbolActionPointSize)
                                 : [UIImage imageNamed:@"pin"];
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_PINTAB)

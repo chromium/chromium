@@ -97,6 +97,7 @@ extern NSString* const kMicrophoneFillSymbol;
 extern NSString* const kMicrophoneSymbol;
 extern NSString* const kMagnifyingglassSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
+extern NSString* const kPinSymbol;
 extern NSString* const kPinSlashSymbol;
 extern NSString* const kSettingsSymbol;
 extern NSString* const kSettingsFilledSymbol;
