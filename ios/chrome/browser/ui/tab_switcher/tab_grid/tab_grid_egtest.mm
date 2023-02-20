@@ -1935,8 +1935,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that add to reading list action works successfully from the long press
 // context menu on search results.
-// TODO(crbug.com/1412117): Re-enable when fixed.
-- (void)DISABLED_testSearchOpenTabsContextMenuAddToReadingList {
+// TODO(crbug.com/1412117): Test fails on simulator.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSearchOpenTabsContextMenuAddToReadingList \
+  testSearchOpenTabsContextMenuAddToReadingList
+#else
+#define MAYBE_testSearchOpenTabsContextMenuAddToReadingList \
+  DISABLED_testSearchOpenTabsContextMenuAddToReadingList
+#endif
+- (void)MAYBE_testSearchOpenTabsContextMenuAddToReadingList {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
 
