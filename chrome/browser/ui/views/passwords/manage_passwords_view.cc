@@ -182,6 +182,7 @@ std::unique_ptr<views::Label> CreateNoteLabel(
                           gfx::Insets::VH(vertical_margin, 0));
   note_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
   note_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  note_label->SetSelectable(true);
   return note_label;
 }
 
