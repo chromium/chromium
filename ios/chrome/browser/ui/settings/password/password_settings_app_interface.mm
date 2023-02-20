@@ -217,6 +217,20 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   return SaveToPasswordStore(example);
 }
 
++ (BOOL)saveExampleNote:(NSString*)note
+               password:(NSString*)password
+               userName:(NSString*)userName
+                 origin:(NSString*)origin {
+  PasswordForm example;
+  example.username_value = base::SysNSStringToUTF16(userName);
+  example.password_value = base::SysNSStringToUTF16(password);
+  example.url = GURL(base::SysNSStringToUTF16(origin));
+  example.signon_realm = example.url.spec();
+  example.notes = {password_manager::PasswordNote(
+      base::SysNSStringToUTF16(note), base::Time::Now())};
+  return SaveToPasswordStore(example);
+}
+
 + (BOOL)saveInsecurePassword:(NSString*)password
                     userName:(NSString*)userName
                       origin:(NSString*)origin {

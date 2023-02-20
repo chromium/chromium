@@ -175,6 +175,13 @@ id<GREYMatcher> PasswordDetailPassword() {
   return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
 }
 
+// Matcher for the note in Password Details view.
+id<GREYMatcher> PasswordDetailNote() {
+  return grey_allOf(
+      grey_accessibilityID(GetTextFieldForID(IDS_IOS_SHOW_PASSWORD_VIEW_NOTE)),
+      grey_kindOfClassName(@"UITextView"), nil);
+}
+
 // Matcher for the federation details in Password Details view.
 id<GREYMatcher> PasswordDetailFederation() {
   return grey_allOf(grey_accessibilityID(GetTextFieldForID(
@@ -382,6 +389,16 @@ void SaveExamplePasswordForms() {
              @"Stored form was not found in the PasswordStore results.");
 }
 
+// Saves an example form with note in the store.
+void SaveExamplePasswordFormWithNote() {
+  GREYAssert(
+      [PasswordSettingsAppInterface saveExampleNote:@"concrete note"
+                                           password:@"concrete password"
+                                           userName:@"concrete username"
+                                             origin:@"https://example.com"],
+      @"Stored form was not found in the PasswordStore results.");
+}
+
 // Saves two example blocked forms in the store.
 void SaveExampleBlockedForms() {
   GREYAssert([PasswordSettingsAppInterface
@@ -529,6 +546,13 @@ id<GREYMatcher> EditDoneButton() {
             (testAccountStorageSwitchShownIfSignedInAndFlagEnabled)]) {
     config.features_enabled.push_back(
         password_manager::features::kEnablePasswordsAccountStorage);
+  }
+
+  if ([self isRunningTest:@selector(testLayoutWithNotesDisabled)]) {
+    config.features_disabled.push_back(syncer::kPasswordNotesWithBackup);
+  }
+  if ([self isRunningTest:@selector(testLayoutWithNotesEnabled)]) {
+    config.features_enabled.push_back(syncer::kPasswordNotesWithBackup);
   }
 
   return config;
@@ -1257,6 +1281,86 @@ id<GREYMatcher> EditDoneButton() {
                             @[ Below() ],
                             [self matcherForPasswordDetailCellWithWebsites:
                                       @"https://example.com/"])];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Checks the order of the elements in the detail view layout for a
+// non-federated, non-blocked credential with notes feature disabled.
+- (void)testLayoutWithNotesDisabled {
+  SaveExamplePasswordForm();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
+                                            username:@"concrete username"]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:[self matcherForPasswordDetailCellWithWebsites:
+                                         @"https://example.com/"]]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      assertWithMatcher:grey_textFieldValue(@"concrete username")];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(kMaskedPassword)];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
+      assertWithMatcher:grey_nil()];
+  [GetInteractionForPasswordDetailItem(PasswordDetailUsername())
+      assertWithMatcher:grey_layout(
+                            @[ Below() ],
+                            [self matcherForPasswordDetailCellWithWebsites:
+                                      @"https://example.com/"])];
+  [GetInteractionForPasswordDetailItem(PasswordDetailPassword())
+      assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailUsername())];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Checks the order of the elements in the detail view layout for a
+// non-federated, non-blocked credential with notes feature enabled.
+- (void)testLayoutWithNotesEnabled {
+  SaveExamplePasswordFormWithNote();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
+                                            username:@"concrete username"]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:[self matcherForPasswordDetailCellWithWebsites:
+                                         @"https://example.com/"]]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      assertWithMatcher:grey_textFieldValue(@"concrete username")];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(kMaskedPassword)];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      assertWithMatcher:grey_text(@"concrete note")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
+      assertWithMatcher:grey_nil()];
+  [GetInteractionForPasswordDetailItem(PasswordDetailUsername())
+      assertWithMatcher:grey_layout(
+                            @[ Below() ],
+                            [self matcherForPasswordDetailCellWithWebsites:
+                                      @"https://example.com/"])];
+  [GetInteractionForPasswordDetailItem(PasswordDetailPassword())
+      assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailUsername())];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];

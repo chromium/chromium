@@ -11,8 +11,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller_delegate.h"
@@ -62,7 +64,8 @@ constexpr char kPassword[] = "test";
 
 - (void)addPasswordViewController:(AddPasswordViewController*)viewController
             didAddPasswordDetails:(NSString*)username
-                         password:(NSString*)password {
+                         password:(NSString*)password
+                             note:(NSString*)note {
 }
 
 - (void)checkForDuplicates:(NSString*)username {
@@ -174,6 +177,54 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAdd) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
   EXPECT_EQ(2, NumberOfItemsInSection(2));
+
+  CheckSectionFooter(
+      [NSString stringWithFormat:@"%@\n\n%@",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
+      3);
+}
+
+// Tests the layout of the view controller when adding a new credential with
+// notes features disabled.
+TEST_F(AddPasswordViewControllerTest, TestSectionsInAddWithNotesDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
+
+  AddPasswordViewController* passwords_controller =
+      static_cast<AddPasswordViewController*>(controller());
+  [passwords_controller loadModel];
+
+  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(0, NumberOfItemsInSection(1));
+  EXPECT_EQ(2, NumberOfItemsInSection(2));
+
+  CheckSectionFooter(
+      [NSString stringWithFormat:@"%@\n\n%@",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
+      3);
+}
+
+// Tests the layout of the view controller when adding a new credential with
+// notes features enabled.
+TEST_F(AddPasswordViewControllerTest, TestSectionsInAddWithNotesEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+
+  AddPasswordViewController* passwords_controller =
+      static_cast<AddPasswordViewController*>(controller());
+  [passwords_controller loadModel];
+
+  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(0, NumberOfItemsInSection(1));
+  EXPECT_EQ(3, NumberOfItemsInSection(2));
 
   CheckSectionFooter(
       [NSString stringWithFormat:@"%@\n\n%@",

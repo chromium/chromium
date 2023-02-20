@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
@@ -22,6 +23,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_line_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -60,6 +63,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeUsername,
   ItemTypePassword,
   ItemTypeFooter,
+  ItemTypeNote,
   ItemTypeDuplicateCredentialButton,
   ItemTypeDuplicateCredentialMessage
 };
@@ -69,7 +73,8 @@ const CGFloat kSymbolSize = 15;
 
 }  // namespace
 
-@interface AddPasswordViewController () <TableViewTextEditItemDelegate>
+@interface AddPasswordViewController () <TableViewTextEditItemDelegate,
+                                         TableViewMultiLineTextEditItemDelegate>
 
 // Whether the password is shown in plain text form or in masked form.
 @property(nonatomic, assign, getter=isPasswordShown) BOOL passwordShown;
@@ -82,6 +87,9 @@ const CGFloat kSymbolSize = 15;
 
 // The text item related to the password value.
 @property(nonatomic, strong) TableViewTextEditItem* passwordTextItem;
+
+// The text item related to the password note value.
+@property(nonatomic, strong) TableViewMultiLineTextEditItem* noteTextItem;
 
 // The view used to anchor error alert which is shown for the username. This is
 // image icon in the `usernameTextItem` cell.
@@ -195,6 +203,12 @@ const CGFloat kSymbolSize = 15;
   [model addItem:self.passwordTextItem
       toSectionWithIdentifier:SectionIdentifierPassword];
 
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    self.noteTextItem = [self noteItem];
+    [model addItem:self.noteTextItem
+        toSectionWithIdentifier:SectionIdentifierPassword];
+  }
+
   [model addSectionWithIdentifier:SectionIdentifierFooter];
   [model setFooter:[self footerItem]
       forSectionWithIdentifier:SectionIdentifierFooter];
@@ -273,6 +287,16 @@ const CGFloat kSymbolSize = 15;
         [self isPasswordShown] ? IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON
                                : IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
   }
+  return item;
+}
+
+// TODO(crbug.com/1414897): Adjust item specs to the defined mocks.
+- (TableViewMultiLineTextEditItem*)noteItem {
+  TableViewMultiLineTextEditItem* item =
+      [[TableViewMultiLineTextEditItem alloc] initWithType:ItemTypeNote];
+  item.label = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_NOTE);
+  item.editingEnabled = YES;
+  item.delegate = self;
   return item;
 }
 
@@ -437,11 +461,12 @@ const CGFloat kSymbolSize = 15;
       textFieldCell.textField.delegate = self;
       break;
     }
-    case ItemTypeDuplicateCredentialMessage:
-    case ItemTypeFooter:
-      break;
     case ItemTypeDuplicateCredentialButton:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    case ItemTypeNote:
+    case ItemTypeDuplicateCredentialMessage:
+    case ItemTypeFooter:
       break;
   }
   return cell;
@@ -458,6 +483,7 @@ const CGFloat kSymbolSize = 15;
       return NO;
     case ItemTypeUsername:
     case ItemTypePassword:
+    case ItemTypeNote:
       return YES;
   }
   return NO;
@@ -572,6 +598,14 @@ const CGFloat kSymbolSize = 15;
   }
 }
 
+#pragma mark - TableViewMultiLineTextEditItemDelegate
+
+- (void)textViewItemDidChange:(TableViewMultiLineTextEditItem*)tableViewItem {
+  // Refresh the cells' height.
+  [self.tableView beginUpdates];
+  [self.tableView endUpdates];
+}
+
 #pragma mark - Actions
 
 // Dimisses this view controller when Cancel button is tapped.
@@ -590,10 +624,10 @@ const CGFloat kSymbolSize = 15;
       LogUserInteractionsWhenAddingCredentialFromSettings(
           password_manager::metrics_util::
               AddCredentialFromSettingsUserInteractions::kCredentialAdded);
-  [self.delegate
-      addPasswordViewController:self
-          didAddPasswordDetails:self.usernameTextItem.textFieldValue
-                       password:self.passwordTextItem.textFieldValue];
+  [self.delegate addPasswordViewController:self
+                     didAddPasswordDetails:self.usernameTextItem.textFieldValue
+                                  password:self.passwordTextItem.textFieldValue
+                                      note:self.noteTextItem.text];
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -610,6 +644,7 @@ const CGFloat kSymbolSize = 15;
     case ItemTypeUsername:
     case ItemTypePassword:
     case ItemTypeWebsite:
+    case ItemTypeNote:
       return YES;
     case ItemTypeDuplicateCredentialMessage:
     case ItemTypeDuplicateCredentialButton:

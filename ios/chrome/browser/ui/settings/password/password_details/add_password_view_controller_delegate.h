@@ -13,7 +13,8 @@
 // Called when user finished adding a new password credential.
 - (void)addPasswordViewController:(AddPasswordViewController*)viewController
             didAddPasswordDetails:(NSString*)username
-                         password:(NSString*)password;
+                         password:(NSString*)password
+                             note:(NSString*)note;
 
 // Called on every keystroke to check whether duplicates exist before adding a
 // new credential.

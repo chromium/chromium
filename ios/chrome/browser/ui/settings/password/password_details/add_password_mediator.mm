@@ -14,6 +14,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
@@ -109,7 +110,8 @@ bool CheckForDuplicates(
 
 - (void)addPasswordViewController:(AddPasswordViewController*)viewController
             didAddPasswordDetails:(NSString*)username
-                         password:(NSString*)password {
+                         password:(NSString*)password
+                             note:(NSString*)note {
   if (_validationTaskTracker->HasTrackedTasks()) {
     // If the task tracker has pending tasks and the "Save" button is pressed,
     // don't do anything.
@@ -122,6 +124,9 @@ bool CheckForDuplicates(
   std::string signonRealm = password_manager::GetSignonRealm(self.URL);
   credential.username = SysNSStringToUTF16(username);
   credential.password = SysNSStringToUTF16(password);
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    credential.note = SysNSStringToUTF16(note);
+  }
   credential.stored_in = {password_manager::PasswordForm::Store::kProfileStore};
 
   password_manager::CredentialFacet facet;

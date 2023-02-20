@@ -34,6 +34,11 @@
   cell.textView.text = self.text;
   cell.textView.editable = self.editingEnabled;
   cell.textView.delegate = self;
+
+  if (self.label.length) {
+    cell.textView.accessibilityIdentifier =
+        [NSString stringWithFormat:@"%@_textField", self.label];
+  }
 }
 
 #pragma mark - UITextViewDelegate
