@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class AccountId;
 class PrefRegistrySimple;
 class PrefService;
 
@@ -399,7 +398,7 @@ void ClearLacrosDataBackwardMigrationModeCacheForTest();
 // Clears the cached value for LacrosSelection policy.
 void ClearLacrosSelectionCacheForTest();
 
-bool IsProfileMigrationEnabled(const AccountId& account_id);
+bool IsProfileMigrationEnabled();
 
 // Returns true if the profile migration can run, but not yet completed.
 bool IsProfileMigrationAvailable();

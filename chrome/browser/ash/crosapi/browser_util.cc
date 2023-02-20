@@ -354,10 +354,10 @@ bool IsLacrosEnabled() {
   if (!IsLacrosAllowedToBeEnabled())
     return false;
 
-  // If profile migration is enabled for the user, then make profile migration a
-  // requirement to enable lacros.
-  if (IsProfileMigrationEnabled(
-          UserManager::Get()->GetPrimaryUser()->GetAccountId())) {
+  // Unless profile migration is disabled, completion of profile migration is
+  // required for Lacros to be enabled.
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kLacrosProfileMigrationForceOff)) {
     PrefService* local_state = g_browser_process->local_state();
     // Note that local_state can be nullptr in tests.
     if (local_state &&
@@ -381,27 +381,6 @@ bool IsLacrosEnabled() {
   }
 
   return base::FeatureList::IsEnabled(ash::features::kLacrosSupport);
-}
-
-bool IsProfileMigrationEnabled(const AccountId& account_id) {
-  // Emergency switch to turn off profile migration. Turn this on via Finch in
-  // case profile migration needs to be turned off after launch.
-  if (base::FeatureList::IsEnabled(
-          ash::features::kLacrosProfileMigrationForceOff)) {
-    return false;
-  }
-
-  // Now `kLacrosProfileMigrationForAnyUser` is enabled by default thus the
-  // following condition is false only when the account is not an internal
-  // google account (@google.com account) and the user has disabled
-  // `kLacrosProfileMigrationForAnyUser`.
-  if (gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()) ||
-      base::FeatureList::IsEnabled(
-          ash::features::kLacrosProfileMigrationForAnyUser)) {
-    return true;
-  }
-
-  return false;
 }
 
 bool IsLacrosEnabledForMigration(const User* user,
@@ -441,14 +420,18 @@ bool IsLacrosEnabledForMigration(const User* user,
 }
 
 bool IsProfileMigrationAvailable() {
+  if (base::FeatureList::IsEnabled(
+          ash::features::kLacrosProfileMigrationForceOff)) {
+    return false;
+  }
+
   UserManager* user_manager = UserManager::Get();
   const user_manager::User* user = user_manager->GetPrimaryUser();
   // |user| may be nullptr on unittests.
-  if (!user || !IsProfileMigrationEnabled(user->GetAccountId()))
+  if (!user ||
+      !IsLacrosEnabledForMigration(user, PolicyInitState::kAfterInit)) {
     return false;
-
-  if (!IsLacrosEnabledForMigration(user, PolicyInitState::kAfterInit))
-    return false;
+  }
 
   // If migration is already completed, it is not necessary to run again.
   if (IsCopyOrMoveProfileMigrationCompletedForUser(
