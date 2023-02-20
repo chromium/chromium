@@ -85,6 +85,8 @@ class PopupRowView : public views::View {
 
   // Returns the view representing the content area of the row.
   PopupCellView& GetContentView() { return *content_view_; }
+  // Returns the view representing the control area of the row. Can be null.
+  PopupCellView* GetControlView() { return control_view_.get(); }
 
  private:
   AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
@@ -105,7 +107,7 @@ class PopupRowView : public views::View {
   // The cell wrapping the content area of the row.
   raw_ptr<PopupCellView> content_view_ = nullptr;
   // The cell wrapping the control area of the row.
-  // TODO(crbug.com/1411172): Implement properly.
+  // TODO(crbug.com/1411172): Add keyboard event handling.
   raw_ptr<PopupCellView> control_view_ = nullptr;
 };
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
@@ -45,31 +46,38 @@ class MockSelectionDelegate : public PopupRowView::SelectionDelegate {
 
 class PopupTestStrategy : public PopupRowStrategy {
  public:
-  explicit PopupTestStrategy(int line_number, bool has_controls)
-      : line_number_(line_number), has_controls_(has_controls) {}
+  explicit PopupTestStrategy(int line_number, bool has_control)
+      : line_number_(line_number), has_control_(has_control) {}
   ~PopupTestStrategy() override = default;
 
   std::unique_ptr<PopupCellView> CreateContent() override {
     auto cell = std::make_unique<PopupCellView>();
-    cell->SetVoiceOverString(u"Test cell");
+    cell->SetUseDefaultFillLayout(true);
+    cell->SetVoiceOverString(u"Test content cell");
     cell->AddChildView(std::make_unique<views::Label>(u"Test content"));
     return cell;
   }
+
   std::unique_ptr<PopupCellView> CreateControl() override {
-    return has_controls_ ? std::make_unique<PopupCellView>() : nullptr;
+    if (!has_control_) {
+      return nullptr;
+    }
+    auto cell = std::make_unique<PopupCellView>();
+    cell->SetUseDefaultFillLayout(true);
+    cell->SetVoiceOverString(u"Test control cell");
+    cell->AddChildView(std::make_unique<views::Label>(u"Test control"));
+    return cell;
   }
 
   int GetLineNumber() const override { return line_number_; }
 
  private:
   const int line_number_;
-  const bool has_controls_;
+  const bool has_control_;
 };
 
 }  // namespace
 
-// TODO(crbug.com/1411172): Add tests for control surface once that is
-// implemented.
 class PopupRowViewTest : public ChromeViewsTestBase {
  public:
   // views::ViewsTestBase:
@@ -125,7 +133,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
-  ShowView(2, /*has_control=*/false);
+  ShowView(2, /*has_control=*/true);
 
   // Move the mouse of out bounds and force paint to satisfy the check that the
   // mouse has been outside the element before enter/exit events are passed on.
@@ -138,14 +146,25 @@ TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
 
+  // Moving from one cell to another triggers two events, one with
+  // `absl::nullopt` as argument and the other with the control cell.
+  EXPECT_CALL(selection_delegate(),
+              SetSelectedCell(absl::optional<CellIndex>()));
+  EXPECT_CALL(
+      selection_delegate(),
+      SetSelectedCell(absl::make_optional<CellIndex>(2u, CellType::kControl)));
+  ASSERT_TRUE(row_view().GetControlView());
+  generator().MoveMouseTo(
+      row_view().GetControlView()->GetBoundsInScreen().CenterPoint());
+
   EXPECT_CALL(selection_delegate(),
               SetSelectedCell(absl::optional<CellIndex>()));
   generator().MoveMouseTo(kOutOfBounds);
 }
 
-TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArguments) {
+TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
   ShowView(0, /*has_control=*/false);
-
+  EXPECT_FALSE(row_view().GetControlView());
   EXPECT_FALSE(row_view().GetSelectedCell().has_value());
 
   // Selecting the content cell notifies the accessibility system that the
@@ -167,6 +186,26 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArguments) {
   EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_FALSE(row_view().GetSelectedCell().has_value());
+}
+
+TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsWithControl) {
+  ShowView(0, /*has_control=*/true);
+  ASSERT_TRUE(row_view().GetControlView());
+  EXPECT_FALSE(row_view().GetSelectedCell().has_value());
+
+  // Selecting the control cell notifies the accessibility system that the
+  // respective view has been selected.
+  EXPECT_CALL(a11y_selection_delegate(),
+              NotifyAXSelection(Ref(*row_view().GetControlView())));
+  row_view().SetSelectedCell(CellType::kControl);
+  EXPECT_EQ(row_view().GetSelectedCell(),
+            absl::make_optional<CellType>(CellType::kControl));
+
+  // Selecting it again leads to no notification.
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
+  row_view().SetSelectedCell(CellType::kControl);
+  EXPECT_EQ(row_view().GetSelectedCell(),
+            absl::make_optional<CellType>(CellType::kControl));
 }
 
 }  // namespace autofill
