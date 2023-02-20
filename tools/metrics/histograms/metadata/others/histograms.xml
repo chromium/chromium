@@ -14950,17 +14950,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebFont.Clients.AlignFontDisplayAuto.FontFacesAffected"
-    units="fonts" expires_after="M86">
-  <owner>kenjibaheux@chromium.org</owner>
-  <owner>xiaochengh@chromium.org</owner>
-  <summary>
-    The number of 'font-display: auto' web fonts whose display periods are
-    modified to 'swap' or 'failure' before a timeout to ensure a good LCP. This
-    is a diagnostic metric for feature AlignFontDisplayAutoTimeoutWithLCPGoal.
-  </summary>
-</histogram>
-
 <histogram name="WebFont.DownloadTime.0.Under10KB" units="ms"
     expires_after="2022-11-13">
   <owner>kenjibaheux@chromium.org</owner>

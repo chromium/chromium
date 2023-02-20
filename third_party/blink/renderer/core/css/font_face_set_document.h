@@ -112,22 +112,6 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
   };
   FontLoadHistogram font_load_histogram_;
 
-  class FontDisplayAutoAlignHistogram {
-    DISALLOW_NEW();
-
-   public:
-    void SetHasFontDisplayAuto() { has_font_display_auto_ = true; }
-    void CountAffected() { ++affected_count_; }
-
-    void Record();
-
-   private:
-    unsigned affected_count_ = 0;
-    bool has_font_display_auto_ = false;
-    bool reported_ = false;
-  };
-  FontDisplayAutoAlignHistogram font_display_auto_align_histogram_;
-
   HeapTaskRunnerTimer<FontFaceSetDocument> lcp_limit_timer_;
 
   bool has_reached_lcp_limit_ = false;
