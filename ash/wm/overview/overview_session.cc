@@ -875,10 +875,14 @@ void OverviewSession::OnWindowActivating(
   // handle the window activation change. Check for split view mode without
   // using |SplitViewController::state_| which is updated asynchronously when
   // snapping an ARC window.
+  // We also check if `gained_active` is to-be-snapped transitional state. In
+  // the case, the window has not been attached to SplitViewController yet but
+  // will be very soon.
   SplitViewController* split_view_controller =
       SplitViewController::Get(gained_active);
   if (split_view_controller->primary_window() ||
-      split_view_controller->secondary_window()) {
+      split_view_controller->secondary_window() ||
+      split_view_controller->IsWindowInTransitionalState(gained_active)) {
     RestoreWindowActivation(false);
     return;
   }

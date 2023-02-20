@@ -13,6 +13,9 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -32,6 +35,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -963,6 +967,50 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_FALSE(window_state()->IsFloated());
   EXPECT_NE(kShellWindowId_FloatContainer, window()->parent()->GetId());
+}
+
+TEST_P(ClientControlledStateTestClamshellAndTablet, DragOverviewWindowToSnap) {
+  auto* const overview_controller = Shell::Get()->overview_controller();
+  auto* const split_view_controller = SplitViewController::Get(window());
+
+  widget_delegate()->EnableSnap();
+
+  // Create a fake normal window in addition to `window()` (client-controlled
+  // window) because we need at least two windows to keep overview mode active
+  // after snapping one of them.
+  auto fake_uninterested_window = CreateAppWindow();
+
+  // Enter overview.
+  ToggleOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+
+  // Drag `window()`'s overview item to snap to left.
+  auto* const overview_item = GetOverviewItemForWindow(window());
+  auto* const event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
+  event_generator->DragMouseTo(0, 0);
+
+  // Ensures the window is in a transitional snapped state.
+  EXPECT_TRUE(split_view_controller->IsWindowInTransitionalState(window()));
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+  EXPECT_FALSE(window_state()->IsSnapped());
+
+  // Activating window just before accepting the request shouldn't end the
+  // overview.
+  widget()->Activate();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Accept the snap request.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_TRUE(window_state()->IsSnapped());
+  EXPECT_TRUE(split_view_controller->InSplitViewMode());
+  EXPECT_EQ(split_view_controller->state(),
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_EQ(split_view_controller->primary_window(), window());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
 }  // namespace ash
