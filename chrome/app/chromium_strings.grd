@@ -1454,8 +1454,17 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
         </if>
         <if expr="not chromeos_lacros">
-          <message name="IDS_FRE_SIGN_IN_SUBTITLE" desc="The subtitle for the sign in page explaining to the users the benefits of signing in to Chrome">
-            You can enjoy the most out of Chromium
+          <message name="IDS_FRE_SIGN_IN_TITLE_0"
+            desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chromium with their Google Account. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
+            Sign in to Chromium
+          </message>
+          <message name="IDS_FRE_SIGN_IN_TITLE_1"
+            desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chromium with their Google Account. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
+            Make Chromium your own
+          </message>
+          <message name="IDS_FRE_SIGN_IN_TITLE_2"
+            desc="This string appears as a heading on a full-page screen that tells users the benefits of signing in to Chromium. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
+            Do more with Chromium
           </message>
         </if>
 

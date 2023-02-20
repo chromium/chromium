@@ -734,26 +734,37 @@
 
     <!-- First Run Experience strings -->
     <if expr="not chromeos_lacros">
-      <message name="IDS_FRE_SIGN_IN_TITLE" desc="The title for the sign in page explaining to the users the benefits of signing in to Chrome">
-        Sign in for more benefits
+      <message name="IDS_FRE_SIGN_IN_SUBTITLE_0"
+        desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
+        Get additional features
       </message>
-      <message name="IDS_FRE_DEVICES_CARD_TITLE" desc="The title of the benefits card explaining to the the users that they can continue their work on any of their signed in devices">
-        Across devices
+      <message name="IDS_FRE_SIGN_IN_SUBTITLE_1"
+        desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
+        Sign in for additional features
       </message>
-      <message name="IDS_FRE_DEVICES_CARD_DESCRIPTION" desc="The description of the benefits card explaining to the users that they can continue their work on any of their signed in devices">
-        Pick up where you left off on any device
+      <message name="IDS_FRE_DEVICES_CARD_TITLE"
+        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The headline is followed by the body text 'Easily pick up where you left off'. The tone should be informative.">
+        All your devices
       </message>
-      <message name="IDS_FRE_SECURITY_CARD_TITLE" desc="The title of the benefits card explaining to the users that signing in to Chrome offers strong security features">
+      <message name="IDS_FRE_DEVICES_CARD_DESCRIPTION"
+        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'All your devices'. This card's body means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The tone should be informative.">
+        Easily pick up where you left off
+      </message>
+      <message name="IDS_FRE_SECURITY_CARD_TITLE"
+        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get a higher level of security. The headline is followed by the body text 'Protect your passwords against phishing'. The tone should be informative.">
         Stronger security
       </message>
-      <message name="IDS_FRE_SECURITY_CARD_DESCRIPTION" desc="The description of the benefits card explaining to the users that signing in to Chrome will grant them more security thus protecting their passwords and more">
-        Extra protection to your passwords and more
+      <message name="IDS_FRE_SECURITY_CARD_DESCRIPTION"
+        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Stronger security'. This card's body means that users can get a higher level of security. Translate 'phishing' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=60554f8 . The tone should be informative.">
+        Protect your passwords against phishing
       </message>
-      <message name="IDS_FRE_BACKUP_CARD_TITLE" desc="The title of the benefits card explaining to the users that they can back up their stuff and use them across all signed in devices">
-        Back up your stuff
+      <message name="IDS_FRE_BACKUP_CARD_TITLE"
+        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Save your bookmarks, passwords, and more with sync'. The tone should be informative.">
+        Back up data
       </message>
-      <message name="IDS_FRE_BACKUP_CARD_DESCRIPTION" desc="The description of the benefits card giving users examples of data they can back up when they sign in">
-        Store your bookmarks and more with sync
+      <message name="IDS_FRE_BACKUP_CARD_DESCRIPTION"
+        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'passwords' as the plural version of https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=281e09e1 . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
+        Save your bookmarks, passwords and more with sync
       </message>
       <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
         Don't sign in

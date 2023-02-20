@@ -103,8 +103,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   constexpr webui::LocalizedString kLocalizedStrings[] = {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"pageTitle", IDS_FRE_SIGN_IN_TITLE},
-    {"pageSubtitle", IDS_FRE_SIGN_IN_SUBTITLE},
+    {"pageTitle", IDS_FRE_SIGN_IN_TITLE_0},
+    {"pageSubtitle", IDS_FRE_SIGN_IN_SUBTITLE_0},
     {"devicesCardTitle", IDS_FRE_DEVICES_CARD_TITLE},
     {"devicesCardDescription", IDS_FRE_DEVICES_CARD_DESCRIPTION},
     {"securityCardTitle", IDS_FRE_SECURITY_CARD_TITLE},
