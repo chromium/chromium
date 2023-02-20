@@ -303,9 +303,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)shouldHideToolbar {
   // Hide the toolbar if the visible view controller is not the current view
   // controller or the `deletionSheetCoordinator` is shown.
-  return self.navigationController.visibleViewController != self &&
-         self.deletionSheetCoordinator != nil &&
-         ![self.deletionSheetCoordinator isVisible];
+  if (self.navigationController.visibleViewController == self) {
+    return NO;
+  } else if (self.deletionSheetCoordinator != nil) {
+    return ![self.deletionSheetCoordinator isVisible];
+  }
+  return YES;
 }
 
 - (BOOL)shouldShowEditDoneButton {
