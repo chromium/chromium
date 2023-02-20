@@ -172,6 +172,7 @@ source_set("feed_core_v2") {
     ":ios_shared",
     "//base",
     "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/proto:proto_ios_shared_v2",
     "//components/feed/core/proto:proto_v2",
   ]
 }
@@ -187,7 +188,7 @@ source_set("ios_shared") {
   deps = [
     "//base",
     "//components/feed/core/common:feed_core_common",
-    "//components/feed/core/proto:proto_v2",
+    "//components/feed/core/proto:proto_ios_shared_v2",
     "//components/prefs",
   ]
 }

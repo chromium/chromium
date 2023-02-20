@@ -22,7 +22,6 @@ proto_library("proto_v2") {
     "v2/wire/capabilities_debug_data.proto",
     "v2/wire/capability.proto",
     "v2/wire/chrome_client_info.proto",
-    "v2/wire/chrome_feed_response_metadata.proto",
     "v2/wire/chrome_fulfillment_info.proto",
     "v2/wire/client_info.proto",
     "v2/wire/client_user_profiles.proto",
@@ -67,6 +66,10 @@ proto_library("proto_v2") {
     "v2/wire/xsurface_content.proto",
     "v2/xsurface.proto",
   ]
+}
+
+proto_library("proto_ios_shared_v2") {
+  sources = [ "v2/wire/chrome_feed_response_metadata.proto" ]
 }
 
 if (is_android) {

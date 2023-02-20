@@ -25,7 +25,6 @@ source_set("feed_ios_unit_tests") {
   deps = [
     ":feed_ios_public",
     "//base/test:test_support",
-    "//components/feed/core/v2:feed_core_v2",
     "//components/prefs",
     "//components/prefs:test_support",
     "//testing/gmock",
