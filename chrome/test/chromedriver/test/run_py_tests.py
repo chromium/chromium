@@ -87,9 +87,6 @@ _NEGATIVE_FILTER = [
     'ChromeDriverTest.testAlertOnNewWindow',
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2532
     'ChromeDriverPageLoadTimeoutTest.testRefreshWithPageLoadTimeout',
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517
-    'ChromeDriverTest.testPrint',
-    'ChromeDriverTest.testPrintInvalidArgument',
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1143940
     'ChromeDriverTest.testTakeLargeElementFullPageScreenshot',
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1306504
@@ -2957,8 +2954,8 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
                                   }
                                 })
     decoded_pdf = base64.b64decode(pdf)
-    self.assertTrue(decoded_pdf.startswith("%PDF"))
-    self.assertTrue(decoded_pdf.endswith("%%EOF"))
+    self.assertTrue(decoded_pdf.startswith(b'%PDF'))
+    self.assertTrue(decoded_pdf.endswith(b'%%EOF'))
 
   def testPrintInvalidArgument(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
