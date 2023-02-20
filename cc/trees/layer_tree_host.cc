@@ -1624,7 +1624,7 @@ void LayerTreeHost::UnregisterLayer(Layer* layer) {
   DCHECK(LayerById(layer->id()));
   DCHECK(!in_paint_layer_contents_);
 
-  auto commit_state = pending_commit_state();
+  CommitState* commit_state = pending_commit_state();
   recordreplay::Assert("[Run-1229-1385] LayerTreeHost::UnregisterLayer %d %d",
                        commit_state->source_frame_number, layer->id());
   commit_state->layers_that_should_push_properties.erase(layer);
@@ -1664,7 +1664,7 @@ void LayerTreeHost::RemoveSurfaceRange(const viz::SurfaceRange& surface_range) {
 }
 
 void LayerTreeHost::AddLayerShouldPushProperties(Layer* layer) {
-  auto commit_state = pending_commit_state();
+  CommitState* commit_state = pending_commit_state();
 
   recordreplay::Assert(
       "[Run-1229-1385] LayerTreeHost::AddLayerShouldPushProperties %d %d",
