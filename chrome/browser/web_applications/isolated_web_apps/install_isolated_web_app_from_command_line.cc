@@ -112,10 +112,6 @@ void OnGetIsolatedWebAppUrlInfo(
 base::expected<absl::optional<IsolatedWebAppLocation>, std::string>
 GetIsolatedWebAppLocationFromCommandLine(const base::CommandLine& command_line,
                                          const PrefService* prefs) {
-  if (!prefs || !IsIwaDevModeEnabled(*prefs)) {
-    return base::unexpected<std::string>(kIwaDevModeNotEnabledMessage);
-  }
-
   base::expected<absl::optional<IsolatedWebAppLocation>, std::string>
       proxy_url = GetProxyUrlFromCommandLine(command_line);
   base::expected<absl::optional<IsolatedWebAppLocation>, std::string>
@@ -126,6 +122,10 @@ GetIsolatedWebAppLocationFromCommandLine(const base::CommandLine& command_line,
       !bundle_path.has_value() || bundle_path->has_value();
   if (!is_proxy_url_set && !is_bundle_path_set) {
     return absl::nullopt;
+  }
+
+  if (!prefs || !IsIwaDevModeEnabled(*prefs)) {
+    return base::unexpected<std::string>(kIwaDevModeNotEnabledMessage);
   }
 
   if (is_proxy_url_set && is_bundle_path_set) {
