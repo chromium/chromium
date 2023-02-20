@@ -29,7 +29,6 @@
 #include "ui/base/ime/input_method_minimal.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_utils.h"
@@ -64,7 +63,6 @@ class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
         display::Display(200, gfx::Rect(1920, 1080, 800, 600)),
         display::DisplayList::Type::NOT_PRIMARY);
     display::Screen::SetScreenInstance(screen_.get());
-
     ShellTestBaseAura::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -95,7 +93,6 @@ class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
   }
 
   std::unique_ptr<display::ScreenBase> screen_;
-  std::unique_ptr<display::test::ScopedScreenOverride> screen_override_;
   std::unique_ptr<ShellDesktopControllerAura> controller_;
 };
 
