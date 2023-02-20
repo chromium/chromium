@@ -2395,6 +2395,9 @@ class ComputedStyle : public ComputedStyleBase,
     if (pseudo == kPseudoIdMarker) {
       return Display() == EDisplay::kListItem;
     }
+    if (pseudo == kPseudoIdBackdrop && TopLayer() == ETopLayer::kNone) {
+      return false;
+    }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
     }
@@ -2406,6 +2409,10 @@ class ComputedStyle : public ComputedStyleBase,
     // elements with an actual layout object.
     return pseudo == kPseudoIdBefore || pseudo == kPseudoIdAfter;
   }
+
+  // Returns true if the element is a top layer candidate whose top-layer
+  // property computes to 'browser'.
+  bool IsInTopLayer(const Element& element) const;
 
   // Load the images of CSS properties that were deferred by LazyLoad.
   void LoadDeferredImages(Document&) const;

@@ -367,6 +367,9 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
     return true;
   }
 
+  if (old_style->TopLayer() != new_style->TopLayer()) {
+    return true;
+  }
   return false;
 }
 
@@ -2463,6 +2466,10 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
     return true;
   }
   return false;
+}
+
+bool ComputedStyle::IsInTopLayer(const Element& element) const {
+  return element.IsInTopLayer() && TopLayer() == ETopLayer::kBrowser;
 }
 
 void ComputedStyleBuilder::PropagateIndependentInheritedProperties(

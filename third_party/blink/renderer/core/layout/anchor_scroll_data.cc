@@ -37,8 +37,7 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!anchor_query)
     return nullptr;
 
-  Element* element = DynamicTo<Element>(layout_object->GetNode());
-  const bool is_in_top_layer = element ? element->IsInTopLayer() : false;
+  bool is_in_top_layer = layout_object->IsInTopLayer();
 
   const NGPhysicalFragment* fragment = nullptr;
   if (value->IsNamed()) {
@@ -48,6 +47,7 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   } else {
     DCHECK(value->IsImplicit() ||
            (value->IsDefault() && !style.AnchorDefault()));
+    Element* element = DynamicTo<Element>(layout_object->GetNode());
     Element* anchor = element ? element->ImplicitAnchorElement() : nullptr;
     LayoutObject* anchor_layout_object =
         anchor ? anchor->GetLayoutObject() : nullptr;

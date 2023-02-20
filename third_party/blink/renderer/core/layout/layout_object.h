@@ -755,6 +755,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            IsStackingContext(style);
   }
 
+  // Returns true if the LayoutObject is rendered in the top layer.
+  bool IsInTopLayer() const {
+    NOT_DESTROYED();
+    if (Element* element = DynamicTo<Element>(GetNode())) {
+      return StyleRef().IsInTopLayer(*element);
+    }
+    return false;
+  }
+
   void NotifyPriorityScrollAnchorStatusChanged();
 
  private:

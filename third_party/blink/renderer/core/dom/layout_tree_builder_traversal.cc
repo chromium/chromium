@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -41,10 +42,7 @@ inline static bool HasDisplayContentsStyle(const Node& node) {
 }
 
 static bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
-  auto* element = DynamicTo<Element>(layout_object->GetNode());
-  if (!element)
-    return false;
-  return element->IsInTopLayer();
+  return layout_object->IsInTopLayer();
 }
 
 ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {
@@ -346,8 +344,9 @@ LayoutObject* LayoutTreeBuilderTraversal::PreviousSiblingLayoutObject(
 
 LayoutObject* LayoutTreeBuilderTraversal::NextInTopLayer(
     const Element& element) {
-  if (!element.IsInTopLayer())
-    return nullptr;
+  DCHECK(element.ComputedStyleRef().IsInTopLayer(element))
+      << "This method should only be called with an element in the top layer "
+         "candidate list which is rendered in the top layer";
   const HeapVector<Member<Element>>& top_layer_elements =
       element.GetDocument().TopLayerElements();
   wtf_size_t position = top_layer_elements.Find(&element);
@@ -357,8 +356,11 @@ LayoutObject* LayoutTreeBuilderTraversal::NextInTopLayer(
     // If top_layer_elements[i] is not a LayoutView child, its LayoutObject is
     // not re-attached and not in the top layer yet, thus we can not use it as a
     // sibling LayoutObject.
-    if (layout_object && IsA<LayoutView>(layout_object->Parent()))
+    if (layout_object &&
+        layout_object->StyleRef().TopLayer() == ETopLayer::kBrowser &&
+        IsA<LayoutView>(layout_object->Parent())) {
       return layout_object;
+    }
   }
   return nullptr;
 }

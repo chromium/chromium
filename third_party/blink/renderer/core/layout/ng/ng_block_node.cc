@@ -1780,8 +1780,7 @@ bool NGBlockNode::IsAtomicInlineLevel() const {
 }
 
 bool NGBlockNode::IsInTopLayer() const {
-  auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode());
-  return element && element->IsInTopLayer();
+  return GetLayoutBox()->IsInTopLayer();
 }
 
 bool NGBlockNode::HasAspectRatio() const {

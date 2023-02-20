@@ -1359,8 +1359,7 @@ Node* PaintLayer::EnclosingNode() const {
 }
 
 bool PaintLayer::IsInTopLayer() const {
-  auto* element = DynamicTo<Element>(GetLayoutObject().GetNode());
-  return element && element->IsInTopLayer();
+  return GetLayoutObject().StyleRef().TopLayer() == ETopLayer::kBrowser;
 }
 
 // Compute the z-offset of the point in the transformState.

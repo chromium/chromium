@@ -3193,7 +3193,7 @@ bool Element::SkipStyleRecalcForContainer(
   // preceding sibling of the originating element's box which means we will not
   // reach the box for ::backdrop during layout. Don't skip style recalc for
   // children of containers in the top layer for this reason.
-  if (IsInTopLayer()) {
+  if (style.IsInTopLayer(*this)) {
     return false;
   }
 
@@ -6515,7 +6515,7 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   // force-updating style on the locked subtree and reach this node. Note that
   // we already detached layout when this element was added to top-layer, so we
   // simply maintain the fact that it doesn't have a layout object/subtree.
-  if (IsInTopLayer() &&
+  if (style.IsInTopLayer(*this) &&
       DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
     return false;
   }
@@ -7030,9 +7030,6 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     DCHECK_EQ(this, GetDocument().documentElement());
     return !GetDocument().GetStyleEngine().ViewTransitionTags().empty();
   }
-  if (pseudo_id == kPseudoIdBackdrop && !IsInTopLayer()) {
-    return false;
-  }
   if (pseudo_id == kPseudoIdFirstLetter && IsSVGElement()) {
     return false;
   }
@@ -7252,11 +7249,22 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
   if (!isConnected()) {
     return;
   }
+
   if (!GetDocument().InStyleRecalc()) {
-    SetForceReattachLayoutTree();
-    // Needs a style recalc to update the ForcesStackingContext flag.
-    SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                               style_change_reason::kTopLayer));
+    if (in_top_layer) {
+      // Need to force re-attachment in case the element was removed and re-
+      // added between two lifecycle updates since the top-layer computed value
+      // would not change, but the layout object order may have.
+      SetForceReattachLayoutTree();
+    }
+
+    if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
+      // Needs a style recalc to update the top-layer property in
+      // StyleAdjuster.
+      SetNeedsStyleRecalc(
+          kLocalStyleChange,
+          StyleChangeReasonForTracing::Create(style_change_reason::kTopLayer));
+    }
   }
 }
 

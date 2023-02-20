@@ -188,9 +188,6 @@ bool ElementForcesStackingContext(Element* element) {
   if (element == element->GetDocument().documentElement()) {
     return true;
   }
-  if (element->IsInTopLayer()) {
-    return true;
-  }
   if (IsA<SVGForeignObjectElement>(*element)) {
     return true;
   }
@@ -273,15 +270,6 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
          IsAtMediaUAShadowBoundary(element) || builder.IsFloating() ||
          builder.HasOutOfFlowPosition() || IsOutermostSVGElement(element) ||
          IsA<HTMLRTElement>(element);
-}
-
-// FIXME: This helper is only needed because ResolveStyle passes a null
-// element to AdjustComputedStyle for pseudo-element styles, so we can't just
-// use element->isInTopLayer().
-static bool IsInTopLayer(const Element* element,
-                         const ComputedStyleBuilder& builder) {
-  return (element && element->IsInTopLayer()) ||
-         builder.StyleType() == kPseudoIdBackdrop;
 }
 
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
@@ -853,13 +841,21 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       AdjustStyleForSvgElement(*svg_element, builder);
     }
 
+    if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
+      if ((element && element->IsInTopLayer()) ||
+          builder.StyleType() == kPseudoIdBackdrop ||
+          builder.StyleType() == kPseudoIdViewTransition) {
+        builder.SetTopLayer(ETopLayer::kBrowser);
+      }
+    }
+
     bool is_document_element =
         element && element->GetDocument().documentElement() == element;
     // Per the spec, position 'static' and 'relative' in the top layer compute
     // to 'absolute'. Root elements that are in the top layer should just
     // be left alone because the fullscreen.css doesn't apply any style to
     // them.
-    if (IsInTopLayer(element, builder) && !is_document_element) {
+    if (builder.TopLayer() == ETopLayer::kBrowser && !is_document_element) {
       if (builder.GetPosition() == EPosition::kStatic ||
           builder.GetPosition() == EPosition::kRelative) {
         builder.SetPosition(EPosition::kAbsolute);
@@ -932,6 +928,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   }
 
   if (ElementForcesStackingContext(element)) {
+    builder.SetForcesStackingContext(true);
+  }
+
+  if (builder.TopLayer() == ETopLayer::kBrowser) {
     builder.SetForcesStackingContext(true);
   }
 
