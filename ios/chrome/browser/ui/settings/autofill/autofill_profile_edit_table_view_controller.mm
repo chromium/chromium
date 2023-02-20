@@ -406,8 +406,95 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ZIP);
 }
 
+// Removes the given section if it exists.
+- (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
+                   withRowAnimation:(UITableViewRowAnimation)animation {
+  TableViewModel* model = self.tableViewModel;
+  if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
+    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
+    [model removeSectionWithIdentifier:sectionIdentifier];
+    [[self tableView] deleteSections:[NSIndexSet indexSetWithIndex:section]
+                    withRowAnimation:animation];
+  }
+}
+
+// If the error status has changed, displays the footer accordingly.
+- (void)changeFooterStatusToRemoveSection:(SectionIdentifier)removeSection
+                               addSection:(SectionIdentifier)addSection {
+  TableViewModel* model = self.tableViewModel;
+  [self
+      performBatchTableViewUpdates:^{
+        [self removeSectionWithIdentifier:removeSection
+                         withRowAnimation:UITableViewRowAnimationTop];
+        NSUInteger fieldsSectionIndex =
+            [model sectionForSectionIdentifier:SectionIdentifierFields];
+        [model insertSectionWithIdentifier:addSection
+                                   atIndex:fieldsSectionIndex + 1];
+        [self.tableView
+              insertSections:[NSIndexSet
+                                 indexSetWithIndex:fieldsSectionIndex + 1]
+            withRowAnimation:UITableViewRowAnimationTop];
+        [self.tableViewModel setFooter:(([self.requiredFieldsWithEmptyValue
+                                                 count] > 0)
+                                            ? [self errorMessageItem]
+                                            : [self footerItem])
+              forSectionWithIdentifier:addSection];
+      }
+                        completion:nil];
+}
+
+// Updates the Done button status based on `self.requiredFieldsWithEmptyValue`
+// and shows/removes the error footer if required.
+- (void)updateDoneButtonStatus {
+  BOOL shouldShowError = ([self.requiredFieldsWithEmptyValue count] > 0);
+  self.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
+  if (shouldShowError != self.errorSectionPresented) {
+    SectionIdentifier addSection = shouldShowError
+                                       ? SectionIdentifierErrorFooter
+                                       : SectionIdentifierFooter;
+    SectionIdentifier removeSection = shouldShowError
+                                          ? SectionIdentifierFooter
+                                          : SectionIdentifierErrorFooter;
+    [self changeFooterStatusToRemoveSection:removeSection
+                                 addSection:addSection];
+    self.errorSectionPresented = shouldShowError;
+  } else if (shouldShowError && [self shouldChangeErrorMessage]) {
+    [self changeFooterStatusToRemoveSection:SectionIdentifierErrorFooter
+                                 addSection:SectionIdentifierErrorFooter];
+  }
+}
+
+// Returns YES, if the error message needs to be changed. This happens when
+// there are multiple required fields that become empty.
+- (BOOL)shouldChangeErrorMessage {
+  TableViewHeaderFooterItem* currentFooter = [self.tableViewModel
+      footerForSectionWithIdentifier:SectionIdentifierErrorFooter];
+  TableViewAttributedStringHeaderFooterItem* attributedFooterItem =
+      base::mac::ObjCCastStrict<TableViewAttributedStringHeaderFooterItem>(
+          currentFooter);
+  NSAttributedString* newFooter = [self errorAndFooterMessage];
+  return ![attributedFooterItem.attributedString
+      isEqualToAttributedString:newFooter];
+}
+
 // Returns the error message item as a footer.
 - (TableViewAttributedStringHeaderFooterItem*)errorMessageItem {
+  TableViewAttributedStringHeaderFooterItem* item =
+      [[TableViewAttributedStringHeaderFooterItem alloc]
+          initWithType:ItemTypeError];
+  [item setAttributedString:[self errorAndFooterMessage]];
+  return item;
+}
+
+// Returns the footer message.
+- (NSString*)footerMessage {
+  return l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+      base::SysNSStringToUTF16(_userEmail));
+}
+
+// Returns the error message combined with footer.
+- (NSAttributedString*)errorAndFooterMessage {
   DCHECK([self.requiredFieldsWithEmptyValue count] > 0);
   NSString* error = l10n_util::GetPluralNSStringF(
       IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR,
@@ -435,19 +522,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [attributedText addAttribute:NSForegroundColorAttributeName
                          value:[UIColor colorNamed:kRedColor]
                          range:NSMakeRange(0, error.length)];
-
-  TableViewAttributedStringHeaderFooterItem* item =
-      [[TableViewAttributedStringHeaderFooterItem alloc]
-          initWithType:ItemTypeError];
-  [item setAttributedString:attributedText];
-  return item;
-}
-
-// Returns the footer message.
-- (NSString*)footerMessage {
-  return l10n_util::GetNSStringF(
-      IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
-      base::SysNSStringToUTF16(_userEmail));
+  return attributedText;
 }
 
 // Creates and returns the `TableViewLinkHeaderFooterItem` footer item.
@@ -498,55 +573,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     item.editingAccessoryType = UITableViewCellAccessoryDisclosureIndicator;
   }
   return item;
-}
-
-// Removes the given section if it exists.
-- (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
-                   withRowAnimation:(UITableViewRowAnimation)animation {
-  TableViewModel* model = self.tableViewModel;
-  if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
-    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
-    [model removeSectionWithIdentifier:sectionIdentifier];
-    [[self tableView] deleteSections:[NSIndexSet indexSetWithIndex:section]
-                    withRowAnimation:animation];
-  }
-}
-
-// If the error status has changed, displays the footer accordingly.
-- (void)changeFooterStatusIfError:(BOOL)error {
-  TableViewModel* model = self.tableViewModel;
-  SectionIdentifier addSection =
-      error ? SectionIdentifierErrorFooter : SectionIdentifierFooter;
-  SectionIdentifier removeSection =
-      error ? SectionIdentifierFooter : SectionIdentifierErrorFooter;
-  [self
-      performBatchTableViewUpdates:^{
-        [self removeSectionWithIdentifier:removeSection
-                         withRowAnimation:UITableViewRowAnimationTop];
-        NSUInteger fieldsSectionIndex =
-            [model sectionForSectionIdentifier:SectionIdentifierFields];
-        [model insertSectionWithIdentifier:addSection
-                                   atIndex:fieldsSectionIndex + 1];
-        [self.tableView
-              insertSections:[NSIndexSet
-                                 indexSetWithIndex:fieldsSectionIndex + 1]
-            withRowAnimation:UITableViewRowAnimationTop];
-        [self.tableViewModel setFooter:(error ? [self errorMessageItem]
-                                              : [self footerItem])
-              forSectionWithIdentifier:addSection];
-      }
-                        completion:nil];
-}
-
-// Updates the Done button status based on `self.requiredFieldsWithEmptyValue`
-// and shows/removes the error footer if required.
-- (void)updateDoneButtonStatus {
-  BOOL shouldShowError = ([self.requiredFieldsWithEmptyValue count] > 0);
-  self.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
-  if (shouldShowError != self.errorSectionPresented) {
-    [self changeFooterStatusIfError:shouldShowError];
-    self.errorSectionPresented = shouldShowError;
-  }
 }
 
 @end
