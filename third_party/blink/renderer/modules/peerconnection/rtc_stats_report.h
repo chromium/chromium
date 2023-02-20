@@ -41,7 +41,14 @@ class RTCStatsReport final : public ScriptWrappable,
                    ExceptionState&) override;
 
  private:
+  bool GetMapEntryIdl(ScriptState*,
+                      const String& key,
+                      ScriptValue&,
+                      ExceptionState&);
+
   std::unique_ptr<RTCStatsReportPlatform> report_;
+  const bool use_web_idl_;
+  const bool unship_deprecated_stats_;
 };
 
 }  // namespace blink

@@ -1755,5 +1755,9 @@ const base::FeatureParam<int> kMaxFCPDelayMsForRenderBlockingFonts(
     "max-fcp-delay",
     100);
 
+BASE_FEATURE(kWebRtcStatsReportIdl,
+             "WebRtcStatsReportIdl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

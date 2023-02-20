@@ -52,7 +52,7 @@ TestStats::TestStats(const std::string& id, webrtc::Timestamp timestamp)
       foo_id("fooId"),
       hw_stat("hwStat") {}
 
-bool MemberIsDefined(const RTCStats& stats, const char* name) {
+bool MemberIsDefined(const RTCStatsWrapper& stats, const char* name) {
   for (size_t i = 0; i < stats.MembersCount(); ++i) {
     std::unique_ptr<RTCStatsMember> member = stats.GetMember(i);
     if (member->GetName() == name && member->IsDefined()) {
@@ -95,7 +95,7 @@ TEST(RTCStatsTest, Iterator) {
   RTCStatsReportPlatform report(webrtc_report.get(), {}, false);
   EXPECT_EQ(report.Size(), 2u);
 
-  std::unique_ptr<RTCStats> stats = report.Next();
+  std::unique_ptr<RTCStatsWrapper> stats = report.Next();
   EXPECT_TRUE(stats);
   EXPECT_EQ(stats->Id(), kFirstId);
   stats = report.Next();
@@ -115,7 +115,7 @@ TEST(RTCStatsTest, OnlyIncludeStandarizedMembers) {
   // TestStats has three members, but the non-standard member should be filtered
   // out.
   RTCStatsReportPlatform report(webrtc_report.get(), {}, false);
-  std::unique_ptr<RTCStats> stats = report.Next();
+  std::unique_ptr<RTCStatsWrapper> stats = report.Next();
   ASSERT_NE(nullptr, stats);
   ASSERT_EQ(3u, stats->MembersCount());
   EXPECT_EQ("standardized", stats->GetMember(0)->GetName());
@@ -134,7 +134,7 @@ TEST(RTCStatsTest, IncludeAllMembers) {
       Vector<webrtc::NonStandardGroupId>{
           webrtc::NonStandardGroupId::kGroupIdForTesting},
       false);
-  std::unique_ptr<RTCStats> stats = report.GetStats("id");
+  std::unique_ptr<RTCStatsWrapper> stats = report.GetStats("id");
   ASSERT_NE(nullptr, stats);
   ASSERT_EQ(4u, stats->MembersCount());
   EXPECT_EQ("standardized", stats->GetMember(0)->GetName());
@@ -158,7 +158,7 @@ TEST(RTCStatsTest, IncludeAllMembersFeatureFlag) {
       Vector<webrtc::NonStandardGroupId>{
           webrtc::NonStandardGroupId::kGroupIdForTesting},
       false);
-  std::unique_ptr<RTCStats> stats = report.GetStats("id");
+  std::unique_ptr<RTCStatsWrapper> stats = report.GetStats("id");
   ASSERT_NE(nullptr, stats);
   ASSERT_EQ(4u, stats->MembersCount());
   EXPECT_EQ("standardized", stats->GetMember(0)->GetName());
@@ -250,7 +250,7 @@ TEST(RTCStatsTest, FlagsControllingDeprecation) {
     RTCStatsReportPlatform report(
         webrtc_report.get(), {},
         /*is_track_stats_deprecation_trial_enabled=*/false);
-    std::unique_ptr<RTCStats> test_stats = report.GetStats("test");
+    std::unique_ptr<RTCStatsWrapper> test_stats = report.GetStats("test");
     EXPECT_FALSE(MemberIsDefined(*test_stats, "fooId"));
   }
   // Deprecated stats are accessible when disabling WebRtcUnshipDeprecatedStats.
@@ -260,7 +260,7 @@ TEST(RTCStatsTest, FlagsControllingDeprecation) {
     RTCStatsReportPlatform report(
         webrtc_report.get(), {},
         /*is_track_stats_deprecation_trial_enabled=*/false);
-    std::unique_ptr<RTCStats> test_stats = report.GetStats("test");
+    std::unique_ptr<RTCStatsWrapper> test_stats = report.GetStats("test");
     EXPECT_TRUE(MemberIsDefined(*test_stats, "fooId"));
   }
   // Deprecated stats are accessible when
@@ -269,7 +269,7 @@ TEST(RTCStatsTest, FlagsControllingDeprecation) {
     RTCStatsReportPlatform report(
         webrtc_report.get(), {},
         /*is_track_stats_deprecation_trial_enabled=*/true);
-    std::unique_ptr<RTCStats> test_stats = report.GetStats("test");
+    std::unique_ptr<RTCStatsWrapper> test_stats = report.GetStats("test");
     EXPECT_TRUE(MemberIsDefined(*test_stats, "fooId"));
   }
 }

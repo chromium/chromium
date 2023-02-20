@@ -956,7 +956,7 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
 
   int undefined_stats_count = 0;
   int defined_stats_count = 0;
-  for (std::unique_ptr<RTCStats> stats = result->Next(); stats;
+  for (std::unique_ptr<RTCStatsWrapper> stats = result->Next(); stats;
        stats = result->Next()) {
     EXPECT_EQ(stats->GetType().Utf8(), webrtc::RTCTestStats::kType);
     if (stats->Id().Utf8() == "RTCUndefinedStats") {

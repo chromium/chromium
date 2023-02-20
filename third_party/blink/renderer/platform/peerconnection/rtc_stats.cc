@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 
+#include <cstddef>
+#include <memory>
 #include <set>
 #include <string>
 
@@ -142,32 +144,41 @@ std::unique_ptr<RTCStatsReportPlatform> RTCStatsReportPlatform::CopyHandle()
       is_track_stats_deprecation_trial_enabled_);
 }
 
-std::unique_ptr<RTCStats> RTCStatsReportPlatform::GetStats(
+std::unique_ptr<RTCStatsWrapper> RTCStatsReportPlatform::GetStats(
     const String& id) const {
   const webrtc::RTCStats* stats = stats_report_->Get(id.Utf8());
   if (!stats || !ShouldExposeStatsObject(*stats, unship_deprecated_stats_))
-    return std::unique_ptr<RTCStats>();
-  return std::make_unique<RTCStats>(stats_report_, stats, exposed_group_ids_,
-                                    unship_deprecated_stats_);
+    return std::unique_ptr<RTCStatsWrapper>();
+  return std::make_unique<RTCStatsWrapper>(
+      stats_report_, stats, exposed_group_ids_, unship_deprecated_stats_);
 }
 
-std::unique_ptr<RTCStats> RTCStatsReportPlatform::Next() {
+std::unique_ptr<RTCStatsWrapper> RTCStatsReportPlatform::Next() {
   while (it_ != end_) {
     const webrtc::RTCStats& next = *it_;
     ++it_;
     if (ShouldExposeStatsObject(next, unship_deprecated_stats_)) {
-      return std::make_unique<RTCStats>(
+      return std::make_unique<RTCStatsWrapper>(
           stats_report_, &next, exposed_group_ids_, unship_deprecated_stats_);
     }
   }
-  return std::unique_ptr<RTCStats>();
+  return std::unique_ptr<RTCStatsWrapper>();
+}
+
+const webrtc::RTCStats* RTCStatsReportPlatform::NextStats() {
+  while (it_ != end_) {
+    const webrtc::RTCStats& stat = *it_;
+    ++it_;
+    return &stat;
+  }
+  return nullptr;
 }
 
 size_t RTCStatsReportPlatform::Size() const {
   return size_;
 }
 
-RTCStats::RTCStats(
+RTCStatsWrapper::RTCStatsWrapper(
     const scoped_refptr<const webrtc::RTCStatsReport>& stats_owner,
     const webrtc::RTCStats* stats,
     const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
@@ -182,28 +193,28 @@ RTCStats::RTCStats(
   DCHECK(stats_owner_->Get(stats_->id()));
 }
 
-RTCStats::~RTCStats() = default;
+RTCStatsWrapper::~RTCStatsWrapper() = default;
 
-String RTCStats::Id() const {
+String RTCStatsWrapper::Id() const {
   return String::FromUTF8(stats_->id());
 }
 
-String RTCStats::GetType() const {
+String RTCStatsWrapper::GetType() const {
   return String::FromUTF8(stats_->type());
 }
 
-double RTCStats::TimestampMs() const {
+double RTCStatsWrapper::TimestampMs() const {
   // The timestamp unit is milliseconds but we want decimal
   // precision so we convert ourselves.
   return stats_->timestamp().us() /
          static_cast<double>(base::Time::kMicrosecondsPerMillisecond);
 }
 
-size_t RTCStats::MembersCount() const {
+size_t RTCStatsWrapper::MembersCount() const {
   return stats_members_.size();
 }
 
-std::unique_ptr<RTCStatsMember> RTCStats::GetMember(size_t i) const {
+std::unique_ptr<RTCStatsMember> RTCStatsWrapper::GetMember(size_t i) const {
   DCHECK_LT(i, stats_members_.size());
   return std::make_unique<RTCStatsMember>(stats_owner_, stats_members_[i]);
 }
