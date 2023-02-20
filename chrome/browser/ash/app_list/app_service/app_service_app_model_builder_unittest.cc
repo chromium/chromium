@@ -76,14 +76,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 using crostini::CrostiniTestHelper;
-using display::test::ScopedScreenOverride;
 using extensions::AppSorting;
 using extensions::ExtensionSystem;
 using plugin_vm::PluginVmTestHelper;
@@ -194,11 +192,12 @@ void InitAppPosition(ChromeAppListItem* new_item) {
 class AppServiceAppModelBuilderTest : public AppListTestBase {
  public:
   AppServiceAppModelBuilderTest() {
-    scoped_screen_override_ =
-        std::make_unique<ScopedScreenOverride>(&test_screen_);
+    display::Screen::SetScreenInstance(&test_screen_);
   }
 
-  ~AppServiceAppModelBuilderTest() override {}
+  ~AppServiceAppModelBuilderTest() override {
+    display::Screen::SetScreenInstance(nullptr);
+  }
 
   AppServiceAppModelBuilderTest(const AppServiceAppModelBuilderTest&) = delete;
   AppServiceAppModelBuilderTest& operator=(
@@ -244,7 +243,6 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
   display::test::TestScreen test_screen_;
-  std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 };
 
 class BuiltInAppTest : public AppServiceAppModelBuilderTest {
