@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -131,7 +132,11 @@ public class WebEngineShellActivity extends AppCompatActivity {
         Tab activeTab = mTabManager.getActiveTab();
         ProgressBar progressBar = findViewById(R.id.progress_bar);
         EditText urlBar = findViewById(R.id.url_bar);
-        new TopBarObservers(new TopBarImpl(this, mTabManager, urlBar, progressBar), mTabManager);
+        Button tabCountButton = findViewById(R.id.tab_count);
+        Spinner tabListSpinner = findViewById(R.id.tab_list);
+        new TopBarObservers(new TopBarImpl(this, mTabManager, urlBar, progressBar, tabCountButton,
+                                    tabListSpinner),
+                mTabManager);
 
         mTabManager.registerTabListObserver(new DefaultObservers.DefaultTabListObserver());
         activeTab.getNavigationController().registerNavigationObserver(

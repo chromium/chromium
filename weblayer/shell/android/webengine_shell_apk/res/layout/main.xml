@@ -18,12 +18,30 @@ found in the LICENSE file.
         android:text="x.x.x"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/url_bar"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textUri"
-        android:selectAllOnFocus="true" />
+        android:weightSum="6">
+        <EditText
+            android:id="@+id/url_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:inputType="textUri"
+            android:selectAllOnFocus="true" />
+        <Button
+            android:id="@+id/tab_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+        <Spinner
+            android:id="@+id/tab_list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:spinnerMode="dialog"
+            android:visibility="invisible" />
+    </LinearLayout>
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
@@ -32,7 +50,6 @@ found in the LICENSE file.
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:progressBackgroundTint="#0fff"
         android:progressTint="#4285F4" />
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view"
         android:layout_width="match_parent"

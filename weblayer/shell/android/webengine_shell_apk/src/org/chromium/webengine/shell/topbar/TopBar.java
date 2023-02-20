@@ -14,5 +14,13 @@ public abstract class TopBar {
 
     public abstract void setProgress(double progress);
 
+    public abstract void addTabToList(Tab tab);
+
+    public abstract void removeTabFromList(Tab tab);
+
+    public abstract void setTabListSelection(Tab tab);
+
     public abstract boolean isTabActive(Tab tab);
+
+    public abstract int getTabsCount();
 }

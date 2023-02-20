@@ -62,15 +62,25 @@ public class TopBarObservers {
     class TopBarTabListObserver extends TabListObserver {
         @Override
         public void onActiveTabChanged(@Nullable Tab activeTab) {
+            if (activeTab == null) {
+                return;
+            }
             mTopBar.setUrlBar(activeTab.getDisplayUri().toString());
+            mTopBar.setTabListSelection(activeTab);
         }
 
         @Override
         public void onTabAdded(@NonNull Tab tab) {
+            mTopBar.addTabToList(tab);
             // Recursively add tab and navigation observers to any new tab.
             tab.registerTabObserver(new TopBarTabObserver(tab));
             tab.getNavigationController().registerNavigationObserver(
                     new TopBarNavigationObserver(tab));
+        }
+
+        @Override
+        public void onTabRemoved(@NonNull Tab tab) {
+            mTopBar.removeTabFromList(tab);
         }
     }
 }
