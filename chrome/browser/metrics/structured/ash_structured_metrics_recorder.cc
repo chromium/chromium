@@ -47,8 +47,8 @@ void AshStructuredMetricsRecorder::Initialize() {
 void AshStructuredMetricsRecorder::RecordEvent(Event&& event) {
   // It is OK not to check whether the remote is bound or not yet.
   std::vector<Event> events;
-  events.push_back(std::move(event));
-  remote_->Record(events);
+  events.emplace_back(std::move(event));
+  remote_->Record(std::move(events));
 }
 
 bool AshStructuredMetricsRecorder::IsReadyToRecord() const {

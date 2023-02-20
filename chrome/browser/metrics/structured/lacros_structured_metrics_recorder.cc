@@ -64,7 +64,7 @@ void LacrosStructuredMetricsRecorder::RecordEvent(Event&& event) {
     for (auto& observer : observers_)
       observer.OnFlush();
 
-    remote->Record(enqueued_events_);
+    remote->Record(std::move(enqueued_events_));
     enqueued_events_.clear();
   }
 
@@ -73,8 +73,8 @@ void LacrosStructuredMetricsRecorder::RecordEvent(Event&& event) {
     observer.OnRecord(event);
 
   std::vector<Event> events;
-  events.push_back(std::move(event));
-  remote->Record(events);
+  events.emplace_back(std::move(event));
+  remote->Record(std::move(events));
 }
 
 bool LacrosStructuredMetricsRecorder::IsReadyToRecord() const {

@@ -15,6 +15,7 @@ mojom("mojom") {
         {
           mojom = "metrics.structured.mojom.Event"
           cpp = "::metrics::structured::Event"
+          move_only = true
         },
       ]
       traits_headers = [ "event_mojom_traits.h" ]
