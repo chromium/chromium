@@ -31,6 +31,9 @@ class IOSChromePasswordCheckManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects from all observers. Must be called before destroying.
+- (void)disconnect;
+
 @property(nonatomic, weak) id<PasswordIssuesConsumer> consumer;
 
 // Deletes password from the password store.

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -29,7 +30,7 @@
 @interface PasswordIssuesCoordinator () <PasswordDetailsCoordinatorDelegate,
                                          PasswordIssuesPresenter> {
   // Password check manager to power mediator.
-  IOSChromePasswordCheckManager* _manager;
+  raw_ptr<IOSChromePasswordCheckManager> _manager;
 }
 
 // Main view controller for this coordinator.
@@ -100,6 +101,7 @@
 }
 
 - (void)stop {
+  [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
 

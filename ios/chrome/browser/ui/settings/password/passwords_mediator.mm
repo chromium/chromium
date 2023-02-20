@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
@@ -57,9 +58,9 @@ bool IsPasswordCheckupEnabled() {
   scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
 
   // Service to check if passwords are synced.
-  SyncSetupService* _syncSetupService;
+  raw_ptr<SyncSetupService> _syncSetupService;
 
-  password_manager::SavedPasswordsPresenter* _savedPasswordsPresenter;
+  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 
   // A helper object for passing data about changes in password check status
   // and changes to compromised credentials list.
@@ -77,22 +78,22 @@ bool IsPasswordCheckupEnabled() {
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
 
-  // Sync observer
+  // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
+
+  // Object storing the time of the previous successful re-authentication.
+  // This is meant to be used by the `ReauthenticationModule` for keeping
+  // re-authentications valid for a certain time interval within the scope
+  // of the Passwords Screen.
+  __strong NSDate* _successfulReauthTime;
+
+  // FaviconLoader is a keyed service that uses LargeIconService to retrieve
+  // favicon images.
+  raw_ptr<FaviconLoader> _faviconLoader;
+
+  // Service to know whether passwords are synced.
+  raw_ptr<syncer::SyncService> _syncService;
 }
-
-// Object storing the time of the previous successful re-authentication.
-// This is meant to be used by the `ReauthenticationModule` for keeping
-// re-authentications valid for a certain time interval within the scope
-// of the Passwords Screen.
-@property(nonatomic, strong, readonly) NSDate* successfulReauthTime;
-
-// FaviconLoader is a keyed service that uses LargeIconService to retrieve
-// favicon images.
-@property(nonatomic, assign) FaviconLoader* faviconLoader;
-
-// Service to know whether passwords are synced.
-@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
@@ -131,16 +132,6 @@ bool IsPasswordCheckupEnabled() {
   return self;
 }
 
-- (void)dealloc {
-  if (_passwordsPresenterObserver) {
-    _savedPasswordsPresenter->RemoveObserver(_passwordsPresenterObserver.get());
-  }
-  if (_passwordCheckObserver) {
-    _passwordCheckManager->RemoveObserver(_passwordCheckObserver.get());
-  }
-  [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
-}
-
 - (void)setConsumer:(id<PasswordsConsumer>)consumer {
   if (_consumer == consumer)
     return;
@@ -160,6 +151,14 @@ bool IsPasswordCheckupEnabled() {
 - (void)disconnect {
   _identityManagerObserver.reset();
   _syncObserver.reset();
+  _passwordsPresenterObserver.reset();
+  _passwordCheckObserver.reset();
+  [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
+
+  _passwordCheckManager.reset();
+  _syncSetupService = nullptr;
+  _savedPasswordsPresenter = nullptr;
+  _faviconLoader = nullptr;
   _syncService = nullptr;
 }
 
@@ -444,17 +443,17 @@ bool IsPasswordCheckupEnabled() {
 }
 
 - (NSDate*)lastSuccessfulReauthTime {
-  return [self successfulReauthTime];
+  return _successfulReauthTime;
 }
 
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
-  syncer::SyncService* syncService = self.syncService;
   BOOL isPasswordSyncEnabled =
-      password_manager_util::IsPasswordSyncNormalEncryptionEnabled(syncService);
-  self.faviconLoader->FaviconForPageUrl(
+      password_manager_util::IsPasswordSyncNormalEncryptionEnabled(
+          _syncService);
+  _faviconLoader->FaviconForPageUrl(
       URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/isPasswordSyncEnabled, completion);
 }

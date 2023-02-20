@@ -4,7 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 
+#import <memory>
+#import <utility>
+#import <vector>
+
 #import "base/containers/contains.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -33,7 +38,7 @@ using base::SysNSStringToUTF16;
     PasswordCheckObserver,
     PasswordDetailsTableViewControllerDelegate> {
   // Password Check manager.
-  IOSChromePasswordCheckManager* _manager;
+  raw_ptr<IOSChromePasswordCheckManager> _manager;
 
   // Listens to compromised passwords changes.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
@@ -62,8 +67,8 @@ using base::SysNSStringToUTF16;
     _manager = manager;
     _credentials = credentials;
     _displayName = displayName;
-    _passwordCheckObserver.reset(
-        new PasswordCheckObserverBridge(self, manager));
+    _passwordCheckObserver =
+        std::make_unique<PasswordCheckObserverBridge>(self, manager);
     DCHECK(!_credentials.empty());
 
     // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
@@ -107,7 +112,7 @@ using base::SysNSStringToUTF16;
     return;
   _consumer = consumer;
 
-  [self fetchPasswordWith:_manager->GetInsecureCredentials()];
+  [self providePasswordsToConsumer];
 
   if (_credentials[0].blocked_by_user) {
     DCHECK_EQ(_credentials.size(), 1u);
@@ -116,7 +121,8 @@ using base::SysNSStringToUTF16;
 }
 
 - (void)disconnect {
-  _manager->RemoveObserver(_passwordCheckObserver.get());
+  _passwordCheckObserver.reset();
+  _manager = nullptr;
 }
 
 - (void)removeCredential:
@@ -199,7 +205,7 @@ using base::SysNSStringToUTF16;
 }
 
 - (void)didFinishEditingPasswordDetails {
-  [self fetchPasswordWith:_manager->GetInsecureCredentials()];
+  [self providePasswordsToConsumer];
 }
 
 - (void)passwordDetailsViewController:
@@ -248,16 +254,16 @@ using base::SysNSStringToUTF16;
 }
 
 - (void)insecureCredentialsDidChange {
-  [self fetchPasswordWith:_manager->GetInsecureCredentials()];
+  [self providePasswordsToConsumer];
 }
 
 #pragma mark - Private
 
-// Updates password details and sets it to a consumer.
-- (void)fetchPasswordWith:
-    (const std::vector<password_manager::CredentialUIEntry>&)
-        insecureCredentials {
+// Pushes password details to the consumer.
+- (void)providePasswordsToConsumer {
   NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
+  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
+      _manager->GetInsecureCredentials();
   for (password_manager::CredentialUIEntry credential : _credentials) {
     PasswordDetails* password =
         [[PasswordDetails alloc] initWithCredential:credential];
