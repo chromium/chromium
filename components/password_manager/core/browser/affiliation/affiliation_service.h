@@ -23,7 +23,15 @@ namespace password_manager {
 class AffiliationService : public KeyedService {
  public:
   // Controls whether to send a network request or fail on a cache miss.
-  enum class StrategyOnCacheMiss { FETCH_OVER_NETWORK, FAIL };
+  enum class StrategyOnCacheMiss {
+    // Affiliation service will keep trying to send request with exponential
+    // backlog.
+    FETCH_OVER_NETWORK,
+    // Request will fail immediately.
+    FAIL,
+    // After first request failure affiliation service will stop trying.
+    TRY_ONCE_OVER_NETWORK
+  };
 
   using ResultCallback =
       base::OnceCallback<void(const AffiliatedFacets& /* results */,
@@ -103,6 +111,13 @@ class AffiliationService : public KeyedService {
   // considered as PSL match.
   virtual void GetPSLExtensions(
       base::OnceCallback<void(std::vector<std::string>)> callback) const = 0;
+
+  // This method will fetch the latest affiliation and branding information for
+  // |facets| even if local cache is still fresh. |callback| is invoked on
+  // completion.
+  virtual void UpdateAffiliationsAndBranding(
+      const std::vector<FacetURI>& facets,
+      base::OnceClosure callback) = 0;
 };
 
 }  // namespace password_manager

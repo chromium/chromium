@@ -90,6 +90,10 @@ void AffiliationFetchThrottler::InformOfNetworkRequestComplete(bool success) {
   exponential_backoff_->InformOfRequest(success);
 }
 
+bool AffiliationFetchThrottler::HasInternetConnection() const {
+  return !network_connection_tracker_->IsOffline();
+}
+
 void AffiliationFetchThrottler::EnsureCallbackIsScheduled() {
   DCHECK_EQ(state_, FETCH_NEEDED);
   DCHECK(has_network_connectivity_);

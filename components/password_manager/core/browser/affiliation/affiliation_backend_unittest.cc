@@ -10,9 +10,11 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -22,6 +24,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_database.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetch_throttler.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetch_throttler_delegate.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/facet_manager.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_api.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_consumer.h"
@@ -61,8 +64,7 @@ class MockAffiliationFetchThrottler : public AffiliationFetchThrottler {
             delegate,
             nullptr,
             network::TestNetworkConnectionTracker::GetInstance(),
-            nullptr),
-        signaled_network_request_needed_(false) {
+            nullptr) {
     EXPECT_CALL(*this, OnInformOfNetworkRequestComplete(testing::_)).Times(0);
   }
 
@@ -104,6 +106,10 @@ class MockAffiliationFetchThrottler : public AffiliationFetchThrottler {
     signaled_network_request_needed_ = false;
   }
 
+  void SetInternetConnectivity(bool has_connection) {
+    has_network_connectivity_ = has_connection;
+  }
+
  private:
   MOCK_METHOD1(OnInformOfNetworkRequestComplete, void(bool));
 
@@ -112,12 +118,17 @@ class MockAffiliationFetchThrottler : public AffiliationFetchThrottler {
     signaled_network_request_needed_ = true;
   }
 
+  bool HasInternetConnection() const override {
+    return has_network_connectivity_;
+  }
+
   void InformOfNetworkRequestComplete(bool success) override {
     OnInformOfNetworkRequestComplete(success);
     reset_signaled_network_request_needed();
   }
 
-  bool signaled_network_request_needed_;
+  bool signaled_network_request_needed_ = false;
+  bool has_network_connectivity_ = true;
 };
 
 const char kTestFacetURIAlpha1[] = "https://one.alpha.example.com";
@@ -1005,6 +1016,79 @@ TEST_P(AffiliationBackendTest, SingleGroupForAffiliatedFacets) {
   } else {
     EXPECT_EQ(0u, backend()->GetAllGroups().size());
   }
+}
+
+TEST_P(AffiliationBackendTest, UpdateAffiliationsAndBrandingClearsOldCache) {
+  mock_fetch_throttler()->SetInternetConnectivity(/*has_connection=*/true);
+  ASSERT_NO_FATAL_FAILURE(PrefetchAndExpectFetch(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1), base::Time::Max()));
+  ASSERT_NO_FATAL_FAILURE(PrefetchAndExpectFetch(
+      FacetURI::FromCanonicalSpec(kTestFacetURIBeta1), base::Time::Max()));
+  EXPECT_EQ(2u, GetNumOfEquivalenceClassInDatabase());
+
+  backend()->UpdateAffiliationsAndBranding(
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
+       FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)},
+      base::DoNothing());
+  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+}
+
+TEST_P(AffiliationBackendTest, UpdateAffiliationsAndBrandingSuccess) {
+  mock_fetch_throttler()->SetInternetConnectivity(/*has_connection=*/true);
+  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+
+  std::vector<FacetURI> facets = {
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
+      FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)};
+
+  base::MockOnceClosure completion_callback;
+
+  backend()->UpdateAffiliationsAndBranding(facets, completion_callback.Get());
+  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(facets));
+
+  // Expect completion callback.
+  EXPECT_CALL(completion_callback, Run);
+  backend_task_runner()->RunUntilIdle();
+
+  EXPECT_GE(2u, backend_facet_manager_count());
+  EXPECT_EQ(2u, GetNumOfEquivalenceClassInDatabase());
+}
+
+TEST_P(AffiliationBackendTest, UpdateAffiliationsAndBrandingFailure) {
+  mock_fetch_throttler()->SetInternetConnectivity(/*has_connection=*/true);
+  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+
+  FacetURI facet = FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1);
+  base::MockOnceClosure completion_callback;
+
+  backend()->UpdateAffiliationsAndBranding({facet}, completion_callback.Get());
+  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  ASSERT_NO_FATAL_FAILURE(ExpectAndFailFetch(facet));
+
+  // Still expect completion callback.
+  EXPECT_CALL(completion_callback, Run);
+  backend_task_runner()->RunUntilIdle();
+
+  EXPECT_GE(1u, backend_facet_manager_count());
+  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+}
+
+TEST_P(AffiliationBackendTest, UpdateAffiliationsAndBrandingFailsIfNoInternet) {
+  mock_fetch_throttler()->SetInternetConnectivity(/*has_connection=*/false);
+  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+
+  FacetURI facet = FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1);
+  base::MockOnceClosure completion_callback;
+
+  // Expect call to completion callback right away.
+  EXPECT_CALL(completion_callback, Run);
+  backend()->UpdateAffiliationsAndBranding({facet}, completion_callback.Get());
+  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
+  ASSERT_FALSE(mock_fetch_throttler()->has_signaled_network_request_needed());
+
+  EXPECT_GE(0u, backend_facet_manager_count());
+  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
 }
 
 INSTANTIATE_TEST_SUITE_P(, AffiliationBackendTest, testing::Bool());

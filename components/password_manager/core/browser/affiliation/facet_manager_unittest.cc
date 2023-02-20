@@ -1537,4 +1537,32 @@ TEST_F(FacetManagerTest, CachedDataBeCanDiscardedAfterCancelledPrefetch) {
   EXPECT_TRUE(facet_manager()->CanCachedDataBeDiscarded());
 }
 
+TEST_F(FacetManagerTest, GetAffiliationsAndBrandingOnceOverNetworkSuccess) {
+  CreateFacetManager();
+  EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
+
+  GetAffiliationsAndBranding(StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK);
+  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
+  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
+  ASSERT_NO_FATAL_FAILURE(CompleteFetch());
+  ExpectConsumerSuccessCallback();
+}
+
+TEST_F(FacetManagerTest, GetAffiliationsAndBrandingOnceOverNetworkFailure) {
+  CreateFacetManager();
+  EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
+
+  GetAffiliationsAndBranding(StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK);
+  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
+  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
+
+  // Simulate failure.
+  fake_facet_manager_host()->reset_need_network_request();
+  facet_manager()->OnFetchFailed();
+  main_task_runner()->RunUntilIdle();
+  ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
+
+  ExpectConsumerFailureCallback();
+}
+
 }  // namespace password_manager

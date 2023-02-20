@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,6 +28,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
+
+namespace {
+
+void IgnoreResult(base::OnceClosure callback, const AffiliatedFacets&, bool) {
+  std::move(callback).Run();
+}
+
+}  // namespace
 
 AffiliationBackend::AffiliationBackend(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -162,11 +172,40 @@ void AffiliationBackend::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
 }
 
 std::vector<GroupedFacets> AffiliationBackend::GetAllGroups() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cache_->GetAllGroups();
 }
 
 std::vector<std::string> AffiliationBackend::GetPSLExtensions() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cache_->GetPSLExtensions();
+}
+
+void AffiliationBackend::UpdateAffiliationsAndBranding(
+    const std::vector<FacetURI>& facets,
+    base::OnceClosure callback) {
+  TRACE_EVENT0("passwords",
+               "AffiliationBackend::UpdateAffiliationsAndBranding");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If there is no internet connection we can't do anything. Fail immediately.
+  if (!throttler_->HasInternetConnection()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  base::RepeatingClosure pending_fetch_calls =
+      base::BarrierClosure(facets.size(), std::move(callback));
+
+  for (const auto& facet_uri : facets) {
+    // Clear local cache for |facet_uri|.
+    cache_->DeleteAffiliationsAndBrandingForFacetURI(facet_uri);
+    FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
+    DCHECK(facet_manager);
+    facet_manager->GetAffiliationsAndBranding(
+        StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK,
+        base::BindOnce(&IgnoreResult, pending_fetch_calls), task_runner_);
+  }
 }
 
 // static
@@ -314,6 +353,8 @@ void AffiliationBackend::OnFetchFailed(AffiliationFetcherInterface* fetcher) {
 
   // Trigger a retry if a fetch is still needed.
   for (const auto& facet_manager_pair : facet_managers_) {
+    // Notify all fetchers about failure to finish single attempt fetches.
+    facet_manager_pair.second->OnFetchFailed();
     if (facet_manager_pair.second->DoesRequireFetch()) {
       throttler_->SignalNetworkRequestNeeded();
       return;
