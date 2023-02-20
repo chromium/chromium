@@ -1541,7 +1541,7 @@ class CORE_EXPORT Document : public ContainerNode,
     return top_layer_elements_;
   }
   void ScheduleForTopLayerRemoval(Element*);
-  bool RemoveFinishedTopLayerElements();
+  void RemoveFinishedTopLayerElements();
 
   HTMLDialogElement* ActiveModalDialog() const;
 
@@ -1938,8 +1938,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   void ResetAgent(Agent& agent);
-
-  bool PendingTopLayerUpdate() const { return pending_top_layer_update_; }
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
@@ -2579,11 +2577,6 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<RenderBlockingResourceManager> render_blocking_resource_manager_;
 
   bool rendering_has_begun_ = false;
-
-  // Set to true if we are in awaiting an UpdateStyleAndLayoutTree() that is
-  // after removing an element from the top layer. Only used for sanity checking
-  // pending animation updates in StyleForLayoutObject().
-  bool pending_top_layer_update_ = false;
 
   DeclarativeShadowRootAllowState declarative_shadow_root_allow_state_ =
       DeclarativeShadowRootAllowState::kNotSet;

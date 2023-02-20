@@ -43,12 +43,12 @@ PostStyleUpdateScope::~PostStyleUpdateScope() {
 }
 
 bool PostStyleUpdateScope::Apply() {
-  bool pseudo_needs_update = ApplyPseudo();
-  if (document_.RemoveFinishedTopLayerElements() || pseudo_needs_update) {
+  if (ApplyPseudo()) {
     return true;
   }
   ApplyAnimations();
   document_.ClearFocusedElementIfNeeded();
+  document_.RemoveFinishedTopLayerElements();
   return false;
 }
 
