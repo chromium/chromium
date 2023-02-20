@@ -102,9 +102,11 @@ class PPB_Graphics3D_Impl::ColorBuffer {
     // don't support overlays for legacy mailboxes. To avoid any problems with
     // overlays, we don't introduce them here.
     mailbox_ = sii_->CreateSharedImage(
-        has_alpha ? viz::RGBA_8888 : viz::RGBX_8888, shared_image_size,
-        gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-        kUnpremul_SkAlphaType, usage, gpu::SurfaceHandle());
+        has_alpha ? viz::SinglePlaneFormat::kRGBA_8888
+                  : viz::SinglePlaneFormat::kRGBX_8888,
+        shared_image_size, gfx::ColorSpace::CreateSRGB(),
+        kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage,
+        gpu::SurfaceHandle());
 
     sync_token_ = sii_->GenVerifiedSyncToken();
   }

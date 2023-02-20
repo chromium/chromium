@@ -652,8 +652,9 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
     const bool texture_can_be_bgra =
         main_thread_context_->ContextCapabilities().texture_format_bgra8888;
     const bool upload_bgra = bitmap_is_bgra && texture_can_be_bgra;
-    const viz::ResourceFormat format =
-        upload_bgra ? viz::BGRA_8888 : viz::RGBA_8888;
+    const viz::SharedImageFormat format =
+        upload_bgra ? viz::SinglePlaneFormat::kBGRA_8888
+                    : viz::SinglePlaneFormat::kRGBA_8888;
 
     bool overlays_supported =
         enable_gpu_memory_buffer_ && main_thread_context_->ContextCapabilities()
@@ -661,7 +662,8 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
     uint32_t texture_target = GL_TEXTURE_2D;
     if (overlays_supported) {
       texture_target = gpu::GetBufferTextureTarget(
-          gfx::BufferUsage::SCANOUT, viz::BufferFormat(format),
+          gfx::BufferUsage::SCANOUT,
+          viz::BufferFormat(format.resource_format()),
           main_thread_context_->ContextCapabilities());
     }
 
@@ -705,10 +707,9 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       src = swizzled.get();
     }
 
-    SkImageInfo src_info =
-        SkImageInfo::Make(size.width(), size.height(),
-                          viz::ResourceFormatToClosestSkColorType(true, format),
-                          kUnknown_SkAlphaType);
+    SkImageInfo src_info = SkImageInfo::Make(
+        size.width(), size.height(), viz::ToClosestSkColorType(true, format),
+        kUnknown_SkAlphaType);
     ri->WaitSyncTokenCHROMIUM(in_sync_token.GetConstData());
     ri->WritePixels(gpu_mailbox, 0, 0, texture_target, src_info.minRowBytes(),
                     src_info, src);

@@ -202,7 +202,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
       }
 
       gpu::Mailbox mailbox = sii->CreateSharedImage(
-          viz::ResourceFormat::RGBA_8888,
+          viz::SinglePlaneFormat::kRGBA_8888,
           gfx::Size(kDummyFrameCodedSize.width(),
                     kDummyFrameCodedSize.height()),
           gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
