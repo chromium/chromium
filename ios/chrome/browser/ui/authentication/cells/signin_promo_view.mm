@@ -258,7 +258,7 @@ constexpr CGFloat kNonProfileImageHeightWidth = 56.0;
   DCHECK_EQ(kNonProfileImageHeightWidth, image.size.height);
   DCHECK_EQ(kNonProfileImageHeightWidth, image.size.width);
   self.imageView.image = image;
-  self.imageView.backgroundColor = [UIColor colorNamed:kSolidPrimaryColor];
+  self.imageView.backgroundColor = [UIColor colorNamed:kSolidWhiteColor];
   self.imageView.layer.cornerRadius = kNonProfileIconCornerRadius;
 }
 
