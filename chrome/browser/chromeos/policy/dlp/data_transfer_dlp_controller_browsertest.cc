@@ -346,13 +346,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   FlushMessageLoop();
 }
 
-// Failing on Lacros: http://crbug.com/1380180
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_WarnDestination DISABLED_WarnDestination
-#else
-#define MAYBE_WarnDestination WarnDestination
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
+// TODO(https://issuetracker.google.com/issues/260517406) flaky test
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, DISABLED_WarnDestination) {
   base::WeakPtr<views::Widget> widget;
 
   {  // Do not remove the brackets, policy update is triggered on
@@ -494,13 +489,9 @@ class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<FakeDlpController> dlp_controller_;
 };
 
-// Failing on Lacros: http://crbug.com/1380180
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ProceedOnWarn DISABLED_ProceedOnWarn
-#else
-#define MAYBE_ProceedOnWarn ProceedOnWarn
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
+// TODO(https://issuetracker.google.com/issues/260517406) flaky test
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
+                       DISABLED_ProceedOnWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -569,13 +560,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
   EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
-// Failing on Lacros: http://crbug.com/1380180
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CancelWarn DISABLED_CancelWarn
-#else
-#define MAYBE_CancelWarn CancelWarn
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
+// TODO(https://issuetracker.google.com/issues/260517406) flaky test
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_CancelWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -639,14 +625,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
   EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
-// Failing on Lacros: http://crbug.com/1380180
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShouldProceedWarn DISABLED_ShouldProceedWarn
-#else
-#define MAYBE_ShouldProceedWarn ShouldProceedWarn
-#endif
+// TODO(https://issuetracker.google.com/issues/260517406) flaky test
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
-                       MAYBE_ShouldProceedWarn) {
+                       DISABLED_ShouldProceedWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -701,13 +682,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
 }
 
 // Test case for crbug.com/1213143
-// Failing on Lacros: http://crbug.com/1380180
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Reporting DISABLED_Reporting
-#else
-#define MAYBE_Reporting Reporting
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
+// TODO(https://issuetracker.google.com/issues/260517406) flaky test
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_Reporting) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(embedded_test_server()->Start());
