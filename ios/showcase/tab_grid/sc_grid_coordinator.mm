@@ -72,7 +72,8 @@
   completion(nil);
 }
 
-- (void)preloadSnapshotsForVisibleGridSize:(int)gridSize {
+- (void)preloadSnapshotsForVisibleGridItems:
+    (NSSet<NSString*>*)visibleGridItems {
   // No-op here.
 }
 

@@ -1005,16 +1005,24 @@ void RecordTabGridCloseTabsCount(int count) {
   }
 }
 
-- (void)preloadSnapshotsForVisibleGridSize:(int)gridSize {
-  int startIndex = std::max(self.webStateList->active_index() - gridSize, 0);
-  int endIndex = std::min(self.webStateList->active_index() + gridSize,
-                          self.webStateList->count() - 1);
+- (void)preloadSnapshotsForVisibleGridItems:
+    (NSSet<NSString*>*)visibleGridItems {
+  int startIndex = self.webStateList->GetIndexOfFirstNonPinnedWebState();
+  int endIndex = self.webStateList->count() - 1;
+
   for (int i = startIndex; i <= endIndex; i++) {
     web::WebState* web_state = self.webStateList->GetWebStateAt(i);
     NSString* identifier = web_state->GetStableIdentifier();
+
+    BOOL isWebStateHidden = ![visibleGridItems containsObject:identifier];
+    if (isWebStateHidden) {
+      continue;
+    }
+
     auto cacheImage = ^(UIImage* image) {
       self.appearanceCache[identifier] = image;
     };
+
     [self snapshotForIdentifier:identifier completion:cacheImage];
   }
 }
