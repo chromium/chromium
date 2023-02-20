@@ -62,13 +62,10 @@ class PasswordsGrouper {
   using UsernamePasswordKey =
       base::StrongAlias<class UsernamePasswordKeyTag, std::string>;
 
-  // Returns a map of facet URI to group id. Create missing group id with
-  // password's sign-on realm that are not present in the grouped facets
-  // received. Store branding information for the affiliated group by updating
-  // the password grouping info parameter.
+  // Returns a map of facet URI to group id. Stores branding information for the
+  // affiliated group by updating |map_group_id_to_branding_info|.
   std::map<std::string, GroupId> MapFacetsToGroupId(
-      const std::vector<GroupedFacets>& groups,
-      const std::vector<std::string>& signon_realms);
+      const std::vector<GroupedFacets>& groups);
 
   void GroupPasswordsImpl(const std::multimap<std::string, PasswordForm>&
                               sort_key_to_password_forms,

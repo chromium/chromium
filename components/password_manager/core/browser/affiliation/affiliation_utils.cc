@@ -177,9 +177,12 @@ bool ParseAndCanonicalizeFacetURI(const std::string& input_uri,
   base::StringPiece scheme = ComponentString(input_uri, input_parsed.scheme);
   if (base::EqualsCaseInsensitiveASCII(scheme, url::kHttpsScheme)) {
     return CanonicalizeWebFacetURI(input_uri, input_parsed, canonical_uri);
-  } else if (base::EqualsCaseInsensitiveASCII(scheme, kAndroidAppScheme)) {
+  }
+  if (base::EqualsCaseInsensitiveASCII(scheme, kAndroidAppScheme)) {
     return CanonicalizeAndroidFacetURI(input_uri, input_parsed, canonical_uri);
   }
+
+  *canonical_uri = input_uri;
   return false;
 }
 

@@ -23,11 +23,14 @@ namespace {
 
 std::string GetSignonRealm(const PasswordForm& form) {
   if (form.IsFederatedCredential()) {
-    return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
-               url::Origin::Create(form.url),
-               url_formatter::SchemeDisplay::SHOW)) +
-           '/';
+    return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+        form.url, url_formatter::SchemeDisplay::SHOW));
   }
+  // Remove trailing '/' because facets don't have it.
+  if (base::EndsWith(form.signon_realm, "/")) {
+    return form.signon_realm.substr(0, form.signon_realm.size() - 1);
+  }
+
   return form.signon_realm;
 }
 
@@ -159,6 +162,41 @@ std::vector<GroupedFacets> MergeRelatedGroups(
   return result;
 }
 
+// Inserts a new group for each |signon_realms| which is missing in |groups|
+std::vector<GroupedFacets> InsertMissingFacets(
+    const std::vector<std::string>& signon_realms,
+    const std::vector<GroupedFacets>& groups) {
+  std::vector<GroupedFacets> groups_copy = groups;
+  std::map<std::string, size_t> facet_to_group_id;
+  for (size_t i = 0; i < groups_copy.size(); i++) {
+    for (const auto& facet : groups_copy[i].facets) {
+      facet_to_group_id[facet.uri.potentially_invalid_spec()] = i;
+    }
+  }
+  for (const auto& signon_realm : signon_realms) {
+    if (facet_to_group_id.contains(signon_realm)) {
+      continue;
+    }
+
+    facet_to_group_id[signon_realm] = groups_copy.size();
+    GroupedFacets new_group;
+    new_group.facets.emplace_back(
+        FacetURI::FromPotentiallyInvalidSpec(signon_realm));
+    groups_copy.push_back(std::move(new_group));
+  }
+  return groups_copy;
+}
+
+std::vector<std::string> ExtractSignonRealms(
+    const std::multimap<std::string, PasswordForm>&
+        sort_key_to_password_forms) {
+  std::vector<std::string> result;
+  for (const auto& element : sort_key_to_password_forms) {
+    result.push_back(GetSignonRealm(element.second));
+  }
+  return result;
+}
+
 FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     const CredentialUIEntry& credential) {
   FacetBrandingInfo branding_info;
@@ -193,10 +231,14 @@ void PasswordsGrouper::GroupPasswords(
       &PasswordsGrouper::GroupPasswordsImpl, weak_ptr_factory_.GetWeakPtr(),
       sort_key_to_password_forms);
 
-  // Before grouping passwords merge related groups. After grouping is finished
-  // invoke |callback|.
+  auto merge_callback = base::BindOnce(&MergeRelatedGroups, psl_extensions_);
+
+  // Before grouping passwords insert a separate groups for missing signon_realm
+  // and merge related groups. After grouping is finished invoke |callback|.
   affiliation_service_->GetAllGroups(
-      base::BindOnce(&MergeRelatedGroups, psl_extensions_)
+      base::BindOnce(&InsertMissingFacets,
+                     ExtractSignonRealms(sort_key_to_password_forms))
+          .Then(std::move(merge_callback))
           .Then(std::move(groups_callback))
           .Then(std::move(callback)));
 }
@@ -307,21 +349,17 @@ void PasswordsGrouper::GroupPasswordsImpl(
     const std::vector<GroupedFacets>& groups) {
   ClearCache();
 
-  // Extract all sign-on realms.
-  std::vector<std::string> signon_realms;
   for (auto const& element : sort_key_to_password_forms) {
     const PasswordForm& form = element.second;
     // Do not group blocked websites.
     if (form.blocked_by_user) {
       blocked_sites.emplace_back(form);
-    } else {
-      signon_realms.push_back(GetSignonRealm(form));
     }
   }
 
   // Construct map to keep track of facet URI to group id mapping.
   std::map<std::string, GroupId> map_facet_to_group_id =
-      MapFacetsToGroupId(groups, signon_realms);
+      MapFacetsToGroupId(groups);
 
   // Construct a map to keep track of group id to a map of credential groups
   // to password form.
@@ -334,20 +372,20 @@ void PasswordsGrouper::GroupPasswordsImpl(
     }
     std::string signon_realm = GetSignonRealm(form);
 
+    DCHECK(map_facet_to_group_id.contains(signon_realm));
     GroupId group_id = map_facet_to_group_id[signon_realm];
 
     UsernamePasswordKey key(CreateUsernamePasswordSortKey(form));
     map_group_id_to_forms[group_id][key].push_back(std::move(form));
 
-    // Store group id for sign-on realm.
-    map_signon_realm_to_group_id[SignonRealm(signon_realm)] = group_id;
+    // Store group id for sign-on realm. Append "/" because
+    // PasswordForm::signon_realms should always has trailing '/'.
+    map_signon_realm_to_group_id[SignonRealm(signon_realm + "/")] = group_id;
   }
 }
 
 std::map<std::string, PasswordsGrouper::GroupId>
-PasswordsGrouper::MapFacetsToGroupId(
-    const std::vector<GroupedFacets>& groups,
-    const std::vector<std::string>& signon_realms) {
+PasswordsGrouper::MapFacetsToGroupId(const std::vector<GroupedFacets>& groups) {
   int group_id_int = 1;
   std::map<std::string, GroupId> map_facet_to_group_id;
   std::set<std::string> facet_uri_in_groups;
@@ -355,7 +393,7 @@ PasswordsGrouper::MapFacetsToGroupId(
   for (const GroupedFacets& grouped_facets : groups) {
     GroupId unique_group_id(group_id_int);
     for (const Facet& facet : grouped_facets.facets) {
-      std::string facet_uri_str = facet.uri.potentially_invalid_spec() + "/";
+      std::string facet_uri_str = facet.uri.potentially_invalid_spec();
       map_facet_to_group_id[facet_uri_str] = unique_group_id;
 
       // Keep track of facet URI (sign-on realm) that are already in a group.
@@ -368,18 +406,6 @@ PasswordsGrouper::MapFacetsToGroupId(
 
     // Increment so it is a new id for the next group.
     group_id_int++;
-  }
-
-  // Create a group ID for the sign-on realms that are not part of any grouped
-  // facets.
-  for (const std::string& signon_realm : signon_realms) {
-    GroupId unique_group_id(group_id_int);
-    if (facet_uri_in_groups.find(signon_realm) == facet_uri_in_groups.end()) {
-      map_facet_to_group_id[signon_realm] = unique_group_id;
-      facet_uri_in_groups.insert(signon_realm);
-
-      group_id_int++;
-    }
   }
 
   return map_facet_to_group_id;

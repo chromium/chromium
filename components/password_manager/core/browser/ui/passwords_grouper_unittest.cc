@@ -74,9 +74,14 @@ TEST_F(PasswordsGrouperTest, GetAffiliatedGroupsWithGroupingInfo) {
       UnorderedElementsAre(
           AffiliatedGroup({credential1}, {GetShownOrigin(credential1)}),
           AffiliatedGroup({credential2}, {GetShownOrigin(credential2)})));
+  EXPECT_THAT(grouper().GetPasswordFormsFor(credential1), ElementsAre(form));
+  EXPECT_THAT(grouper().GetPasswordFormsFor(credential2),
+              ElementsAre(federated_form));
 
   EXPECT_THAT(grouper().GetBlockedSites(),
               ElementsAre(CredentialUIEntry(blocked_form)));
+  EXPECT_THAT(grouper().GetPasswordFormsFor(CredentialUIEntry(blocked_form)),
+              ElementsAre(blocked_form));
 }
 
 TEST_F(PasswordsGrouperTest, GroupPasswords) {
@@ -171,6 +176,7 @@ TEST_F(PasswordsGrouperTest, HttpCredentialsSupported) {
   EXPECT_THAT(
       grouper().GetAffiliatedGroupsWithGroupingInfo(),
       ElementsAre(AffiliatedGroup({credential}, {GetShownOrigin(credential)})));
+  EXPECT_THAT(grouper().GetPasswordFormsFor(credential), ElementsAre(form));
 }
 
 TEST_F(PasswordsGrouperTest, FederatedCredentialsGroupedWithRegular) {
@@ -287,6 +293,23 @@ TEST_F(PasswordsGrouperTest, MainDomainComputationUsesPSLExtensions) {
           AffiliatedGroup({credential2, credential3},
                           {GetShownOrigin(credential2)}),
           AffiliatedGroup({credential4}, {GetShownOrigin(credential4)})));
+}
+
+TEST_F(PasswordsGrouperTest, HttpAndHttpsGroupedTogether) {
+  PasswordForm form1 = CreateForm("http://test.com/");
+  PasswordForm form2 = CreateForm("https://test.com/");
+
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
+  grouper().GroupPasswords(
+      {std::make_pair("key1", form1), std::make_pair("key2", form2)},
+      base::DoNothing());
+
+  CredentialUIEntry credential({form1, form2});
+  EXPECT_THAT(
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
+      ElementsAre(AffiliatedGroup({credential}, {GetShownOrigin(credential)})));
 }
 
 }  // namespace password_manager

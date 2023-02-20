@@ -1501,9 +1501,6 @@ TEST_F(SavedPasswordsPresenterTest, DeletePasswordsInCredentialGroup) {
   form2.url = GURL("https://m.test0.com");
   form2.signon_realm = form2.url.spec();
 
-  store().AddLogin(form);
-  store().AddLogin(form2);
-
   std::vector<password_manager::GroupedFacets> grouped_facets(1);
   Facet facet(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet));
@@ -1512,7 +1509,12 @@ TEST_F(SavedPasswordsPresenterTest, DeletePasswordsInCredentialGroup) {
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
 
+  store().AddLogin(form);
+  store().AddLogin(form2);
+
   RunUntilIdle();
+
+  presenter().GetSavedCredentials();
 
   // Delete credential with multiple facets.
   presenter().RemoveCredential(CredentialUIEntry({form, form2}));
