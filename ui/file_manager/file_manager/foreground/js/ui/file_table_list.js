@@ -9,6 +9,7 @@ import {str, strf, util} from '../../../common/js/util.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
+import {FilesTooltip} from '../../elements/files_tooltip.js';
 import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
@@ -477,21 +478,25 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
  * @return {!HTMLDivElement} Created element.
  */
 filelist.renderInlineStatus = (doc) => {
-  const iconDiv = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
-  iconDiv.className = 'inline-status';
+  const inlineStatus =
+      /** @type {!HTMLDivElement} */ (doc.createElement('div'));
+  inlineStatus.className = 'inline-status';
 
   const inlineStatusIcon = doc.createElement('xf-icon');
   inlineStatusIcon.size = 'extra_small';
   inlineStatusIcon.type = 'offline';
-  iconDiv.appendChild(inlineStatusIcon);
+  inlineStatus.appendChild(inlineStatusIcon);
 
   if (util.isInlineSyncStatusEnabled()) {
     const syncProgress = doc.createElement('xf-pie-progress');
     syncProgress.className = 'progress';
-    iconDiv.appendChild(syncProgress);
+    inlineStatus.appendChild(syncProgress);
   }
 
-  return iconDiv;
+  /** @type {!FilesTooltip} */ (document.querySelector('files-tooltip'))
+      .addTarget(inlineStatus);
+
+  return inlineStatus;
 };
 
 /**
