@@ -189,6 +189,9 @@ TEST_F(PasswordImporterTest, CSVImportWithNote) {
             base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Import.PerFile.Notes.TotalCount", 1, 1);
+
   password_manager::ImportResults results = GetImportResults();
 
   EXPECT_EQ(1u, results.number_imported);
@@ -366,6 +369,9 @@ TEST_F(PasswordImporterTest, ExactMatchWithConflictingNotesValidConcatenation) {
                             kTestCSVInput.length()));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Import.PerFile.Notes.Concatenations", 1, 1);
+
   const password_manager::ImportResults& results = GetImportResults();
 
   ASSERT_EQ(0u, results.failed_imports.size());
@@ -405,6 +411,9 @@ TEST_F(PasswordImporterTest, ExactMatchImportedNoteIsSubstingOfLocalNote) {
                             kTestCSVInput.length()));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Import.PerFile.Notes.Substrings", 1, 1);
+
   const password_manager::ImportResults& results = GetImportResults();
 
   ASSERT_EQ(0u, results.failed_imports.size());
@@ -414,6 +423,8 @@ TEST_F(PasswordImporterTest, ExactMatchImportedNoteIsSubstingOfLocalNote) {
 }
 
 TEST_F(PasswordImporterTest, CSVImportExactMatchProfileStore) {
+  base::test::ScopedFeatureList feature_list{syncer::kPasswordNotesWithBackup};
+
   constexpr char kTestCSVInput[] =
       "Url,Username,Password,Comment\n"
       "https://"
@@ -444,6 +455,8 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileStore) {
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.Import.PerFile.Duplicates", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Import.PerFile.Notes.Duplicates", 1, 1);
 
   const password_manager::ImportResults& results = GetImportResults();
 

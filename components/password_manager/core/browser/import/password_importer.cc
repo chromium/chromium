@@ -332,6 +332,11 @@ void PasswordImporter::ConsumePasswords(
     return;
   }
 
+  size_t notes_per_file_count = 0;
+  size_t notes_duplicates_per_file_count = 0;
+  size_t notes_substrings_per_file_count = 0;
+  size_t notes_concatenations_per_file_count = 0;
+
   // TODO(crbug/1325290): Either move to earlier point or update histogram.
   base::Time start_time = base::Time::Now();
   std::vector<password_manager::CredentialUIEntry> credentials;
@@ -353,9 +358,8 @@ void PasswordImporter::ConsumePasswords(
       return false;
     }
 
-    // TODO(crbug.com/1383938): Add metric for total number of credential with a
-    // note found in the file. Increment a variable here, emit to the histogram
-    // after the loop.
+    notes_per_file_count++;
+
     auto forms = presenter_->GetCorrespondingPasswordForms(credential);
     if (forms.empty()) {
       // No matching local credentials.
@@ -364,16 +368,12 @@ void PasswordImporter::ConsumePasswords(
 
     auto local_credential = CredentialUIEntry(forms);
     if (local_credential.note == imported_note) {
-      // Duplicate is not considered to be a conflict.
-      // TODO(crbug.com/1383938): Add metric – note resolved – duplicate.
+      notes_duplicates_per_file_count++;
       return false;
     }
 
     if (local_credential.note.find(imported_note) != std::u16string::npos) {
-      // Don't proceed with the concatenation if the local note contains the
-      // imported note as a substring.
-      // TODO(crbug.com/1383938): Add metric – note resolved – imported note is
-      // a substring of local note.
+      notes_substrings_per_file_count++;
       return false;
     }
 
@@ -382,9 +382,6 @@ void PasswordImporter::ConsumePasswords(
       // Notes concatenation size should not exceed 1000 characters.
       results.failed_imports.push_back(CreateFailedImportEntry(
           credential, ImportEntry::Status::LONG_CONCATENATED_NOTE));
-      // TODO(crbug.com/1383938): Add metric – note resolved – notes
-      // concatenation is too long. Error reported. Imported credential doesn't
-      // require further processing.
       return true;
     }
 
@@ -399,7 +396,7 @@ void PasswordImporter::ConsumePasswords(
     // Otherwise, accumulate credentials that need to be edited and ideally do
     // updates as a bulk operation.
     presenter_->EditSavedCredentials(local_credential, updated_credential);
-    // TODO(crbug.com/1383938): Add metric – note resolved – notes concatenated.
+    notes_concatenations_per_file_count++;
     results.number_imported++;
 
     // Matching local credentials were updated with notes concatenation.
@@ -429,6 +426,18 @@ void PasswordImporter::ConsumePasswords(
       credentials.emplace_back(std::move(current_credential));
     }
   }
+
+  base::UmaHistogramCounts1000(
+      "PasswordManager.Import.PerFile.Notes.TotalCount", notes_per_file_count);
+  base::UmaHistogramCounts1000(
+      "PasswordManager.Import.PerFile.Notes.Concatenations",
+      notes_concatenations_per_file_count);
+  base::UmaHistogramCounts1000(
+      "PasswordManager.Import.PerFile.Notes.Duplicates",
+      notes_duplicates_per_file_count);
+  base::UmaHistogramCounts1000(
+      "PasswordManager.Import.PerFile.Notes.Substrings",
+      notes_substrings_per_file_count);
 
   // Pass `credentials` along with import results `results` to the callback
   // too since they are necessary to report which imports did actually fail.

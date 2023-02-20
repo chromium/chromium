@@ -1711,6 +1711,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.Import.PerFile.Notes.{Type}" units="units"
+    expires_after="2023-09-15">
+  <owner>eliaskh@chromium.org</owner>
+  <owner>natiahlyi@google.com</owner>
+  <summary>
+    Tracks the number of {Type} per one imported CSV file with Google Password
+    Manager in Settings UI. Recorded during the passwords import process
+    triggered from settings, after parsing the input file.
+  </summary>
+  <token key="Type">
+    <variant name="Concatenations"
+        summary="imported notes that were concatenated with local notes of
+                 the same credential"/>
+    <variant name="Duplicates"
+        summary="imported notes that are duplicates of local notes of the
+                 same credential"/>
+    <variant name="Substrings"
+        summary="imported notes that are substrings of local notes of the
+                 same credential"/>
+    <variant name="TotalCount"
+        summary="valid notes (note's length is not greater than 1000
+                 characters)"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.Import.PerFile.{ErrorType}" units="units"
     expires_after="2023-09-15">
   <owner>eliaskh@chromium.org</owner>
