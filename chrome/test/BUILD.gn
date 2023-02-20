@@ -4403,6 +4403,7 @@ if (!is_android) {
         "//chromeos/components/onc:test_support",
         "//chromeos/components/quick_answers/public/cpp:cpp",
         "//chromeos/components/remote_apps/mojom:mojom",
+        "//chromeos/crosapi/cpp:crosapi_constants",
         "//chromeos/dbus/dlp",
         "//chromeos/dbus/missive:test_support",
         "//chromeos/process_proxy",
