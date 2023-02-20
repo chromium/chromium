@@ -11,8 +11,8 @@ include_rules = [
   # Tests can use all content/public headers.
   "+content/public",
 
-  # This file does not belong in content/public as it should not be
-  # included directly by embedders of content/.  It must however be
+  # This file does not belong in the content/public as it should not be
+  # included directly by embedded of content/.  It must however be
   # available to code in content/public.
   "+content/common/content_export.h",
 
