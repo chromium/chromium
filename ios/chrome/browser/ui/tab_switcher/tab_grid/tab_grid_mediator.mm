@@ -1019,8 +1019,9 @@ void RecordTabGridCloseTabsCount(int count) {
       continue;
     }
 
+    __weak __typeof(self) weakSelf = self;
     auto cacheImage = ^(UIImage* image) {
-      self.appearanceCache[identifier] = image;
+      weakSelf.appearanceCache[identifier] = image;
     };
 
     [self snapshotForIdentifier:identifier completion:cacheImage];
