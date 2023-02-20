@@ -134,6 +134,10 @@ void TestSystemTrayClient::ShowCalendarEvent(
   show_calendar_event_count_++;
 }
 
+void TestSystemTrayClient::ShowGoogleMeet(const std::string& hangout_link) {
+  show_google_meet_count_++;
+}
+
 void TestSystemTrayClient::ShowChannelInfoAdditionalDetails() {
   ++show_channel_info_additional_details_count_;
 }

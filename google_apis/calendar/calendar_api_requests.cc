@@ -33,7 +33,8 @@ constexpr int kMaxResults = 2500;
 constexpr char kCalendarEventListFields[] =
     "timeZone,etag,kind,items(id,kind,summary,colorId,"
     "status,start(date),end(date),start(dateTime),end(dateTime),htmlLink,"
-    "attendees(responseStatus,self),attendeesOmitted,creator(self))";
+    "attendees(responseStatus,self),attendeesOmitted,hangoutLink,"
+    "creator(self))";
 
 CalendarApiGetRequest::CalendarApiGetRequest(RequestSender* sender,
                                              const std::string& fields)

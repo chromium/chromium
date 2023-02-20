@@ -44,6 +44,7 @@ constexpr char kAttendeesResponseStatus[] = "responseStatus";
 constexpr char kAttendeesSelf[] = "self";
 constexpr char kCalendarEventKind[] = "calendar#event";
 constexpr char kColorId[] = "colorId";
+constexpr char kHangoutLink[] = "hangoutLink";
 constexpr char kEnd[] = "end";
 constexpr char kHtmlLink[] = "htmlLink";
 constexpr char kPathToCreatorSelf[] = "creator.self";
@@ -63,27 +64,6 @@ constexpr auto kAttendeesResponseStatuses =
          {"declined", CalendarEvent::ResponseStatus::kDeclined},
          {"needsAction", CalendarEvent::ResponseStatus::kNeedsAction},
          {"tentative", CalendarEvent::ResponseStatus::kTentative}});
-
-// Converts the `items` field from the response. This method helps to use the
-// custom conversion entrypoint `CalendarEvent::CreateFrom`.
-// Returns false when it fails (e.g. the value is structurally different from
-// expected).
-bool ConvertResponseItems(const base::Value* value,
-                          std::vector<std::unique_ptr<CalendarEvent>>* result) {
-  const auto* items = value->GetIfList();
-  if (!items)
-    return false;
-
-  result->reserve(items->size());
-  for (const auto& item : *items) {
-    auto event = CalendarEvent::CreateFrom(item);
-    if (!event)
-      return false;
-    result->push_back(std::move(event));
-  }
-
-  return true;
-}
 
 // Converts the event status to `EventStatus`. Returns false when it fails
 // (e.g. the value is structurally different from expected).
@@ -168,6 +148,30 @@ absl::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
   return CalendarEvent::ResponseStatus::kUnknown;
 }
 
+// Converts the `items` field from the response. This method helps to use the
+// custom conversion entrypoint `CalendarEvent::CreateFrom`.
+// Returns false when it fails (e.g. the value is structurally different from
+// expected).
+bool ConvertResponseItems(const base::Value* value, CalendarEvent* event) {
+  base::JSONValueConverter<CalendarEvent> converter;
+
+  if (!IsResourceKindExpected(*value, kCalendarEventKind) ||
+      !converter.Convert(*value, event)) {
+    DVLOG(1) << "Unable to create: Invalid CalendarEvent JSON!";
+    return false;
+  }
+
+  auto self_response_status = CalculateSelfResponseStatus(*value);
+  if (self_response_status.has_value()) {
+    event->set_self_response_status(self_response_status.value());
+    return true;
+  }
+
+  DVLOG(1) << "Unable to calculate self response status: Invalid "
+              "CalendarEvent JSON!";
+  return false;
+}
+
 bool IsAllDayEvent(const base::Value* value, bool* result) {
   *result = value->GetDict().Find("date") != nullptr;
   return result;
@@ -218,6 +222,7 @@ void CalendarEvent::RegisterJSONConverter(
   converter->RegisterStringField(kSummary, &CalendarEvent::summary_);
   converter->RegisterStringField(kHtmlLink, &CalendarEvent::html_link_);
   converter->RegisterStringField(kColorId, &CalendarEvent::color_id_);
+  converter->RegisterStringField(kHangoutLink, &CalendarEvent::hangout_link_);
   converter->RegisterCustomValueField(kStatus, &CalendarEvent::status_,
                                       &ConvertEventStatus);
   converter->RegisterCustomValueField(kStart, &CalendarEvent::start_time_,
@@ -226,28 +231,6 @@ void CalendarEvent::RegisterJSONConverter(
                                       &DateTime::CreateDateTimeFromValue);
   converter->RegisterCustomValueField(kStart, &CalendarEvent::all_day_event_,
                                       &IsAllDayEvent);
-}
-
-// static
-std::unique_ptr<CalendarEvent> CalendarEvent::CreateFrom(
-    const base::Value& value) {
-  auto event = std::make_unique<CalendarEvent>();
-  base::JSONValueConverter<CalendarEvent> converter;
-  if (!IsResourceKindExpected(value, kCalendarEventKind) ||
-      !converter.Convert(value, event.get())) {
-    DVLOG(1) << "Unable to create: Invalid CalendarEvent JSON!";
-    return nullptr;
-  }
-
-  auto self_response_status = CalculateSelfResponseStatus(value);
-  if (self_response_status.has_value()) {
-    event->set_self_response_status(self_response_status.value());
-    return event;
-  }
-
-  DVLOG(1) << "Unable to calculate self response status: Invalid "
-              "CalendarEvent JSON!";
-  return nullptr;
 }
 
 int CalendarEvent::GetApproximateSizeInBytes() const {
@@ -260,6 +243,7 @@ int CalendarEvent::GetApproximateSizeInBytes() const {
   total_bytes += color_id_.length();
   total_bytes += sizeof(status_);
   total_bytes += sizeof(self_response_status_);
+  total_bytes += hangout_link_.length();
 
   return total_bytes;
 }
@@ -274,8 +258,8 @@ void EventList::RegisterJSONConverter(
   converter->RegisterStringField(kTimeZone, &EventList::time_zone_);
   converter->RegisterStringField(kApiResponseETagKey, &EventList::etag_);
   converter->RegisterStringField(kApiResponseKindKey, &EventList::kind_);
-  converter->RegisterCustomValueField(kApiResponseItemsKey, &EventList::items_,
-                                      &ConvertResponseItems);
+  converter->RegisterRepeatedCustomValue<CalendarEvent>(
+      kApiResponseItemsKey, &EventList::items_, &ConvertResponseItems);
 }
 
 // static

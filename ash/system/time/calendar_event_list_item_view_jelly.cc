@@ -12,6 +12,7 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
@@ -141,7 +142,8 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       calendar_view_controller_(calendar_view_controller),
       selected_date_params_(selected_date_params),
-      event_url_(event.html_link()) {
+      event_url_(event.html_link()),
+      hangout_link_(event.hangout_link()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   const auto [start_time, end_time] = calendar_utils::GetStartAndEndTime(
@@ -186,17 +188,28 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
   auto horizontal_layout_manager = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kEventListItemInsets,
       kEventListItemHorizontalChildSpacing);
-  horizontal_layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
   views::View* horizontal_container =
       AddChildView(std::make_unique<views::View>());
-  horizontal_container->SetLayoutManager(std::move(horizontal_layout_manager));
+  auto* horizontal_container_layout_manager =
+      horizontal_container->SetLayoutManager(
+          std::move(horizontal_layout_manager));
+
+  // Event list dot.
   if (show_event_list_dot) {
-    horizontal_container
+    views::View* event_list_dot_container =
+        horizontal_container->AddChildView(std::make_unique<views::View>());
+    auto* layout_vertical_start = event_list_dot_container->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+    layout_vertical_start->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kStart);
+    event_list_dot_container
         ->AddChildView(
             std::make_unique<CalendarEventListItemDot>(event.color_id()))
         ->SetID(kEventListItemDotID);
   }
+
+  // Labels.
   views::View* vertical_container =
       horizontal_container->AddChildView(std::make_unique<views::View>());
   vertical_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -205,6 +218,29 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
       CreateSummaryLabel(event.summary(), tooltip_text, fixed_width).Build());
   vertical_container->AddChildView(
       CreateTimeLabel(formatted_time_text, tooltip_text).Build());
+  horizontal_container_layout_manager->SetFlexForView(vertical_container, 1);
+
+  // Join button.
+  if (!event.hangout_link().empty()) {
+    views::View* join_button_container =
+        horizontal_container->AddChildView(std::make_unique<views::View>());
+    auto* layout_vertical_center = join_button_container->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+    layout_vertical_center->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    auto join_button = std::make_unique<PillButton>(
+        base::BindRepeating(
+            &CalendarEventListItemViewJelly::OnJoinMeetingButtonPressed,
+            weak_ptr_factory_.GetWeakPtr()),
+        l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON),
+        PillButton::Type::kPrimaryWithoutIcon);
+    join_button->SetAccessibleName(
+        l10n_util::GetStringFUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON_ACCESSIBLE_NAME,
+                                   base::UTF8ToUTF16(event.summary())));
+    join_button->SetID(kJoinButtonID);
+    join_button_container->AddChildView(std::move(join_button));
+  }
 }
 
 CalendarEventListItemViewJelly::~CalendarEventListItemViewJelly() = default;
@@ -227,6 +263,13 @@ bool CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {
       event_url_, selected_date_params_.selected_date_midnight, opened_pwa,
       finalized_url);
   return true;
+}
+
+void CalendarEventListItemViewJelly::OnJoinMeetingButtonPressed(
+    const ui::Event& event) {
+  calendar_view_controller_->RecordJoinMeetingButtonPressed(event);
+
+  Shell::Get()->system_tray_model()->client()->ShowGoogleMeet(hangout_link_);
 }
 
 BEGIN_METADATA(CalendarEventListItemViewJelly, views::View);

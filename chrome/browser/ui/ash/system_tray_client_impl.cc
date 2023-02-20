@@ -744,11 +744,31 @@ void SystemTrayClientImpl::ShowCalendarEvent(
   }
 
   // Launch web app.
-  proxy->LaunchAppWithUrl(web_app::kGoogleCalendarAppId,
-                          apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                                              /*prefer_container=*/true),
+  proxy->LaunchAppWithUrl(web_app::kGoogleCalendarAppId, ui::EF_NONE,
                           official_url, apps::LaunchSource::kFromShelf);
   opened_pwa = true;
+}
+
+// TODO(b/269075177): Reuse existing Google Meet PWA instead of opening a new
+// one for each call to `LaunchAppWithUrl`.
+void SystemTrayClientImpl::ShowGoogleMeet(const std::string& hangout_link) {
+  const auto final_url = GURL(hangout_link);
+
+  if (!IsAppInstalled(web_app::kGoogleMeetAppId)) {
+    OpenInBrowser(final_url);
+    return;
+  }
+
+  apps::AppServiceProxyAsh* proxy = GetActiveUserAppServiceProxyAsh();
+  if (!proxy) {
+    LOG(ERROR) << __FUNCTION__
+               << " failed to get active user AppServiceProxyAsh";
+    OpenInBrowser(final_url);
+    return;
+  }
+
+  proxy->LaunchAppWithUrl(web_app::kGoogleMeetAppId, ui::EF_NONE, final_url,
+                          apps::LaunchSource::kFromShelf);
 }
 
 void SystemTrayClientImpl::ShowChannelInfoAdditionalDetails() {

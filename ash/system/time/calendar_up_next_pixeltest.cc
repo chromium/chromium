@@ -23,12 +23,13 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const base::Time start_time,
     const base::Time end_time,
     const char* summary = "Event with long name that should ellipsis",
-    bool all_day_event = false) {
+    bool all_day_event = false,
+    const std::string hangout_link = "") {
   return calendar_test_utils::CreateEvent(
       "id_0", summary, start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
-      all_day_event);
+      all_day_event, hangout_link);
 }
 
 }  // namespace
@@ -182,6 +183,28 @@ TEST_F(
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_multiple_upcoming_events_press_scroll_right_button",
+      /*revision_number=*/0, Widget()));
+}
+
+TEST_F(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Add an upcoming event with a hangout_link.
+  std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
+  auto start_time = base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
+                    base::Minutes(10);
+  auto end_time =
+      base::subtle::TimeNowIgnoringOverride().LocalMidnight() + base::Hours(1);
+  events.push_back(CreateEvent(start_time, end_time, "First event", false,
+                               "https://meet.google.com/abc-123"));
+
+  CreateCalendarUpNextView(std::move(events));
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "calendar_up_next_join_button",
       /*revision_number=*/0, Widget()));
 }
 

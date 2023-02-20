@@ -45,6 +45,7 @@ TEST(CalendarAPIResponseTypesTest, ParseEventList) {
   EXPECT_EQ(event.status(), CalendarEvent::EventStatus::kConfirmed);
   EXPECT_EQ(event.self_response_status(),
             CalendarEvent::ResponseStatus::kNeedsAction);
+  EXPECT_EQ(event.hangout_link(), "https://meet.google.com/jbe-test");
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseEventListWithCorrectEventStatuses) {

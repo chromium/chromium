@@ -558,6 +558,50 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, UnofficialEventUrl) {
   EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarEventUrl).spec());
 }
 
+class SystemTrayClientShowGoogleMeetTest
+    : public SystemTrayClientShowCalendarTest {
+ public:
+  SystemTrayClientShowGoogleMeetTest() = default;
+
+  ~SystemTrayClientShowGoogleMeetTest() override = default;
+
+ protected:
+  // ash::LoginManagerTest:
+  void SetUpOnMainThread() override {
+    ash::LoginManagerTest::SetUpOnMainThread();
+    LoginUser(account_id_);
+    browser_ = CreateBrowser(
+        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id_));
+    ASSERT_TRUE(browser_);
+  }
+
+  Browser* browser_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientShowGoogleMeetTest,
+                       LaunchGoogleMeetInBrowser) {
+  constexpr char kMeetUrl[] = "https://meet.google.com/abc-123";
+
+  ash::Shell::Get()->system_tray_model()->client()->ShowGoogleMeet(kMeetUrl);
+
+  EXPECT_EQ(
+      GURL(kMeetUrl),
+      browser_->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientShowGoogleMeetTest,
+                       LaunchGoogleMeetInGoogleMeetApp) {
+  constexpr char kMeetUrl[] = "https://meet.google.com/abc-123";
+
+  InstallApp(web_app::kGoogleMeetAppId, "Google Meet");
+  ash::Shell::Get()->system_tray_model()->client()->ShowGoogleMeet(kMeetUrl);
+
+  // Expect the meet_url not to have opened in the browser.
+  EXPECT_NE(
+      GURL(kMeetUrl),
+      browser_->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+}
+
 class SystemTrayClientShowChannelInfoGiveFeedbackTest
     : public ash::LoginManagerTest {
  public:

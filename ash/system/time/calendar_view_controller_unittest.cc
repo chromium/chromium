@@ -250,4 +250,33 @@ TEST_F(CalendarViewControllerUnittest, MaxDistanceBrowsedRecordedOnClose) {
   histogram_tester.ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 1);
 }
 
+TEST_F(
+    CalendarViewControllerUnittest,
+    ShouldRecordEventListViewJoinMeetingButtonPressed_WhenEventListIsShowing) {
+  base::HistogramTester histogram_tester;
+  auto controller = std::make_unique<CalendarViewController>();
+
+  controller->OnEventListOpened();
+  const std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(
+      ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
+  controller->RecordJoinMeetingButtonPressed(*test_event);
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Calendar.EventListView.JoinMeetingButton.Pressed", 1);
+}
+
+TEST_F(
+    CalendarViewControllerUnittest,
+    ShouldRecordUpNextViewJoinMeetingButtonPressed_WhenEventListIsNotShowing) {
+  base::HistogramTester histogram_tester;
+  auto controller = std::make_unique<CalendarViewController>();
+
+  const std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(
+      ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
+  controller->RecordJoinMeetingButtonPressed(*test_event);
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Calendar.UpNextView.JoinMeetingButton.Pressed", 1);
+}
+
 }  // namespace ash

@@ -112,6 +112,7 @@ TEST_F(CalendarApiRequestsTest, GetEventListRequest) {
       "2Cstart(date)%2Cend(date)%"
       "2Cstart(dateTime)%2Cend(dateTime)%"
       "2ChtmlLink%2Cattendees(responseStatus%2Cself)%2CattendeesOmitted%"
+      "2ChangoutLink%"
       "2Ccreator(self))",
       http_request_.relative_url);
 

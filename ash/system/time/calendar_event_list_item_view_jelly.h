@@ -21,6 +21,7 @@ namespace ash {
 constexpr int kSummaryLabelID = 100;
 constexpr int kTimeLabelID = 101;
 constexpr int kEventListItemDotID = 102;
+constexpr int kJoinButtonID = 103;
 
 class CalendarViewController;
 
@@ -59,6 +60,8 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
   // ActionableView:
   bool PerformAction(const ui::Event& event) override;
 
+  void OnJoinMeetingButtonPressed(const ui::Event& event);
+
  private:
   friend class CalendarViewEventListViewTest;
 
@@ -69,6 +72,10 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
 
   // The URL for the meeting event.
   const GURL event_url_;
+
+  const std::string hangout_link_;
+
+  base::WeakPtrFactory<CalendarEventListItemViewJelly> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

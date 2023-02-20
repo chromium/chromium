@@ -82,9 +82,6 @@ class CalendarEvent {
   static void RegisterJSONConverter(
       base::JSONValueConverter<CalendarEvent>* converter);
 
-  // Creates CalendarEvent from parsed JSON.
-  static std::unique_ptr<CalendarEvent> CreateFrom(const base::Value& value);
-
   // The ID of this Calendar Event.
   const std::string& id() const { return id_; }
   void set_id(const std::string& id) { id_ = id; }
@@ -122,6 +119,12 @@ class CalendarEvent {
     all_day_event_ = all_day_event;
   }
 
+  // Google Meet video conference URL, if one is attached to the event.
+  const std::string& hangout_link() const { return hangout_link_; }
+  void set_hangout_link(const std::string& hangout_link) {
+    hangout_link_ = hangout_link;
+  }
+
   // Return the approximate size of this event, in bytes.
   int GetApproximateSizeInBytes() const;
 
@@ -134,7 +137,8 @@ class CalendarEvent {
   ResponseStatus self_response_status_ = ResponseStatus::kUnknown;
   DateTime start_time_;
   DateTime end_time_;
-  bool all_day_event_;
+  bool all_day_event_ = false;
+  std::string hangout_link_;
 };
 
 // Parses a list of calendar events.

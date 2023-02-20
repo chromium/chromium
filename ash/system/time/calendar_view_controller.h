@@ -77,6 +77,12 @@ class ASH_EXPORT CalendarViewController {
   // is used currently).
   void RecordEventListItemActivated(const ui::Event& event);
 
+  // Records a metric for the "Join" meeting button being pressed.
+  // Captures whether it was from the `CalendarEventListView` or implicitly the
+  // `CalendarUpNextView` (the only other place the `CalendarEventListItemView`
+  // is used currently).
+  void RecordJoinMeetingButtonPressed(const ui::Event& event);
+
   // Called when a calendar event is about to launch. Used to record metrics.
   void OnCalendarEventWillLaunch();
 

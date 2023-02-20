@@ -45,16 +45,12 @@ constexpr int kCombinedViewMargin =
     kCalendarUpNextViewStartEndMargin * 2 +
     calendar_utils::kEventListItemViewStartEndMargin * 2;
 // At full width (displaying a single event) the label should be the tray width
-// minus `kCombinedViewMargin`, otherwise it'll become scrollable.
-// TODO(b/266537227): When adding the join button, also reduce this off the
-// size.
-constexpr int kLabelFullWidth = kTrayMenuWidth - kCombinedViewMargin;
+// and so have no max applied.
+constexpr int kLabelFullWidth = 0;
 // UI spec is a fixed 240 width for the whole up next event list item view, if
 // there's more than 1 being shown. Given we're achieving this using
 // `SizeToFit()` on a label, the label will need to account for the
 // `kCombinedViewMargin` so we reduce those off the size.
-// TODO (b/266537227): When adding the join button, also reduce this off the
-// size.
 constexpr int kLabelCappedWidth = 240 - kCombinedViewMargin;
 constexpr gfx::Insets kHeaderInsets = gfx::Insets::TLBR(0, 0, 6, 0);
 constexpr int kHeaderBetweenChildSpacing = 14;

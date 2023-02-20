@@ -67,6 +67,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
                          const base::Time& date,
                          bool& opened_pwa,
                          GURL& final_event_url) override;
+  void ShowGoogleMeet(const std::string& hangout_link) override;
   void ShowChannelInfoAdditionalDetails() override;
   void ShowChannelInfoGiveFeedback() override;
   void ShowAudioSettings() override;
@@ -134,6 +135,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
 
   int show_calendar_event_count() const { return show_calendar_event_count_; }
 
+  int show_google_meet_count() const { return show_google_meet_count_; }
+
   const std::string& last_network_type() const { return last_network_type_; }
 
   int show_firmware_update_count() const { return show_firmware_update_count_; }
@@ -179,6 +182,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_network_create_count_ = 0;
   int show_access_code_casting_dialog_count_ = 0;
   int show_calendar_event_count_ = 0;
+  int show_google_meet_count_ = 0;
   std::string last_bluetooth_settings_device_id_;
   std::string last_network_settings_network_id_;
   std::string last_network_type_;

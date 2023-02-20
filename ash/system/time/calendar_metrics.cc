@@ -37,6 +37,10 @@ constexpr char kCalendarEventListItemInUpNextPressed[] =
     "Ash.Calendar.UpNextView.EventListItem.Pressed";
 constexpr char kCalendarUpNextEventDisplayedCount[] =
     "Ash.Calendar.UpNextView.EventDisplayedCount";
+constexpr char kCalendarEventListItemJoinButtonPressed[] =
+    "Ash.Calendar.EventListView.JoinMeetingButton.Pressed";
+constexpr char kCalendarUpNextJoinButtonPressed[] =
+    "Ash.Calendar.UpNextView.JoinMeetingButton.Pressed";
 
 }  // namespace
 
@@ -125,6 +129,16 @@ void RecordEventListItemInUpNextLaunched(const ui::Event& event) {
 
 void RecordUpNextEventCount(const int event_count) {
   base::UmaHistogramCounts100(kCalendarUpNextEventDisplayedCount, event_count);
+}
+
+void RecordJoinButtonPressedFromEventListView(const ui::Event& event) {
+  base::UmaHistogramEnumeration(kCalendarEventListItemJoinButtonPressed,
+                                GetEventType(event));
+}
+
+void RecordJoinButtonPressedFromUpNextView(const ui::Event& event) {
+  base::UmaHistogramEnumeration(kCalendarUpNextJoinButtonPressed,
+                                GetEventType(event));
 }
 
 }  // namespace calendar_metrics

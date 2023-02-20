@@ -20,12 +20,13 @@ namespace {
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* start_time,
     const char* end_time,
-    bool all_day_event = false) {
+    bool all_day_event = false,
+    std::string hangout_link = "") {
   return calendar_test_utils::CreateEvent(
       "id_0", "summary_0", start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
-      all_day_event);
+      all_day_event, hangout_link);
 }
 
 }  // namespace
@@ -89,6 +90,11 @@ class CalendarViewEventListItemViewJellyTest : public AshTestBase {
   const views::View* GetEventListItemDot() {
     return static_cast<views::View*>(
         event_list_item_view_jelly_->GetViewByID(kEventListItemDotID));
+  }
+
+  const views::Button* GetJoinButton() {
+    return static_cast<views::Button*>(
+        event_list_item_view_jelly_->GetViewByID(kJoinButtonID));
   }
 
   CalendarViewController* controller() { return controller_.get(); }
@@ -232,6 +238,39 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
 
   // Event list dot should exist.
   EXPECT_TRUE(GetEventListItemDot());
+}
+
+TEST_F(CalendarViewEventListItemViewJellyTest,
+       ShouldShowJoinMeetingButton_WhenGoogleMeetLinkExists) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
+  SetSelectedDateInController(date);
+  const char* start_time_string = "22 Nov 2021 09:00 GMT";
+  const char* end_time_string = "22 Nov 2021 10:00 GMT";
+  const auto event = CreateEvent(start_time_string, end_time_string, false,
+                                 "https://meet.google.com/my-meeting");
+
+  CreateEventListItemView(date, event.get(), /*round_top_corners=*/true,
+                          /*round_bottom_corners=*/true,
+                          /*show_event_list_dot=*/false);
+
+  EXPECT_TRUE(GetJoinButton());
+}
+
+TEST_F(CalendarViewEventListItemViewJellyTest,
+       ShouldHideJoinMeetingButton_WhenGoogleMeetLinkDoesNotExist) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
+  SetSelectedDateInController(date);
+  const char* start_time_string = "22 Nov 2021 09:00 GMT";
+  const char* end_time_string = "22 Nov 2021 10:00 GMT";
+  const auto event = CreateEvent(start_time_string, end_time_string);
+
+  CreateEventListItemView(date, event.get(), /*round_top_corners=*/true,
+                          /*round_bottom_corners=*/true,
+                          /*show_event_list_dot=*/false);
+
+  EXPECT_FALSE(GetJoinButton());
 }
 
 }  // namespace ash

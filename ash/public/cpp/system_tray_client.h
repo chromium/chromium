@@ -162,6 +162,10 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
                                  bool& opened_pwa,
                                  GURL& finalized_event_url) = 0;
 
+  // Launches Google Meet from the given URL.
+  // Opens in the Google Meet PWA if installed, otherwise opens in the browser.
+  virtual void ShowGoogleMeet(const std::string& hangout_link) = 0;
+
   // Shown when the device is on a non-stable release track and the user clicks
   // the channel/version button from quick settings.
   virtual void ShowChannelInfoAdditionalDetails() = 0;

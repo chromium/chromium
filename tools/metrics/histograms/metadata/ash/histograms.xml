@@ -810,6 +810,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.EventListView.JoinMeetingButton.Pressed"
+    enum="CalendarEventSource" expires_after="2024-02-10">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the &quot;Join&quot; meeting button is pressed from the
+    Calendar &quot;EventListView&quot; i.e. the user opens the sys tray
+    calendar, taps todays date cell, then scrolls to the event and taps the
+    &quot;Join&quot; meeting button.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.FetchEvents.FetchDuration" units="ms"
     expires_after="2023-09-18">
   <owner>rtinkoff@google.com</owner>
@@ -982,6 +994,18 @@ chromium-metrics-reviews@google.com.
     next&quot; view and launched in Google Calendar. i.e. the user opens the sys
     tray calendar, &quot;Up next&quot; displays an event in the next 10 mins and
     the user taps the event.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Calendar.UpNextView.JoinMeetingButton.Pressed"
+    enum="CalendarEventSource" expires_after="2024-02-10">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the &quot;Join&quot; meeting button is pressed from the
+    Calendar &quot;Up next&quot; view i.e. the user opens the sys tray calendar,
+    &quot;Up next&quot; displays an event in the next 10 mins and the user taps
+    &quot;Join&quot; meeting button on the event.
   </summary>
 </histogram>
 

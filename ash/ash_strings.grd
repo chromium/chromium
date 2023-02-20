@@ -4725,6 +4725,14 @@ Connect your device to power.
         See all events for today
       </message>
 
+      <message name="IDS_ASH_CALENDAR_JOIN_BUTTON" desc="The join meeting button on the event list item views.">
+        Join
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_JOIN_BUTTON_ACCESSIBLE_NAME" desc="The join meeting button accessible name on the event list item views.">
+        Hit enter to join event <ph name="event_summary">$1<ex>Lunch break</ex></ph>
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME" desc="The accessible name for the progress bar shown in the status tray.">
         Loading
       </message>
