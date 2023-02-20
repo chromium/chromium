@@ -5390,6 +5390,12 @@ const char kEcheSWACheckAndroidNetworkInfoDescription[] =
     "Allows CrOS to analyze Android network information to provide more "
     "context on connection errors";
 
+const char kEnableNotificationImageDragName[] =
+    "Enable notification image drag";
+const char kEnableNotificationImageDragDescription[] =
+    "Enable users to drag the image shown on the notification and drop it to "
+    "directly paste or share";
+
 const char kEnableOAuthIppName[] =
     "Enable OAuth when printing via the IPP protocol";
 const char kEnableOAuthIppDescription[] =

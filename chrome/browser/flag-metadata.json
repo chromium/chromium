@@ -2780,6 +2780,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-notification-image-drag",
+    "owners": ["andrewxu", "dmblack"],
+    "expiry_milestone": 116
+  },
+  {
     "name": "enable-notifications-revamp",
     "owners": [ "amehfooz", "newcomer" ],
     "expiry_milestone": 106

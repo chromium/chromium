@@ -9390,6 +9390,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPolicyMergeMultiSourceDescription, kOsAll,
      FEATURE_VALUE_TYPE(policy::features::kPolicyMergeMultiSource)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-notification-image-drag",
+     flag_descriptions::kEnableNotificationImageDragName,
+     flag_descriptions::kEnableNotificationImageDragDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kNotificationImageDrag)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
