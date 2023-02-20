@@ -245,6 +245,12 @@ class CORE_EXPORT CSSParserToken {
   union {
     UChar delimiter_;
     HashTokenType hash_token_type_;
+    // NOTE: For DimensionToken, this value stores the numeric part,
+    // value_data_char_raw_ (or value_data_char_inline_) stores the
+    // unit as text, and unit_ stores the unit as enum (assuming it
+    // is a valid unit). So for e.g. “100px”, numeric_value_ = 100.0,
+    // value_length_ = 2, value_data_char_inline_ = "px", and
+    // unit_ = kPixels.
     double numeric_value_;
     mutable int id_;
 
