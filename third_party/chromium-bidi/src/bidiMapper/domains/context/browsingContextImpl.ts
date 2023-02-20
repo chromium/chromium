@@ -435,8 +435,13 @@ export class BrowsingContextImpl {
       : params.context.origin;
   }
 
-  #documentChanged(loaderId: string) {
-    if (this.#loaderId === loaderId) {
+  #documentChanged(loaderId?: string) {
+    // Same document navigation.
+    if (loaderId === undefined || this.#loaderId === loaderId) {
+      if (this.#targetDefers.Page.navigatedWithinDocument.isFinished) {
+        this.#targetDefers.Page.navigatedWithinDocument =
+          new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
+      }
       return;
     }
 
@@ -444,14 +449,6 @@ export class BrowsingContextImpl {
       this.#targetDefers.documentInitialized.reject('Document changed');
     }
     this.#targetDefers.documentInitialized = new Deferred<void>();
-
-    if (!this.#targetDefers.Page.navigatedWithinDocument.isFinished) {
-      this.#targetDefers.Page.navigatedWithinDocument.reject(
-        'Document changed'
-      );
-    }
-    this.#targetDefers.Page.navigatedWithinDocument =
-      new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
 
     if (!this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
       this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.reject(
@@ -489,12 +486,7 @@ export class BrowsingContextImpl {
       throw new Message.UnknownException(cdpNavigateResult.errorText);
     }
 
-    if (
-      cdpNavigateResult.loaderId !== undefined &&
-      cdpNavigateResult.loaderId !== this.#loaderId
-    ) {
-      this.#documentChanged(cdpNavigateResult.loaderId);
-    }
+    this.#documentChanged(cdpNavigateResult.loaderId);
 
     // Wait for `wait` condition.
     switch (wait) {
