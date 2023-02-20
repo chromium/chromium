@@ -259,7 +259,7 @@
           Use screen lock to confirm cards faster
         </message>
         <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_ERROR" desc="Validation error message for missing required address field." formatter_data="android_java">
-          <ph name="FIELD">$1<ex>Postal code</ex></ph> can't be empty
+          Enter <ph name="FIELD">$1<ex>ZIP code</ex></ph>
         </message>
       </if>
       <if expr="not is_macosx and not is_win and not is_android">
