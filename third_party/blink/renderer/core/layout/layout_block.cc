@@ -288,9 +288,13 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
         Layer() ? Layer()->Transform() : nullptr);
     // Compare local scale before and after.
     if (old_squared_scale != new_squared_scale) {
+      bool stacking_context_changed =
+          old_style &&
+          (IsStackingContext(*old_style) != IsStackingContext(new_style));
       for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
         To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
-        if (GetNode() == GetDocument().documentElement()) {
+        if (GetNode() == GetDocument().documentElement() ||
+            stacking_context_changed) {
           box->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
         }
       }
