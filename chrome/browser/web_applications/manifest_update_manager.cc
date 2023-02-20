@@ -62,6 +62,16 @@ ManifestUpdateManager::ResultCallback* GetResultCallbackMutableForTesting() {
 
 }  // namespace
 
+ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting::
+    ScopedBypassWindowCloseWaitingForTesting() {
+  BypassWindowCloseWaitingForTesting() = true;  // IN-TEST
+}
+
+ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting::
+    ~ScopedBypassWindowCloseWaitingForTesting() {
+  BypassWindowCloseWaitingForTesting() = false;  // IN-TEST
+}
+
 class ManifestUpdateManager::PreUpdateWebContentsObserver
     : public content::WebContentsObserver {
  public:

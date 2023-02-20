@@ -191,7 +191,8 @@ constexpr char kOriginTrialToken[] =
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(WebAppDarkModeOriginTrialBrowserTest, OriginTrial) {
-  ManifestUpdateManager::BypassWindowCloseWaitingForTesting() = true;
+  ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting
+      bypass_window_close_waiting;
 
   bool serve_token = true;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(

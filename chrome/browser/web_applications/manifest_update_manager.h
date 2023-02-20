@@ -54,6 +54,16 @@ class WebAppCommandScheduler;
 // of being triggered by page loads.
 class ManifestUpdateManager final : public WebAppInstallManagerObserver {
  public:
+  class ScopedBypassWindowCloseWaitingForTesting {
+   public:
+    ScopedBypassWindowCloseWaitingForTesting();
+    ScopedBypassWindowCloseWaitingForTesting(
+        const ScopedBypassWindowCloseWaitingForTesting&) = delete;
+    ScopedBypassWindowCloseWaitingForTesting& operator=(
+        const ScopedBypassWindowCloseWaitingForTesting&) = delete;
+    ~ScopedBypassWindowCloseWaitingForTesting();
+  };
+
   using UpdatePendingCallback = base::OnceCallback<void(const GURL& url)>;
   // Sets a |callback| for testing code to get notified when a manifest update
   // is needed and there is a PWA window preventing the update from proceeding.
@@ -64,8 +74,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   using ResultCallback =
       base::OnceCallback<void(const GURL& url, ManifestUpdateResult result)>;
   static void SetResultCallbackForTesting(ResultCallback callback);
-
-  static bool& BypassWindowCloseWaitingForTesting();
 
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
@@ -174,6 +182,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void NotifyResult(const GURL& url,
                     const absl::optional<AppId>& app_id,
                     ManifestUpdateResult result);
+
+  static bool& BypassWindowCloseWaitingForTesting();
 
   raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
   raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;

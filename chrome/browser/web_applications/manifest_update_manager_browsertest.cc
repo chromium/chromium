@@ -4671,7 +4671,8 @@ IN_PROC_BROWSER_TEST_P(
     }
   )";
 
-  ManifestUpdateManager::BypassWindowCloseWaitingForTesting() = true;
+  ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting
+      bypass_window_close_waiting;
 
   testing::TestParamInfo<
       std::tuple<AppIdTestParam, AppIdTestParam, AppIdTestParam>>
@@ -4974,8 +4975,6 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(ExpectTitleUpdate() ? "Different app name" : "Test app name",
             GetProvider().registrar_unsafe().GetAppShortName(app_id));
-
-  ManifestUpdateManager::BypassWindowCloseWaitingForTesting() = false;
 }
 
 INSTANTIATE_TEST_SUITE_P(
