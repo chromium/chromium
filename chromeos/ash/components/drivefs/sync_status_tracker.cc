@@ -178,7 +178,7 @@ const SyncState SyncStatusTracker::GetNodeState(
           path.empty() ? GetNodePath(node) : std::move(path)};
 }
 
-void SyncStatusTracker::SetNodeState(Node* node,
+void SyncStatusTracker::SetNodeState(Node* const node,
                                      const SyncStatus status,
                                      const int64_t transferred = 0,
                                      const int64_t total = 0) {
@@ -215,8 +215,8 @@ const base::FilePath SyncStatusTracker::GetNodePath(const Node* node) const {
 
 SyncStatusTracker::NodeState SyncStatusTracker::NodeState::Set(
     const SyncStatus status,
-    int32_t transferred,
-    int32_t total) {
+    int64_t transferred,
+    int64_t total) {
   NodeState delta;
 
   // If the node's status has changed, mark as dirty (both the node and the

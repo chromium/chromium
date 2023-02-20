@@ -78,11 +78,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
       SetSyncState(id, path, SyncStatus::kCompleted);
     }
   }
+
   void SetQueued(const int64_t id,
                  const base::FilePath& path,
                  const int64_t total) {
     SetSyncState(id, path, SyncStatus::kQueued, 0, total);
   }
+
   void SetInProgress(const int64_t id,
                      const base::FilePath& path,
                      const int64_t transferred,
@@ -93,6 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
     }
     SetSyncState(id, path, SyncStatus::kInProgress, transferred, total);
   }
+
   void SetError(const int64_t id, const base::FilePath& path) {
     SetSyncState(id, path, SyncStatus::kError);
   }
@@ -130,8 +133,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
   // ancestors until the root.
   void SetNodeState(Node* node,
                     const SyncStatus status,
-                    const int64_t transferred,
-                    const int64_t total);
+                    int64_t transferred,
+                    int64_t total);
 
   const SyncState GetNodeState(
       const Node* node,
@@ -148,9 +151,7 @@ struct SyncStatusTracker::NodeState {
   // Sets the state with the provided new values and returns a "delta" NodeState
   // representing what changes were applied. If delta is pristine, no changes
   // were applied.
-  NodeState Set(const SyncStatus new_status,
-                const int32_t transferred,
-                const int32_t total);
+  NodeState Set(SyncStatus new_status, int64_t transferred, int64_t total);
 
   void ApplyDelta(const NodeState& status);
 
@@ -160,7 +161,9 @@ struct SyncStatusTracker::NodeState {
   inline bool IsPristine() const { return !is_dirty_; }
 
   float GetProgress() const {
-    return total_ ? (float)transferred_ / (float)total_ : 0;
+    return total_
+               ? static_cast<double>(transferred_) / static_cast<double>(total_)
+               : 0;
   }
 
   SyncStatus GetStatus() const;
