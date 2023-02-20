@@ -3497,6 +3497,11 @@ const NGLayoutResult* LayoutBox::GetCachedLayoutResult(
     const NGBlockBreakToken* break_token) const {
   NOT_DESTROYED();
   wtf_size_t index = FragmentIndex(break_token);
+
+  recordreplay::Assert(
+      "[RUN-1239-1384] LayoutBox::GetCachedLayoutResult %lu %lu", index,
+      layout_results_.size());
+
   if (index >= layout_results_.size())
     return nullptr;
   const NGLayoutResult* result = layout_results_[index];
