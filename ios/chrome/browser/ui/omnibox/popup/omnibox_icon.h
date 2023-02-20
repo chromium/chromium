@@ -28,8 +28,6 @@ typedef NS_ENUM(NSInteger, OmniboxIconType) {
 @property(nonatomic, strong, readonly) UIColor* iconImageTintColor;
 @property(nonatomic, strong, readonly) UIImage* backgroundImage;
 @property(nonatomic, strong, readonly) UIColor* backgroundImageTintColor;
-@property(nonatomic, strong, readonly) UIImage* overlayImage;
-@property(nonatomic, strong, readonly) UIColor* overlayImageTintColor;
 
 @end
 

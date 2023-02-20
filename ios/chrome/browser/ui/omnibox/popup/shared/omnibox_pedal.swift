@@ -48,7 +48,5 @@ extension OmniboxPedalData: OmniboxIcon {
   public var iconImageTintColor: UIColor? { return nil }
   public var backgroundImage: UIImage? { return nil }
   public var backgroundImageTintColor: UIColor? { return nil }
-  public var overlayImage: UIImage? { return nil }
-  public var overlayImageTintColor: UIColor? { return nil }
 
 }

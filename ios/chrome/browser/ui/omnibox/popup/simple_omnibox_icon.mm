@@ -142,17 +142,4 @@
   }
 }
 
-- (UIImage*)overlayImage {
-  switch (self.iconType) {
-    case OmniboxIconTypeImage:
-    case OmniboxIconTypeSuggestionIcon:
-    case OmniboxIconTypeFavicon:
-      return nil;
-  }
-}
-
-- (UIColor*)overlayImageTintColor {
-  return nil;
-}
-
 @end

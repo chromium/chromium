@@ -19,7 +19,6 @@
 
 @property(nonatomic, strong) UIImageView* backgroundImageView;
 @property(nonatomic, strong) UIImageView* mainImageView;
-@property(nonatomic, strong) UIImageView* overlayImageView;
 
 @property(nonatomic, strong) id<OmniboxIcon> omniboxIcon;
 
@@ -36,9 +35,6 @@
     _mainImageView = [[UIImageView alloc] initWithImage:nil];
     _mainImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    _overlayImageView = [[UIImageView alloc] initWithImage:nil];
-    _overlayImageView.translatesAutoresizingMaskIntoConstraints = NO;
-
     UIImageView* mask = [[UIImageView alloc]
         initWithImage:[UIImage imageNamed:@"background_solid"]];
     self.maskView = mask;
@@ -49,7 +45,6 @@
 - (void)prepareForReuse {
   self.backgroundImageView.image = nil;
   self.mainImageView.image = nil;
-  [self.overlayImageView removeFromSuperview];
   self.mainImageView.contentMode = UIViewContentModeCenter;
 }
 
@@ -84,19 +79,6 @@
   ]];
 }
 
-- (void)addOverlayImageView {
-  [self addSubview:self.overlayImageView];
-  [NSLayoutConstraint activateConstraints:@[
-    [self.overlayImageView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor],
-    [self.overlayImageView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
-    [self.overlayImageView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [self.overlayImageView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
-  ]];
-}
-
 - (void)setOmniboxIcon:(id<OmniboxIcon>)omniboxIcon {
   _omniboxIcon = omniboxIcon;
 
@@ -119,11 +101,6 @@
                                      imageURL) {
                                return;
                              }
-                             [weakSelf addOverlayImageView];
-                             weakSelf.overlayImageView.image =
-                                 omniboxIcon.overlayImage;
-                             weakSelf.overlayImageView.tintColor =
-                                 omniboxIcon.overlayImageTintColor;
                              weakSelf.mainImageView.image = image;
                            }];
       break;
@@ -164,7 +141,6 @@
   _highlighted = highlighted;
   self.backgroundImageView.highlighted = highlighted;
   self.mainImageView.highlighted = highlighted;
-  self.overlayImageView.highlighted = highlighted;
 
   self.mainImageView.tintColor =
       highlighted ? UIColor.whiteColor : self.omniboxIcon.iconImageTintColor;
