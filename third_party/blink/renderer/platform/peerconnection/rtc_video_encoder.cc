@@ -648,9 +648,10 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // we don't care about ordering.
   Vector<int> input_buffers_free_;
 
-  // The number of output buffers ready to be filled with output from the
-  // encoder.
-  int output_buffers_free_count_{0};
+  // The number of output buffers that have been sent to a hardware video
+  // encoder by VideoEncodeAccelerator::UseOutputBitstreamBuffer() and the
+  // encoder holds them.
+  size_t output_buffers_in_encoder_count_{0};
 
   // Whether to send the frames to VEA as native buffer. Native buffer allows
   // VEA to pass the buffer to the encoder directly without further processing.
@@ -872,7 +873,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
   // continue. If this is a key frame, WebRTC will request a key frame again.
   // Besides, webrtc will drop a frame if Encode() blocks too long.
   if (!use_native_input_ && input_buffers_free_.empty() &&
-      output_buffers_free_count_ == 0) {
+      output_buffers_in_encoder_count_ == 0u) {
     DVLOG(2) << "Run out of input and output buffers. Drop the frame.";
     encode_event.Set(WEBRTC_VIDEO_CODEC_ERROR);
     encode_event.Signal();
@@ -907,7 +908,7 @@ void RTCVideoEncoder::Impl::UseOutputBitstreamBufferId(
         bitstream_buffer_id,
         output_buffers_[bitstream_buffer_id].first.Duplicate(),
         output_buffers_[bitstream_buffer_id].first.GetSize()));
-    output_buffers_free_count_++;
+    output_buffers_in_encoder_count_++;
   }
 }
 
@@ -1022,7 +1023,7 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
     video_encoder_->UseOutputBitstreamBuffer(
         media::BitstreamBuffer(i, output_buffers_[i].first.Duplicate(),
                                output_buffers_[i].first.GetSize()));
-    output_buffers_free_count_++;
+    output_buffers_in_encoder_count_++;
   }
   DCHECK_EQ(status_, WEBRTC_VIDEO_CODEC_UNINITIALIZED);
   status_ = WEBRTC_VIDEO_CODEC_OK;
@@ -1054,7 +1055,8 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                       media::VideoEncodeAccelerator::kPlatformFailureError);
     return;
   }
-  output_buffers_free_count_--;
+  DCHECK_NE(output_buffers_in_encoder_count_, 0u);
+  output_buffers_in_encoder_count_--;
 
   // Find RTP and capture timestamps by going through |pending_timestamps_|.
   // Derive it from current time otherwise.
