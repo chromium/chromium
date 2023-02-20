@@ -10,7 +10,9 @@ source_set("inactive_tabs") {
   ]
   deps = [
     ":inactive_tabs_ui",
+    "//base",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
   ]
 }
 

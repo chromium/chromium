@@ -18,6 +18,16 @@
 
 @implementation InactiveTabsViewController
 
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil {
+  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+  if (self) {
+    _gridViewController = [[GridViewController alloc] init];
+    _gridViewController.theme = GridThemeLight;
+  }
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = UIColor.blackColor;
@@ -34,8 +44,6 @@
   navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:navigationBar];
 
-  _gridViewController = [[GridViewController alloc] init];
-  _gridViewController.theme = GridThemeLight;
   UIView* gridView = _gridViewController.view;
   gridView.translatesAutoresizingMaskIntoConstraints = NO;
   gridView.accessibilityIdentifier = kInactiveTabGridIdentifier;

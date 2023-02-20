@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/notreached.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,7 +20,8 @@ namespace {
 const NSTimeInterval kDuration = 0.2;
 }  // namespace
 
-@interface InactiveTabsCoordinator () <InactiveTabsViewControllerDelegate>
+@interface InactiveTabsCoordinator () <GridViewControllerDelegate,
+                                       InactiveTabsViewControllerDelegate>
 
 // The view controller displaying the inactive tabs.
 @property(nonatomic, strong) InactiveTabsViewController* viewController;
@@ -38,6 +41,7 @@ const NSTimeInterval kDuration = 0.2;
 
   self.viewController = [[InactiveTabsViewController alloc] init];
   self.viewController.delegate = self;
+  self.viewController.gridViewController.delegate = self;
   UIView* baseView = self.baseViewController.view;
   UIView* view = self.viewController.view;
   view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -84,6 +88,84 @@ const NSTimeInterval kDuration = 0.2;
         [self.viewController removeFromParentViewController];
         self.viewController = nil;
       }];
+}
+
+#pragma mark - GridViewControllerDelegate
+
+- (void)gridViewController:(GridViewController*)gridViewController
+       didSelectItemWithID:(NSString*)itemID {
+  // TODO(crbug.com/1408053): Reactivate the tab.
+}
+
+- (void)gridViewController:(GridViewController*)gridViewController
+        didCloseItemWithID:(NSString*)itemID {
+  // TODO(crbug.com/1408053): Close the tab.
+}
+
+- (void)didTapPlusSignInGridViewController:
+    (GridViewController*)gridViewController {
+  NOTREACHED();
+}
+
+- (void)gridViewController:(GridViewController*)gridViewController
+         didMoveItemWithID:(NSString*)itemID
+                   toIndex:(NSUInteger)destinationIndex {
+  NOTREACHED();
+}
+
+- (void)gridViewController:(GridViewController*)gridViewController
+        didChangeItemCount:(NSUInteger)count {
+  // No op.
+}
+
+- (void)gridViewController:(GridViewController*)gridViewController
+       didRemoveItemWIthID:(NSString*)itemID {
+  // No op.
+}
+
+- (void)didChangeLastItemVisibilityInGridViewController:
+    (GridViewController*)gridViewController {
+  // No op.
+}
+
+- (void)gridViewController:(GridViewController*)gridViewController
+    contentNeedsAuthenticationChanged:(BOOL)needsAuth {
+  NOTREACHED();
+}
+
+- (void)gridViewControllerWillBeginDragging:
+    (GridViewController*)gridViewController {
+  // No op.
+}
+
+- (void)gridViewControllerDragSessionWillBegin:
+    (GridViewController*)gridViewController {
+  // No op.
+}
+
+- (void)gridViewControllerDragSessionDidEnd:
+    (GridViewController*)gridViewController {
+  // No op.
+}
+
+- (void)gridViewControllerScrollViewDidScroll:
+    (GridViewController*)gridViewController {
+  // No op.
+}
+
+- (void)gridViewControllerDropAnimationWillBegin:
+    (GridViewController*)gridViewController {
+  NOTREACHED();
+}
+
+- (void)gridViewControllerDropAnimationDidEnd:
+    (GridViewController*)gridViewController {
+  NOTREACHED();
+}
+
+- (void)didTapInactiveTabsButtonInGridViewController:
+    (GridViewController*)gridViewController {
+  NOTREACHED();
 }
 
 #pragma mark - InactiveTabsViewControllerDelegate
