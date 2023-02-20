@@ -13,6 +13,17 @@ build_webui("build") {
 
   static_files = [ "intro.html" ]
 
+  if (enable_dice_support) {
+    static_files += [
+      "images/cloud_upload.svg",
+      "images/devices.svg",
+    ]
+
+    if (!is_chrome_branded) {
+      static_files += [ "images/security.svg" ]
+    }
+  }
+
   if (is_chromeos_lacros) {
     web_component_files = [ "lacros_app.ts" ]
   } else if (enable_dice_support) {
@@ -23,8 +34,6 @@ build_webui("build") {
   }
 
   non_web_component_files = [ "browser_proxy.ts" ]
-
-  icons_html_files = [ "icons.html" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_composite = true

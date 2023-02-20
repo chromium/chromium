@@ -36,6 +36,7 @@
           <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="google_chrome/chrome_128px.svg" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_SVG" file="google_chrome/chrome_logo.svg" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="google_chrome/chrome_logo_animation.svg" type="BINDATA" />
+          <include name="IDR_GSHIELD_ICON_SVG" file="google_chrome/gshield.svg" type="BINDATA" />
           <if expr="chromeos_ash">
             <include name="IDR_PRODUCT_LOGO_24PX_2X" file="google_chrome/chrome_24px_2x.svg" type="BINDATA" />
             <!-- Used by lacros. -->

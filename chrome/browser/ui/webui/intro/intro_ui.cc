@@ -126,17 +126,21 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   source->AddBoolean("isDeviceManaged", is_device_managed);
 
-  source->AddResourcePath("product-logo.svg", IDR_PRODUCT_LOGO_SVG);
-  source->AddResourcePath("product-logo-animation.svg",
+  source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
+  source->AddResourcePath("images/product-logo-animation.svg",
                           IDR_PRODUCT_LOGO_ANIMATION_SVG);
-  source->AddResourcePath("left_illustration.svg",
+  source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
-  source->AddResourcePath("left_illustration_dark.svg",
+  source->AddResourcePath("images/left_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
-  source->AddResourcePath("right_illustration.svg",
+  source->AddResourcePath("images/right_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
-  source->AddResourcePath("right_illustration_dark.svg",
+  source->AddResourcePath("images/right_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  source->AddResourcePath("images/gshield.svg", IDR_GSHIELD_ICON_SVG);
+#endif
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -154,7 +158,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   source->AddString("enterpriseInfo", GetLacrosIntroManagementDisclaimer(
                                           *profile, *profile_entry));
   source->AddResourcePath(
-      "lacros_intro_banner.svg",
+      "images/lacros_intro_banner.svg",
       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_LACROS_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG);
 #endif
 

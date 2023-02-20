@@ -1,4 +1,4 @@
-<style>
+<style include="cr-icons">
   :host {
     --background-image-width: 17vw;
     --cr-button-height: 36px;
@@ -17,13 +17,19 @@
     --gap-between-cards: 12px;
     --icon-color: var(--google-blue-600);
     --icon-container-color: var(--google-grey-100);
-    --left-background-image-url: url(left_illustration.svg);
+    --left-background-image-url: url(images/left_illustration.svg);
     --product-logo-margin-top: 50px;
     --product-logo-size: 90px;
-    --right-background-image-url: url(right_illustration.svg);
+    --right-background-image-url: url(images/right_illustration.svg);
     /* This is a dummy value, we set the actual one in javascript using
     "setTranslationHeightToAlignLogoAndAnimation" */
     --safe-zone-animation-translation-height: 0;
+    <if expr="not _google_chrome">
+    --security-icon-path: url(images/security.svg);
+    </if>
+    <if expr="_google_chrome">
+    --security-icon-path: url(images/gshield.svg);
+    </if>
     --scrollbar-background: var(--google-grey-100);
     --scrollbar-width: 4px;
     --subtitle-font-size: 1.25rem;
@@ -41,8 +47,8 @@
       --icon-container-color: var(--google-grey-700);
       --disclaimer-border-color: var(--google-grey-600);
       --disclaimer-color: var(--google-grey-100);
-      --left-background-image-url: url(left_illustration_dark.svg);
-      --right-background-image-url: url(right_illustration_dark.svg);
+      --left-background-image-url: url(images/left_illustration_dark.svg);
+      --right-background-image-url: url(images/right_illustration_dark.svg);
       --scrollbar-background: var(--google-grey-800);
     }
   }
@@ -126,13 +132,6 @@
     font-weight: 500;
     line-height: 22px;
     margin: 0 0 4px;
-  }
-
-  iron-icon {
-    --iron-icon-fill-color: var(--icon-color);
-    --iron-icon-height: 36px;
-    --iron-icon-width: 36px;
-    margin-bottom: 16px;
   }
 
   .fade-in {
@@ -315,6 +314,29 @@
     top: 50%;
     transform: translateY(-50%);
   }
+
+  #security {
+    --cr-icon-image: var(--security-icon-path);
+  }
+
+  #devices {
+    --cr-icon-image: url(images/devices.svg);
+  }
+
+  #cloud-upload {
+    --cr-icon-image: url(images/cloud_upload.svg);
+  }
+
+  .cr-icon {
+    --cr-icon-color: var(--icon-color);
+    --cr-icon-size: 36px;
+    margin: 0 0 16px;
+  }
+
+  /* Prevent the icons from being flipped in RTL mode. */
+  :host-context([dir=rtl]) .cr-icon {
+    transform: scaleX(1);
+  }
 </style>
 
 <img class="background-image" id="left-background-image">
@@ -322,13 +344,13 @@
 
 <div class="custom-scrollbar" id="safeZone">
   <div id="contentArea">
-    <img id="product-logo" src="product-logo.svg">
+    <img id="product-logo" src="images/product-logo.svg">
     <h1 class="fade-in">$i18n{pageTitle}</h1>
     <p class="fade-in" id="subtitle">$i18n{pageSubtitle}</p>
     <div id="benefit-cards-container">
       <template is="dom-repeat" items="[[benefitCards_]]">
         <div class="benefit-card fade-in">
-          <iron-icon icon="[[item.iconName]]"></iron-icon>
+          <div id="[[item.iconId]]" class="cr-icon"></div>
           <h2>[[item.title]]</h2>
           <p class="benefit-card-description">[[item.description]]</p>
         </div>

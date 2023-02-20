@@ -4,9 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './icons.html.js';
 import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -32,7 +32,7 @@ export interface SignInPromoElement {
 export interface BenefitCard {
   title: string;
   description: string;
-  iconName: string;
+  iconId: string;
 }
 
 const SignInPromoElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
@@ -48,17 +48,17 @@ export class SignInPromoElement extends SignInPromoElementBase {
       {
         title: this.i18n('devicesCardTitle'),
         description: this.i18n('devicesCardDescription'),
-        iconName: 'intro:devices',
+        iconId: 'devices',
       },
       {
         title: this.i18n('securityCardTitle'),
         description: this.i18n('securityCardDescription'),
-        iconName: 'cr:security',
+        iconId: 'security',
       },
       {
         title: this.i18n('backupCardTitle'),
         description: this.i18n('backupCardDescription'),
-        iconName: 'intro:cloud-upload',
+        iconId: 'cloud-upload',
       },
     ];
   }
