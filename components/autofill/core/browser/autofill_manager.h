@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
@@ -45,6 +46,7 @@ struct FormData;
 struct FormFieldData;
 class FormStructure;
 class LogManager;
+class TouchToFillDelegateImpl;
 
 // This class defines the interface should be implemented by autofill
 // implementation in browser side to interact with AutofillDriver.
@@ -149,6 +151,11 @@ class AutofillManager
   const AutofillClient* client() const {
     DCHECK(!driver()->IsPrerendering());
     return client_;
+  }
+
+  AutofillClient* unsafe_client(
+      base::PassKey<TouchToFillDelegateImpl> pass_key) {
+    return AutofillManager::unsafe_client();
   }
 
   // Returns a WeakPtr to the leaf class.

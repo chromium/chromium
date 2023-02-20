@@ -110,7 +110,15 @@ bool TouchToFillDelegateImpl::IsShowingTouchToFill() {
 // TODO(crbug.com/1348538): Create a central point for TTF hiding decision.
 void TouchToFillDelegateImpl::HideTouchToFill() {
   if (IsShowingTouchToFill()) {
-    manager_->client()->HideTouchToFillCreditCard();
+    // TODO(crbug.com/1417442): This is to prevent calling virtual functions in
+    // destructors in the following call chain:
+    //       ~ContentAutofillDriver()
+    //   --> ~BrowserAutofillManager()
+    //   --> ~TouchToFillDelegateImpl()
+    //   --> HideTouchToFill()
+    //   --> AutofillManager::safe_client()
+    //   --> ContentAutofillDriver::IsPrerendering()
+    manager_->unsafe_client(/*pass_key=*/{})->HideTouchToFillCreditCard();
   }
 }
 
