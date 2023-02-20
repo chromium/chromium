@@ -789,26 +789,29 @@ repackage_jars("repackage_native") {
   jar_excluded_patterns = _jar_excluded_patterns + _build_jar_excluded_patterns
 }
 
-_native_intermediate_jar_path = "$target_out_dir/repackage_native_impl.jar"
+_native_without_jni_jar_path =
+    "$target_out_dir/cronet_impl_native_without_jni_java.jar"
 
-# Do not depend on this target directly. Use :repackage_native.
-repackage_jars("repackage_native_impl") {
-  output = _native_intermediate_jar_path
+# Use :repackage_native unless you explicitly require a package without GEN_JNI
+# (this is required by downstream testing, see crbug.com/1401015).
+repackage_jars("repackage_native_without_jni") {
+  output = _native_without_jni_jar_path
   deps = cronet_impl_native_java_deps_to_package +
          [ ":cronet_impl_native_base_java" ]
   jar_excluded_patterns = _jar_excluded_patterns + _build_jar_excluded_patterns
+  remove_gen_jni = true
 }
 
 # Do not depend on this target directly. Use :repackage_native.
 # This target exists to provide :repackage_native with a suitable target to
 # depend on (since dist_aar only pulls in deps of type "java_library").
 android_java_prebuilt("repackage_native_java") {
-  jar_path = _native_intermediate_jar_path
+  jar_path = _native_without_jni_jar_path
 
   # Since only the unprocessed jar is used, no need to complete the bytecode
   # processing step.
   enable_bytecode_checks = false
-  deps = [ ":repackage_native_impl" ]
+  deps = [ ":repackage_native_without_jni" ]
 }
 
 repackage_jars("repackage_common") {
@@ -1740,6 +1743,7 @@ if (!is_component_build) {
         ":repackage_common",
         ":repackage_fake",
         ":repackage_native",
+        ":repackage_native_without_jni",
         ":repackage_platform",
       ]
       if (current_cpu == "arm" && arm_version == 7) {
