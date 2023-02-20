@@ -2371,6 +2371,28 @@
             ]
         }
     ],
+    "CanvasCompressHibernatedImage": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CanvasCompressHibernatedImage"
+                    ]
+                }
+            ]
+        }
+    ],
     "CanvasFreeMemoryWhenHidden": [
         {
             "platforms": [
