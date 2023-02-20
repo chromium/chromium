@@ -35,6 +35,11 @@ source_set("coordinator_impl") {
     ":coordinator_headers",
     ":ui",
     "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/commands",
   ]
 }
 
@@ -47,7 +52,6 @@ source_set("ui") {
   # The other targets should be removed after folder editor view controller use cases are replaced with coordinator.
   visibility = [
     ":coordinator_impl",
-    "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/bookmarks/folder_chooser:ui",
   ]
   sources = [

@@ -18,29 +18,32 @@ class BookmarkNode;
 // a new folder.
 @interface BookmarksFolderEditorCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
-// Initializes BookmarksFolderEditorCoordinator, to create a new folder.
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-    NS_DESIGNATED_INITIALIZER;
-// Initializes BookmarksFolderEditorCoordinator. The view will edit the bookmark
-// folder node. `folderNode` cannot be nil.
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)navigationController
-                       browser:(Browser*)browser
-                    folderNode:(const bookmarks::BookmarkNode*)folderNode
-    NS_DESIGNATED_INITIALIZER;
-
 // Coordinator's delegate.
 @property(nonatomic, weak) id<BookmarksFolderEditorCoordinatorDelegate>
     delegate;
-// Returns the edited folder node. When creating a new folder, the new folder
-// node can be retrieved after `-[id<BookmarksFolderEditorCoordinatorDelegate>
-// bookmarksFolderEditorCoordinatorShouldStop:]` is called.
-@property(nonatomic, assign, readonly)
-    const bookmarks::BookmarkNode* editedFolderNode;
+
+// Initializes BookmarksFolderEditorCoordinator, to create a new folder in
+// `parentFolderNode`.
+// If `parentFolderNode` is `nullptr`, a default parent will be set.
+- (instancetype)initWithBaseNavigationController:
+                    (UINavigationController*)navigationController
+                                         browser:(Browser*)browser
+                                parentFolderNode:
+                                    (const bookmarks::BookmarkNode*)parentFolder
+    NS_DESIGNATED_INITIALIZER;
+// Initializes BookmarksFolderEditorCoordinator. The view will edit the bookmark
+// folder node.
+// `folderNode` cannot be `nullptr` or editable.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)navigationController
+                       browser:(Browser*)browser
+                    folderNode:(const bookmarks::BookmarkNode*)folder
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Whether the bookmark folder editor can be dismissed.
+- (BOOL)canDismiss;
 
 @end
 

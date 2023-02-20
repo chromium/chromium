@@ -167,6 +167,57 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(!_folderChooserCoordinator);
 }
 
+#pragma mark - Public
+
+- (void)presentationControllerDidAttemptToDismiss {
+  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self
+                         browser:_browser
+                           title:nil
+                         message:nil
+                   barButtonItem:self.navigationItem.leftBarButtonItem];
+
+  __weak __typeof(self) weakSelf = self;
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
+                action:^{
+                  [weakSelf saveFolder];
+                }
+                 style:UIAlertActionStyleDefault];
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
+                action:^{
+                  [weakSelf dismiss];
+                }
+                 style:UIAlertActionStyleDestructive];
+  // IDS_IOS_NAVIGATION_BAR_CANCEL_BUTTON
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
+                action:^{
+                  weakSelf.navigationItem.leftBarButtonItem.enabled = YES;
+                  weakSelf.navigationItem.rightBarButtonItem.enabled = YES;
+                }
+                 style:UIAlertActionStyleCancel];
+
+  self.navigationItem.leftBarButtonItem.enabled = NO;
+  self.navigationItem.rightBarButtonItem.enabled = NO;
+  [self.actionSheetCoordinator start];
+}
+
+// Whether the bookmarks folder editor can be dismissed.
+- (BOOL)canDismiss {
+  if (self.edited) {
+    return NO;
+  }
+  if (self.folderChooserCoordinator) {
+    return [self.folderChooserCoordinator canDismiss];
+  }
+  return YES;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -224,20 +275,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Actions
 
-// Whether the bookmarks folder editor can be dismissed.
-- (BOOL)canDismiss {
-  if (self.edited) {
-    return NO;
-  }
-  if (self.folderChooserCoordinator) {
-    return [self.folderChooserCoordinator canDismiss];
-  }
-  return YES;
-}
-
 - (void)dismiss {
   [self.view endEditing:YES];
-  [self.delegate bookmarkFolderEditorDidCancel:self];
+  [self.delegate bookmarksFolderEditorDidCancel:self];
 }
 
 - (void)deleteFolder {
@@ -249,7 +289,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                               editedNodes, self.bookmarkModel,
                               self.browserState)];
-  [self.delegate bookmarkFolderEditorDidDeleteEditedFolder:self];
+  [self.delegate bookmarksFolderEditorDidDeleteEditedFolder:self];
 }
 
 - (void)saveFolder {
@@ -263,7 +303,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     DCHECK(self.folder);
     // Tell delegate if folder title has been changed.
     if (self.folder->GetTitle() != folderTitle) {
-      [self.delegate bookmarkFolderEditorWillCommitTitleChange:self];
+      [self.delegate bookmarksFolderEditorWillCommitTitleChange:self];
     }
 
     self.bookmarkModel->SetTitle(self.folder, folderTitle,
@@ -282,7 +322,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         self.parentFolder, self.parentFolder->children().size(), folderTitle);
   }
   [self.view endEditing:YES];
-  [self.delegate bookmarkFolderEditor:self didFinishEditingFolder:self.folder];
+  [self.delegate bookmarksFolderEditor:self didFinishEditingFolder:self.folder];
 }
 
 - (void)changeParentFolder {
@@ -406,64 +446,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       ItemTypeParentFolder) {
     [self changeParentFolder];
   }
-}
-
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidAttemptToDismiss:
-    (UIPresentationController*)presentationController {
-  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self
-                         browser:_browser
-                           title:nil
-                         message:nil
-                   barButtonItem:self.navigationItem.leftBarButtonItem];
-
-  __weak __typeof(self) weakSelf = self;
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
-                action:^{
-                  [weakSelf saveFolder];
-                }
-                 style:UIAlertActionStyleDefault];
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
-                action:^{
-                  [weakSelf dismiss];
-                }
-                 style:UIAlertActionStyleDestructive];
-  // IDS_IOS_NAVIGATION_BAR_CANCEL_BUTTON
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
-                action:^{
-                  weakSelf.navigationItem.leftBarButtonItem.enabled = YES;
-                  weakSelf.navigationItem.rightBarButtonItem.enabled = YES;
-                }
-                 style:UIAlertActionStyleCancel];
-
-  self.navigationItem.leftBarButtonItem.enabled = NO;
-  self.navigationItem.rightBarButtonItem.enabled = NO;
-  [self.actionSheetCoordinator start];
-}
-
-- (void)presentationControllerWillDismiss:
-    (UIPresentationController*)presentationController {
-  // Resign first responder if trying to dismiss the VC so the keyboard doesn't
-  // linger until the VC dismissal has completed.
-  [self.view endEditing:YES];
-}
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self dismiss];
-}
-
-- (BOOL)presentationControllerShouldDismiss:
-    (UIPresentationController*)presentationController {
-  return [self canDismiss];
 }
 
 #pragma mark - Private

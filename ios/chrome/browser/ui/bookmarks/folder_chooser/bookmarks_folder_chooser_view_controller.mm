@@ -273,27 +273,27 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - BookmarksFolderEditorViewControllerDelegate
 
-- (void)bookmarkFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
-      didFinishEditingFolder:(const BookmarkNode*)folder {
+- (void)bookmarksFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
+       didFinishEditingFolder:(const BookmarkNode*)folder {
   DCHECK(folder);
   [self reloadModel];
   [self changeSelectedFolder:folder];
   [self delayedNotifyDelegateOfSelection];
 }
 
-- (void)bookmarkFolderEditorDidDeleteEditedFolder:
+- (void)bookmarksFolderEditorDidDeleteEditedFolder:
     (BookmarksFolderEditorViewController*)folderEditor {
   NOTREACHED();
 }
 
-- (void)bookmarkFolderEditorDidCancel:
+- (void)bookmarksFolderEditorDidCancel:
     (BookmarksFolderEditorViewController*)folderEditor {
   [self.navigationController popViewControllerAnimated:YES];
   self.folderAddController.delegate = nil;
   self.folderAddController = nil;
 }
 
-- (void)bookmarkFolderEditorWillCommitTitleChange:
+- (void)bookmarksFolderEditorWillCommitTitleChange:
     (BookmarksFolderEditorViewController*)controller {
   // Do nothing.
 }

@@ -18,20 +18,22 @@ class BookmarkNode;
 }  // namespace bookmarks
 
 @protocol BookmarksFolderEditorViewControllerDelegate
+
 // Called when the controller successfully created or edited `folder`.
-- (void)bookmarkFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
-      didFinishEditingFolder:(const bookmarks::BookmarkNode*)folder;
+- (void)bookmarksFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
+       didFinishEditingFolder:(const bookmarks::BookmarkNode*)folder;
 // Called when the user deletes the edited folder.
 // This is never called if the editor is created with
 // `folderCreatorWithBookmarkModel:parentFolder:`.
-- (void)bookmarkFolderEditorDidDeleteEditedFolder:
+- (void)bookmarksFolderEditorDidDeleteEditedFolder:
     (BookmarksFolderEditorViewController*)folderEditor;
 // Called when the user cancels the folder creation.
-- (void)bookmarkFolderEditorDidCancel:
+- (void)bookmarksFolderEditorDidCancel:
     (BookmarksFolderEditorViewController*)folderEditor;
 // Called when the controller is going to commit the title change.
-- (void)bookmarkFolderEditorWillCommitTitleChange:
+- (void)bookmarksFolderEditorWillCommitTitleChange:
     (BookmarksFolderEditorViewController*)folderEditor;
+
 @end
 
 // View controller for creating or editing a bookmark folder. Allows editing of
@@ -67,6 +69,8 @@ class BookmarkNode;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
+// Called when the user attempt to swipe down the view controller.
+- (void)presentationControllerDidAttemptToDismiss;
 // Whether the bookmarks folder editor can be dismissed.
 - (BOOL)canDismiss;
 
