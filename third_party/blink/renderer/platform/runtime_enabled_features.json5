@@ -847,6 +847,10 @@
       status: "stable",
     },
     {
+      name: "CSSLinearTimingFunction",
+      status: "experimental"
+    },
+    {
       name: "CSSLogical",
       status: "experimental",
       base_feature: "none",

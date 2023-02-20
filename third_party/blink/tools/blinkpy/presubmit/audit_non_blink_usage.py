@@ -477,6 +477,7 @@ _CONFIG = [
             "gfx::KeyframedColorAnimationCurve",
             "gfx::KeyframedFloatAnimationCurve",
             "gfx::KeyframedTransformAnimationCurve",
+            "gfx::LinearEasingPoint",
             "gfx::TransformKeyframe",
             "gfx::TransformOperations",
 

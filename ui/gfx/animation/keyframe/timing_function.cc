@@ -4,6 +4,7 @@
 
 #include "ui/gfx/animation/keyframe/timing_function.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 
@@ -155,13 +156,27 @@ float StepsTimingFunction::GetStepsStartOffset() const {
   }
 }
 
+LinearTimingFunction::LinearTimingFunction() = default;
+
+LinearTimingFunction::LinearTimingFunction(
+    std::vector<LinearEasingPoint> points)
+    : points_(std::move(points)) {}
+
+LinearTimingFunction::~LinearTimingFunction() = default;
+
+LinearTimingFunction::LinearTimingFunction(const LinearTimingFunction& other) {
+  points_ = other.points_;
+}
+
 std::unique_ptr<LinearTimingFunction> LinearTimingFunction::Create() {
   return base::WrapUnique(new LinearTimingFunction());
 }
 
-LinearTimingFunction::LinearTimingFunction() = default;
-
-LinearTimingFunction::~LinearTimingFunction() = default;
+std::unique_ptr<LinearTimingFunction> LinearTimingFunction::Create(
+    std::vector<LinearEasingPoint> points) {
+  DCHECK(points.size() >= 2);
+  return base::WrapUnique(new LinearTimingFunction(std::move(points)));
+}
 
 TimingFunction::Type LinearTimingFunction::GetType() const {
   return Type::LINEAR;
@@ -175,8 +190,46 @@ double LinearTimingFunction::Velocity(double x) const {
   return 0;
 }
 
-double LinearTimingFunction::GetValue(double t) const {
-  return t;
+double LinearTimingFunction::GetValue(double input_progress) const {
+  if (IsTrivial()) {
+    return input_progress;
+  }
+  // https://w3c.github.io/csswg-drafts/css-easing/#linear-easing-function-output
+  // 1. Let points be linearEasingFunction’s points.
+  // 2. Let pointAIndex be index of the last item in points with an input
+  // less than or equal to inputProgress, or 0 if there is no match.
+  auto it = std::upper_bound(points_.cbegin(), points_.cend(), input_progress,
+                             [](double progress, const auto& point) {
+                               return 100 * progress < point.input;
+                             });
+  it = it == points_.cend() ? std::prev(it) : it;
+  auto point_a = it == points_.cbegin() ? it : std::prev(it);
+  // 3. If pointAIndex is equal to points size minus 1, decrement pointAIndex
+  // by 1.
+  point_a = std::next(point_a) == points_.cend() ? std::prev(point_a) : point_a;
+  // 4. Let pointA be points[pointAIndex].
+  // 5. Let pointB be points[pointAIndex + 1].
+  const auto& point_b = std::next(point_a);
+  // 6. If pointA’s input is equal to pointB’s input, return pointB’s output.
+  if (point_a->input == point_b->input) {
+    return point_b->output;
+  }
+  // 7. Let progressFromPointA be inputProgress minus pointA’s input.
+  const double progress_from_point_a = input_progress - point_a->input / 100;
+  // 8. Let pointInputRange be pointB’s input minus pointA’s input.
+  const double point_input_range = (point_b->input - point_a->input) / 100;
+  // 9. Let progressBetweenPoints be progressFromPointA divided by
+  // pointInputRange.
+  const double progress_between_points =
+      progress_from_point_a / point_input_range;
+  // 10. Let pointOutputRange be pointB’s output minus pointA’s output.
+  const double point_output_range = point_b->output - point_a->output;
+  // 11. Let outputFromLastPoint be progressBetweenPoints multiplied by
+  // pointOutputRange.
+  const double output_from_last_point =
+      progress_between_points * point_output_range;
+  // 12. Return pointA’s output plus outputFromLastPoint.
+  return point_a->output + output_from_last_point;
 }
 
 }  // namespace gfx

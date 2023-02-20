@@ -24,11 +24,39 @@
  */
 
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
-
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace blink {
-namespace cssvalue {
+namespace blink::cssvalue {
+
+String CSSLinearTimingFunctionValue::CustomCSSText() const {
+  WTF::StringBuilder builder;
+  builder.Append("linear(");
+  for (wtf_size_t i = 0; i < points_.size(); ++i) {
+    if (i != 0) {
+      builder.Append(", ");
+    }
+    builder.AppendNumber(points_[i].output);
+    builder.Append(" ");
+    builder.AppendNumber(points_[i].input);
+    builder.Append("%");
+  }
+  builder.Append(")");
+  return builder.ReleaseString();
+}
+
+bool CSSLinearTimingFunctionValue::Equals(
+    const CSSLinearTimingFunctionValue& other) const {
+  if (points_.size() != other.points_.size()) {
+    return false;
+  }
+  for (wtf_size_t i = 0; i < points_.size(); ++i) {
+    if (points_[i] != other.points_[i]) {
+      return false;
+    }
+  }
+  return true;
+}
 
 String CSSCubicBezierTimingFunctionValue::CustomCSSText() const {
   return "cubic-bezier(" + String::Number(x1_) + ", " + String::Number(y1_) +
@@ -83,5 +111,4 @@ bool CSSStepsTimingFunctionValue::Equals(
   return steps_ == other.steps_ && step_position_ == other.step_position_;
 }
 
-}  // namespace cssvalue
-}  // namespace blink
+}  // namespace blink::cssvalue

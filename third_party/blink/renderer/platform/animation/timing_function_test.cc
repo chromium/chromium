@@ -36,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 
 namespace blink {
 
@@ -63,6 +64,10 @@ class TimingFunctionTest : public testing::Test {
 TEST_F(TimingFunctionTest, LinearToString) {
   scoped_refptr<TimingFunction> linear_timing = LinearTimingFunction::Shared();
   EXPECT_EQ(linear_timing->ToString(), "linear");
+  std::vector<gfx::LinearEasingPoint> points{{0, 1}, {50, 2}, {100, 3}};
+  scoped_refptr<TimingFunction> linear_timing_complex =
+      LinearTimingFunction::Create(points);
+  EXPECT_EQ(linear_timing_complex->ToString(), "linear(1 0%, 2 50%, 3 100%)");
 }
 
 TEST_F(TimingFunctionTest, CubicToString) {
@@ -133,6 +138,9 @@ TEST_F(TimingFunctionTest, LinearOperatorEq) {
   scoped_refptr<TimingFunction> linear_timing2 = LinearTimingFunction::Shared();
   EXPECT_EQ(*linear_timing1, *linear_timing1);
   EXPECT_EQ(*linear_timing1, *linear_timing2);
+  std::vector<gfx::LinearEasingPoint> points{{0, 1}, {100, 1}};
+  const auto& linear_timing3 = LinearTimingFunction::Create(std::move(points));
+  EXPECT_EQ(*linear_timing1, *linear_timing3);
 }
 
 TEST_F(TimingFunctionTest, CubicOperatorEq) {
@@ -250,6 +258,20 @@ TEST_F(TimingFunctionTest, LinearEvaluate) {
   EXPECT_EQ(0.6, linear_timing->Evaluate(0.6));
   EXPECT_EQ(-0.2, linear_timing->Evaluate(-0.2));
   EXPECT_EQ(1.6, linear_timing->Evaluate(1.6));
+  std::vector<gfx::LinearEasingPoint> points{{0, 0}, {100, 1}};
+  scoped_refptr<TimingFunction> linear_timing_trivial =
+      LinearTimingFunction::Create(std::move(points));
+  EXPECT_EQ(0.2, linear_timing_trivial->Evaluate(0.2));
+  EXPECT_EQ(0.6, linear_timing_trivial->Evaluate(0.6));
+  EXPECT_EQ(-0.2, linear_timing_trivial->Evaluate(-0.2));
+  EXPECT_EQ(1.6, linear_timing_trivial->Evaluate(1.6));
+  points = {{0, 0}, {50, 1}, {60, .5}, {100, 1}};
+  scoped_refptr<TimingFunction> linear_timing_complex =
+      LinearTimingFunction::Create(std::move(points));
+  EXPECT_EQ(.5, linear_timing_complex->Evaluate(.25));
+  EXPECT_EQ(.5, linear_timing_complex->Evaluate(.6));
+  EXPECT_EQ(.75, linear_timing_complex->Evaluate(.80));
+  EXPECT_EQ(-.5, linear_timing_complex->Evaluate(-.25));
 }
 
 TEST_F(TimingFunctionTest, LinearRange) {
@@ -259,11 +281,21 @@ TEST_F(TimingFunctionTest, LinearRange) {
   linear_timing->Range(&start, &end);
   EXPECT_NEAR(0, start, 0.01);
   EXPECT_NEAR(1, end, 0.01);
-  start = -1;
-  end = 10;
-  linear_timing->Range(&start, &end);
-  EXPECT_NEAR(-1, start, 0.01);
-  EXPECT_NEAR(10, end, 0.01);
+  std::vector<gfx::LinearEasingPoint> points{{0, 0}, {50, 1}, {100, 0}};
+  scoped_refptr<TimingFunction> linear_timing_complex =
+      LinearTimingFunction::Create(std::move(points));
+  start = .25;
+  end = .75;
+  linear_timing_complex->Range(&start, &end);
+  EXPECT_NEAR(.5, start, 0.01);
+  EXPECT_NEAR(1, end, 0.01);
+  points = {{0, 0}, {50, .75}, {60, 0.1}, {100, 1}};
+  linear_timing_complex = LinearTimingFunction::Create(std::move(points));
+  start = .5;
+  end = .75;
+  linear_timing_complex->Range(&start, &end);
+  EXPECT_NEAR(.1, start, 0.01);
+  EXPECT_NEAR(.75, end, 0.01);
 }
 
 TEST_F(TimingFunctionTest, StepRange) {

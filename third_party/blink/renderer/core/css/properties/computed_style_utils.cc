@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
+#include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
@@ -2225,7 +2226,13 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
     }
 
     default:
-      return CSSIdentifierValue::Create(CSSValueID::kLinear);
+      const auto* linear_timing_function =
+          To<LinearTimingFunction>(timing_function.get());
+      if (linear_timing_function->IsTrivial()) {
+        return CSSIdentifierValue::Create(CSSValueID::kLinear);
+      }
+      return MakeGarbageCollected<cssvalue::CSSLinearTimingFunctionValue>(
+          linear_timing_function->Points());
   }
 }
 

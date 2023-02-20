@@ -6,6 +6,7 @@
 #define UI_GFX_ANIMATION_KEYFRAME_TIMING_FUNCTION_H_
 
 #include <memory>
+#include <vector>
 
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
@@ -122,10 +123,32 @@ class GFX_KEYFRAME_ANIMATION_EXPORT StepsTimingFunction
   StepPosition step_position_;
 };
 
+struct GFX_KEYFRAME_ANIMATION_EXPORT LinearEasingPoint {
+  double input;
+  double output;
+
+  LinearEasingPoint() = default;
+  LinearEasingPoint(double input, double output) {
+    this->input = input;
+    this->output = output;
+  }
+
+  bool operator==(const LinearEasingPoint& other) const {
+    return input == other.input && output == other.output;
+  }
+  bool operator!=(const LinearEasingPoint& other) const {
+    return !(*this == other);
+  }
+};
+
 class GFX_KEYFRAME_ANIMATION_EXPORT LinearTimingFunction
     : public TimingFunction {
  public:
   static std::unique_ptr<LinearTimingFunction> Create();
+  static std::unique_ptr<LinearTimingFunction> Create(
+      std::vector<LinearEasingPoint> points);
+
+  LinearTimingFunction& operator=(const LinearTimingFunction&) = delete;
   ~LinearTimingFunction() override;
 
   // TimingFunction implementation.
@@ -134,8 +157,15 @@ class GFX_KEYFRAME_ANIMATION_EXPORT LinearTimingFunction
   std::unique_ptr<TimingFunction> Clone() const override;
   double Velocity(double time) const override;
 
+  const LinearEasingPoint& Point(size_t i) const { return points_[i]; }
+  const std::vector<LinearEasingPoint>& Points() const { return points_; }
+  bool IsTrivial() const { return !points_.size(); }
+
  private:
   LinearTimingFunction();
+  explicit LinearTimingFunction(std::vector<LinearEasingPoint> points);
+  LinearTimingFunction(const LinearTimingFunction&);
+  std::vector<LinearEasingPoint> points_;
 };
 
 }  // namespace gfx

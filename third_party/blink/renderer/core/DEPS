@@ -109,6 +109,7 @@ include_rules = [
     "+ui/events/types/scroll_types.h",
     "+ui/gfx/animation/keyframe/animation_curve.h",
     "+ui/gfx/animation/keyframe/keyframed_animation_curve.h",
+    "+ui/gfx/animation/keyframe/timing_function.h",
     "+ui/gfx/geometry",
     "+ui/gfx/range/range.h",
     "-web",

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/style/border_image_length_box.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/fill_layer.h"
+#include "third_party/blink/renderer/platform/animation/timing_function.h"
 
 namespace blink {
 
@@ -569,6 +570,11 @@ scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
         NOTREACHED();
         return CSSTimingData::InitialTimingFunction();
     }
+  }
+
+  if (const auto* linear_timing_function =
+          DynamicTo<cssvalue::CSSLinearTimingFunctionValue>(value)) {
+    return LinearTimingFunction::Create(linear_timing_function->Points());
   }
 
   if (const auto* cubic_timing_function =

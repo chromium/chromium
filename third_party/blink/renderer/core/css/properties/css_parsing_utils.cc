@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/color_utils.h"
 
 namespace blink {
@@ -153,6 +154,132 @@ CSSValue* ConsumeBaseline(CSSParserTokenRange& range) {
         preference, baseline, CSSValuePair::kDropIdenticalValues);
   }
   return baseline;
+}
+
+absl::optional<cssvalue::CSSLinearStop> ConsumeLinearStop(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
+  absl::optional<double> number;
+  absl::optional<double> length_a;
+  absl::optional<double> length_b;
+  while (!range.AtEnd()) {
+    if (range.Peek().GetType() == kCommaToken) {
+      break;
+    }
+    CSSPrimitiveValue* value =
+        ConsumeNumber(range, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!number.has_value() && value && value->IsNumber()) {
+      number = value->GetDoubleValue();
+      continue;
+    }
+    value = ConsumePercent(range, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!length_a.has_value() && value && value->IsPercentage()) {
+      length_a = value->GetDoubleValue();
+      value =
+          ConsumePercent(range, context, CSSPrimitiveValue::ValueRange::kAll);
+      if (value && value->IsPercentage()) {
+        length_b = value->GetDoubleValue();
+      }
+      continue;
+    }
+    return {};
+  }
+  if (!number.has_value()) {
+    return {};
+  }
+  return {{number.value(), length_a, length_b}};
+}
+
+CSSValue* ConsumeLinear(CSSParserTokenRange& range,
+                        const CSSParserContext& context) {
+  // https://w3c.github.io/csswg-drafts/css-easing/#linear-easing-function-parsing
+  DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kLinear);
+  CSSParserTokenRange range_copy = range;
+  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  Vector<cssvalue::CSSLinearStop> stop_list{};
+  absl::optional<cssvalue::CSSLinearStop> linear_stop;
+  do {
+    linear_stop = ConsumeLinearStop(args, context);
+    if (!linear_stop.has_value()) {
+      return nullptr;
+    }
+    stop_list.emplace_back(linear_stop.value());
+  } while (ConsumeCommaIncludingWhitespace(args));
+  if (!args.AtEnd()) {
+    return nullptr;
+  }
+  // 1. Let function be a new linear easing function.
+  // 2. Let largestInput be negative infinity.
+  // 3. If there are less than two items in stopList, then return failure.
+  if (stop_list.size() < 2) {
+    return nullptr;
+  }
+  // 4. For each stop in stopList:
+  double largest_input = std::numeric_limits<double>::lowest();
+  Vector<gfx::LinearEasingPoint> points{};
+  for (wtf_size_t i = 0; i < stop_list.size(); ++i) {
+    const auto& stop = stop_list[i];
+    // 4.1. Let point be a new linear easing point with its output set
+    // to stop’s <number> as a number.
+    gfx::LinearEasingPoint point{std::numeric_limits<double>::quiet_NaN(),
+                                 stop.number};
+    // 4.2. Append point to function’s points.
+    points.emplace_back(point);
+    // 4.3. If stop has a <linear-stop-length>, then:
+    if (stop.length_a.has_value()) {
+      // 4.3.1. Set point’s input to whichever is greater:
+      // stop’s <linear-stop-length>'s first <percentage> as a number,
+      // or largestInput.
+      points.back().input = std::max(largest_input, stop.length_a.value());
+      // 4.3.2. Set largestInput to point’s input.
+      largest_input = points.back().input;
+      // 4.3.3. If stop’s <linear-stop-length> has a second <percentage>, then:
+      if (stop.length_b.has_value()) {
+        // 4.3.3.1. Let extraPoint be a new linear easing point with its output
+        // set to stop’s <number> as a number.
+        gfx::LinearEasingPoint extra_point{
+            // 4.3.3.3. Set extraPoint’s input to whichever is greater:
+            // stop’s <linear-stop-length>'s second <percentage>
+            // as a number, or largestInput.
+            std::max(largest_input, stop.length_b.value()), stop.number};
+        // 4.3.3.2. Append extraPoint to function’s points.
+        points.emplace_back(extra_point);
+        // 4.3.3.4. Set largestInput to extraPoint’s input.
+        largest_input = extra_point.input;
+      }
+      // 4.4. Otherwise, if stop is the first item in stopList, then:
+    } else if (i == 0) {
+      // 4.4.1. Set point’s input to 0.
+      points.back().input = 0;
+      // 4.4.2. Set largestInput to 0.
+      largest_input = 0;
+      // 4.5. Otherwise, if stop is the last item in stopList,
+      // then set point’s input to whichever is greater: 1 or largestInput.
+    } else if (i == stop_list.size() - 1) {
+      points.back().input = std::max(100., largest_input);
+    }
+  }
+  // 5. For runs of items in function’s points that have a null input, assign a
+  // number to the input by linearly interpolating between the closest previous
+  // and next points that have a non-null input.
+  wtf_size_t upper_index = 0;
+  for (wtf_size_t i = 1; i < points.size(); ++i) {
+    if (std::isnan(points[i].input)) {
+      if (i > upper_index) {
+        const auto* it = std::find_if(
+            std::next(points.begin(), i + 1), points.end(),
+            [](const auto& point) { return !std::isnan(point.input); });
+        upper_index = static_cast<wtf_size_t>(it - points.begin());
+      }
+      points[i].input = points[i - 1].input +
+                        (points[upper_index].input - points[i - 1].input) /
+                            (upper_index - (i - 1));
+    }
+  }
+  range = range_copy;
+  // 6. Return function.
+  return MakeGarbageCollected<cssvalue::CSSLinearTimingFunctionValue>(
+      std::move(points));
 }
 
 CSSValue* ConsumeSteps(CSSParserTokenRange& range,
@@ -4077,6 +4204,10 @@ CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange& range,
   }
 
   CSSValueID function = range.Peek().FunctionId();
+  if (function == CSSValueID::kLinear &&
+      RuntimeEnabledFeatures::CSSLinearTimingFunctionEnabled()) {
+    return ConsumeLinear(range, context);
+  }
   if (function == CSSValueID::kSteps) {
     return ConsumeSteps(range, context);
   }

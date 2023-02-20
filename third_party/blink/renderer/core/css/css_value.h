@@ -132,6 +132,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsShadowValue() const { return class_type_ == kShadowClass; }
   bool IsStringValue() const { return class_type_ == kStringClass; }
   bool IsURIValue() const { return class_type_ == kURIClass; }
+  bool IsLinearTimingFunctionValue() const {
+    return class_type_ == kLinearTimingFunctionClass;
+  }
   bool IsCubicBezierTimingFunctionValue() const {
     return class_type_ == kCubicBezierTimingFunctionClass;
   }
@@ -248,6 +251,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kConicGradientClass,
 
     // Timing function classes.
+    kLinearTimingFunctionClass,
     kCubicBezierTimingFunctionClass,
     kStepsTimingFunctionClass,
 

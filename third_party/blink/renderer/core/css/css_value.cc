@@ -273,6 +273,9 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSShadowValue>(*this, other);
       case kStringClass:
         return CompareCSSValues<CSSStringValue>(*this, other);
+      case kLinearTimingFunctionClass:
+        return CompareCSSValues<cssvalue::CSSLinearTimingFunctionValue>(*this,
+                                                                        other);
       case kCubicBezierTimingFunctionClass:
         return CompareCSSValues<cssvalue::CSSCubicBezierTimingFunctionValue>(
             *this, other);
@@ -417,6 +420,8 @@ String CSSValue::CssText() const {
       return To<CSSShadowValue>(this)->CustomCSSText();
     case kStringClass:
       return To<CSSStringValue>(this)->CustomCSSText();
+    case kLinearTimingFunctionClass:
+      return To<cssvalue::CSSLinearTimingFunctionValue>(this)->CustomCSSText();
     case kCubicBezierTimingFunctionClass:
       return To<cssvalue::CSSCubicBezierTimingFunctionValue>(this)
           ->CustomCSSText();
@@ -623,6 +628,10 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kStringClass:
       To<CSSStringValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kLinearTimingFunctionClass:
+      To<cssvalue::CSSLinearTimingFunctionValue>(this)->TraceAfterDispatch(
+          visitor);
       return;
     case kCubicBezierTimingFunctionClass:
       To<cssvalue::CSSCubicBezierTimingFunctionValue>(this)->TraceAfterDispatch(

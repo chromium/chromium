@@ -1,5 +1,8 @@
 This is a testharness.js-based test.
 PASS e.style['transition-timing-function'] = "linear" should set the property value
+PASS e.style['transition-timing-function'] = "linear(0 0%, 0.5 50%, 1 100%)" should set the property value
+PASS e.style['transition-timing-function'] = "linear(0 0%, 10 10%, 10 50%, 25.4 75%, 100 100%)" should set the property value
+PASS e.style['transition-timing-function'] = "linear(0 0%, 1 100%)" should set the property value
 PASS e.style['transition-timing-function'] = "ease" should set the property value
 PASS e.style['transition-timing-function'] = "ease-in" should set the property value
 PASS e.style['transition-timing-function'] = "ease-out" should set the property value

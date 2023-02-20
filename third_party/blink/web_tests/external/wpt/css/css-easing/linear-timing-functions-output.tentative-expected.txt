@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
-FAIL linear function easing with output greater than 1 Failed to execute 'animate' on 'Element': 'linear(0, 1.5, 1)' is not a valid value for easing
-FAIL linear function easing with output less than 1 Failed to execute 'animate' on 'Element': 'linear(1, -0.5, 0)' is not a valid value for easing
+PASS linear function easing with output greater than 1
+PASS linear function easing with output less than 1
 FAIL linear function easing, linear equivalent Failed to execute 'animate' on 'Element': 'linear()' is not a valid value for easing
 FAIL linear function easing, constant Failed to execute 'animate' on 'Element': 'linear(0.5)' is not a valid value for easing
-FAIL linear function easing, steps equivalent Failed to execute 'animate' on 'Element': 'linear(0.2 0% 20%, 0.4 20% 40%, 0.6 40% 60%, 0.8 60% 80%, 1.0 80% 100%)' is not a valid value for easing
-FAIL linear function easing, input value being unspecified in the first entry implies zero Failed to execute 'animate' on 'Element': 'linear(0, 0.1 -10%, 1)' is not a valid value for easing
-FAIL linear function easing, input value being unspecified in the last entry implies max input value Failed to execute 'animate' on 'Element': 'linear(0, 0.9 110%, 1)' is not a valid value for easing
+PASS linear function easing, steps equivalent
+PASS linear function easing, input value being unspecified in the first entry implies zero
+PASS linear function easing, input value being unspecified in the last entry implies max input value
 Harness: the test ran to completion.
 

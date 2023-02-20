@@ -4,23 +4,76 @@
 
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 
+#include <algorithm>
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 
 namespace blink {
 
 String LinearTimingFunction::ToString() const {
-  return "linear";
+  if (linear_->IsTrivial()) {
+    return "linear";
+  }
+  WTF::StringBuilder builder;
+  builder.Append("linear(");
+  for (wtf_size_t i = 0; i < linear_->Points().size(); ++i) {
+    if (i != 0) {
+      builder.Append(", ");
+    }
+    builder.Append(String::NumberToStringECMAScript(linear_->Point(i).output));
+    builder.Append(" ");
+    builder.Append(String::NumberToStringECMAScript(linear_->Point(i).input));
+    builder.Append("%");
+  }
+  builder.Append(")");
+  return builder.ReleaseString();
 }
 
 double LinearTimingFunction::Evaluate(double fraction) const {
-  return fraction;
+  return linear_->GetValue(fraction);
 }
 
-void LinearTimingFunction::Range(double* min_value, double* max_value) const {}
+void LinearTimingFunction::Range(double* min_value, double* max_value) const {
+  if (IsTrivial()) {
+    return;
+  }
+  //
+  //        (min_it) # *               (max_it) ^ *
+  //                 | | *                      | |
+  //  (min_value) @  | | |   (max_value) %      | |
+  //                 * | | *                    | |
+  // ________________|_|_|_|____________________|_|_
+  // @ - min_value.
+  // % - max_value.
+  // # - min_it is first of points with same input (and input >= min_value).
+  // ^ - max_it.
+  // for min_comp we want the first of points in case of input equality.
+  // (e.g. begin of range).
+  const auto min_comp = [](double value, const auto& point) {
+    return value <= point.input;
+  };
+  // for max_comp we want the last of points in case of input equality.
+  // (e.g. end of range).
+  const auto max_comp = [](double value, const auto& point) {
+    return value < point.input;
+  };
+  auto min_it = std::upper_bound(Points().cbegin(), Points().cend(),
+                                 100 * *min_value, min_comp);
+  min_it = min_it == Points().cend() ? std::prev(min_it) : min_it;
+  auto max_it = std::upper_bound(Points().cbegin(), Points().cend(),
+                                 100 * *max_value, max_comp);
+  const auto [min, max] = std::minmax_element(
+      min_it, max_it,
+      [](const auto& a, const auto& b) { return a.output < b.output; });
+  double min_val = Evaluate(*min_value);
+  double max_val = Evaluate(*max_value);
+  *min_value = std::min({min_val, max_val, min->output});
+  *max_value = std::max({min_val, max_val, max->output});
+}
 
 std::unique_ptr<gfx::TimingFunction> LinearTimingFunction::CloneToCC() const {
-  return nullptr;
+  return linear_->Clone();
 }
 
 CubicBezierTimingFunction* CubicBezierTimingFunction::Preset(
@@ -183,6 +236,15 @@ scoped_refptr<TimingFunction> CreateCompositorTimingFunctionFromCC(
       return StepsTimingFunction::Create(
           steps_timing_function->steps(),
           steps_timing_function->step_position());
+    }
+
+    case gfx::TimingFunction::Type::LINEAR: {
+      auto* linear_timing_function =
+          static_cast<const gfx::LinearTimingFunction*>(timing_function);
+      if (linear_timing_function->IsTrivial()) {
+        return LinearTimingFunction::Shared();
+      }
+      return LinearTimingFunction::Create(linear_timing_function->Points());
     }
 
     default:
