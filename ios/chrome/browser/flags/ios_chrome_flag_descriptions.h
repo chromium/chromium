@@ -632,6 +632,11 @@ extern const char kOneTapForMapsDescription[];
 extern const char kOptimizationTargetPredictionDescription[];
 extern const char kOptimizationTargetPredictionName[];
 
+// Title and description for the flag to enable adding notes to password in
+// settings.
+extern const char kPasswordNotesWithBackupName[];
+extern const char kPasswordNotesWithBackupDescription[];
+
 // Title and description for the flag to enable PhishGuard password reuse
 // detection.
 extern const char kPasswordReuseDetectionName[];

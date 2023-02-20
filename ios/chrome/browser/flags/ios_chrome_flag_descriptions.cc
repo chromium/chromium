@@ -716,6 +716,10 @@ const char kOptimizationTargetPredictionDescription[] =
 const char kOptimizationTargetPredictionName[] =
     "Enables usage of optimization guide TFLite models.";
 
+const char kPasswordNotesWithBackupName[] = "Password notes in settings";
+const char kPasswordNotesWithBackupDescription[] =
+    "Enables a note section for each password in the settings page.";
+
 const char kPasswordReuseDetectionName[] =
     "PhishGuard password reuse detection";
 const char kPasswordReuseDetectionDescription[] =

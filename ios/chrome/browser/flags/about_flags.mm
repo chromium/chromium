@@ -1355,6 +1355,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSCustomBrowserEditMenuName,
      flag_descriptions::kIOSCustomBrowserEditMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSCustomBrowserEditMenu)},
+    {"password-notes", flag_descriptions::kPasswordNotesWithBackupName,
+     flag_descriptions::kPasswordNotesWithBackupDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kPasswordNotesWithBackup)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

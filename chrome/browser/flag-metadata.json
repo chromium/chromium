@@ -5613,7 +5613,7 @@
   },
   {
     "name": "password-notes",
-    "owners": ["mamir", "derinel@google.com"],
+    "owners": ["mamir", "derinel@google.com", "rgod@google.com"],
     "expiry_milestone": 114
   },
   {
