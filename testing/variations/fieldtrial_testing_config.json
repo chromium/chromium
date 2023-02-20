@@ -8950,7 +8950,7 @@
             ]
         }
     ],
-    "PermissionsPromptSurvey": [
+    "PermissionsQuietPromptsSurvey": [
         {
             "platforms": [
                 "chromeos",
@@ -8961,12 +8961,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Notifications_Accepted_20221207",
+                    "name": "Enabled_Notifications_Quiet_20230208",
                     "params": {
-                        "action_filter": "Accepted",
-                        "probability": "0.102",
+                        "probability": "0.3",
+                        "prompt_disposition_filter": "LocationBarLeftQuietChip",
+                        "prompt_disposition_reason_filter": "OnDevicePredictionModel,PredictionService",
                         "request_type_filter": "Notifications",
-                        "trigger_id": "YU4bKoXZ40ugnJ3q1cK0QhGFeT4E"
+                        "survey_display_time": "OnPromptAppearing",
+                        "trigger_id": "UKctDAzjF0ugnJ3q1cK0SvrQob5m"
                     },
                     "enable_features": [
                         "PermissionsPromptSurvey"
