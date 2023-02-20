@@ -357,8 +357,12 @@ crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/tr
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
+# finder:group-start anglebug.com/8003 failures happen in many tests, so can be classified as stale for one specific test
 crbug.com/angleproject/8003 [ mac passthrough angle-metal intel ] deqp/functional/gles3/uniformbuffers/multi_basic_types.html [ Failure ]
+crbug.com/angleproject/8003 [ mac passthrough angle-metal intel ] deqp/functional/gles3/uniformbuffers/multi_nested_struct.html [ Failure ]
 crbug.com/angleproject/8003 [ mac passthrough angle-metal intel ] deqp/functional/gles3/uniformbuffers/single_nested_struct.html [ Failure ]
+crbug.com/angleproject/8003 [ mac passthrough angle-metal intel ] deqp/functional/gles3/uniformbuffers/single_nested_struct_array.html [ Failure ]
+# finder:group-end
 crbug.com/angleproject/8026 [ mac passthrough angle-metal intel ] conformance2/uniforms/dependent-buffer-change.html [ Failure ]
 
 ## Metal M1 ##
