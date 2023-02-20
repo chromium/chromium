@@ -84,7 +84,7 @@ V8OffscreenRenderingContext* GPUCanvasContext::AsV8OffscreenRenderingContext() {
 SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
   if (!swap_buffers_)
     return CanvasRenderingContext::CanvasRenderingContextSkColorInfo();
-  return SkColorInfo(viz::ResourceFormatToClosestSkColorType(
+  return SkColorInfo(viz::ToClosestSkColorType(
                          /*gpu_compositing=*/true, swap_buffers_->Format()),
                      alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
                          ? kOpaque_SkAlphaType

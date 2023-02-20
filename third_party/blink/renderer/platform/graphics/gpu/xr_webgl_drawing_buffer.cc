@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -459,9 +460,10 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
                    gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   gpu::Mailbox mailbox = sii->CreateSharedImage(
-      alpha_ ? viz::RGBA_8888 : viz::RGBX_8888, size_, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      gpu::kNullSurfaceHandle);
+      alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
+             : viz::SinglePlaneFormat::kRGBX_8888,
+      size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      usage, gpu::kNullSurfaceHandle);
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());

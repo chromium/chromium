@@ -15,17 +15,17 @@
 namespace blink {
 
 namespace {
-viz::ResourceFormat WGPUFormatToViz(WGPUTextureFormat format) {
+viz::SharedImageFormat WGPUFormatToViz(WGPUTextureFormat format) {
   switch (format) {
     case WGPUTextureFormat_BGRA8Unorm:
-      return viz::BGRA_8888;
+      return viz::SinglePlaneFormat::kBGRA_8888;
     case WGPUTextureFormat_RGBA8Unorm:
-      return viz::RGBA_8888;
+      return viz::SinglePlaneFormat::kRGBA_8888;
     case WGPUTextureFormat_RGBA16Float:
-      return viz::RGBA_F16;
+      return viz::SinglePlaneFormat::kRGBA_F16;
     default:
       NOTREACHED();
-      return viz::RGBA_8888;
+      return viz::SinglePlaneFormat::kRGBA_8888;
   }
 }
 
@@ -67,7 +67,7 @@ WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
   device_ = nullptr;
 }
 
-viz::ResourceFormat WebGPUSwapBufferProvider::Format() const {
+viz::SharedImageFormat WebGPUSwapBufferProvider::Format() const {
   return format_;
 }
 
@@ -327,7 +327,7 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
                                     GetTextureTarget());
 
   auto success = frame_pool->CopyRGBATextureToVideoFrame(
-      Format(), current_swap_buffer_->size,
+      Format().resource_format(), current_swap_buffer_->size,
       PredefinedColorSpaceToGfxColorSpace(color_space_),
       kTopLeft_GrSurfaceOrigin, mailbox_holder, dst_color_space,
       std::move(callback));

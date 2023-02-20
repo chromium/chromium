@@ -1167,6 +1167,7 @@ _CONFIG = [
             'viz::ReleaseCallback',
             'viz::ResourceFormat',
             'viz::ResourceFormatToClosestSkColorType',
+            'viz::ToClosestSkColorType',
             'viz::TransferableResource',
         ],
     },

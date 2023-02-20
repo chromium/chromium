@@ -7,6 +7,7 @@
 
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
@@ -44,7 +45,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       PredefinedColorSpace color_space);
   ~WebGPUSwapBufferProvider() override;
 
-  viz::ResourceFormat Format() const;
+  viz::SharedImageFormat Format() const;
   const gfx::Size& Size() const;
   cc::Layer* CcLayer();
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
@@ -162,7 +163,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   WTF::Vector<scoped_refptr<SwapBuffer>> unused_swap_buffers_;
   scoped_refptr<SwapBuffer> last_swap_buffer_;
-  const viz::ResourceFormat format_;
+  const viz::SharedImageFormat format_;
   const WGPUTextureUsage usage_;
   const PredefinedColorSpace color_space_;
 
