@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+PASS A simple blob range request.
+PASS A blob range request with no end.
+PASS A blob range request with no start.
+PASS A simple blob range request with whitespace.
+PASS Blob content with short content and a large range end
+PASS Blob range request with multiple range values
+PASS Blob range request with multiple range values and whitespace
+FAIL Blob range request with trailing comma assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range with no start or end assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range with invalid whitespace in range #1 assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range with invalid whitespace in range #2 assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range request with short range end assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range start should be an ASCII digit assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range should have a dash assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range end should be an ASCII digit assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range should include '-' assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range should include '=' assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Blob range should include 'bytes=' assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS Blob content with short content and a large range start
+Harness: the test ran to completion.
+
