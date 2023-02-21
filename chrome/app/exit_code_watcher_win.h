@@ -1,14 +1,12 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef COMPONENTS_BROWSER_WATCHER_EXIT_CODE_WATCHER_WIN_H_
-#define COMPONENTS_BROWSER_WATCHER_EXIT_CODE_WATCHER_WIN_H_
+#ifndef CHROME_APP_EXIT_CODE_WATCHER_WIN_H_
+#define CHROME_APP_EXIT_CODE_WATCHER_WIN_H_
 
 #include "base/process/process.h"
 #include "base/threading/thread.h"
 #include "base/win/scoped_handle.h"
-
-namespace browser_watcher {
 
 // Watches for the exit code of a process and records
 class ExitCodeWatcher {
@@ -50,6 +48,4 @@ class ExitCodeWatcher {
   base::win::ScopedHandle stop_watching_handle_;
 };
 
-}  // namespace browser_watcher
-
-#endif  // COMPONENTS_BROWSER_WATCHER_EXIT_CODE_WATCHER_WIN_H_
+#endif  // CHROME_APP_EXIT_CODE_WATCHER_WIN_H_

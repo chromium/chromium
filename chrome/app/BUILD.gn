@@ -59,11 +59,25 @@ if (is_win) {
   source_set("chrome_exe_main_exports") {
     sources = [ "chrome_exe_main_win.h" ]
   }
-  source_set("crash_reporter_client_win_unit_tests") {
+
+  source_set("exit_code_watcher") {
+    sources = [
+      "exit_code_watcher_win.cc",
+      "exit_code_watcher_win.h",
+    ]
+    public_deps = [ "//base:base" ]
+  }
+
+  source_set("win_unit_tests") {
     testonly = true
-    sources = [ "chrome_crash_reporter_client_win_unittest.cc" ]
+    sources = [
+      "chrome_crash_reporter_client_win_unittest.cc",
+      "exit_code_watcher_win_unittest.cc",
+    ]
     deps = [
+      ":exit_code_watcher",
       "//base:base",
+      "//base/test:test_support",
       "//chrome/chrome_elf:crash",
       "//testing/gtest:gtest",
     ]

@@ -196,6 +196,7 @@ if (!is_android && !is_mac) {
         "//base",
         "//build:branding_buildflags",
         "//chrome/app:chrome_exe_main_exports",
+        "//chrome/app:exit_code_watcher",
         "//chrome/app/version_assembly:chrome_exe_manifest",
         "//chrome/browser:active_use_util",
         "//chrome/browser:chrome_process_finder",

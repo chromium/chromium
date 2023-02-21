@@ -38,6 +38,7 @@
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/app/delay_load_failure_hook_win.h"
+#include "chrome/app/exit_code_watcher_win.h"
 #include "chrome/app/main_dll_loader_win.h"
 #include "chrome/app/packed_resources_integrity.h"
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -48,7 +49,6 @@
 #include "chrome/install_static/initialize_from_primary_module.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/user_data_dir.h"
-#include "components/browser_watcher/exit_code_watcher_win.h"
 #include "components/crash/core/app/crash_switches.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/app/fallback_crash_handling_win.h"
@@ -326,7 +326,7 @@ int main() {
 
   if (process_type == crash_reporter::switches::kCrashpadHandler) {
     // Check if we should monitor the exit code of this process
-    std::unique_ptr<browser_watcher::ExitCodeWatcher> exit_code_watcher;
+    std::unique_ptr<ExitCodeWatcher> exit_code_watcher;
 
     crash_reporter::SetupFallbackCrashHandling(*command_line);
     // no-periodic-tasks is specified for self monitoring crashpad instances.
@@ -344,8 +344,7 @@ int main() {
                 ::GetCurrentProcess(), &duplicate_handle,
                 PROCESS_QUERY_INFORMATION, FALSE, DUPLICATE_SAME_ACCESS)) {
           base::Process parent_process(duplicate_handle);
-          exit_code_watcher =
-              std::make_unique<browser_watcher::ExitCodeWatcher>();
+          exit_code_watcher = std::make_unique<ExitCodeWatcher>();
           if (exit_code_watcher->Initialize(std::move(parent_process))) {
             exit_code_watcher->StartWatching();
           }

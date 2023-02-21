@@ -6296,7 +6296,7 @@ test("unit_tests") {
       "//chrome:packed_resources_integrity",
       "//chrome//services/util_win:unit_tests",
       "//chrome/app:chrome_dll_resources",
-      "//chrome/app:crash_reporter_client_win_unit_tests",
+      "//chrome/app:win_unit_tests",
       "//chrome/browser:chrome_process_finder",
       "//chrome/browser/enterprise/platform_auth:test_utils",
       "//chrome/browser/safe_browsing/chrome_cleaner",

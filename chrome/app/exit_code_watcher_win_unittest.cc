@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/browser_watcher/exit_code_watcher_win.h"
+#include "chrome/app/exit_code_watcher_win.h"
 
 #include <stdint.h>
 
@@ -20,8 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
-namespace browser_watcher {
-
 namespace {
 
 MULTIPROCESS_TEST_MAIN(Sleeper) {
@@ -33,8 +31,7 @@ MULTIPROCESS_TEST_MAIN(Sleeper) {
 
 class ScopedSleeperProcess {
  public:
-   ScopedSleeperProcess() : is_killed_(false) {
-  }
+  ScopedSleeperProcess() : is_killed_(false) {}
 
   ~ScopedSleeperProcess() {
     if (process_.IsValid()) {
@@ -78,9 +75,7 @@ class ExitCodeWatcherTest : public testing::Test {
 
   ExitCodeWatcherTest() : cmd_line_(base::CommandLine::NO_PROGRAM) {}
 
-  void SetUp() override {
-    Super::SetUp();
-  }
+  void SetUp() override { Super::SetUp(); }
 
   base::Process OpenSelfWithAccess(uint32_t access) {
     return base::Process::OpenWithAccess(base::GetCurrentProcId(), access);
@@ -154,5 +149,3 @@ TEST_F(ExitCodeWatcherTest, ExitCodeWatcherStopWatching) {
   ASSERT_NO_FATAL_FAILURE(sleeper.Kill(kExitCode, true));
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 }
-
-}  // namespace browser_watcher

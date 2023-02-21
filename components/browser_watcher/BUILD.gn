@@ -9,11 +9,7 @@ if (is_win) {
     sources = [ "activity_report.proto" ]
   }
 
-  static_library("browser_watcher_client") {
-    sources = [
-      "exit_code_watcher_win.cc",
-      "exit_code_watcher_win.h",
-    ]
+  group("browser_watcher_client") {
     deps = [
       ":activity_report_proto",
       ":stability_client",
@@ -89,7 +85,6 @@ if (is_win) {
     sources = [
       "activity_report_extractor_unittest.cc",
       "activity_tracker_annotation_unittest.cc",
-      "exit_code_watcher_win_unittest.cc",
       "extended_crash_reporting_win_unittest.cc",
     ]
     deps = [
