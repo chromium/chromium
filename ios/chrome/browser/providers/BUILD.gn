@@ -16,6 +16,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/fullscreen:chromium_fullscreen",
     "//ios/chrome/browser/providers/keyboard:chromium_keyboard",
     "//ios/chrome/browser/providers/lens:chromium_lens",
+    "//ios/chrome/browser/providers/lottie:chromium_lottie_animation",
     "//ios/chrome/browser/providers/mailto_handler:chromium_mailto_handler",
     "//ios/chrome/browser/providers/modals:chromium_modals",
     "//ios/chrome/browser/providers/omaha:chromium_omaha",
