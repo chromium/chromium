@@ -1424,75 +1424,6 @@ template("mojom") {
       }
     }
 
-    if (generate_fuzzing && !defined(variant)) {
-      # This block contains the C++ targets for the MojoLPM fuzzer, we need to
-      # do this here so that we can use the typemap configuration for the
-      # empty-variant Mojo target.
-
-      mojolpm_target_name = "${target_name}_mojolpm"
-      mojolpm_generator_target_name = "${target_name}__generator"
-      source_set(mojolpm_target_name) {
-        # There are still a few missing header dependencies between mojo targets
-        # with typemaps and the dependencies of their typemap headers. It would
-        # be good to enable include checking for these in the future though.
-        check_includes = false
-        testonly = true
-        if (defined(invoker.sources)) {
-          # Split the input into generated and non-generated source files. They
-          # need to be processed separately.
-          gen_dir_path_wildcard = get_path_info("//", "gen_dir") + "/*"
-          non_gen_sources =
-              filter_exclude(invoker.sources, [ gen_dir_path_wildcard ])
-          gen_sources =
-              filter_include(invoker.sources, [ gen_dir_path_wildcard ])
-          sources = process_file_template(
-                  non_gen_sources,
-                  [
-                    "{{source_gen_dir}}/{{source_file_part}}-mojolpm.cc",
-                    "{{source_gen_dir}}/{{source_file_part}}-mojolpm.h",
-                  ])
-          sources += process_file_template(
-                  gen_sources,
-                  [
-                    "{{source_dir}}/{{source_file_part}}-mojolpm.cc",
-                    "{{source_dir}}/{{source_file_part}}-mojolpm.h",
-                  ])
-          deps = []
-        } else {
-          sources = []
-          deps = []
-        }
-
-        public_deps = [
-          ":$generator_shared_target_name",
-
-          # NB: hardcoded dependency on the no-variant variant generator, since
-          # mojolpm only uses the no-variant type.
-          ":$mojolpm_generator_target_name",
-          ":$mojolpm_proto_target_name",
-          "//base",
-          "//mojo/public/tools/fuzzers:mojolpm",
-        ]
-
-        foreach(d, all_deps) {
-          # Resolve the name, so that a target //mojo/something becomes
-          # //mojo/something:something and we can append variant_suffix to
-          # get the cpp dependency name.
-          full_name = get_label_info("$d", "label_no_toolchain")
-          public_deps += [ "${full_name}_mojolpm" ]
-        }
-
-        foreach(config, cpp_typemap_configs) {
-          if (defined(config.traits_deps)) {
-            deps += config.traits_deps
-          }
-          if (defined(config.traits_public_deps)) {
-            public_deps += config.traits_public_deps
-          }
-        }
-      }
-    }
-
     # Write the typemapping configuration for this target out to a file to be
     # validated by a Python script. This helps catch mistakes that can't
     # be caught by logic in GN.
@@ -1616,7 +1547,10 @@ template("mojom") {
       if (defined(output_name_override)) {
         output_name = output_name_override
       }
-      visibility = output_visibility + [ ":$output_target_name" ]
+      visibility = output_visibility + [
+                     ":$output_target_name",
+                     ":${target_name}_mojolpm",
+                   ]
       if (defined(invoker.testonly)) {
         testonly = invoker.testonly
       }
@@ -1706,6 +1640,75 @@ template("mojom") {
       if (defined(bindings_configuration.for_blink) &&
           bindings_configuration.for_blink) {
         public_deps += [ "//mojo/public/cpp/bindings:wtf_support" ]
+      }
+    }
+
+    if (generate_fuzzing && !defined(variant)) {
+      # This block contains the C++ targets for the MojoLPM fuzzer, we need to
+      # do this here so that we can use the typemap configuration for the
+      # empty-variant Mojo target.
+
+      mojolpm_target_name = "${target_name}_mojolpm"
+      mojolpm_generator_target_name = "${target_name}__generator"
+      source_set(mojolpm_target_name) {
+        # There are still a few missing header dependencies between mojo targets
+        # with typemaps and the dependencies of their typemap headers. It would
+        # be good to enable include checking for these in the future though.
+        check_includes = false
+        testonly = true
+        if (defined(invoker.sources)) {
+          # Split the input into generated and non-generated source files. They
+          # need to be processed separately.
+          gen_dir_path_wildcard = get_path_info("//", "gen_dir") + "/*"
+          non_gen_sources =
+              filter_exclude(invoker.sources, [ gen_dir_path_wildcard ])
+          gen_sources =
+              filter_include(invoker.sources, [ gen_dir_path_wildcard ])
+          sources = process_file_template(
+                  non_gen_sources,
+                  [
+                    "{{source_gen_dir}}/{{source_file_part}}-mojolpm.cc",
+                    "{{source_gen_dir}}/{{source_file_part}}-mojolpm.h",
+                  ])
+          sources += process_file_template(
+                  gen_sources,
+                  [
+                    "{{source_dir}}/{{source_file_part}}-mojolpm.cc",
+                    "{{source_dir}}/{{source_file_part}}-mojolpm.h",
+                  ])
+          deps = [ ":$output_target_name" ]
+        } else {
+          sources = []
+          deps = []
+        }
+
+        public_deps = [
+          ":$generator_shared_target_name",
+
+          # NB: hardcoded dependency on the no-variant variant generator, since
+          # mojolpm only uses the no-variant type.
+          ":$mojolpm_generator_target_name",
+          ":$mojolpm_proto_target_name",
+          "//base",
+          "//mojo/public/tools/fuzzers:mojolpm",
+        ]
+
+        foreach(d, all_deps) {
+          # Resolve the name, so that a target //mojo/something becomes
+          # //mojo/something:something and we can append variant_suffix to
+          # get the cpp dependency name.
+          full_name = get_label_info("$d", "label_no_toolchain")
+          public_deps += [ "${full_name}_mojolpm" ]
+        }
+
+        foreach(config, cpp_typemap_configs) {
+          if (defined(config.traits_deps)) {
+            deps += config.traits_deps
+          }
+          if (defined(config.traits_public_deps)) {
+            public_deps += config.traits_public_deps
+          }
+        }
       }
     }
 
