@@ -1093,10 +1093,10 @@ void MLGraphXnnpack::BuildOnBackgroundThread(
   graph->xnn_context_ = SharedXnnpackContext::GetInstance(error_message);
   if (!graph->xnn_context_) {
     status = xnn_status_uninitialized;
+  } else {
+    status = graph->CreateXnnSubgraphAndRuntime(
+        *named_outputs, *toposorted_operators, error_message);
   }
-
-  status = graph->CreateXnnSubgraphAndRuntime(
-      *named_outputs, *toposorted_operators, error_message);
 
   PostCrossThreadTask(*resolver_task_runner, FROM_HERE,
                       CrossThreadBindOnce(&MLGraphXnnpack::OnBuildFinished,
