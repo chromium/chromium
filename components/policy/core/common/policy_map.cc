@@ -234,6 +234,10 @@ void PolicyMap::Entry::ClearConflicts() {
   ClearMessage(MessageType::kWarning, IDS_POLICY_CONFLICT_DIFF_VALUE);
 }
 
+bool PolicyMap::Entry::HasConflicts() {
+  return !conflicts.empty();
+}
+
 bool PolicyMap::Entry::HasMessage(MessageType type) const {
   return message_ids_.find(type) != message_ids_.end();
 }

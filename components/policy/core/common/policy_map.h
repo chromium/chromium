@@ -103,6 +103,9 @@ class POLICY_EXPORT PolicyMap {
     // Removes all the conflicts.
     void ClearConflicts();
 
+    // Whether the policy has conflicting policies.
+    bool HasConflicts();
+
     // Getter for |ignored_|.
     bool ignored() const;
     // Sets |ignored_| to true.
