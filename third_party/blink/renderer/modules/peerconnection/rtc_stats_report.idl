@@ -296,7 +296,11 @@ dictionary RTCIceCandidateStats : RTCStats {
   // https://w3c.github.io/webrtc-provisional-stats/#RTCIceCandidateStats-stat*
   RTCNetworkType networkType;
   // Non-standard and obsolete stats.
+  // - Removed because `type` reveals same information ("local-candidate" or
+  //   "remote-candidate").
   boolean isRemote;
+  // - Removed because it was renamed `address`.
+  DOMString? ip;
 };
 
 // https://w3c.github.io/webrtc-stats/#candidatepair-dict*

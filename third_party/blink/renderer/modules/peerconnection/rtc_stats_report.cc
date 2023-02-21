@@ -902,6 +902,9 @@ RTCIceCandidateStats* ToV8Stat(
   if (webrtc_stat.is_remote.is_defined()) {
     v8_stat->setIsRemote(*webrtc_stat.is_remote);
   }
+  if (webrtc_stat.ip.is_defined()) {
+    v8_stat->setIp(String::FromUTF8(*webrtc_stat.ip));
+  }
   return v8_stat;
 }
 
