@@ -4,14 +4,46 @@
 
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+namespace {
+
+mojom::MouseSettingsPtr GetDefaultMouseSettings() {
+  mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
+  settings->swap_right = kDefaultSwapRight;
+  settings->sensitivity = kDefaultSensitivity;
+  settings->reverse_scrolling = kDefaultReverseScrolling;
+  settings->acceleration_enabled = kDefaultAccelerationEnabled;
+  settings->scroll_sensitivity = kDefaultSensitivity;
+  settings->scroll_acceleration = kDefaultScrollAcceleration;
+  return settings;
+}
+
+// GetMouseSettingsFromPrefs returns a mouse settings based on user prefs
+// to be used as settings for new mouses.
+mojom::MouseSettingsPtr GetMouseSettingsFromPrefs(PrefService* prefs) {
+  mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
+  settings->swap_right = prefs->GetBoolean(prefs::kPrimaryMouseButtonRight);
+  settings->sensitivity = prefs->GetInteger(prefs::kMouseSensitivity);
+  settings->reverse_scrolling = prefs->GetBoolean(prefs::kMouseReverseScroll);
+  settings->acceleration_enabled = prefs->GetBoolean(prefs::kMouseAcceleration);
+  settings->scroll_sensitivity =
+      prefs->GetInteger(prefs::kMouseScrollSensitivity);
+  settings->scroll_acceleration =
+      prefs->GetBoolean(prefs::kMouseScrollAcceleration);
+  return settings;
+}
+
+}  // namespace
 
 MousePrefHandlerImpl::MousePrefHandlerImpl() = default;
 MousePrefHandlerImpl::~MousePrefHandlerImpl() = default;
@@ -22,7 +54,7 @@ void MousePrefHandlerImpl::InitializeMouseSettings(PrefService* pref_service,
       pref_service->GetDict(prefs::kMouseDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(mouse->device_key);
   if (!settings_dict) {
-    mouse->settings = GetNewMouseSettings(*mouse);
+    mouse->settings = GetNewMouseSettings(pref_service, *mouse);
   } else {
     mouse->settings =
         RetreiveMouseSettings(pref_service, *mouse, *settings_dict);
@@ -69,17 +101,15 @@ void MousePrefHandlerImpl::UpdateMouseSettings(PrefService* pref_service,
 }
 
 mojom::MouseSettingsPtr MousePrefHandlerImpl::GetNewMouseSettings(
+    PrefService* prefs,
     const mojom::Mouse& mouse) {
-  // TODO(michaelcheco): Implement pulling from old device settings if the
-  // device was observed in the transition period.
-  mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
-  settings->swap_right = kDefaultSwapRight;
-  settings->sensitivity = kDefaultSensitivity;
-  settings->reverse_scrolling = kDefaultReverseScrolling;
-  settings->acceleration_enabled = kDefaultAccelerationEnabled;
-  settings->scroll_sensitivity = kDefaultSensitivity;
-  settings->scroll_acceleration = kDefaultScrollAcceleration;
-  return settings;
+  // TODO(michaelcheco): Remove once transitioned to per-device settings.
+  if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
+          InputDeviceTracker::InputDeviceCategory::kMouse, mouse.device_key)) {
+    return GetMouseSettingsFromPrefs(prefs);
+  }
+
+  return GetDefaultMouseSettings();
 }
 
 mojom::MouseSettingsPtr MousePrefHandlerImpl::RetreiveMouseSettings(

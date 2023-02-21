@@ -210,18 +210,13 @@ extern const char kEnableSyncConsent[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kTapToClickEnabled[];
 extern const char kEnableTouchpadThreeFingerClick[];
-extern const char kPrimaryMouseButtonRight[];
 extern const char kPrimaryPointingStickButtonRight[];
 extern const char kOwnerPrimaryPointingStickButtonRight[];
-extern const char kMouseAcceleration[];
-extern const char kMouseScrollAcceleration[];
 extern const char kPointingStickAcceleration[];
 extern const char kTouchpadAcceleration[];
 extern const char kTouchpadScrollAcceleration[];
 extern const char kTouchpadHapticFeedback[];
 extern const char kTouchpadHapticClickSensitivity[];
-extern const char kMouseSensitivity[];
-extern const char kMouseScrollSensitivity[];
 extern const char kTouchpadSensitivity[];
 extern const char kTouchpadScrollSensitivity[];
 extern const char kPointingStickSensitivity[];

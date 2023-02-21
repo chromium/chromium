@@ -27,7 +27,8 @@ class ASH_EXPORT MousePrefHandlerImpl : public MousePrefHandler {
                            const mojom::Mouse& mouse) override;
 
  private:
-  mojom::MouseSettingsPtr GetNewMouseSettings(const mojom::Mouse& Mouse);
+  mojom::MouseSettingsPtr GetNewMouseSettings(PrefService* prefs,
+                                              const mojom::Mouse& Mouse);
   mojom::MouseSettingsPtr RetreiveMouseSettings(
       PrefService* prefs,
       const mojom::Mouse& mouse,

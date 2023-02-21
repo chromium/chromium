@@ -120,36 +120,39 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest,
   // the future to verify that the pref was not modified.
   static base::test::RepeatingTestFuture<const char*> pref_changed_future;
   registrar.Init(prefs);
-  registrar.Add(prefs::kPrimaryMouseButtonRight,
+  registrar.Add(ash::prefs::kPrimaryMouseButtonRight,
                 base::BindRepeating(pref_changed_future.GetCallback(),
-                                    prefs::kPrimaryMouseButtonRight));
+                                    ash::prefs::kPrimaryMouseButtonRight));
 
   // Manually switch the primary mouse button to right button.
-  prefs->SetBoolean(prefs::kPrimaryMouseButtonRight, true);
-  EXPECT_EQ(base::Value(true), GetPrefValue(prefs::kPrimaryMouseButtonRight));
-  EXPECT_EQ(prefs::kPrimaryMouseButtonRight, pref_changed_future.Take());
+  prefs->SetBoolean(ash::prefs::kPrimaryMouseButtonRight, true);
+  EXPECT_EQ(base::Value(true),
+            GetPrefValue(ash::prefs::kPrimaryMouseButtonRight));
+  EXPECT_EQ(ash::prefs::kPrimaryMouseButtonRight, pref_changed_future.Take());
 
   // Switch the primary mouse button to left button through device policy,
   // and wait for the change to take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
   proto.mutable_login_screen_primary_mouse_button_switch()->set_value(false);
   RefreshDevicePolicy();
-  EXPECT_EQ(prefs::kPrimaryMouseButtonRight, pref_changed_future.Take());
+  EXPECT_EQ(ash::prefs::kPrimaryMouseButtonRight, pref_changed_future.Take());
 
   // Verify that the pref which controls the primary mouse button state in the
   // login profile is managed by the policy.
-  EXPECT_TRUE(IsPrefManaged(prefs::kPrimaryMouseButtonRight));
-  EXPECT_EQ(base::Value(false), GetPrefValue(prefs::kPrimaryMouseButtonRight));
+  EXPECT_TRUE(IsPrefManaged(ash::prefs::kPrimaryMouseButtonRight));
+  EXPECT_EQ(base::Value(false),
+            GetPrefValue(ash::prefs::kPrimaryMouseButtonRight));
 
   // Verify that the state of primary mouse button cannot be changed manually
   // anymore.
-  prefs->SetBoolean(prefs::kPrimaryMouseButtonRight, true);
+  prefs->SetBoolean(ash::prefs::kPrimaryMouseButtonRight, true);
   // Browser tests use a `ScopedRunLoopTimeout` to automatically fail a test
   // when a timeout happens, so we use EXPECT_FATAL_FAILURE to handle it.
   static bool success = false;
   EXPECT_FATAL_FAILURE({ success = pref_changed_future.Wait(); }, "timed out");
   EXPECT_FALSE(success);
-  EXPECT_EQ(base::Value(false), GetPrefValue(prefs::kPrimaryMouseButtonRight));
+  EXPECT_EQ(base::Value(false),
+            GetPrefValue(ash::prefs::kPrimaryMouseButtonRight));
 
   // Switch the primary mouse button to right button through device policy
   // as a recommended value, and wait for the change to take effect.
@@ -158,17 +161,19 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest,
       ->mutable_policy_options()
       ->set_mode(em::PolicyOptions::RECOMMENDED);
   RefreshDevicePolicy();
-  EXPECT_EQ(prefs::kPrimaryMouseButtonRight, pref_changed_future.Take());
+  EXPECT_EQ(ash::prefs::kPrimaryMouseButtonRight, pref_changed_future.Take());
 
   // Verify that the pref which controls the primary mouse button state in the
   // login profile is being applied as recommended by the policy.
-  EXPECT_FALSE(IsPrefManaged(prefs::kPrimaryMouseButtonRight));
-  EXPECT_EQ(base::Value(true), GetPrefValue(prefs::kPrimaryMouseButtonRight));
+  EXPECT_FALSE(IsPrefManaged(ash::prefs::kPrimaryMouseButtonRight));
+  EXPECT_EQ(base::Value(true),
+            GetPrefValue(ash::prefs::kPrimaryMouseButtonRight));
 
   // Verify that the state of primary mouse button can be enabled manually
   // again.
-  prefs->SetBoolean(prefs::kPrimaryMouseButtonRight, false);
-  EXPECT_EQ(base::Value(false), GetPrefValue(prefs::kPrimaryMouseButtonRight));
+  prefs->SetBoolean(ash::prefs::kPrimaryMouseButtonRight, false);
+  EXPECT_EQ(base::Value(false),
+            GetPrefValue(ash::prefs::kPrimaryMouseButtonRight));
 }
 
 // Tests that enabling/disabling public accounts correctly reflects in the login

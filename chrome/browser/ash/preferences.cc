@@ -210,16 +210,16 @@ void Preferences::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
 
   registry->RegisterBooleanPref(
-      ::prefs::kPrimaryMouseButtonRight, false,
+      prefs::kPrimaryMouseButtonRight, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
       ::prefs::kPrimaryPointingStickButtonRight, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
-      ::prefs::kMouseAcceleration, true,
+      prefs::kMouseAcceleration, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
-      ::prefs::kMouseScrollAcceleration, true,
+      prefs::kMouseScrollAcceleration, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
       ::prefs::kPointingStickAcceleration, true,
@@ -239,10 +239,10 @@ void Preferences::RegisterProfilePrefs(
                                 false);
 
   registry->RegisterIntegerPref(
-      ::prefs::kMouseSensitivity, 3,
+      prefs::kMouseSensitivity, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterIntegerPref(
-      ::prefs::kMouseScrollSensitivity, 3,
+      prefs::kMouseScrollSensitivity, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterIntegerPref(
       ::prefs::kPointingStickSensitivity, 3,
@@ -587,20 +587,20 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   natural_scroll_.Init(prefs::kNaturalScroll, prefs, callback);
   mouse_reverse_scroll_.Init(prefs::kMouseReverseScroll, prefs, callback);
 
-  mouse_sensitivity_.Init(::prefs::kMouseSensitivity, prefs, callback);
-  mouse_scroll_sensitivity_.Init(::prefs::kMouseScrollSensitivity, prefs,
+  mouse_sensitivity_.Init(prefs::kMouseSensitivity, prefs, callback);
+  mouse_scroll_sensitivity_.Init(prefs::kMouseScrollSensitivity, prefs,
                                  callback);
   touchpad_sensitivity_.Init(::prefs::kTouchpadSensitivity, prefs, callback);
   touchpad_scroll_sensitivity_.Init(::prefs::kTouchpadScrollSensitivity, prefs,
                                     callback);
   pointing_stick_sensitivity_.Init(::prefs::kPointingStickSensitivity, prefs,
                                    callback);
-  primary_mouse_button_right_.Init(::prefs::kPrimaryMouseButtonRight, prefs,
+  primary_mouse_button_right_.Init(prefs::kPrimaryMouseButtonRight, prefs,
                                    callback);
   primary_pointing_stick_button_right_.Init(
       ::prefs::kPrimaryPointingStickButtonRight, prefs, callback);
-  mouse_acceleration_.Init(::prefs::kMouseAcceleration, prefs, callback);
-  mouse_scroll_acceleration_.Init(::prefs::kMouseScrollAcceleration, prefs,
+  mouse_acceleration_.Init(prefs::kMouseAcceleration, prefs, callback);
+  mouse_scroll_acceleration_.Init(prefs::kMouseScrollAcceleration, prefs,
                                   callback);
   pointing_stick_acceleration_.Init(::prefs::kPointingStickAcceleration, prefs,
                                     callback);
@@ -851,8 +851,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       mouse_settings.SetReverseScroll(enabled);
   }
 
-  if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kMouseSensitivity) {
+  if (reason != REASON_PREF_CHANGED || pref_name == prefs::kMouseSensitivity) {
     const int sensitivity_int = mouse_sensitivity_.GetValue();
     if (user_is_active) {
       mouse_settings.SetSensitivity(sensitivity_int);
@@ -867,7 +866,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
                                      sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kMouseScrollSensitivity) {
+      pref_name == prefs::kMouseScrollSensitivity) {
     // With the flag off, use to normal sensitivity (legacy fallback).
     // TODO(https://crbug.com/836258): Remove check when flag is removed.
     const int sensitivity_int = AreScrollSettingsAllowed()
@@ -915,7 +914,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
         "Touchpad.ScrollSensitivity.Started", sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kPrimaryMouseButtonRight) {
+      pref_name == prefs::kPrimaryMouseButtonRight) {
     const bool right = primary_mouse_button_right_.GetValue();
     if (user_is_active)
       mouse_settings.SetPrimaryButtonRight(right);
@@ -943,14 +942,13 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       }
     }
   }
-  if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kMouseAcceleration) {
+  if (reason != REASON_PREF_CHANGED || pref_name == prefs::kMouseAcceleration) {
     const bool enabled = mouse_acceleration_.GetValue();
     if (user_is_active)
       mouse_settings.SetAcceleration(enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kMouseScrollAcceleration) {
+      pref_name == prefs::kMouseScrollAcceleration) {
     const bool enabled = mouse_scroll_acceleration_.GetValue();
     if (user_is_active)
       mouse_settings.SetScrollAcceleration(enabled);

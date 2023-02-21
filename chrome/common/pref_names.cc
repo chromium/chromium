@@ -445,9 +445,6 @@ const char kTapToClickEnabled[] = "settings.touchpad.enable_tap_to_click";
 const char kEnableTouchpadThreeFingerClick[] =
     "settings.touchpad.enable_three_finger_click";
 
-// A boolean pref set to true if primary mouse button is the left button.
-const char kPrimaryMouseButtonRight[] = "settings.mouse.primary_right";
-
 // A boolean pref set to true if primary pointing stick button is the left
 // button.
 const char kPrimaryPointingStickButtonRight[] =
@@ -456,14 +453,6 @@ const char kPrimaryPointingStickButtonRight[] =
 // Copy of the primary pointing stick buttons option to use on login screen.
 const char kOwnerPrimaryPointingStickButtonRight[] =
     "owner.pointing_stick.primary_right";
-
-// A boolean pref set to true if mouse acceleration is enabled. When disabled
-// only simple linear scaling is applied based on sensitivity.
-const char kMouseAcceleration[] = "settings.mouse.acceleration";
-
-// A boolean pref set to true if mouse scroll acceleration is enabled. When
-// disabled, only simple linear scaling is applied based on sensitivity.
-const char kMouseScrollAcceleration[] = "settings.mouse.scroll_acceleration";
 
 // A boolean pref set to true if pointing stick acceleration is enabled. When
 // disabled only simple linear scaling is applied based on sensitivity.
@@ -486,13 +475,6 @@ const char kTouchpadHapticFeedback[] = "settings.touchpad.haptic_feedback";
 // feedback to Firm feedback [1, 3, 5].
 const char kTouchpadHapticClickSensitivity[] =
     "settings.touchpad.haptic_click_sensitivity";
-
-// A integer pref for the touchpad sensitivity.
-const char kMouseSensitivity[] = "settings.mouse.sensitivity2";
-
-// A integer pref for the touchpad scroll sensitivity, in the range
-// [PointerSensitivity::kLowest, PointerSensitivity::kHighest].
-const char kMouseScrollSensitivity[] = "settings.mouse.scroll_sensitivity";
 
 // A integer pref for the touchpad sensitivity.
 const char kTouchpadSensitivity[] = "settings.touchpad.sensitivity2";

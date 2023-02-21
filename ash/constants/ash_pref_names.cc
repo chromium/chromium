@@ -1329,6 +1329,24 @@ const char kPortraitRelighting[] = "ash.camera.portrait_relighting";
 const char kRecordArcAppSyncMetrics[] =
     "ash.should_record_arc_app_sync_metrics";
 
+// A boolean pref set to true if primary mouse button is the left button.
+const char kPrimaryMouseButtonRight[] = "settings.mouse.primary_right";
+
+// A integer pref for the touchpad sensitivity.
+const char kMouseSensitivity[] = "settings.mouse.sensitivity2";
+
+// A boolean pref set to true if mouse acceleration is enabled. When disabled
+// only simple linear scaling is applied based on sensitivity.
+const char kMouseAcceleration[] = "settings.mouse.acceleration";
+
+// A integer pref for the touchpad scroll sensitivity, in the range
+// [PointerSensitivity::kLowest, PointerSensitivity::kHighest].
+const char kMouseScrollSensitivity[] = "settings.mouse.scroll_sensitivity";
+
+// A boolean pref set to true if mouse scroll acceleration is enabled. When
+// disabled, only simple linear scaling is applied based on sensitivity.
+const char kMouseScrollAcceleration[] = "settings.mouse.scroll_acceleration";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

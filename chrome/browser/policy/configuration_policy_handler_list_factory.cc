@@ -937,7 +937,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kAccessibilityDictationEnabled,
     base::Value::Type::BOOLEAN },
   { key::kPrimaryMouseButtonSwitch,
-    prefs::kPrimaryMouseButtonRight,
+    ash::prefs::kPrimaryMouseButtonRight,
     base::Value::Type::BOOLEAN },
   { key::kKeyboardFocusHighlightEnabled,
     ash::prefs::kAccessibilityFocusHighlightEnabled,
