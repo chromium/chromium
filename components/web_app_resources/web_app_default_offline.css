@@ -33,12 +33,12 @@
   transform: translate(-50%, -50%);
 }
 .icon {
-  border-radius: 50%;
   height: 160px;
   width: 160px;
 }
 .message {
-  font-family: 'Google Sans';
+  font-family: 'system-ui', sans-serif;
+  font-size: 18px;
   text-align: center;
   width: 80%;
 }
