@@ -31,4 +31,10 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnPrimaryContainer};
   mixer[kColorSidePanelFilterChipBackgroundSelected] = {
       ui::kColorSysPrimaryContainer};
+
+  // TODO(crbug.com/1400860): Change to kColorSysNeutralOutline once available
+  mixer[kColorSidePanelTextfieldBorder] = {
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+          ? ui::kColorRefNeutral40
+          : ui::kColorRefNeutral80};
 }

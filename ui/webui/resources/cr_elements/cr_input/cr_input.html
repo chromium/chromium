@@ -45,6 +45,10 @@
         letter-spacing: var(--cr-input-letter-spacing);
       }
 
+      :host-context([chrome-refresh-2023]) #input-container {
+        border: var(--cr-input-border, none);
+      }
+
       #input::placeholder {
         color: var(--cr-input-placeholder-color, var(--cr-secondary-text-color));
         letter-spacing: var(--cr-input-placeholder-letter-spacing);

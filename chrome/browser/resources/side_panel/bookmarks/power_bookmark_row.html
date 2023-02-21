@@ -19,6 +19,27 @@
     --cr-input-padding-start: 0;
     width: 100%;
   }
+
+  :host-context([chrome-refresh-2023]) cr-input {
+    --cr-input-border: 1px solid var(--color-side-panel-textfield-border);
+    --cr-input-border-bottom: none;
+    --cr-input-border-radius: 8px;
+    --cr-input-padding-bottom: 9px;
+    --cr-input-padding-end: 9px;
+    --cr-input-padding-start: 9px;
+    --cr-input-padding-top: 9px;
+    --cr-input-underline-display: none;
+    height: 36px;
+    line-height: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) cr-input:focus {
+    --cr-input-border: 2px solid var(--cr-focus-outline-color);
+    --cr-input-padding-bottom: 8px;
+    --cr-input-padding-end: 8px;
+    --cr-input-padding-start: 8px;
+    --cr-input-padding-top: 8px;
+  }
 </style>
 
 <cr-url-list-item

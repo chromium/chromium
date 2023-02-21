@@ -321,6 +321,7 @@
   E_CPONLY(kColorSidePanelFilterChipIcon) \
   E_CPONLY(kColorSidePanelFilterChipIconSelected) \
   E_CPONLY(kColorSidePanelFilterChipBackgroundSelected) \
+  E_CPONLY(kColorSidePanelTextfieldBorder) \
   /* Status bubble colors. */ \
   E_CPONLY(kColorStatusBubbleBackgroundFrameActive) \
   E_CPONLY(kColorStatusBubbleBackgroundFrameInactive) \
