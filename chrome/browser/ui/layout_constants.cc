@@ -20,8 +20,6 @@ int GetLayoutConstant(LayoutConstant constant) {
              kBookmarkBarAttachedVerticalMargin;
     case BOOKMARK_BAR_BUTTON_HEIGHT:
       return touch_ui ? 36 : 28;
-    case BOOKMARK_BAR_NTP_HEIGHT:
-      return touch_ui ? GetLayoutConstant(BOOKMARK_BAR_HEIGHT) : 39;
     case WEB_APP_MENU_BUTTON_SIZE:
       return 24;
     case WEB_APP_PAGE_ACTION_ICON_SIZE:

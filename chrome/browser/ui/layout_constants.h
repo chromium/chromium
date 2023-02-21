@@ -18,22 +18,6 @@ enum LayoutConstant {
   // The height of a button within the Bookmarks Bar.
   BOOKMARK_BAR_BUTTON_HEIGHT,
 
-#if BUILDFLAG(IS_MAC)
-  // This is a little smaller than the bookmarkbar height because of the visual
-  // overlap with the main toolbar. This height should not be used when
-  // computing the height of the toolbar.
-  BOOKMARK_BAR_HEIGHT_NO_OVERLAP,
-#endif
-
-  // The height of Bookmarks Bar, when visible in "New Tab Page" mode.
-  BOOKMARK_BAR_NTP_HEIGHT,
-
-#if BUILDFLAG(IS_MAC)
-  // The amount of space between the inner bookmark bar and the outer toolbar on
-  // new tab pages.
-  BOOKMARK_BAR_NTP_PADDING,
-#endif
-
   // The size of icons used in Download bubbles.
   // TODO(crbug/1296323): We should be sourcing the size of the file icon from
   // the layout
