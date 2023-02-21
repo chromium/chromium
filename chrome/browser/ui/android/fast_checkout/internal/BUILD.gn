@@ -57,6 +57,8 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
+    "java/res/anim/fast_checkout_view_flipper_fade_in.xml",
+    "java/res/anim/fast_checkout_view_flipper_fade_out.xml",
     "java/res/drawable/fast_checkout_item_background_bottom.xml",
     "java/res/drawable/fast_checkout_item_background_top.xml",
     "java/res/drawable/fast_checkout_item_background_top_copy.xml",

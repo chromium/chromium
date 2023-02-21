@@ -28,7 +28,9 @@ found in the LICENSE file.
     android:id="@+id/fast_checkout_bottom_sheet_view_flipper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:measureAllChildren="false" >
+    android:measureAllChildren="false"
+    android:inAnimation="@anim/fast_checkout_view_flipper_fade_in"
+    android:outAnimation="@anim/fast_checkout_view_flipper_fade_out" >
 
       <include
           android:id="@+id/fast_checkout_home_screen_sheet"
