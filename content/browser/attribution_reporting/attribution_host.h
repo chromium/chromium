@@ -64,6 +64,8 @@ class CONTENT_EXPORT AttributionHost
   // for reportEvent or for an automatic beacon. It may be cached and sent
   // later. This should be called before the navigation committed for a
   // navigation beacon.
+  // This function should only be invoked if Attribution Reporting API is
+  // enabled on the page.
   void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
       RenderFrameHostImpl* initiator_frame_host);

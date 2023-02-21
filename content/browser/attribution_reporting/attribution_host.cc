@@ -38,6 +38,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -447,6 +448,11 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     RenderFrameHostImpl* initiator_frame_host) {
   if (!initiator_frame_host) {
+    return;
+  }
+
+  if (!initiator_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
     return;
   }
 
