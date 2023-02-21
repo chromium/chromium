@@ -182,31 +182,6 @@ base::Value OsStatesDebugValue(
     debug_dict.Set("file_handling", std::move(file_handlers_list));
   }
 
-  if (current_states.has_url_handling()) {
-    base::Value::List url_handlers;
-    for (const auto& url_handler :
-         current_states.url_handling().url_handlers()) {
-      base::Value::Dict url_handler_dict;
-      url_handler_dict.Set("origin", url_handler.origin());
-      url_handler_dict.Set("has_origin_wildcard",
-                           url_handler.has_origin_wildcard());
-      base::Value::List paths;
-      for (auto path : url_handler.paths()) {
-        paths.Append(path);
-      }
-      url_handler_dict.Set("paths", std::move(paths));
-      base::Value::List exclude_paths;
-      for (auto path : url_handler.exclude_paths()) {
-        exclude_paths.Append(path);
-      }
-      url_handler_dict.Set("exclude_paths", std::move(exclude_paths));
-      url_handlers.Append(std::move(url_handler_dict));
-    }
-    base::Value::Dict url_handling;
-    url_handling.Set("url_handlers", std::move(url_handlers));
-    debug_dict.Set("url_handling", std::move(url_handling));
-  }
-
   return base::Value(std::move(debug_dict));
 }
 
