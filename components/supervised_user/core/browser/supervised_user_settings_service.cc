@@ -309,8 +309,8 @@ SupervisedUserSettingsService::MergeDataAndStartSyncing(
     DCHECK_EQ(SUPERVISED_USER_SETTINGS, sync_data.GetDataType());
     const ::sync_pb::ManagedUserSettingSpecifics& supervised_user_setting =
         sync_data.GetSpecifics().managed_user_setting();
-    std::unique_ptr<base::Value> value =
-        JSONReader::ReadDeprecated(supervised_user_setting.value());
+    absl::optional<base::Value> value =
+        JSONReader::Read(supervised_user_setting.value());
     // Wrongly formatted input will cause null values.
     // SetKey below requires non-null values.
     if (!value) {
