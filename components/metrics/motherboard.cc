@@ -16,7 +16,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_bstr.h"
@@ -142,20 +141,8 @@ void ReadWin32Bios(const ComPtr<IWbemServices>& services,
 }
 
 void ReadFirmwareType(absl::optional<Motherboard::BiosType>* bios_type) {
-  // NOTE: GetFirmwareType API only exists on >= Win8.  Dynamically
-  //       get function handle.
-  using GetFirmwareTypeFunction = decltype(&GetFirmwareType);
-  base::ScopedNativeLibrary dll(base::FilePath(L"kernel32.dll"));
-  if (!dll.is_valid())
-    return;
-  GetFirmwareTypeFunction get_firmware_type_function =
-      reinterpret_cast<GetFirmwareTypeFunction>(
-          dll.GetFunctionPointer("GetFirmwareType"));
-  if (!get_firmware_type_function)
-    return;
-
   FIRMWARE_TYPE firmware_type = FirmwareTypeUnknown;
-  if (get_firmware_type_function(&firmware_type)) {
+  if (::GetFirmwareType(&firmware_type)) {
     if (firmware_type == FirmwareTypeBios) {
       *bios_type = Motherboard::BiosType::kLegacy;
     } else if (firmware_type == FirmwareTypeUefi) {
