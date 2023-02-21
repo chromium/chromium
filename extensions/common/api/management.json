@@ -295,7 +295,7 @@
       },
       {
         "name": "uninstall",
-        "description": "Uninstalls a currently installed app or extension. Note: This function does not work in managed environments when the user is not allowed to uninstall the specified extension/app.",
+        "description": "Uninstalls a currently installed app or extension. Note: This function does not work in managed environments when the user is not allowed to uninstall the specified extension/app. If the uninstall fails (e.g. the user cancels the dialog) the promise will be rejected or the callback will be called with $(ref:runtime.lastError) set.",
         "parameters": [
           {
             "name": "id",
