@@ -1,0 +1,65 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "AutocompleteScoringModelMetadataProto";
+
+package optimization_guide.proto;
+
+// Types of scoring signals.
+enum ScoringSignalType {
+  SCORING_SIGNAL_TYPE_UNKNOWN = 0;
+  SCORING_SIGNAL_TYPE_TYPED_COUNT = 1;
+  SCORING_SIGNAL_TYPE_VISIT_COUNT = 2;
+  SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_VISIT_SECS = 3;
+  SCORING_SIGNAL_TYPE_IS_HOST_ONLY = 4;
+  SCORING_SIGNAL_TYPE_LENGTH_OF_URL = 5;
+  SCORING_SIGNAL_TYPE_FIRST_URL_MATCH_POSITION = 6;
+  SCORING_SIGNAL_TYPE_HOST_MATCH_AT_WORD_BOUNDARY = 7;
+  SCORING_SIGNAL_TYPE_TOTAL_URL_MATCH_LENGTH = 8;
+  SCORING_SIGNAL_TYPE_TOTAL_HOST_MATCH_LENGTH = 9;
+  SCORING_SIGNAL_TYPE_TOTAL_PATH_MATCH_LENGTH = 10;
+  SCORING_SIGNAL_TYPE_TOTAL_QUERY_OR_REF_MATCH_LENGTH = 11;
+  SCORING_SIGNAL_TYPE_TOTAL_TITLE_MATCH_LENGTH = 12;
+  SCORING_SIGNAL_TYPE_TITLE_MATCH_RATIO = 13;
+  SCORING_SIGNAL_TYPE_URL_MATCH_RATIO = 14;
+  SCORING_SIGNAL_TYPE_ALLOWED_TO_BE_DEFAULT_MATCH = 15;
+  SCORING_SIGNAL_TYPE_HAS_NON_SCHEME_WWW_MATCH = 16;
+  SCORING_SIGNAL_TYPE_TOTAL_BOOKMARK_TITLE_MATCH_LENGTH = 17;
+  SCORING_SIGNAL_TYPE_FIRST_BOOKMARK_TITLE_MATCH_POSITION = 18;
+  SCORING_SIGNAL_TYPE_NUM_BOOKMARKS_OF_URL = 19;
+  SCORING_SIGNAL_TYPE_SHORTCUT_VISIT_COUNT = 20;
+  SCORING_SIGNAL_TYPE_SHORTEST_SHORTCUT_LEN = 21;
+  SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_SHORTCUT_VISIT_SEC = 22;
+}
+
+// Types of signal transformations.
+enum ScoringSignalTransformation {
+  // No transformation.
+  SCORING_SIGNAL_TRANSFORMATION_UNKNOWN = 0;
+  // log2(x).
+  SCORING_SIGNAL_TRANSFORMATION_LOG_2 = 1;
+}
+
+// Specification of a scoring signal.
+message ScoringSignalSpec {
+  // Type of the scoring signal.
+  optional ScoringSignalType type = 1;
+  // Value to use if missing.
+  optional float missing_value = 2;
+  // Transformation to apply to this signal.
+  optional ScoringSignalTransformation transformation = 3;
+}
+
+// The message contains a set of params to run a specific autocomplete scoring
+// model.
+message AutocompleteScoringModelMetadata {
+  // Scoring signals are specified here in the same order as in offline model
+  // training. During inference, the signals must also be arranged according
+  // to this order.
+  repeated ScoringSignalSpec scoring_signal_specs = 1;
+}
