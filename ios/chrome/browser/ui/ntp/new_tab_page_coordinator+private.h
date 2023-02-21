@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
 @class ContentSuggestionsHeaderViewController;
+@class NewTabPageViewController;
 
 // This is a private category that is intended to only be imported in
 // new_tab_page_coordinator.mm and tests.
@@ -26,6 +27,8 @@
 // Tracks the visibility of the NTP to report NTP usage metrics.
 // True if the NTP view is currently displayed to the user.
 @property(nonatomic, readonly) BOOL visible;
+
+@property(nonatomic, strong) NewTabPageViewController* NTPViewController;
 
 @end
 

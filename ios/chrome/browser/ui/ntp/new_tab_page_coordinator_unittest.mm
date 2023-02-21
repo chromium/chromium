@@ -128,6 +128,39 @@ class NewTabPageCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(FakeboxFocuser)];
   }
 
+  // Dynamically calls a selector on an object.
+  void DynamicallyCallSelector(id object, SEL selector, Class klass) {
+    NSMethodSignature* signature =
+        [klass instanceMethodSignatureForSelector:selector];
+    // Note: numberOfArguments is always at least 2 (self and _cmd).
+    ASSERT_EQ(int(signature.numberOfArguments), 2);
+    NSInvocation* invocation =
+        [NSInvocation invocationWithMethodSignature:signature];
+    invocation.selector = selector;
+    [invocation invokeWithTarget:object];
+  }
+
+  // Expects a coordinator method call to call a view controller method.
+  void ExpectMethodToProxyToVC(SEL coordinator_selector,
+                               SEL view_controller_selector) {
+    NewTabPageViewController* original_vc = coordinator_.NTPViewController;
+    id view_controller_mock = OCMClassMock([NewTabPageViewController class]);
+    coordinator_.NTPViewController =
+        (NewTabPageViewController*)view_controller_mock;
+
+    // Expect the call on the view controller.
+    DynamicallyCallSelector([view_controller_mock expect],
+                            view_controller_selector,
+                            [NewTabPageViewController class]);
+
+    // Call the method on the coordinator.
+    DynamicallyCallSelector(coordinator_, coordinator_selector,
+                            [coordinator_ class]);
+
+    [view_controller_mock verify];
+    coordinator_.NTPViewController = original_vc;
+  }
+
   web::WebState* web_state_;
   id toolbar_delegate_;
   id delegate_;
@@ -251,4 +284,23 @@ TEST_F(NewTabPageCoordinatorTest, DidChangeActiveWebState) {
     EXPECT_EQ(coordinator_.webState, nullptr);
     coordinator_ = nil;
   }
+}
+
+// Tests that various NTPCoordinator methods correctly proxy method calls to
+// the NTPViewController.
+TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+
+  ExpectMethodToProxyToVC(@selector(stopScrolling), @selector(stopScrolling));
+  ExpectMethodToProxyToVC(@selector(isScrolledToTop),
+                          @selector(isNTPScrolledToTop));
+  ExpectMethodToProxyToVC(@selector(willUpdateSnapshot),
+                          @selector(willUpdateSnapshot));
+  ExpectMethodToProxyToVC(@selector(focusFakebox), @selector(focusFakebox));
+  ExpectMethodToProxyToVC(@selector(locationBarDidResignFirstResponder),
+                          @selector(omniboxDidResignFirstResponder));
+
+  [coordinator_ stop];
 }
