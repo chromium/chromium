@@ -74,7 +74,7 @@ BASE_FEATURE(kForceSpectreVariant2Mitigation,
 // as controlled by CanCacheSandboxPolicy().
 BASE_FEATURE(kCacheMacSandboxProfiles,
              "CacheMacSandboxProfiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 bool IsNetworkSandboxEnabled() {
