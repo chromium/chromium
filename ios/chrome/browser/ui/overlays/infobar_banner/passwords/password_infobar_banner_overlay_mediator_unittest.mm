@@ -98,7 +98,7 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
   InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
                      MockIOSChromeSavePasswordInfoBarDelegate::Create(
                          kUsername, kPassword, GURL::EmptyGURL(),
-                         /*account_store_password=*/absl::nullopt));
+                         /*account_to_store_password=*/absl::nullopt));
   // Package the infobar into an OverlayRequest, then create a mediator that
   // uses this request in order to set up a fake consumer.
   std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
