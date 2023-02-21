@@ -20,17 +20,8 @@ class TouchToFillCreditCardProperties {
             new PropertyModel.ReadableObjectPropertyKey("sheet_items");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
-    static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_SCAN_CREDIT_CARD =
-            new PropertyModel.WritableBooleanPropertyKey("should_show_scan_credit_card");
-    static final PropertyModel.ReadableObjectPropertyKey<Runnable> SCAN_CREDIT_CARD_CALLBACK =
-            new ReadableObjectPropertyKey<>("scan_credit_card_callback");
-    static final PropertyModel
-            .ReadableObjectPropertyKey<Runnable> SHOW_CREDIT_CARD_SETTINGS_CALLBACK =
-            new ReadableObjectPropertyKey<>("show_credit_card_settings_callback");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, SHEET_ITEMS, DISMISS_HANDLER,
-            SHOULD_SHOW_SCAN_CREDIT_CARD, SCAN_CREDIT_CARD_CALLBACK,
-            SHOW_CREDIT_CARD_SETTINGS_CALLBACK};
+    static final PropertyKey[] ALL_KEYS = {VISIBLE, SHEET_ITEMS, DISMISS_HANDLER};
 
     @interface ItemType {
         // The header at the top of the touch to fill sheet.
@@ -41,6 +32,9 @@ class TouchToFillCreditCardProperties {
 
         // A "Continue" button, which is shown when there is 1 credit card only.
         int FILL_BUTTON = 2;
+
+        // A footer section containing additional actions.
+        int FOOTER = 3;
     }
 
     /**
@@ -75,6 +69,25 @@ class TouchToFillCreditCardProperties {
         static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID};
 
         private HeaderProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the footer in the TouchToFill sheet for
+     * payments.
+     */
+    static class FooterProperties {
+        static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_SCAN_CREDIT_CARD =
+                new PropertyModel.WritableBooleanPropertyKey("should_show_scan_credit_card");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> SCAN_CREDIT_CARD_CALLBACK =
+                new ReadableObjectPropertyKey<>("scan_credit_card_callback");
+        static final PropertyModel
+                .ReadableObjectPropertyKey<Runnable> SHOW_CREDIT_CARD_SETTINGS_CALLBACK =
+                new ReadableObjectPropertyKey<>("show_credit_card_settings_callback");
+
+        static final PropertyKey[] ALL_KEYS = {SHOULD_SHOW_SCAN_CREDIT_CARD,
+                SCAN_CREDIT_CARD_CALLBACK, SHOW_CREDIT_CARD_SETTINGS_CALLBACK};
+
+        private FooterProperties() {}
     }
 
     private TouchToFillCreditCardProperties() {}

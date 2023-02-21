@@ -11,7 +11,6 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_marginBottom="16dp"
     android:orientation="vertical">
 
     <ImageView
@@ -30,40 +29,12 @@ found in the LICENSE file.
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sheet_item_list"
-        android:layout_above="@id/touch_to_fill_footer"
         android:layout_below="@id/drag_handlebar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin_modern"
         android:layout_marginStart="@dimen/touch_to_fill_sheet_margin_modern"
         android:clipToPadding="false"
-        android:paddingBottom="@dimen/touch_to_fill_sheet_bottom_padding_button_modern"
         android:divider="@null"
         tools:listitem="@layout/touch_to_fill_credential_item_modern"/>
-
-    <LinearLayout
-        android:id="@+id/touch_to_fill_footer"
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/ttf_buttons_vertical_margin">
-
-      <View style="@style/HorizontalDivider"
-          android:layout_width="match_parent"
-          android:layout_height="@dimen/divider_height"
-          android:layout_marginHorizontal="@dimen/ttf_divider_horizontal_margin"
-          android:layout_marginBottom="@dimen/ttf_buttons_vertical_margin"/>
-
-      <TextView
-          android:id="@+id/touch_to_fill_sheet_manage_passwords"
-          android:layout_width="match_parent"
-          android:layout_height="@dimen/ttf_buttons_height"
-          android:paddingHorizontal="@dimen/ttf_sheet_padding"
-          android:minHeight="48dp"
-          android:gravity="center_vertical|start"
-          android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-          android:background="?android:attr/selectableItemBackground"
-          android:textDirection="locale"
-          android:textAlignment="viewStart"/>
-    </LinearLayout>
 </RelativeLayout>

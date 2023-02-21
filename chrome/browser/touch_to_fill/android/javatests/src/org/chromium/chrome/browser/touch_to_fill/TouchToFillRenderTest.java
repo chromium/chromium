@@ -8,11 +8,11 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.MANAGE_BUTTON_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MANAGE_BUTTON_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
+import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -103,7 +104,7 @@ public class TouchToFillRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(5)
+                    .setRevision(6)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -159,10 +160,8 @@ public class TouchToFillRenderTest {
                     org.chromium.chrome.browser.touch_to_fill.R.string
                             .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             addButton(ARON);
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -184,10 +183,8 @@ public class TouchToFillRenderTest {
                     org.chromium.chrome.browser.touch_to_fill.R.string
                             .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             addButton(ARON);
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -213,9 +210,7 @@ public class TouchToFillRenderTest {
             mModel.get(SHEET_ITEMS);
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -239,9 +234,7 @@ public class TouchToFillRenderTest {
             mModel.get(SHEET_ITEMS);
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -264,10 +257,8 @@ public class TouchToFillRenderTest {
                     org.chromium.chrome.browser.touch_to_fill.R.string
                             .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             addButton(ARON);
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -288,10 +279,8 @@ public class TouchToFillRenderTest {
                     org.chromium.chrome.browser.touch_to_fill.R.string
                             .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             addButton(ARON);
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -316,9 +305,7 @@ public class TouchToFillRenderTest {
             mModel.get(SHEET_ITEMS);
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -340,9 +327,7 @@ public class TouchToFillRenderTest {
             mModel.get(SHEET_ITEMS);
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -367,9 +352,7 @@ public class TouchToFillRenderTest {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB),
                             buildCredentialItem(MARIAM)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -391,9 +374,7 @@ public class TouchToFillRenderTest {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB),
                             buildCredentialItem(MARIAM)));
-            mModel.set(MANAGE_BUTTON_TEXT,
-                    mActivityTestRule.getActivity().getString(
-                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
+            addFooter();
             mModel.set(VISIBLE, true);
         });
 
@@ -445,6 +426,17 @@ public class TouchToFillRenderTest {
                                         UrlFormatter.formatUrlForDisplayOmitScheme(
                                                 credential.getOriginUrl()))
                                 .with(SHOW_SUBMIT_BUTTON, true)
+                                .build()));
+    }
+
+    private void addFooter() {
+        mModel.get(SHEET_ITEMS)
+                .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.FOOTER,
+                        new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                                .with(MANAGE_BUTTON_TEXT,
+                                        mActivityTestRule.getActivity().getString(
+                                                org.chromium.chrome.browser.touch_to_fill.R.string
+                                                        .manage_passwords))
                                 .build()));
     }
 }

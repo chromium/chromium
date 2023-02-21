@@ -13,6 +13,7 @@ android_resources("java_resources") {
     "java/res/drawable/touch_to_fill_credential_background_modern_rounded_down.xml",
     "java/res/drawable/touch_to_fill_credential_background_modern_rounded_up.xml",
     "java/res/layout/touch_to_fill_fill_button_modern.xml",
+    "java/res/layout/touch_to_fill_sheet.xml",
     "java/res/values/dimens.xml",
   ]
 }

@@ -31,13 +31,8 @@ class TouchToFillProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("sheet_items");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
-    static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_CLICK_MANAGE =
-            new PropertyModel.WritableObjectPropertyKey<>("on_click_manage");
-    static final PropertyModel.WritableObjectPropertyKey<String> MANAGE_BUTTON_TEXT =
-            new PropertyModel.WritableObjectPropertyKey<>("manage_button_text");
     static PropertyModel createDefaultModel(Callback<Integer> handler) {
-        return new PropertyModel
-                .Builder(VISIBLE, SHEET_ITEMS, DISMISS_HANDLER, ON_CLICK_MANAGE, MANAGE_BUTTON_TEXT)
+        return new PropertyModel.Builder(VISIBLE, SHEET_ITEMS, DISMISS_HANDLER)
                 .with(VISIBLE, false)
                 .with(SHEET_ITEMS, new ListModel<>())
                 .with(DISMISS_HANDLER, handler)
@@ -129,8 +124,24 @@ class TouchToFillProperties {
         private HeaderProperties() {}
     }
 
+    /**
+     * Properties defined here reflect the visible state of the footer in the TouchToFill sheet for
+     * payments.
+     */
+    static class FooterProperties {
+        // TODO(crbug.com/1247698): Use ReadableBooleanPropertyKey.
+        static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_CLICK_MANAGE =
+                new PropertyModel.WritableObjectPropertyKey<>("on_click_manage");
+        static final PropertyModel.WritableObjectPropertyKey<String> MANAGE_BUTTON_TEXT =
+                new PropertyModel.WritableObjectPropertyKey<>("manage_button_text");
+
+        static final PropertyKey[] ALL_KEYS = {ON_CLICK_MANAGE, MANAGE_BUTTON_TEXT};
+
+        private FooterProperties() {}
+    }
+
     @IntDef({ItemType.HEADER, ItemType.CREDENTIAL, ItemType.WEBAUTHN_CREDENTIAL,
-            ItemType.FILL_BUTTON})
+            ItemType.FILL_BUTTON, ItemType.FOOTER})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         /**
@@ -152,6 +163,11 @@ class TouchToFillProperties {
          * The fill button at the end of the sheet that filling more obvious for one suggestion.
          */
         int FILL_BUTTON = 4;
+
+        /**
+         * A footer section containing additional actions.
+         */
+        int FOOTER = 5;
     }
 
     /**

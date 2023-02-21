@@ -9,13 +9,13 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.MANAGE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MANAGE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
+import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
@@ -83,8 +84,6 @@ class TouchToFillMediator {
             List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials,
             boolean triggerSubmission) {
         assert credentials != null;
-        mModel.set(ON_CLICK_MANAGE, this::onManagePasswordSelected);
-        mModel.set(MANAGE_BUTTON_TEXT, getManageButtonText(credentials, webAuthnCredentials));
 
         TouchToFillResourceProvider resourceProvider = new TouchToFillResourceProviderImpl();
 
@@ -121,6 +120,13 @@ class TouchToFillMediator {
             }
             requestIconOrFallbackImage(model, url);
         }
+
+        sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FOOTER,
+                new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                        .with(ON_CLICK_MANAGE, this::onManagePasswordSelected)
+                        .with(MANAGE_BUTTON_TEXT,
+                                getManageButtonText(credentials, webAuthnCredentials))
+                        .build()));
 
         mModel.set(VISIBLE, true);
     }

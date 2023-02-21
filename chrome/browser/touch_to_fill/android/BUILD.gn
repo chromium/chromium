@@ -100,6 +100,7 @@ android_library("test_java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/touch_to_fill/android/internal:java",
     "//chrome/browser/touch_to_fill/android/internal:resource_provider_public_impl_java",
+    "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_integration_test_support",

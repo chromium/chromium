@@ -11,13 +11,13 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.MANAGE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MANAGE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
@@ -69,10 +69,6 @@ class TouchToFillViewBinder {
                 assert (model.get(DISMISS_HANDLER) != null);
                 model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
             }
-        } else if (propertyKey == ON_CLICK_MANAGE) {
-            view.setOnManagePasswordClick(model.get(ON_CLICK_MANAGE));
-        } else if (propertyKey == MANAGE_BUTTON_TEXT) {
-            view.setManagePasswordText(model.get(MANAGE_BUTTON_TEXT));
         } else if (propertyKey == SHEET_ITEMS) {
             view.setSheetItemListAdapter(
                     new RecyclerViewAdapter<>(new SimpleRecyclerViewMcp<>(model.get(SHEET_ITEMS),
@@ -116,6 +112,9 @@ class TouchToFillViewBinder {
                                 ? R.layout.touch_to_fill_fill_button_modern
                                 : R.layout.touch_to_fill_fill_button,
                         TouchToFillViewBinder::bindFillButtonView);
+            case ItemType.FOOTER:
+                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_footer_item,
+                        TouchToFillViewBinder::bindFooterView);
         }
         assert false : "Cannot create view for ItemType: " + itemType;
         return null;
@@ -296,6 +295,25 @@ class TouchToFillViewBinder {
                             ? PasswordManagerResourceProviderFactory.create()
                                       .getPasswordManagerIcon()
                             : model.get(IMAGE_DRAWABLE_ID)));
+        } else {
+            assert false : "Unhandled update to property:" + key;
+        }
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    private static void bindFooterView(PropertyModel model, View view, PropertyKey key) {
+        if (key == ON_CLICK_MANAGE) {
+            view.findViewById(R.id.touch_to_fill_sheet_manage_passwords)
+                    .setOnClickListener((v) -> model.get(ON_CLICK_MANAGE).run());
+        } else if (key == MANAGE_BUTTON_TEXT) {
+            TextView managePasswordsView =
+                    view.findViewById(R.id.touch_to_fill_sheet_manage_passwords);
+            managePasswordsView.setText(model.get(MANAGE_BUTTON_TEXT));
         } else {
             assert false : "Unhandled update to property:" + key;
         }

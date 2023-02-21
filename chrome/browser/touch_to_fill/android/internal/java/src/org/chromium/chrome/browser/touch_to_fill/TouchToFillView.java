@@ -10,7 +10,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,6 +47,7 @@ class TouchToFillView extends TouchToFillViewBase {
             switch (type) {
                 case ItemType.HEADER: // Fallthrough.
                 case ItemType.FILL_BUTTON:
+                case ItemType.FOOTER:
                     return true;
                 case ItemType.CREDENTIAL: // Fallthrough.
                 case ItemType.WEBAUTHN_CREDENTIAL:
@@ -59,8 +59,10 @@ class TouchToFillView extends TouchToFillViewBase {
 
         @Override
         protected boolean containsFillButton(RecyclerView parent) {
-            return parent.getAdapter().getItemViewType(parent.getAdapter().getItemCount() - 1)
-                    == ItemType.FILL_BUTTON;
+            int itemCount = parent.getAdapter().getItemCount();
+            // The button will be above the footer if it's present.
+            return itemCount > 1
+                    && parent.getAdapter().getItemViewType(itemCount - 2) == ItemType.FILL_BUTTON;
         }
     }
 
@@ -80,17 +82,6 @@ class TouchToFillView extends TouchToFillViewBase {
         if (usesUnifiedPasswordManagerBranding()) {
             mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(context));
         }
-    }
-
-    void setOnManagePasswordClick(Runnable runnable) {
-        getContentView()
-                .findViewById(R.id.touch_to_fill_sheet_manage_passwords)
-                .setOnClickListener((v) -> runnable.run());
-    }
-
-    void setManagePasswordText(String buttonText) {
-        TextView view = getContentView().findViewById(R.id.touch_to_fill_sheet_manage_passwords);
-        view.setText(buttonText);
     }
 
     @Override
@@ -124,8 +115,8 @@ class TouchToFillView extends TouchToFillViewBase {
     }
 
     @Override
-    protected View getFooter() {
-        return getContentView().findViewById(R.id.touch_to_fill_footer);
+    protected int getFooterId() {
+        return R.id.touch_to_fill_footer;
     }
 
     @Override

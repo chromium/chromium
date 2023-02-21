@@ -62,9 +62,9 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     /**
      * Used to access the footer to measure it.
-     * @return the {@link View} containing footer items in the {@link BottomSheet}.
+     * @return the id of the {@link View} containing footer items in the {@link BottomSheet}.
      */
-    protected abstract View getFooter();
+    protected abstract int getFooterId();
 
     /**
      * Used to access the list of suggestions to measure it.
@@ -127,7 +127,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      */
     public boolean setVisible(boolean isVisible) {
         if (isVisible) {
-            remeasure(false);
+            remeasure();
             mBottomSheetController.addObserver(mBottomSheetObserver);
             if (!mBottomSheetController.requestShowContent(this, true)) {
                 mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -149,7 +149,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     }
 
     /**
-     * Returns the height of the full state. Must show the footer items permanently. For up to three
+     * Returns the height of the full state. Must show the footer items permanently. For up to four
      * suggestions, the sheet usually cannot fill the screen.
      *
      * @return the full state height in pixels. Never 0. Can theoretically exceed the screen height.
@@ -164,8 +164,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         if (requiredMaxHeight <= mBottomSheetController.getContainerHeight()) {
             return requiredMaxHeight;
         }
-        // If the footer would move off-screen, make it sticky and update the layout.
-        remeasure(true);
+        remeasure();
         ViewUtils.requestLayout(mContentView, "TouchToFillView.getMaximumSheetHeightPx");
         return getHeightWhenFullyExtendedPx();
     }
@@ -182,22 +181,25 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
             // TODO(crbug.com/1330933): Assert this condition in setVisible. Should never happen.
             return BottomSheetContent.HeightMode.DEFAULT;
         }
-        return getHeightWithMarginsPx(getHandlebar(), false)
+        int height = getHeightWithMarginsPx(getHandlebar(), false)
                 + getSheetItemListHeightWithMarginsPx(true);
+        View footer = mSheetItemListView.findViewById(getFooterId());
+        if (footer != null) {
+            if (footer.getMeasuredHeight() == 0) {
+                // This can happen when bottom sheet container layout changes, apparently causing
+                // the footer layout to be invalidated. Measure the content view again.
+                remeasure();
+                ViewUtils.requestLayout(footer, "TouchToFillView.getHeightWhenFullyExtendedPx");
+            }
+            height -= getHeightWithMarginsPx(footer, false);
+        }
+        return height;
     }
 
     private @Px int getHeightWhenFullyExtendedPx() {
         assert mContentView.getMeasuredHeight() > 0 : "ContentView hasn't been measured.";
         int height = getHeightWithMarginsPx(getHandlebar(), false)
                 + getSheetItemListHeightWithMarginsPx(false);
-        View footer = getFooter();
-        if (footer.getMeasuredHeight() == 0) {
-            // This can happen when bottom sheet container layout changes, apparently causing
-            // the footer layout to be invalidated. Measure the content view again.
-            remeasure(true);
-            ViewUtils.requestLayout(footer, "TouchToFillView.getHeightWhenFullyExtendedPx");
-        }
-        height += getHeightWithMarginsPx(footer, false);
         return height;
     }
 
@@ -216,8 +218,6 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
             }
             totalHeight += getHeightWithMarginsPx(child, false);
         }
-        // Since the last element is fully visible, add the conclusive margin.
-        totalHeight += getConclusiveMarginHeightPx();
         return totalHeight;
     }
 
@@ -238,22 +238,10 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     /**
      * Measures the content of the bottom sheet.
-     * @param useStickyFooter indicates if the footer should be shown permanently.
      */
-    protected void remeasure(boolean useStickyFooter) {
-        RelativeLayout.LayoutParams footerLayoutParams =
-                (RelativeLayout.LayoutParams) getFooter().getLayoutParams();
+    protected void remeasure() {
         RelativeLayout.LayoutParams sheetItemListLayoutParams =
                 (RelativeLayout.LayoutParams) mSheetItemListView.getLayoutParams();
-        if (useStickyFooter) {
-            sheetItemListLayoutParams.addRule(RelativeLayout.ABOVE, getFooter().getId());
-            footerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            footerLayoutParams.removeRule(RelativeLayout.BELOW);
-        } else {
-            sheetItemListLayoutParams.removeRule(RelativeLayout.ABOVE);
-            footerLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            footerLayoutParams.addRule(RelativeLayout.BELOW, getItemList().getId());
-        }
         mContentView.measure(
                 View.MeasureSpec.makeMeasureSpec(getInsetDisplayWidthPx(), MeasureSpec.AT_MOST),
                 MeasureSpec.UNSPECIFIED);
@@ -313,9 +301,11 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
+        // TODO(crbug.com/1247698): Fix the half height for the case of more than 3 listed items.
         // Disable the half state when TalkBack is on.
         if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) return HeightMode.DISABLED;
-        return Math.min(getDesiredSheetHeightPx(), mBottomSheetController.getContainerHeight())
+        return Math.min(getDesiredSheetHeightPx() + getConclusiveMarginHeightPx(),
+                       mBottomSheetController.getContainerHeight())
                 / (float) mBottomSheetController.getContainerHeight();
     }
 

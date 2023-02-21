@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/touch_to_fill_footer"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="@dimen/ttf_buttons_vertical_margin"
+    android:layout_marginTop="@dimen/ttf_sheet_padding">
+
+    <!-- Divider -->
+    <View style="@style/HorizontalDivider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginBottom="@dimen/ttf_buttons_vertical_margin"/>
+
+    <TextView
+        android:id="@+id/touch_to_fill_sheet_manage_passwords"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ttf_buttons_height"
+        android:paddingHorizontal="@dimen/ttf_sheet_padding"
+        android:minHeight="48dp"
+        android:gravity="center_vertical|start"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:background="?android:attr/selectableItemBackground"
+        android:textDirection="locale"
+        android:textAlignment="viewStart"/>
+</LinearLayout>

@@ -21,13 +21,13 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.MANAGE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MANAGE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
@@ -148,9 +148,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Arrays.asList(ANA, CARL), true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(3)); // Header + 2 credentials
-        assertThat(
-                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passwords)));
+        assertThat(itemList.size(), is(4)); // Header + 2 credentials + footer.
+        assertThat(itemList.get(itemList.size() - 1).model.get(MANAGE_BUTTON_TEXT),
+                is(mContext.getString(R.string.manage_passwords)));
 
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
         assertThat(itemList.get(0).model.get(TITLE),
@@ -179,9 +179,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Arrays.asList(ANA), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
-        assertThat(
-                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passwords)));
+        assertThat(itemList.size(), is(4)); // Header + 1 credential + Button + Footer.
+        assertThat(itemList.get(itemList.size() - 1).model.get(MANAGE_BUTTON_TEXT),
+                is(mContext.getString(R.string.manage_passwords)));
 
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
         assertThat(itemList.get(0).model.get(TITLE),
@@ -205,9 +205,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL, true, Arrays.asList(DINO), Collections.emptyList(), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
-        assertThat(
-                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passkeys)));
+        assertThat(itemList.size(), is(4)); // Header + 1 credential + Button + Footer.
+        assertThat(itemList.get(itemList.size() - 1).model.get(MANAGE_BUTTON_TEXT),
+                is(mContext.getString(R.string.manage_passkeys)));
 
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
         assertThat(itemList.get(0).model.get(TITLE),
@@ -226,9 +226,9 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsWithWebAuthnAndPasswordEntries() {
         mMediator.showCredentials(TEST_URL, true, Arrays.asList(DINO), Arrays.asList(ANA), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(
-                itemList.size(), is(3)); // Header + 1 webauthn credential + 1 password credential
-        assertThat(mModel.get(MANAGE_BUTTON_TEXT),
+        // Header + 1 webauthn credential + 1 password credential + Footer.
+        assertThat(itemList.size(), is(4));
+        assertThat(itemList.get(itemList.size() - 1).model.get(MANAGE_BUTTON_TEXT),
                 is(mContext.getString(R.string.manage_passwords_and_passkeys)));
 
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
@@ -251,9 +251,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Arrays.asList(ANA), true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
-        assertThat(
-                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passwords)));
+        assertThat(itemList.size(), is(4)); // Header + 1 credential + Button + Footer.
+        assertThat(itemList.get(itemList.size() - 1).model.get(MANAGE_BUTTON_TEXT),
+                is(mContext.getString(R.string.manage_passwords)));
 
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
         assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
@@ -268,7 +268,7 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Arrays.asList(ANA, CARL, BOB), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(4)); // Header + three Credentials
+        assertThat(itemList.size(), is(5)); // Header + 3 Credentials + Footer.
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
@@ -293,7 +293,7 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Collections.singletonList(CARL), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
+        assertThat(itemList.size(), is(4)); // Header + Credential + Continue Button + Footer.
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(CARL));
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
@@ -320,7 +320,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsFormatPslOrigins() {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Arrays.asList(ANA, BOB), false);
-        assertThat(mModel.get(SHEET_ITEMS).size(), is(3)); // Header + two Credentials
+        assertThat(mModel.get(SHEET_ITEMS).size(), is(4)); // Header + 2 Credentials + Footer.
         assertThat(mModel.get(SHEET_ITEMS).get(1).type, is(ItemType.CREDENTIAL));
         assertThat(mModel.get(SHEET_ITEMS).get(1).model.get(FORMATTED_ORIGIN),
                 is(format(ANA.getOriginUrl())));
@@ -335,7 +335,7 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Collections.singletonList(ANA), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
+        assertThat(itemList.size(), is(4)); // Header + Credential + Continue Button + Footer.
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
@@ -344,7 +344,7 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Collections.singletonList(BOB), false);
         itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
+        assertThat(itemList.size(), is(4)); // Header + Credential + Continue Button + Footer.
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(BOB));
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
@@ -420,8 +420,10 @@ public class TouchToFillControllerTest {
     public void testHidesWhenSelectingManagePasswords() {
         mMediator.showCredentials(
                 TEST_URL, true, Collections.emptyList(), Arrays.asList(ANA, CARL, BOB), false);
-        assertThat(mModel.get(ON_CLICK_MANAGE), is(notNullValue()));
-        mModel.get(ON_CLICK_MANAGE).run();
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(
+                itemList.get(itemList.size() - 1).model.get(ON_CLICK_MANAGE), is(notNullValue()));
+        itemList.get(itemList.size() - 1).model.get(ON_CLICK_MANAGE).run();
         verify(mMockDelegate).onManagePasswordsSelected();
         assertThat(mModel.get(VISIBLE), is(false));
         assertThat(RecordHistogram.getHistogramValueCountForTesting(

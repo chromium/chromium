@@ -261,7 +261,8 @@ public class TouchToFillIntegrationTest {
     }
 
     private RecyclerView getCredentials() {
-        return mActivityTestRule.getActivity().findViewById(R.id.sheet_item_list);
+        return mActivityTestRule.getActivity().findViewById(
+                org.chromium.chrome.browser.touch_to_fill.common.R.id.sheet_item_list);
     }
 
     private TextView getManagePasswordsButton() {

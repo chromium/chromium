@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
 import android.content.Context;
@@ -19,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -96,8 +99,8 @@ class TouchToFillCreditCardMediator {
         }
 
         sheetItems.add(0, buildHeader(hasOnlyLocalCards(cards)));
+        sheetItems.add(buildFooter(shouldShowScanCreditCard));
 
-        mModel.set(SHOULD_SHOW_SCAN_CREDIT_CARD, shouldShowScanCreditCard);
         mModel.set(VISIBLE, true);
 
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, cards.length);
@@ -165,6 +168,15 @@ class TouchToFillCreditCardMediator {
                         .with(IMAGE_DRAWABLE_ID,
                                 hasOnlyLocalCards ? R.drawable.fre_product_logo
                                                   : R.drawable.google_pay)
+                        .build());
+    }
+
+    private ListItem buildFooter(boolean hasScanCardButton) {
+        return new ListItem(TouchToFillCreditCardProperties.ItemType.FOOTER,
+                new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                        .with(SHOULD_SHOW_SCAN_CREDIT_CARD, hasScanCardButton)
+                        .with(SCAN_CREDIT_CARD_CALLBACK, this::scanCreditCard)
+                        .with(SHOW_CREDIT_CARD_SETTINGS_CALLBACK, this::showCreditCardSettings)
                         .build());
     }
 

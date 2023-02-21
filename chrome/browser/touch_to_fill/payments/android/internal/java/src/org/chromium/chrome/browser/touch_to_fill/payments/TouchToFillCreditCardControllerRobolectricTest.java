@@ -21,12 +21,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.HEADER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
 import android.app.Activity;
@@ -151,7 +151,11 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     @Test
     public void testScanNewCard() {
         mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true);
-        mTouchToFillCreditCardModel.get(SCAN_CREDIT_CARD_CALLBACK).run();
+        int lastItemPos = mTouchToFillCreditCardModel.get(SHEET_ITEMS).size() - 1;
+        mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                .get(lastItemPos)
+                .model.get(SCAN_CREDIT_CARD_CALLBACK)
+                .run();
         verify(mDelegateMock).scanCreditCard();
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
@@ -161,7 +165,11 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     @Test
     public void testShowCreditCardSettings() {
         mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true);
-        mTouchToFillCreditCardModel.get(SHOW_CREDIT_CARD_SETTINGS_CALLBACK).run();
+        int lastItemPos = mTouchToFillCreditCardModel.get(SHEET_ITEMS).size() - 1;
+        mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                .get(lastItemPos)
+                .model.get(SHOW_CREDIT_CARD_SETTINGS_CALLBACK)
+                .run();
         verify(mDelegateMock).showCreditCardSettings();
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
