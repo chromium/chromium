@@ -20,6 +20,9 @@ window.addEventListener("message", async (event) => {
       reply(obtainedAccess);
     }
       break;
+    case "write document.cookie":
+      document.cookie = event.data.cookie;
+      reply(undefined);
     case "document.cookie":
       reply(document.cookie);
       break;
