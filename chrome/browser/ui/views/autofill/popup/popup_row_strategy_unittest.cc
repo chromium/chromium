@@ -9,12 +9,15 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -72,15 +75,22 @@ const RowStrategyTestdata kTestcases[] = {
         .strategy_type = StrategyType::kFooter,
         .set_size = 3,
         .set_index = 3,
+    },
+    RowStrategyTestdata{
+        .frontend_ids = {POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                         POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                         POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY},
+        .line_number = 1,
+        .strategy_type = StrategyType::kSuggestion,
+        .set_size = 3,
+        .set_index = 2,
     }};
 
 }  // namespace
 
 // Test fixture for testing PopupRowStrategy. Note that most of the detailed
 // view testing is covered by pixel tests in `popup_view_views_browsertest.cc`.
-class PopupRowStrategyTest
-    : public ChromeViewsTestBase,
-      public ::testing::WithParamInterface<RowStrategyTestdata> {
+class PopupRowStrategyTest : public ChromeViewsTestBase {
  public:
   // Sets suggestions in the mocked popup controller.
   void SetSuggestions(const std::vector<int>& frontend_ids) {
@@ -136,7 +146,50 @@ class PopupRowStrategyTest
   MockAutofillPopupController controller_;
 };
 
-TEST_P(PopupRowStrategyTest, HasContentArea) {
+TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonRemovesEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillShowAutocompleteDeleteButton);
+  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  std::unique_ptr<PopupRowStrategy> strategy =
+      CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
+
+  std::unique_ptr<PopupCellView> cell = strategy->CreateControl();
+  ASSERT_THAT(cell, NotNull());
+
+  // Clicking the cell (as opposed to the button) should not do anything.
+  base::RepeatingClosure on_accept_callback = cell->GetOnAcceptedCallback();
+  ASSERT_TRUE(on_accept_callback);
+  EXPECT_CALL(controller(), RemoveSuggestion(1));
+  on_accept_callback.Run();
+}
+
+TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillShowAutocompleteDeleteButton);
+  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  std::unique_ptr<PopupRowStrategy> strategy =
+      CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
+
+  std::unique_ptr<PopupCellView> cell = strategy->CreateControl();
+  ASSERT_THAT(cell, NotNull());
+
+  ui::AXNodeData node_data;
+  cell->GetAccessibleNodeData(&node_data);
+
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kButton);
+}
+
+class PopupRowStrategyParametrizedTest
+    : public PopupRowStrategyTest,
+      public ::testing::WithParamInterface<RowStrategyTestdata> {};
+
+TEST_P(PopupRowStrategyParametrizedTest, HasContentArea) {
   const RowStrategyTestdata kTestdata = GetParam();
 
   SetSuggestions(kTestdata.frontend_ids);
@@ -147,7 +200,7 @@ TEST_P(PopupRowStrategyTest, HasContentArea) {
   EXPECT_THAT(strategy->CreateContent(), NotNull());
 }
 
-TEST_P(PopupRowStrategyTest, ContentAreaCallbacksWork) {
+TEST_P(PopupRowStrategyParametrizedTest, ContentAreaCallbacksWork) {
   const RowStrategyTestdata kTestdata = GetParam();
 
   SetSuggestions(kTestdata.frontend_ids);
@@ -159,7 +212,7 @@ TEST_P(PopupRowStrategyTest, ContentAreaCallbacksWork) {
   TestContentCallbacks(*content_cell, kTestdata.line_number);
 }
 
-TEST_P(PopupRowStrategyTest, DeletedControllerIsHandledGracefully) {
+TEST_P(PopupRowStrategyParametrizedTest, DeletedControllerIsHandledGracefully) {
   const RowStrategyTestdata kTestdata = GetParam();
 
   SetSuggestions(kTestdata.frontend_ids);
@@ -177,7 +230,8 @@ TEST_P(PopupRowStrategyTest, DeletedControllerIsHandledGracefully) {
   callback.Run();
 }
 
-TEST_P(PopupRowStrategyTest, SetsAccessibilityAttributesForContentArea) {
+TEST_P(PopupRowStrategyParametrizedTest,
+       SetsAccessibilityAttributesForContentArea) {
   const RowStrategyTestdata kTestdata = GetParam();
 
   SetSuggestions(kTestdata.frontend_ids);
@@ -199,7 +253,7 @@ TEST_P(PopupRowStrategyTest, SetsAccessibilityAttributesForContentArea) {
             kTestdata.set_index);
 }
 
-TEST_P(PopupRowStrategyTest, HasNoControlArea) {
+TEST_P(PopupRowStrategyParametrizedTest, HasControlArea) {
   const RowStrategyTestdata kTestdata = GetParam();
 
   SetSuggestions(kTestdata.frontend_ids);
@@ -210,7 +264,7 @@ TEST_P(PopupRowStrategyTest, HasNoControlArea) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         PopupRowStrategyTest,
+                         PopupRowStrategyParametrizedTest,
                          ::testing::ValuesIn(kTestcases));
 
 }  // namespace autofill

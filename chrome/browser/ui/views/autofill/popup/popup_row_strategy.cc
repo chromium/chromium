@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -28,8 +27,10 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -42,6 +43,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -452,6 +454,7 @@ void AddCallbacksToContentView(
 
 // ********************* AccessibilityDelegate implementations *****************
 
+// ********************* ContentItemAccessibilityDelegate  *********************
 class ContentItemAccessibilityDelegate
     : public PopupCellView::AccessibilityDelegate {
  public:
@@ -508,7 +511,25 @@ void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size_);
 }
 
-// TODO(crbug.com/1417187): Add an a11y delegate for control buttons.
+// ******************** DeleteButtonAccessibilityDelegate  *********************
+class DeleteButtonAccessibilityDelegate
+    : public PopupCellView::AccessibilityDelegate {
+ public:
+  DeleteButtonAccessibilityDelegate() = default;
+  ~DeleteButtonAccessibilityDelegate() override = default;
+
+  void GetAccessibleNodeData(bool is_selected,
+                             ui::AXNodeData* node_data) const override;
+};
+
+void DeleteButtonAccessibilityDelegate::GetAccessibleNodeData(
+    bool is_selected,
+    ui::AXNodeData* node_data) const {
+  node_data->role = ax::mojom::Role::kButton;
+  // TODO(crbug.com/1417187): Add voice over text of original suggestion here?
+  node_data->SetNameChecked(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
+}
 
 }  // namespace
 
@@ -623,7 +644,33 @@ void PopupSuggestionStrategy::FormatLabel(views::Label& label,
 }
 
 std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
-  NOTIMPLEMENTED();
+  if (!GetController()) {
+    return nullptr;
+  }
+
+  // If the feature is enabled, autocomplete entries have a delete button.
+  if (GetController()->GetSuggestionAt(GetLineNumber()).frontend_id ==
+          POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)) {
+    std::unique_ptr<PopupCellView> view =
+        views::Builder<PopupCellView>()
+            .SetAccessibilityDelegate(
+                std::make_unique<DeleteButtonAccessibilityDelegate>())
+            .Build();
+
+    view->SetUseDefaultFillLayout(true);
+    views::ImageView* delete_icon =
+        view->AddChildView(ImageViewFromVectorIcon(kTrashCanIcon));
+    delete_icon->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
+    view->SetOnAcceptedCallback(base::BindRepeating(
+        base::IgnoreResult(&AutofillPopupController::RemoveSuggestion),
+        GetController(), GetLineNumber()));
+
+    return view;
+  }
+
   return nullptr;
 }
 
@@ -702,7 +749,6 @@ PopupPasswordSuggestionStrategy::CreateAndTrackSubtextViews(
 
 std::unique_ptr<PopupCellView>
 PopupPasswordSuggestionStrategy::CreateControl() {
-  NOTIMPLEMENTED();
   return nullptr;
 }
 
@@ -789,7 +835,6 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
 }
 
 std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateControl() {
-  NOTIMPLEMENTED();
   return nullptr;
 }
 

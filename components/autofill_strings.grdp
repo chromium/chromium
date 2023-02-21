@@ -49,6 +49,9 @@
       Remove address from Chromium?
     </message>
   </if>
+  <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP" desc="Tooltip shown when hovering over a small button with a trash-can logo next to an Autocomplete entry in the Autofill popup." translateable="false">
+    Remove entry
+  </message>
   <message name="IDS_AUTOFILL_CC_AMEX" desc="Full American Express credit card name.">
     American Express
   </message>
