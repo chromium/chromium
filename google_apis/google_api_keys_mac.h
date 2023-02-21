@@ -7,8 +7,11 @@
 
 #include <string>
 
+#include "base/component_export.h"
+
 namespace google_apis {
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 std::string GetAPIKeyFromInfoPlist(const std::string& key_name);
 
 }  // namespace google_apis

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -24,7 +25,7 @@
 // change on start-up.
 // --------------------------------------------------------------------------
 
-struct CoreAccountId {
+struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   CoreAccountId();
   CoreAccountId(const CoreAccountId&);
   CoreAccountId(CoreAccountId&&) noexcept;
@@ -96,16 +97,21 @@ struct CoreAccountId {
   std::string id_;
 };
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 bool operator<(const CoreAccountId& lhs, const CoreAccountId& rhs);
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs);
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 bool operator!=(const CoreAccountId& lhs, const CoreAccountId& rhs);
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 std::ostream& operator<<(std::ostream& out, const CoreAccountId& a);
 
 // Returns the values of the account ids in a vector. Useful especially for
 // logs.
+COMPONENT_EXPORT(GOOGLE_APIS)
 std::vector<std::string> ToStringList(
     const std::vector<CoreAccountId>& account_ids);
 

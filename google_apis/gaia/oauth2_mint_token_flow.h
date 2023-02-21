@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +22,7 @@
 class GoogleServiceAuthError;
 class OAuth2MintTokenFlowTest;
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kOAuth2MintTokenApiCallResultHistogram[];
 
 // Values carrying the result of processing a successful API call.
@@ -48,7 +50,7 @@ enum class OAuth2MintTokenApiCallResult {
 // Data for the remote consent resolution:
 // - URL of the consent page to be displayed to the user.
 // - Cookies that should be set before navigating to that URL.
-struct RemoteConsentResolutionData {
+struct COMPONENT_EXPORT(GOOGLE_APIS) RemoteConsentResolutionData {
   RemoteConsentResolutionData();
   ~RemoteConsentResolutionData();
 
@@ -65,7 +67,8 @@ struct RemoteConsentResolutionData {
 // This class implements the OAuth2 flow to Google to mint an OAuth2 access
 // token for the given client and the given set of scopes from the OAuthLogin
 // scoped "master" OAuth2 token for the user logged in to Chrome.
-class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
+class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
+    : public OAuth2ApiCallFlow {
  public:
   // There are four different modes when minting a token to grant
   // access to third-party app for a user.
@@ -81,7 +84,7 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
   };
 
   // Parameters needed to mint a token.
-  struct Parameters {
+  struct COMPONENT_EXPORT(GOOGLE_APIS) Parameters {
    public:
     Parameters();
     Parameters(const std::string& eid,
@@ -109,7 +112,7 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
     Mode mode;
   };
 
-  class Delegate {
+  class COMPONENT_EXPORT(GOOGLE_APIS) Delegate {
    public:
     virtual void OnMintTokenSuccess(const std::string& access_token,
                                     const std::set<std::string>& granted_scopes,

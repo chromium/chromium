@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 
@@ -21,7 +22,8 @@ class SharedURLLoaderFactory;
 // tokens from Google's authorization server.  See "Refreshing an access token"
 // for more Google specific info:
 // https://developers.google.com/identity/protocols/oauth2/web-server?csw=1#obtainingaccesstokens
-class GaiaAccessTokenFetcher : public OAuth2AccessTokenFetcherImpl {
+class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAccessTokenFetcher
+    : public OAuth2AccessTokenFetcherImpl {
  public:
   static const char kOAuth2NetResponseCodeHistogramName[];
   static const char kOAuth2ResponseHistogramName[];

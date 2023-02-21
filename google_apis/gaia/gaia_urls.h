@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/singleton.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -14,7 +15,7 @@
 // A singleton that provides all the URLs that are used for connecting to GAIA.
 //
 // Please update InitializeFromConfig() when adding new URLs.
-class GaiaUrls {
+class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
  public:
   static GaiaUrls* GetInstance();
 

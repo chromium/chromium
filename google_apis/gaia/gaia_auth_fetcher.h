@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -43,7 +44,7 @@ enum class MultiloginMode {
 };
 
 // Specifies the "source" parameter for Gaia calls.
-class GaiaSource {
+class COMPONENT_EXPORT(GOOGLE_APIS) GaiaSource {
  public:
   enum Type {
     kChrome,
@@ -72,9 +73,9 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-class GaiaAuthFetcher {
+class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
  public:
-  struct MultiloginTokenIDPair {
+  struct COMPONENT_EXPORT(GOOGLE_APIS) MultiloginTokenIDPair {
     std::string token_;
     std::string gaia_id_;
 

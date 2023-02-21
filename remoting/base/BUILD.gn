@@ -166,6 +166,7 @@ source_set("breakpad") {
   if (is_mac) {
     sources += [ "breakpad_mac.mm" ]
     deps += [ "//third_party/breakpad" ]
+    frameworks = [ "Foundation.framework" ]
   }
 
   if (is_win) {

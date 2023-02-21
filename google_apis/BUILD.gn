@@ -110,100 +110,88 @@ config("key_defines") {
   }
 }
 
-# Variables:
-#   deps: Extra dependencies
-template("google_apis_tmpl") {
-  source_set(target_name) {
-    sources = [
-      "gaia/core_account_id.cc",
-      "gaia/core_account_id.h",
-      "gaia/gaia_access_token_fetcher.cc",
-      "gaia/gaia_access_token_fetcher.h",
-      "gaia/gaia_auth_consumer.cc",
-      "gaia/gaia_auth_consumer.h",
-      "gaia/gaia_auth_fetcher.cc",
-      "gaia/gaia_auth_fetcher.h",
-      "gaia/gaia_auth_util.cc",
-      "gaia/gaia_auth_util.h",
-      "gaia/gaia_config.cc",
-      "gaia/gaia_config.h",
-      "gaia/gaia_constants.cc",
-      "gaia/gaia_constants.h",
-      "gaia/gaia_oauth_client.cc",
-      "gaia/gaia_oauth_client.h",
-      "gaia/gaia_switches.cc",
-      "gaia/gaia_switches.h",
-      "gaia/gaia_urls.cc",
-      "gaia/gaia_urls.h",
-      "gaia/google_service_auth_error.cc",
-      "gaia/google_service_auth_error.h",
-      "gaia/oauth2_access_token_consumer.cc",
-      "gaia/oauth2_access_token_consumer.h",
-      "gaia/oauth2_access_token_fetcher.cc",
-      "gaia/oauth2_access_token_fetcher.h",
-      "gaia/oauth2_access_token_fetcher_immediate_error.cc",
-      "gaia/oauth2_access_token_fetcher_immediate_error.h",
-      "gaia/oauth2_access_token_fetcher_impl.cc",
-      "gaia/oauth2_access_token_fetcher_impl.h",
-      "gaia/oauth2_access_token_manager.cc",
-      "gaia/oauth2_access_token_manager.h",
-      "gaia/oauth2_api_call_flow.cc",
-      "gaia/oauth2_api_call_flow.h",
-      "gaia/oauth2_id_token_decoder.cc",
-      "gaia/oauth2_id_token_decoder.h",
-      "gaia/oauth2_mint_token_flow.cc",
-      "gaia/oauth2_mint_token_flow.h",
-      "gaia/oauth_multilogin_result.cc",
-      "gaia/oauth_multilogin_result.h",
-      "gaia/oauth_request_signer.cc",
-      "gaia/oauth_request_signer.h",
-      "google_api_keys.cc",
-      "google_api_keys.h",
-    ]
+component("google_apis") {
+  sources = [
+    "gaia/core_account_id.cc",
+    "gaia/core_account_id.h",
+    "gaia/gaia_access_token_fetcher.cc",
+    "gaia/gaia_access_token_fetcher.h",
+    "gaia/gaia_auth_consumer.cc",
+    "gaia/gaia_auth_consumer.h",
+    "gaia/gaia_auth_fetcher.cc",
+    "gaia/gaia_auth_fetcher.h",
+    "gaia/gaia_auth_util.cc",
+    "gaia/gaia_auth_util.h",
+    "gaia/gaia_config.cc",
+    "gaia/gaia_config.h",
+    "gaia/gaia_constants.cc",
+    "gaia/gaia_constants.h",
+    "gaia/gaia_oauth_client.cc",
+    "gaia/gaia_oauth_client.h",
+    "gaia/gaia_switches.cc",
+    "gaia/gaia_switches.h",
+    "gaia/gaia_urls.cc",
+    "gaia/gaia_urls.h",
+    "gaia/google_service_auth_error.cc",
+    "gaia/google_service_auth_error.h",
+    "gaia/oauth2_access_token_consumer.cc",
+    "gaia/oauth2_access_token_consumer.h",
+    "gaia/oauth2_access_token_fetcher.cc",
+    "gaia/oauth2_access_token_fetcher.h",
+    "gaia/oauth2_access_token_fetcher_immediate_error.cc",
+    "gaia/oauth2_access_token_fetcher_immediate_error.h",
+    "gaia/oauth2_access_token_fetcher_impl.cc",
+    "gaia/oauth2_access_token_fetcher_impl.h",
+    "gaia/oauth2_access_token_manager.cc",
+    "gaia/oauth2_access_token_manager.h",
+    "gaia/oauth2_api_call_flow.cc",
+    "gaia/oauth2_api_call_flow.h",
+    "gaia/oauth2_id_token_decoder.cc",
+    "gaia/oauth2_id_token_decoder.h",
+    "gaia/oauth2_mint_token_flow.cc",
+    "gaia/oauth2_mint_token_flow.h",
+    "gaia/oauth_multilogin_result.cc",
+    "gaia/oauth_multilogin_result.h",
+    "gaia/oauth_request_signer.cc",
+    "gaia/oauth_request_signer.h",
+    "google_api_keys.cc",
+    "google_api_keys.h",
+  ]
 
-    configs += [ ":key_defines" ]
+  configs += [ ":key_defines" ]
 
-    public_deps = [
-      ":buildflags",
-      "//build:chromeos_buildflags",
-    ]
+  public_deps = [
+    ":buildflags",
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
 
-    deps = [
-      ":oauth2_mint_token_consent_result_proto",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//build:branding_buildflags",
-      "//build:chromeos_buildflags",
-      "//crypto",
-      "//mojo/public/cpp/bindings:struct_traits",
-      "//services/network/public/cpp",
-    ]
-
-    if (_use_official_google_keys_and_generate_metrics_key_header) {
-      deps += [ "internal:generate_metrics_key_header" ]
-    }
-
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    }
-
-    if (is_apple) {
-      sources += [
-        "google_api_keys_mac.h",
-        "google_api_keys_mac.mm",
-      ]
-
-      frameworks = [ "Foundation.framework" ]
-    }
-  }
-}
-
-google_apis_tmpl("google_apis") {
   deps = [
+    ":oauth2_mint_token_consent_result_proto",
+    "//base/third_party/dynamic_annotations",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//crypto",
+    "//mojo/public/cpp/bindings:struct_traits",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
+
+  if (_use_official_google_keys_and_generate_metrics_key_header) {
+    deps += [ "internal:generate_metrics_key_header" ]
+  }
+
+  if (is_apple) {
+    sources += [
+      "google_api_keys_mac.h",
+      "google_api_keys_mac.mm",
+    ]
+
+    frameworks = [ "Foundation.framework" ]
+  }
+
+  defines = [ "IS_GOOGLE_APIS_IMPL" ]
 }
 
 proto_library("oauth2_mint_token_consent_result_proto") {
