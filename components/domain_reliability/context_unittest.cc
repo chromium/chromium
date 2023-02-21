@@ -12,10 +12,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/beacon.h"
 #include "components/domain_reliability/dispatcher.h"
@@ -86,9 +86,10 @@ std::string StatusFromInt(int i) {
 
 template <typename ValueTypeFindResult,
           typename ValueType,
-          ValueTypeFindResult (Value::*FindValueType)(base::StringPiece) const>
+          ValueTypeFindResult (Value::Dict::*FindValueType)(base::StringPiece)
+              const>
 struct HasValue {
-  bool operator()(const Value& dict,
+  bool operator()(const Value::Dict& dict,
                   const std::string& key,
                   ValueType expected_value) {
     ValueTypeFindResult actual_value = (dict.*FindValueType)(key);
@@ -98,25 +99,25 @@ struct HasValue {
   }
 };
 
-HasValue<absl::optional<bool>, bool, &Value::FindBoolPath> HasBooleanValue;
-HasValue<absl::optional<double>, double, &Value::FindDoublePath> HasDoubleValue;
-HasValue<absl::optional<int>, int, &Value::FindIntPath> HasIntegerValue;
-HasValue<const std::string*, std::string, &Value::FindStringPath>
+HasValue<absl::optional<bool>, bool, &Value::Dict::FindBoolByDottedPath>
+    HasBooleanValue;
+HasValue<absl::optional<double>, double, &Value::Dict::FindDoubleByDottedPath>
+    HasDoubleValue;
+HasValue<absl::optional<int>, int, &Value::Dict::FindIntByDottedPath>
+    HasIntegerValue;
+HasValue<const std::string*, std::string, &Value::Dict::FindStringByDottedPath>
     HasStringValue;
 
-bool GetEntryFromReport(const Value* report,
-                        size_t index,
-                        const Value** entry_out) {
-  if (!report || !report->is_dict())
-    return false;
-  const Value* entries = report->FindListKey("entries");
-  if (!entries || index >= entries->GetList().size())
-    return false;
-  const Value& entry = entries->GetList()[index];
-  if (!entry.is_dict())
-    return false;
-  *entry_out = &entry;
-  return true;
+const Value::Dict* GetEntryFromReport(const Value::Dict& report, size_t index) {
+  const Value::List* entries = report.FindList("entries");
+  if (!entries || index >= entries->size()) {
+    return nullptr;
+  }
+  const Value& entry = (*entries)[index];
+  if (!entry.is_dict()) {
+    return nullptr;
+  }
+  return &entry.GetDict();
 }
 
 class DomainReliabilityContextTest : public testing::Test {
@@ -362,10 +363,9 @@ TEST_F(DomainReliabilityContextTest, ReportUpload) {
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  std::unique_ptr<Value> value =
-      base::JSONReader::ReadDeprecated(upload_report());
-  const Value* entry;
-  ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
+  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  ASSERT_TRUE(entry);
   EXPECT_TRUE(HasStringValue(*entry, "failure_data.custom_error",
                              "net::ERR_CONNECTION_RESET"));
   EXPECT_TRUE(HasBooleanValue(*entry, "network_changed", false));
@@ -687,10 +687,9 @@ TEST_F(DomainReliabilityContextTest, NetworkChanged) {
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  std::unique_ptr<Value> value =
-      base::JSONReader::ReadDeprecated(upload_report());
-  const Value* entry;
-  ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
+  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  ASSERT_TRUE(entry);
   EXPECT_TRUE(HasBooleanValue(*entry, "network_changed", true));
 
   DomainReliabilityUploader::UploadResult result;
@@ -718,10 +717,9 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  std::unique_ptr<Value> value =
-      base::JSONReader::ReadDeprecated(upload_report());
-  const Value* entry;
-  ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
+  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  ASSERT_TRUE(entry);
 
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_port_migration_detected", true));
@@ -752,10 +750,9 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  std::unique_ptr<Value> value =
-      base::JSONReader::ReadDeprecated(upload_report());
-  const Value* entry;
-  ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
+  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  ASSERT_TRUE(entry);
 
   EXPECT_TRUE(HasStringValue(*entry, "status", "tcp.connection_reset"));
   EXPECT_FALSE(HasStringValue(*entry, "quic_error", ""));
@@ -787,10 +784,9 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  std::unique_ptr<Value> value =
-      base::JSONReader::ReadDeprecated(upload_report());
-  const Value* entry;
-  ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
+  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  ASSERT_TRUE(entry);
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
   EXPECT_TRUE(HasStringValue(*entry, "status", "tcp.connection_reset"));
   EXPECT_TRUE(HasStringValue(*entry, "quic_error", "quic.invalid.stream_data"));
@@ -833,10 +829,9 @@ TEST_F(DomainReliabilityContextTest, FractionalSampleRate) {
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  std::unique_ptr<Value> value =
-      base::JSONReader::ReadDeprecated(upload_report());
-  const Value* entry;
-  ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
+  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  ASSERT_TRUE(entry);
   EXPECT_TRUE(HasDoubleValue(*entry, "sample_rate", 0.5));
 
   DomainReliabilityUploader::UploadResult result;
