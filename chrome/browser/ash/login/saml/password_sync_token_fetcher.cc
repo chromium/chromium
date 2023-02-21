@@ -24,6 +24,7 @@
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
+#include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -241,7 +242,8 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
   }
   resource_request->load_flags =
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
   if (request_type_ == RequestType::kCreateToken) {
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
   } else {

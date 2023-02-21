@@ -12,6 +12,7 @@
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
+#include "google_apis/credentials_mode.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -194,7 +195,8 @@ std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
       net::AppendQueryParameter(request_url_, kQueryParameterAlternateOutputKey,
                                 kQueryParameterAlternateOutputProto);
   request->method = GetHttpMethodString(http_method_);
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
   request->headers.SetHeader(
       kAuthorizationHeader,
       /*value=*/base::StringPrintf("Bearer %s", access_token.c_str()));

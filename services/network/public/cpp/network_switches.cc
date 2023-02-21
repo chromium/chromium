@@ -17,6 +17,8 @@ const char kHostResolverRules[] = "host-resolver-rules";
 // causing them to attempt an unauthenticated SSL/TLS session. This is intended
 // for use when testing various service URLs (eg: kPromoServerURL, kSbURLPrefix,
 // kSyncServiceURL, etc).
+// TODO(crbug.com/1417189): Remove this flag if the alternative solution
+// implemented for crbug.com/1221565 covers all needs.
 const char kIgnoreUrlFetcherCertRequests[] = "ignore-urlfetcher-cert-requests";
 
 // A set of public key hashes for which to ignore certificate-related errors.

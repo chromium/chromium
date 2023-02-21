@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
+#include "google_apis/credentials_mode.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
 #include "net/base/load_flags.h"
@@ -193,7 +194,8 @@ void CheckinRequest::Start() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = checkin_url_;
   resource_request->method = "POST";
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
 
   DVLOG(1) << "Performing check-in request with android id: "
            << request_info_.android_id

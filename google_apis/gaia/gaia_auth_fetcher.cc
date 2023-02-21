@@ -22,6 +22,7 @@
 #include "base/system/sys_info.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -266,7 +267,9 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
   resource_request->url = gaia_gurl;
   original_url_ = gaia_gurl;
 
-  if (credentials_mode != network::mojom::CredentialsMode::kOmit) {
+  if (credentials_mode != network::mojom::CredentialsMode::kOmit &&
+      credentials_mode !=
+          network::mojom::CredentialsMode::kOmitBug_775438_Workaround) {
     CHECK(gaia::HasGaiaSchemeHostPort(gaia_gurl)) << gaia_gurl;
 
     url::Origin origin = GaiaUrls::GetInstance()->gaia_origin();
@@ -410,10 +413,10 @@ void GaiaAuthFetcher::StartRevokeOAuth2Token(const std::string& auth_token) {
             }
           }
         })");
-  CreateAndStartGaiaFetcher(request_body_, kFormEncodedContentType,
-                            std::string(), oauth2_revoke_gurl_,
-                            network::mojom::CredentialsMode::kOmit,
-                            traffic_annotation);
+  CreateAndStartGaiaFetcher(
+      request_body_, kFormEncodedContentType, std::string(),
+      oauth2_revoke_gurl_, google_apis::GetOmitCredentialsModeForGaiaRequests(),
+      traffic_annotation);
 }
 
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchange(
@@ -458,7 +461,7 @@ void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
         })");
   CreateAndStartGaiaFetcher(
       request_body_, kFormEncodedContentType, std::string(), oauth2_token_gurl_,
-      network::mojom::CredentialsMode::kOmit, traffic_annotation);
+      google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
 }
 
 void GaiaAuthFetcher::StartMergeSession(const std::string& uber_token,
@@ -549,7 +552,7 @@ void GaiaAuthFetcher::StartTokenFetchForUberAuthExchange(
         })");
   CreateAndStartGaiaFetcher(
       std::string(), std::string(), authentication_header, uberauth_token_gurl_,
-      network::mojom::CredentialsMode::kOmit, traffic_annotation);
+      google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
 }
 
 void GaiaAuthFetcher::StartListAccounts() {
@@ -747,9 +750,9 @@ void GaiaAuthFetcher::StartCreateReAuthProofTokenForParent(
   DCHECK(reauth_url.is_valid());
 
   // Start the request.
-  CreateAndStartGaiaFetcher(post_body, kJsonContentType, headers, reauth_url,
-                            network::mojom::CredentialsMode::kOmit,
-                            traffic_annotation);
+  CreateAndStartGaiaFetcher(
+      post_body, kJsonContentType, headers, reauth_url,
+      google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
 }
 
 void GaiaAuthFetcher::StartGetCheckConnectionInfo() {
@@ -780,10 +783,10 @@ void GaiaAuthFetcher::StartGetCheckConnectionInfo() {
             }
           }
         })");
-  CreateAndStartGaiaFetcher(std::string(), std::string(), std::string(),
-                            get_check_connection_info_url_,
-                            network::mojom::CredentialsMode::kOmit,
-                            traffic_annotation);
+  CreateAndStartGaiaFetcher(
+      std::string(), std::string(), std::string(),
+      get_check_connection_info_url_,
+      google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
 }
 
 // static

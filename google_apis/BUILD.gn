@@ -112,6 +112,8 @@ config("key_defines") {
 
 component("google_apis") {
   sources = [
+    "credentials_mode.cc",
+    "credentials_mode.h",
     "gaia/core_account_id.cc",
     "gaia/core_account_id.h",
     "gaia/gaia_access_token_fetcher.cc",
@@ -164,6 +166,7 @@ component("google_apis") {
     ":buildflags",
     "//base",
     "//build:chromeos_buildflags",
+    "//services/network/public/cpp",
   ]
 
   deps = [
@@ -174,7 +177,6 @@ component("google_apis") {
     "//crypto",
     "//mojo/public/cpp/bindings:struct_traits",
     "//net",
-    "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
 

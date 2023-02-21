@@ -5,5 +5,6 @@ include_rules = [
   "+components/signin/public/webdata",
   "+components/signin/public/android/jni_headers",
   "+components/signin/public/android/test_support_jni_headers",
+  "+google_apis",
   "+mojo/public",
 ]
