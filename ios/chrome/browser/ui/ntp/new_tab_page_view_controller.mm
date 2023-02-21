@@ -214,7 +214,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
   self.headerController.showing = YES;
 
-  [self applyCollectionViewConstraints];
   [self updateNTPLayout];
 
   // Scroll to the top before coming into view to minimize sudden visual jerking
@@ -435,14 +434,15 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // changes in feed visibility.
   [self applyCollectionViewConstraints];
 
+  // Force relayout so that the views added in this method are rendered ASAP,
+  // ensuring it is showing in the new tab animation.
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
+
   // If the feed is not visible, we control the delegate ourself (since it is
-  // otherwise controlled by the feed service). The view is also layed out
-  // so that we can correctly calculate the minimum height.
+  // otherwise controlled by the feed service).
   if (!self.isFeedVisible) {
     self.feedWrapperViewController.contentCollectionView.delegate = self;
-
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
     [self setMinimumHeight];
   }
 }
