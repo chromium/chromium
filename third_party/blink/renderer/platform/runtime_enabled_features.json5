@@ -946,7 +946,7 @@
       // regardless of whether the new highlights or decorations are exposed
       // to authors (see CSSSpellingGrammarErrors).
       name: "CSSPaintingForSpellingGrammarErrors",
-      status: "stable",
+      status: "experimental",
       base_feature: "CssPaintingForSpellingGrammarErrors",
     },
     {
