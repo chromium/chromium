@@ -19,16 +19,16 @@
 namespace base {
 class TickClock;
 class TimeTicks;
-}
+}  // namespace base
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace extensions {
 class RuntimeAPI;
 class UpdateObserver;
-}
+}  // namespace extensions
 
 class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
                                  public extensions::ExtensionRegistryObserver {
@@ -78,7 +78,7 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   // Map to prevent extensions from getting stuck in reload loops. Maps
   // extension id to the last time it was reloaded and the number of times
   // it was reloaded with not enough time in between reloads.
-  std::map<std::string, std::pair<base::TimeTicks, int> > last_reload_time_;
+  std::map<std::string, std::pair<base::TimeTicks, int>> last_reload_time_;
 
   // Information about update checks, keyed by extension id.
   struct UpdateCheckInfo;

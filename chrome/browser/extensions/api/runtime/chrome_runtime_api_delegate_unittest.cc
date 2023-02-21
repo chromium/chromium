@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
@@ -48,7 +47,7 @@ class TestEventRouter : public EventRouter {
   TestEventRouter(const TestEventRouter&) = delete;
   TestEventRouter& operator=(const TestEventRouter&) = delete;
 
-  ~TestEventRouter() override {}
+  ~TestEventRouter() override = default;
 
   // An entry in our fake event registry.
   using Entry = std::pair<std::string, std::string>;
@@ -77,7 +76,7 @@ std::unique_ptr<KeyedService> TestEventRouterFactoryFunction(
 // either no update was found, or one was (and it was downloaded).
 class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
  public:
-  DownloaderTestDelegate() {}
+  DownloaderTestDelegate() = default;
 
   DownloaderTestDelegate(const DownloaderTestDelegate&) = delete;
   DownloaderTestDelegate& operator=(const DownloaderTestDelegate&) = delete;
@@ -86,8 +85,9 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
   // is available.
   void AddNoUpdateResponse(const std::string& id) {
     no_updates_.insert(id);
-    if (updates_.find(id) != updates_.end())
+    if (updates_.find(id) != updates_.end()) {
       updates_.erase(id);
+    }
   }
 
   // On the next update check for extension |id|, pretend that an update to
@@ -95,8 +95,9 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
   void AddUpdateResponse(const std::string& id,
                          const base::FilePath& path,
                          const std::string& version) {
-    if (no_updates_.find(id) != no_updates_.end())
+    if (no_updates_.find(id) != no_updates_.end()) {
       no_updates_.erase(id);
+    }
     DownloadFinishedArgs args;
     args.path = path;
     args.version = base::Version(version);
@@ -107,8 +108,9 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
                         ExtensionDownloaderDelegate* delegate,
                         std::vector<ExtensionDownloaderTask> tasks) override {
     std::set<int> request_ids;
-    for (const ExtensionDownloaderTask& task : tasks)
+    for (const ExtensionDownloaderTask& task : tasks) {
       request_ids.insert(task.request_id);
+    }
     // Instead of immediately firing callbacks to the delegate in matching
     // cases below, we instead post a task since the delegate typically isn't
     // expecting a synchronous reply (the real code has to go do at least one
@@ -166,7 +168,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
 // Helper to let test code wait for and return an update check result.
 class UpdateCheckResultCatcher {
  public:
-  UpdateCheckResultCatcher() {}
+  UpdateCheckResultCatcher() = default;
 
   UpdateCheckResultCatcher(const UpdateCheckResultCatcher&) = delete;
   UpdateCheckResultCatcher& operator=(const UpdateCheckResultCatcher&) = delete;
@@ -175,8 +177,9 @@ class UpdateCheckResultCatcher {
     EXPECT_EQ(nullptr, result_.get());
     result_ = std::make_unique<RuntimeAPIDelegate::UpdateCheckResult>(
         result.status, result.version);
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   std::unique_ptr<RuntimeAPIDelegate::UpdateCheckResult> WaitForResult() {
@@ -194,7 +197,7 @@ class UpdateCheckResultCatcher {
 
 class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
  public:
-  ChromeRuntimeAPIDelegateTest() {}
+  ChromeRuntimeAPIDelegateTest() = default;
 
   ChromeRuntimeAPIDelegateTest(const ChromeRuntimeAPIDelegateTest&) = delete;
   ChromeRuntimeAPIDelegateTest& operator=(const ChromeRuntimeAPIDelegateTest&) =
@@ -383,7 +386,7 @@ class ExtensionLoadWaiter : public ExtensionRegistryObserver {
 
 class ChromeRuntimeAPIDelegateReloadTest : public ChromeRuntimeAPIDelegateTest {
  public:
-  ChromeRuntimeAPIDelegateReloadTest() {}
+  ChromeRuntimeAPIDelegateReloadTest() = default;
 
   ChromeRuntimeAPIDelegateReloadTest(
       const ChromeRuntimeAPIDelegateReloadTest&) = delete;

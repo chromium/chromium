@@ -4,10 +4,8 @@
 
 #include <utility>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -18,7 +16,6 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/test_runtime_api_delegate.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/manifest.h"
 
 namespace extensions {
 
@@ -27,18 +24,19 @@ namespace {
 // A RuntimeAPIDelegate that simulates a successful restart request every time.
 class DelayedRestartTestApiDelegate : public TestRuntimeAPIDelegate {
  public:
-  DelayedRestartTestApiDelegate() {}
+  DelayedRestartTestApiDelegate() = default;
 
   DelayedRestartTestApiDelegate(const DelayedRestartTestApiDelegate&) = delete;
   DelayedRestartTestApiDelegate& operator=(
       const DelayedRestartTestApiDelegate&) = delete;
 
-  ~DelayedRestartTestApiDelegate() override {}
+  ~DelayedRestartTestApiDelegate() override = default;
 
   // TestRuntimeAPIDelegate:
   bool RestartDevice(std::string* error_message) override {
-    if (quit_closure_)
+    if (quit_closure_) {
       std::move(quit_closure_).Run();
+    }
 
     *error_message = "Success.";
     restart_done_ = true;
@@ -65,7 +63,8 @@ class DelayedRestartTestApiDelegate : public TestRuntimeAPIDelegate {
 class DelayedRestartExtensionsBrowserClient
     : public TestExtensionsBrowserClient {
  public:
-  DelayedRestartExtensionsBrowserClient(content::BrowserContext* context)
+  explicit DelayedRestartExtensionsBrowserClient(
+      content::BrowserContext* context)
       : TestExtensionsBrowserClient(context) {}
 
   DelayedRestartExtensionsBrowserClient(
@@ -73,7 +72,7 @@ class DelayedRestartExtensionsBrowserClient
   DelayedRestartExtensionsBrowserClient& operator=(
       const DelayedRestartExtensionsBrowserClient&) = delete;
 
-  ~DelayedRestartExtensionsBrowserClient() override {}
+  ~DelayedRestartExtensionsBrowserClient() override = default;
 
   // TestExtensionsBrowserClient:
   PrefService* GetPrefServiceForContext(
@@ -107,12 +106,12 @@ class DelayedRestartExtensionsBrowserClient
 
 class RestartAfterDelayApiTest : public ApiUnitTest {
  public:
-  RestartAfterDelayApiTest() {}
+  RestartAfterDelayApiTest() = default;
 
   RestartAfterDelayApiTest(const RestartAfterDelayApiTest&) = delete;
   RestartAfterDelayApiTest& operator=(const RestartAfterDelayApiTest&) = delete;
 
-  ~RestartAfterDelayApiTest() override {}
+  ~RestartAfterDelayApiTest() override = default;
 
   void SetUp() override {
     // Use our ExtensionsBrowserClient that returns our RuntimeAPIDelegate.

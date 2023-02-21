@@ -100,7 +100,7 @@ std::string GetActiveUrl(Browser* browser) {
 
 class RuntimeAPIUpdateTest : public ExtensionApiTest {
  public:
-  RuntimeAPIUpdateTest() {}
+  RuntimeAPIUpdateTest() = default;
 
   RuntimeAPIUpdateTest(const RuntimeAPIUpdateTest&) = delete;
   RuntimeAPIUpdateTest& operator=(const RuntimeAPIUpdateTest&) = delete;
@@ -136,8 +136,9 @@ class RuntimeAPIUpdateTest : public ExtensionApiTest {
     ExtensionHost* background_host =
         ProcessManager::Get(browser()->profile())
             ->GetBackgroundHostForExtension(extension_id);
-    if (!background_host)
+    if (!background_host) {
       return false;
+    }
     content::CrashTab(background_host->host_contents());
     return true;
   }
