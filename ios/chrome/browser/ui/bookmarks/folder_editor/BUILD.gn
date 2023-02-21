@@ -40,6 +40,7 @@ source_set("coordinator_impl") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks/folder_chooser:coordinator_headers",
     "//ios/chrome/browser/ui/commands",
   ]
 }
@@ -53,8 +54,6 @@ source_set("ui") {
     "bookmarks_folder_editor_view_controller.h",
     "bookmarks_folder_editor_view_controller.mm",
   ]
-
-  # TODO(crbug.com/1409488): Move folder_chooser_coordinator_headers target to :coordinator_impl target.
   deps = [
     "//base",
     "//base:i18n",
@@ -67,9 +66,7 @@ source_set("ui") {
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks/cells",
-    "//ios/chrome/browser/ui/bookmarks/folder_chooser:coordinator_headers",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/keyboard",

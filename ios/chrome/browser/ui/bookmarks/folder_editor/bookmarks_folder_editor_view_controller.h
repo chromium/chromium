@@ -5,6 +5,7 @@
 #define IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_EDITOR_BOOKMARKS_FOLDER_EDITOR_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
+#import <set>
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
@@ -19,6 +20,14 @@ class BookmarkNode;
 
 @protocol BookmarksFolderEditorViewControllerDelegate
 
+// Used to show the folder chooser UI when the user decides to update the
+// parent folder.
+- (void)showBookmarksFolderChooserWithParentFolder:
+            (const bookmarks::BookmarkNode*)parent
+                                       hiddenNodes:
+                                           (const std::set<
+                                               const bookmarks::BookmarkNode*>&)
+                                               hiddenNodes;
 // Called when the controller successfully created or edited `folder`.
 - (void)bookmarksFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
        didFinishEditingFolder:(const bookmarks::BookmarkNode*)folder;
@@ -73,6 +82,9 @@ class BookmarkNode;
 - (void)presentationControllerDidAttemptToDismiss;
 // Whether the bookmarks folder editor can be dismissed.
 - (BOOL)canDismiss;
+// TODO(crbug.com/1402758): Remove this method after model code is moved to the
+// mediator.
+- (void)updateParentFolder:(const bookmarks::BookmarkNode*)parent;
 
 @end
 

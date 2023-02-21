@@ -16,7 +16,7 @@ source_set("coordinator_headers") {
   visibility = [
     ":coordinator_impl",
     ":folder_chooser",
-    "//ios/chrome/browser/ui/bookmarks/folder_editor:ui",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor:coordinator_impl",
   ]
   sources = [
     "bookmarks_folder_chooser_coordinator.h",

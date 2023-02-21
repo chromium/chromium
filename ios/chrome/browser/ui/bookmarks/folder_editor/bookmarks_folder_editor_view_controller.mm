@@ -24,8 +24,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
-#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"
-#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -56,7 +54,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @interface BookmarksFolderEditorViewController () <
-    BookmarksFolderChooserCoordinatorDelegate,
     BookmarkModelBridgeObserver,
     BookmarkTextFieldItemDelegate> {
   std::unique_ptr<BookmarkModelBridge> _modelBridge;
@@ -72,10 +69,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Whether the folder name was edited.
 @property(nonatomic, assign) BOOL edited;
 @property(nonatomic, assign) const BookmarkNode* folder;
-// TODO(crbug.com/1402758): Move this to BookmarksFolderEditorCoordinator.
-// A reference to the presented folder chooser.
-@property(nonatomic, strong)
-    BookmarksFolderChooserCoordinator* folderChooserCoordinator;
 @property(nonatomic, assign) const BookmarkNode* parentFolder;
 @property(nonatomic, weak) UIBarButtonItem* doneItem;
 @property(nonatomic, strong) BookmarkTextFieldItem* titleItem;
@@ -164,7 +157,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)dealloc {
   _titleItem.delegate = nil;
-  DCHECK(!_folderChooserCoordinator);
 }
 
 #pragma mark - Public
@@ -209,13 +201,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Whether the bookmarks folder editor can be dismissed.
 - (BOOL)canDismiss {
-  if (self.edited) {
-    return NO;
-  }
-  if (self.folderChooserCoordinator) {
-    return [self.folderChooserCoordinator canDismiss];
-  }
-  return YES;
+  return !self.edited;
+}
+
+- (void)updateParentFolder:(const bookmarks::BookmarkNode*)parent {
+  DCHECK(parent);
+  self.parentFolder = parent;
+  [self updateParentFolderState];
 }
 
 #pragma mark - UIViewController
@@ -330,38 +322,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self.folder) {
     hiddenNodes.insert(self.folder);
   }
-  _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
-      initWithBaseNavigationController:self.navigationController
-                               browser:_browser
-                           hiddenNodes:hiddenNodes];
-  _folderChooserCoordinator.selectedFolder = self.parentFolder;
-  _folderChooserCoordinator.delegate = self;
-  [_folderChooserCoordinator start];
-}
-
-#pragma mark - BookmarksFolderChooserCoordinatorDelegate
-
-- (void)bookmarksFolderChooserCoordinatorDidConfirm:
-            (BookmarksFolderChooserCoordinator*)coordinator
-                                 withSelectedFolder:
-                                     (const bookmarks::BookmarkNode*)folder {
-  DCHECK(_folderChooserCoordinator);
-  DCHECK(folder);
-
-  [_folderChooserCoordinator stop];
-  _folderChooserCoordinator.delegate = nil;
-  _folderChooserCoordinator = nil;
-
-  self.parentFolder = folder;
-  [self updateParentFolderState];
-}
-
-- (void)bookmarksFolderChooserCoordinatorDidCancel:
-    (BookmarksFolderChooserCoordinator*)coordinator {
-  DCHECK(_folderChooserCoordinator);
-  [_folderChooserCoordinator stop];
-  _folderChooserCoordinator.delegate = nil;
-  _folderChooserCoordinator = nil;
+  [self.delegate showBookmarksFolderChooserWithParentFolder:self.folder
+                                                hiddenNodes:hiddenNodes];
 }
 
 #pragma mark - BookmarkModelBridgeObserver

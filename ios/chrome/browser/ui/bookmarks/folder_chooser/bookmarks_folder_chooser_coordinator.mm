@@ -109,22 +109,11 @@
 
 - (void)stop {
   [super stop];
+  // Stop child coordinator before stopping `self`.
+  [self stopBookmarksFolderEditorCoordinator];
 
   DCHECK(_viewController);
   if (_baseNavigationController) {
-    // Currently when folder editor is shown from folder chooser and the user
-    // presses done button on the folder editor both the folder editor and
-    // folder chooser is supposed to be popped at the same time. However the
-    // folder chooser view controller also calls
-    // delayedNotifyDelegateOfSelection in this case, so both the view
-    // controllers need to be popped here at the end of that delayed
-    // selection.
-    // TODO(crbug.com/1405746): Revisit this logic after folder editor
-    // coordinator is finished.
-    if (_baseNavigationController.topViewController != _viewController) {
-      [_baseNavigationController popToViewController:_viewController
-                                            animated:YES];
-    }
     DCHECK_EQ(_baseNavigationController.topViewController, _viewController);
     [_baseNavigationController popViewControllerAnimated:YES];
   } else if (_navigationController) {
@@ -139,10 +128,6 @@
     DCHECK(!self.baseViewController.presentedViewController);
   }
   _viewController = nil;
-
-  [_folderEditorCoordinator stop];
-  _folderEditorCoordinator.delegate = nil;
-  _folderEditorCoordinator = nil;
 }
 
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder {
@@ -201,9 +186,7 @@
                   (const bookmarks::BookmarkNode*)folder {
   DCHECK(folder);
   DCHECK(_folderEditorCoordinator);
-  [_folderEditorCoordinator stop];
-  _folderEditorCoordinator.delegate = nil;
-  _folderEditorCoordinator = nil;
+  [self stopBookmarksFolderEditorCoordinator];
 
   [_viewController notifyFolderNodeAdded:folder];
 }
@@ -211,9 +194,7 @@
 - (void)bookmarksFolderEditorCoordinatorShouldStop:
     (BookmarksFolderEditorCoordinator*)coordinator {
   DCHECK(_folderEditorCoordinator);
-  [_folderEditorCoordinator stop];
-  _folderEditorCoordinator.delegate = nil;
-  _folderEditorCoordinator = nil;
+  [self stopBookmarksFolderEditorCoordinator];
 }
 
 - (void)bookmarksFolderEditorWillCommitTitleChange:
@@ -239,6 +220,14 @@
 
 - (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
   return _editedNodes;
+}
+
+#pragma mark - Private
+
+- (void)stopBookmarksFolderEditorCoordinator {
+  [_folderEditorCoordinator stop];
+  _folderEditorCoordinator.delegate = nil;
+  _folderEditorCoordinator = nil;
 }
 
 @end
