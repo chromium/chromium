@@ -181,6 +181,8 @@ void FirstRunFlowControllerDice::Init(
                       /*enable_animations=*/true));
   SwitchToStep(Step::kIntro, /*reset_state=*/true,
                std::move(step_switch_finished_callback));
+
+  signin_metrics::LogSignInOffered(kAccessPoint);
 }
 
 void FirstRunFlowControllerDice::CancelPostSignInFlow() {

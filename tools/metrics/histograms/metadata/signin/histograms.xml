@@ -1062,6 +1062,41 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SignIn.Offered" enum="SigninAccessPoint"
+    expires_after="2023-12-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the option to sign in to Chrome was offered to the user, and
+    logs the original access point associated with this event.
+
+    This histogram is still in development and has a limited coverage of the
+    Signin access points for now.
+  </summary>
+</histogram>
+
+<histogram name="Signin.SignIn.Started" enum="SigninAccessPoint"
+    expires_after="2023-12-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the user started the flow to sign in to Chrome, and logs the
+    original access point associated with this event.
+
+    Notes:
+
+    - This histogram is still in development and has a limited coverage of the
+    Signin access points for now. See go/chrome-signin-metrics-revamp for more
+    context on the planned work.
+
+    - For the First Run, we log it once for the whole first run flow, it does
+    not get recorded multiple times if the user steps back in the flow and
+    chooses again to sign in.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninAbortedAccessPoint" enum="SigninAccessPoint"
     expires_after="2023-10-06">
   <owner>bsazonov@chromium.org</owner>

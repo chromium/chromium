@@ -257,13 +257,19 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   identity_manager_observation_.Observe(
       IdentityManagerFactory::GetForProfile(profile_));
 
-  // Record that the sign in process starts (its end is recorded automatically
-  // by the instance of DiceTurnSyncOnHelper constructed later on in
-  // ProfilePickerSignedInFlowController).
+  // Record that the sign in process starts. Its end is recorded automatically
+  // when the primary account is set.
   signin_metrics::RecordSigninUserActionForAccessPoint(signin_access_point_);
   signin_metrics::LogSigninAccessPointStarted(
       signin_access_point_,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+  if (signin_access_point_ ==
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE) {
+    // This metric is logged for only one access point for now. Others should
+    // audit all their flows to make sure the reflected data is accurate.
+    // `LogSigninAccessPointStarted()` covers them in the meantime.
+    signin_metrics::LogSignInStarted(signin_access_point_);
+  }
 
   // Apply the default theme to get consistent colors for toolbars in newly
   // created profiles (this matters for linux where the 'system' theme is used

@@ -497,6 +497,16 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 // Tracks the reason of sign in.
 void LogSigninReason(Reason reason);
 
+// Logs sign in offered events and their associated access points.
+// Access points (or features) are responsible for recording this where relevant
+// for them.
+void LogSignInOffered(AccessPoint access_point);
+
+// Logs sign in start events and their associated access points. The
+// completion events are automatically logged when the primary account state
+// changes, see `signin::PrimaryAccountMutator`.
+void LogSignInStarted(AccessPoint access_point);
+
 // Logs sync opt-in start events and their associated access points. The
 // completion events are automatically logged when the primary account state
 // changes, see `signin::PrimaryAccountMutator`.

@@ -36,6 +36,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -213,6 +214,11 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   histogram_tester.ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunOutcome", 0);
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
 #endif
 }
 
