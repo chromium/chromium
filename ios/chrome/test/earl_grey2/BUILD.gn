@@ -76,6 +76,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/autofill:eg2_tests",
     "//ios/chrome/browser/device_sharing:eg2_tests",
     "//ios/chrome/browser/feature_engagement:eg2_tests",
+    "//ios/chrome/browser/find_in_page:eg2_tests",
     "//ios/chrome/browser/https_upgrades:eg2_tests",
     "//ios/chrome/browser/metrics:eg2_tests",
     "//ios/chrome/browser/net:eg2_tests",

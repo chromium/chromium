@@ -59,6 +59,30 @@ source_set("features") {
   public_deps = [ "//base:base" ]
 }
 
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "find_in_page_egtest.h",
+    "find_in_page_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//ios/chrome/browser/find_in_page:features",
+    "//ios/chrome/browser/ui/find_bar:constants",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server:http_server",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("eg_app_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
