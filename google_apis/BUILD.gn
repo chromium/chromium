@@ -213,7 +213,6 @@ proto_library("oauth2_mint_token_consent_result_proto") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "gaia/core_account_id_for_testing.cc",
     "gaia/fake_gaia.cc",
     "gaia/fake_gaia.h",
     "gaia/fake_oauth2_access_token_manager.cc",

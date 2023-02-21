@@ -77,16 +77,19 @@ struct CoreAccountId {
 
   // --------------------------------------------------------------------------
   // -------------------- ONLY FOR TESTING ------------------------------------
-  // The following constructors are only used for testing. Their implementation
-  // is defined in core_account_id_for_testing.cc and is not linked in the
-  // production code. The reason for this is that they are currently being
-  // removed, but they are extensively used by the testing code.
+#if defined(UNIT_TEST)
+  // The following constructors are only used for testing. The reason for this
+  // is that they are currently being removed, but they are extensively used by
+  // the testing code.
   //
   // TODO(crbug.com/1028578): Update the tests to use one of FromEmail(),
   // FromGaia() or FromString() methods above.
-  explicit CoreAccountId(const char* id);
-  explicit CoreAccountId(std::string&& id);
-  explicit CoreAccountId(const std::string& id);
+  explicit CoreAccountId(const char* id) : id_(id) {}
+
+  explicit CoreAccountId(std::string&& id) : id_(std::move(id)) {}
+
+  explicit CoreAccountId(const std::string& id) : id_(id) {}
+#endif  // defined(UNIT_TEST)
   // --------------------------------------------------------------------------
 
  private:
