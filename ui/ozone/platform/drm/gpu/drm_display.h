@@ -77,6 +77,7 @@ class DrmDisplay {
   void Update(HardwareDisplayControllerInfo* info,
               const display::DisplaySnapshot* display_snapshot);
   void SetOrigin(const gfx::Point origin) { origin_ = origin; }
+  bool SetHdcpKeyProp(const std::string& key);
   bool GetHDCPState(display::HDCPState* state,
                     display::ContentProtectionMethod* protection_method);
   bool SetHDCPState(display::HDCPState state,

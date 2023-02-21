@@ -161,6 +161,9 @@ class DrmThread : public base::Thread,
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       uint32_t modeset_flag,
       ConfigureNativeDisplaysCallback callback) override;
+  void SetHdcpKeyProp(int64_t display_id,
+                      const std::string& key,
+                      SetHdcpKeyPropCallback callback) override;
   void GetHDCPState(int64_t display_id,
                     base::OnceCallback<void(int64_t,
                                             bool,

@@ -70,6 +70,7 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       display::ConfigureCallback callback,
       uint32_t modeset_flag) override;
+  bool GpuSetHdcpKeyProp(int64_t display_id, const std::string& key) override;
   bool GpuGetHDCPState(int64_t display_id) override;
   bool GpuSetHDCPState(
       int64_t display_id,
@@ -105,6 +106,7 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   void GpuRelinquishDisplayControlCallback(bool success) const;
   void GpuShouldDisplayEventTriggerConfigurationCallback(
       bool should_trigger) const;
+  void GpuSetHdcpKeyPropCallback(int64_t display_id, bool success) const;
   void GpuGetHDCPStateCallback(
       int64_t display_id,
       bool success,

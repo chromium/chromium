@@ -171,6 +171,12 @@ void FakeDisplayDelegate::Configure(
   }
 }
 
+void FakeDisplayDelegate::SetHdcpKeyProp(int64_t display_id,
+                                         const std::string& key,
+                                         SetHdcpKeyPropCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void FakeDisplayDelegate::GetHDCPState(const DisplaySnapshot& output,
                                        GetHDCPStateCallback callback) {
   std::move(callback).Run(false, HDCP_STATE_UNDESIRED,

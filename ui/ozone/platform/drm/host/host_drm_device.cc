@@ -203,6 +203,20 @@ void HostDrmDevice::GpuShouldDisplayEventTriggerConfiguration(
                                                       std::move(callback));
 }
 
+bool HostDrmDevice::GpuSetHdcpKeyProp(int64_t display_id,
+                                      const std::string& key) {
+  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
+  if (!IsConnected()) {
+    return false;
+  }
+
+  auto callback =
+      base::BindOnce(&HostDrmDevice::GpuSetHdcpKeyPropCallback, this);
+  drm_device_->SetHdcpKeyProp(display_id, key, std::move(callback));
+
+  return true;
+}
+
 bool HostDrmDevice::GpuGetHDCPState(int64_t display_id) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
   if (!IsConnected())
@@ -285,6 +299,12 @@ void HostDrmDevice::GpuShouldDisplayEventTriggerConfigurationCallback(
     bool should_trigger) const {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
   display_manager_->GpuShouldDisplayEventTriggerConfiguration(should_trigger);
+}
+
+void HostDrmDevice::GpuSetHdcpKeyPropCallback(int64_t display_id,
+                                              bool success) const {
+  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
+  display_manager_->GpuSetHdcpKeyProp(display_id, success);
 }
 
 void HostDrmDevice::GpuGetHDCPStateCallback(

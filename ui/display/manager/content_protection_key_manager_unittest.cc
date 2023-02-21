@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
 #include "ui/display/fake/fake_display_snapshot.h"
+#include "ui/display/manager/test/test_native_display_delegate.h"
 #include "ui/display/types/display_constants.h"
 
 namespace display::test {
@@ -51,10 +52,15 @@ class ContentProtectionKeyManagerTest : public testing::Test {
   ContentProtectionKeyManager key_manager_;
   std::unique_ptr<DisplaySnapshot> display_;
 
+  ActionLogger log_;
+  TestNativeDisplayDelegate native_display_delegate_{&log_};
+
  private:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         features::kRequireHdcpKeyProvisioning);
+
+    key_manager_.set_native_display_delegate(&native_display_delegate_);
 
     display_ = FakeDisplaySnapshot::Builder()
                    .SetId(kDisplayId)
@@ -71,6 +77,9 @@ TEST_F(ContentProtectionKeyManagerTest, TestIfKeySetWhenServerKeyIsValid) {
   auto on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(result); });
 
   SetKeyIfRequiredForDisplay(std::move(on_key_set));
+
+  EXPECT_EQ(GetSetHdcpKeyPropAction(kDisplayId, true),
+            log_.GetActionsAndClear());
 }
 
 TEST_F(ContentProtectionKeyManagerTest, TestIfKeyNotSetWhenServerKeyIsEmpty) {
@@ -112,6 +121,9 @@ TEST_F(ContentProtectionKeyManagerTest,
   auto displays =
       std::vector<DisplaySnapshot*>{display_.get(), other_display.get()};
   key_manager_.SetKeyIfRequired(displays, kDisplayId, std::move(on_key_set));
+
+  EXPECT_EQ(GetSetHdcpKeyPropAction(kDisplayId, true),
+            log_.GetActionsAndClear());
 }
 
 TEST_F(ContentProtectionKeyManagerTest, TestIfKeyNotSetWhenDisplayIsEdp) {
@@ -141,17 +153,27 @@ TEST_F(ContentProtectionKeyManagerTest,
   SetKeyIfRequiredForDisplay(std::move(on_key_set));
 }
 
-TEST_F(ContentProtectionKeyManagerTest, TesThatKeyIsSetForMultipleDisplays) {
+TEST_F(ContentProtectionKeyManagerTest, TestThatKeyIsSetForMultipleDisplays) {
   SetProvisionedKeyRequest(true);
 
   auto on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(result); });
-
-  SetKeyIfRequiredForDisplay(std::move(on_key_set));
-
-  on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(true); });
-
   key_manager_.SetKeyIfRequired(std::vector<DisplaySnapshot*>{display_.get()},
-                                kDisplayId + 1, std::move(on_key_set));
+                                kDisplayId, std::move(on_key_set));
+
+  auto other_display = FakeDisplaySnapshot::Builder()
+                           .SetId(kDisplayId + 1)
+                           .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
+                           .SetHasContentProtectionKey(true)
+                           .SetCurrentMode(kDisplayMode.Clone())
+                           .Build();
+  on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(result); });
+  key_manager_.SetKeyIfRequired(
+      std::vector<DisplaySnapshot*>{other_display.get()}, kDisplayId + 1,
+      std::move(on_key_set));
+
+  EXPECT_EQ(GetSetHdcpKeyPropAction(kDisplayId, true) + "," +
+                GetSetHdcpKeyPropAction(kDisplayId + 1, true),
+            log_.GetActionsAndClear());
 }
 
 TEST_F(ContentProtectionKeyManagerTest,

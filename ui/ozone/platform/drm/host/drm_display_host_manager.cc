@@ -594,6 +594,16 @@ void DrmDisplayHostManager::GpuHasUpdatedNativeDisplays(
   }
 }
 
+void DrmDisplayHostManager::GpuSetHdcpKeyProp(int64_t display_id,
+                                              bool success) {
+  DrmDisplayHost* display = GetDisplay(display_id);
+  if (display) {
+    display->OnHdcpKeyPropSetReceived(success);
+  } else {
+    LOG(ERROR) << "Couldn't find display with id=" << display_id;
+  }
+}
+
 void DrmDisplayHostManager::GpuReceivedHDCPState(
     int64_t display_id,
     bool status,

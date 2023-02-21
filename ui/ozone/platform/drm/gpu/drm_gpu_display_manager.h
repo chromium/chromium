@@ -60,6 +60,7 @@ class DrmGpuDisplayManager {
   bool ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       uint32_t modeset_flag);
+  bool SetHdcpKeyProp(int64_t display_id, const std::string& key);
   bool GetHDCPState(int64_t display_id,
                     display::HDCPState* state,
                     display::ContentProtectionMethod* protection_method);

@@ -332,6 +332,17 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
   return config_success;
 }
 
+bool DrmGpuDisplayManager::SetHdcpKeyProp(int64_t display_id,
+                                          const std::string& key) {
+  DrmDisplay* display = FindDisplay(display_id);
+  if (!display) {
+    LOG(ERROR) << "SetHdcpKeyProp: There is no display with ID " << display_id;
+    return false;
+  }
+
+  return display->SetHdcpKeyProp(key);
+}
+
 bool DrmGpuDisplayManager::GetHDCPState(
     int64_t display_id,
     display::HDCPState* state,

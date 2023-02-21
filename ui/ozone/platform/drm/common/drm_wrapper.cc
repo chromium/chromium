@@ -429,6 +429,24 @@ ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlob(const void* blob,
   return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
 
+ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlobWithFlags(const void* blob,
+                                                              size_t size,
+                                                              uint32_t flags) {
+// TODO(markyacoub): the flag requires being merged to libdrm then backported to
+// CrOS. Remove the #if once that happens.
+#if defined(DRM_MODE_CREATE_BLOB_WRITE_ONLY)
+  uint32_t id = 0;
+  int ret = -1;
+
+  ret = drmModeCreatePropertyBlobWithFlags(file_.GetPlatformFile(), blob, size,
+                                           &id, flags);
+  DCHECK(!ret && id);
+  return std::make_unique<DrmPropertyBlobMetadata>(this, id);
+#else
+  return nullptr;
+#endif
+}
+
 void DrmWrapper::DestroyPropertyBlob(uint32_t id) {
   drmModeDestroyPropertyBlob(drm_fd_.get(), id);
 }

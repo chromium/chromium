@@ -434,6 +434,14 @@ void DrmThread::RemoveGraphicsDevice(const base::FilePath& path) {
   device_manager_->RemoveDrmDevice(path);
 }
 
+void DrmThread::SetHdcpKeyProp(int64_t display_id,
+                               const std::string& key,
+                               SetHdcpKeyPropCallback callback) {
+  TRACE_EVENT0("drm", "DrmThread::SetHdcpKeyProp");
+  bool is_prop_set = display_manager_->SetHdcpKeyProp(display_id, key);
+  std::move(callback).Run(display_id, is_prop_set);
+}
+
 void DrmThread::GetHDCPState(
     int64_t display_id,
     base::OnceCallback<void(int64_t,

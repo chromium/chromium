@@ -232,6 +232,11 @@ class DrmWrapper {
   // Creates a property blob with data |blob| of size |size|.
   virtual ScopedDrmPropertyBlob CreatePropertyBlob(const void* blob,
                                                    size_t size);
+  // Creates a property blob with |size| for data |blob| which user space
+  // can't read back.
+  virtual ScopedDrmPropertyBlob CreatePropertyBlobWithFlags(const void* blob,
+                                                            size_t size,
+                                                            uint32_t flags);
   virtual void DestroyPropertyBlob(uint32_t id);
 
   // Returns a binary blob associated with |property_id|. May be nullptr if the

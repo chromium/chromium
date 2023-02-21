@@ -173,6 +173,35 @@ void DrmDisplay::Update(HardwareDisplayControllerInfo* info,
 #endif
 }
 
+bool DrmDisplay::SetHdcpKeyProp(const std::string& key) {
+  DCHECK(connector_);
+
+  TRACE_EVENT1("drm", "DrmDisplay::SetHdcpKeyProp", "connector",
+               connector_->connector_id);
+
+  // The HDCP key is secret, we want to create it as write only so the user
+  // space can't read it back. (i.e. through `modetest`)
+  ScopedDrmPropertyBlob key_blob;
+  // TODO(markyacoub): the flag requires being merged to libdrm then backported
+  // to CrOS. Remove the #if once that happens.
+#if defined(DRM_MODE_CREATE_BLOB_WRITE_ONLY)
+  key_blob = drm_->CreatePropertyBlobWithFlags(key.data(), key.size(),
+                                               DRM_MODE_CREATE_BLOB_WRITE_ONLY);
+#endif
+
+  if (!key_blob) {
+    LOG(ERROR) << "Failed to create HDCP Key property blob";
+    return false;
+  }
+
+  ScopedDrmPropertyPtr hdcp_key_property(
+      drm_->GetProperty(connector_.get(), kContentProtectionKey));
+  DCHECK(hdcp_key_property);
+
+  return drm_->SetProperty(connector_->connector_id, hdcp_key_property->prop_id,
+                           key_blob->id());
+}
+
 // When reading DRM state always check that it's still valid. Any sort of events
 // (such as disconnects) may invalidate the state.
 bool DrmDisplay::GetHDCPState(

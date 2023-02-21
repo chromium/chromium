@@ -36,6 +36,11 @@ std::string GetSetHDCPStateAction(int64_t display_id,
                             display_id, state, protection_method);
 }
 
+std::string GetSetHdcpKeyPropAction(int64_t display_id, bool success) {
+  return base::StringPrintf("set_hdcp_key_prop(id=%" PRId64 ",success=%d)",
+                            display_id, success);
+}
+
 std::string SetColorMatrixAction(int64_t display_id,
                                  const std::vector<float>& color_matrix) {
   std::string ctm;

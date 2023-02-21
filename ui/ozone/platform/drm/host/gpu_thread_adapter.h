@@ -53,6 +53,8 @@ class GpuThreadAdapter {
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       display::ConfigureCallback callback,
       uint32_t modeset_flag) = 0;
+  virtual bool GpuSetHdcpKeyProp(int64_t display_id,
+                                 const std::string& key) = 0;
   virtual bool GpuGetHDCPState(int64_t display_id) = 0;
   virtual bool GpuSetHDCPState(
       int64_t display_id,

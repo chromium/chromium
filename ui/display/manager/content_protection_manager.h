@@ -79,6 +79,7 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
 
   void set_native_display_delegate(NativeDisplayDelegate* delegate) {
     native_display_delegate_ = delegate;
+    hdcp_key_manager_.set_native_display_delegate(delegate);
   }
 
   using ClientId = absl::optional<uint64_t>;

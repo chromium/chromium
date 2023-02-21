@@ -25,6 +25,7 @@ struct DisplayConfigurationParams;
 using GetDisplaysCallback =
     base::OnceCallback<void(const std::vector<DisplaySnapshot*>&)>;
 using ConfigureCallback = base::OnceCallback<void(bool)>;
+using SetHdcpKeyPropCallback = base::OnceCallback<void(bool)>;
 using GetHDCPStateCallback =
     base::OnceCallback<void(bool, HDCPState, ContentProtectionMethod)>;
 using SetHDCPStateCallback = base::OnceCallback<void(bool)>;
@@ -61,6 +62,11 @@ class DISPLAY_TYPES_EXPORT NativeDisplayDelegate {
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       ConfigureCallback callback,
       uint32_t modeset_flag) = 0;
+
+  // Sets the HDCP Key Property.
+  virtual void SetHdcpKeyProp(int64_t display_id,
+                              const std::string& key,
+                              SetHdcpKeyPropCallback callback) = 0;
 
   // Gets HDCP state of output.
   virtual void GetHDCPState(const DisplaySnapshot& output,
