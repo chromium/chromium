@@ -7049,6 +7049,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "use-sha1-server-handshakes",
+    "owners": [ "bbe", "trusty-transport@chromium.org" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "use-stork-smds-server-address",
     "owners": [ "cros-connectivity@google.com", "hsuregan"],
     // This flag is required for dev testing via Stork profiles which can be quickly

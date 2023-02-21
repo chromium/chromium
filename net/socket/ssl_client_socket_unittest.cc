@@ -3318,7 +3318,7 @@ TEST_F(SSLClientSocketTest, SHA1) {
   EXPECT_THAT(rv, IsOk());
 
   SSLConfig config;
-  config.disable_legacy_crypto = true;
+  config.disable_sha1_server_signatures = true;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
   EXPECT_THAT(rv, IsError(ERR_SSL_PROTOCOL_ERROR));
 }

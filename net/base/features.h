@@ -87,6 +87,10 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // Update protocol using ALPN information in HTTPS DNS records.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcbAlpn);
 
+// If enabled allows the use of SHA-1 by the server for signatures
+// in the TLS handshake.
+NET_EXPORT BASE_DECLARE_FEATURE(kSHA1ServerSignature);
+
 // Enables TLS 1.3 early data.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableTLS13EarlyData);
 

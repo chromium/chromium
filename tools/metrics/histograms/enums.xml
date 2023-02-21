@@ -61393,6 +61393,7 @@ from previous Chrome versions.
   <int value="-231426350" label="AutofillEnableToolbarStatusChip:enabled"/>
   <int value="-230824955" label="NTPMostLikelyFaviconsFromServer:enabled"/>
   <int value="-226826278" label="ForceEnableFastCheckoutCapabilities:disabled"/>
+  <int value="-226715863" label="SHA1ServerSignature:enabled"/>
   <int value="-225505731" label="CCTModule:enabled"/>
   <int value="-225228149" label="ContentSettingsRedesign:enabled"/>
   <int value="-223595595" label="OSKResizesVisualViewportByDefault:enabled"/>
@@ -63500,6 +63501,7 @@ from previous Chrome versions.
   <int value="991192182" label="InfobarScrollOptimization:enabled"/>
   <int value="991462028"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:enabled"/>
+  <int value="992066588" label="SHA1ServerSignature:disabled"/>
   <int value="993486662" label="BorealisForceBetaClient:enabled"/>
   <int value="993539774" label="EnforceAshExtensionKeeplist:enabled"/>
   <int value="994317727"

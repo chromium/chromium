@@ -865,7 +865,7 @@ int SSLClientSocketImpl::Init() {
     return ERR_UNEXPECTED;
   }
 
-  if (ssl_config_.disable_legacy_crypto) {
+  if (ssl_config_.disable_sha1_server_signatures) {
     static const uint16_t kVerifyPrefs[] = {
         SSL_SIGN_ECDSA_SECP256R1_SHA256, SSL_SIGN_RSA_PSS_RSAE_SHA256,
         SSL_SIGN_RSA_PKCS1_SHA256,       SSL_SIGN_ECDSA_SECP384R1_SHA384,
@@ -1749,7 +1749,7 @@ SSLClientSessionCache::Key SSLClientSocketImpl::GetSessionCacheKey(
     key.network_anonymization_key = ssl_config_.network_anonymization_key;
   }
   key.privacy_mode = ssl_config_.privacy_mode;
-  key.disable_legacy_crypto = ssl_config_.disable_legacy_crypto;
+  key.disable_legacy_crypto = ssl_config_.disable_sha1_server_signatures;
   return key;
 }
 
