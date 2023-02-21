@@ -8,6 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
+#include "base/command_line.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -27,10 +28,25 @@
   //  UIWindow* window = content::Shell::windows()[0]->window();
   content::ShellBrowserContext* browserContext =
       content::ShellContentBrowserClient::Get()->browser_context();
-  UIWindow* window =
-      content::Shell::CreateNewWindow(browserContext, GURL(url::kAboutBlankURL),
-                                      nullptr, gfx::Size())
-          ->window();
+
+  GURL initial_url(url::kAboutBlankURL);
+
+  // If a URL has been provided as an argument, use it. However, no attempt is
+  // made here to sanitize this input.
+  // TODO(crbug.com/1418123): usually this is done with GetStartupURL() and,
+  // ideally, we'd leverage that once the shell on ios shares more machinery.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  const auto& args = command_line->GetArgs();
+  if (!args.empty()) {
+    GURL candidate(args[0]);
+    if (candidate.is_valid()) {
+      initial_url = candidate;
+    }
+  }
+
+  UIWindow* window = content::Shell::CreateNewWindow(
+                         browserContext, initial_url, nullptr, gfx::Size())
+                         ->window();
   self.window = window;
   return YES;
 }
