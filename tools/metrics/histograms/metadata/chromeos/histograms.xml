@@ -1424,6 +1424,39 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.Keyboard.ModifierPressed.{KeyboardType}"
+    enum="ModifierKeyDomCodes" expires_after="2024-01-05">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of times modifier keys are pressed before any modifier
+    remapping takes place on {KeyboardType} keyboards.
+  </summary>
+  <token key="KeyboardType">
+    <variant name="AppleExternal"/>
+    <variant name="CrOSExternal"/>
+    <variant name="External"/>
+    <variant name="Internal"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Inputs.Keyboard.RemappedModifierPressed.{KeyboardType}"
+    enum="ModifierKeyDomCodes" expires_after="2024-01-05">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of times modifier keys are pressed after modifier
+    remappings takes place on {KeyboardType} keyboards.
+  </summary>
+  <token key="KeyboardType">
+    <variant name="AppleExternal"/>
+    <variant name="CrOSExternal"/>
+    <variant name="External"/>
+    <variant name="Internal"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Intents.IntentPickerAction"
     enum="IntentPickerDialogAction" expires_after="2023-08-20">
   <owner>tsergeant@chromium.org</owner>

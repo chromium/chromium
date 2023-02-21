@@ -69469,6 +69469,21 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Fallback to rootfs"/>
 </enum>
 
+<enum name="ModifierKeyDomCodes">
+  <int value="0" label="MetaLeft"/>
+  <int value="1" label="MetaRight"/>
+  <int value="2" label="ControlLeft"/>
+  <int value="3" label="ControlRight"/>
+  <int value="4" label="AltLeft"/>
+  <int value="5" label="AltRight"/>
+  <int value="6" label="ShiftLeft"/>
+  <int value="7" label="ShiftRight"/>
+  <int value="8" label="CapsLock"/>
+  <int value="9" label="Backspace"/>
+  <int value="10" label="Escape"/>
+  <int value="11" label="Assistant"/>
+</enum>
+
 <enum name="ModuleBlocklistCacheReadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to open the file"/>

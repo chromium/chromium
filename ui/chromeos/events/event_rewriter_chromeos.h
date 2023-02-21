@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
@@ -115,6 +116,24 @@ class EventRewriterChromeOS : public EventRewriter {
     // is only sent once per user session, and this function returns true if
     // the notification was shown.
     virtual bool NotifyDeprecatedSixPackKeyRewrite(KeyboardCode key_code) = 0;
+  };
+
+  // Enum used to record the usage of the modifier keys on all devices. Do not
+  // edit the ordering of the values.
+  enum class ModifierKeyUsageMetric {
+    kMetaLeft,
+    kMetaRight,
+    kControlLeft,
+    kControlRight,
+    kAltLeft,
+    kAltRight,
+    kShiftLeft,
+    kShiftRight,
+    kCapsLock,
+    kBackspace,
+    kEscape,
+    kAssistant,
+    kMaxValue = kAssistant
   };
 
   // Does not take ownership of the |sticky_keys_controller|, which may also be
@@ -252,6 +271,11 @@ class EventRewriterChromeOS : public EventRewriter {
                                int flags,
                                int* matched_mask,
                                bool* matched_alt_deprecation) const;
+
+  // Records when modifier keys are pressed to metrics for tracking usage of
+  // various metrics before and after remapping.
+  void RecordModifierKeyPressedBeforeRemapping(DomCode dom_code);
+  void RecordModifierKeyPressedAfterRemapping(DomCode dom_code);
 
   // Rewrite a particular kind of event.
   EventRewriteStatus RewriteKeyEvent(const KeyEvent& key_event,
