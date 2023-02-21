@@ -152,7 +152,7 @@ NSString* const kSettingsArticleSuggestionsImageName =
 NSString* const kDefaultBrowserWorldImageName = @"default_browser_world";
 
 // The size of trailing symbol icons for unsafe state.
-NSInteger kTrailingSymbolImagePointSize = 18;
+NSInteger kTrailingSymbolImagePointSize = 22;
 
 // Key used for storing NSUserDefault entry to keep track of the last timestamp
 // we've shown the default browser blue dot promo.

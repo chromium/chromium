@@ -75,6 +75,9 @@ typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
   TimestampFooterItem,
 };
 
+// The size of trailing symbol icons.
+NSInteger kTrailingSymbolImagePointSize = 22;
+
 using password_manager::InsecureCredential;
 using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
@@ -92,7 +95,8 @@ PrefService* SetPrefService() {
 // The image when the state is safe.
 UIImage* SafeImage() {
   if (UseSymbols()) {
-    return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 18);
+    return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
+                                              kTrailingSymbolImagePointSize);
   }
   return [[UIImage imageNamed:@"settings_safe_state"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -101,7 +105,8 @@ UIImage* SafeImage() {
 // The image when the state is unsafe.
 UIImage* UnsafeImage() {
   if (UseSymbols()) {
-    return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol, 18);
+    return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
+                                              kTrailingSymbolImagePointSize);
   }
   return [[UIImage imageNamed:@"settings_unsafe_state"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
