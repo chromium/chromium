@@ -128,6 +128,10 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void SetCurrentDeviceScaleFactor(float device_scale_factor) override;
   void UpdateScreenInfo() override;
   void TransformPointToRootSurface(gfx::PointF* point) override;
+  bool TransformPointToCoordSpaceForView(
+      const gfx::PointF& point,
+      RenderWidgetHostViewBase* target_view,
+      gfx::PointF* transformed_point) override;
   void ProcessAckedTouchEvent(
       const TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override;

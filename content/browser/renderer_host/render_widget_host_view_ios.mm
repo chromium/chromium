@@ -499,6 +499,19 @@ void RenderWidgetHostViewIOS::TransformPointToRootSurface(gfx::PointF* point) {
   browser_compositor_->TransformPointToRootSurface(point);
 }
 
+bool RenderWidgetHostViewIOS::TransformPointToCoordSpaceForView(
+    const gfx::PointF& point,
+    RenderWidgetHostViewBase* target_view,
+    gfx::PointF* transformed_point) {
+  if (target_view == this) {
+    *transformed_point = point;
+    return true;
+  }
+
+  return target_view->TransformPointToLocalCoordSpace(
+      point, GetCurrentSurfaceId(), transformed_point);
+}
+
 display::ScreenInfo RenderWidgetHostViewIOS::GetCurrentScreenInfo() const {
   return screen_infos_.current();
 }
