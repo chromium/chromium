@@ -6,12 +6,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -493,7 +493,7 @@ TEST_F(UsbChooserContextTest, PolicyAskForUrls) {
   prefs->SetManagedPref(prefs::kManagedDefaultWebUsbGuardSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   prefs->SetManagedPref(prefs::kManagedWebUsbAskForUrls,
-                        base::JSONReader::ReadDeprecated(R"(
+                        base::test::ParseJsonList(R"(
     [ "https://foo.origin" ]
   )"));
 
@@ -525,7 +525,7 @@ TEST_F(UsbChooserContextTest, PolicyBlockedForUrls) {
 
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedWebUsbBlockedForUrls,
-                        base::JSONReader::ReadDeprecated(R"(
+                        base::test::ParseJsonList(R"(
     [ "https://foo.origin" ]
   )"));
 
@@ -618,8 +618,8 @@ TEST_F(UsbChooserContextTest,
 
   ExpectNoPermissions(store, *specific_device_info);
 
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   ExpectCorrectPermissions(store, kValidOrigins, kInvalidOrigins,
                            *specific_device_info);
@@ -640,8 +640,8 @@ TEST_F(UsbChooserContextTest,
 
   ExpectNoPermissions(store, *vendor_related_device_info);
 
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   ExpectCorrectPermissions(store, kValidOrigins, kInvalidOrigins,
                            *vendor_related_device_info);
@@ -661,8 +661,8 @@ TEST_F(UsbChooserContextTest,
 
   ExpectNoPermissions(store, *unrelated_device_info);
 
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   EXPECT_TRUE(store->HasDevicePermission(kCoolOrigin, *unrelated_device_info));
   for (const auto& origin_url : PolicyOrigins()) {
@@ -706,8 +706,8 @@ TEST_F(UsbChooserContextTest,
   EXPECT_FALSE(store->HasDevicePermission(kCoolOrigin, *specific_device_info));
   EXPECT_FALSE(store->HasDevicePermission(kCoolOrigin, *unrelated_device_info));
 
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   EXPECT_TRUE(
       store->HasDevicePermission(kProductVendorOrigin, *specific_device_info));
@@ -753,9 +753,8 @@ TEST_F(DeviceLoginScreenWebUsbChooserContextTest,
   ExpectNoPermissions(user_store, *specific_device_info);
   ExpectNoPermissions(signin_store, *specific_device_info);
 
-  user_profile->GetPrefs()->Set(
-      prefs::kManagedWebUsbAllowDevicesForUrls,
-      *base::JSONReader::ReadDeprecated(kPolicySetting));
+  user_profile->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                    base::test::ParseJsonList(kPolicySetting));
 
   ExpectCorrectPermissions(user_store, kValidOrigins, kInvalidOrigins,
                            *specific_device_info);
@@ -780,9 +779,9 @@ TEST_F(DeviceLoginScreenWebUsbChooserContextTest,
   ExpectNoPermissions(user_store, *specific_device_info);
   ExpectNoPermissions(signin_store, *specific_device_info);
 
-  signin_profile->GetPrefs()->Set(
+  signin_profile->GetPrefs()->SetList(
       prefs::kManagedWebUsbAllowDevicesForUrls,
-      *base::JSONReader::ReadDeprecated(kPolicySetting));
+      base::test::ParseJsonList(kPolicySetting));
 
   ExpectNoPermissions(user_store, *specific_device_info);
   ExpectCorrectPermissions(signin_store, kValidOrigins, kInvalidOrigins,
@@ -829,8 +828,8 @@ void ExpectChooserObjectInfo(const UsbChooserContext::Object* actual,
 
 TEST_F(UsbChooserContextTest, GetGrantedObjectsWithOnlyPolicyAllowedDevices) {
   auto* store = GetChooserContext(profile());
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   const auto kVendorOrigin = url::Origin::Create(GURL(kVendorUrl));
   auto objects = store->GetGrantedObjects(kVendorOrigin);
@@ -847,8 +846,8 @@ TEST_F(UsbChooserContextTest, GetGrantedObjectsWithOnlyPolicyAllowedDevices) {
 
 TEST_F(UsbChooserContextTest,
        GetGrantedObjectsWithUserAndPolicyAllowedDevices) {
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   UsbDeviceInfoPtr persistent_device_info =
       device_manager_.CreateAndAddDevice(1000, 1, "Google", "Gizmo", "123ABC");
@@ -895,8 +894,8 @@ TEST_F(UsbChooserContextTest,
 
 TEST_F(UsbChooserContextTest,
        GetGrantedObjectsWithUserGrantedDeviceAllowedBySpecificDevicePolicy) {
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   UsbDeviceInfoPtr persistent_device_info = device_manager_.CreateAndAddDevice(
       6353, 5678, "Google", "Gizmo", "123ABC");
@@ -927,8 +926,8 @@ TEST_F(UsbChooserContextTest,
       6353, 1000, "Vendor", "Product", "123ABC");
 
   auto* store = GetChooserContext(profile());
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   const auto kVendorOrigin = url::Origin::Create(GURL(kVendorUrl));
   store->GrantDevicePermission(kVendorOrigin, *persistent_device_info);
@@ -953,8 +952,8 @@ TEST_F(UsbChooserContextTest,
       1123, 5813, "Some", "Product", "123ABC");
 
   auto* store = GetChooserContext(profile());
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   const auto kAnyDeviceOrigin = url::Origin::Create(GURL(kAnyDeviceUrl));
   store->GrantDevicePermission(kAnyDeviceOrigin, *persistent_device_info);
@@ -976,8 +975,8 @@ TEST_F(UsbChooserContextTest,
 TEST_F(UsbChooserContextTest,
        GetAllGrantedObjectsWithOnlyPolicyAllowedDevices) {
   auto* store = GetChooserContext(profile());
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   auto objects = store->GetAllGrantedObjects();
   ASSERT_EQ(objects.size(), 4u);
@@ -1017,8 +1016,8 @@ TEST_F(UsbChooserContextTest,
 
 TEST_F(UsbChooserContextTest,
        GetAllGrantedObjectsWithUserAndPolicyAllowedDevices) {
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   const GURL kGoogleUrl("https://www.google.com");
   const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
@@ -1094,8 +1093,8 @@ TEST_F(UsbChooserContextTest,
 TEST_F(UsbChooserContextTest,
        GetAllGrantedObjectsWithSpecificPolicyAndUserGrantedDevice) {
   auto* store = GetChooserContext(profile());
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   UsbDeviceInfoPtr persistent_device_info = device_manager_.CreateAndAddDevice(
       6353, 5678, "Specific", "Product", "123ABC");
@@ -1154,8 +1153,8 @@ TEST_F(UsbChooserContextTest,
       6353, 1000, "Vendor", "Product", "123ABC");
 
   auto* store = GetChooserContext(profile());
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
@@ -1207,8 +1206,8 @@ TEST_F(UsbChooserContextTest,
       1123, 5813, "Some", "Product", "123ABC");
 
   auto* store = GetChooserContext(profile());
-  profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                             *base::JSONReader::ReadDeprecated(kPolicySetting));
+  profile()->GetPrefs()->SetList(prefs::kManagedWebUsbAllowDevicesForUrls,
+                                 base::test::ParseJsonList(kPolicySetting));
 
   EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
