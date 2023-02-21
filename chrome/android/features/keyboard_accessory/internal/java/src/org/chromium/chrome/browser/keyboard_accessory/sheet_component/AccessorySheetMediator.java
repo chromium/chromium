@@ -90,30 +90,6 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
         mModel.set(ACTIVE_TAB_INDEX, position);
     }
 
-    /**
-     * Returns the position of a tab which needs to become the active tab. If the tab to be deleted
-     * is the active tab, return the item on its left. If it was the first item in the list, return
-     * the new first item. If no items remain, return {@link
-     * AccessorySheetProperties#NO_ACTIVE_TAB}.
-     * @param tabToBeDeleted The tab to be removed from the list.
-     * @return The position of the tab which should become active.
-     */
-    private int getNextActiveTab(KeyboardAccessoryData.Tab tabToBeDeleted) {
-        int activeTab = mModel.get(ACTIVE_TAB_INDEX);
-        for (int i = 0; i <= activeTab; i++) {
-            KeyboardAccessoryData.Tab tabLeftToActiveTab = mModel.get(TABS).get(i);
-            // If we delete the active tab or a tab left to it, the new active tab moves left.
-            if (tabLeftToActiveTab == tabToBeDeleted) {
-                --activeTab;
-                break;
-            }
-        }
-        if (activeTab >= 0) return activeTab; // The new active tab is valid.
-        // If there are items left, take the first one.
-        int itemCountAfterDeletion = mModel.get(TABS).size() - 1;
-        return itemCountAfterDeletion > 0 ? 0 : NO_ACTIVE_TAB;
-    }
-
     @Override
     public void onPropertyChanged(PropertyObservable<PropertyKey> source, PropertyKey propertyKey) {
         if (propertyKey == VISIBLE) {
