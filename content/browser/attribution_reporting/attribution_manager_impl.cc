@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -30,6 +31,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -46,6 +48,7 @@
 #include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
@@ -70,6 +73,7 @@
 #include "content/public/common/content_switches.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -485,10 +489,13 @@ AttributionManagerImpl::AttributionManagerImpl(
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAttributionReportingCrossAppWeb)) {
 #if BUILDFLAG(IS_ANDROID)
-  attribution_os_level_manager_ =
-      std::make_unique<AttributionOsLevelManagerAndroid>();
+    attribution_os_level_manager_ =
+        std::make_unique<AttributionOsLevelManagerAndroid>();
 #endif
+  }
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {

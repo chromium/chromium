@@ -448,6 +448,7 @@ source_set("browser") {
     "attribution_reporting/attribution_observer.h",
     "attribution_reporting/attribution_observer_types.cc",
     "attribution_reporting/attribution_observer_types.h",
+    "attribution_reporting/attribution_os_level_manager.h",
     "attribution_reporting/attribution_report.cc",
     "attribution_reporting/attribution_report.h",
     "attribution_reporting/attribution_report_network_sender.cc",

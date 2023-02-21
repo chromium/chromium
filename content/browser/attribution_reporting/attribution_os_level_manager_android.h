@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 
 class GURL;
 
@@ -19,10 +20,10 @@ namespace content {
 
 // This class is responsible for communicating with java code to handle
 // registering events received on the web with Android.
-class AttributionOsLevelManagerAndroid {
+class AttributionOsLevelManagerAndroid : public AttributionOsLevelManager {
  public:
   AttributionOsLevelManagerAndroid();
-  ~AttributionOsLevelManagerAndroid();
+  ~AttributionOsLevelManagerAndroid() override;
 
   AttributionOsLevelManagerAndroid(const AttributionOsLevelManagerAndroid&) =
       delete;
@@ -35,7 +36,7 @@ class AttributionOsLevelManagerAndroid {
 
   void RegisterAttributionSource(const GURL& registration_url,
                                  const url::Origin& top_level_origin,
-                                 bool is_debug_key_allowed);
+                                 bool is_debug_key_allowed) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobj_;

@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
-#include "build/build_config.h"
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -53,15 +52,12 @@ class AggregatableReportRequest;
 class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionDebugReport;
+class AttributionOsLevelManager;
 class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
 class StoragePartitionImpl;
 class StoredSource;
-
-#if BUILDFLAG(IS_ANDROID)
-class AttributionOsLevelManagerAndroid;
-#endif
 
 struct GlobalRenderFrameHostId;
 struct SendResult;
@@ -316,10 +312,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   base::ObserverList<AttributionObserver> observers_;
 
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<AttributionOsLevelManagerAndroid>
-      attribution_os_level_manager_;
-#endif
+  std::unique_ptr<AttributionOsLevelManager> attribution_os_level_manager_;
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };
