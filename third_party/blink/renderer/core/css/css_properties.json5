@@ -5881,12 +5881,15 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       independent: false,  // Actually true, but setting it to false saves a precious bit in ComputedStyleBase.
       inherited: true,
-      field_template: "bitset_keyword",
+      // This property is "keyword" but use "primitive" to use `EWhiteSpace` defined manually.
+      field_template: "primitive",
+      field_size: 4,  // Ensure this is in sync with `kEWhiteSpaceBits`.
+      include_paths: ["third_party/blink/renderer/core/css/white_space.h"],
       keywords: [
         "normal", "pre", "pre-wrap", "pre-line", "nowrap", "break-spaces"
       ],
       typedom_types: ["Keyword"],
-      default_value: "normal",
+      default_value: "EWhiteSpace::kNormal",
       valid_for_cue: true,
       valid_for_marker: true,
     },
