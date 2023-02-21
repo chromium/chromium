@@ -461,6 +461,12 @@ const char kAutofillEnableVirtualCardDescription[] =
     "When enabled, if all requirements are met, Autofill will offer to use "
     "virtual credit cards in form filling.";
 
+const char kAutofillEnableNewSaveCardBubbleUiName[] =
+    "Update UI messaging and banner image for credit card upload save";
+const char kAutofillEnableNewSaveCardBubbleUiDescription[] =
+    "When enabled, the user will see a new banner logo and text in the bubble "
+    "offering to upload their cards to Google Pay.";
+
 const char kAutofillEnableVirtualCardManagementInDesktopSettingsPageName[] =
     "Enable virtual card enrollment management in desktop payments settings "
     "page";

@@ -79,6 +79,12 @@ BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
              "AutofillEnableManualFallbackForVirtualCards",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the user will see a new banner logo and text in the bubble
+// offering to Upstream their cards onto Google Pay.
+BASE_FEATURE(kAutofillEnableNewSaveCardBubbleUi,
+             "AutofillEnableNewSaveCardBubbleUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible merchant promo code offer or reward.
 BASE_FEATURE(kAutofillEnableOfferNotificationForPromoCodes,

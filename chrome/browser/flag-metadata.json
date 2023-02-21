@@ -490,6 +490,11 @@
       "expiry_milestone": 109
   },
   {
+    "name": "autofill-enable-new-save-card-bubble-ui",
+    "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "autofill-enable-offer-notification-for-promo-codes",
     "owners": [ "jsaul@google.com", "siyua" ],
     "expiry_milestone": 116

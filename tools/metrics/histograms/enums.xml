@@ -63878,6 +63878,7 @@ from previous Chrome versions.
       label="TrustedWebActivityNotificationPermissionDelegation:enabled"/>
   <int value="1203086664"
       label="ForceEnablePasswordDomainCapabilities:disabled"/>
+  <int value="1203425824" label="AutofillEnableNewSaveCardBubbleUi:disabled"/>
   <int value="1203633646" label="AutofillEnableVirtualCardMetadata:disabled"/>
   <int value="1203795051" label="PassiveMixedContentWarning:enabled"/>
   <int value="1203821857" label="Vulkan:disabled"/>
@@ -65504,6 +65505,7 @@ from previous Chrome versions.
   <int value="2120659210" label="BackForwardCache:enabled"/>
   <int value="2121056855" label="IncreaseInputAudioBufferSize:disabled"/>
   <int value="2121550859" label="PreferHtmlOverPlugins:enabled"/>
+  <int value="2121634232" label="AutofillEnableNewSaveCardBubbleUi:enabled"/>
   <int value="2121776031" label="auto-virtual-keyboard"/>
   <int value="2121870664"
       label="lacros-data-backward-migration-policy:enabled"/>
