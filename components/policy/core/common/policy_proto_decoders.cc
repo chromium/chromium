@@ -237,7 +237,7 @@ bool ParseComponentPolicy(base::Value json,
   // Each description is an object that contains the policy value under the
   // "Value" key. The optional "Level" key is either "Mandatory" (default) or
   // "Recommended".
-  for (auto it : json.DictItems()) {
+  for (auto it : json.GetDict()) {
     const std::string& policy_name = it.first;
     base::Value description = std::move(it.second);
     if (!description.is_dict()) {
@@ -245,7 +245,8 @@ bool ParseComponentPolicy(base::Value json,
       return false;
     }
 
-    absl::optional<base::Value> value = description.ExtractKey(kValue);
+    base::Value::Dict& description_dict = description.GetDict();
+    absl::optional<base::Value> value = description_dict.Extract(kValue);
     if (!value.has_value()) {
       *error = base::StrCat(
           {"The JSON blob dictionary value doesn't contain the required ",
@@ -254,7 +255,7 @@ bool ParseComponentPolicy(base::Value json,
     }
 
     PolicyLevel level = POLICY_LEVEL_MANDATORY;
-    const std::string* level_string = description.FindStringKey(kLevel);
+    const std::string* level_string = description_dict.FindString(kLevel);
     if (level_string && *level_string == kRecommended)
       level = POLICY_LEVEL_RECOMMENDED;
 
