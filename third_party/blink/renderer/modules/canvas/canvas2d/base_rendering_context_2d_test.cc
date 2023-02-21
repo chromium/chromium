@@ -401,18 +401,16 @@ TEST(BaseRenderingContextLayerTests, FilterShadowAndGlobalAlpha) {
   context->beginLayer();
   context->endLayer();
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
-      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+  cc::PaintFlags flags;
+  flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
+      sk_make_sp<DropShadowPaintFilter>(
+          0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+          DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr),
+      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr)));
 
-  cc::PaintFlags filter_flags;
-  filter_flags.setImageFilter(
-      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
-  filter_flags.setAlphaf(0.2f);
   EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
+              ElementsAre(PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<SaveLayerAlphaOp>(0.2f),
                           PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
@@ -428,19 +426,17 @@ TEST(BaseRenderingContextLayerTests, FilterShadowGlobalAlphaAndComposite) {
   context->beginLayer();
   context->endLayer();
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
-      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
-  shadow_flags.setBlendMode(SkBlendMode::kXor);
+  cc::PaintFlags flags;
+  flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
+      sk_make_sp<DropShadowPaintFilter>(
+          0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+          DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr),
+      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr)));
+  flags.setBlendMode(SkBlendMode::kXor);
 
-  cc::PaintFlags filter_flags;
-  filter_flags.setImageFilter(
-      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
-  filter_flags.setAlphaf(0.2f);
   EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
+              ElementsAre(PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<SaveLayerAlphaOp>(0.2f),
                           PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 

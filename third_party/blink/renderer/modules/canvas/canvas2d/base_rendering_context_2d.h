@@ -531,6 +531,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // PaintCanvas, and validates the state stack. Helper for Restore and
   // EndLayer.
   void PopAndRestore();
+  void pushLayerStack(CanvasRenderingContext2DState::SaveType save_type);
 
   bool ShouldDrawImageAntialiased(const gfx::RectF& dest_rect) const;
 

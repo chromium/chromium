@@ -37,6 +37,8 @@
 
     ctx.drawImage(canvas2, 0, 0);
   variants:
+    no_global_states:
+      render_states: // No global states.
     alpha:
       render_states: ctx.globalAlpha = 0.6;
     globalcompositeoperation:
@@ -62,7 +64,7 @@
       fuzzy: maxDifference=0-2; totalPixels=0-5824
       render_states: |-
         ctx.globalAlpha = 0.5;
-        ctx.filter = 'sepia(0.5)';
+        ctx.filter = 'sepia(0.5) drop-shadow(5px 5px 0px #81e)';
         ctx.shadowOffsetX = -10;
         ctx.shadowOffsetY = 10;
         ctx.shadowColor = 'orange';

@@ -170,6 +170,14 @@ void BaseRenderingContext2D::restore() {
   PopAndRestore();
 }
 
+void BaseRenderingContext2D::pushLayerStack(
+    CanvasRenderingContext2DState::SaveType save_type) {
+  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
+      GetState(), CanvasRenderingContext2DState::kDontCopyClipList, save_type));
+  max_state_stack_depth_ =
+      std::max(state_stack_.size(), max_state_stack_depth_);
+}
+
 void BaseRenderingContext2D::beginLayer() {
   if (isContextLost())
     return;
@@ -187,47 +195,27 @@ void BaseRenderingContext2D::beginLayer() {
   if (!canvas)
     return;
 
-  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-      GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
-      CanvasRenderingContext2DState::SaveType::kBeginEndLayer));
-  max_state_stack_depth_ =
-      std::max(state_stack_.size(), max_state_stack_depth_);
   layer_count_++;
 
-  if (globalAlpha() != 1 &&
-      (StateHasFilter() || GetState().ShouldDrawShadows())) {
-    // For alpha and either filters or shadows, we have to split the save into
-    // two layers, so the shadow and filter can properly interact with alpha.
-    // We also need to flip how and where the shadows and filter are applied
-    // if there are shadows.
+  using SaveType = CanvasRenderingContext2DState::SaveType;
+  const int initial_save_count = canvas->getSaveCount();
+  SaveType save_type = SaveType::kBeginEndLayer;
+  bool composite_op_handled = false;
+
+  // For alpha and shadows (which include filters because they can also produce
+  // shadows), we must use two nested layers. The inner one applies the alpha
+  // and the outer one applies the shadow/filter. This is needed to to get a
+  // transparent shadow foreground, as the alpha would otherwise be applied to
+  // the result of foreground+shadow.
+  if (GetState().ShouldDrawShadows() || StateHasFilter()) {
+    pushLayerStack(save_type);
+    save_type = SaveType::kInternalLayer;
+
     cc::PaintFlags flags;
     flags.setBlendMode(GetState().GlobalComposite());
-    flags.setImageFilter(GetState().ShouldDrawShadows()
-                             ? GetState().ShadowAndForegroundImageFilter()
-                             : StateGetFilter());
-    canvas->saveLayer(flags);
+    composite_op_handled = true;
 
-    // Push to state stack to keep stack size up to date.
-    state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-        GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
-        CanvasRenderingContext2DState::SaveType::kInternalLayer));
-    max_state_stack_depth_ =
-        std::max(state_stack_.size(), max_state_stack_depth_);
-
-    if (StateHasFilter() && GetState().ShouldDrawShadows()) {
-      cc::PaintFlags extra_flags;
-      extra_flags.setAlphaf(static_cast<float>(globalAlpha()));
-      extra_flags.setImageFilter(StateGetFilter());
-      canvas->saveLayer(extra_flags);
-    } else {
-      canvas->saveLayerAlphaf(globalAlpha());
-    }
-  } else if (StateHasFilter() || GetState().ShouldDrawShadows() ||
-             GetState().GlobalComposite() != SkBlendMode::kSrcOver) {
-    cc::PaintFlags flags;
-    flags.setBlendMode(GetState().GlobalComposite());
-
-    if (StateHasFilter() && GetState().ShouldDrawShadows()) {
+    if (GetState().ShouldDrawShadows() && StateHasFilter()) {
       flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
           GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
     } else if (GetState().ShouldDrawShadows()) {
@@ -235,9 +223,19 @@ void BaseRenderingContext2D::beginLayer() {
     } else if (StateHasFilter()) {
       flags.setImageFilter(StateGetFilter());
     }
+    canvas->saveLayer(flags);
+  }
+
+  if (GetState().GlobalComposite() != SkBlendMode::kSrcOver &&
+      !composite_op_handled) {
+    pushLayerStack(save_type);
+    cc::PaintFlags flags;
+    flags.setBlendMode(GetState().GlobalComposite());
     flags.setAlphaf(static_cast<float>(globalAlpha()));
     canvas->saveLayer(flags);
-  } else {
+  } else if (globalAlpha() != 1 ||
+             initial_save_count == canvas->getSaveCount()) {
+    pushLayerStack(save_type);
     canvas->saveLayerAlphaf(globalAlpha());
   }
 
