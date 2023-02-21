@@ -96,6 +96,7 @@ void BrowserDataBackMigrator::Migrate(
       crosapi::browser_util::PolicyInitState::kBeforeInit));
 
   running_ = true;
+  migration_start_time_ = base::TimeTicks::Now();
 
   const base::FilePath lacros_profile_dir =
       ash_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
@@ -1320,6 +1321,7 @@ BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
 void BrowserDataBackMigrator::InvokeCallback(TaskResult result) {
   RecordFinalStatus(result);
   RecordPosixErrnoIfAvailable(result);
+  RecordMigrationTimeIfSuccessful(result, migration_start_time_);
   std::move(finished_callback_).Run(ToResult(result));
 }
 
@@ -1342,6 +1344,18 @@ void BrowserDataBackMigrator::RecordPosixErrnoIfAvailable(TaskResult result) {
 
   std::string uma_name = kPosixErrnoUMA + TaskStatusToString(result.status);
   base::UmaHistogramSparse(uma_name, posix_errno);
+}
+
+// static
+void BrowserDataBackMigrator::RecordMigrationTimeIfSuccessful(
+    TaskResult result,
+    base::TimeTicks migration_start_time) {
+  if (result.status != TaskStatus::kSucceeded) {
+    return;
+  }
+
+  base::UmaHistogramMediumTimes(kSuccessfulMigrationTimeUMA,
+                                base::TimeTicks::Now() - migration_start_time);
 }
 
 // static

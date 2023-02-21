@@ -1126,4 +1126,22 @@ TEST(BrowserDataBackMigratorUMATest, TaskStatusToString) {
             "Succeeded");
 }
 
+TEST(BrowserDataBackMigratorUMATest, RecordMigrationTimeIfSuccessful) {
+  base::HistogramTester histogram_tester;
+
+  // No total time is recorded on failed migration.
+  BrowserDataBackMigrator::TaskResult failure = {
+      BrowserDataBackMigrator::TaskStatus::kDeleteTmpDirDeleteFailed, EPERM};
+  BrowserDataBackMigrator::RecordMigrationTimeIfSuccessful(
+      failure, base::TimeTicks::Now());
+  histogram_tester.ExpectTotalCount(kSuccessfulMigrationTimeUMA, 0);
+
+  // When migration succeeds, total time is recorded.
+  BrowserDataBackMigrator::TaskResult success = {
+      BrowserDataBackMigrator::TaskStatus::kSucceeded};
+  BrowserDataBackMigrator::RecordMigrationTimeIfSuccessful(
+      success, base::TimeTicks::Now());
+  histogram_tester.ExpectTotalCount(kSuccessfulMigrationTimeUMA, 1);
+}
+
 }  // namespace ash

@@ -25,6 +25,8 @@ constexpr char kTmpDir[] = "back_migrator_tmp";
 
 constexpr char kFinalStatusUMA[] = "Ash.BrowserDataBackMigrator.FinalStatus";
 constexpr char kPosixErrnoUMA[] = "Ash.BrowserDataBackMigrator.PosixErrno.";
+constexpr char kSuccessfulMigrationTimeUMA[] =
+    "Ash.BrowserDataBackMigrator.SuccessfulMigrationTime";
 
 // Injects the restart function called from
 // `BrowserDataBackMigrator::AttemptRestart()` in RAII manner.
@@ -103,6 +105,8 @@ class BrowserDataBackMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorUMATest, RecordFinalStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorUMATest,
                            RecordPosixErrnoIfAvailable);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorUMATest,
+                           RecordMigrationTimeIfSuccessful);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorUMATest, TaskStatusToString);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
                            MergesAshOnlyPreferencesCorrectly);
@@ -326,11 +330,17 @@ class BrowserDataBackMigrator {
   // Records the final status of the migration in `kFinalStatusUMA`.
   static void RecordFinalStatus(TaskResult result);
 
-  // Record Ash.BrowserDataBackMigrator.PosixErrno.{result.status} UMA with the
+  // Records Ash.BrowserDataBackMigrator.PosixErrno.{result.status} UMA with the
   // value of `result.posix_errno` if the migration failed.
   static void RecordPosixErrnoIfAvailable(TaskResult result);
 
-  // Convert `TaskStatus` to string.
+  // Records `kSuccessfulMigrationTimeUMA` UMA with the elapsed time since
+  // starting backward migration. Only recorded if migration was successful.
+  static void RecordMigrationTimeIfSuccessful(
+      TaskResult result,
+      base::TimeTicks migration_start_time);
+
+  // Converts `TaskStatus` to string.
   static std::string TaskStatusToString(TaskStatus task_status);
 
   // Path to the ash profile directory.
@@ -341,6 +351,9 @@ class BrowserDataBackMigrator {
 
   // Local state prefs, not owned.
   PrefService* local_state_ = nullptr;
+
+  // Used to record how long the migration takes in UMA.
+  base::TimeTicks migration_start_time_;
 
   base::WeakPtrFactory<BrowserDataBackMigrator> weak_factory_{this};
 };
