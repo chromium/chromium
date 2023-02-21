@@ -486,7 +486,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
 
   performance_manager::user_tuning::UserPerformanceTuningManager::
       PreDiscardResourceUsage::CreateForWebContents(
-          null_contents.get(), tab_memory_footprint_estimate);
+          null_contents.get(), tab_memory_footprint_estimate, discard_reason);
 
   // Attach the ResourceCoordinatorTabHelper. In production code this has
   // already been attached by now due to AttachTabHelpers, but there's a long

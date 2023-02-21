@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
@@ -65,8 +66,9 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
         browser()->tab_strip_model()->GetWebContentsAt(0);
     TabDiscardTabHelper::CreateForWebContents(contents);
     performance_manager::user_tuning::UserPerformanceTuningManager::
-        PreDiscardResourceUsage::CreateForWebContents(contents,
-                                                      kMemorySavingsKilobytes);
+        PreDiscardResourceUsage::CreateForWebContents(
+            contents, kMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   }
 
   void TearDown() override {
@@ -250,7 +252,8 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotRenderSmallMemorySavingsInDialog) {
   TabDiscardTabHelper::CreateForWebContents(contents);
   performance_manager::user_tuning::UserPerformanceTuningManager::
       PreDiscardResourceUsage::CreateForWebContents(
-          contents, kSmallMemorySavingsKilobytes);
+          contents, kSmallMemorySavingsKilobytes,
+          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   // Mark the new tab as discarded.
   SetTabDiscardState(1, true);
@@ -333,7 +336,8 @@ TEST_F(HighEfficiencyChipViewTest, ShowChipWithoutSavingsInGuestMode) {
   TabDiscardTabHelper::CreateForWebContents(contents);
   performance_manager::user_tuning::UserPerformanceTuningManager::
       PreDiscardResourceUsage::CreateForWebContents(
-          contents, kSmallMemorySavingsKilobytes);
+          contents, kSmallMemorySavingsKilobytes,
+          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
