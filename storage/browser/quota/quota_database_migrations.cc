@@ -221,9 +221,9 @@ bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
     return false;
 
   // Upgrade to version 7 since it already deletes EvictionInfoTable.
-  quota_database.meta_table_->SetVersionNumber(7);
-  quota_database.meta_table_->SetCompatibleVersionNumber(7);
-  return transaction.Commit();
+  return quota_database.meta_table_->SetVersionNumber(7) &&
+         quota_database.meta_table_->SetCompatibleVersionNumber(7) &&
+         transaction.Commit();
 }
 
 bool QuotaDatabaseMigrations::MigrateFromVersion6ToVersion7(
@@ -240,9 +240,9 @@ bool QuotaDatabaseMigrations::MigrateFromVersion6ToVersion7(
   if (!db->Execute(kDeleteEvictionInfoTableSql))
     return false;
 
-  quota_database.meta_table_->SetVersionNumber(7);
-  quota_database.meta_table_->SetCompatibleVersionNumber(7);
-  return transaction.Commit();
+  return quota_database.meta_table_->SetVersionNumber(7) &&
+         quota_database.meta_table_->SetCompatibleVersionNumber(7) &&
+         transaction.Commit();
 }
 
 bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
@@ -339,9 +339,9 @@ bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
     return false;
 
   // Mark database as up to date.
-  quota_database.meta_table_->SetVersionNumber(8);
-  quota_database.meta_table_->SetCompatibleVersionNumber(8);
-  return transaction.Commit();
+  return quota_database.meta_table_->SetVersionNumber(8) &&
+         quota_database.meta_table_->SetCompatibleVersionNumber(8) &&
+         transaction.Commit();
 }
 
 bool QuotaDatabaseMigrations::MigrateFromVersion8ToVersion9(
@@ -441,9 +441,9 @@ bool QuotaDatabaseMigrations::MigrateFromVersion8ToVersion9(
     return false;
 
   // Mark database as up to date.
-  quota_database.meta_table_->SetVersionNumber(9);
-  quota_database.meta_table_->SetCompatibleVersionNumber(9);
-  return transaction.Commit();
+  return quota_database.meta_table_->SetVersionNumber(9) &&
+         quota_database.meta_table_->SetCompatibleVersionNumber(9) &&
+         transaction.Commit();
 }
 
 }  // namespace storage
