@@ -112,6 +112,9 @@ class FastCheckoutClientImpl
   FRIEND_TEST_ALL_PREFIXES(
       FastCheckoutClientImplTest,
       OnFullCardRequestSucceeded_InvokesCreditCardFormFill);
+  FRIEND_TEST_ALL_PREFIXES(
+      FastCheckoutClientImplTest,
+      TryToFillForms_LocalCreditCard_ImmediatelyFillsCreditCardForm);
 
   // From autofill::PersonalDataManagerObserver.
   void OnPersonalDataChanged() override;

@@ -344,14 +344,24 @@ void FastCheckoutClientImpl::TryToFillForms() {
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true);
       autofill::CreditCard* credit_card = GetSelectedCreditCard();
       if (field && !credit_card_form_global_id_ && credit_card) {
-        autofill::CreditCardCvcAuthenticator* cvc_authenticator =
-            autofill_client_->GetCvcAuthenticator();
-        DCHECK(cvc_authenticator);
-        credit_card_form_global_id_ = form_global_id;
-        cvc_authenticator->GetFullCardRequest()->GetFullCard(
-            *credit_card, autofill::AutofillClient::UnmaskCardReason::kAutofill,
-            weak_ptr_factory_.GetWeakPtr(),
-            cvc_authenticator->GetAsFullCardRequestUIDelegate());
+        if (autofill::CreditCard::IsLocalCard(credit_card)) {
+          static_cast<autofill::BrowserAutofillManager*>(
+              autofill_manager_.get())
+              ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard,
+                                     run_id_);
+          autofill_manager_->FillCreditCardForm(form->ToFormData(), *field,
+                                                *credit_card, u"");
+        } else {
+          autofill::CreditCardCvcAuthenticator* cvc_authenticator =
+              autofill_client_->GetCvcAuthenticator();
+          DCHECK(cvc_authenticator);
+          credit_card_form_global_id_ = form_global_id;
+          cvc_authenticator->GetFullCardRequest()->GetFullCard(
+              *credit_card,
+              autofill::AutofillClient::UnmaskCardReason::kAutofill,
+              weak_ptr_factory_.GetWeakPtr(),
+              cvc_authenticator->GetAsFullCardRequestUIDelegate());
+        }
       }
     }
   }

@@ -39,6 +39,7 @@ using ::autofill::AutofillProfile;
 using ::autofill::CreditCard;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Pointee;
@@ -296,15 +297,17 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
   // Sets up test data, calls `TryToStart(..)` and `OnOptionsSelected(..)`.
   std::tuple<autofill::AutofillProfile*, autofill::CreditCard*>
   StartRunAndSelectOptions(
-      const base::flat_set<autofill::FormSignature>& forms_to_fill) {
+      const base::flat_set<autofill::FormSignature>& forms_to_fill,
+      bool local_card = false) {
     auto autofill_profile_unique_ptr =
         std::make_unique<autofill::AutofillProfile>(
             autofill::test::GetFullProfile());
     autofill_profile_unique_ptr->set_profile_label(
         base::UTF16ToUTF8(kAutofillProfileLabel));
     personal_data_manager()->AddProfile(*autofill_profile_unique_ptr);
-    auto credit_card_unique_ptr =
-        std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard());
+    auto credit_card_unique_ptr = std::make_unique<autofill::CreditCard>(
+        local_card ? autofill::test::GetCreditCard()
+                   : autofill::test::GetMaskedServerCard());
     credit_card_unique_ptr->SetNickname(kCreditCardNickname);
     personal_data_manager()->AddCreditCard(*credit_card_unique_ptr);
 
@@ -913,4 +916,21 @@ TEST_F(FastCheckoutClientImplTest,
   fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
 
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+}
+
+TEST_F(FastCheckoutClientImplTest,
+       TryToFillForms_LocalCreditCard_ImmediatelyFillsCreditCardForm) {
+  autofill::FormStructure* credit_card_form =
+      AddFormToAutofillManagerCache(SetUpCreditCardForm());
+  const autofill::FormFieldData& field = *credit_card_form->field(0);
+
+  EXPECT_CALL(
+      *autofill_manager(),
+      SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, Ne(0)));
+  EXPECT_CALL(
+      *autofill_manager(),
+      FillCreditCardFormImpl(FormDataEqualTo(credit_card_form->ToFormData()),
+                             FormFieldDataEqualTo(field), _, Eq(u"")));
+  StartRunAndSelectOptions({credit_card_form->form_signature()},
+                           /*local_card=*/true);
 }
