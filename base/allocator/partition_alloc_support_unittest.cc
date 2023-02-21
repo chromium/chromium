@@ -327,6 +327,57 @@ TEST(PartitionAllocDanglingPtrChecks, CrossTaskNoFreeConsideredCrossTask) {
   partition_alloc::GetDanglingRawPtrReleasedFn()(42);
 }
 
+TEST(PartitionAllocDanglingPtrChecks,
+     ExtractDanglingPtrSignatureMacStackTrace) {
+  const std::string stack_trace_output =
+      "0   lib_1  0x0000000115fdfa12 base::F1(**) + 18\r\n"
+      "1   lib_1  0x0000000115ec0043 base::F2() + 19\r\n"
+      "2   lib_1  0x000000011601fb01 "
+      "allocator_shim::internal::PartitionFree(foo) + 13265\r\n"
+      "3   lib_1  0x0000000114831027 base::F3(bar) + 42\r\n"
+      "4   lib_2  0x00000001148eae35 base::F4() + 437\r\n";
+  EXPECT_EQ("base::F3(bar)",
+            PartitionAllocSupport::ExtractDanglingPtrSignatureForTests(
+                stack_trace_output));
+}
+
+TEST(PartitionAllocDanglingPtrChecks, ExtractDanglingPtrSignatureMacTaskTrace) {
+  const std::string task_trace_output =
+      "Task trace:\r\n"
+      "0   lib_1  0x00000001161fd431 base::F1() + 257\r\n"
+      "1   lib_1  0x0000000115a49404 base::F2() + 68\r\n";
+  EXPECT_EQ("base::F1()",
+            PartitionAllocSupport::ExtractDanglingPtrSignatureForTests(
+                task_trace_output));
+}
+
+TEST(PartitionAllocDanglingPtrChecks,
+     ExtractDanglingPtrSignatureWindowsStackTrace) {
+  const std::string stack_trace_output =
+      "Backtrace:\r\n"
+      "\tbase::F1 [0x055643C3+19] (o:\\base\\F1.cc:329)\r\n"
+      "\tallocator_shim::internal::PartitionFree [0x0648F87B+5243] "
+      "(o:\\path.cc:441)\r\n"
+      "\t_free_base [0x0558475D+29] (o:\\file_path.cc:142)\r\n"
+      "\tbase::F2 [0x04E5B317+23] (o:\\base\\F2.cc:91)\r\n"
+      "\tbase::F3 [0x04897800+544] (o:\\base\\F3.cc:638)\r\n";
+  EXPECT_EQ("base::F2",
+            PartitionAllocSupport::ExtractDanglingPtrSignatureForTests(
+                stack_trace_output));
+}
+
+TEST(PartitionAllocDanglingPtrChecks,
+     ExtractDanglingPtrSignatureWindowsTaskTrace) {
+  const std::string task_trace_output =
+      "Task trace:\r\n"
+      "Backtrace:\r\n"
+      "\tbase::F1 [0x049068A3+813] (o:\\base\\F1.cc:207)\r\n"
+      "\tbase::F2 [0x0490614C+192] (o:\\base\\F2.cc:116)\r\n";
+  EXPECT_EQ("base::F1",
+            PartitionAllocSupport::ExtractDanglingPtrSignatureForTests(
+                task_trace_output));
+}
+
 #endif
 
 }  // namespace allocator

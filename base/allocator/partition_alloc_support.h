@@ -75,6 +75,11 @@ class BASE_EXPORT PartitionAllocSupport {
   void OnForegrounded(bool has_main_frame);
   void OnBackgrounded();
 
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  static std::string ExtractDanglingPtrSignatureForTests(
+      std::string stacktrace);
+#endif
+
   static PartitionAllocSupport* Get() {
     static auto* singleton = new PartitionAllocSupport();
     return singleton;

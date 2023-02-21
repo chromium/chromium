@@ -466,17 +466,30 @@ absl::optional<DanglingPointerFreeInfo> TakeDanglingPointerFreeInfo(
 // are all the dangling raw_ptr occurrences in a table.
 std::string ExtractDanglingPtrSignature(std::string stacktrace) {
   std::vector<StringPiece> lines = SplitStringPiece(
-      stacktrace, "\r\n", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
+      stacktrace, "\r\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
   // We are looking for the callers of the function releasing the raw_ptr and
   // freeing memory:
   const StringPiece callees[] = {
+      // Common signatures
+      "internal::PartitionFree",
+      "base::(anonymous namespace)::FreeFn",
+
+      // Linux signatures
       "internal::RawPtrBackupRefImpl<>::ReleaseInternal()",
-      "internal::PartitionFree()",
       "base::RefCountedThreadSafe<>::Release()",
-      "base::(anonymous namespace)::FreeFn()",
+
+      // Windows signatures
+      "internal::RawPtrBackupRefImpl<0>::ReleaseInternal",
+      "_free_base",
+      // Windows stack traces are prefixed with "Backtrace:"
+      "Backtrace:",
+
+      // Mac signatures
+      "internal::RawPtrBackupRefImpl<false>::ReleaseInternal",
+
       // Task traces are prefixed with "Task trace:" in
-      // https://crsrc.org/c/base/debug/task_trace.cc;drc=82fbec846172f4e7ea576ad4f2f7f3d082dcb13b;l=77
+      // |TaskTrace::OutputToStream|
       "Task trace:",
   };
   size_t caller_index = 0;
@@ -492,20 +505,56 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
   }
   StringPiece caller = lines[caller_index];
 
-  // |callers| follows the following format:
-  //
-  //    #4 0x56051fe3404b content::GeneratedCodeCache::DidCreateBackend()
-  //    -- -------------- -----------------------------------------------
-  // Depth Address        Function
-
-  size_t address_start = caller.find(' ');
-  size_t function_start = caller.find(' ', address_start + 1);
-
-  if (address_start == caller.npos || function_start == caller.npos) {
+  if (caller.empty()) {
     return "invalid_format";
   }
 
-  return std::string(caller.substr(function_start + 1));
+  // On Posix platforms |callers| follows the following format:
+  //
+  // #<index> <address> <symbol>
+  //
+  // See https://crsrc.org/c/base/debug/stack_trace_posix.cc
+  if (caller[0] == '#') {
+    const size_t address_start = caller.find(' ');
+    const size_t function_start = caller.find(' ', address_start + 1);
+
+    if (address_start == caller.npos || function_start == caller.npos) {
+      return "invalid_format";
+    }
+
+    return std::string(caller.substr(function_start + 1));
+  }
+
+  // On Windows platforms |callers| follows the following format:
+  //
+  // \t<symbol> [0x<address>]+<displacement>(<filename>:<line>)
+  //
+  // See https://crsrc.org/c/base/debug/stack_trace_win.cc
+  if (caller[0] == '\t') {
+    const size_t symbol_start = 1;
+    const size_t symbol_end = caller.find(' ');
+    if (symbol_end == caller.npos) {
+      return "invalid_format";
+    }
+    return std::string(caller.substr(symbol_start, symbol_end - symbol_start));
+  }
+
+  // On Mac platforms |callers| follows the following format:
+  //
+  // <index> <library> 0x<address> <symbol> + <line>
+  //
+  // See https://crsrc.org/c/base/debug/stack_trace_posix.cc
+  if (caller[0] >= '0' && caller[0] <= '9') {
+    const size_t address_start = caller.find("0x");
+    const size_t symbol_start = caller.find(' ', address_start + 1) + 1;
+    const size_t symbol_end = caller.find(' ', symbol_start);
+    if (symbol_start == caller.npos || symbol_end == caller.npos) {
+      return "invalid_format";
+    }
+    return std::string(caller.substr(symbol_start, symbol_end - symbol_start));
+  }
+
+  return "invalid_format";
 }
 
 std::string ExtractDanglingPtrSignature(debug::TaskTrace task_trace) {
@@ -1189,5 +1238,12 @@ void PartitionAllocSupport::OnBackgrounded() {
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
+
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+std::string PartitionAllocSupport::ExtractDanglingPtrSignatureForTests(
+    std::string stacktrace) {
+  return ExtractDanglingPtrSignature(stacktrace);
+}
+#endif
 
 }  // namespace base::allocator
