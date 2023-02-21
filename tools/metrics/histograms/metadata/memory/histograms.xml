@@ -1144,6 +1144,66 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintAfter"
+    units="MB" expires_after="2023-08-01">
+  <owner>tasak@google.com</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    The total private memory footprint 10 seconds after a user-level memory
+    pressure signal is generated. Recorded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintBefore"
+    units="MB" expires_after="2023-08-01">
+  <owner>tasak@google.com</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    The total private memory footprint right before a user-level memory pressure
+    signal is generated. Recorded on Android.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintVisibleOrHigherPriorityRenderersAfter"
+    units="MB" expires_after="2023-08-01">
+  <owner>tasak@google.com</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    The total private memory footprint excluding lower priority renderers' 10
+    seconds after a user-level memory pressure signal is generated. Recorded on
+    Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintVisibleOrHigherPriorityRenderersBefore"
+    units="MB" expires_after="2023-08-01">
+  <owner>tasak@google.com</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    The total private memory footprint excluding lower priority renderers' right
+    before a user-level memory pressure signal is generated. Recorded on
+    Android.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Memory.Experimental.Utility2" units="MB"
     expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->

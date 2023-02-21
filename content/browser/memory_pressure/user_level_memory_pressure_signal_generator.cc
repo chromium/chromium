@@ -9,7 +9,6 @@
 #include <fcntl.h>
 #include <inttypes.h>
 #include <unistd.h>
-#include <utility>
 #include "base/android/child_process_binding_types.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -18,6 +17,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,6 +32,10 @@
 #include "content/public/browser/child_process_data.h"
 
 namespace memory_pressure {
+
+namespace {
+constexpr uint64_t k1MB = 1024ull * 1024;
+}
 
 #if !defined(ARCH_CPU_64_BITS)
 
@@ -79,7 +84,6 @@ base::TimeDelta MinimumIntervalFor6GbDevices() {
   return kMinimumInterval.Get();
 }
 
-constexpr uint64_t k1MB = 1024ull * 1024;
 constexpr size_t kDefaultMemoryThresholdMB = 485;
 
 uint64_t MemoryThresholdParamFor4GbDevices() {
@@ -159,12 +163,15 @@ void UserLevelMemoryPressureSignalGenerator::Start(
 }
 void UserLevelMemoryPressureSignalGenerator::OnTimerFired() {
   base::TimeDelta interval = measure_interval_;
-  uint64_t total_private_footprint_bytes =
+  std::pair<uint64_t, uint64_t> total_pmfs =
       GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
-  if (total_private_footprint_bytes > memory_threshold_) {
+  if (total_pmfs.first > memory_threshold_) {
     NotifyMemoryPressure();
     interval = minimum_interval_;
+
+    ReportBeforeAfterMetrics(total_pmfs.first, total_pmfs.second, "Before");
+    StartReportingTimer();
   }
 
   StartPeriodicTimer(interval);
@@ -183,19 +190,40 @@ void UserLevelMemoryPressureSignalGenerator::StartPeriodicTimer(
                      base::Unretained(this)));
 }
 
-// static
-uint64_t UserLevelMemoryPressureSignalGenerator::
-    GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers() {
-  uint64_t total_private_footprint_bytes = 0u;
+void UserLevelMemoryPressureSignalGenerator::StartReportingTimer() {
+  // Don't try to start the timer in tests that don't support it.
+  if (!base::SequencedTaskRunner::HasCurrentDefault()) {
+    return;
+  }
+  delayed_report_timer_.Start(
+      FROM_HERE, base::Seconds(10),
+      base::BindOnce(
+          &UserLevelMemoryPressureSignalGenerator::OnReportingTimerFired,
+          base::Unretained(this)));
+}
 
-  auto add_process_private_footprint = [&](const base::Process& process) {
+void UserLevelMemoryPressureSignalGenerator::OnReportingTimerFired() {
+  std::pair<uint64_t, uint64_t> total_pmfs =
+      GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
+  ReportBeforeAfterMetrics(total_pmfs.first, total_pmfs.second, "After");
+}
+
+// static
+std::pair<uint64_t, uint64_t> UserLevelMemoryPressureSignalGenerator::
+    GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers() {
+  uint64_t total_pmf_visible_or_higher_priority_renderers_bytes = 0u;
+
+  auto add_process_private_footprint = [&](uint64_t& pmf,
+                                           const base::Process& process) {
     if (process.IsValid()) {
-      total_private_footprint_bytes += GetPrivateFootprint(process).value_or(0);
+      pmf += GetPrivateFootprint(process).value_or(0);
     }
   };
 
   // Measure private memory footprint of browser process
-  add_process_private_footprint(base::Process::Current());
+  add_process_private_footprint(
+      total_pmf_visible_or_higher_priority_renderers_bytes,
+      base::Process::Current());
 
   // Measure private memory footprints of GPU process and Utility processes.
   // Since GPU process uses the same user id as the browser process (android),
@@ -206,13 +234,16 @@ uint64_t UserLevelMemoryPressureSignalGenerator::
   // TODO(crbug.com/1393283): measure the private memory footprints of
   // the utility processes correctly.
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-    add_process_private_footprint(iter.GetData().GetProcess());
+    add_process_private_footprint(
+        total_pmf_visible_or_higher_priority_renderers_bytes,
+        iter.GetData().GetProcess());
   }
 
   // Measure private memory footprints of renderer processes with visible
   // or higher priority. Since the renderer processes with invisible or lower
   // priority will be cleaned up by Android OS, this pressure signal feature
   // doesn't need to take care of them.
+  uint64_t lower_priority_renderers_pmf_bytes = 0u;
   for (content::RenderProcessHost::iterator iter =
            content::RenderProcessHost::AllHostsIterator();
        !iter.IsAtEnd(); iter.Advance()) {
@@ -227,6 +258,8 @@ uint64_t UserLevelMemoryPressureSignalGenerator::
     // Ignore renderer processes with invisible or lower priority.
     if (host->GetEffectiveChildBindingState() <
         base::android::ChildBindingState::VISIBLE) {
+      lower_priority_renderers_pmf_bytes +=
+          GetPrivateFootprint(process).value_or(0);
       continue;
     }
 
@@ -235,11 +268,14 @@ uint64_t UserLevelMemoryPressureSignalGenerator::
     // status, i.e. no such file or directory. So each renderer process
     // provides its private memory footprint for the browser process and
     // the browser process gets the (cached) value via RenderProcessHostImpl.
-    total_private_footprint_bytes +=
+    total_pmf_visible_or_higher_priority_renderers_bytes +=
         static_cast<content::RenderProcessHostImpl*>(host)
             ->GetPrivateMemoryFootprint();
   }
-  return total_private_footprint_bytes;
+
+  return std::make_pair(total_pmf_visible_or_higher_priority_renderers_bytes,
+                        total_pmf_visible_or_higher_priority_renderers_bytes +
+                            lower_priority_renderers_pmf_bytes);
 }
 
 // static
@@ -276,6 +312,27 @@ void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
   base::MemoryPressureListener::NotifyMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
+// static
+void UserLevelMemoryPressureSignalGenerator::ReportBeforeAfterMetrics(
+    uint64_t total_pmf_visible_or_higher_priority_renderers,
+    uint64_t total_pmf,
+    const char* suffix_name) {
+  std::string metric_name_total_pmf_visible_or_higher_priority_renderers =
+      base::StringPrintf(
+          "Memory.Experimental.UserLevelMemoryPressureSignal."
+          "TotalPrivateMemoryFootprintVisibleOrHigherPriorityRenderers%s",
+          suffix_name);
+  base::UmaHistogramMemoryLargeMB(
+      metric_name_total_pmf_visible_or_higher_priority_renderers,
+      total_pmf_visible_or_higher_priority_renderers / k1MB);
+
+  std::string metric_name_total_pmf = base::StringPrintf(
+      "Memory.Experimental.UserLevelMemoryPressureSignal."
+      "TotalPrivateMemoryFootprint%s",
+      suffix_name);
+  base::UmaHistogramMemoryLargeMB(metric_name_total_pmf, total_pmf / k1MB);
 }
 
 namespace {
