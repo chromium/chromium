@@ -151,7 +151,7 @@ index key column values, followed by the record's primary key column values.
 storage costs. This is because indexes for `WITHOUT ROWID` tables enjoy
 [a space optimization](https://sqlite.org/fileformat2.html#representation_of_sql_indices)
 where columns in both the primary key and the index key are not stored twice in
-B-tree nodes.
+B-tree nodes. Note that data in such tables cannot be recovered by `sql::Recovery`.
 
 
 ### Statement execution model {#query-model}
