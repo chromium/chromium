@@ -70,7 +70,10 @@ class IdleRequestCallbackWrapper
     callback_wrapper->Cancel();
   }
 
-  void Cancel() { controller_ = nullptr; }
+  void Cancel() {
+    recordreplay::Assert("[RUN-1335-1391] IdleRequestCallbackWrapper::Cancel %d", Id());
+    controller_ = nullptr;
+  }
 
   ScriptedIdleTaskController::CallbackId Id() const { return id_; }
   ScriptedIdleTaskController* Controller() const { return controller_; }
