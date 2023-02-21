@@ -1734,11 +1734,13 @@ int32_t PdfAccessibilityTree::GetId(const ui::AXNode* node) const {
   return node->id();
 }
 
-void PdfAccessibilityTree::GetChildren(
-    const ui::AXNode* node,
-    std::vector<const ui::AXNode*>* out_children) const {
-  *out_children = std::vector<const ui::AXNode*>(node->children().cbegin(),
-                                                 node->children().cend());
+size_t PdfAccessibilityTree::GetChildCount(const ui::AXNode* node) const {
+  return node->children().size();
+}
+
+const ui::AXNode* PdfAccessibilityTree::ChildAt(const ui::AXNode* node,
+                                                size_t index) const {
+  return node->children()[index];
 }
 
 ui::AXNode* PdfAccessibilityTree::GetParent(const ui::AXNode* node) const {

@@ -494,10 +494,6 @@ class MODULES_EXPORT AXObjectCacheImpl
     return ax_tree_source_->ShouldLoadInlineTextBoxes(&obj);
   }
 
-  void GetChildren(AXObject& parent, std::vector<AXObject*>* out_children) {
-    return ax_tree_source_->GetChildren(&parent, out_children);
-  }
-
   void SetImageAsDataNodeId(int id, const gfx::Size& max_size) {
     ax_tree_source_->set_image_data_node_id(id, max_size);
   }

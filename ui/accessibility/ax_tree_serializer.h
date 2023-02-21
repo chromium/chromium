@@ -364,10 +364,14 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
     AXSourceNode* out_lca) {
   bool result = false;
   int id = tree_->GetId(node);
-  std::vector<AXSourceNode> children;
-  tree_->GetChildren(node, &children);
-  for (size_t i = 0; i < children.size(); ++i) {
-    AXSourceNode& child = children[i];
+  tree_->CacheChildrenIfNeeded(node);
+  auto num_children = tree_->GetChildCount(node);
+  for (size_t i = 0; i < num_children; ++i) {
+    AXSourceNode child = tree_->ChildAt(node, i);
+    if (!child) {
+      continue;
+    }
+
     DCHECK(tree_->IsValid(child));
     int child_id = tree_->GetId(child);
     ClientTreeNode* client_child = ClientTreeNodeById(child_id);
@@ -377,6 +381,7 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
         // If the client child has no parent, it must have been the
         // previous root node, so there is no LCA and we can exit early.
         *out_lca = tree_->GetNull();
+        tree_->ClearChildCache(node);
         return true;
       } else if (parent->id != id) {
         // If the client child's parent is not this node, update the LCA
@@ -399,6 +404,7 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
     if (AnyDescendantWasReparented(child, out_lca))
       result = true;
   }
+  tree_->ClearChildCache(node);
   return result;
 }
 
@@ -656,14 +662,21 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // consistent results.
   std::set<AXNodeID> new_ignored_ids;
   std::set<AXNodeID> new_child_ids;
-  std::vector<AXSourceNode> children;
+  size_t num_children = 0;
   if (should_terminate_early) {
     incomplete_node_ids_.push_back(id);
   } else {
-    tree_->GetChildren(node, &children);
+    tree_->CacheChildrenIfNeeded(node);
+    num_children = tree_->GetChildCount(node);
   }
-  for (size_t i = 0; i < children.size(); ++i) {
-    AXSourceNode& child = children[i];
+  size_t actual_num_children = 0;
+  for (size_t i = 0; i < num_children; ++i) {
+    AXSourceNode child = tree_->ChildAt(node, i);
+    if (!child) {
+      continue;
+    }
+    actual_num_children++;
+
     int new_child_id = tree_->GetId(child);
     new_child_ids.insert(new_child_id);
     if (tree_->IsIgnored(child))
@@ -692,6 +705,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
         LOG(ERROR) << error.str();
         Reset();
       }
+      tree_->ClearChildCache(node);
       return false;
     }
   }
@@ -750,9 +764,13 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // Iterate over the children, serialize them, and update the ClientTreeNode
   // data structure to reflect the new tree.
   std::vector<AXNodeID> actual_serialized_node_child_ids;
-  client_node->children.reserve(children.size());
-  for (size_t i = 0; i < children.size(); ++i) {
-    AXSourceNode& child = children[i];
+  client_node->children.reserve(actual_num_children);
+  for (size_t i = 0; i < num_children; ++i) {
+    AXSourceNode child = tree_->ChildAt(node, i);
+    if (!child) {
+      continue;
+    }
+
     int child_id = tree_->GetId(child);
 
     // Skip if the child isn't valid.
@@ -779,8 +797,10 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
       // Re-serialize it if the child is marked as invalid, otherwise
       // we don't have to because the client already has it.
       if (reused_child->invalid || ignored_state_changed) {
-        if (!SerializeChangedNodes(child, out_update))
+        if (!SerializeChangedNodes(child, out_update)) {
+          tree_->ClearChildCache(node);
           return false;
+        }
       }
     } else {
       ClientTreeNode* new_child = new ClientTreeNode();
@@ -810,13 +830,17 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
           LOG(ERROR) << error.str();
           Reset();
         }
+        tree_->ClearChildCache(node);
         return false;
       }
       client_id_map_[child_id] = new_child;
-      if (!SerializeChangedNodes(child, out_update))
+      if (!SerializeChangedNodes(child, out_update)) {
+        tree_->ClearChildCache(node);
         return false;
+      }
     }
   }
+  tree_->ClearChildCache(node);
 
   // Finally, update the child ids of this node to reflect the actual child
   // ids that were valid during serialization.

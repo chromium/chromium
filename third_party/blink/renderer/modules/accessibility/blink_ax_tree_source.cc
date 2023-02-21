@@ -286,51 +286,48 @@ int32_t BlinkAXTreeSource::GetId(AXObject* node) const {
   return node->AXObjectID();
 }
 
-void BlinkAXTreeSource::GetChildren(
-    AXObject* parent,
-    std::vector<AXObject*>* out_children) const {
-  if (ui::CanHaveInlineTextBoxChildren(parent->RoleValue()) &&
-      ShouldLoadInlineTextBoxes(parent)) {
-    parent->LoadInlineTextBoxes();
+size_t BlinkAXTreeSource::GetChildCount(AXObject* node) const {
+  if (ui::CanHaveInlineTextBoxChildren(node->RoleValue()) &&
+      ShouldLoadInlineTextBoxes(node)) {
+    node->LoadInlineTextBoxes();
   }
 
-  for (int i = 0; i < parent->ChildCountIncludingIgnored(); i++) {
-    AXObject* child = parent->ChildAtIncludingIgnored(i);
+  return node->ChildCountIncludingIgnored();
+}
 
-    // The child may be invalid due to issues in blink accessibility code.
-    if (!child || child->IsDetached()) {
-      NOTREACHED() << "Should not try to serialize an invalid child:"
-                   << "\nParent: " << parent->ToString(true).Utf8()
-                   << "\nChild: " << child->ToString(true).Utf8();
-      continue;
-    }
+AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
+  auto* child = node->ChildAtIncludingIgnored(static_cast<int>(index));
 
-    if (!child->AccessibilityIsIncludedInTree()) {
-      // TODO(https://crbug.com/1407396) resolve and restore to NOTREACHED().
-      DCHECK(false) << "Should not receive unincluded child."
-                    << "\nChild: " << child->ToString(true).Utf8()
-                    << "\nParent: " << parent->ToString(true).Utf8();
-      continue;
-    }
+  // The child may be invalid due to issues in blink accessibility code.
+  if (!child || child->IsDetached()) {
+    NOTREACHED() << "Should not try to serialize an invalid child:"
+                 << "\nParent: " << node->ToString(true).Utf8()
+                 << "\nChild: " << child->ToString(true).Utf8();
+    return nullptr;
+  }
+
+  if (!child->AccessibilityIsIncludedInTree()) {
+    // TODO(https://crbug.com/1407396) resolve and restore to NOTREACHED().
+    DCHECK(false) << "Should not receive unincluded child."
+                  << "\nChild: " << child->ToString(true).Utf8()
+                  << "\nParent: " << node->ToString(true).Utf8();
+    return nullptr;
+  }
+
+  // These should not be produced by Blink. They are only needed on Mac and
+  // handled in AXTableInfo on the browser side.
+  DCHECK_NE(child->RoleValue(), ax::mojom::blink::Role::kColumn);
+  DCHECK_NE(child->RoleValue(), ax::mojom::blink::Role::kTableHeaderContainer);
 
 #if DCHECK_IS_ON()
-    CheckParentUnignoredOf(parent, child);
+  CheckParentUnignoredOf(node, child);
 #endif
 
-    // These should not be produced by Blink. They are only needed on Mac and
-    // handled in AXTableInfo on the browser side.
-    DCHECK_NE(child->RoleValue(), ax::mojom::blink::Role::kColumn);
-    DCHECK_NE(child->RoleValue(),
-              ax::mojom::blink::Role::kTableHeaderContainer);
-
-    // If an optional exclude_offscreen flag is set (only intended to be
-    // used for a one-time snapshot of the accessibility tree), prune any
-    // node that's entirely offscreen from the tree.
-    if (exclude_offscreen_ && child->IsOffScreen())
-      continue;
-
-    out_children->push_back(child);
+  if (exclude_offscreen_ && child->IsOffScreen()) {
+    return nullptr;
   }
+
+  return child;
 }
 
 AXObject* BlinkAXTreeSource::GetParent(AXObject* node) const {
@@ -438,10 +435,16 @@ AXObject* BlinkAXTreeSource::GetPluginRoot() {
     }
 
     // Explore children of this object.
-    std::vector<AXObject*> children;
-    GetChildren(obj, &children);
-    for (auto* child : children)
+    CacheChildrenIfNeeded(obj);
+    auto num_children = GetChildCount(obj);
+    for (size_t i = 0; i < num_children; i++) {
+      auto* child = ChildAt(obj, i);
+      if (!child) {
+        continue;
+      }
       objs_to_explore.push_back(child);
+    }
+    ClearChildCache(obj);
   }
 
   return nullptr;

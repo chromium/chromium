@@ -47,8 +47,10 @@ class VIEWS_EXPORT AXTreeSourceViews
   AXAuraObjWrapper* GetRoot() const override;
   AXAuraObjWrapper* GetFromId(int32_t id) const override;
   int32_t GetId(AXAuraObjWrapper* node) const override;
-  void GetChildren(AXAuraObjWrapper* node,
-                   std::vector<AXAuraObjWrapper*>* out_children) const override;
+  void CacheChildrenIfNeeded(AXAuraObjWrapper*) override;
+  size_t GetChildCount(AXAuraObjWrapper* node) const override;
+  void ClearChildCache(AXAuraObjWrapper*) override;
+  AXAuraObjWrapper* ChildAt(AXAuraObjWrapper* node, size_t) const override;
   AXAuraObjWrapper* GetParent(AXAuraObjWrapper* node) const override;
   bool IsIgnored(AXAuraObjWrapper* node) const override;
   bool IsValid(AXAuraObjWrapper* node) const override;

@@ -178,9 +178,12 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
 
   // AXTreeSource:
   int32_t GetId(AccessibilityInfoDataWrapper* info_data) const override;
-  void GetChildren(
-      AccessibilityInfoDataWrapper* info_data,
-      std::vector<AccessibilityInfoDataWrapper*>* out_children) const override;
+  void CacheChildrenIfNeeded(AccessibilityInfoDataWrapper*) override;
+  size_t GetChildCount(AccessibilityInfoDataWrapper*) const override;
+  AccessibilityInfoDataWrapper* ChildAt(AccessibilityInfoDataWrapper*,
+                                        size_t) const override;
+  void ClearChildCache(AccessibilityInfoDataWrapper*) override;
+
   bool IsIgnored(AccessibilityInfoDataWrapper* info_data) const override;
   bool IsValid(AccessibilityInfoDataWrapper* info_data) const override;
   bool IsEqual(AccessibilityInfoDataWrapper* info_data1,
@@ -189,6 +192,10 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
 
   // AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;
+
+  void GetChildren(
+      AccessibilityInfoDataWrapper* info_data,
+      std::vector<AccessibilityInfoDataWrapper*>* out_children) const;
 
   // Maps an AccessibilityInfoDataWrapper ID to its tree data.
   std::map<int32_t, std::unique_ptr<AccessibilityInfoDataWrapper>> tree_map_;

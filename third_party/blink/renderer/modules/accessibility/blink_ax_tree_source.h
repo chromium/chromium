@@ -43,8 +43,10 @@ class MODULES_EXPORT BlinkAXTreeSource
   AXObject* GetRoot() const override;
   AXObject* GetFromId(int32_t id) const override;
   int32_t GetId(AXObject* node) const override;
-  void GetChildren(AXObject* node,
-                   std::vector<AXObject*>* out_children) const override;
+  void CacheChildrenIfNeeded(AXObject*) override {}
+  size_t GetChildCount(AXObject* node) const override;
+  AXObject* ChildAt(AXObject* node, size_t) const override;
+  void ClearChildCache(AXObject*) override {}
   AXObject* GetParent(AXObject* node) const override;
   void SerializeNode(AXObject* node, ui::AXNodeData* out_data) const override;
   bool IsIgnored(AXObject* node) const override;

@@ -20,6 +20,8 @@ AccessibilityInfoDataWrapper::AccessibilityInfoDataWrapper(
     AXTreeSourceArc* tree_source)
     : tree_source_(tree_source) {}
 
+AccessibilityInfoDataWrapper::~AccessibilityInfoDataWrapper() = default;
+
 void AccessibilityInfoDataWrapper::Serialize(ui::AXNodeData* out_data) const {
   out_data->id = GetId();
   PopulateAXRole(out_data);

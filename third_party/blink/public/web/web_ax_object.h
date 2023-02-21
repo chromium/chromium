@@ -114,7 +114,6 @@ class BLINK_EXPORT WebAXObject {
   bool IsInClientTree();
   void OnLoadInlineTextBoxes() const;
   bool ShouldLoadInlineTextBoxes() const;
-  void GetChildren(std::vector<WebAXObject>* out_children);
   void SetImageAsDataNodeId(const gfx::Size& max_size) const;
   int ImageDataNodeId() const;
 

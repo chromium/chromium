@@ -259,11 +259,15 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
   AXNode* GetRoot() const override { return tree_->root(); }
   AXNode* GetFromId(AXNodeID id) const override { return tree_->GetFromId(id); }
   AXNodeID GetId(const AXNode* node) const override { return node->id(); }
-  void GetChildren(const AXNode* node,
-                   std::vector<const AXNode*>* out_children) const override {
-    *out_children = std::vector<const AXNode*>(node->children().cbegin(),
-                                               node->children().cend());
+  void CacheChildrenIfNeeded(const AXNode*) override {}
+  size_t GetChildCount(const AXNode* node) const override {
+    return node->children().size();
   }
+  AXNode* ChildAt(const AXNode* node, size_t index) const override {
+    return node->children()[index];
+  }
+  void ClearChildCache(const AXNode*) override {}
+
   AXNode* GetParent(const AXNode* node) const override {
     return node->parent();
   }

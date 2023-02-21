@@ -103,17 +103,18 @@ TEST_F(AXTreeSourceAuraTest, Accessors) {
 
   // Grab the content view directly from cache to avoid walking down the tree.
   AXAuraObjWrapper* content = cache_.GetOrCreate(content_);
-  std::vector<AXAuraObjWrapper*> content_children;
-  ax_tree.GetChildren(content, &content_children);
-  ASSERT_EQ(1U, content_children.size());
+  ax_tree.CacheChildrenIfNeeded(content);
+  ASSERT_EQ(1U, ax_tree.GetChildCount(content));
 
   // Walk down to the text field and assert it is what we expect.
-  AXAuraObjWrapper* textfield = content_children[0];
+  AXAuraObjWrapper* textfield = ax_tree.ChildAt(content, 0);
   AXAuraObjWrapper* cached_textfield = cache_.GetOrCreate(textfield_);
   ASSERT_EQ(cached_textfield, textfield);
-  std::vector<AXAuraObjWrapper*> textfield_children;
-  ax_tree.GetChildren(textfield, &textfield_children);
-  ASSERT_EQ(0u, textfield_children.size());
+  ax_tree.CacheChildrenIfNeeded(textfield);
+  ASSERT_EQ(0u, ax_tree.GetChildCount(textfield));
+  ax_tree.ClearChildCache(textfield);
+
+  ax_tree.ClearChildCache(content);
 
   ASSERT_EQ(content, textfield->GetParent());
 

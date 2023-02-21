@@ -46,9 +46,10 @@ class AXTreeSource {
   // tree sources.
   virtual AXNodeID GetId(AXNodeSource node) const = 0;
 
-  // Append all children of |node| to |out_children|.
-  virtual void GetChildren(AXNodeSource node,
-                           std::vector<AXNodeSource>* out_children) const = 0;
+  virtual void CacheChildrenIfNeeded(AXNodeSource) = 0;
+  virtual size_t GetChildCount(AXNodeSource) const = 0;
+  virtual AXNodeSource ChildAt(AXNodeSource, size_t) const = 0;
+  virtual void ClearChildCache(AXNodeSource) = 0;
 
   // Get the parent of |node|.
   virtual AXNodeSource GetParent(AXNodeSource node) const = 0;

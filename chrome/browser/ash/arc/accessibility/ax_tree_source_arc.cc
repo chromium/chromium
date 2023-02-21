@@ -549,6 +549,62 @@ int32_t AXTreeSourceArc::GetId(AccessibilityInfoDataWrapper* info_data) const {
   return info_data->GetId();
 }
 
+void AXTreeSourceArc::CacheChildrenIfNeeded(
+    AccessibilityInfoDataWrapper* info_data) {
+  if (!info_data->cached_children_) {
+    info_data->cached_children_.emplace();
+  }
+  GetChildren(info_data, &(*info_data->cached_children_));
+}
+
+size_t AXTreeSourceArc::GetChildCount(
+    AccessibilityInfoDataWrapper* info_data) const {
+  if (!info_data) {
+    return 0;
+  }
+  DCHECK(info_data->cached_children_);
+  return info_data->cached_children_->size();
+}
+
+AccessibilityInfoDataWrapper* AXTreeSourceArc::ChildAt(
+    AccessibilityInfoDataWrapper* info_data,
+    size_t i) const {
+  DCHECK(info_data->cached_children_);
+  DCHECK(i >= 0 && i < info_data->cached_children_->size());
+  return (*info_data->cached_children_)[i];
+}
+
+// We don't need to handle cache clearing here, because each
+// AccessibilityInfoDataWrapper is created during
+// AXTreeSourceArc::NotifyAccessibilityEvent(), and destructed at the end of it
+// that method.
+void AXTreeSourceArc::ClearChildCache(AccessibilityInfoDataWrapper* info_data) {
+}
+
+bool AXTreeSourceArc::IsIgnored(AccessibilityInfoDataWrapper* info_data) const {
+  return false;
+}
+
+bool AXTreeSourceArc::IsValid(AccessibilityInfoDataWrapper* info_data) const {
+  return info_data;
+}
+
+bool AXTreeSourceArc::IsEqual(AccessibilityInfoDataWrapper* info_data1,
+                              AccessibilityInfoDataWrapper* info_data2) const {
+  if (!info_data1 || !info_data2) {
+    return false;
+  }
+  return info_data1->GetId() == info_data2->GetId();
+}
+
+AccessibilityInfoDataWrapper* AXTreeSourceArc::GetNull() const {
+  return nullptr;
+}
+
+void AXTreeSourceArc::PerformAction(const ui::AXActionData& data) {
+  delegate_->OnAction(data);
+}
+
 void AXTreeSourceArc::GetChildren(
     AccessibilityInfoDataWrapper* info_data,
     std::vector<AccessibilityInfoDataWrapper*>* out_children) const {
@@ -601,29 +657,6 @@ void AXTreeSourceArc::GetChildren(
       std::swap(out_children->at(j), out_children->at(j + 1));
     }
   }
-}
-
-bool AXTreeSourceArc::IsIgnored(AccessibilityInfoDataWrapper* info_data) const {
-  return false;
-}
-
-bool AXTreeSourceArc::IsValid(AccessibilityInfoDataWrapper* info_data) const {
-  return info_data;
-}
-
-bool AXTreeSourceArc::IsEqual(AccessibilityInfoDataWrapper* info_data1,
-                              AccessibilityInfoDataWrapper* info_data2) const {
-  if (!info_data1 || !info_data2)
-    return false;
-  return info_data1->GetId() == info_data2->GetId();
-}
-
-AccessibilityInfoDataWrapper* AXTreeSourceArc::GetNull() const {
-  return nullptr;
-}
-
-void AXTreeSourceArc::PerformAction(const ui::AXActionData& data) {
-  delegate_->OnAction(data);
 }
 
 }  // namespace arc

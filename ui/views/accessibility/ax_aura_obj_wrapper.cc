@@ -9,6 +9,8 @@ namespace views {
 AXAuraObjWrapper::AXAuraObjWrapper(AXAuraObjCache* cache)
     : aura_obj_cache_(cache) {}
 
+AXAuraObjWrapper::~AXAuraObjWrapper() = default;
+
 bool AXAuraObjWrapper::HandleAccessibleAction(const ui::AXActionData& action) {
   return false;
 }

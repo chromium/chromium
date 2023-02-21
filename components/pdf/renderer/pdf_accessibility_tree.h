@@ -104,8 +104,10 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   ui::AXNode* GetRoot() const override;
   ui::AXNode* GetFromId(int32_t id) const override;
   int32_t GetId(const ui::AXNode* node) const override;
-  void GetChildren(const ui::AXNode* node,
-                   std::vector<const ui::AXNode*>* out_children) const override;
+  void CacheChildrenIfNeeded(const ui::AXNode*) override {}
+  size_t GetChildCount(const ui::AXNode*) const override;
+  const ui::AXNode* ChildAt(const ui::AXNode* node, size_t) const override;
+  void ClearChildCache(const ui::AXNode*) override {}
   ui::AXNode* GetParent(const ui::AXNode* node) const override;
   bool IsIgnored(const ui::AXNode* node) const override;
   bool IsValid(const ui::AXNode* node) const override;

@@ -736,13 +736,15 @@ class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
   int32_t GetId(const ui::AXNode* node) const override {
     return root_node_->data().id;
   }
-  void GetChildren(
-      const ui::AXNode* node,
-      std::vector<const ui::AXNode*>* out_children) const override {
-    DCHECK(node);
-    *out_children = std::vector<const ui::AXNode*>(node->children().cbegin(),
-                                                   node->children().cend());
+  void CacheChildrenIfNeeded(const ui::AXNode*) override {}
+  size_t GetChildCount(const ui::AXNode* node) const override {
+    return node->children().size();
   }
+  const ui::AXNode* ChildAt(const ui::AXNode* node,
+                            size_t index) const override {
+    return node->children()[index];
+  }
+  void ClearChildCache(const ui::AXNode*) override {}
   ui::AXNode* GetParent(const ui::AXNode* node) const override {
     return nullptr;
   }

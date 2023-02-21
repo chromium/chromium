@@ -249,17 +249,6 @@ bool WebAXObject::ShouldLoadInlineTextBoxes() const {
   return private_->AXObjectCache().ShouldLoadInlineTextBoxes(*private_);
 }
 
-BLINK_EXPORT void WebAXObject::GetChildren(
-    std::vector<WebAXObject>* out_children) {
-  if (IsDetached())
-    return;
-  std::vector<AXObject*> children;
-  private_->AXObjectCache().GetChildren(*private_, &children);
-  for (auto* child : children) {
-    out_children->push_back(WebAXObject(child));
-  }
-}
-
 BLINK_EXPORT void WebAXObject::SetImageAsDataNodeId(
     const gfx::Size& max_size) const {
   if (IsDetached())
