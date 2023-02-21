@@ -53,7 +53,7 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
  public:
   explicit MemoryCacheEntry(Resource* resource) {
     if (recordreplay::IsRecordingOrReplaying("leak-references")) {
-      leaked_resource_ = resource;
+      strong_resource_ = resource;
     } else {
       resource_ = resource;
     }
@@ -62,7 +62,7 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
   void Trace(Visitor*) const;
   Resource* GetResource() const { 
     if (recordreplay::IsRecordingOrReplaying("leak-references")) {
-      return leaked_resource_; 
+      return strong_resource_; 
     } else {
       return resource_; 
     }
@@ -74,9 +74,9 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
   // We use UntracedMember<> here to do custom weak processing.
   UntracedMember<Resource> resource_;
   
-  // Replay uses Member<> here to leak resources to avoid non-deterministic
+  // Replay uses Member<> here to maintain a strong ref to avoid non-deterministic
   // GC of resources.
-  Member<Resource> leaked_resource_;
+  Member<Resource> strong_resource_;
 };
 
 // This cache holds subresources used by Web pages: images, scripts,

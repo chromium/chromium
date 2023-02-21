@@ -60,7 +60,7 @@ MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache* cache) {
 void MemoryCacheEntry::Trace(Visitor* visitor) const {
   // Don't bother to register for tracing events if we're instrumented.
   if (recordreplay::IsRecordingOrReplaying("leak-references")) {
-    visitor->Trace(leaked_resource_);
+    visitor->Trace(strong_resource_);
   } else {
     visitor->template RegisterWeakCallbackMethod<
         MemoryCacheEntry, &MemoryCacheEntry::ClearResourceWeak>(this);
