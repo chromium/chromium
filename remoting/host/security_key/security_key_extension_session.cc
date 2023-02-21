@@ -95,26 +95,24 @@ bool SecurityKeyExtensionSession::OnExtensionMessage(
     return false;
   }
 
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(message.data());
+  absl::optional<base::Value> value = base::JSONReader::Read(message.data());
   if (!value || !value->is_dict()) {
     LOG(WARNING) << "Failed to retrieve data from gnubby-auth message.";
     return true;
   }
 
-  std::string* maybe_type = value->FindStringKey(kMessageType);
-  if (!maybe_type) {
+  const base::Value::Dict& client_message = value->GetDict();
+  const std::string* type = client_message.FindString(kMessageType);
+  if (!type) {
     LOG(WARNING) << "Invalid gnubby-auth message format.";
     return true;
   }
-  std::string type = *maybe_type;
 
-  base::Value::Dict client_message = std::move(*value).TakeDict();
-  if (type == kControlMessage) {
+  if (*type == kControlMessage) {
     ProcessControlMessage(client_message);
-  } else if (type == kDataMessage) {
+  } else if (*type == kDataMessage) {
     ProcessDataMessage(client_message);
-  } else if (type == kErrorMessage) {
+  } else if (*type == kErrorMessage) {
     ProcessErrorMessage(client_message);
   } else {
     VLOG(2) << "Unknown gnubby-auth message type: " << type;

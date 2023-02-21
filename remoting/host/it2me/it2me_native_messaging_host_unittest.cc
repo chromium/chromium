@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
@@ -83,9 +84,8 @@ base::Value::Dict CreateConnectMessage(int id) {
   connect_message.Set(kAuthServiceWithToken, "oauth2:sometoken");
   connect_message.Set(
       kIceConfig,
-      base::Value::FromUniquePtrValue(base::JSONReader::ReadDeprecated(
-          "{ \"iceServers\": [ { \"urls\": [ \"stun:" +
-          std::string(kTestStunServer) + "\" ] } ] }")));
+      base::test::ParseJsonDict("{ \"iceServers\": [ { \"urls\": [ \"stun:" +
+                                std::string(kTestStunServer) + "\" ] } ] }"));
 
   return connect_message;
 }
@@ -364,8 +364,7 @@ It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
       return absl::nullopt;
     }
 
-    std::unique_ptr<base::Value> message =
-        base::JSONReader::ReadDeprecated(message_json);
+    absl::optional<base::Value> message = base::JSONReader::Read(message_json);
     if (!message || !message->is_dict()) {
       LOG(ERROR) << "Malformed message:" << message_json;
       return absl::nullopt;
