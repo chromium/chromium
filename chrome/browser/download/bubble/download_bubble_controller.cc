@@ -36,6 +36,10 @@ using DownloadCreationType = ::download::DownloadItem::DownloadCreationType;
 namespace {
 constexpr int kShowDownloadsInBubbleForNumDays = 1;
 constexpr int kMaxDownloadsToShow = 100;
+// Don't show the partial view more than once per 15 seconds, as this pops up
+// automatically and may be annoying to the user. The time is reset when the
+// user clicks on the button to open the main view.
+constexpr base::TimeDelta kShowPartialViewMinInterval = base::Seconds(15);
 
 bool FindOfflineItemByContentId(const ContentId& to_find,
                                 const OfflineItem& candidate) {
@@ -375,7 +379,12 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetMainView() {
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
-  last_partial_view_shown_time_ = absl::make_optional(base::Time::Now());
+  base::Time now = base::Time::Now();
+  if (last_partial_view_shown_time_.has_value() &&
+      now - *last_partial_view_shown_time_ < kShowPartialViewMinInterval) {
+    return {};
+  }
+  last_partial_view_shown_time_ = absl::make_optional(now);
   std::vector<DownloadUIModelPtr> list =
       GetDownloadUIModels(/*is_main_view=*/false);
   base::UmaHistogramCounts100("Download.Bubble.PartialViewSize", list.size());

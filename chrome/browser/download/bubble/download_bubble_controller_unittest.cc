@@ -387,6 +387,45 @@ TEST_F(DownloadBubbleUIControllerTest,
   EXPECT_EQ(second_controller().GetPartialView().size(), 0ul);
 }
 
+// Tests that no items are returned (i.e. no partial view will be shown) if it
+// is too soon since the last partial view has been shown.
+TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
+  std::vector<std::string> ids = {"Download 1", "Download 2", "Download 3",
+                                  "Download 4"};
+
+  // First time showing the partial view should work.
+  EXPECT_CALL(display_controller(), OnNewItem(true, true)).Times(1);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar1.pdf"),
+                   download::DownloadItem::IN_PROGRESS, ids[0]);
+  EXPECT_EQ(controller().GetPartialView().size(), 1u);
+
+  // No items are returned for a partial view because it is too soon.
+  task_environment_.FastForwardBy(base::Seconds(14));
+  EXPECT_CALL(display_controller(), OnNewItem(false, true)).Times(1);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
+                   download::DownloadItem::COMPLETE, ids[1]);
+  EXPECT_EQ(controller().GetPartialView().size(), 0u);
+
+  // Partial view can now be shown, and contains all the items.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_CALL(display_controller(), OnNewItem(false, true)).Times(1);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar3.pdf"),
+                   download::DownloadItem::COMPLETE, ids[1]);
+  EXPECT_EQ(controller().GetPartialView().size(), 3u);
+
+  // Showing the main view even before time is up should still work.
+  task_environment_.FastForwardBy(base::Seconds(14));
+  EXPECT_EQ(controller().GetPartialView().size(), 0u);
+  EXPECT_EQ(controller().GetMainView().size(), 3u);
+
+  // Main view resets the partial view time, so the partial view can now be
+  // shown.
+  EXPECT_CALL(display_controller(), OnNewItem(true, true)).Times(1);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar4.pdf"),
+                   download::DownloadItem::IN_PROGRESS, ids[3]);
+  EXPECT_EQ(controller().GetPartialView().size(), 1u);
+}
+
 class DownloadBubbleUIControllerIncognitoTest
     : public DownloadBubbleUIControllerTest {
  public:
