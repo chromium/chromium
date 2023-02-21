@@ -2478,6 +2478,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE" desc="In Device Settings, the title of the slider under the input section in audio settings subpage. This slider controls the microphone's gain setting." translateable="false">
     Gain
   </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED" desc="In Device Settings, the aria label for the input mute button when not muted." translateable="false">
+    Toggle mic. Mic is on, toggling will mute input.
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the input mute button when muted." translateable="false">
+    Toggle mic. Mic is muted.
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED_BY_HARDWARE_SWITCH" desc="In Device Settings, the aria label for the input mute button when microphone mute switch is turned on." translateable="false">
+    Device's microphone button is turned off.
+  </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE" desc="In Device Settings, the title of the noise cancellation toggle under the input section in audio settings subpage." translateable="false">
     Noise Cancellation
   </message>
@@ -2519,6 +2528,12 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_AUDIO_MUTED_EXTERNALLY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by hardware/switch." translateable="false">
     Muted by hardware/switch
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED" desc="In Device Settings, the aria label for the output mute button when not muted." translateable="false">
+    Toggle volume. Volume is on, toggling will mute audio.
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the output mute button when not muted." translateable="false">
+    Toggle volume. Volume is muted.
   </message>
 
   <!-- Device pointer page (OS settings) -->

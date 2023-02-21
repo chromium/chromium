@@ -339,6 +339,25 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         return '';
     }
   }
+
+  /** Returns the appropriate aria-label for input mute button. */
+  protected getInputMuteButtonAriaLabel(): string {
+    if (this.audioSystemProperties_.inputMuteState ===
+        MuteState.kMutedExternally) {
+      return this.i18n('audioInputMuteButtonAriaLabelMutedByHardwareSwitch');
+    }
+
+    return this.isInputMuted_ ?
+        this.i18n('audioInputMuteButtonAriaLabelMuted') :
+        this.i18n('audioInputMuteButtonAriaLabelNotMuted');
+  }
+
+  /** Returns the appropriate aria-label for output mute button. */
+  protected getOutputMuteButtonAriaLabel(): string {
+    return this.isOutputMuted_ ?
+        this.i18n('audioOutputMuteButtonAriaLabelMuted') :
+        this.i18n('audioOutputMuteButtonAriaLabelNotMuted');
+  }
 }
 
 declare global {

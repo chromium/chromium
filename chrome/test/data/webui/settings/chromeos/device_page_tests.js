@@ -1469,6 +1469,67 @@ suite('SettingsDevicePage', function() {
           loadTimeData.getString('audioMutedExternallyTooltip'),
           inputMuteTooltip.textContent.trim());
     });
+
+    test(
+        'mute state updates button aria-description and aria-pressed',
+        async function() {
+          const outputMuteButton =
+              audioPage.shadowRoot.querySelector('#audioOutputMuteButton');
+          const inputMuteButton =
+              audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
+
+          // Default state should be unmuted so show the toggle mute tooltip.
+          assertEquals(
+              loadTimeData.getString('audioOutputMuteButtonAriaLabelNotMuted'),
+              outputMuteButton.ariaDescription.trim());
+          assertEquals(
+              loadTimeData.getString('audioInputMuteButtonAriaLabelNotMuted'),
+              inputMuteButton.ariaDescription.trim());
+          const ariaNotPressedValue = 'false';
+          assertEquals(ariaNotPressedValue, outputMuteButton.ariaPressed);
+          assertEquals(ariaNotPressedValue, inputMuteButton.ariaPressed);
+
+          // Test muted by user case.
+          crosAudioConfig.setAudioSystemProperties(
+              mutedByUserFakeAudioSystemProperties);
+          await flushTasks();
+          assertEquals(
+              loadTimeData.getString('audioOutputMuteButtonAriaLabelMuted'),
+              outputMuteButton.ariaDescription.trim());
+          assertEquals(
+              loadTimeData.getString('audioInputMuteButtonAriaLabelMuted'),
+              inputMuteButton.ariaDescription.trim());
+          const ariaPressedValue = 'true';
+          assertEquals(ariaPressedValue, outputMuteButton.ariaPressed);
+          assertEquals(ariaPressedValue, inputMuteButton.ariaPressed);
+
+          // Test muted by policy case.
+          crosAudioConfig.setAudioSystemProperties(
+              mutedByPolicyFakeAudioSystemProperties);
+          await flushTasks();
+          assertEquals(
+              loadTimeData.getString('audioOutputMuteButtonAriaLabelMuted'),
+              outputMuteButton.ariaDescription.trim());
+          assertEquals(
+              loadTimeData.getString('audioInputMuteButtonAriaLabelMuted'),
+              inputMuteButton.ariaDescription.trim());
+          assertEquals(ariaPressedValue, outputMuteButton.ariaPressed);
+          assertEquals(ariaPressedValue, inputMuteButton.ariaPressed);
+
+          // Test muted externally case.
+          crosAudioConfig.setAudioSystemProperties(
+              mutedExternallyFakeAudioSystemProperties);
+          await flushTasks();
+          assertEquals(
+              loadTimeData.getString('audioOutputMuteButtonAriaLabelMuted'),
+              outputMuteButton.ariaDescription.trim());
+          assertEquals(
+              loadTimeData.getString(
+                  'audioInputMuteButtonAriaLabelMutedByHardwareSwitch'),
+              inputMuteButton.ariaDescription.trim());
+          assertEquals(ariaPressedValue, outputMuteButton.ariaPressed);
+          assertEquals(ariaPressedValue, inputMuteButton.ariaPressed);
+        });
   });
 
   suite(assert(TestNames.PerDeviceMouse), function() {

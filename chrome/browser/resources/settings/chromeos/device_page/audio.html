@@ -107,9 +107,14 @@
               on-click="onOutputMuteButtonClicked"
               disabled="[[isOutputMutedByPolicy_(
                   audioSystemProperties_.outputMuteState
-                )]]">
+                )]]"
+              aria-description="[[getOutputMuteButtonAriaLabel(
+                  isOutputMuted_
+                )]]"
+              aria-labelledby="audioOutputVolumeLabel"
+              aria-pressed="[[isOutputMuted_]]">
           </cr-icon-button>
-          <paper-tooltip id="audioOutputMuteButtonTooltip"
+          <paper-tooltip id="audioOutputMuteButtonTooltip" aria-hidden="true"
               for="audioOutputMuteButton">
             [[getMuteTooltip_(audioSystemProperties_.outputMuteState)]]
           </paper-tooltip>
@@ -159,9 +164,15 @@
               iron-icon="[[getInputIcon_(isInputMuted_)]]"
               on-click="onInputMuteClicked"
               class="audio-mute-button"
-              disabled="[[shouldDisableInputGainControls(isInputMuted_)]]">
+              disabled="[[shouldDisableInputGainControls(isInputMuted_)]]"
+              aria-description$="[[getInputMuteButtonAriaLabel(
+                  audioSystemProperties_.inputMuteState,
+                  isInputMuted_
+                )]]"
+              aria-labelledby="audioInputGainLabel"
+              aria-pressed="[[isInputMuted_]]">
           </cr-icon-button>
-          <paper-tooltip id="audioInputMuteButtonTooltip"
+          <paper-tooltip id="audioInputMuteButtonTooltip" aria-hidden="true"
               for="audioInputGainMuteButton">
             [[getMuteTooltip_(audioSystemProperties_.inputMuteState)]]
           </paper-tooltip>
