@@ -1759,5 +1759,9 @@ BASE_FEATURE(kWebRtcStatsReportIdl,
              "WebRtcStatsReportIdl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
+             "QuoteEmptySecChUaStringHeadersConsistently",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

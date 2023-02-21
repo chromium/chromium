@@ -992,6 +992,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kMaxFCPDelayMsForRenderBlockingFonts;
 
+// Whether Sec-CH-UA headers on subresource fetches that contain an empty
+// string should be quoted (`""`) as they are for navigation fetches. See
+// https://crbug.com/1416925.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kQuoteEmptySecChUaStringHeadersConsistently);
+
 }  // namespace features
 }  // namespace blink
 
