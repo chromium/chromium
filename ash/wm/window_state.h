@@ -100,6 +100,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     // Cross fade animation. Copies old layer, and fades it out while fading the
     // new layer in.
     kCrossFade,
+    // Custom cross fade animations when floating/unfloating a window.
+    kCrossFadeFloat,
+    kCrossFadeUnfloat,
     // Bounds animation.
     kAnimate,
     // Bounds animation with zero tween. Updates the bounds once at the end of

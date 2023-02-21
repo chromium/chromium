@@ -221,6 +221,10 @@ void TabletModeWindowState::UpdateWindowPosition(
     case WindowState::BoundsChangeAnimationType::kAnimate:
       window_state->SetBoundsDirectAnimated(bounds_in_parent);
       break;
+    // `UpdateWindowPosition` is used to update already floated window bounds
+    // during drag/tuck, so we use regular crossfade window animations.
+    case WindowState::BoundsChangeAnimationType::kCrossFadeFloat:
+    case WindowState::BoundsChangeAnimationType::kCrossFadeUnfloat:
     case WindowState::BoundsChangeAnimationType::kAnimateZero:
       NOTREACHED();
       break;

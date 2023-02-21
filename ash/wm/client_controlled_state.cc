@@ -201,6 +201,12 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
           case WindowState::BoundsChangeAnimationType::kCrossFade:
             window_state->SetBoundsDirectCrossFade(bounds);
             break;
+          case WindowState::BoundsChangeAnimationType::kCrossFadeFloat:
+            window_state->SetBoundsDirectCrossFade(bounds, true);
+            break;
+          case WindowState::BoundsChangeAnimationType::kCrossFadeUnfloat:
+            window_state->SetBoundsDirectCrossFade(bounds, false);
+            break;
           case WindowState::BoundsChangeAnimationType::kAnimate:
             window_state->SetBoundsDirectAnimated(
                 bounds, bounds_change_animation_duration_);
