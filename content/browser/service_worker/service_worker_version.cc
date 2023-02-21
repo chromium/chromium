@@ -209,6 +209,7 @@ const char* FetchHandlerTypeToSuffix(
 // This function merges SHA256 checksum hash strings in
 // ServiceWokrerResourceRecord and return a single hash string.
 absl::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
+    const GURL& main_script_url,
     const ServiceWorkerScriptCacheMap& script_cache_map) {
   const std::unique_ptr<crypto::SecureHash> checksum =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
@@ -240,8 +241,12 @@ absl::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
 
   uint8_t result[crypto::kSHA256Length];
   checksum->Finish(result, crypto::kSHA256Length);
+  const std::string encoded = base::HexEncode(result);
 
-  return base::HexEncode(result);
+  DVLOG(3) << "Updated ServiceWorker script checksum. script_url:"
+           << main_script_url.spec() << ", checksum:" << encoded;
+
+  return encoded;
 }
 
 }  // namespace
@@ -1340,7 +1345,7 @@ void ServiceWorkerVersion::OnStarted(
   // with the script newly added/updated in |script_cache_map_|.
   if (!sha256_script_checksum_) {
     sha256_script_checksum_ =
-        MergeResourceRecordSHA256ScriptChecksum(script_cache_map_);
+        MergeResourceRecordSHA256ScriptChecksum(script_url_, script_cache_map_);
   }
 
   // Fire all start callbacks.
@@ -2726,6 +2731,6 @@ void ServiceWorkerVersion::SetResources(
   DCHECK(!sha256_script_checksum_);
   script_cache_map_.SetResources(resources);
   sha256_script_checksum_ =
-      MergeResourceRecordSHA256ScriptChecksum(script_cache_map_);
+      MergeResourceRecordSHA256ScriptChecksum(script_url_, script_cache_map_);
 }
 }  // namespace content
