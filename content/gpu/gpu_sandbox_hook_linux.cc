@@ -282,8 +282,11 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       // To support threads in mesa we use --gpu-sandbox-start-early and
       // that requires the following libs and files to be accessible.
       "/usr/lib64/libEGL.so.1", "/usr/lib64/libGLESv2.so.2",
-      "/usr/lib64/libglapi.so.0", "/usr/lib64/dri/i965_dri.so",
-      "/usr/lib64/dri/iris_dri.so",
+      "/usr/lib64/libelf.so.1", "/usr/lib64/libglapi.so.0",
+      "/usr/lib64/libdrm_amdgpu.so.1", "/usr/lib64/libdrm_radeon.so.1",
+      "/usr/lib64/libdrm_nouveau.so.2", "/usr/lib64/dri/crocus_dri.so",
+      "/usr/lib64/dri/i965_dri.so", "/usr/lib64/dri/iris_dri.so",
+      "/usr/lib64/dri/swrast_dri.so",
       // Allow libglvnd files and libs.
       "/usr/share/glvnd/egl_vendor.d",
       "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
