@@ -51,16 +51,6 @@ using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 
 constexpr double kRelevanceThreshold = 0.64;
 
-// TODO(b/263994165): Replace with actual icon before feature is released.
-// This is currently blocked by b/267948410, to manually load the settings and
-// diagnostics icons in search.
-gfx::ImageSkia GetTestIcon() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(50, 50);
-  bitmap.eraseColor(SK_ColorYELLOW);
-  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-}
-
 }  // namespace
 
 SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
@@ -270,8 +260,9 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(TelemetryInfoPtr info_ptr) {
           100));
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
-      profile_, last_query_, /*url_path=*/"", GetTestIcon(), relevance_, title,
-      description, SystemInfoAnswerResult::AnswerCardDisplayType::kTextCard,
+      profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
+      title, description,
+      SystemInfoAnswerResult::AnswerCardDisplayType::kTextCard,
       SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics));
   SwapResults(&new_results);
 }
@@ -351,7 +342,7 @@ void SystemInfoCardProvider::UpdateChromeOsVersion() {
       l10n_util::GetStringUTF16(IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
-      profile_, last_query_, kAboutChromeOsSectionPath, GetTestIcon(),
+      profile_, last_query_, kAboutChromeOsSectionPath, os_settings_icon_,
       relevance_, version_string, description,
       SystemInfoAnswerResult::AnswerCardDisplayType::kTextCard,
       SystemInfoAnswerResult::SystemInfoCategory::kSettings));
