@@ -89,3 +89,34 @@ source_set("constants") {
 
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "price_notifications_table_view_controller_unittest.mm" ]
+  deps = [
+    ":price_notifications_ui",
+    ":test_support",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/price_notifications/cells",
+    "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "test_price_notifications_mutator.h",
+    "test_price_notifications_mutator.mm",
+  ]
+
+  deps = [
+    ":price_notifications_ui",
+    "//base",
+  ]
+}
