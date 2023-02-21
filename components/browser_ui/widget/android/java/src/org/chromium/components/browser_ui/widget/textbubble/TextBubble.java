@@ -540,7 +540,15 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      */
     private void setText(TextView view) {
         view.setText(mIsAccessibilityEnabled ? mAccessibilityString : mString);
-        if (mInverseColor) {
+        updateTextStyle(view, mInverseColor);
+    }
+
+    /**
+     * @param isInverse Whether the color scheme is inversed or not.
+     * @param view The {@link TextView} to update the style for.
+     */
+    protected void updateTextStyle(TextView view, boolean isInverse) {
+        if (isInverse) {
             ApiCompatibilityUtils.setTextAppearance(
                     view, R.style.TextAppearance_TextMediumThick_Accent1);
         }

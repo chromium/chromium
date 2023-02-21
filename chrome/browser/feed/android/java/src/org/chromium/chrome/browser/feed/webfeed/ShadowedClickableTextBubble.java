@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.feed.webfeed;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.LoadingView;
@@ -96,6 +98,16 @@ public class ShadowedClickableTextBubble extends TextBubble {
         Drawable background = ResourcesCompat.getDrawable(
                 context.getResources(), R.drawable.follow_accelerator_shadow, null);
         return background;
+    }
+
+    @Override
+    protected void updateTextStyle(TextView view, boolean isInverse) {
+        if (isInverse) {
+            ApiCompatibilityUtils.setTextAppearance(
+                    view, R.style.TextAppearance_ClickableButtonInverse);
+        } else {
+            ApiCompatibilityUtils.setTextAppearance(view, R.style.TextAppearance_ClickableButton);
+        }
     }
 
     /**
