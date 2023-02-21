@@ -43,16 +43,22 @@ DEFINE_PROTO_FUZZER(
     maybe_storage_key =
         blink::StorageKey::Deserialize(storage_key_fuzzer.deserialize());
     if (maybe_storage_key) {
-      assert(maybe_storage_key->Serialize() ==
-             storage_key_fuzzer.deserialize());
+      // We need to force enable third-party partitioning before serializing
+      // to ensure no information is lost due to partitioning being disabled.
+      assert(
+          maybe_storage_key->CopyWithForceEnabledThirdPartyStoragePartitioning()
+              .Serialize() == storage_key_fuzzer.deserialize());
     }
 
     // LocalStorage deserialization test.
     maybe_storage_key = blink::StorageKey::DeserializeForLocalStorage(
         storage_key_fuzzer.deserialize());
     if (maybe_storage_key) {
-      assert(maybe_storage_key->SerializeForLocalStorage() ==
-             storage_key_fuzzer.deserialize());
+      // We need to force enable third-party partitioning before serializing
+      // to ensure no information is lost due to partitioning being disabled.
+      assert(
+          maybe_storage_key->CopyWithForceEnabledThirdPartyStoragePartitioning()
+              .SerializeForLocalStorage() == storage_key_fuzzer.deserialize());
     }
   }
 }
