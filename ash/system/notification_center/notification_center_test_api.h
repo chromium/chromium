@@ -10,6 +10,7 @@
 
 #include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -65,9 +66,8 @@ class NotificationCenterTestApi {
       const GURL& url = GURL(),
       const message_center::NotifierId& notifier_id =
           message_center::NotifierId(),
-      const message_center::NotificationPriority =
-          message_center::NotificationPriority::DEFAULT_PRIORITY,
-      const bool pinned = false);
+      const message_center::RichNotificationData& optional_fields =
+          message_center::RichNotificationData());
 
   // Adds a notification and returns the associated id.
   std::string AddNotification();
@@ -168,7 +168,8 @@ class NotificationCenterTestApi {
       const ui::ImageModel& icon,
       const std::u16string& display_source,
       const GURL& url,
-      const message_center::NotifierId& notifier_id);
+      const message_center::NotifierId& notifier_id,
+      const message_center::RichNotificationData& optional_fields);
 
   int notification_id_ = 0;
   NotificationCenterTray* const notification_center_tray_;

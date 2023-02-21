@@ -25,6 +25,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/message_center/views/message_popup_view.h"
@@ -72,14 +73,13 @@ std::string NotificationCenterTestApi::AddCustomNotification(
     const std::u16string& display_source,
     const GURL& url,
     const message_center::NotifierId& notifier_id,
-    const message_center::NotificationPriority priority,
-    const bool pinned) {
+    const message_center::RichNotificationData& optional_fields) {
   const std::string id = GenerateNotificationId();
 
-  auto notification = CreateNotification(id, title, message, icon,
-                                         display_source, url, notifier_id);
-  notification->set_priority(priority);
-  notification->set_pinned(pinned);
+  auto notification =
+      CreateNotification(id, title, message, icon, display_source, url,
+                         notifier_id, optional_fields);
+
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
   return id;
@@ -97,28 +97,31 @@ std::string NotificationCenterTestApi::AddNotificationWithSourceUrl(
   GURL gurl = GURL(url);
   message_center::MessageCenter::Get()->AddNotification(CreateNotification(
       id, u"test_title", u"test_message", ui::ImageModel(),
-      base::EmptyString16(), gurl, message_center::NotifierId(gurl)));
+      base::EmptyString16(), gurl, message_center::NotifierId(gurl),
+      message_center::RichNotificationData()));
 
   return id;
 }
 
 std::string NotificationCenterTestApi::AddPinnedNotification() {
+  message_center::RichNotificationData optional_fields;
+  optional_fields.pinned = true;
   return AddCustomNotification(
       /*title=*/u"test_title",
       /*message=*/u"test_message", ui::ImageModel(), base::EmptyString16(),
-      GURL(), message_center::NotifierId(),
-      message_center::NotificationPriority::DEFAULT_PRIORITY, /*pinned=*/true);
+      GURL(), message_center::NotifierId(), optional_fields);
 }
 
 std::string NotificationCenterTestApi::AddSystemNotification() {
   message_center::NotifierId notifier_id;
   notifier_id.type = message_center::NotifierType::SYSTEM_COMPONENT;
-
+  message_center::RichNotificationData optional_fields;
+  optional_fields.priority =
+      message_center::NotificationPriority::SYSTEM_PRIORITY;
   return AddCustomNotification(
       /*title=*/u"test_title",
       /*message=*/u"test_message", ui::ImageModel(), base::EmptyString16(),
-      GURL(), notifier_id,
-      message_center::NotificationPriority::SYSTEM_PRIORITY);
+      GURL(), notifier_id, optional_fields);
 }
 
 void NotificationCenterTestApi::RemoveNotification(const std::string& id) {
@@ -274,10 +277,11 @@ NotificationCenterTestApi::CreateNotification(
     const ui::ImageModel& icon,
     const std::u16string& display_source,
     const GURL& url,
-    const message_center::NotifierId& notifier_id) {
+    const message_center::NotifierId& notifier_id,
+    const message_center::RichNotificationData& optional_fields) {
   return std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message, icon,
-      display_source, url, notifier_id, message_center::RichNotificationData(),
+      display_source, url, notifier_id, optional_fields,
       new message_center::NotificationDelegate());
 }
 
