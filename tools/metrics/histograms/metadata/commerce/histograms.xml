@@ -163,7 +163,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Heuristics.MerchantNameSource"
-    enum="CommerceHeuristicsDataSource" expires_after="2023-06-18">
+    enum="CommerceHeuristicsDataSource" expires_after="2023-08-20">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

@@ -888,7 +888,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.Category"
-    enum="ContextualSearchQuickActionCategory" expires_after="2023-06-18">
+    enum="ContextualSearchQuickActionCategory" expires_after="2023-08-20">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1512,7 +1512,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"
     enum="ShowQueryTilesSegmentationResultComparison"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>haileywang@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>

@@ -357,7 +357,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
-    units="ms" expires_after="2023-06-18">
+    units="ms" expires_after="2023-08-20">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
