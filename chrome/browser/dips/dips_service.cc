@@ -35,6 +35,7 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 namespace {
 

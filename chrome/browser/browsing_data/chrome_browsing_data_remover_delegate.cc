@@ -143,6 +143,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/net_buildflags.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"

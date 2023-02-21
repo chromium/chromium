@@ -7,6 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "media/cast/test/utility/net_utility.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace mirroring {

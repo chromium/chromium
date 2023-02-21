@@ -11,6 +11,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_browser_net {

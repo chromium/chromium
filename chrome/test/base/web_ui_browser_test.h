@@ -17,6 +17,7 @@
 #include "chrome/test/base/devtools_listener.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/javascript_browser_test.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 namespace {
 class WebUITestMessageHandler;
