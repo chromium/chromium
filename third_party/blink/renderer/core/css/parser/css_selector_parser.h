@@ -86,14 +86,14 @@ class CORE_EXPORT CSSSelectorParser {
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end
   //
-  // Note that <scope-start> / <scope-end> are *forgiving* selector lists.
-  // Therefore empty lists, represented by !CSSSelectorList::IsValid(), are
-  // allowed.
-  //
-  // Parse errors are signalled by returning nullptr.
-  static CSSSelectorList* ParseScopeBoundary(CSSParserTokenRange,
-                                             const CSSParserContext*,
-                                             StyleSheetContents*);
+  // Parse errors are signalled by returning absl::nullopt. Empty spans are
+  // normal and expected, since <scope-start> / <scope-end> are forgiving
+  // selector lists.
+  static absl::optional<base::span<CSSSelector>> ParseScopeBoundary(
+      CSSParserTokenRange,
+      const CSSParserContext*,
+      StyleSheetContents*,
+      HeapVector<CSSSelector>&);
 
  private:
   CSSSelectorParser(const CSSParserContext*,
@@ -124,7 +124,8 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList* ConsumeNestedSelectorList(CSSParserTokenRange&);
   CSSSelectorList* ConsumeForgivingNestedSelectorList(CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
-  CSSSelectorList* ConsumeForgivingComplexSelectorList(CSSParserTokenRange&);
+  absl::optional<base::span<CSSSelector>> ConsumeForgivingComplexSelectorList(
+      CSSParserTokenRange&);
   CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
   CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);

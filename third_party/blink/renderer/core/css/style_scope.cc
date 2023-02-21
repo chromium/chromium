@@ -44,8 +44,10 @@ unsigned StyleScope::Specificity() const {
 StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
                               const CSSParserContext* context,
                               StyleSheetContents* style_sheet) {
-  CSSSelectorList* from = nullptr;
-  CSSSelectorList* to = nullptr;
+  HeapVector<CSSSelector> arena;
+
+  absl::optional<base::span<CSSSelector>> from;
+  absl::optional<base::span<CSSSelector>> to;
 
   prelude.ConsumeWhitespace();
 
@@ -61,8 +63,9 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
   // <scope-start>
   {
     auto block = prelude.ConsumeBlock();
-    from = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet);
-    if (!from) {
+    from = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet,
+                                                 arena);
+    if (!from.has_value()) {
       return nullptr;
     }
   }
@@ -76,8 +79,9 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
     }
 
     auto block = prelude.ConsumeBlock();
-    to = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet);
-    if (!to) {
+    to = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet,
+                                               arena);
+    if (!to.has_value()) {
       return nullptr;
     }
   }
@@ -88,7 +92,14 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
     return nullptr;
   }
 
-  return MakeGarbageCollected<StyleScope>(from, to);
+  CSSSelectorList* from_list =
+      from.has_value() ? CSSSelectorList::AdoptSelectorVector(from.value())
+                       : nullptr;
+  CSSSelectorList* to_list =
+      to.has_value() ? CSSSelectorList::AdoptSelectorVector(to.value())
+                     : nullptr;
+
+  return MakeGarbageCollected<StyleScope>(from_list, to_list);
 }
 
 void StyleScope::Trace(blink::Visitor* visitor) const {
