@@ -889,7 +889,6 @@ void ShellSurfaceBase::OnSurfaceCommit() {
   if (shadow_bounds_changed_)
     host_window()->AllocateLocalSurfaceId();
 
-  DCHECK(presentation_callbacks().empty());
   root_surface()->CommitSurfaceHierarchy(false);
 
   if (!OnPreWidgetCommit())
