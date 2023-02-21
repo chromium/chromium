@@ -1346,7 +1346,16 @@ void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
     delegate_->OnDeviceScaleFactorChanged(old_device_scale_factor,
                                           device_scale_factor);
   }
+
+  // We may add or remove children during child->OnDeviceScaleFactorChanged().
+  std::vector<base::WeakPtr<Layer>> weak_children(children_.size());
   for (auto* child : children_) {
+    weak_children.push_back(child->weak_ptr_factory_.GetWeakPtr());
+  }
+  for (auto& child : weak_children) {
+    if (!child) {
+      continue;
+    }
     child->OnDeviceScaleFactorChanged(device_scale_factor);
 
     // A child layer may have triggered a delegate or an observer to delete
