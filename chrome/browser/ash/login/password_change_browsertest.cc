@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -161,6 +162,7 @@ class PasswordChangeTest : public PasswordChangeTestBase {
                                  {test_user_info_},
                                  &fake_gaia_,
                                  &cryptohome_};
+  base::AutoReset<bool> branded_build{&WizardContext::g_is_branded_build, true};
 
  private:
   base::FilePath GetTestingFilePath() const {
