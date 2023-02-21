@@ -133,6 +133,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
     {"ok", IDS_POLICY_OK},
     {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
     {"scopeUser", IDS_POLICY_SCOPE_USER},
+    {"scopeAllUsers", IDS_POLICY_SCOPE_ALL_USERS},
     {"title", IDS_POLICY_TITLE},
     {"unknown", IDS_POLICY_UNKNOWN},
     {"unset", IDS_POLICY_UNSET},

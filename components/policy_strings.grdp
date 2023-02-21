@@ -563,6 +563,9 @@ Additional details:
   <message name="IDS_POLICY_SCOPE_USER" desc="Text displayed in the Applies to column when a policy applies to the current user only.">
     Current user
   </message>
+  <message name="IDS_POLICY_SCOPE_ALL_USERS" desc="Text displayed in the Applies to column when a policy applies to all the users in the current session.">
+    All users
+  </message>
   <if expr="not is_android and not is_chromeos">
     <message name="IDS_POLICY_SCOPE_DEVICE" desc="Text displayed in the Applies to column when a policy applies to everyone on the machine.">
       Machine
