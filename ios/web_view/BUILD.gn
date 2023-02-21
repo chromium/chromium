@@ -333,6 +333,7 @@ source_set("web_view_sources") {
     "//components/services/unzip:in_process",
     "//components/signin/core/browser",
     "//components/signin/ios/browser",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/ios",
     "//components/signin/public/webdata",
