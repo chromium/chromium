@@ -44,9 +44,15 @@ BASE_FEATURE(kRemoveMobileViewportDoubleTap,
              "RemoveMobileViewportDoubleTap",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Design doc: bit.ly/scrollunification
+// Disabled on Windows due to crbug.com/1378021.
 BASE_FEATURE(kScrollUnification,
              "ScrollUnification",
+#if BUILDFLAG(IS_WIN)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kSchedulerSmoothnessForAnimatedScrolls,
              "SmoothnessModeForAnimatedScrolls",
