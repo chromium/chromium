@@ -191,8 +191,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     // The callback to be run after this site is reset.
     private Observer mWebsiteSettingsObserver;
 
-    private final SiteDataCleaner mSiteDataCleaner = new SiteDataCleaner();
-
     // The website this page is displaying details about.
     private Website mSite;
 
@@ -346,8 +344,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             }
             Callback<Boolean> onDialogClosed = (Boolean confirmed) -> {
                 if (confirmed) {
-                    mSite.clearAllStoredData(getSiteSettingsDelegate().getBrowserContextHandle(),
-                            mDataClearedCallback::run);
+                    SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(),
+                            mSite, mDataClearedCallback);
                 }
             };
             ClearWebsiteStorageDialog dialogFragment =
@@ -1176,7 +1174,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                         .setPositiveButton(buttonResId,
                                 (dialog, which) -> {
                                     if (mHideNonPermissionPreferences) {
-                                        mSiteDataCleaner.resetPermissions(
+                                        SiteDataCleaner.resetPermissions(
                                                 getSiteSettingsDelegate().getBrowserContextHandle(),
                                                 mSite);
                                     } else {
@@ -1216,9 +1214,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         boolean finishActivityImmediately =
                 mSite.getTotalUsage() == 0 && mObjectPolicyPermissionCount == 0;
 
-        mSiteDataCleaner.resetPermissions(
+        SiteDataCleaner.resetPermissions(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite);
-        mSiteDataCleaner.clearData(
+        SiteDataCleaner.clearData(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite, mDataClearedCallback);
 
         int navigationSource = getArguments().getInt(

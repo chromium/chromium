@@ -38,13 +38,10 @@ public class SiteDataCleanerUnitTest {
     @Mock
     private BrowserContextHandle mContextHandle;
 
-    private SiteDataCleaner mSiteDataCleaner;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mBridgeMock);
-        mSiteDataCleaner = new SiteDataCleaner();
     }
 
     @Test
@@ -58,7 +55,7 @@ public class SiteDataCleanerUnitTest {
         final Runnable callback = () -> {
             callbacksReceived.incrementAndGet();
         };
-        mSiteDataCleaner.clearData(mContextHandle, group, callback);
+        SiteDataCleaner.clearData(mContextHandle, group, callback);
         // Check that the callback was invoked only once.
         Assert.assertEquals(1, callbacksReceived.get());
         // Verify that the bridge is called for each of the websites.

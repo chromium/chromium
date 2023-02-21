@@ -198,7 +198,7 @@ public class PageInfoPermissionsController
         fetcher.fetchAllPreferences((Collection<Website> sites) -> {
             Website site = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
                     address, sites);
-            new SiteDataCleaner().resetPermissions(browserContext, site);
+            SiteDataCleaner.resetPermissions(browserContext, site);
             mMainController.refreshPermissions();
         });
     }

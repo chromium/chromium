@@ -19,7 +19,7 @@ public class SiteDataCleaner {
      * Clears the data of the specified site.
      * @param finishCallback is called when finished.
      */
-    public void clearData(
+    public static void clearData(
             BrowserContextHandle browserContextHandle, Website site, Runnable finishCallback) {
         String origin = site.getAddress().getOrigin();
         WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, origin);
@@ -32,7 +32,7 @@ public class SiteDataCleaner {
      * Clears the data for each of the sites in a given group.
      * @param finishCallback is called when the entire operation is finished.
      */
-    public void clearData(
+    public static void clearData(
             BrowserContextHandle contextHandle, WebsiteGroup group, Runnable finishCallback) {
         final AtomicInteger callbacksReceived = new AtomicInteger(0);
         List<Website> sites = group.getWebsites();
@@ -50,7 +50,7 @@ public class SiteDataCleaner {
     /**
      * Resets the permissions of the specified site.
      */
-    public void resetPermissions(BrowserContextHandle browserContextHandle, Website site) {
+    public static void resetPermissions(BrowserContextHandle browserContextHandle, Website site) {
         // Clear the permissions.
         for (ContentSettingException exception : site.getContentSettingExceptions()) {
             site.setContentSetting(browserContextHandle, exception.getContentSettingType(),
@@ -69,7 +69,8 @@ public class SiteDataCleaner {
     /**
      * Resets the permissions for each of the sites in a given group.
      */
-    public void resetPermissions(BrowserContextHandle browserContextHandle, WebsiteGroup group) {
+    public static void resetPermissions(
+            BrowserContextHandle browserContextHandle, WebsiteGroup group) {
         for (Website site : group.getWebsites()) {
             resetPermissions(browserContextHandle, site);
         }

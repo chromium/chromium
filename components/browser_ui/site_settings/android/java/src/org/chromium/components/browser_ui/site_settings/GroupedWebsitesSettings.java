@@ -34,8 +34,6 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
     public static final String PREF_RESET_GROUP = "reset_group_button";
 
-    private final SiteDataCleaner mSiteDataCleaner = new SiteDataCleaner();
-
     private WebsiteGroup mSiteGroup;
 
     private Dialog mConfirmationDialog;
@@ -138,9 +136,9 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
     @VisibleForTesting
     public void resetGroup() {
         if (getActivity() == null) return;
-        mSiteDataCleaner.resetPermissions(
+        SiteDataCleaner.resetPermissions(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup);
-        mSiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup,
+        SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup,
                 mDataClearedCallback);
     }
 
