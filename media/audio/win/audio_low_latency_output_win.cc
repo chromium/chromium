@@ -29,6 +29,7 @@
 #include "media/audio/win/audio_session_event_listener_win.h"
 #include "media/audio/win/avrt_wrapper_win.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -670,6 +671,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     UINT64 qpc_position = 0;
     base::TimeDelta delay;
     base::TimeTicks delay_timestamp;
+    // Stores glitch info to be passed on to OnMoreData().
+    AudioGlitchInfo::Accumulator glitch_info_accumulator;
     hr = audio_clock_->GetPosition(&position, &qpc_position);
     if (SUCCEEDED(hr)) {
       // Number of frames already played out through the speaker.
@@ -699,9 +702,16 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
         const int64_t gap_duration_us = qpc_position_diff_us - position_diff_us;
 
-        glitch_reporter_.UpdateStats(gap_duration_us > buffer_duration_us / 2
+        // TODO(crbug.com/1417946): Investigate precisely what gap duration
+        // should be counted as a glitch.
+        bool is_glitch = gap_duration_us > buffer_duration_us / 2;
+        glitch_reporter_.UpdateStats(is_glitch
                                          ? base::Microseconds(gap_duration_us)
                                          : base::TimeDelta());
+        if (is_glitch) {
+          glitch_info_accumulator.Add(
+              {.duration = base::Microseconds(gap_duration_us), .count = 1});
+        }
       }
 
       last_position_ = position;
@@ -736,8 +746,9 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       std::unique_ptr<AudioBus> audio_bus(
           AudioBus::WrapMemory(params_, audio_data));
       audio_bus_->set_is_bitstream_format(true);
-      int frames_filled =
-          source_->OnMoreData(delay, delay_timestamp, {}, audio_bus.get());
+      int frames_filled = source_->OnMoreData(
+          delay, delay_timestamp, glitch_info_accumulator.GetAndReset(),
+          audio_bus.get());
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
       if (!frames_filled)
@@ -750,8 +761,9 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       return true;
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-    int frames_filled =
-        source_->OnMoreData(delay, delay_timestamp, {}, audio_bus_.get());
+    int frames_filled = source_->OnMoreData(
+        delay, delay_timestamp, glitch_info_accumulator.GetAndReset(),
+        audio_bus_.get());
     uint32_t num_filled_bytes = frames_filled * format_.Format.nBlockAlign;
     DCHECK_LE(num_filled_bytes, packet_size_bytes_);
     audio_bus_->Scale(volume_);
