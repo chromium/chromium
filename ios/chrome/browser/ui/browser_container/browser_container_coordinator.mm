@@ -106,6 +106,8 @@
     id<BrowserCoordinatorCommands> handler =
         HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
     self.partialTranslateMediator.browserHandler = handler;
+    self.browserEditMenuHandler.partialTranslateDelegate =
+        self.partialTranslateMediator;
   }
 
   [self.webContentAreaOverlayContainerCoordinator start];

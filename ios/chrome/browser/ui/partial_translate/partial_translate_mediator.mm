@@ -71,6 +71,17 @@
   }));
 }
 
+- (BOOL)canHandlePartialTranslateSelection {
+  DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
+  // TODO(crbug.com/1417238): add metrics
+  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+  if (!tabHelper) {
+    return NO;
+  }
+  return tabHelper->CanRetrieveSelectedText() &&
+         PartialTranslateLimitMaxCharacters() > 0u;
+}
+
 - (void)switchToFullTranslateWithMessage:(NSString*)message {
   // TODO(crbug.com/1417238): add metrics
   if (!self.alertDelegate) {

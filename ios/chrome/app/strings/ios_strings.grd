@@ -1777,6 +1777,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PARTIAL_TRANSLATE_ACTION_TRANSLATE_FULL_PAGE" desc="The action button to translate the full page (Title Case).">
         Translate Full Page
       </message>
+      <message name="IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY" desc="Action displayed in Edit Menu to trigger Partial Translate. As an action, it should be an infinitive verb, but should also respect the 'Google Translate' branding. Possible variations are 'Google Translate' or 'Translate with Google' are acceptable to meet those criteria [MAX_LENGTH=25em].">
+        Google Translate
+      </message>
       <message name="IDS_IOS_PARTIAL_TRANSLATE_ERROR_GENERIC" desc="Error message when when the process failed (unknown reason).">
         Partial translation failed.
       </message>

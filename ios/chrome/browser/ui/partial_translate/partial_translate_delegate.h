@@ -11,6 +11,9 @@
 // Handles the link to text menu item selection.
 - (void)handlePartialTranslateSelection;
 
+// Returns whether a partial translate can be handled.
+- (BOOL)canHandlePartialTranslateSelection;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_DELEGATE_H_

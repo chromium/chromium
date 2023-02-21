@@ -8,12 +8,17 @@
 #import <UIKit/UIKit.h>
 
 @protocol LinkToTextDelegate;
+@protocol PartialTranslateDelegate;
 
 // A handler for the Browser edit menu.
 // This class is in charge of customising the menu and executing the commands.
 @interface BrowserEditMenuHandler : NSObject
 // The delegate to handle link to text button selection.
 @property(nonatomic, weak) id<LinkToTextDelegate> linkToTextDelegate;
+
+// The delegate to handle Partial Translate button selection.
+@property(nonatomic, weak) id<PartialTranslateDelegate>
+    partialTranslateDelegate;
 
 // Will be called by `BrowserContainerViewController buildMenuWithBuilder:`
 // to customize its edit menu.
