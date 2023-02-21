@@ -1673,7 +1673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
