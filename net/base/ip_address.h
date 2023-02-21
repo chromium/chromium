@@ -107,6 +107,10 @@ class NET_EXPORT IPAddress {
   // Nullopt if `value` is malformed to be deserialized to IPAddress.
   static absl::optional<IPAddress> FromValue(const base::Value& value);
 
+  // Parses an IP address literal (either IPv4 or IPv6). Returns the resulting
+  // IPAddress on success, or nullopt on error.
+  static absl::optional<IPAddress> FromIPLiteral(base::StringPiece ip_literal);
+
   // Creates a zero-sized, invalid address.
   IPAddress();
 

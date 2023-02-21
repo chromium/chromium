@@ -360,19 +360,22 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                                                    network_anonymization_key);
   }
 
-  bool HasLiveSession(const url::SchemeHostPort& scheme_host_port) {
+  bool HasLiveSession(const url::SchemeHostPort& scheme_host_port,
+                      bool require_dns_https_alpn = false) {
     quic::QuicServerId server_id(scheme_host_port.host(),
                                  scheme_host_port.port(), false);
-    return QuicStreamFactoryPeer::HasLiveSession(factory_.get(),
-                                                 scheme_host_port, server_id);
+    return QuicStreamFactoryPeer::HasLiveSession(
+        factory_.get(), scheme_host_port, server_id, require_dns_https_alpn);
   }
 
   bool HasActiveJob(const url::SchemeHostPort& scheme_host_port,
-                    const PrivacyMode privacy_mode) {
+                    const PrivacyMode privacy_mode,
+                    bool require_dns_https_alpn = false) {
     quic::QuicServerId server_id(scheme_host_port.host(),
                                  scheme_host_port.port(),
                                  privacy_mode == PRIVACY_MODE_ENABLED);
-    return QuicStreamFactoryPeer::HasActiveJob(factory_.get(), server_id);
+    return QuicStreamFactoryPeer::HasActiveJob(factory_.get(), server_id,
+                                               require_dns_https_alpn);
   }
 
   // Get the pending, not activated session, if there is only one session alive.
@@ -387,11 +390,13 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   QuicChromiumClientSession* GetActiveSession(
       const url::SchemeHostPort& scheme_host_port,
       const NetworkAnonymizationKey& network_anonymization_key =
-          NetworkAnonymizationKey()) {
+          NetworkAnonymizationKey(),
+      bool require_dns_https_alpn = false) {
     quic::QuicServerId server_id(scheme_host_port.host(),
                                  scheme_host_port.port(), false);
     return QuicStreamFactoryPeer::GetActiveSession(factory_.get(), server_id,
-                                                   network_anonymization_key);
+                                                   network_anonymization_key,
+                                                   require_dns_https_alpn);
   }
 
   int GetSourcePortForNewSession(const url::SchemeHostPort& destination) {
@@ -13617,11 +13622,93 @@ TEST_P(QuicStreamFactoryTest, ResultAfterHostResolutionCallbackFailAsync) {
   EXPECT_EQ(ERR_NAME_NOT_RESOLVED, callback_.WaitForResult());
 }
 
+namespace {
+
+struct DnsRaceTestParams {
+  quic::ParsedQuicVersion version;
+  bool enable_quic_priority_incremental_support;
+  bool require_dns_https_alpn;
+};
+
+// Used by ::testing::PrintToStringParamName().
+std::string PrintToString(const DnsRaceTestParams& p) {
+  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
+                       (p.enable_quic_priority_incremental_support ? "" : "No"),
+                       "Incremental",
+                       (p.require_dns_https_alpn ? "_SVCB" : "")});
+}
+
+std::vector<DnsRaceTestParams> GetDnsRaceTestParams() {
+  std::vector<DnsRaceTestParams> ret;
+  for (const auto& p : GetTestParams()) {
+    DnsRaceTestParams params{.version = p.version,
+                             .enable_quic_priority_incremental_support =
+                                 p.enable_quic_priority_incremental_support,
+                             .require_dns_https_alpn = false};
+    ret.push_back(params);
+    params.require_dns_https_alpn = true;
+    ret.push_back(params);
+  }
+  return ret;
+}
+
+}  // namespace
+
+class QuicStreamFactoryDnsRaceTest
+    : public QuicStreamFactoryTestBase,
+      public ::testing::TestWithParam<DnsRaceTestParams> {
+ protected:
+  QuicStreamFactoryDnsRaceTest()
+      : QuicStreamFactoryTestBase(
+            GetParam().version,
+            GetParam().enable_quic_priority_incremental_support) {
+    quic_params_->race_stale_dns_on_connection = true;
+    if (require_dns_https_alpn()) {
+      quic_params_->supported_versions = {version_};
+    }
+  }
+
+  bool require_dns_https_alpn() const {
+    return GetParam().require_dns_https_alpn;
+  }
+
+  quic::ParsedQuicVersion InitialQuicVersion() const {
+    if (require_dns_https_alpn()) {
+      return quic::ParsedQuicVersion::Unsupported();
+    }
+    return version_;
+  }
+
+  void AddSvcbHostResolverRule(base::StringPiece ip_literal,
+                               base::StringPiece alpn) {
+    HostResolverEndpointResult endpoint_result;
+    endpoint_result.ip_endpoints.push_back(IPEndPoint(
+        *IPAddress::FromIPLiteral(ip_literal), scheme_host_port_.port()));
+    endpoint_result.metadata.target_name = scheme_host_port_.host();
+    endpoint_result.metadata.supported_protocol_alpns = {std::string(alpn)};
+    host_resolver_->rules()->AddRule(
+        scheme_host_port_.host(),
+        MockHostResolver::RuleResolver::RuleResult({endpoint_result}));
+  }
+
+  void AddDefaultHostResolverRule(base::StringPiece ip_literal) {
+    if (require_dns_https_alpn()) {
+      AddSvcbHostResolverRule(ip_literal, quic::AlpnForVersion(version_));
+    } else {
+      host_resolver_->rules()->AddRule(scheme_host_port_.host(), ip_literal);
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
+                         QuicStreamFactoryDnsRaceTest,
+                         ::testing::ValuesIn(GetDnsRaceTestParams()),
+                         ::testing::PrintToStringParamName());
+
 // With dns race experiment turned on, and DNS resolve succeeds synchronously,
 // the final connection is established through the resolved DNS. No racing
 // connection.
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionSync) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest, ResultAfterDNSRaceAndHostResolutionSync) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -13629,7 +13716,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionSync) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_synchronous_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13638,8 +13725,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionSync) {
 
   // Change to different address for fresh host resolutions.
   host_resolver_->rules()->ClearRules();
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
-                                   kNonCachedIPAddress);
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -13649,15 +13735,17 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionSync) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
   EXPECT_EQ(session->peer_address().host().ToString(), kNonCachedIPAddress);
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
@@ -13667,7 +13755,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionSync) {
 // With dns race experiment on, DNS resolve returns async, no matching cache in
 // host resolver, connection should be successful and through resolved DNS. No
 // racing connection.
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionAsync) {
+TEST_P(QuicStreamFactoryDnsRaceTest, ResultAfterDNSRaceAndHostResolutionAsync) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -13675,8 +13763,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionAsync) {
 
   // Set an address in resolver for asynchronous return.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -13686,9 +13773,10 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionAsync) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
   TestCompletionCallback host_resolution_callback;
@@ -13704,7 +13792,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionAsync) {
 
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
 
   EXPECT_EQ(session->peer_address().host().ToString(), kNonCachedIPAddress);
 
@@ -13714,9 +13803,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionAsync) {
 
 // With dns race experiment on, dns resolve async, stale dns used, connect
 // async, and then the result matches.
-TEST_P(QuicStreamFactoryTest,
+TEST_P(QuicStreamFactoryDnsRaceTest,
        ResultAfterDNSRaceHostResolveAsyncConnectAsyncStaleMatch) {
-  quic_params_->race_stale_dns_on_connection = true;
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -13724,7 +13812,7 @@ TEST_P(QuicStreamFactoryTest,
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13744,9 +13832,10 @@ TEST_P(QuicStreamFactoryTest,
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
@@ -13756,17 +13845,19 @@ TEST_P(QuicStreamFactoryTest,
       ->NotifySessionOneRttKeyAvailable();
 
   // Check that the racing job is running.
-  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
 
   // Resolve dns and call back, make sure job finishes.
   host_resolver_->ResolveAllPending();
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  EXPECT_TRUE(HasLiveSession(scheme_host_port_));
+  EXPECT_TRUE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
 
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
 
   EXPECT_EQ(session->peer_address().host().ToString(), kCachedIPAddress);
 
@@ -13776,9 +13867,8 @@ TEST_P(QuicStreamFactoryTest,
 
 // With dns race experiment on, dns resolve async, stale dns used, dns resolve
 // return, then connection finishes and matches with the result.
-TEST_P(QuicStreamFactoryTest,
+TEST_P(QuicStreamFactoryDnsRaceTest,
        ResultAfterDNSRaceHostResolveAsyncStaleMatchConnectAsync) {
-  quic_params_->race_stale_dns_on_connection = true;
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -13786,7 +13876,7 @@ TEST_P(QuicStreamFactoryTest,
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13806,9 +13896,10 @@ TEST_P(QuicStreamFactoryTest,
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
@@ -13826,7 +13917,8 @@ TEST_P(QuicStreamFactoryTest,
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
   EXPECT_EQ(session->peer_address().host().ToString(), kCachedIPAddress);
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
@@ -13835,8 +13927,8 @@ TEST_P(QuicStreamFactoryTest,
 
 // With dns race experiment on, dns resolve async, stale used and connects
 // async, finishes before dns, but no match
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest,
+       ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -13844,7 +13936,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13853,8 +13945,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
 
   // Change to different address for fresh host resolutions.
   host_resolver_->rules()->ClearRules();
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
-                                   kNonCachedIPAddress);
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   factory_->set_is_quic_known_to_work_on_current_network(false);
   crypto_client_stream_factory_.set_handshake_mode(
@@ -13882,9 +13973,10 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
@@ -13892,8 +13984,9 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
   // Finish the stale connection.
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
-  EXPECT_TRUE(HasLiveSession(scheme_host_port_));
-  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  EXPECT_TRUE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
 
   // Finish host resolution and check the job is done.
   host_resolver_->ResolveAllPending();
@@ -13902,7 +13995,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
   EXPECT_EQ(session->peer_address().host().ToString(), kNonCachedIPAddress);
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
@@ -13913,8 +14007,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
 
 // With dns race experiment on, dns resolve async, stale used and connects
 // async, dns finishes first, but no match
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest,
+       ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -13922,7 +14016,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13931,8 +14025,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
 
   // Change to different address for fresh host resolutions.
   host_resolver_->rules()->ClearRules();
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
-                                   kNonCachedIPAddress);
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   factory_->set_is_quic_known_to_work_on_current_network(false);
   crypto_client_stream_factory_.set_handshake_mode(
@@ -13959,9 +14052,10 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
   base::RunLoop().RunUntilIdle();
@@ -13975,7 +14069,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
   EXPECT_EQ(session->peer_address().host().ToString(), kNonCachedIPAddress);
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
@@ -13986,8 +14081,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
 
 // With dns race experiment on, dns resolve returns error sync, same behavior
 // as experiment is not on
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveError) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest, ResultAfterDNSRaceHostResolveError) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14003,17 +14097,17 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveError) {
 
   EXPECT_EQ(ERR_NAME_NOT_RESOLVED,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 }
 
 // With dns race experiment on, no cache available, dns resolve returns error
 // async
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsyncError) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest, ResultAfterDNSRaceHostResolveAsyncError) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14029,9 +14123,10 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsyncError) {
 
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
@@ -14042,8 +14137,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsyncError) {
 
 // With dns race experiment on, dns resolve async, staled used and connects
 // sync, dns returns error and no connection is established.
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleSyncHostResolveError) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest,
+       ResultAfterDNSRaceStaleSyncHostResolveError) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14051,7 +14146,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleSyncHostResolveError) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14077,21 +14172,82 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleSyncHostResolveError) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
   // Check that the stale connection is running.
-  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
 
   base::RunLoop().RunUntilIdle();
   // Finish host resolution.
   host_resolver_->ResolveAllPending();
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
 
-  EXPECT_TRUE(HasLiveSession(scheme_host_port_));
+  EXPECT_TRUE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
+
+  EXPECT_TRUE(quic_data.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data.AllWriteDataConsumed());
+}
+
+// With dns race experiment on, dns resolve async, staled used and connects
+// sync, dns returns no ALPN match and no connection is established.
+TEST_P(QuicStreamFactoryDnsRaceTest,
+       ResultAfterDNSRaceStaleSyncHostResolveNoMatchingALPN) {
+  host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Set up an address in stale resolver cache.
+  host_resolver_->set_ondemand_mode(true);
+  AddSvcbHostResolverRule(kCachedIPAddress, quic::AlpnForVersion(version_));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
+  // Expire the cache
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change the ALPN for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  AddSvcbHostResolverRule(kCachedIPAddress, "wrong-alpn");
+
+  // Socket for the stale connection which is supposed to disconnect.
+  MockQuicData quic_data(version_);
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  int packet_num = 1;
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.MakeConnectionClosePacket(
+                         packet_num++, true,
+                         quic::QUIC_STALE_CONNECTION_CANCELLED, "net error"));
+  quic_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+
+  // Check that the stale connection is running.
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
+
+  base::RunLoop().RunUntilIdle();
+  // Finish host resolution.
+  host_resolver_->ResolveAllPending();
+  EXPECT_THAT(callback_.WaitForResult(),
+              IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
+
+  EXPECT_TRUE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
   EXPECT_TRUE(quic_data.AllWriteDataConsumed());
@@ -14100,8 +14256,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleSyncHostResolveError) {
 // With dns race experiment on, dns resolve async, stale used and connection
 // return error, then dns matches.
 // This serves as a regression test for crbug.com/956374.
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSMatches) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest, ResultAfterDNSRaceStaleErrorDNSMatches) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14109,7 +14264,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSMatches) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14128,13 +14283,15 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSMatches) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
-  EXPECT_FALSE(HasLiveSession(scheme_host_port_));
-  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  EXPECT_FALSE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
 
   base::RunLoop().RunUntilIdle();
   host_resolver_->ResolveAllPending();
@@ -14143,8 +14300,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSMatches) {
 
 // With dns race experiment on, dns resolve async, stale used and connection
 // returns error, dns no match, new connection is established
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatch) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest, ResultAfterDNSRaceStaleErrorDNSNoMatch) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14152,7 +14308,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatch) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14161,8 +14317,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatch) {
 
   // Change to different address for fresh host resolutions.
   host_resolver_->rules()->ClearRules();
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
-                                   kNonCachedIPAddress);
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   // Add failure for the stale connection.
   MockQuicData quic_data(version_);
@@ -14178,22 +14333,25 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatch) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
   // Check that the stale connection fails.
-  EXPECT_FALSE(HasLiveSession(scheme_host_port_));
-  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  EXPECT_FALSE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
   host_resolver_->ResolveAllPending();
   EXPECT_EQ(callback_.WaitForResult(), OK);
 
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
 
   EXPECT_EQ(session->peer_address().host().ToString(), kNonCachedIPAddress);
 
@@ -14203,8 +14361,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatch) {
 
 // With dns race experiment on, dns resolve async, stale used and connection
 // returns error, dns no match, new connection error
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest,
+       ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14212,7 +14370,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14221,8 +14379,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
 
   // Change to different address for fresh host resolutions.
   host_resolver_->rules()->ClearRules();
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
-                                   kNonCachedIPAddress);
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   // Add failure for stale connection.
   MockQuicData quic_data(version_);
@@ -14237,15 +14394,17 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
   // Check the stale connection fails.
-  EXPECT_FALSE(HasLiveSession(scheme_host_port_));
-  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  EXPECT_FALSE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
 
   // Check the resolved dns connection fails.
   host_resolver_->ResolveAllPending();
@@ -14254,8 +14413,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
 
 // With dns race experiment on, dns resolve async and stale connect async, dns
 // resolve returns error and then preconnect finishes
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncErrorStaleAsync) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest,
+       ResultAfterDNSRaceResolveAsyncErrorStaleAsync) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14263,7 +14422,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncErrorStaleAsync) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14292,9 +14451,10 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncErrorStaleAsync) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
@@ -14309,9 +14469,8 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncErrorStaleAsync) {
 
 // With dns race experiment on, dns resolve async and stale connect async, dns
 // resolve returns error and then preconnect fails.
-TEST_P(QuicStreamFactoryTest,
+TEST_P(QuicStreamFactoryDnsRaceTest,
        ResultAfterDNSRaceResolveAsyncErrorStaleAsyncError) {
-  quic_params_->race_stale_dns_on_connection = true;
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14319,7 +14478,7 @@ TEST_P(QuicStreamFactoryTest,
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14347,9 +14506,10 @@ TEST_P(QuicStreamFactoryTest,
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
@@ -14365,16 +14525,14 @@ TEST_P(QuicStreamFactoryTest,
 
 // With dns race experiment on, test that host resolution callback behaves
 // normal as experiment is not on
-TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsync) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest, ResultAfterDNSRaceHostResolveAsync) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -14384,9 +14542,10 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsync) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
@@ -14410,8 +14569,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsync) {
 
 // With stale dns and migration before handshake experiment on, migration failed
 // after handshake confirmed, and then fresh resolve returns.
-TEST_P(QuicStreamFactoryTest, StaleNetworkFailedAfterHandshake) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest, StaleNetworkFailedAfterHandshake) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
 
   InitializeConnectionMigrationV2Test(
@@ -14421,7 +14579,7 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedAfterHandshake) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14430,8 +14588,7 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedAfterHandshake) {
 
   // Change to different address for fresh host resolutions.
   host_resolver_->rules()->ClearRules();
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
-                                   kNonCachedIPAddress);
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -14448,15 +14605,17 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedAfterHandshake) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
   base::RunLoop().RunUntilIdle();
   // Check that the racing job is running.
-  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
 
   // By disconnecting the network, the stale session will be killed.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -14464,12 +14623,13 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedAfterHandshake) {
 
   host_resolver_->ResolveAllPending();
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  EXPECT_TRUE(HasLiveSession(scheme_host_port_));
+  EXPECT_TRUE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
 
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
 
   EXPECT_EQ(session->peer_address().host().ToString(), kNonCachedIPAddress);
 
@@ -14481,8 +14641,7 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedAfterHandshake) {
 
 // With stale dns experiment on,  the stale session is killed while waiting for
 // handshake
-TEST_P(QuicStreamFactoryTest, StaleNetworkFailedBeforeHandshake) {
-  quic_params_->race_stale_dns_on_connection = true;
+TEST_P(QuicStreamFactoryDnsRaceTest, StaleNetworkFailedBeforeHandshake) {
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
@@ -14491,7 +14650,7 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedBeforeHandshake) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  AddDefaultHostResolverRule(kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14500,8 +14659,7 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedBeforeHandshake) {
 
   // Change to different address for fresh host resolutions.
   host_resolver_->rules()->ClearRules();
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
-                                   kNonCachedIPAddress);
+  AddDefaultHostResolverRule(kNonCachedIPAddress);
 
   factory_->set_is_quic_known_to_work_on_current_network(false);
   crypto_client_stream_factory_.set_handshake_mode(
@@ -14522,14 +14680,16 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedBeforeHandshake) {
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                scheme_host_port_, InitialQuicVersion(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, require_dns_https_alpn(),
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
 
   // Check that the racing job is running.
-  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  EXPECT_TRUE(
+      HasActiveJob(scheme_host_port_, privacy_mode_, require_dns_https_alpn()));
 
   base::RunLoop().RunUntilIdle();
   // By disconnecting the network, the stale session will be killed.
@@ -14542,12 +14702,13 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedBeforeHandshake) {
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  EXPECT_TRUE(HasLiveSession(scheme_host_port_));
+  EXPECT_TRUE(HasLiveSession(scheme_host_port_, require_dns_https_alpn()));
 
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  QuicChromiumClientSession* session = GetActiveSession(
+      scheme_host_port_, NetworkAnonymizationKey(), require_dns_https_alpn());
   EXPECT_EQ(session->peer_address().host().ToString(), kNonCachedIPAddress);
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
@@ -14930,11 +15091,22 @@ TEST_P(QuicStreamFactoryTest, RequireDnsHttpsNotAlpnName) {
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/false);
 }
 
+// If the only routes come from HTTPS/SVCB records (impossible until
+// https://crbug.com/1417033 is implemented), we should still pick up the
+// address from the HTTPS record.
+TEST_P(QuicStreamFactoryTest, RequireDnsHttpsRecordOnly) {
+  std::vector<HostResolverEndpointResult> endpoints(1);
+  endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoints[0].metadata.supported_protocol_alpns = {
+      quic::AlpnForVersion(version_)};
+  TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/true);
+}
+
 void QuicStreamFactoryTestBase::TestRequireDnsHttpsAlpn(
     std::vector<HostResolverEndpointResult> endpoints,
     bool expect_success) {
   quic_params_->supported_versions = {version_};
-  host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  host_resolver_ = std::make_unique<MockHostResolver>();
   host_resolver_->rules()->AddRule(
       scheme_host_port_.host(),
       MockHostResolverBase::RuleResolver::RuleResult(

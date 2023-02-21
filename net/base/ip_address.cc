@@ -181,14 +181,21 @@ size_t IPAddressBytes::EstimateMemoryUsage() const {
 
 // static
 absl::optional<IPAddress> IPAddress::FromValue(const base::Value& value) {
-  if (!value.is_string())
+  if (!value.is_string()) {
     return absl::nullopt;
+  }
 
+  return IPAddress::FromIPLiteral(value.GetString());
+}
+
+// static
+absl::optional<IPAddress> IPAddress::FromIPLiteral(
+    base::StringPiece ip_literal) {
   IPAddress address;
-  bool success = address.AssignFromIPLiteral(value.GetString());
-  if (!success || !address.IsValid())
+  if (!address.AssignFromIPLiteral(ip_literal)) {
     return absl::nullopt;
-
+  }
+  DCHECK(address.IsValid());
   return address;
 }
 

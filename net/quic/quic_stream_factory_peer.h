@@ -49,10 +49,12 @@ class QuicStreamFactoryPeer {
       QuicStreamFactory* factory,
       const quic::QuicServerId& server_id,
       const NetworkAnonymizationKey& network_anonymization_key =
-          NetworkAnonymizationKey());
+          NetworkAnonymizationKey(),
+      bool require_dns_https_alpn = false);
 
   static bool HasActiveJob(QuicStreamFactory* factory,
-                           const quic::QuicServerId& server_id);
+                           const quic::QuicServerId& server_id,
+                           bool require_dns_https_alpn = false);
 
   static QuicChromiumClientSession* GetPendingSession(
       QuicStreamFactory* factory,
@@ -63,11 +65,13 @@ class QuicStreamFactoryPeer {
       QuicStreamFactory* factory,
       const quic::QuicServerId& server_id,
       const NetworkAnonymizationKey& network_anonymization_key =
-          NetworkAnonymizationKey());
+          NetworkAnonymizationKey(),
+      bool require_dns_https_alpn = false);
 
   static bool HasLiveSession(QuicStreamFactory* factory,
                              url::SchemeHostPort destination,
-                             const quic::QuicServerId& server_id);
+                             const quic::QuicServerId& server_id,
+                             bool require_dns_https_alpn = false);
 
   static bool IsLiveSession(QuicStreamFactory* factory,
                             QuicChromiumClientSession* session);
