@@ -87,6 +87,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   // Internal methods called by Layers.
   void NotifyTreeChanged();
   void NotifyPropertyChanged();
+  viz::ResourceId GetVizResourceId(cc::UIResourceId id);
+  bool IsUIResourceOpaque(int resource_id);
   void AddSurfaceRange(const viz::SurfaceRange& range);
   void RemoveSurfaceRange(const viz::SurfaceRange& range);
 

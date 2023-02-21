@@ -32,6 +32,12 @@ class TestFrameSinkImpl : public FrameSinkImpl {
   bool BindToClient(FrameSinkImplClient* client) override;
   void SetNeedsBeginFrame(bool needs_begin_frame) override;
 
+  using FrameSinkImpl::UploadedResourceMap;
+  using FrameSinkImpl::UploadedUIResource;
+  const UploadedResourceMap& uploaded_resources() const {
+    return uploaded_resources_;
+  }
+
  private:
   class TestMojoCompositorFrameSink;
   TestFrameSinkImpl(

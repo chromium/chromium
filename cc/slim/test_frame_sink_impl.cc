@@ -95,6 +95,9 @@ bool TestFrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
   client_ = client;
   frame_sink_ = mojo_sink_.get();
   bind_to_client_called_ = true;
+  if (bind_to_client_result_) {
+    context_provider_->BindToCurrentSequence();
+  }
   return bind_to_client_result_;
 }
 

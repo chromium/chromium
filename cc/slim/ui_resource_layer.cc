@@ -10,8 +10,8 @@
 #include "cc/slim/features.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
-#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 
 namespace cc::slim {
 
@@ -135,6 +135,34 @@ void UIResourceLayer::SetUIResourceIdInternal(cc::UIResourceId resource_id) {
   resource_id_ = resource_id;
   SetDrawsContent(HasDrawableContent());
   NotifyPropertyChanged();
+}
+
+void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
+                                  const gfx::Transform& transform,
+                                  const gfx::Rect* clip) {
+  viz::ResourceId viz_resource_id =
+      static_cast<LayerTreeImpl*>(layer_tree())->GetVizResourceId(resource_id_);
+  if (viz_resource_id == viz::kInvalidResourceId) {
+    return;
+  }
+
+  viz::SharedQuadState* quad_state =
+      CreateAndAppendSharedQuadState(render_pass, transform, clip);
+
+  viz::TextureDrawQuad* quad =
+      render_pass.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
+  constexpr bool kFlipped = false;
+  constexpr bool kNearest = false;
+  constexpr bool kPremultiplied = true;
+  constexpr bool kSecureOutputOnly = false;
+  constexpr auto kVideoType = gfx::ProtectedVideoType::kClear;
+  const bool needs_blending = !static_cast<LayerTreeImpl*>(layer_tree())
+                                   ->IsUIResourceOpaque(resource_id_);
+  quad->SetNew(quad_state, quad_state->quad_layer_rect,
+               quad_state->visible_quad_layer_rect, needs_blending,
+               viz_resource_id, kPremultiplied, uv_top_left(),
+               uv_bottom_right(), SkColors::kTransparent, vertex_opacity_,
+               kFlipped, kNearest, kSecureOutputOnly, kVideoType);
 }
 
 }  // namespace cc::slim

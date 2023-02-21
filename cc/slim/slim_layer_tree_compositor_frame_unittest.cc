@@ -15,12 +15,16 @@
 #include "cc/slim/test_frame_sink_impl.h"
 #include "cc/slim/test_layer_tree_client.h"
 #include "cc/slim/test_layer_tree_impl.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/test/draw_quad_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc::slim {
@@ -302,6 +306,85 @@ TEST_F(SlimLayerTreeCompositorFrameTest, AxisAlignedClip) {
     // Clip is in target space.
     EXPECT_EQ(quad->shared_quad_state->clip_rect.value(),
               gfx::Rect(5, 5, 10, 20));
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
+  auto ui_resource_layer = UIResourceLayer::Create();
+  ui_resource_layer->SetBounds(viewport_.size());
+  ui_resource_layer->SetIsDrawable(true);
+  layer_tree_->SetRoot(ui_resource_layer);
+
+  viz::ResourceId first_resource_id = viz::kInvalidResourceId;
+  {
+    auto image_info =
+        SkImageInfo::Make(1, 1, kN32_SkColorType, kPremul_SkAlphaType);
+    SkBitmap bitmap;
+    bitmap.allocPixels(image_info);
+    bitmap.setImmutable();
+    ui_resource_layer->SetBitmap(bitmap);
+
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsTextureQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_),
+                                  viz::HasTransform(gfx::Transform()))));
+    const viz::TextureDrawQuad* texture_quad =
+        viz::TextureDrawQuad::MaterialCast(pass->quad_list.front());
+    EXPECT_TRUE(texture_quad->needs_blending);
+    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
+    EXPECT_EQ(gfx::PointF(0.0f, 0.0f), texture_quad->uv_top_left);
+    EXPECT_EQ(gfx::PointF(1.0f, 1.0f), texture_quad->uv_bottom_right);
+    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[0]);
+    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[1]);
+    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[2]);
+    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[3]);
+
+    ASSERT_EQ(frame.resource_list.size(), 1u);
+    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
+    EXPECT_EQ(frame.resource_list[0].size, gfx::Size(1, 1));
+    first_resource_id = texture_quad->resource_id();
+
+    ASSERT_EQ(frame_sink_->uploaded_resources().size(), 1u);
+    EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,
+              texture_quad->resource_id());
+  }
+
+  ui_resource_layer->SetUV(gfx::PointF(0.25f, 0.25f),
+                           gfx::PointF(0.75f, 0.75f));
+  ui_resource_layer->SetVertexOpacity(0.1f, 0.2f, 0.3f, 0.4f);
+  {
+    auto image_info =
+        SkImageInfo::Make(2, 2, kN32_SkColorType, kPremul_SkAlphaType);
+    SkBitmap bitmap;
+    bitmap.allocPixels(image_info);
+    bitmap.setImmutable();
+    ui_resource_layer->SetBitmap(bitmap);
+
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsTextureQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_),
+                                  viz::HasTransform(gfx::Transform()))));
+    const viz::TextureDrawQuad* texture_quad =
+        viz::TextureDrawQuad::MaterialCast(pass->quad_list.front());
+    EXPECT_TRUE(texture_quad->needs_blending);
+    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
+    EXPECT_EQ(gfx::PointF(0.25f, 0.25f), texture_quad->uv_top_left);
+    EXPECT_EQ(gfx::PointF(0.75f, 0.75f), texture_quad->uv_bottom_right);
+    EXPECT_EQ(0.1f, texture_quad->vertex_opacity[0]);
+    EXPECT_EQ(0.2f, texture_quad->vertex_opacity[1]);
+    EXPECT_EQ(0.3f, texture_quad->vertex_opacity[2]);
+    EXPECT_EQ(0.4f, texture_quad->vertex_opacity[3]);
+
+    ASSERT_EQ(frame.resource_list.size(), 1u);
+    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
+    EXPECT_EQ(frame.resource_list[0].size, gfx::Size(2, 2));
+    EXPECT_NE(first_resource_id, texture_quad->resource_id());
   }
 }
 

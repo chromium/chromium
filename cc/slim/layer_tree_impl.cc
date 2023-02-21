@@ -231,6 +231,17 @@ void LayerTreeImpl::NotifyPropertyChanged() {
   SetNeedsDraw();
 }
 
+viz::ResourceId LayerTreeImpl::GetVizResourceId(cc::UIResourceId id) {
+  if (!frame_sink_) {
+    return viz::kInvalidResourceId;
+  }
+  return frame_sink_->GetVizResourceId(id);
+}
+
+bool LayerTreeImpl::IsUIResourceOpaque(int resource_id) {
+  return !frame_sink_ || frame_sink_->IsUIResourceOpaque(resource_id);
+}
+
 void LayerTreeImpl::AddSurfaceRange(const viz::SurfaceRange& range) {
   DCHECK(range.IsValid());
   DCHECK(!referenced_surfaces_.contains(range));
@@ -292,6 +303,20 @@ void LayerTreeImpl::GenerateCompositorFrame(
   // * Surface embedding fields (referenced surfaces, activation dependency,
   //   deadline)
   TRACE_EVENT0("cc", "slim::LayerTreeImpl::ProduceFrame");
+
+  for (auto& resource_request :
+       ui_resource_manager_.TakeUIResourcesRequests()) {
+    switch (resource_request.GetType()) {
+      case cc::UIResourceRequest::UI_RESOURCE_CREATE:
+        frame_sink_->UploadUIResource(resource_request.GetId(),
+                                      resource_request.GetBitmap());
+        break;
+      case cc::UIResourceRequest::UI_RESOURCE_DELETE:
+        frame_sink_->MarkUIResourceForDeletion(resource_request.GetId());
+        break;
+    }
+  }
+
   auto render_pass = viz::CompositorRenderPass::Create();
   render_pass->SetNew(viz::CompositorRenderPassId(root_->id()),
                       /*output_rect=*/device_viewport_rect_,

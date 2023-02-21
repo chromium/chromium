@@ -53,6 +53,10 @@ FrameSinkImpl::FrameSinkImpl(
       io_thread_id_(io_thread_id) {}
 
 FrameSinkImpl::~FrameSinkImpl() {
+  for (const auto& uploaded_resource_pair : uploaded_resources_) {
+    resource_provider_.RemoveImportedResource(
+        uploaded_resource_pair.second.viz_resource_id);
+  }
   resource_provider_.ShutdownAndReleaseAllResources();
 }
 
