@@ -26,6 +26,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GaiaUrls(const GaiaUrls&) = delete;
   GaiaUrls& operator=(const GaiaUrls&) = delete;
 
+  // Simplifies unit tests that depend on `GaiaUrls` singleton. Set to `nullptr`
+  // to reset.
+  static void SetInstanceForTesting(GaiaUrls* gaia_urls);
+
   // The URLs for different calls in the Google Accounts programmatic login API.
   const GURL& google_url() const;
   const GURL& secure_google_url() const;

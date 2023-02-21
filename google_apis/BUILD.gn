@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
@@ -295,6 +296,10 @@ test("google_apis_unittests") {
 
     deps += [ "//third_party/ocmock" ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//google_apis/tasks:tasks_unittests" ]
+  }
 }
 
 bundle_data("google_apis_unittest_bundle_data") {
@@ -313,6 +318,8 @@ bundle_data("google_apis_unittest_bundle_data") {
     "test/data/gaia/not_a_json.txt",
     "test/data/gaia/one_base_url.json",
     "test/data/gaia/one_url.json",
+    "test/data/tasks/task_lists.json",
+    "test/data/tasks/tasks.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

@@ -71,6 +71,8 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSecureConnectOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFeedOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kKAnonymityServiceOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCalendarReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksOAuth2Scope[];
 
 // Used by wallet sign in helper.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];
