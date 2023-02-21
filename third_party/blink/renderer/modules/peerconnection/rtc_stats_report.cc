@@ -1235,11 +1235,8 @@ class RTCStatsReportIterationSource final
  public:
   explicit RTCStatsReportIterationSource(
       std::unique_ptr<RTCStatsReportPlatform> report,
-      bool use_web_idl,
-      bool unship_deprecated_stats)
-      : report_(std::move(report)),
-        use_web_idl_(use_web_idl),
-        unship_deprecated_stats_(unship_deprecated_stats) {}
+      bool use_web_idl)
+      : report_(std::move(report)), use_web_idl_(use_web_idl) {}
 
   bool FetchNextItem(ScriptState* script_state,
                      String& key,
@@ -1269,7 +1266,7 @@ class RTCStatsReportIterationSource final
     // Loop until a stat can be converted.
     while (rtc_stats) {
       v8_stat = RTCStatsToIDL(script_state, *rtc_stats, expose_hardware_caps,
-                              unship_deprecated_stats_);
+                              report_->unship_deprecated_stats());
       if (v8_stat) {
         break;
       }
@@ -1290,7 +1287,6 @@ class RTCStatsReportIterationSource final
  private:
   std::unique_ptr<RTCStatsReportPlatform> report_;
   const bool use_web_idl_;
-  const bool unship_deprecated_stats_;
 };
 
 }  // namespace
@@ -1315,9 +1311,7 @@ Vector<webrtc::NonStandardGroupId> GetExposedGroupIds(
 RTCStatsReport::RTCStatsReport(std::unique_ptr<RTCStatsReportPlatform> report)
     : report_(std::move(report)),
       use_web_idl_(
-          base::FeatureList::IsEnabled(features::kWebRtcStatsReportIdl)),
-      unship_deprecated_stats_(
-          base::FeatureList::IsEnabled(WebRtcUnshipDeprecatedStats)) {}
+          base::FeatureList::IsEnabled(features::kWebRtcStatsReportIdl)) {}
 
 uint32_t RTCStatsReport::size() const {
   return base::saturated_cast<uint32_t>(report_->Size());
@@ -1326,7 +1320,7 @@ uint32_t RTCStatsReport::size() const {
 PairSyncIterable<RTCStatsReport>::IterationSource*
 RTCStatsReport::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<RTCStatsReportIterationSource>(
-      report_->CopyHandle(), use_web_idl_, unship_deprecated_stats_);
+      report_->CopyHandle(), use_web_idl_);
 }
 
 bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
@@ -1340,7 +1334,7 @@ bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
 
   RTCStats* v8_stats = RTCStatsToIDL(
       script_state, *stats, ExposeHardwareCapabilityStats(script_state),
-      unship_deprecated_stats_);
+      report_->unship_deprecated_stats());
   if (!v8_stats) {
     return false;
   }

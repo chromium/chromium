@@ -48,6 +48,7 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
       const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
       bool is_track_stats_deprecation_trial_enabled);
   virtual ~RTCStatsReportPlatform();
+
   // Creates a new report object that is a handle to the same underlying stats
   // report (the stats are not copied). The new report's iterator is reset,
   // useful when needing multiple iterators.
@@ -60,6 +61,7 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
   std::unique_ptr<RTCStatsWrapper> Next();
 
   const webrtc::RTCStatsReport& stats_report() const { return *stats_report_; }
+  bool unship_deprecated_stats() const { return unship_deprecated_stats_; }
   const webrtc::RTCStats* NextStats();
 
   // The number of stats objects.
