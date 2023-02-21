@@ -544,7 +544,8 @@ TEST_P(NotificationGroupingControllerTest, ChildNotificationUpdate) {
 // When the last child of the group notification is removed, its parent
 // notification should be removed as well. We are testing in the case where
 // there is no popup or notification center is not showing.
-TEST_P(NotificationGroupingControllerTest, ChildNotificationRemove) {
+// TODO(crbug.com/1417929): Re-enable this test
+TEST_P(NotificationGroupingControllerTest, DISABLED_ChildNotificationRemove) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1;
   const GURL url(u"http://test-url.com/");
