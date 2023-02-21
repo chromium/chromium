@@ -108,6 +108,10 @@ class WebStateListObserver : public base::CheckedObserver {
   // were performed on it during the batch (e.g. detect that all tabs were
   // closed at once).
   virtual void BatchOperationEnded(WebStateList* web_state_list);
+
+  // Invoked when the WebStateList is being destroyed. Gives subclasses a chance
+  // to cleanup.
+  virtual void WebStateListDestroyed(WebStateList* web_state_list);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_H_

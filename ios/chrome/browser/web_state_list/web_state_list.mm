@@ -147,6 +147,9 @@ WebStateList::WebStateList(WebStateListDelegate* delegate)
 
 WebStateList::~WebStateList() {
   CloseAllWebStates(CLOSE_NO_FLAGS);
+  for (auto& observer : observers_) {
+    observer.WebStateListDestroyed(this);
+  }
 }
 
 bool WebStateList::ContainsIndex(int index) const {

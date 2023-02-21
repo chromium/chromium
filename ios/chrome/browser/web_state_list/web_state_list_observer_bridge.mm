@@ -153,3 +153,13 @@ void WebStateListObserverBridge::BatchOperationEnded(
 
   [observer_ webStateListBatchOperationEnded:web_state_list];
 }
+
+void WebStateListObserverBridge::WebStateListDestroyed(
+    WebStateList* web_state_list) {
+  const SEL selector = @selector(webStateListDestroyed:);
+  if (![observer_ respondsToSelector:selector]) {
+    return;
+  }
+
+  [observer_ webStateListDestroyed:web_state_list];
+}
