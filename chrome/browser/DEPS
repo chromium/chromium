@@ -73,7 +73,6 @@ include_rules = [
   "+components/browser_ui/site_settings",
   "+components/browser_ui/strings",
   "+components/browser_ui/styles",
-  "+components/browser_watcher",
   "+components/browsing_data/content",
   "+components/browsing_data/core",
   "+components/browsing_topics",

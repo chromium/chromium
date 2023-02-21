@@ -236,7 +236,6 @@ static_library("metrics") {
       "system_session_analyzer/system_session_analyzer_win.cc",
       "system_session_analyzer/system_session_analyzer_win.h",
     ]
-    deps += [ "//components/browser_watcher:stability_client" ]
     libs = [ "wevtapi.lib" ]
   } else {
     sources += [ "machine_id_provider_nonwin.cc" ]

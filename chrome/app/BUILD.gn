@@ -232,7 +232,6 @@ static_library("test_support") {
     deps += [
       "//chrome/chrome_elf:test_stubs",
       "//chrome/install_static:install_static_util",
-      "//components/browser_watcher:stability_client",
       "//sandbox/win:sandbox",
     ]
   }

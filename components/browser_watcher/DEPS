@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/metrics",
-  "+components/variations",
-  "+components/crash",
-  "+third_party/crashpad/crashpad",
-]

@@ -2949,7 +2949,6 @@ def CheckSpamLogging(input_api, output_api):
             r"^chrome/chrome_elf/dll_hash/dll_hash_main\.cc$",
             r"^chrome/installer/setup/.*",
             r"^chromecast/",
-            r"^components/browser_watcher/dump_stability_report_main_win\.cc$",
             r"^components/media_control/renderer/media_playback_options\.cc$",
             r"^components/policy/core/common/policy_logger\.cc$",
             r"^components/viz/service/display/"

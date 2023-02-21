@@ -308,9 +308,6 @@ component("base") {
     "cxx20_is_constant_evaluated.h",
     "cxx20_to_address.h",
     "dcheck_is_on.h",
-    "debug/activity_analyzer.cc",
-    "debug/activity_analyzer.h",
-    "debug/activity_tracker.cc",
     "debug/activity_tracker.h",
     "debug/alias.cc",
     "debug/alias.h",
@@ -3033,8 +3030,6 @@ test("base_unittests") {
     "cpu_unittest.cc",
     "cxx17_backports_unittest.cc",
     "cxx20_is_constant_evaluated_unittest.cc",
-    "debug/activity_analyzer_unittest.cc",
-    "debug/activity_tracker_unittest.cc",
     "debug/alias_unittest.cc",
     "debug/asan_service_unittest.cc",
     "debug/crash_logging_unittest.cc",
@@ -4648,13 +4643,6 @@ fuzzer_test("base_json_reader_fuzzer") {
 fuzzer_test("base_json_string_escape_fuzzer") {
   sources = [ "json/string_escape_fuzzer.cc" ]
   deps = [ "//base" ]
-}
-
-fuzzer_test("base_activity_analyzer_fuzzer") {
-  sources = [ "debug/activity_analyzer_fuzzer.cc" ]
-  deps = [ "//base" ]
-  dict = "debug/activity_analyzer_fuzzer.dict"
-  seed_corpus = "test/data/activity_analyzer_fuzzer"
 }
 
 if (is_mac) {

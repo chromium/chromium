@@ -600,10 +600,7 @@ test("components_unittests") {
   }
 
   if (is_win) {
-    deps += [
-      "//components/browser_watcher:unit_tests",
-      "//components/winhttp:unit_tests",
-    ]
+    deps += [ "//components/winhttp:unit_tests" ]
   }
 
   if (enable_printing) {
