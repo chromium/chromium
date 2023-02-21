@@ -18,6 +18,7 @@ class FilePath;
 
 namespace content {
 class BrowserContext;
+class ServiceWorkerContext;
 class SiteInstance;
 class StoragePartition;
 class StoragePartitionConfig;
@@ -61,6 +62,11 @@ content::StoragePartition* GetStoragePartitionForExtensionId(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context,
     bool can_create = true);
+
+// Returns the ServiceWorkerContext associated with the given `extension_id`.
+content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context);
 
 // Maps a |file_url| to a |file_path| on the local filesystem, including
 // resources in extensions. Returns true on success. See NaClBrowserDelegate for

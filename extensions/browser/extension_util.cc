@@ -12,6 +12,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -115,6 +116,13 @@ content::StoragePartition* GetStoragePartitionForExtensionId(
       browser_context->GetStoragePartition(storage_partition_config,
                                            can_create);
   return storage_partition;
+}
+
+content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context) {
+  return GetStoragePartitionForExtensionId(extension_id, browser_context)
+      ->GetServiceWorkerContext();
 }
 
 // This function is security sensitive. Bugs could cause problems that break

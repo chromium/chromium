@@ -490,12 +490,8 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK_NE(BrowserState::kStarted, worker_state->browser_state_);
 
-  content::StoragePartition* partition =
-      util::GetStoragePartitionForExtensionId(
-          lazy_context_id.extension_id(), lazy_context_id.browser_context());
-
   content::ServiceWorkerContext* service_worker_context =
-      partition->GetServiceWorkerContext();
+      GetServiceWorkerContext(lazy_context_id.extension_id());
 
   const GURL& scope = context_id.first.service_worker_scope();
   service_worker_context->StartWorkerForScope(
@@ -720,8 +716,8 @@ ServiceWorkerTaskQueue::WorkerState* ServiceWorkerTaskQueue::GetWorkerState(
 
 content::ServiceWorkerContext* ServiceWorkerTaskQueue::GetServiceWorkerContext(
     const ExtensionId& extension_id) {
-  return util::GetStoragePartitionForExtensionId(extension_id, browser_context_)
-      ->GetServiceWorkerContext();
+  return util::GetServiceWorkerContextForExtensionId(extension_id,
+                                                     browser_context_);
 }
 
 void ServiceWorkerTaskQueue::StartObserving(
