@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
@@ -43,13 +46,17 @@
   self.viewController = [[PasswordCheckupViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.handler = self;
-  self.mediator = [[PasswordCheckupMediator alloc] init];
+  self.mediator = [[PasswordCheckupMediator alloc]
+      initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                       GetForBrowserState(
+                                           self.browser->GetBrowserState())];
   self.mediator.consumer = self.viewController;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }
 
 - (void)stop {
+  [self.mediator disconnect];
   self.mediator = nil;
   self.viewController.handler = nil;
   self.viewController = nil;
