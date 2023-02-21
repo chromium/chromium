@@ -593,11 +593,18 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
 
 void OsIntegrationManager::RegisterRunOnOsLogin(const AppId& app_id,
                                                 ResultCallback callback) {
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.RunOnOsLogin.Registration.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
+
   GetShortcutInfoForApp(
       app_id,
       base::BindOnce(
           &OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(metrics_callback)));
 }
 
 void OsIntegrationManager::MacAppShimOnAppInstalledForProfile(
@@ -642,10 +649,17 @@ bool OsIntegrationManager::UnregisterShortcutsMenu(const AppId& app_id,
 
 void OsIntegrationManager::UnregisterRunOnOsLogin(const AppId& app_id,
                                                   ResultCallback callback) {
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.RunOnOsLogin.Unregistration.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
+
   ScheduleUnregisterRunOnOsLogin(
       sync_bridge_, app_id, profile_->GetPath(),
       base::UTF8ToUTF16(registrar_->GetAppShortName(app_id)),
-      std::move(callback));
+      std::move(metrics_callback));
 }
 
 void OsIntegrationManager::DeleteShortcuts(

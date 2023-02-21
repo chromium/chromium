@@ -58,10 +58,12 @@
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
+#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -1583,7 +1585,41 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
           provider->registrar_unsafe().GetAppShortName(app_id));
   EXPECT_FALSE(base::PathExists(desktop_shortcut_path));
 #endif
-}  // namespace web_app
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, RunOnOsLoginMetrics) {
+  os_hooks_suppress_.reset();
+  GURL pwa_url("https://test-app.com");
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+      registration = OsIntegrationTestOverride::OverrideForTesting();
+
+  auto* provider = WebAppProvider::GetForTest(profile());
+  const AppId& app_id = InstallPWA(pwa_url);
+
+  ASSERT_TRUE(provider->registrar_unsafe().IsInstalled(app_id));
+
+  base::HistogramTester tester;
+  base::RunLoop run_loop;
+  provider->scheduler().SetRunOnOsLoginMode(
+      app_id, RunOnOsLoginMode::kWindowed, base::BindLambdaForTesting([&]() {
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.RunOnOsLogin.Registration.Result"),
+            BucketsAre(base::Bucket(true, 1)));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      profile(), app_id, provider->registrar_unsafe().GetAppShortName(app_id)));
+
+  test::UninstallAllWebApps(profile());
+  EXPECT_FALSE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      profile(), app_id, provider->registrar_unsafe().GetAppShortName(app_id)));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.RunOnOsLogin.Unregistration.Result"),
+              BucketsAre(base::Bucket(true, 1)));
+}
 #endif
 
 // Tests that reparenting the last browser tab doesn't close the browser window.

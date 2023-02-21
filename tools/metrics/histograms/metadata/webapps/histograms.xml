@@ -1109,6 +1109,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.RunOnOsLogin.Registration.Result" enum="BooleanSuccess"
+    expires_after="2024-03-01">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of registering Run On OS Login with the OS. This is
+    triggered during OS integration whenever an app is being installed or the
+    run on OS login state is being updated by the user from various UI surfaces
+    like the chrome://apps context menu or from the app settings page for an
+    app.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.RunOnOsLogin.Unregistration.Result"
+    enum="BooleanSuccess" expires_after="2024-03-01">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of unregistering Run On OS Login with the OS. This is
+    triggered during OS integration whenever an app is being uninstalled or the
+    user is modifying the app preferences to not have it run on startup from the
+    chrome://apps context menu or app settings page.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Shortcuts.Creation.Result"
     enum="ShortcutsCreationResult" expires_after="2023-08-20">
   <owner>phillis@chromium.org</owner>
