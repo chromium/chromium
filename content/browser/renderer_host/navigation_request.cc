@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_request.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -62,6 +63,7 @@
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/cookie_utils.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -2511,6 +2513,23 @@ void NavigationRequest::SetWaitingForRendererResponse() {
   SetState(WAITING_FOR_RENDERER_RESPONSE);
 }
 
+bool NavigationRequest::ShouldAddCookieChangeListener() {
+  // The `CookieChangeListener` will only be set up if all of these are true:
+  // (1) the navigation's protocol is HTTP(s).
+  // (2) we allow a document with `Cache-control: no-store` header to
+  // enter BFCache.
+  // (3) the navigation is neither a same-document navigation nor a page
+  // activation, since in these cases, an existing `RenderFrameHost` will be
+  // used, and it would already have an existing listener, so we should skip the
+  // initialization.
+  // (4) the navigation is a primary main frame navigation, as the cookie
+  // change information will only be used in the inactive document control
+  // logic.
+  return BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() &&
+         !IsPageActivation() && !IsSameDocument() && IsInPrimaryMainFrame() &&
+         common_params_->url.SchemeIsHTTPOrHTTPS();
+}
+
 void NavigationRequest::StartNavigation() {
   DCHECK(frame_tree_node_->navigation_request() == this ||
          is_synchronous_renderer_commit_);
@@ -2528,6 +2547,24 @@ void NavigationRequest::StartNavigation() {
   starting_site_instance_ =
       frame_tree_node->current_frame_host()->GetSiteInstance();
   site_info_ = GetSiteInfoForCommonParamsURL();
+
+  // It's important to start listening to the cookie changes before the network
+  // request of the navigation begins in order to ensure the listener won't miss
+  // any cookie changes that happen after the network request is sent that
+  // potentially modify some cookie values that are used in this request.
+  // The information of cookie modification will be used to determine if the
+  // document that this navigation will load should be eligible for BFCache.
+  // The listener eventually will be transferred over to the committed
+  // `RenderFrameHost`.
+  if (ShouldAddCookieChangeListener()) {
+    // The listener should receive the change events of the cookies from the
+    // the domain of the main-frame navigation url.
+    // If the navigation gets redirected, it will be reset with the new URL when
+    // `NavigationRequest::OnRequestRedirected()` is called.
+    cookie_change_listener_ =
+        std::make_unique<RenderFrameHostImpl::CookieChangeListener>(
+            GetStoragePartitionWithCurrentSiteInfo(), common_params_->url);
+  }
 
   // Compute the redirect chain.
   // TODO(clamy): Try to simplify this and have the redirects be part of
@@ -3032,6 +3069,16 @@ void NavigationRequest::OnRequestRedirected(
   // network stack.)
   commit_params_->redirect_infos.back().new_referrer =
       common_params_->referrer->url.spec();
+
+  // When the redirection happens, the cookie_change_listener_ should be
+  // re-initialized if needed.
+  if (ShouldAddCookieChangeListener()) {
+    cookie_change_listener_ =
+        std::make_unique<RenderFrameHostImpl::CookieChangeListener>(
+            GetStoragePartitionWithCurrentSiteInfo(), common_params_->url);
+  } else {
+    cookie_change_listener_.reset();
+  }
 
   // Check Content Security Policy before the NavigationThrottles run. This
   // gives CSP a chance to modify requests that NavigationThrottles would
@@ -4443,12 +4490,7 @@ void NavigationRequest::OnStartChecksComplete(
     return;
   }
 
-  // |site_info_|'s StoragePartitionConfig should refer to the correct
-  // StoragePartition for this navigation.
-  BrowserContext* browser_context =
-      frame_tree_node_->navigator().controller().GetBrowserContext();
-  StoragePartition* partition = browser_context->GetStoragePartition(
-      site_info_.storage_partition_config());
+  StoragePartition* partition = GetStoragePartitionWithCurrentSiteInfo();
   DCHECK(partition);
 
   // |loader_| should not exist if the service worker handle
@@ -4599,6 +4641,9 @@ void NavigationRequest::OnStartChecksComplete(
 
   // Reset the compositor lock before starting the loader.
   compositor_lock_.reset();
+
+  BrowserContext* browser_context =
+      frame_tree_node_->navigator().controller().GetBrowserContext();
 
   loader_ = NavigationURLLoader::Create(
       browser_context, partition,
@@ -8781,6 +8826,15 @@ void NavigationRequest::CheckSoftNavigationHeuristicsInvariants() {
   DCHECK(IsSameDocument());
   DCHECK(IsInMainFrame());
   DCHECK(!frame_tree_node()->IsFencedFrameRoot());
+}
+
+StoragePartition* NavigationRequest::GetStoragePartitionWithCurrentSiteInfo() {
+  // `site_info_`'s StoragePartitionConfig should refer to the correct
+  // `StoragePartition` for this navigation.
+  return frame_tree_node_->navigator()
+      .controller()
+      .GetBrowserContext()
+      ->GetStoragePartition(site_info_.storage_partition_config());
 }
 
 }  // namespace content

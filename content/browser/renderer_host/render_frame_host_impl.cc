@@ -12180,6 +12180,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     }
     RecordDocumentCreatedUkmEvent(params->origin, document_ukm_source_id,
                                   ukm_recorder);
+
+    // We only replace the `CookieChangeListener` with the one initialized by
+    // the navigation request when navigating to a new document. Otherwise, the
+    // existing `CookieChangeListener` will be reused.
+    cookie_change_listener_ = navigation_request->TakeCookieChangeListener();
   }
 
   if (!is_same_document_navigation) {
@@ -14698,6 +14703,33 @@ net::CookieSettingOverrides RenderFrameHostImpl::GetCookieSettingOverrides() {
   auto subresource_loader_factories_config =
       SubresourceLoaderFactoriesConfig::ForLastCommittedNavigation(*this);
   return subresource_loader_factories_config.cookie_setting_overrides();
+}
+
+RenderFrameHostImpl::CookieChangeListener::CookieChangeListener(
+    StoragePartition* storage_partition,
+    GURL& url) {
+  DCHECK(storage_partition);
+  auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
+  cookie_manager->AddCookieChangeListener(
+      url, absl::nullopt,
+      cookie_change_listener_receiver_.BindNewPipeAndPassRemote());
+}
+
+RenderFrameHostImpl::CookieChangeListener::~CookieChangeListener() = default;
+
+void RenderFrameHostImpl::CookieChangeListener::OnCookieChange(
+    const net::CookieChangeInfo& change) {
+  // TODO (https://crbug.com/1399741): After adding the invalidation signals
+  // API, we could mark the page as ineligible for BFCache as soon as the cookie
+  // change event is received.
+  cookie_change_info_.http_only_cookie_modified |= change.cookie.IsHttpOnly();
+  cookie_change_info_.cookie_modified = true;
+}
+
+RenderFrameHostImpl::CookieChangeListener::CookieChangeInfo
+RenderFrameHostImpl::GetCookieChangeInfo() {
+  return cookie_change_listener_ ? cookie_change_listener_->cookie_change_info()
+                                 : CookieChangeListener::CookieChangeInfo{};
 }
 
 }  // namespace content

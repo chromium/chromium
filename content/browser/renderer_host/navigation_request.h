@@ -1124,6 +1124,11 @@ class CONTENT_EXPORT NavigationRequest
   void AddDeferredSubframeNavigationThrottle(
       base::WeakPtr<SubframeHistoryNavigationThrottle> throttle);
 
+  std::unique_ptr<RenderFrameHostImpl::CookieChangeListener>
+  TakeCookieChangeListener() {
+    return std::move(cookie_change_listener_);
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -1767,6 +1772,13 @@ class CONTENT_EXPORT NavigationRequest
   // IsInMainFrame().
   void UnblockPendingSubframeNavigationRequestsIfNeeded();
 
+  // Returns if we should add/reset the `CookieChangeListener` for the current
+  // navigation.
+  bool ShouldAddCookieChangeListener();
+
+  // Returns the `StoragePartition` based on the config from the `site_info_`.
+  StoragePartition* GetStoragePartitionWithCurrentSiteInfo();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
@@ -2406,6 +2418,16 @@ class CONTENT_EXPORT NavigationRequest
   // frame commits.
   absl::optional<base::UnguessableToken>
       main_frame_same_document_navigation_token_;
+
+  // The listener that receives cookie change events and maintains cookie change
+  // information for the domain of the URL that this `NavigationRequest` is
+  // navigating to. The listener will observe all the cookie changes starting
+  // from the navigation/redirection, and it will be moved to the
+  // `RenderFrameHostImpl` when the navigation is committed and continues
+  // observing until the destruction of the document.
+  // See `RenderFrameHostImpl::CookieChangeListener`.
+  std::unique_ptr<RenderFrameHostImpl::CookieChangeListener>
+      cookie_change_listener_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

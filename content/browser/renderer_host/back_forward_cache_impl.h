@@ -28,7 +28,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -139,15 +138,12 @@ class CONTENT_EXPORT BackForwardCacheImpl
   GetChannelAssociatedMessageHandlingPolicy();
 
   // BackForwardCache entry, consisting of the page and associated metadata.
-  class Entry : public ::network::mojom::CookieChangeListener {
+  class Entry {
    public:
     explicit Entry(std::unique_ptr<StoredPage> stored_page);
-    ~Entry() override;
+    ~Entry();
 
     void WriteIntoTrace(perfetto::TracedValue context);
-
-    // Starts monitoring the cookie change in this entry.
-    void StartMonitoringCookieChange();
 
     // Indicates whether or not all the |render_view_hosts| in this entry have
     // received the acknowledgement from renderer that it finished running
@@ -183,23 +179,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
    private:
     friend class BackForwardCacheImpl;
-
-    // ::network::mojom::CookieChangeListener
-    void OnCookieChange(const net::CookieChangeInfo& change) override;
-
-    mojo::Receiver<::network::mojom::CookieChangeListener>
-        cookie_listener_receiver_{this};
-
-    struct CookieModified {
-      // Indicates whether or not cookie on the bfcache entry has been modified
-      // while the entry is in bfcache.
-      bool cookie_modified = false;
-      // Indicates whether or not HTTPOnly cookie on the bfcache entry
-      // has been modified while the entry is in bfcache.
-      bool http_only_cookie_modified = false;
-    };
-    // Only populated when |AllowStoringPagesWithCacheControlNoStore()| is true.
-    absl::optional<CookieModified> cookie_modified_;
 
     std::unique_ptr<StoredPage> stored_page_;
   };
@@ -393,6 +372,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
       RenderFrameHostImpl& rfh,
       BackForwardCacheCanStoreDocumentResult& eviction_reason);
 
+  // Returns true if the flag is on for pages with cache-control:no-store to
+  // get restored from back/forward cache unless cookies change.
+  static bool AllowStoringPagesWithCacheControlNoStore();
+
  private:
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
@@ -455,10 +438,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // be called after adding or removing an entry in |entries_|.
   void AddProcessesForEntry(Entry& entry);
   void RemoveProcessesForEntry(Entry& entry);
-
-  // Returns true if the flag is on for pages with cache-control:no-store to
-  // get restored from back/forward cache unless cookies change.
-  static bool AllowStoringPagesWithCacheControlNoStore();
 
   static BlockListedFeatures GetAllowedFeatures(
       RequestedFeatures requested_features);

@@ -482,12 +482,7 @@ BackForwardCacheImpl::GetChannelAssociatedMessageHandlingPolicy() {
 }
 
 BackForwardCacheImpl::Entry::Entry(std::unique_ptr<StoredPage> stored_page)
-    : stored_page_(std::move(stored_page)) {
-  if (BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore()) {
-    cookie_modified_ = {/*http_only_cookie_modified*/ false,
-                        /*cookie_modified*/ false};
-  }
-}
+    : stored_page_(std::move(stored_page)) {}
 
 BackForwardCacheImpl::Entry::~Entry() = default;
 
@@ -495,26 +490,6 @@ void BackForwardCacheImpl::Entry::WriteIntoTrace(
     perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("render_frame_host", render_frame_host());
-}
-
-void BackForwardCacheImpl::Entry::StartMonitoringCookieChange() {
-  RenderFrameHostImpl* rfh = stored_page_->render_frame_host();
-  StoragePartition* storage_partition = rfh->GetStoragePartition();
-  auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
-  if (!cookie_listener_receiver_.is_bound()) {
-    // Listening only to the main document's URL, not the documents inside the
-    // subframes.
-    cookie_manager->AddCookieChangeListener(
-        rfh->GetLastCommittedURL(), absl::nullopt,
-        cookie_listener_receiver_.BindNewPipeAndPassRemote());
-  }
-}
-
-void BackForwardCacheImpl::Entry::OnCookieChange(
-    const net::CookieChangeInfo& change) {
-  DCHECK(cookie_modified_.has_value());
-  cookie_modified_->http_only_cookie_modified = change.cookie.IsHttpOnly();
-  cookie_modified_->cookie_modified = true;
 }
 
 void BackForwardCacheImpl::RenderProcessBackgroundedChanged(
@@ -630,20 +605,13 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
     return;
   }
 
-  auto* matching_entry = FindMatchingEntry(render_frame_host->GetPage());
-  // |matching_entry| can be nullptr for tests because this can be called from
-  // |GetCurrentBackForwardCacheEligibility()|, at which point |rfh| may not
-  // have a matching entry yet.
-  if (!matching_entry)
-    return;
-
   // Note that kCacheControlNoStoreHTTPOnlyCookieModified,
   // kCacheControlNoStoreCookieModified and kCacheControlNoStore are mutually
   // exclusive.
-  if (matching_entry->cookie_modified_->http_only_cookie_modified) {
+  if (render_frame_host->GetCookieChangeInfo().http_only_cookie_modified) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kCacheControlNoStoreHTTPOnlyCookieModified);
-  } else if (matching_entry->cookie_modified_->cookie_modified) {
+  } else if (render_frame_host->GetCookieChangeInfo().cookie_modified) {
     // JavaScript cookies are modified but not HTTP cookies. Only restore based
     // on the experiment level.
     if (GetCacheControlNoStoreLevel() <=
@@ -1089,14 +1057,6 @@ void BackForwardCacheImpl::StoreEntry(
 #endif
 
   entry->render_frame_host()->DidEnterBackForwardCache();
-  if (AllowStoringPagesWithCacheControlNoStore()) {
-    if (entry->render_frame_host()->GetBackForwardCacheDisablingFeatures().Has(
-            WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
-      // Start monitoring the cookie change only when cache-control:no-store
-      // header is present.
-      entry->StartMonitoringCookieChange();
-    }
-  }
   entry->SetStoredPageDelegate(this);
   entries_.push_front(std::move(entry));
   AddProcessesForEntry(*entries_.front());
@@ -1417,6 +1377,7 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
   }
 }
 
+// static
 bool BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() {
   return GetCacheControlNoStoreLevel() >
          CacheControlNoStoreExperimentLevel::kDoNotStore;
