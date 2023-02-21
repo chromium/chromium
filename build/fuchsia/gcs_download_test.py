@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import subprocess
 import sys
 import tarfile
@@ -27,18 +28,23 @@ def _mock_task(status_code: int = 0, stderr: str = '') -> mock.Mock:
 @mock.patch('tempfile.TemporaryDirectory')
 @mock.patch('subprocess.run')
 @mock.patch('tarfile.open')
+@unittest.skipIf(os.name == 'nt', 'Fuchsia tests not supported on Windows')
 class TestDownloadAndUnpackFromCloudStorage(unittest.TestCase):
   def testHappyPath(self, mock_tarfile, mock_run, mock_tmp_dir):
     mock_run.return_value = _mock_task()
-    mock_tmp_dir.return_value.__enter__.return_value = '/some/tmp/dir'
+
+    tmp_dir = os.path.join('some', 'tmp', 'dir')
+    mock_tmp_dir.return_value.__enter__.return_value = tmp_dir
 
     mock_seq = mock.Mock()
     mock_seq.attach_mock(mock_run, 'Run')
     mock_seq.attach_mock(mock_tarfile, 'Untar')
     mock_seq.attach_mock(mock_tmp_dir, 'MkTmpD')
 
-    DownloadAndUnpackFromCloudStorage('gs://some/url', 'output/dir')
+    output_dir = os.path.join('output', 'dir')
+    DownloadAndUnpackFromCloudStorage('gs://some/url', output_dir)
 
+    image_tgz_path = os.path.join(tmp_dir, 'image.tgz')
     mock_seq.assert_has_calls([
         mock.call.MkTmpD(),
         mock.call.MkTmpD().__enter__(),
@@ -47,8 +53,8 @@ class TestDownloadAndUnpackFromCloudStorage(unittest.TestCase):
                       stdout=subprocess.PIPE,
                       check=True,
                       encoding='utf-8'),
-        mock.call.Untar(name='/some/tmp/dir/image.tgz', mode='r|gz'),
-        mock.call.Untar().extractall(path='output/dir'),
+        mock.call.Untar(name=image_tgz_path, mode='r|gz'),
+        mock.call.Untar().extractall(path=output_dir),
         mock.call.MkTmpD().__exit__(None, None, None)
     ],
                               any_order=False)
@@ -56,8 +62,7 @@ class TestDownloadAndUnpackFromCloudStorage(unittest.TestCase):
     # Verify cmd.
     cmd = ' '.join(mock_run.call_args[0][0])
     self.assertRegex(
-        cmd,
-        r'.*python\s.*gsutil.py\s+cp\s+gs://some/url\s+/some/tmp/dir/image.tgz')
+        cmd, r'.*python\s.*gsutil.py\s+cp\s+gs://some/url\s+' + image_tgz_path)
 
   def testFailedTarOpen(self, mock_tarfile, mock_run, mock_tmp_dir):
     mock_run.return_value = _mock_task(stderr='some error')
