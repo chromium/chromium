@@ -188,6 +188,9 @@ struct BLINK_EXPORT WebNavigationInfo {
   // alive until we create the NavigationRequest.
   CrossVariantMojoRemote<mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
       initiator_policy_container_keep_alive_handle;
+
+  // The initiator frame's LocalDOMWindow's has_storage_access state.
+  bool has_storage_access = false;
 };
 
 // This structure holds all information provided by the embedder that is
@@ -528,6 +531,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // <enum_representing_runtime_enabled_feature, enabled/disabled>
   base::flat_map<::blink::mojom::RuntimeFeatureState, bool>
       modified_runtime_features;
+
+  // Whether the document should be loaded with the has_storage_access bit set.
+  bool has_storage_access = false;
 };
 
 }  // namespace blink

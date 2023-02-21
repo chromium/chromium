@@ -1356,7 +1356,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::string() /* href_translate */,
           false /* is_history_navigation_in_new_child_frame */,
           base::TimeTicks::Now() /* input_start */,
-          network::mojom::RequestDestination::kEmpty);
+          network::mojom::RequestDestination::kEmpty,
+          /*has_storage_access=*/false);
   // Note that some params are set to default values (e.g. page_state set to
   // the default blink::PageState()) even if the DidCommit message that came
   // from the renderer contained relevant info that can be used to fill the
@@ -3056,6 +3057,9 @@ void NavigationRequest::OnRequestRedirected(
           .IsSameOriginWith(redirect_info.new_url);
   did_receive_early_hints_before_cross_origin_redirect_ |=
       did_create_early_hints_manager_params_ && !is_same_origin_redirect;
+
+  common_params_->has_storage_access =
+      common_params_->has_storage_access && is_same_origin_redirect;
 
   commit_params_->redirects.push_back(common_params_->url);
   common_params_->url = redirect_info.new_url;

@@ -563,6 +563,32 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation) {
                 SecurityOrigin::Create(same_origin_url)),
             local_frame->DomWindow()->GetStorageKey());
 
+  EXPECT_FALSE(local_frame->DomWindow()->HasStorageAccess());
+
+  EXPECT_TRUE(local_frame->Loader()
+                  .GetDocumentLoader()
+                  ->LastNavigationHadTrustedInitiator());
+}
+
+TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
+  const KURL& requestor_url =
+      KURL(NullURL(), "https://www.example.com/foo.html");
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
+
+  const KURL& same_origin_url =
+      KURL(NullURL(), "https://www.example.com/bar.html");
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), same_origin_url);
+  params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
+  params->has_storage_access = true;
+  LocalFrame* local_frame =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+
+  EXPECT_TRUE(local_frame->DomWindow()->HasStorageAccess());
+
   EXPECT_TRUE(local_frame->Loader()
                   .GetDocumentLoader()
                   ->LastNavigationHadTrustedInitiator());

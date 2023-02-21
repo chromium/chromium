@@ -59,7 +59,9 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
 //
 // This function has to be called on the UI thread.
 bool VerifyBeginNavigationCommonParams(
+    const RenderFrameHostImpl& current_rfh,
     SiteInstance* site_instance,
+    blink::LocalFrameToken* initiator_frame_token,
     blink::mojom::CommonNavigationParams* common_params);
 
 // Verify that the initiator frame identified by `initiator_frame_token` and

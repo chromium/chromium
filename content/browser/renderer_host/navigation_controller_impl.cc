@@ -3855,7 +3855,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           network::mojom::CSPDisposition::CHECK, std::vector<int>(),
           params.href_translate,
           false /* is_history_navigation_in_new_child_frame */,
-          params.input_start, network::mojom::RequestDestination::kEmpty);
+          params.input_start, network::mojom::RequestDestination::kEmpty,
+          /*has_storage_access=*/false);
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(

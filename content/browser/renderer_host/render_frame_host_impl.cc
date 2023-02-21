@@ -8219,8 +8219,10 @@ void RenderFrameHostImpl::BeginNavigation(
 
   blink::mojom::CommonNavigationParamsPtr validated_common_params =
       unvalidated_common_params.Clone();
-  if (!VerifyBeginNavigationCommonParams(GetSiteInstance(),
-                                         &*validated_common_params)) {
+  if (!VerifyBeginNavigationCommonParams(
+          *this, GetSiteInstance(),
+          base::OptionalToPtr(begin_params->initiator_frame_token),
+          &*validated_common_params)) {
     return;
   }
 

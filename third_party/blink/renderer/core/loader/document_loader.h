@@ -813,6 +813,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   absl::optional<FencedFrame::RedactedFencedFrameProperties>
       fenced_frame_properties_;
+
+  // Indicates whether the document should be loaded with its has_storage_access
+  // bit set.
+  const bool has_storage_access_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

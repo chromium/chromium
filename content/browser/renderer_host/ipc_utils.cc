@@ -70,6 +70,32 @@ bool VerifyInitiatorOrigin(int process_id,
   return true;
 }
 
+bool VerifyHasStorageAccess(
+    const RenderFrameHostImpl& current_rfh,
+    blink::LocalFrameToken* initiator_frame_token,
+    const blink::mojom::CommonNavigationParams& common_params) {
+  if (!common_params.has_storage_access) {
+    return true;
+  }
+
+  // The initiator origin must be provided, and must be same-origin with the
+  // request URL.
+  if (!common_params.initiator_origin.has_value() ||
+      !common_params.initiator_origin.value().IsSameOriginWith(
+          common_params.url)) {
+    return false;
+  }
+
+  // The initiator's frame token must be provided and must be equal to the
+  // current frame token.
+  if (!initiator_frame_token ||
+      *initiator_frame_token != current_rfh.GetFrameToken()) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool VerifyDownloadUrlParams(SiteInstance* site_instance,
@@ -150,7 +176,9 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
 }
 
 bool VerifyBeginNavigationCommonParams(
+    const RenderFrameHostImpl& current_rfh,
     SiteInstance* site_instance,
+    blink::LocalFrameToken* initiator_frame_token,
     blink::mojom::CommonNavigationParams* common_params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(site_instance);
@@ -205,6 +233,14 @@ bool VerifyBeginNavigationCommonParams(
   // navigate an existing document to a different site.
   if (NavigationTypeUtils::IsSameDocument(common_params->navigation_type))
     return false;
+
+  // Verify |has_storage_access|. This corresponds to some of the changes to
+  // "create navigation params by fetching" in the Storage Access API spec:
+  // https://privacycg.github.io/storage-access/#navigation
+  if (!VerifyHasStorageAccess(current_rfh, initiator_frame_token,
+                              *common_params)) {
+    return false;
+  }
 
   // Verification succeeded.
   return true;
