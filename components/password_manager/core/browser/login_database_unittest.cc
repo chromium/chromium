@@ -1842,7 +1842,7 @@ TEST(LoginDatabaseFutureLoginDatabase, ShouldNotDowngradeDatabaseVersion) {
     // Set the DB version to be coming from the future.
     ASSERT_TRUE(meta_table.Init(&connection, kDBFutureVersion,
                                 kCompatibleVersionNumber));
-    meta_table.SetVersionNumber(kDBFutureVersion);
+    ASSERT_TRUE(meta_table.SetVersionNumber(kDBFutureVersion));
   }
   {
     // Open the database again.
