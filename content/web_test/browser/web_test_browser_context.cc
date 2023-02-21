@@ -79,7 +79,7 @@ PushMessagingService* WebTestBrowserContext::GetPushMessagingService() {
 PermissionControllerDelegate*
 WebTestBrowserContext::GetPermissionControllerDelegate() {
   if (!permission_manager_.get())
-    permission_manager_ = std::make_unique<WebTestPermissionManager>();
+    permission_manager_ = std::make_unique<WebTestPermissionManager>(*this);
   return permission_manager_.get();
 }
 

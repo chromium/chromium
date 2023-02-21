@@ -27,7 +27,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1470,7 +1469,8 @@ void WebTestControlHost::SetPermission(const std::string& name,
   WebTestContentBrowserClient::Get()
       ->GetWebTestBrowserContext()
       ->GetWebTestPermissionManager()
-      ->SetPermission(type, status, origin, embedding_origin);
+      ->SetPermission(type, status, origin, embedding_origin,
+                      base::DoNothing());
 }
 
 void WebTestControlHost::GetWritableDirectory(
