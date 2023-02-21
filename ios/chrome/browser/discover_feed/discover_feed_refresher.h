@@ -8,10 +8,6 @@
 // An interface to refresh the Discover Feed.
 class DiscoverFeedRefresher {
  public:
-  // Refreshes the Discover Feed.
-  // DEPRECATED: use `RefreshFeed(bool feed_visible)`.
-  virtual void RefreshFeed() {}
-
   // Refreshes the Discover Feed, indicating whether the feed is visible at the
   // time of the request.
   virtual void RefreshFeed(bool feed_visible) = 0;
