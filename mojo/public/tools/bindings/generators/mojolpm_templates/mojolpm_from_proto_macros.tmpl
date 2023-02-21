@@ -215,7 +215,7 @@ bool FromProto(
   output = static_cast<{{mojom_type}}>(input);
   return true;
 {%-   else %}
-  return mojo::EnumTraits<{{enum_type}}, {{mojom_type}}>::FromMojom(
+  return ::mojo::EnumTraits<{{enum_type}}, {{mojom_type}}>::FromMojom(
     static_cast<{{enum_type}}>(input), &output);
 {%-   endif %}
 }
@@ -319,7 +319,7 @@ bool FromProto(
 {%-     set dataview_type = (union|get_qualified_name_for_kind(flatten_nested_kind=True)) ~ "DataView" %}
 {%-     set data_type = (union|get_qualified_name_for_kind(flatten_nested_kind=True, internal=True)) %}
   ::mojo::Message mojolpm_message(0, 0, 0, 0, nullptr);
-  mojo::internal::MessageFragment<{{data_type}}> mojolpm_fragment(
+  ::mojo::internal::MessageFragment<{{data_type}}> mojolpm_fragment(
       mojolpm_message);
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{union_type}}>::Serialize(

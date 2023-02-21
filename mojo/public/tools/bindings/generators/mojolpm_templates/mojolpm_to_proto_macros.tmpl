@@ -179,7 +179,9 @@ bool ToProto(
     }
 {%-   if kind.value_kind|is_nullable_kind %}
     if ({{util.not_null(kind.value_kind, 'in_entry.second')}}) {
-{%-     if kind.value_kind|is_move_only_kind %}
+{%-     if kind.value_kind|is_struct_kind %}
+      result = ToProto(std::move(in_entry.second), *out_entry->mutable_value());
+{%-     elif kind.value_kind|is_move_only_kind %}
       result = ToProto(std::move(*in_entry.second), *out_entry->mutable_value());
 {%-     else %}
       result = ToProto(*in_entry.second, *out_entry->mutable_value());
@@ -286,7 +288,7 @@ bool ToProto(
   return true;
 {%-   else %}
   output = static_cast<{{proto_type}}>(
-    mojo::EnumTraits<{{enum_type}}, {{mojom_type}}>::ToMojom(input));
+    ::mojo::EnumTraits<{{enum_type}}, {{mojom_type}}>::ToMojom(input));
   return true;
 {%-   endif %}
 }{{"\n"-}}
