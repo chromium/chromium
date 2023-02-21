@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/color_utils.h"
@@ -34,7 +33,6 @@ constexpr SkColor kDragColor60Blue =
 constexpr SkColor kHoverColor = SkColorSetA(gfx::kGoogleBlue600, 0x66 /*40%*/);
 
 constexpr int kParentPadding = 16;
-constexpr int kBackgroundBlur = 20;
 constexpr int kMenuEntrySize = 48;
 constexpr int kMenuEntryIconSize = 24;
 constexpr int kMenuEntryCornerRadius = 8;
@@ -67,10 +65,6 @@ MenuEntryView::MenuEntryView(
   SetImageModel(views::Button::STATE_NORMAL, game_icon);
   SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                    kMenuEntryCornerRadius));
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(kBackgroundBlur);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kMenuEntryCornerRadius));
 
   SetSize(allow_reposition_
               ? gfx::Size(kMenuEntrySize, kMenuEntrySize)

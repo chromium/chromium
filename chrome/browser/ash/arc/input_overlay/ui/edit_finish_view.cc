@@ -16,7 +16,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -36,7 +35,6 @@ constexpr int kViewMargin = 8;
 constexpr int kViewCornerRadius = 16;
 constexpr int kViewBackgroundColor = SkColorSetA(SK_ColorBLACK, 0xCC /*80%*/);
 constexpr int kParentPadding = 16;
-constexpr int kBackgroundBlur = 10;
 // Space between children.
 constexpr int kSpaceRow = 4;
 // Alpha view features.
@@ -230,13 +228,6 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
                     ? views::CreateRoundedRectBackground(kViewBackgroundColor,
                                                          kViewCornerRadius)
                     : views::CreateSolidBackground(SK_ColorTRANSPARENT));
-
-  if (AllowReposition()) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetBackgroundBlur(kBackgroundBlur);
-    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kViewCornerRadius));
-  }
 
   auto on_mouse_pressed_callback = base::BindRepeating(
       &EditFinishView::OnMousePressed, base::Unretained(this));
