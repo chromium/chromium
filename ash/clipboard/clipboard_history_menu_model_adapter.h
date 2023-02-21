@@ -35,7 +35,8 @@ class ClipboardHistoryResourceManager;
 
 // Used to show the clipboard history menu, which holds the last few things
 // copied.
-class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
+class ASH_EXPORT ClipboardHistoryMenuModelAdapter
+    : public views::MenuModelAdapter {
  public:
   static std::unique_ptr<ClipboardHistoryMenuModelAdapter> Create(
       ui::SimpleMenuModel::Delegate* delegate,

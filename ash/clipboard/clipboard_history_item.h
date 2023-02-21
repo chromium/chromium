@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/models/image_model.h"
 
 namespace ash {
 
@@ -54,6 +55,12 @@ class ASH_EXPORT ClipboardHistoryItem {
   const base::Time time_copied() const { return time_copied_; }
   ui::ClipboardInternalFormat main_format() const { return main_format_; }
   DisplayFormat display_format() const { return display_format_; }
+  void set_html_preview(const ui::ImageModel& html_preview) {
+    html_preview_ = html_preview;
+  }
+  const absl::optional<ui::ImageModel>& html_preview() const {
+    return html_preview_;
+  }
   const std::u16string& display_text() const { return display_text_; }
 
  private:
@@ -73,6 +80,10 @@ class ASH_EXPORT ClipboardHistoryItem {
   // The item's categorization based on the options we have for presenting data
   // to the user.
   const DisplayFormat display_format_;
+
+  // Cached display image. For HTML items, this will be a placeholder image
+  // until the preview is ready; for non-HTML items, there will be no value.
+  absl::optional<ui::ImageModel> html_preview_;
 
   // The text that should be displayed on this item's menu entry.
   const std::u16string display_text_;

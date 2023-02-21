@@ -7,81 +7,25 @@
 #include <string>
 
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/image/canvas_image_source.h"
-#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
-
-namespace {
-
-constexpr int kPlaceholderImageWidth = 234;
-constexpr int kPlaceholderImageHeight = 74;
-constexpr int kPlaceholderImageOutlineCornerRadius = 8;
-constexpr int kPlaceholderImageSVGSize = 32;
-
-// Used to draw the UnrenderedHTMLPlaceholderImage, which is shown while HTML is
-// rendering. Drawn in order to turn the square and single colored SVG into a
-// multicolored rectangle image.
-class UnrenderedHTMLPlaceholderImage : public gfx::CanvasImageSource {
- public:
-  UnrenderedHTMLPlaceholderImage()
-      : gfx::CanvasImageSource(
-            gfx::Size(kPlaceholderImageWidth, kPlaceholderImageHeight)) {}
-  UnrenderedHTMLPlaceholderImage(const UnrenderedHTMLPlaceholderImage&) =
-      delete;
-  UnrenderedHTMLPlaceholderImage& operator=(
-      const UnrenderedHTMLPlaceholderImage&) = delete;
-  ~UnrenderedHTMLPlaceholderImage() override = default;
-
-  // gfx::CanvasImageSource:
-  void Draw(gfx::Canvas* canvas) override {
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setAntiAlias(true);
-    flags.setColor(gfx::kGoogleGrey100);
-    canvas->DrawRoundRect(
-        /*rect=*/{kPlaceholderImageWidth, kPlaceholderImageHeight},
-        kPlaceholderImageOutlineCornerRadius, flags);
-
-    flags = cc::PaintFlags();
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setAntiAlias(true);
-    const gfx::ImageSkia center_image =
-        gfx::CreateVectorIcon(kUnrenderedHtmlPlaceholderIcon,
-                              kPlaceholderImageSVGSize, gfx::kGoogleGrey600);
-    canvas->DrawImageInt(
-        center_image, (size().width() - center_image.size().width()) / 2,
-        (size().height() - center_image.size().height()) / 2, flags);
-  }
-};
-
-}  // namespace
 
 // ClipboardHistoryResourceManager ---------------------------------------------
 
 ClipboardHistoryResourceManager::ClipboardHistoryResourceManager(
-    const ClipboardHistory* clipboard_history)
-    : clipboard_history_(clipboard_history),
-      placeholder_image_model_(
-          ui::ImageModel::FromImageSkia(gfx::CanvasImageSource::MakeImageSkia<
-                                        UnrenderedHTMLPlaceholderImage>())) {
+    ClipboardHistory* clipboard_history)
+    : clipboard_history_(clipboard_history) {
   clipboard_history_->AddObserver(this);
 }
 
@@ -89,17 +33,6 @@ ClipboardHistoryResourceManager::~ClipboardHistoryResourceManager() {
   clipboard_history_->RemoveObserver(this);
   if (ClipboardImageModelFactory::Get())
     ClipboardImageModelFactory::Get()->OnShutdown();
-}
-
-ui::ImageModel ClipboardHistoryResourceManager::GetImageModel(
-    const ClipboardHistoryItem& item) const {
-  // Use a cached image model when possible.
-  auto cached_image_model = FindCachedImageModelForItem(item);
-  if (cached_image_model == cached_image_models_.end() ||
-      cached_image_model->image_model.IsEmpty()) {
-    return placeholder_image_model_;
-  }
-  return cached_image_model->image_model;
 }
 
 void ClipboardHistoryResourceManager::AddObserver(Observer* observer) const {
@@ -110,57 +43,64 @@ void ClipboardHistoryResourceManager::RemoveObserver(Observer* observer) const {
   observers_.RemoveObserver(observer);
 }
 
-ClipboardHistoryResourceManager::CachedImageModel::CachedImageModel() = default;
-
-ClipboardHistoryResourceManager::CachedImageModel::CachedImageModel(
-    const CachedImageModel& other) = default;
-
-ClipboardHistoryResourceManager::CachedImageModel&
-ClipboardHistoryResourceManager::CachedImageModel::operator=(
-    const CachedImageModel&) = default;
-
-ClipboardHistoryResourceManager::CachedImageModel::~CachedImageModel() =
+ClipboardHistoryResourceManager::ImageModelRequest::ImageModelRequest() =
     default;
 
-void ClipboardHistoryResourceManager::CacheImageModel(
+ClipboardHistoryResourceManager::ImageModelRequest::ImageModelRequest(
+    const ImageModelRequest& other) = default;
+
+ClipboardHistoryResourceManager::ImageModelRequest&
+ClipboardHistoryResourceManager::ImageModelRequest::operator=(
+    const ImageModelRequest&) = default;
+
+ClipboardHistoryResourceManager::ImageModelRequest::~ImageModelRequest() =
+    default;
+
+void ClipboardHistoryResourceManager::OnImageModelRendered(
     const base::UnguessableToken& id,
     ui::ImageModel image_model) {
-  auto cached_image_model = base::ConstCastIterator(
-      cached_image_models_, FindCachedImageModelForId(id));
-  if (cached_image_model == cached_image_models_.end())
+  auto image_model_request = base::ranges::find(
+      image_model_requests_, id,
+      &ClipboardHistoryResourceManager::ImageModelRequest::id);
+  if (image_model_request == image_model_requests_.end()) {
     return;
+  }
 
-  cached_image_model->image_model = std::move(image_model);
+  // Set the HTML preview for each item attached to `id`'s request.
+  for (auto& item : clipboard_history_->GetItems()) {
+    if (!base::Contains(image_model_request->clipboard_history_item_ids,
+                        item.id())) {
+      continue;
+    }
+
+    DCHECK(item.html_preview().has_value());
+    if (item.html_preview().value() != image_model) {
+      item.set_html_preview(image_model);
+    }
+  }
 
   for (auto& observer : observers_) {
     observer.OnCachedImageModelUpdated(
-        cached_image_model->clipboard_history_item_ids);
+        image_model_request->clipboard_history_item_ids);
   }
-}
 
-std::vector<ClipboardHistoryResourceManager::CachedImageModel>::const_iterator
-ClipboardHistoryResourceManager::FindCachedImageModelForId(
-    const base::UnguessableToken& id) const {
-  return base::ranges::find(
-      cached_image_models_, id,
-      &ClipboardHistoryResourceManager::CachedImageModel::id);
-}
-
-std::vector<ClipboardHistoryResourceManager::CachedImageModel>::const_iterator
-ClipboardHistoryResourceManager::FindCachedImageModelForItem(
-    const ClipboardHistoryItem& item) const {
-  return base::ranges::find_if(
-      cached_image_models_, [&](const auto& cached_image_model) {
-        return base::Contains(cached_image_model.clipboard_history_item_ids,
-                              item.id());
-      });
+  image_model_requests_.erase(image_model_request);
 }
 
 void ClipboardHistoryResourceManager::CancelUnfinishedRequests() {
-  for (const auto& cached_image_model : cached_image_models_) {
-    if (cached_image_model.image_model.IsEmpty())
-      ClipboardImageModelFactory::Get()->CancelRequest(cached_image_model.id);
+  for (const auto& image_model_request : image_model_requests_) {
+    ClipboardImageModelFactory::Get()->CancelRequest(image_model_request.id);
   }
+}
+
+std::vector<ClipboardHistoryResourceManager::ImageModelRequest>::iterator
+ClipboardHistoryResourceManager::GetImageModelRequestForItem(
+    const ClipboardHistoryItem& item) {
+  return base::ranges::find_if(
+      image_model_requests_, [&](const auto& image_model_request) {
+        return base::Contains(image_model_request.clipboard_history_item_ids,
+                              item.id());
+      });
 }
 
 void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
@@ -176,25 +116,31 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
     return;
   }
 
-  const auto& items = clipboard_history_->GetItems();
+  auto& items = clipboard_history_->GetItems();
 
-  // See if we have an |existing| item that will render the same as |item|.
+  // See if we have an `existing` item that will render the same as `item`.
   auto it = base::ranges::find_if(items, [&](const auto& existing) {
     return &existing != &item &&
-           !(existing.data().format() &
-             static_cast<int>(ui::ClipboardInternalFormat::kPng)) &&
+           existing.display_format() ==
+               ClipboardHistoryItem::DisplayFormat::kHtml &&
            existing.data().markup_data() == item.data().markup_data();
   });
 
-  // If we don't have an existing image model in the cache, create one and
-  // instruct ClipboardImageModelFactory to render it. Note that the factory may
+  // If no existing item will render the same as `item`, create a new request to
+  // render an HTML preview for `item`. Note that the image model factory may
   // or may not start rendering immediately depending on its activation status.
   if (it == items.end()) {
     base::UnguessableToken id = base::UnguessableToken::Create();
-    CachedImageModel cached_image_model;
-    cached_image_model.id = id;
-    cached_image_model.clipboard_history_item_ids.push_back(item.id());
-    cached_image_models_.push_back(std::move(cached_image_model));
+    ImageModelRequest image_model_request;
+    image_model_request.id = id;
+    image_model_request.clipboard_history_item_ids.push_back(item.id());
+    image_model_requests_.push_back(std::move(image_model_request));
+
+    // `image_model_factory` can be nullptr in tests.
+    auto* image_model_factory = ClipboardImageModelFactory::Get();
+    if (!image_model_factory) {
+      return;
+    }
 
     // `text_input_client` can be nullptr in tests.
     const auto* text_input_client =
@@ -202,23 +148,37 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
             display::Screen::GetScreen()->GetPrimaryDisplay().id())
             ->GetInputMethod()
             ->GetTextInputClient();
-
     const gfx::Rect bounding_box =
         text_input_client ? text_input_client->GetSelectionBoundingBox()
                           : gfx::Rect();
-    ClipboardImageModelFactory::Get()->Render(
+
+    image_model_factory->Render(
         id, item.data().markup_data(),
         IsRectContainedByAnyDisplay(bounding_box) ? bounding_box.size()
                                                   : gfx::Size(),
-        base::BindOnce(&ClipboardHistoryResourceManager::CacheImageModel,
+        base::BindOnce(&ClipboardHistoryResourceManager::OnImageModelRendered,
                        weak_factory_.GetWeakPtr(), id));
     return;
   }
-  // If we do have an existing model, we need only to update its usages.
-  auto cached_image_model = base::ConstCastIterator(
-      cached_image_models_, FindCachedImageModelForItem(*it));
-  DCHECK(cached_image_model != cached_image_models_.end());
-  cached_image_model->clipboard_history_item_ids.push_back(item.id());
+
+  // If there is an existing item that will render the same as `item`, check
+  // whether the existing item's preview has rendered.
+  auto image_model_request = GetImageModelRequestForItem(*it);
+  if (image_model_request != image_model_requests_.end()) {
+    // If rendering is still in progress, just note that `item` will need to
+    // hear about the result as well.
+    image_model_request->clipboard_history_item_ids.push_back(item.id());
+  } else {
+    // If rendering has finished, set `item` to have the same preview.
+    auto mutable_item =
+        base::ranges::find(items, item.id(), &ClipboardHistoryItem::id);
+    DCHECK(mutable_item != items.end());
+
+    const auto& existing_preview = it->html_preview();
+    DCHECK(existing_preview.has_value());
+
+    mutable_item->set_html_preview(existing_preview.value());
+  }
 }
 
 void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
@@ -228,30 +188,27 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
     return;
   }
 
-  // We should have an image model in the cache.
-  auto cached_image_model = base::ConstCastIterator(
-      cached_image_models_, FindCachedImageModelForItem(item));
-
-  DCHECK(cached_image_model != cached_image_models_.end());
-  if (cached_image_model == cached_image_models_.end())
+  // If the item's image model request has already finished, there is nothing
+  // more to do.
+  auto image_model_request = GetImageModelRequestForItem(item);
+  if (image_model_request == image_model_requests_.end()) {
     return;
+  }
 
-  // Update usages.
-  base::Erase(cached_image_model->clipboard_history_item_ids, item.id());
-  if (!cached_image_model->clipboard_history_item_ids.empty())
-    return;
+  // If `item` was attached to a pending request, make sure it is not updated
+  // when rendering finishes.
+  base::Erase(image_model_request->clipboard_history_item_ids, item.id());
 
-  // If the ImageModel was never rendered, cancel the request.
-  if (cached_image_model->image_model.IsEmpty())
-    ClipboardImageModelFactory::Get()->CancelRequest(cached_image_model->id);
-
-  // If the cached image model is no longer in use, it can be erased.
-  cached_image_models_.erase(cached_image_model);
+  if (image_model_request->clipboard_history_item_ids.empty()) {
+    // If no more items are waiting on the image model, cancel the request.
+    ClipboardImageModelFactory::Get()->CancelRequest(image_model_request->id);
+    image_model_requests_.erase(image_model_request);
+  }
 }
 
 void ClipboardHistoryResourceManager::OnClipboardHistoryCleared() {
   CancelUnfinishedRequests();
-  cached_image_models_ = std::vector<CachedImageModel>();
+  image_model_requests_.clear();
 }
 
 }  // namespace ash

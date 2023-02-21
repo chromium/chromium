@@ -16,7 +16,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -116,12 +115,9 @@ class FadeImageView : public views::ImageView,
   }
 
   void SetImageFromModel() {
-    // TODO(b/267677307): Make cached image an item field, set and updated
-    // directly by the resource manager.
     if (const auto* item = item_resolver_.Run()) {
-      const gfx::ImageSkia& image =
-          *(resource_manager_->GetImageModel(*item).GetImage().ToImageSkia());
-      SetImage(image);
+      DCHECK(item->html_preview().has_value());
+      SetImage(item->html_preview().value());
     }
 
     // When fading in a new image, the ImageView's image has likely changed

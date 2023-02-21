@@ -6,8 +6,6 @@
 
 #include <vector>
 
-#include "ash/clipboard/clipboard_history_controller_impl.h"
-#include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
@@ -22,6 +20,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_provider_source.h"
+#include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
@@ -115,7 +114,13 @@ ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
       time_copied_(base::Time::Now()),
       main_format_(clipboard_history_util::CalculateMainFormat(data_).value()),
       display_format_(CalculateDisplayFormat(main_format_, data_)),
-      display_text_(DetermineDisplayText(data_)) {}
+      display_text_(DetermineDisplayText(data_)) {
+  if (display_format_ == DisplayFormat::kHtml) {
+    // The `ClipboardHistoryResourceManager` will update this preview once an
+    // image model is rendered.
+    html_preview_ = clipboard_history_util::GetHtmlPreviewPlaceholder();
+  }
+}
 
 ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem&) =
     default;
@@ -147,15 +152,9 @@ absl::optional<std::string> ClipboardHistoryItem::GetImageDataUrl() const {
       }
       break;
     case DisplayFormat::kHtml: {
-      // TODO(b/267677307): Make cached image an item field, set and updated
-      // directly by the resource manager.
-      const SkBitmap& bitmap = *(Shell::Get()
-                                     ->clipboard_history_controller()
-                                     ->resource_manager()
-                                     ->GetImageModel(*this)
-                                     .GetImage()
-                                     .ToSkBitmap());
-      maybe_url = webui::GetBitmapDataUrl(bitmap);
+      DCHECK(html_preview_.has_value());
+      maybe_url =
+          webui::GetBitmapDataUrl(*html_preview_->GetImage().ToSkBitmap());
       break;
     }
     case DisplayFormat::kFile: {
