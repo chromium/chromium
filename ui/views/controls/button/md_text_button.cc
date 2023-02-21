@@ -53,6 +53,9 @@ MdTextButton::MdTextButton(PressedCallback callback,
   if (features::IsChromeRefresh2023()) {
     constexpr int kImageSpacing = 8;
     SetImageLabelSpacing(kImageSpacing);
+  } else {
+    SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
+        ShapeContextTokens::kButtonRadius));
   }
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
