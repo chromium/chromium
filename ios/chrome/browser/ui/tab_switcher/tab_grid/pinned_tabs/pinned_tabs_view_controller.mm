@@ -117,7 +117,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
   [self.collectionView reloadData];
-  [self updateEmptyCollectionViewLabelVisibility];
 
   [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
 
@@ -160,6 +159,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   // Show the view if `visible` is true to ensure smooth animation.
   if (visible) {
+    [self updateEmptyCollectionViewLabelVisibility];
     self.view.hidden = NO;
   }
 
@@ -621,7 +621,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 
   [self.collectionView deleteItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
-  [self updateEmptyCollectionViewLabelVisibility];
 }
 
 // Handles the completion of item insertion into the collection view.
@@ -699,8 +698,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [_emptyCollectionViewLabel.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
   ]];
-
-  [self updateEmptyCollectionViewLabelVisibility];
 }
 
 // Configures `cell`'s identifier and title synchronously, favicon and snapshot
