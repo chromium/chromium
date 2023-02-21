@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -67,6 +68,14 @@ void WebAppPreloadInstaller::InstallApp(
     const PreloadAppDefinition& app,
     WebAppPreloadInstalledCallback callback) {
   DCHECK_EQ(app.GetPlatform(), AppType::kWeb);
+
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    // Installation in Lacros is not implemented yet. Report the installation as
+    // successful to prevent useless retries.
+    // TODO(b/267667215): Support web app installation for Lacros web apps.
+    std::move(callback).Run(/*success=*/true);
+    return;
+  }
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
