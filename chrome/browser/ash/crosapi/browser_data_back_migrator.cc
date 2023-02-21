@@ -1090,6 +1090,7 @@ bool BrowserDataBackMigrator::IsBackMigrationForceEnabled() {
 bool BrowserDataBackMigrator::IsBackMigrationEnabled(
     crosapi::browser_util::PolicyInitState policy_init_state) {
   if (IsBackMigrationForceEnabled()) {
+    VLOG(1) << "Lacros backward migration is force enabled";
     return true;
   }
 
@@ -1099,6 +1100,7 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
           switches::kForceBrowserDataBackwardMigration);
 
   if (force_migration_switch == kBrowserDataBackwardMigrationForceSkip) {
+    VLOG(1) << "Lacros backward migration is force skipped";
     return false;
   }
 
@@ -1132,17 +1134,23 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
   // Backward migration can be explicitly enabled by using the
   // LacrosDataBackwardMigrationMode policy.
   if (migration_mode ==
-      crosapi::browser_util::LacrosDataBackwardMigrationMode::kKeepAll)
+      crosapi::browser_util::LacrosDataBackwardMigrationMode::kKeepAll) {
+    VLOG(1) << "Lacros backward migration mode is keep_all";
     return true;
+  }
 
   // Modes beside none do not go through backward migration.
   // None is the default, fall back to the feature instead.
   if (migration_mode !=
-      crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone)
+      crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone) {
+    VLOG(1) << "Lacros backward migration mode is not none";
     return false;
+  }
 
-  return base::FeatureList::IsEnabled(
+  bool isFeatureEnabled = base::FeatureList::IsEnabled(
       ash::features::kLacrosProfileBackwardMigration);
+  VLOG(1) << "Lacros backward migration feature flag is " << isFeatureEnabled;
+  return isFeatureEnabled;
 }
 
 // static
