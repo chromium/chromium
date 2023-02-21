@@ -60,11 +60,6 @@
     --iron-icon-width: 20px;
   }
 
-  cr-button {
-    border-color: var(--cros-button-stroke-color-secondary);
-    border-radius: 16px;
-  }
-
   cr-button + cr-button {
     margin-inline-start: 8px;
   }
@@ -131,12 +126,14 @@
       <template is="dom-if" if="[[shouldShowLayoutOptions_]]">
         <div id="wallpaperOptions">
           <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
+              class="secondary"
               aria-pressed$="[[getFillAriaPressed_(image_)]]">
             <iron-icon icon="[[fillIcon_]]"></iron-icon>
             <div class="text">$i18n{fill}</div>
           </cr-button>
           <cr-button id="center" data-layout="CENTER"
               on-click="onClickLayoutIcon_"
+              class="secondary"
               aria-pressed$="[[getCenterAriaPressed_(image_)]]">
             <iron-icon icon="[[centerIcon_]]"></iron-icon>
             <div class="text">$i18n{center}</div>
@@ -145,7 +142,7 @@
       </template>
       <template is="dom-if" if="[[showCollectionOptions_]]">
         <div id="collectionOptions">
-          <cr-button id="dailyRefresh"
+          <cr-button id="dailyRefresh" class="secondary"
               aria-label="$i18n{ariaLabelChangeDaily}"
               aria-pressed$="[[ariaPressed_]]"
               on-click="onClickDailyRefreshToggle_"
@@ -153,7 +150,7 @@
             <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
             <div class="text">$i18n{changeDaily}</div>
           </cr-button>
-          <cr-button id="refreshWallpaper"
+          <cr-button id="refreshWallpaper" class="secondary"
               aria-label="$i18n{ariaLabelRefresh}"
               on-click="onClickUpdateDailyRefreshWallpaper_"
               hidden$="[[!showRefreshButton_]]">
