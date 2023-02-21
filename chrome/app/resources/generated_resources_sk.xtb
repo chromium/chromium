@@ -157,7 +157,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1139923033416533844">Využitie pamäte</translation>
 <translation id="1140351953533677694">Mať prístup k zariadeniam pripojeným cez Bluetooth a sériový port</translation>
 <translation id="114036956334641753">Zvuk a titulky</translation>
-<translation id="1141949282671776404">Kým bola táto karta neaktívna, Šetrič pamäte uvoľnil <ph name="MEMORY_VALUE" /> pamäte na ďalšie úlohy.</translation>
+<translation id="1141949282671776404">Keď bola táto karta neaktívna, šetrič pamäte uvoľnil iným úlohám <ph name="MEMORY_VALUE" /> pamäte.</translation>
 <translation id="1142002900084379065">Najnovšie fotky</translation>
 <translation id="1143142264369994168">Podpisovateľ certifikátu</translation>
 <translation id="1145593918056169051">Tlačiareň sa zastavila</translation>
@@ -1244,7 +1244,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> Systém sa počas príslušného procesu reštartuje.</translation>
 <translation id="2095774564753225041">Podporované typy súborov</translation>
-<translation id="2097616539631531348">Kým bola táto karta neaktívna, Šetrič pamäte uvoľnil pamäť na ďalšie úlohy.</translation>
+<translation id="2097616539631531348">Keď bola táto karta neaktívna, šetrič pamäte uvoľnil pamäť iným úlohám.</translation>
 <translation id="2098805196501063469">Skontrolovať zostávajúce heslá</translation>
 <translation id="2099686503067610784">Odstrániť certifikát servera „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="2100273922101894616">Automaticky prihlasovať</translation>
@@ -3758,7 +3758,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4378556263712303865">Rekvizícia zariadenia</translation>
 <translation id="4379281552162875326">Chcete odinštalovať aplikáciu <ph name="APP_NAME" />?</translation>
 <translation id="4380648069038809855">Zapnutie režimu celej obrazovky</translation>
-<translation id="4383048856908088702">Kým bola táto karta neaktívna, šetrič pamäte uvoľnil <ph name="MEMORY_VALUE" /> pamäte na ďalšie úlohy. Môžete to kedykoľvek zmeniť v sekcii <ph name="SETTINGS_LINK" />.</translation>
+<translation id="4383048856908088702">Keď bola táto karta neaktívna, šetrič pamäte uvoľnil iným úlohám <ph name="MEMORY_VALUE" /> pamäte. Toto správanie môžete kedykoľvek zmeniť v sekcii <ph name="SETTINGS_LINK" />.</translation>
 <translation id="4384312707950789900">Pridať k preferovaným</translation>
 <translation id="4384652540891215547">Aktivovať rozšírenie</translation>
 <translation id="4384886290276344300">Zmeniť nastavenia klávesnice</translation>
@@ -3850,7 +3850,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4452898361839215358">alebo vyberte súbor PPD. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Dotknite sa senzora odtlačkov prstov v pravom hornom rohu klávesnice. Údaje odtlačkov prstov sa bezpečne uložia a nikdy neopustia vaše zariadenie (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4453946976636652378">Vyhľadajte v službe <ph name="SEARCH_ENGINE_NAME" /> alebo zadajte webovú adresu</translation>
-<translation id="4458535500699390320">Kým bola táto karta neaktívna, šetrič pamäte uvoľnil pamäť na ďalšie úlohy. Túto možnosť môžete kedykoľvek zmeniť v nastaveniach.</translation>
+<translation id="4458535500699390320">Keď bola táto karta neaktívna, šetrič pamäte uvoľnil pamäť iným úlohám. Toto správanie môžete kedykoľvek zmeniť v nastaveniach.</translation>
 <translation id="4459169140545916303">Aktívne pred <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dňami</translation>
 <translation id="4460014764210899310">Zrušiť zoskupenie</translation>
 <translation id="4461483878391246134">Pridajte jazyky, pri ktorých sa nikdy nemá ponúkať preklad</translation>
@@ -7270,7 +7270,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7635711411613274199">To, či sa vám pri prehliadaní zobrazí prispôsobená reklama, závisí od <ph name="BEGIN_LINK1" />tém reklamy<ph name="LINK_END1" />, vašich <ph name="BEGIN_LINK2" />nastavení súborov cookie<ph name="LINK_END2" /> a od toho, či prehliadaný web prispôsobuje reklamy</translation>
 <translation id="7636919061354591437">Nainštalovať v tomto zariadení</translation>
 <translation id="7637253234491814483">Klepnite na senzor odtlačkov prstov v pravom hornom rohu klávesnice vedľa vypínača. Údaje odtlačkov prstov sú uložené bezpečne a nikdy sa nedostanú mimo zariadenia <ph name="DEVICE_TYPE" />.</translation>
-<translation id="7637272932128132922">Kým bola táto karta neaktívna, šetrič pamäte uvoľnil pamäť na ďalšie úlohy. Môžete to kedykoľvek zmeniť v sekcii <ph name="SETTINGS_LINK" />.</translation>
+<translation id="7637272932128132922">Keď bola táto karta neaktívna, šetrič pamäte uvoľnil pamäť iným úlohám. Toto správanie môžete kedykoľvek zmeniť v sekcii <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Na disku nie je dostatok miesta</translation>
 <translation id="7639914187072011620">Presmerovanie SAML sa nepodarilo načítať zo servera</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vás automaticky prihlási na vhodných weboch pomocou hesiel, ktoré ste si uložili.</translation>

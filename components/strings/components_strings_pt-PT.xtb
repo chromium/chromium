@@ -207,7 +207,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">A página quer instalar um controlador de serviço.</translation>
 <translation id="1432581352905426595">Gerir motores de pesquisa</translation>
-<translation id="1435940442311036198">Usar uma chave de acesso num dispositivo diferente</translation>
+<translation id="1435940442311036198">Usar uma token de acesso num dispositivo diferente</translation>
 <translation id="1436185428532214179">Pode solicitar a edição de ficheiros e pastas no seu dispositivo</translation>
 <translation id="1442386063175183758">Dobra simétrica à direita</translation>
 <translation id="1442987760062738829">Perfurar</translation>
@@ -1943,7 +1943,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5764920692828389743">Enviar para <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para ver os métodos de fornecimento e os requisitos, selecione um endereço</translation>
 <translation id="57689295674415555">O número do cartão virtual não foi preenchido?</translation>
-<translation id="5772086939108830423">Usar uma chave de acesso num dispositivo diferente</translation>
+<translation id="5772086939108830423">Usar uma token de acesso num dispositivo diferente</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5776574724412881956">Cartão virtual não preenchido? Clique nos detalhes do cartão virtual para os copiar para a área de transferência. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experiência ativada</translation>
