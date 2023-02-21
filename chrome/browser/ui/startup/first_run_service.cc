@@ -187,6 +187,8 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
     SetFirstRunFinished(FinishedReason::kFinishedFlow);
   }
 
+  base::UmaHistogramEnumeration("ProfilePicker.FirstRun.ExitStatus", status);
+
   bool proceed = status == ProfilePicker::FirstRunExitStatus::kCompleted;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   proceed |= kForYouFreCloseShouldProceed.Get();

@@ -44623,6 +44623,19 @@ Called by update_permissions_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="FirstRunExitStatus">
+  <summary>
+    Status code indicating how the first run experience was exited.
+  </summary>
+  <int value="0"
+      label="Completed: finished through the buttons in the experience"/>
+  <int value="1"
+      label="Quit early: window closed, experience not considered 'finished'
+             (Lacros only)"/>
+  <int value="2"
+      label="Quit at end: window closed, experience considered 'finished'"/>
+</enum>
+
 <enum name="FirstRunLaunchSource">
   <summary>
     External applications/promotions that triggered Chrome launch and First Run.

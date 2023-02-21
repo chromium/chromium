@@ -776,6 +776,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.FirstRun.ExitStatus" enum="FirstRunExitStatus"
+    expires_after="2023-12-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>for-you-fre@google.com</owner>
+  <summary>
+    Records the status when the first run experience is exited. Note that some
+    experiments can override the behaviour at the end of the first run, based on
+    the the status. This histogram is recorded before the override happens.
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.FirstRun.OrganizationAvailableTiming" units="ms"
     expires_after="2023-07-25">
   <owner>dgn@chromium.org</owner>

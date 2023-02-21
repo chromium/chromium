@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/profile_ui_test_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -40,9 +41,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/device_settings_lacros.h"
@@ -214,11 +217,17 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   histogram_tester.ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunOutcome", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kQuitEarly, 1);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
 #endif
 }
 
@@ -331,6 +340,30 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest, ShouldOpenFirstRun) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest, CompletedOnIntro) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+
+  fre_service()->OpenFirstRunIfNeeded(
+      FirstRunService::EntryPoint::kOther,
+      ExpectProceed(true).Then(run_loop.QuitClosure()));
+
+  profiles::testing::WaitForPickerWidgetCreated();
+  profiles::testing::WaitForPickerLoadStop(GURL(chrome::kChromeUIIntroURL));
+
+  content::WebContents* web_contents =
+      ProfilePicker::GetWebViewForTesting()->GetWebContents();
+  web_contents->GetWebUI()->ProcessWebUIMessage(
+      web_contents->GetURL(), "continueWithoutAccount", base::Value::List());
+  profiles::testing::WaitForPickerClosed();
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+}
+
 class FirstRunServiceNotForYouBrowserTest : public FirstRunServiceBrowserTest {
  public:
   FirstRunServiceNotForYouBrowserTest() {
@@ -488,6 +521,7 @@ class FirstRunServiceFeatureParamsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(FirstRunServiceFeatureParamsBrowserTest, CloseProceeds) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
 
   EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
@@ -503,6 +537,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunServiceFeatureParamsBrowserTest, CloseProceeds) {
 
   EXPECT_TRUE(GetFirstRunFinishedPrefValue());
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+
+  // We log `QuitAtEnd`, whether proceed is overridden or not.
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
