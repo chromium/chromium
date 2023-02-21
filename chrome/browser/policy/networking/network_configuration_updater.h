@@ -84,8 +84,9 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
   // Parses the incoming policy, applies server and authority certificates.
   // Calls the specialized methods from subclasses to handle client certificates
   // and network configs.
-  virtual void ApplyNetworkPolicy(base::Value::List network_configs_onc,
-                                  base::Value::Dict global_network_config) = 0;
+  virtual void ApplyNetworkPolicy(
+      const base::Value::List& network_configs_onc,
+      const base::Value::Dict& global_network_config) = 0;
 
   // Parses the current value of the ONC policy. Clears |network_configs|,
   // |global_network_config| and |certificates| and fills them with the

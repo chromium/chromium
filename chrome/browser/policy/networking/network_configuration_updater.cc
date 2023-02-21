@@ -214,8 +214,7 @@ void NetworkConfigurationUpdater::ApplyPolicy() {
 
   ImportCertificates(std::move(certificates));
   MarkFieldsAsRecommendedForBackwardsCompatibility(network_configs);
-  ApplyNetworkPolicy(std::move(network_configs),
-                     std::move(global_network_config));
+  ApplyNetworkPolicy(network_configs, global_network_config);
 }
 
 void NetworkConfigurationUpdater::
