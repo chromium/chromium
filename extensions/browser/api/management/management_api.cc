@@ -447,15 +447,12 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
           *target_extension, browser_context())) {
     // Either ask for parent permission or notify the child that their parent
     // has disabled this action.
-    auto parent_permission_callback = base::BindOnce(
-        &ManagementSetEnabledFunction::OnParentPermissionDialogDone, this);
-    auto error_callback = base::BindOnce(
-        &ManagementSetEnabledFunction::OnBlockedByParentDialogDone, this);
-    AddRef();  // Matched in OnParentPermissionDialogDone() or
-               // OnBlockedByParentDialogDone().
+    auto extension_approval_callback = base::BindOnce(
+        &ManagementSetEnabledFunction::OnExtensionApprovalDone, this);
+    AddRef();  // Matched in OnExtensionApprovalDone().
     supervised_user_extensions_delegate->PromptForParentPermissionOrShowError(
         *target_extension, browser_context(), GetSenderWebContents(),
-        std::move(parent_permission_callback), std::move(error_callback));
+        std::move(extension_approval_callback));
     return RespondLater();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -537,14 +534,13 @@ void ManagementSetEnabledFunction::OnRequirementsChecked(
   }
 }
 
-void ManagementSetEnabledFunction::OnParentPermissionDialogDone(
-    SupervisedUserExtensionsDelegate::ParentPermissionDialogResult result) {
+void ManagementSetEnabledFunction::OnExtensionApprovalDone(
+    SupervisedUserExtensionsDelegate::ExtensionApprovalResult result) {
 // TODO(crbug.com/1320442): Investigate whether ENABLE_SUPERVISED_USERS can
 // be ported to //extensions.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
   switch (result) {
-    case SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
-        kParentPermissionReceived: {
+    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved: {
       const ManagementAPIDelegate* delegate =
           ManagementAPI::GetFactoryInstance()
               ->Get(browser_context())
@@ -554,26 +550,21 @@ void ManagementSetEnabledFunction::OnParentPermissionDialogDone(
       break;
     }
 
-    case SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
-        kParentPermissionCanceled: {
+    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled: {
       Respond(Error(keys::kUserDidNotReEnableError));
       break;
     }
 
-    case SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
-        kParentPermissionFailed: {
+    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed: {
       Respond(Error(keys::kParentPermissionFailedError));
       break;
     }
-  }
-  // Matches the AddRef in Run().
-  Release();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-}
 
-void ManagementSetEnabledFunction::OnBlockedByParentDialogDone() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-  Respond(Error(keys::kUserCantModifyError, extension_id_));
+    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kBlocked: {
+      Respond(Error(keys::kUserCantModifyError, extension_id_));
+      break;
+    }
+  }
   // Matches the AddRef in Run().
   Release();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)

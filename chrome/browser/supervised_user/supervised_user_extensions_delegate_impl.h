@@ -30,8 +30,7 @@ class SupervisedUserExtensionsDelegateImpl
       const extensions::Extension& extension,
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,
-      ParentPermissionDialogDoneCallback parent_permission_callback,
-      base::OnceClosure error_callback) override;
+      ExtensionApprovalDoneCallback extension_approval_callback) override;
 
  private:
   // Returns true if |context| represents a supervised child account who may
@@ -45,7 +44,7 @@ class SupervisedUserExtensionsDelegateImpl
       content::BrowserContext* context,
       content::WebContents* contents,
       extensions::SupervisedUserExtensionsDelegate::
-          ParentPermissionDialogDoneCallback done_callback);
+          ExtensionApprovalDoneCallback done_callback);
 
   // Shows a dialog indicating that |extension| has been blocked and call
   // |done_callback| when it completes.
@@ -54,6 +53,10 @@ class SupervisedUserExtensionsDelegateImpl
       content::WebContents* contents,
       base::OnceClosure done_callback);
 
+  // The dialog pointer is only destroyed when a new dialog is created or the
+  // SupervisedUserExtensionsDelegate is destroyed. Therefore there can only be
+  // one dialog opened at a time and the last dialog object can have a pretty
+  // long lifetime.
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
 };
 

@@ -20,24 +20,24 @@
 namespace {
 
 void OnParentPermissionDialogComplete(
-    extensions::SupervisedUserExtensionsDelegate::
-        ParentPermissionDialogDoneCallback delegate_done_callback,
+    extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback
+        delegate_done_callback,
     ParentPermissionDialog::Result result) {
   switch (result) {
     case ParentPermissionDialog::Result::kParentPermissionReceived:
       std::move(delegate_done_callback)
           .Run(extensions::SupervisedUserExtensionsDelegate::
-                   ParentPermissionDialogResult::kParentPermissionReceived);
+                   ExtensionApprovalResult::kApproved);
       break;
     case ParentPermissionDialog::Result::kParentPermissionCanceled:
       std::move(delegate_done_callback)
           .Run(extensions::SupervisedUserExtensionsDelegate::
-                   ParentPermissionDialogResult::kParentPermissionCanceled);
+                   ExtensionApprovalResult::kCanceled);
       break;
     case ParentPermissionDialog::Result::kParentPermissionFailed:
       std::move(delegate_done_callback)
           .Run(extensions::SupervisedUserExtensionsDelegate::
-                   ParentPermissionDialogResult::kParentPermissionFailed);
+                   ExtensionApprovalResult::kFailed);
       break;
   }
 }
@@ -71,8 +71,7 @@ void SupervisedUserExtensionsDelegateImpl::PromptForParentPermissionOrShowError(
     const extensions::Extension& extension,
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
-    ParentPermissionDialogDoneCallback parent_permission_callback,
-    base::OnceClosure error_callback) {
+    ExtensionApprovalDoneCallback extension_approval_callback) {
   DCHECK(IsChild(browser_context));
   DCHECK(!IsExtensionAllowedByParent(extension, browser_context));
 
@@ -82,10 +81,13 @@ void SupervisedUserExtensionsDelegateImpl::PromptForParentPermissionOrShowError(
   if (CanInstallExtensions(browser_context)) {
     ShowParentPermissionDialogForExtension(
         extension, browser_context, web_contents,
-        std::move(parent_permission_callback));
+        std::move(extension_approval_callback));
   } else {
     ShowExtensionEnableBlockedByParentDialogForExtension(
-        extension, web_contents, std::move(error_callback));
+        extension, web_contents,
+        base::BindOnce(std::move(extension_approval_callback),
+                       SupervisedUserExtensionsDelegate::
+                           ExtensionApprovalResult::kBlocked));
   }
 }
 
@@ -101,7 +103,7 @@ void SupervisedUserExtensionsDelegateImpl::
         const extensions::Extension& extension,
         content::BrowserContext* context,
         content::WebContents* contents,
-        ParentPermissionDialogDoneCallback done_callback) {
+        ExtensionApprovalDoneCallback done_callback) {
   ParentPermissionDialog::DoneCallback inner_done_callback = base::BindOnce(
       &::OnParentPermissionDialogComplete, std::move(done_callback));
 
