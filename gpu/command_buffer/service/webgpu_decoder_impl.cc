@@ -1532,8 +1532,17 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   swiftShaderOptions.forceSwiftShader = true;
   dawn_instance_->DiscoverAdapters(&swiftShaderOptions);
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-#endif  // BUILDFLAG(IS_WIN)
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kCompat) {
+    // On compat, discover default adapters to also discover the compat adapter.
+    // TODO(senorblanco): This may incorrectly discover a compat adapter that
+    // does not match the one ANGLE is using.
+    dawn_instance_->DiscoverDefaultAdapters();
+  }
+#else   // BUILDFLAG(IS_WIN)
+  // Only discover default adapters on non-Windows. Windows requires
+  // compatibility with ANGLE. Other adapters will not be compatible.
   dawn_instance_->DiscoverDefaultAdapters();
+#endif  // BUILDFLAG(IS_WIN)
 
   std::vector<dawn::native::Adapter> adapters = dawn_instance_->GetAdapters();
   for (dawn::native::Adapter& adapter : adapters) {
