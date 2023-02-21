@@ -1,1 +1,1 @@
-{"files": ["test_ui.js", "test_proxy.js", "file-with-dashes.js", "dir/another_element_in_dir.js"], "base_dir": "tools/tests/preprocessed" }
+{"files": ["test_ui.js", "test_proxy.js", "file-with-dashes.js", "dir/another_element_in_dir.js"], "base_dir": "tests/preprocessed" }
