@@ -10,6 +10,10 @@ namespace media_router {
 // An interface for media router debugging and feedback.
 class MediaRouterDebugger {
  public:
+  // Fetches the MediaRouterDebugger from the media router fetched from the
+  // |frame_tree_node_id|. Must be called on the UiThread. May return a nullptr.
+  static MediaRouterDebugger* GetForFrameTreeNode(int frame_tree_node_id);
+
   MediaRouterDebugger();
 
   MediaRouterDebugger(const MediaRouterDebugger&) = delete;

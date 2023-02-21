@@ -58,4 +58,8 @@ struct SessionParameters {
   //
   // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
   bool force_letterboxing;
+
+  // If this is set to true, the Mirroring Service will fetch, analyze, and
+  // store information on the quality of the session using RTCP logs.
+  bool enable_rtcp_reporting;
 };

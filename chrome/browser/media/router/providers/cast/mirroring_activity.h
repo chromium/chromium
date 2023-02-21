@@ -20,6 +20,7 @@
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
+#include "components/mirroring/mojom/session_parameters.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -97,6 +98,19 @@ class MirroringActivity : public CastActivity,
 
   // Scrubs AES related data in messages with type "OFFER".
   static std::string GetScrubbedLogMessage(const base::Value::Dict& message);
+
+  // Starts the mirroring service via the Ui thread. Can only be called on the
+  // Ui thread.
+  void StartOnUiThread(
+      base::WeakPtr<mirroring::MirroringServiceHost> host,
+      mirroring::mojom::SessionParametersPtr session_params,
+      mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
+      mojo::PendingRemote<mirroring::mojom::CastMessageChannel>
+          outbound_channel,
+      mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
+          inbound_channel,
+      const std::string& sink_name,
+      int frame_tree_node_id);
 
   std::unique_ptr<mirroring::MirroringServiceHost> host_;
 

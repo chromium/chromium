@@ -237,7 +237,9 @@ base::Value::Dict StatsEventSubscriber::GetStats() const {
     stats.Set(CastStatToString(it->first), it->second->GetHistogram());
   }
 
-  ret.Set(event_media_type_ == AUDIO_EVENT ? "audio" : "video",
+  ret.Set(event_media_type_ == AUDIO_EVENT
+              ? StatsEventSubscriber::kAudioStatsDictKey
+              : StatsEventSubscriber::kVideoStatsDictKey,
           std::move(stats));
 
   return ret;

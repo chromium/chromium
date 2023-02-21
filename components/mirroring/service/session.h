@@ -17,6 +17,7 @@
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/rpc_dispatcher_impl.h"
 #include "components/mirroring/service/rtp_stream.h"
+#include "components/mirroring/service/session_logger.h"
 #include "gpu/config/gpu_info.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/cast/cast_environment.h"
@@ -206,6 +207,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   std::unique_ptr<viz::Gpu> gpu_;
   SupportedProfiles supported_profiles_;
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider> vea_provider_;
+  std::unique_ptr<SessionLogger> session_logger_;
 
   // A callback to call after initialization is completed
   AsyncInitializeDoneCB init_done_cb_;

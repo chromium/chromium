@@ -893,7 +893,8 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
         mirroring::mojom::SessionType::AUDIO_AND_VIDEO, endpoint.address(),
         "model_name", "friendly_name", "sender-123", "receiver-456",
         base::Milliseconds(kTargetPlayoutDelayMs),
-        false /* is_remote_playback */, false /** force_letterboxing */);
+        false /* is_remote_playback */, false /** force_letterboxing */,
+        false /* should_enable_rtcp_reporting */);
     host_->Start(std::move(session_params), std::move(observer_remote),
                  std::move(channel_remote),
                  channel_to_service_.BindNewPipeAndPassReceiver(), "Sink Name");

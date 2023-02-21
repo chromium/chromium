@@ -466,6 +466,7 @@ void Session::StopStreaming() {
     audio_input_device_ = nullptr;
   }
   audio_capturing_callback_.reset();
+  session_logger_.reset();
   audio_stream_.reset();
   video_stream_.reset();
   cast_transport_.reset();
@@ -722,6 +723,10 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
       cast_environment_->Clock(), kSendEventsInterval,
       std::make_unique<TransportClient>(this), std::move(udp_client),
       base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  if (session_params_.enable_rtcp_reporting) {
+    session_logger_ = std::make_unique<SessionLogger>(cast_environment_);
+  }
 
   if (state_ == REMOTING) {
     DCHECK(media_remoter_);

@@ -4,12 +4,32 @@
 
 #include "components/media_router/browser/media_router_debugger.h"
 
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 
 namespace media_router {
 
 MediaRouterDebugger::MediaRouterDebugger() = default;
 MediaRouterDebugger::~MediaRouterDebugger() = default;
+
+// static.
+MediaRouterDebugger* MediaRouterDebugger::GetForFrameTreeNode(
+    int frame_tree_node_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  auto* media_router = MediaRouterFactory::GetApiForBrowserContextIfExists(
+      web_contents->GetBrowserContext());
+
+  return media_router ? &media_router->GetDebugger() : nullptr;
+}
 
 void MediaRouterDebugger::EnableRtcpReports() {
   is_rtcp_reports_enabled_ = true;

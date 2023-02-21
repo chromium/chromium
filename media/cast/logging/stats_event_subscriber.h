@@ -55,7 +55,12 @@ class StatsEventSubscriber final : public RawEventSubscriber {
   // Resets stats in this object.
   void Reset();
 
+  static constexpr char kAudioStatsDictKey[] = "audio";
+  static constexpr char kVideoStatsDictKey[] = "video";
+
  private:
+  // TODO(b/268543775): Replace friend class declarations with public getters
+  // for tests.
   friend class StatsEventSubscriberTest;
   FRIEND_TEST_ALL_PREFIXES(StatsEventSubscriberTest, EmptyStats);
   FRIEND_TEST_ALL_PREFIXES(StatsEventSubscriberTest, CaptureEncode);

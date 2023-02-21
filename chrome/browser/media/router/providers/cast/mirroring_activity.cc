@@ -36,7 +36,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/route_request_result.h"
-#include "components/mirroring/mojom/session_parameters.mojom-forward.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -188,6 +187,13 @@ void AutoSwitchToFlingingIfNeeded(const std::string& sink_id,
       base::TimeDelta(), incognito);
 }
 
+bool IsRtcpReportingEnabled(int frame_tree_node_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto* debugger = MediaRouterDebugger::GetForFrameTreeNode(frame_tree_node_id);
+
+  return debugger ? debugger->IsRtcpReportsEnabled() : false;
+}
+
 }  // namespace
 
 MirroringActivity::MirroringActivity(
@@ -305,8 +311,8 @@ void MirroringActivity::OnError(SessionError error) {
     // Record the error for access code discovery types.
     CastDiscoveryType discovery_type = cast_data_.discovery_type;
     if (discovery_type == CastDiscoveryType::kAccessCodeManualEntry) {
-      base::UmaHistogramEnumeration(
-          kHistogramStartFailureAccessCodeManualEntry, error);
+      base::UmaHistogramEnumeration(kHistogramStartFailureAccessCodeManualEntry,
+                                    error);
     } else if (discovery_type ==
                CastDiscoveryType::kAccessCodeRememberedDevice) {
       base::UmaHistogramEnumeration(
@@ -337,8 +343,7 @@ void MirroringActivity::DidStart() {
   if (discovery_type == CastDiscoveryType::kAccessCodeManualEntry) {
     base::UmaHistogramEnumeration(kHistogramStartSuccessAccessCodeManualEntry,
                                   *mirroring_type_);
-  } else if (discovery_type ==
-             CastDiscoveryType::kAccessCodeRememberedDevice) {
+  } else if (discovery_type == CastDiscoveryType::kAccessCodeRememberedDevice) {
     base::UmaHistogramEnumeration(
         kHistogramStartSuccessAccessCodeRememberedDevice, *mirroring_type_);
   }
@@ -542,10 +547,10 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   if (!has_audio && !has_video) {
     return;
   }
-  const SessionType session_type =
-      has_audio && has_video
-          ? SessionType::AUDIO_AND_VIDEO
-          : has_audio ? SessionType::AUDIO_ONLY : SessionType::VIDEO_ONLY;
+  const SessionType session_type = has_audio && has_video
+                                       ? SessionType::AUDIO_AND_VIDEO
+                                   : has_audio ? SessionType::AUDIO_ONLY
+                                               : SessionType::VIDEO_ONLY;
 
   will_start_mirroring_timestamp_ = base::Time::Now();
 
@@ -562,16 +567,41 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &mirroring::MirroringServiceHost::Start, host_->GetWeakPtr(),
+          &MirroringActivity::StartOnUiThread, weak_ptr_factory_.GetWeakPtr(),
+          host_->GetWeakPtr(),
           SessionParameters::New(
               session_type, cast_data_.ip_endpoint.address(),
               cast_data_.model_name, sink_.sink().name(),
               session.destination_id(), message_handler_->source_id(),
               cast_source->target_playout_delay(),
               route().media_source().IsRemotePlaybackSource(),
-              ShouldForceLetterboxing(cast_data_.model_name)),
+              ShouldForceLetterboxing(cast_data_.model_name),
+              false /* enable_rtcp_reporting */),
           std::move(observer_remote), std::move(channel_remote),
-          std::move(channel_to_service_receiver_), route_.media_sink_name()));
+          std::move(channel_to_service_receiver_), route_.media_sink_name(),
+          frame_tree_node_id_));
+}
+
+void MirroringActivity::StartOnUiThread(
+    base::WeakPtr<mirroring::MirroringServiceHost> host,
+    mirroring::mojom::SessionParametersPtr session_params,
+    mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
+    mojo::PendingRemote<mirroring::mojom::CastMessageChannel> outbound_channel,
+    mojo::PendingReceiver<mirroring::mojom::CastMessageChannel> inbound_channel,
+    const std::string& sink_name,
+    int frame_tree_node_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!host) {
+    return;
+  }
+
+  session_params->enable_rtcp_reporting =
+      IsRtcpReportingEnabled(frame_tree_node_id);
+
+  host->Start(std::move(session_params), std::move(observer),
+              std::move(outbound_channel), std::move(inbound_channel),
+              sink_name);
 }
 
 void MirroringActivity::StopMirroring() {
