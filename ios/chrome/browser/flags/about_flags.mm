@@ -1359,6 +1359,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFeedExperimentTaggingName,
      flag_descriptions::kFeedExperimentTaggingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFeedExperimentTagging)},
+    {"spotlight-reading-list-source",
+     flag_descriptions::kSpotlightReadingListSourceName,
+     flag_descriptions::kSpotlightReadingListSourceDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSpotlightReadingListSource)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

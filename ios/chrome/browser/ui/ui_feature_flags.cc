@@ -139,3 +139,7 @@ bool IsTabGridSortedByRecency() {
 BASE_FEATURE(kMultilineFadeTruncatingLabel,
              "MultilineFadeTruncatingLabel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSpotlightReadingListSource,
+             "SpotlightReadingListSource",
+             base::FEATURE_DISABLED_BY_DEFAULT);

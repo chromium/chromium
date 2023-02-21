@@ -713,6 +713,10 @@ extern const char kSmartSortingNewOverflowMenuDescription[];
 extern const char kSmartSortingPriceTrackingDestinationName[];
 extern const char kSmartSortingPriceTrackingDestinationDescription[];
 
+// Title and description for th eflag to index Reading List items in Spotlight.
+extern const char kSpotlightReadingListSourceName[];
+extern const char kSpotlightReadingListSourceDescription[];
+
 // Title and description for the flag to enable the Share Chrome App action
 // in the new overflow menu.
 extern const char kNewOverflowMenuShareChromeActionName[];

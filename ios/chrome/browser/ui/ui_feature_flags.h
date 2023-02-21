@@ -124,4 +124,7 @@ bool IsTabGridSortedByRecency();
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 
+// Enables indexing Reading List items in Spotlight.
+BASE_DECLARE_FEATURE(kSpotlightReadingListSource);
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

@@ -6539,6 +6539,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "spotlight-reading-list-source",
+    "owners": [
+      "bling-flags@google.com",
+      "stkhapugin"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "start-surface",
     "owners": [ "gogerald", "bling-flags@google.com" ],
     "expiry_milestone": 94
