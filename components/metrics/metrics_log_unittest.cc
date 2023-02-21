@@ -124,6 +124,7 @@ class MetricsLogTest : public testing::Test {
     EXPECT_TRUE(system_profile.has_channel());
     EXPECT_FALSE(system_profile.has_is_extended_stable_channel());
     EXPECT_TRUE(system_profile.has_application_locale());
+    EXPECT_TRUE(system_profile.has_client_uuid());
 
     const SystemProfileProto::OS& os = system_profile.os();
     EXPECT_TRUE(os.has_name());

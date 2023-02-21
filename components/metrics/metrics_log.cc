@@ -493,9 +493,11 @@ const SystemProfileProto& MetricsLog::RecordEnvironment(
   // call RecordEnvironment() in order to persist the system profile in the
   // persistent histograms .pma file.
   if (has_environment_) {
+    std::string client_uuid = uma_proto_.system_profile().client_uuid();
     uma_proto_.clear_system_profile();
     MetricsLog::RecordCoreSystemProfile(client_,
                                         uma_proto_.mutable_system_profile());
+    uma_proto_.mutable_system_profile()->set_client_uuid(client_uuid);
   }
 
   has_environment_ = true;
