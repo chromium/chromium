@@ -13,6 +13,8 @@ oneway interface ITabNavigationControllerProxy {
     void goForward() = 3;
     void canGoBack(IBooleanCallback callback) = 4;
     void canGoForward(IBooleanCallback callback) = 5;
+    void reload() = 7;
+    void stop() = 8;
 
     void setNavigationObserverDelegate(INavigationObserverDelegate tabNavigationDelegate) = 6;
 }
