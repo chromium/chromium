@@ -214,7 +214,8 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
-        if (available > 0) {
+        // Ignore more bytes after an abort (streaming == nullptr).
+        if (available > 0 && streaming_) {
           if (code_cache_state_ == CodeCacheState::kBeforeFirstByte)
             code_cache_state_ = MaybeConsumeCodeCache();
 
@@ -234,9 +235,8 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         case BytesConsumer::Result::kShouldWait:
           NOTREACHED();
           return;
-        case BytesConsumer::Result::kOk: {
+        case BytesConsumer::Result::kOk:
           break;
-        }
         case BytesConsumer::Result::kDone: {
           // Ignore this event if we already aborted.
           if (!streaming_) {
