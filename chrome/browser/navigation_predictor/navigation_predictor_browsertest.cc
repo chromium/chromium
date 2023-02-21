@@ -265,7 +265,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PipelineHttp) {
 }
 
 // Make sure AnchorsData gets cleared between navigations.
-IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MultipleNavigations) {
+// TODO(crbug.com/1417581): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
+                       DISABLED_MultipleNavigations) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
