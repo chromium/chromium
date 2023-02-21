@@ -560,7 +560,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
             (const std::vector<autofill::FormDataPredictions>&)forms
                         inFrame:(web::WebFrame*)frame {
   if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowTypePredictions)) {
+          autofill::features::test::kAutofillShowTypePredictions)) {
     return;
   }
 

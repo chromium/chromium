@@ -686,7 +686,7 @@ TEST_P(AddressProfileSaveManagerTest,
        SilentlyUpdateProfile_DisabledByFeatureFlag) {
   base::test::ScopedFeatureList disabled_update_feature;
   disabled_update_feature.InitAndEnableFeature(
-      features::kAutofillDisableSilentProfileUpdates);
+      features::test::kAutofillDisableSilentProfileUpdates);
 
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -805,7 +805,7 @@ TEST_P(AddressProfileSaveManagerTest,
        UserConfirmableMerge_DisabledByFeatureFlag) {
   base::test::ScopedFeatureList disabled_update_feature;
   disabled_update_feature.InitAndEnableFeature(
-      features::kAutofillDisableProfileUpdates);
+      features::test::kAutofillDisableProfileUpdates);
 
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();

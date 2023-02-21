@@ -161,7 +161,7 @@ class PasswordManagerVotingBrowserTest : public PasswordManagerBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::kAutofillServerCommunication};
+      autofill::features::test::kAutofillServerCommunication};
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 

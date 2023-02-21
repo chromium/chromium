@@ -584,8 +584,8 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
 
 void AutofillAgent::FieldTypePredictionsAvailable(
     const std::vector<FormDataPredictions>& forms) {
-  bool attach_predictions_to_dom =
-      base::FeatureList::IsEnabled(features::kAutofillShowTypePredictions);
+  bool attach_predictions_to_dom = base::FeatureList::IsEnabled(
+      features::test::kAutofillShowTypePredictions);
   for (const auto& form : forms) {
     form_cache_.ShowPredictions(form, attach_predictions_to_dom);
   }

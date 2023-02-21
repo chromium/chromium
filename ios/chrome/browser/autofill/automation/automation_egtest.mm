@@ -90,7 +90,7 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
-      autofill::features::kAutofillShowTypePredictions);
+      autofill::features::test::kAutofillShowTypePredictions);
   return config;
 }
 

@@ -92,13 +92,14 @@ class MetricsScraper {
   // Creates a MetricsScraper if the Finch flag is enabled.
   static std::unique_ptr<MetricsScraper> MaybeCreate(const std::string& test) {
     if (!base::FeatureList::IsEnabled(
-            features::kAutofillCapturedSiteTestsMetricsScraper)) {
+            features::test::kAutofillCapturedSiteTestsMetricsScraper)) {
       return nullptr;
     }
     const std::string& output_dir =
-        features::kAutofillCapturedSiteTestsMetricsScraperOutputDir.Get();
+        features::test::kAutofillCapturedSiteTestsMetricsScraperOutputDir.Get();
     const std::string& histogram_regex =
-        features::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex.Get();
+        features::test::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex
+            .Get();
     return base::WrapUnique(new MetricsScraper(
         base::FilePath::FromASCII(output_dir).AppendASCII(test + ".txt"),
         base::UTF8ToUTF16(histogram_regex)));
@@ -320,8 +321,10 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kAutofillAcrossIframes, {}},
-                              {features::kAutofillServerCommunication, {}},
-                              {features::kAutofillShowTypePredictions, {}},
+                              {features::test::kAutofillServerCommunication,
+                               {}},
+                              {features::test::kAutofillShowTypePredictions,
+                               {}},
                               {features::kAutofillParsingPatternProvider,
                                {{"prediction_source", "nextgen"}}}},
         /*disabled_features=*/{});

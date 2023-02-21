@@ -143,8 +143,8 @@ class AutofillServerTest : public InProcessBrowserTest {
     // instead of data urls.
     scoped_feature_list_.InitWithFeatures(
         // Enabled.
-        {features::kAutofillAllowNonHttpActivation,
-         features::kAutofillServerCommunication},
+        {features::test::kAutofillAllowNonHttpActivation,
+         features::test::kAutofillServerCommunication},
         // Disabled.
         {});
 

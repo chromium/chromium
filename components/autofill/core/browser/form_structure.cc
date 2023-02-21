@@ -83,7 +83,7 @@ namespace {
 bool HasAllowedScheme(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS() ||
          base::FeatureList::IsEnabled(
-             features::kAutofillAllowNonHttpActivation);
+             features::test::kAutofillAllowNonHttpActivation);
 }
 
 // Helper for |EncodeUploadRequest()| that creates a bit field corresponding to

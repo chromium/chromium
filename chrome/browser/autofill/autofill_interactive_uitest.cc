@@ -1191,8 +1191,8 @@ class AutofillInteractiveTestWithHistogramTester
     : public AutofillInteractiveTest {
  public:
   AutofillInteractiveTestWithHistogramTester() {
-    feature_list_.InitWithFeatureState(features::kAutofillServerCommunication,
-                                       true);
+    feature_list_.InitWithFeatureState(
+        features::test::kAutofillServerCommunication, true);
   }
 
   void SetUp() override {

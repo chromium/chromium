@@ -38,8 +38,10 @@ void TestDataCreator::MaybeAddTestProfiles(
     const base::RepeatingCallback<void(const AutofillProfile&)>&
         add_profile_callback) {
   if (has_created_test_addresses_ ||
-      !base::FeatureList::IsEnabled(features::kAutofillCreateDataForTest))
+      !base::FeatureList::IsEnabled(
+          features::test::kAutofillCreateDataForTest)) {
     return;
+  }
 
   has_created_test_addresses_ = true;
 
@@ -53,8 +55,10 @@ void TestDataCreator::MaybeAddTestProfiles(
 void TestDataCreator::MaybeAddTestCreditCards(
     const base::RepeatingCallback<void(const CreditCard&)>& add_cc_callback) {
   if (has_created_test_credit_cards_ ||
-      !base::FeatureList::IsEnabled(features::kAutofillCreateDataForTest))
+      !base::FeatureList::IsEnabled(
+          features::test::kAutofillCreateDataForTest)) {
     return;
+  }
 
   has_created_test_credit_cards_ = true;
 

@@ -158,7 +158,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
           personal_data_manager_->IsProfileUpdateBlocked(
               existing_profile->guid()) ||
           base::FeatureList::IsEnabled(
-              features::kAutofillDisableProfileUpdates);
+              features::test::kAutofillDisableProfileUpdates);
 
       if (is_blocked_for_update) {
         ++number_of_blocked_profile_updates_;
@@ -184,7 +184,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
              AutofillProfile::Source::kLocalOrSyncable ||
          features::kAutofillEnableSilentUpdatesForAccountProfiles.Get()) &&
         !base::FeatureList::IsEnabled(
-            features::kAutofillDisableSilentProfileUpdates)) {
+            features::test::kAutofillDisableSilentProfileUpdates)) {
       merged_profile.set_modification_date(AutofillClock::Now());
       updated_profiles_.emplace_back(merged_profile);
     } else {
