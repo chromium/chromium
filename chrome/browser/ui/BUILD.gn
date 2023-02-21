@@ -3048,6 +3048,8 @@ static_library("ui") {
       "webui/settings/ash/guest_os_handler.h",
       "webui/settings/ash/hierarchy.cc",
       "webui/settings/ash/hierarchy.h",
+      "webui/settings/ash/input_device_settings/input_device_settings_provider.cc",
+      "webui/settings/ash/input_device_settings/input_device_settings_provider.h",
       "webui/settings/ash/internet_handler.cc",
       "webui/settings/ash/internet_handler.h",
       "webui/settings/ash/internet_section.cc",
@@ -3156,6 +3158,7 @@ static_library("ui") {
       "//ash/public/cpp",
       "//ash/public/cpp/app_list/vector_icons",
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
+      "//ash/public/mojom",
       "//ash/quick_pair/common",
       "//ash/quick_pair/keyed_service",
       "//ash/quick_pair/proto:fastpair_proto",
@@ -3242,6 +3245,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/parent_access:proto",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",
+      "//chrome/browser/ui/webui/settings/ash/input_device_settings:mojom",
       "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom",
       "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings",
       "//chrome/browser/web_applications",
@@ -6126,6 +6130,7 @@ static_library("test_support") {
     ]
     deps += [
       "//ash/public/cpp",
+      "//ash/public/mojom",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos/ash/components/dbus",
       "//chromeos/ui/base",
