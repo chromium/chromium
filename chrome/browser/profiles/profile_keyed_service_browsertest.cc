@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/test/browser_test.h"
+#include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -236,6 +237,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "MediaRouterUIService",
     "NotificationDisplayService",
     "OptimizationGuideKeyedService",
+#if BUILDFLAG(ENABLE_PDF)
+    "PdfViewerPrivateEventRouter",
+#endif  // BUILDFLAG(ENABLE_PDF)
     "PlatformNotificationService",
     "PrefWatcher",
     "PrivacySandboxSettings",
@@ -415,6 +419,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "OptimizationGuideKeyedService",
     "PageContentAnnotationsService",
     "PasswordsPrivateEventRouter",
+#if BUILDFLAG(ENABLE_PDF)
+    "PdfViewerPrivateEventRouter",
+#endif  // BUILDFLAG(ENABLE_PDF)
     "PermissionHelper",
     "PermissionsManager",
     "PermissionsUpdaterShutdownFactory",

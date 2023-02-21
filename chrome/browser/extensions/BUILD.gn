@@ -1348,6 +1348,12 @@ static_library("extensions") {
   }
 
   if (enable_pdf) {
+    sources += [
+      "api/pdf_viewer_private/pdf_viewer_private_event_router.cc",
+      "api/pdf_viewer_private/pdf_viewer_private_event_router.h",
+      "api/pdf_viewer_private/pdf_viewer_private_event_router_factory.cc",
+      "api/pdf_viewer_private/pdf_viewer_private_event_router_factory.h",
+    ]
     deps += [
       "//chrome/browser/pdf",
       "//components/pdf/browser",

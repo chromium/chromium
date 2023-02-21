@@ -30,4 +30,10 @@ namespace pdfViewerPrivate {
     [supportsPromises] static void setPdfOcrPref(
         boolean value, OnPdfOcrPrefSetCallback callback);
   };
+
+  interface Events {
+    // Fired when a pref value for PDF OCR has changed.
+    // |value| The pref value that changed.
+    static void onPdfOcrPrefChanged(boolean value);
+  };
 };

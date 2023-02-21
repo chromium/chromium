@@ -76,5 +76,23 @@ chrome.test.runTests([
         await chrome.pdfViewerPrivate.isPdfOcrAlwaysActive();
     chrome.test.assertFalse(isPdfOcrAlwaysActive);
     chrome.test.succeed();
+  },
+  /**
+   * Test that the onPdfOcrPrefChanged function can monitor changes in the PDF
+   * OCR pref correctly. It monitors the pref defined with the following name:
+   * `settings.a11y.pdf_ocr_always_active`
+   */
+  async function testOnPdfOcrPrefChanged() {
+    const result = await chrome.pdfViewerPrivate.setPdfOcrPref(false);
+    chrome.test.assertTrue(result);
+
+    chrome.pdfViewerPrivate.onPdfOcrPrefChanged.addListener(function local(
+        isPdfOcrAlwaysActive) {
+      chrome.pdfViewerPrivate.onPdfOcrPrefChanged.removeListener(local);
+      chrome.test.assertTrue(isPdfOcrAlwaysActive);
+      chrome.test.succeed();
+    });
+
+    chrome.pdfViewerPrivate.setPdfOcrPref(true);
   }
 ]);
