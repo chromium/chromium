@@ -1,16 +1,12 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "testing/libfuzzer/proto/lpm_interface.h"
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
-#include "third_party/blink/common/storage_key/storage_key_fuzzer.pb.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/common/storage_key/storage_key_proto_converter.h"
 
 struct IcuEnvironment {
   IcuEnvironment() { CHECK(base::i18n::InitializeICU()); }
@@ -20,45 +16,34 @@ struct IcuEnvironment {
 
 IcuEnvironment* env = new IcuEnvironment();
 
-DEFINE_PROTO_FUZZER(
-    const storage_key_proto::StorageKeyFuzzer& storage_key_fuzzer) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  std::string serialized_storage_key(reinterpret_cast<const char*>(data), size);
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning, toggle);
 
-    blink::StorageKey storage_key = Convert(storage_key_fuzzer.storage_key());
-
-    // General serialization test.
-    absl::optional<blink::StorageKey> maybe_storage_key =
-        blink::StorageKey::Deserialize(storage_key.Serialize());
-    assert(storage_key == maybe_storage_key.value());
-
-    // LocalStorage serialization test.
-    maybe_storage_key = blink::StorageKey::DeserializeForLocalStorage(
-        storage_key.SerializeForLocalStorage());
-    assert(storage_key == maybe_storage_key.value());
-
     // General deserialization test.
-    maybe_storage_key =
-        blink::StorageKey::Deserialize(storage_key_fuzzer.deserialize());
+    absl::optional<blink::StorageKey> maybe_storage_key =
+        blink::StorageKey::Deserialize(serialized_storage_key);
     if (maybe_storage_key) {
       // We need to force enable third-party partitioning before serializing
       // to ensure no information is lost due to partitioning being disabled.
       assert(
           maybe_storage_key->CopyWithForceEnabledThirdPartyStoragePartitioning()
-              .Serialize() == storage_key_fuzzer.deserialize());
+              .Serialize() == serialized_storage_key);
     }
 
     // LocalStorage deserialization test.
-    maybe_storage_key = blink::StorageKey::DeserializeForLocalStorage(
-        storage_key_fuzzer.deserialize());
+    maybe_storage_key =
+        blink::StorageKey::DeserializeForLocalStorage(serialized_storage_key);
     if (maybe_storage_key) {
       // We need to force enable third-party partitioning before serializing
       // to ensure no information is lost due to partitioning being disabled.
       assert(
           maybe_storage_key->CopyWithForceEnabledThirdPartyStoragePartitioning()
-              .SerializeForLocalStorage() == storage_key_fuzzer.deserialize());
+              .SerializeForLocalStorage() == serialized_storage_key);
     }
   }
+  return 0;
 }

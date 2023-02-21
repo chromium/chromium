@@ -486,21 +486,23 @@ static_library("test_support") {
 }
 
 if (use_libfuzzer) {
-  proto_library("storage_key_fuzzer_proto") {
-    testonly = true
-    proto_in_dir = "//"
-    sources = [ "storage_key/storage_key_fuzzer.proto" ]
-    proto_deps = [ "//third_party/blink/public/common:storage_key_proto" ]
-  }
-
-  fuzzer_test("storage_key_fuzzer") {
-    sources = [ "storage_key/storage_key_fuzzer.cc" ]
+  fuzzer_test("storage_key_proto_fuzzer") {
+    sources = [ "storage_key/storage_key_proto_fuzzer.cc" ]
     deps = [
       ":common",
-      ":storage_key_fuzzer_proto",
       "//base/test:test_support",
+      "//third_party/blink/public/common:storage_key_proto",
       "//third_party/blink/public/common:storage_key_proto_converter",
       "//third_party/libprotobuf-mutator",
+    ]
+  }
+
+  fuzzer_test("storage_key_string_fuzzer") {
+    sources = [ "storage_key/storage_key_string_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base/test:test_support",
+      "//third_party/blink/public/common",
     ]
     seed_corpus = "//third_party/blink/common/storage_key/storage_key_corpus"
   }
