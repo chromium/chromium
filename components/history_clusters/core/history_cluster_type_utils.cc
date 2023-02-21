@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/history_clusters/history_cluster_type_utils.h"
+#include "components/history_clusters/core/history_cluster_type_utils.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "ui/base/l10n/time_format.h"
-#include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 
 namespace history_clusters {
 
 // Creates a `mojom::VisitPtr` from a `history_clusters::Visit`.
-mojom::URLVisitPtr VisitToMojom(Profile* profile,
+mojom::URLVisitPtr VisitToMojom(const TemplateURLService* template_url_service,
                                 const history::ClusterVisit& visit) {
   auto visit_mojom = mojom::URLVisit::New();
   visit_mojom->visit_id = visit.annotated_visit.visit_row.visit_id;
@@ -68,8 +67,6 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
     visit_mojom->annotations.push_back(mojom::Annotation::kBookmarked);
   }
 
-  const TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
   const TemplateURL* default_search_provider =
       template_url_service ? template_url_service->GetDefaultSearchProvider()
                            : nullptr;
@@ -97,10 +94,8 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
 
 // Creates a `mojom::SearchQueryPtr` from the given search query, if possible.
 absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
-    Profile* profile,
+    const TemplateURLService* template_url_service,
     const std::string& search_query) {
-  const TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
   const TemplateURL* default_search_provider =
       template_url_service ? template_url_service->GetDefaultSearchProvider()
                            : nullptr;
@@ -121,7 +116,7 @@ absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
   return search_query_mojom;
 }
 
-mojom::ClusterPtr ClusterToMojom(Profile* profile,
+mojom::ClusterPtr ClusterToMojom(const TemplateURLService* template_url_service,
                                  const history::Cluster cluster) {
   auto cluster_mojom = mojom::Cluster::New();
   cluster_mojom->id = cluster.cluster_id;
@@ -143,11 +138,12 @@ mojom::ClusterPtr ClusterToMojom(Profile* profile,
   }
 
   for (const auto& visit : cluster.visits) {
-    cluster_mojom->visits.push_back(VisitToMojom(profile, visit));
+    cluster_mojom->visits.push_back(VisitToMojom(template_url_service, visit));
   }
 
   for (const auto& related_search : cluster.related_searches) {
-    auto search_query_mojom = SearchQueryToMojom(profile, related_search);
+    auto search_query_mojom =
+        SearchQueryToMojom(template_url_service, related_search);
     if (search_query_mojom) {
       cluster_mojom->related_searches.emplace_back(
           std::move(*search_query_mojom));

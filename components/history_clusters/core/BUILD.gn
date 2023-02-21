@@ -29,6 +29,8 @@ static_library("core") {
     "file_clustering_backend.h",
     "full_membership_cluster_processor.cc",
     "full_membership_cluster_processor.h",
+    "history_cluster_type_utils.cc",
+    "history_cluster_type_utils.h",
     "history_clusters_db_tasks.cc",
     "history_clusters_db_tasks.h",
     "history_clusters_debug_jsons.cc",
@@ -75,6 +77,7 @@ static_library("core") {
   deps = [
     "//base",
     "//components/history/core/browser",
+    "//components/history_clusters/public/mojom:mojo_bindings",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:entities",

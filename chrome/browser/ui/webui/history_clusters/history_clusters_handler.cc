@@ -28,13 +28,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/webui/history_clusters/history_cluster_type_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/cluster_metrics_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/ui/query_clusters_state.h"
 #include "components/image_service/image_service.h"
@@ -144,8 +144,10 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
     bool can_load_more,
     bool is_continuation) {
   std::vector<mojom::ClusterPtr> cluster_mojoms;
+  const TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
   for (const auto& cluster : clusters_batch) {
-    auto cluster_mojom = ClusterToMojom(profile, cluster);
+    auto cluster_mojom = ClusterToMojom(template_url_service, cluster);
     cluster_mojoms.emplace_back(std::move(cluster_mojom));
   }
 
