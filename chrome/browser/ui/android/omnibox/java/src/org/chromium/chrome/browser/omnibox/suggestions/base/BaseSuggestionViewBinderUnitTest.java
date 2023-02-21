@@ -147,7 +147,7 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertEquals(1, actionButtons.size());
         Assert.assertEquals(View.VISIBLE, actionButtons.get(0).getVisibility());
         Assert.assertEquals(list.get(0).icon.drawable, actionButtons.get(0).getDrawable());
-        Assert.assertNotNull(actionButtons.get(0).getBackground());
+        Assert.assertNotNull(actionButtons.get(0).getForeground());
         verify(mBaseView, times(1)).addView(actionButtons.get(0));
 
         Assert.assertTrue(actionButtons.get(0).performClick());

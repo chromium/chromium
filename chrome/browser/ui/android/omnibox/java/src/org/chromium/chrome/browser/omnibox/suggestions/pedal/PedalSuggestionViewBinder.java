@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.core.view.ViewCompat;
@@ -69,9 +68,8 @@ public final class PedalSuggestionViewBinder<T extends View>
             view.getPedalChipView().setOnClickListener(
                     omniboxPedalListItem.model.get(PedalViewProperties.ON_PEDAL_CLICK));
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
-            Drawable backgroundDrawable =
-                    BaseSuggestionViewBinder.getSelectableBackgroundDrawable(view, model);
-            view.getPedalView().setBackground(backgroundDrawable);
+            view.getPedalView().setForeground(
+                    BaseSuggestionViewBinder.getForegroundDrawable(model, view));
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view.getPedalView(), model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));

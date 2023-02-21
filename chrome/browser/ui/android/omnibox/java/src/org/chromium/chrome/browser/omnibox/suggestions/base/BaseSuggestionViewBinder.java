@@ -105,14 +105,14 @@ public final class BaseSuggestionViewBinder<T extends View>
         view.setActionButtonsCount(actionCount);
 
         // Drawable retrieved once here (expensive) and will be copied multiple times (cheap).
-        Drawable backgroundDrawable = getSelectableBackgroundDrawable(view, model);
+        Drawable foregroundDrawable = getForegroundDrawable(model, view);
         final List<ImageView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionCount; index++) {
             final ImageView actionView = actionViews.get(index);
             final Action action = actions.get(index);
             actionView.setOnClickListener(v -> action.callback.run());
             actionView.setContentDescription(action.accessibilityDescription);
-            actionView.setBackground(copyDrawable(backgroundDrawable));
+            actionView.setForeground(copyDrawable(foregroundDrawable));
             updateIcon(actionView, action.icon,
                     ChromeColors.getPrimaryIconTintRes(isIncognito(model)));
 
@@ -141,8 +141,8 @@ public final class BaseSuggestionViewBinder<T extends View>
     private static <T extends View> void updateColorScheme(
             PropertyModel model, BaseSuggestionView<T> view) {
         updateSuggestionIcon(model, view);
-        Drawable backgroundDrawable = getSelectableBackgroundDrawable(view, model);
-        view.getDecoratedSuggestionView().setBackground(backgroundDrawable);
+        Drawable foregroundDrawable = getForegroundDrawable(model, view);
+        view.getDecoratedSuggestionView().setForeground(foregroundDrawable);
 
         final List<Action> actions = model.get(BaseSuggestionViewProperties.ACTIONS);
         // Setting ACTIONS and updating actionViews can happen later. Appropriate color scheme will
@@ -152,7 +152,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         final List<ImageView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionViews.size(); index++) {
             ImageView actionView = actionViews.get(index);
-            actionView.setBackground(copyDrawable(backgroundDrawable));
+            actionView.setForeground(copyDrawable(foregroundDrawable));
             updateIcon(actionView, actions.get(index).icon,
                     ChromeColors.getPrimaryIconTintRes(isIncognito(model)));
         }
@@ -243,16 +243,22 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     /**
-     * Retrieves selecatable background drawable from resources. If possible prefer
-     * {@link #copyDrawable(Drawable)} over this operation, as it offers an order of magnitude
-     * better performance in incognito.
+     * Retrieves selectable drawable from resources to be applied as Foreground.
+     *
+     * Depending on the intended outcome, there are two different ways to apply these drawables:
+     * 1. If the intention is to _expand the existing_ focus area of the suggestion, the exact
+     *    same copy should be applied to all of the related UI elements.
+     * 2. If the intention is to _define a new_ focus area, a new copy should be applied.
+     *
+     * Wherever possible, use {@link #copyDrawable(Drawable)} to create new copies of this drawable,
+     * as it offers an order of magnitude better performance in incognito.
      * The drawable should be used only once, all other uses should make a copy.
      *
      * @param view A view that provides context.
      * @param model A property model to look up relevant properties.
-     * @return A selectable background drawable.
+     * @return A selectable (foreground) drawable.
      */
-    public static Drawable getSelectableBackgroundDrawable(View view, PropertyModel model) {
+    public static Drawable getForegroundDrawable(PropertyModel model, View view) {
         return OmniboxResourceProvider.resolveAttributeToDrawable(view.getContext(),
                 model.get(SuggestionCommonProperties.COLOR_SCHEME),
                 R.attr.selectableItemBackground);
