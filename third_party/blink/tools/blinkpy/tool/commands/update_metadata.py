@@ -48,6 +48,7 @@ from blinkpy.web_tests.port.base import Port
 path_finder.bootstrap_wpt_imports()
 from manifest import manifest as wptmanifest
 from wptrunner import manifestupdate, metadata, testloader, wpttest
+from wptrunner.wptmanifest import node as wptnode
 from wptrunner.wptmanifest.backends import conditional
 from wptrunner.wptmanifest.parser import ParseError
 
@@ -738,6 +739,7 @@ class MetadataUpdater:
         if modified:
             if self._bug:
                 self._add_bug_url(expected)
+            sort_metadata_ast(expected.node)
             if not self._dry_run:
                 metadata.write_new_expected(test_file.metadata_path, expected)
         return modified
@@ -746,6 +748,29 @@ class MetadataUpdater:
         for test_id_section in expected.iterchildren():
             if test_id_section.modified:
                 test_id_section.set('bug', 'crbug.com/%d' % self._bug)
+
+
+def sort_metadata_ast(node: wptnode.DataNode) -> None:
+    """Sort the metadata abstract syntax tree to create a stable rendering.
+
+    Since keys/sections are identified by unique names within their block, their
+    ordering within the file do not matter. Sorting avoids creating spurious
+    diffs after serialization.
+
+    Note:
+        This mutates the given node. Create a copy with `node.copy()` if you
+        wish to keep the original.
+    """
+    assert all(
+        isinstance(child, (wptnode.DataNode, wptnode.KeyValueNode))
+        for child in node.children), node
+    # Put keys first, then child sections. Keys and child sections are sorted
+    # alphabetically within their respective groups.
+    node.children.sort(key=lambda child: (bool(
+        isinstance(child, wptnode.DataNode)), child.data or ''))
+    for child in node.children:
+        if isinstance(child, wptnode.DataNode):
+            sort_metadata_ast(child)
 
 
 def _compose(f, g):

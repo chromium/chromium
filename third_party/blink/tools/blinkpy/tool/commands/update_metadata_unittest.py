@@ -19,12 +19,13 @@ from blinkpy.tool.commands.update_metadata import (
     UpdateMetadata,
     MetadataUpdater,
     load_and_update_manifests,
+    sort_metadata_ast,
 )
 from blinkpy.web_tests.builder_list import BuilderList
 
 path_finder.bootstrap_wpt_imports()
 from manifest.manifest import Manifest
-from wptrunner import metadata
+from wptrunner import metadata, wptmanifest
 
 
 class BaseUpdateMetadataTest(LoggingTestCase):
@@ -1106,6 +1107,43 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               [subtest]
                 expected: FAIL
             """)
+
+    def test_stable_rendering(self):
+        buf = io.BytesIO(
+            textwrap.dedent("""\
+                [variant.html?foo=baz]
+                  [subtest 2]
+                    expected:
+                      if os == "win": FAIL
+                      if os == "mac": FAIL
+                    disabled: @False
+                  [subtest 1]
+                  expected: [OK, CRASH]
+
+                bug: crbug.com/123
+
+                [variant.html?foo=bar/abc]
+                """).encode())
+        ast = wptmanifest.parse(buf)
+        sort_metadata_ast(ast)
+        # Unlike keys/sections, the ordering of conditions is significant, so
+        # they should not be sorted.
+        self.assertEqual(
+            wptmanifest.serialize(ast),
+            textwrap.dedent("""\
+                bug: crbug.com/123
+                [variant.html?foo=bar/abc]
+
+                [variant.html?foo=baz]
+                  expected: [OK, CRASH]
+                  [subtest 1]
+
+                  [subtest 2]
+                    disabled: @False
+                    expected:
+                      if os == "win": FAIL
+                      if os == "mac": FAIL
+                """))
 
 
 class UpdateMetadataArgumentParsingTest(unittest.TestCase):
