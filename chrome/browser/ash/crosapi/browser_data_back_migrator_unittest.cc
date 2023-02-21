@@ -8,9 +8,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -50,6 +53,16 @@ constexpr char kAshLevelDBValue[] = "ash-value";
 constexpr char kLacrosLevelDBValue[] = "lacros-value";
 constexpr char kAshLevelDBMeta[] = "ash-meta";
 constexpr char kLacrosLevelDBMeta[] = "lacros-meta";
+
+const int kAshPrefValue = 0;
+const int kLacrosPrefValue = 1;
+// Dotted paths of preferences not found in:
+// - kAshOnlyPreferencesKeys
+// - kLacrosOnlyPreferencesKeys
+// - kSplitPreferencesKeys
+constexpr char kOtherLacrosPreference[] = "xxx.xxx.xxx";
+constexpr char kOtherAshPreference[] = "yyy.xxx.xxx";
+constexpr char kOtherBothChromesPreference[] = "zzz.xxx.xxx";
 
 enum class FilesSetup {
   kAshOnly = 0,
@@ -223,6 +236,27 @@ std::map<std::string, std::string> ReadLevelDB(const base::FilePath& path) {
   return db_map;
 }
 
+bool WriteJSONDict(const base::Value::Dict& json_dict,
+                   const base::FilePath& dest) {
+  std::string serialized_dict;
+
+  if (!base::JSONWriter::Write(json_dict, &serialized_dict)) {
+    return false;
+  }
+  if (!base::WriteFile(dest, serialized_dict)) {
+    return false;
+  }
+  return true;
+}
+
+size_t CountStringInList(const base::Value::List& list,
+                         const std::string& value) {
+  return std::count_if(list.cbegin(), list.cend(),
+                       [&](const base::Value& item) {
+                         return item.is_string() && item.GetString() == value;
+                       });
+}
+
 class BrowserDataBackMigratorTest : public testing::Test {
  public:
   BrowserDataBackMigratorTest() {
@@ -269,9 +303,19 @@ class BrowserDataBackMigratorTest : public testing::Test {
 
     tmp_profile_dir_ =
         ash_profile_dir_.Append(browser_data_back_migrator::kTmpDir);
+
+    merged_prefs_path_ = tmp_profile_dir_.Append("Preferences");
+    lacros_prefs_path_ = lacros_profile_dir_.Append("Preferences");
+    ash_prefs_path_ = ash_profile_dir_.Append("Preferences");
   }
 
   void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }
+
+  void CreateDirectories() {
+    ASSERT_TRUE(base::CreateDirectory(ash_profile_dir_));
+    ASSERT_TRUE(base::CreateDirectory(lacros_profile_dir_));
+    CreateTemporaryDirectory();
+  }
 
   void CreateTemporaryDirectory() {
     // During backward migration, `tmp_profile_dir_` is created in
@@ -324,6 +368,22 @@ class BrowserDataBackMigratorTest : public testing::Test {
     }
   }
 
+  void WritePrefs(const base::Value::Dict& ash_prefs,
+                  const base::Value::Dict& lacros_prefs) {
+    ASSERT_TRUE(WriteJSONDict(ash_prefs, ash_prefs_path_));
+    ASSERT_TRUE(WriteJSONDict(lacros_prefs, lacros_prefs_path_));
+  }
+
+  void ReadMergedPrefs(base::Value* prefs_out) {
+    std::string merged_contents;
+    ASSERT_TRUE(base::ReadFileToString(merged_prefs_path_, &merged_contents));
+    absl::optional<base::Value> merged_prefs =
+        base::JSONReader::Read(merged_contents);
+    ASSERT_TRUE(merged_prefs.has_value());
+
+    *prefs_out = std::move(merged_prefs.value());
+  }
+
   void SetupStateStoreLevelDBFiles(const base::FilePath& ash_profile_dir,
                                    const base::FilePath& lacros_profile_dir,
                                    FilesSetup setup) {
@@ -362,6 +422,10 @@ class BrowserDataBackMigratorTest : public testing::Test {
   base::FilePath ash_profile_dir_;
   base::FilePath lacros_profile_dir_;
   base::FilePath tmp_profile_dir_;
+
+  base::FilePath merged_prefs_path_;
+  base::FilePath ash_prefs_path_;
+  base::FilePath lacros_prefs_path_;
 
   std::string kAshOnlyMetaKey;
   std::string kAshOnlyValueKey;
@@ -607,6 +671,263 @@ TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeStateStoreLevelDB) {
           browser_data_migrator_util::LevelDBType::kStateStore));
     }
   }
+}
+
+TEST_F(BrowserDataBackMigratorTest,
+       MergesAshOnlyPreferencesCorrectly) {
+  // AshPrefs
+  // {
+  //   kOtherAshPreference: kAshPrefValue,
+  //   browser_data_migrator_util::kAshOnlyPreferencesKeys[0]: kAshPrefValue,
+  // }
+  //
+  // LacrosPrefs
+  // {
+  //   browser_data_migrator_util::kAshOnlyPreferencesKeys[0]: kLacrosPrefValue,
+  // }
+  CreateDirectories();
+
+  base::Value::Dict ash_prefs;
+  ash_prefs.SetByDottedPath(
+      browser_data_migrator_util::kAshOnlyPreferencesKeys[0], kAshPrefValue);
+  ash_prefs.SetByDottedPath(kOtherAshPreference, kAshPrefValue);
+
+  base::Value::Dict lacros_prefs;
+  lacros_prefs.SetByDottedPath(
+      browser_data_migrator_util::kAshOnlyPreferencesKeys[0], kLacrosPrefValue);
+
+  WritePrefs(ash_prefs, lacros_prefs);
+
+  ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
+      ash_prefs_path_, lacros_prefs_path_, merged_prefs_path_));
+
+  // Expected MergedPrefs
+  // {
+  //   kOtherAshPreference: kAshPrefValue,
+  //   browser_data_migrator_util::kAshOnlyPreferencesKeys[0]: kAshPrefValue,
+  // }
+  base::Value merged_prefs;
+  ReadMergedPrefs(&merged_prefs);
+
+  const base::Value* merged_ash_pref = merged_prefs.GetDict().FindByDottedPath(
+      browser_data_migrator_util::kAshOnlyPreferencesKeys[0]);
+  ASSERT_TRUE(merged_ash_pref);
+  ASSERT_EQ(merged_ash_pref->GetInt(), kAshPrefValue);
+  const base::Value* merged_other_ash_pref =
+      merged_prefs.GetDict().FindByDottedPath(kOtherAshPreference);
+  ASSERT_TRUE(merged_other_ash_pref);
+  ASSERT_EQ(merged_other_ash_pref->GetInt(), kAshPrefValue);
+}
+
+TEST_F(BrowserDataBackMigratorTest,
+       MergesDictSplitPreferencesCorrectly) {
+  // AshPrefs
+  // {
+  //   browser_data_migrator_util::kSplitPreferencesKeys[0]: {
+  //    browser_data_migrator_util::kExtensionsAshOnly[0]: kAshPrefValue,
+  //    browser_data_migrator_util::kExtensionsBothChromes[0]: kAshPrefValue,
+  //    kLacrosOnlyExtensionId: kAshPrefValue
+  //   }
+  // }
+  //
+  // LacrosPrefs
+  // {
+  //   browser_data_migrator_util::kSplitPreferencesKeys[0]: {
+  //    browser_data_migrator_util::kExtensionsAshOnly[0]: kLacrosPrefValue,
+  //    browser_data_migrator_util::kExtensionsBothChromes[0]: kLacrosPrefValue,
+  //    kLacrosOnlyExtensionId: kLacrosPrefValue
+  //   }
+  // }
+  CreateDirectories();
+
+  base::Value::Dict ash_prefs;
+  base::Value::Dict ash_split_pref_dict;
+  ash_split_pref_dict.SetByDottedPath(
+      browser_data_migrator_util::kExtensionsAshOnly[0], kAshPrefValue);
+  ash_split_pref_dict.SetByDottedPath(
+      browser_data_migrator_util::kExtensionsBothChromes[0], kAshPrefValue);
+  ash_split_pref_dict.SetByDottedPath(kLacrosOnlyExtensionId, kAshPrefValue);
+  ash_prefs.SetByDottedPath(
+      browser_data_migrator_util::kSplitPreferencesKeys[0],
+      base::Value(std::move(ash_split_pref_dict)));
+
+  base::Value::Dict lacros_prefs;
+  base::Value::Dict lacros_split_pref_dict;
+  lacros_split_pref_dict.SetByDottedPath(
+      browser_data_migrator_util::kExtensionsAshOnly[0], kLacrosPrefValue);
+  lacros_split_pref_dict.SetByDottedPath(
+      browser_data_migrator_util::kExtensionsBothChromes[0], kLacrosPrefValue);
+  lacros_split_pref_dict.SetByDottedPath(kLacrosOnlyExtensionId,
+                                         kLacrosPrefValue);
+  lacros_prefs.SetByDottedPath(
+      browser_data_migrator_util::kSplitPreferencesKeys[0],
+      base::Value(std::move(lacros_split_pref_dict)));
+
+  WritePrefs(ash_prefs, lacros_prefs);
+
+  ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
+      ash_prefs_path_, lacros_prefs_path_, merged_prefs_path_));
+
+  // Expected MergedPrefs
+  // {
+  //   browser_data_migrator_util::kSplitPreferencesKeys[0]: {
+  //    browser_data_migrator_util::kExtensionsAshOnly[0]: kAshPrefValue,
+  //    browser_data_migrator_util::kExtensionsBothChromes[0]: kAshPrefValue,
+  //    kLacrosOnlyExtensionId: kLacrosPrefValue
+  //   }
+  // }
+  base::Value merged_prefs;
+  ReadMergedPrefs(&merged_prefs);
+
+  const base::Value* split_pref = merged_prefs.GetDict().FindByDottedPath(
+      browser_data_migrator_util::kSplitPreferencesKeys[0]);
+  ASSERT_TRUE(split_pref);
+  const base::Value::Dict* split_pref_dict = &split_pref->GetDict();
+  const base::Value* ash_extension_value = split_pref_dict->FindByDottedPath(
+      browser_data_migrator_util::kExtensionsAshOnly[0]);
+  ASSERT_TRUE(ash_extension_value);
+  ASSERT_EQ(ash_extension_value->GetInt(), kAshPrefValue);
+  const base::Value* common_extension_value = split_pref_dict->FindByDottedPath(
+      browser_data_migrator_util::kExtensionsBothChromes[0]);
+  ASSERT_TRUE(common_extension_value);
+  ASSERT_EQ(common_extension_value->GetInt(), kAshPrefValue);
+  const base::Value* lacros_extension_value =
+      split_pref_dict->FindByDottedPath(kLacrosOnlyExtensionId);
+  ASSERT_TRUE(lacros_extension_value);
+  ASSERT_EQ(lacros_extension_value->GetInt(), kLacrosPrefValue);
+}
+
+TEST_F(BrowserDataBackMigratorTest,
+       MergesListSplitPreferencesCorrectly) {
+  // AshPrefs
+  // {
+  //   browser_data_migrator_util::kSplitPreferencesKeys[0]: [
+  //    browser_data_migrator_util::kExtensionsAshOnly[0],
+  //    browser_data_migrator_util::kExtensionsBothChromes[0],
+  //    kLacrosOnlyExtensionId
+  //   ]
+  // }
+  //
+  // LacrosPrefs
+  // {
+  //   browser_data_migrator_util::kSplitPreferencesKeys[0]: [
+  //    browser_data_migrator_util::kExtensionsAshOnly[0],
+  //    browser_data_migrator_util::kExtensionsBothChromes[0],
+  //    kLacrosOnlyExtensionId
+  //   ]
+  // }
+  CreateDirectories();
+
+  base::Value::Dict ash_prefs;
+  base::Value::List ash_split_pref_list;
+  ash_split_pref_list.Append(browser_data_migrator_util::kExtensionsAshOnly[0]);
+  ash_split_pref_list.Append(
+      browser_data_migrator_util::kExtensionsBothChromes[0]);
+  ash_split_pref_list.Append(kLacrosOnlyExtensionId);
+  ash_prefs.SetByDottedPath(
+      browser_data_migrator_util::kSplitPreferencesKeys[0],
+      base::Value(std::move(ash_split_pref_list)));
+
+  base::Value::Dict lacros_prefs;
+  base::Value::List lacros_split_pref_list;
+  lacros_split_pref_list.Append(kLacrosOnlyExtensionId);
+  lacros_prefs.SetByDottedPath(
+      browser_data_migrator_util::kSplitPreferencesKeys[0],
+      base::Value(std::move(lacros_split_pref_list)));
+
+  WritePrefs(ash_prefs, lacros_prefs);
+
+  ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
+      ash_prefs_path_, lacros_prefs_path_, merged_prefs_path_));
+
+  // Expected MergedPrefs
+  // {
+  //   browser_data_migrator_util::kSplitPreferencesKeys[0]: [
+  //    browser_data_migrator_util::kExtensionsAshOnly[0],
+  //    browser_data_migrator_util::kExtensionsBothChromes[0],
+  //    kLacrosOnlyExtensionId
+  //   ]
+  // }
+  base::Value merged_prefs;
+  ReadMergedPrefs(&merged_prefs);
+
+  const base::Value* split_pref = merged_prefs.GetDict().FindByDottedPath(
+      browser_data_migrator_util::kSplitPreferencesKeys[0]);
+  ASSERT_TRUE(split_pref);
+  const base::Value::List* split_pref_list = &split_pref->GetList();
+  ASSERT_EQ(
+      CountStringInList(*split_pref_list,
+                        browser_data_migrator_util::kExtensionsAshOnly[0]),
+      1u);
+  ASSERT_EQ(
+      CountStringInList(*split_pref_list,
+                        browser_data_migrator_util::kExtensionsBothChromes[0]),
+      1u);
+  ASSERT_EQ(CountStringInList(*split_pref_list, kLacrosOnlyExtensionId), 1u);
+}
+
+TEST_F(BrowserDataBackMigratorTest,
+       MergesLacrosPreferencesCorrectly) {
+  // AshPrefs
+  // {
+  //   kOtherAshPreference: kAshPrefValue,
+  //   browser_data_migrator_util::kLacrosOnlyPreferencesKeys[0]: kAshPrefValue,
+  //   kOtherBothChromesPreference: kAshPrefValue,
+  // }
+  //
+  // LacrosPrefs
+  // {
+  //   kOtherBothChromesPreference: kLacrosPrefValue,
+  //   browser_data_migrator_util::kAshOnlyPreferencesKeys[0]: kLacrosPrefValue,
+  //   kOtherLacrosPreference: kLacrosPrefValue,
+  // }
+  CreateDirectories();
+
+  base::Value::Dict ash_prefs;
+  ash_prefs.SetByDottedPath(
+      browser_data_migrator_util::kLacrosOnlyPreferencesKeys[0], kAshPrefValue);
+  ash_prefs.SetByDottedPath(kOtherAshPreference, kAshPrefValue);
+  ash_prefs.SetByDottedPath(kOtherBothChromesPreference, kAshPrefValue);
+
+  base::Value::Dict lacros_prefs;
+  lacros_prefs.SetByDottedPath(
+      browser_data_migrator_util::kLacrosOnlyPreferencesKeys[0],
+      kLacrosPrefValue);
+  lacros_prefs.SetByDottedPath(kOtherBothChromesPreference, kLacrosPrefValue);
+  lacros_prefs.SetByDottedPath(kOtherLacrosPreference, kLacrosPrefValue);
+
+  WritePrefs(ash_prefs, lacros_prefs);
+
+  ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
+      ash_prefs_path_, lacros_prefs_path_, merged_prefs_path_));
+
+  // Expected MergedPrefs
+  // {
+  //   kOtherAshPreference: kAshPrefValue,
+  //   browser_data_migrator_util::kLacrosOnlyPreferencesKeys[0]: kLacrosPrefValue,
+  //   kOtherBothChromesPreference: kLacrosPrefValue,
+  //   kOtherLacrosPreference: kLacrosPrefValue,
+  // }
+  base::Value merged_prefs;
+  ReadMergedPrefs(&merged_prefs);
+
+  const base::Value* lacros_preference =
+      merged_prefs.GetDict().FindByDottedPath(
+          browser_data_migrator_util::kLacrosOnlyPreferencesKeys[0]);
+  ASSERT_TRUE(lacros_preference);
+  ASSERT_EQ(lacros_preference->GetInt(), kLacrosPrefValue);
+  const base::Value* other_ash_preference =
+      merged_prefs.GetDict().FindByDottedPath(kOtherAshPreference);
+  ASSERT_TRUE(other_ash_preference);
+  ASSERT_EQ(other_ash_preference->GetInt(), kAshPrefValue);
+  const base::Value* other_common_preference =
+      merged_prefs.GetDict().FindByDottedPath(kOtherBothChromesPreference);
+  ASSERT_TRUE(other_common_preference);
+  ASSERT_EQ(other_common_preference->GetInt(), kLacrosPrefValue);
+  const base::Value* other_lacros_preference =
+      merged_prefs.GetDict().FindByDottedPath(kOtherLacrosPreference);
+  ASSERT_TRUE(other_lacros_preference);
+  ASSERT_EQ(other_lacros_preference->GetInt(), kLacrosPrefValue);
 }
 
 TEST_P(BrowserDataBackMigratorFilesSetupTest,

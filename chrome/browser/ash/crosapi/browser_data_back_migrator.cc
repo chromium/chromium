@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,6 +25,7 @@
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_constants.h"
@@ -787,14 +789,8 @@ bool BrowserDataBackMigrator::MergePreferences(
     return false;
   }
 
-  // For preferences that were moved to Lacros, and deleted in Ash, copy them
-  // back to Ash.
-  for (const char* key :
-       browser_data_migrator_util::kLacrosOnlyPreferencesKeys) {
-    base::Value* lacros_value = lacros_root_dict->FindByDottedPath(key);
-    if (lacros_value)
-      ash_root_dict->SetByDottedPath(key, lacros_value->Clone());
-  }
+  std::string current_path;
+  MergeLacrosPreferences(*ash_root_dict, current_path, lacros_root.value(), 0u);
 
   // Preferences that were split between Ash and Lacros relate to extensions.
   // Here we need to take the preferences from Lacros that were removed from
@@ -850,6 +846,56 @@ bool BrowserDataBackMigrator::MergePreferences(
     PLOG(ERROR) << "Failure while writing Preferences JSON to "
                 << tmp_pref_path.value();
     return false;
+  }
+
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::MergeLacrosPreferences(
+    base::Value::Dict& ash_root_dict,
+    std::string& current_dotted_path,
+    const base::Value& current_value,
+    unsigned int recursion_depth) {
+  if (recursion_depth >= kMaxRecursionDepth) {
+    LOG(WARNING) << "We have reached maximum recursion depth "
+                 << kMaxRecursionDepth
+                 << " and we are stopping MergeLacrosPreferences()";
+    return false;
+  }
+
+  // If the |current_dotted_path| was split or ash-only, then ignore it.
+  if (base::Contains(browser_data_migrator_util::kSplitPreferencesKeys,
+                     current_dotted_path) ||
+      base::Contains(browser_data_migrator_util::kAshOnlyPreferencesKeys,
+                     current_dotted_path)) {
+    return true;
+  }
+
+  // If current value is not a dictionary, then it is a final pref.
+  // Merge it into the |ash_root_dict|.
+  if (!current_value.is_dict()) {
+    ash_root_dict.SetByDottedPath(current_dotted_path, current_value.Clone());
+
+    return true;
+  }
+  // Otherwise, traverse all child elements of the current dictionary.
+  for (const auto child_entry : current_value.GetDict()) {
+    const std::string& child_entry_key = child_entry.first;
+    const base::Value* child_entry_value = &child_entry.second;
+
+    std::string child_dotted_path;
+    // Can be empty if it is a root dictionary.
+    if (current_dotted_path.empty()) {
+      child_dotted_path = child_entry_key;
+    } else {
+      child_dotted_path = current_dotted_path + "." + child_entry_key;
+    }
+
+    if (!MergeLacrosPreferences(ash_root_dict, child_dotted_path,
+                                *child_entry_value, recursion_depth + 1u)) {
+      return false;
+    }
   }
 
   return true;

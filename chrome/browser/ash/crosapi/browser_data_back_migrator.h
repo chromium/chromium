@@ -104,6 +104,14 @@ class BrowserDataBackMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorUMATest,
                            RecordPosixErrnoIfAvailable);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorUMATest, TaskStatusToString);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
+                           MergesAshOnlyPreferencesCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
+                           MergesDictSplitPreferencesCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
+                           MergesListSplitPreferencesCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
+                           MergesLacrosPreferencesCorrectly);
 
   // A list of all the possible results of migration, including success and all
   // failure types in each step of the migration.
@@ -251,6 +259,15 @@ class BrowserDataBackMigrator {
   static bool MergePreferences(const base::FilePath& ash_pref_path,
                                const base::FilePath& lacros_pref_path,
                                const base::FilePath& tmp_pref_path);
+
+  // For Lacros preferences that were neither split nor ash-only,
+  // simply prefer them over the ones that are currently in Ash.
+  // Traverse all JSON dotted paths in Lacros preferences using
+  // depth-first search and merge them into |ash_root_dict|.
+  static bool MergeLacrosPreferences(base::Value::Dict& ash_root_dict,
+                                     std::string& current_path,
+                                     const base::Value& current_value,
+                                     unsigned int recursion_depth);
 
   // Decides whether preferences for the given `extension_id` should be migrated
   // back from Lacros to Ash.
