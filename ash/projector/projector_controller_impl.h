@@ -213,6 +213,7 @@ class ASH_EXPORT ProjectorControllerImpl
   // Whether speech recognition is taking place or not.
   SpeechRecognitionState speech_recognition_state_ =
       SpeechRecognitionState::kRecognitionNotStarted;
+  bool use_on_device_speech_recognition = false;
 
   // Whether DLP restriction check is completed.
   bool dlp_restriction_checked_completed_ = false;

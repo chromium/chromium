@@ -236,6 +236,13 @@ void ProjectorControllerImpl::OnTranscription(
 }
 
 void ProjectorControllerImpl::OnTranscriptionError() {
+  const auto end_state =
+      speech_recognition_state_ == SpeechRecognitionState::kRecognitionStopping
+          ? SpeechRecognitionEndState::
+                kSpeechRecognitionEncounteredErrorWhileStopping
+          : SpeechRecognitionEndState::kSpeechRecognitionEnounteredError;
+  RecordSpeechRecognitionEndState(end_state, use_on_device_speech_recognition);
+
   force_stop_recognition_timer_.AbandonAndStop();
 
   // TODO(b/261093550) Investigate the real reason why
@@ -260,6 +267,11 @@ void ProjectorControllerImpl::OnTranscriptionError() {
 }
 
 void ProjectorControllerImpl::OnSpeechRecognitionStopped(bool forced) {
+  const auto end_state =
+      forced ? SpeechRecognitionEndState::kSpeechRecognitionForcedStopped
+             : SpeechRecognitionEndState::kSpeechRecognitionSuccessfullyStopped;
+  RecordSpeechRecognitionEndState(end_state, use_on_device_speech_recognition);
+
   speech_recognition_state_ = SpeechRecognitionState::kRecognitionNotStarted;
 
   const auto metadata_recognition_status =
@@ -504,12 +516,14 @@ void ProjectorControllerImpl::StartSpeechRecognition() {
   if (ProjectorController::AreExtendedProjectorFeaturesDisabled() || !client_)
     return;
 
-  DCHECK(client_->GetSpeechRecognitionAvailability().IsAvailable());
+  const auto availability = client_->GetSpeechRecognitionAvailability();
+  DCHECK(availability.IsAvailable());
   DCHECK(speech_recognition_state_ !=
          SpeechRecognitionState::kRecognitionStarted);
 
   client_->StartSpeechRecognition();
   speech_recognition_state_ = SpeechRecognitionState::kRecognitionStarted;
+  use_on_device_speech_recognition = availability.use_on_device;
 }
 
 void ProjectorControllerImpl::MaybeStopSpeechRecognition() {

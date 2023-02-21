@@ -4458,6 +4458,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Projector.SpeechRecognitionEndState.{RecognizerLocation}"
+    enum="SpeechRecognitionEndState" expires_after="2023-11-01">
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    For a recognition session happening at {RecognizerLocation}, this histogram
+    records the recognition status at the end of the session.
+  </summary>
+  <token key="RecognizerLocation">
+    <variant name="OnDevice" summary="Speech recognition happened on device"/>
+    <variant name="ServerBased"
+        summary="Speech recognition happened on remote servers"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
     enum="ProjectorToolbar" expires_after="2023-10-17">
   <owner>tobyhuang@chromium.org</owner>

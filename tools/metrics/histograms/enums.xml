@@ -96591,6 +96591,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Needs restore"/>
 </enum>
 
+<enum name="SpeechRecognitionEndState">
+  <int value="0" label="Speech recognition successfully stopped"/>
+  <int value="1" label="Speech recognition enountered error while recognizing"/>
+  <int value="2" label="Speech recognition enountered error while stopping"/>
+  <int value="3" label="Speech recognition forced stopped"/>
+</enum>
+
 <enum name="SplashColorStatus">
   <int value="0" label="Default color"/>
   <int value="1" label="Custom color"/>
