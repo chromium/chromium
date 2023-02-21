@@ -108,6 +108,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "five_files.icon",
     "folder.icon",
     "four_files.icon",
+    "gif.icon",
     "global_media_controls.icon",
     "hide_closed_caption.icon",
     "holding_space.icon",
