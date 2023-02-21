@@ -161,8 +161,7 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
     if (line.empty())
       continue;
 
-    std::unique_ptr<base::Value> dictionary =
-        base::JSONReader::ReadDeprecated(line);
+    absl::optional<base::Value> dictionary = base::JSONReader::Read(line);
     CHECK(dictionary);
 
     DCHECK(dictionary->is_dict());
