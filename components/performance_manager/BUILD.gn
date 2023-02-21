@@ -183,8 +183,6 @@ static_library("performance_manager") {
     "v8_memory/web_memory_aggregator.h",
     "v8_memory/web_memory_impl.cc",
     "v8_memory/web_memory_impl.h",
-    "v8_memory/web_memory_stress_tester.cc",
-    "v8_memory/web_memory_stress_tester.h",
     "web_contents_proxy.cc",
     "web_contents_proxy_impl.cc",
     "web_contents_proxy_impl.h",
