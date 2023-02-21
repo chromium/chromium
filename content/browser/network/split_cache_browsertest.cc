@@ -995,7 +995,8 @@ class ScopeBlinkMemoryCachePerContext : public SplitCacheContentBrowserTest {
   base::test::ScopedFeatureList feature_list;
 };
 
-IN_PROC_BROWSER_TEST_F(ScopeBlinkMemoryCachePerContext, CheckFeature) {
+// TODO(crbug.com/1415276): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(ScopeBlinkMemoryCachePerContext, DISABLED_CheckFeature) {
   base::HistogramTester histograms;
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       blink::features::kScopeMemoryCachePerContext));
