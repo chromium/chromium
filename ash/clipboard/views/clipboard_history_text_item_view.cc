@@ -57,10 +57,11 @@ END_METADATA
 // ClipboardHistoryTextItemView
 
 ClipboardHistoryTextItemView::ClipboardHistoryTextItemView(
-    const ClipboardHistoryItem* clipboard_history_item,
+    const base::UnguessableToken& item_id,
+    const ClipboardHistory* clipboard_history,
     views::MenuItemView* container)
-    : ClipboardHistoryItemView(clipboard_history_item, container),
-      text_(clipboard_history_item->display_text()) {
+    : ClipboardHistoryItemView(item_id, clipboard_history, container),
+      text_(GetClipboardHistoryItem()->display_text()) {
   SetAccessibleName(text_);
 }
 

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "base/unguessable_token.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -16,6 +17,7 @@ class MenuItemView;
 }  // namespace views
 
 namespace ash {
+class ClipboardHistory;
 class ClipboardHistoryDeleteButton;
 class ClipboardHistoryItem;
 class ClipboardHistoryMainButton;
@@ -27,7 +29,8 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   METADATA_HEADER(ClipboardHistoryItemView);
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(
-      const ClipboardHistoryItem& item,
+      const base::UnguessableToken& item_id,
+      const ClipboardHistory* clipboard_history,
       const ClipboardHistoryResourceManager* resource_manager,
       views::MenuItemView* container);
 
@@ -106,18 +109,14 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
     ClipboardHistoryItemView* const container_;
   };
 
-  ClipboardHistoryItemView(const ClipboardHistoryItem* clipboard_history_item,
+  ClipboardHistoryItemView(const base::UnguessableToken& item_id,
+                           const ClipboardHistory* clipboard_history,
                            views::MenuItemView* container);
-
-  // Maybe record histograms after the button is pressed.
-  void MaybeRecordButtonPressedHistogram() const;
 
   // Creates the contents view.
   virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
 
-  const ClipboardHistoryItem* clipboard_history_item() const {
-    return clipboard_history_item_;
-  }
+  const ClipboardHistoryItem* GetClipboardHistoryItem() const;
 
  private:
   // Indicates the child under pseudo focus, i.e. the view responding to the
@@ -157,8 +156,11 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // Updates `pseudo_focus_` and children visibility.
   void SetPseudoFocus(PseudoFocus new_pseudo_focus);
 
-  // Owned by ClipboardHistoryMenuModelAdapter.
-  const ClipboardHistoryItem* const clipboard_history_item_;
+  // Unique identifier for the `ClipboardHistoryItem` this view represents.
+  const base::UnguessableToken item_id_;
+
+  // Owned by `ClipboardHistoryControllerImpl`.
+  const base::raw_ptr<const ClipboardHistory> clipboard_history_;
 
   views::MenuItemView* const container_;
 

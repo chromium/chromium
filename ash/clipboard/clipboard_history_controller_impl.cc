@@ -284,6 +284,9 @@ ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
 }
 
 void ClipboardHistoryControllerImpl::Shutdown() {
+  if (IsMenuShowing()) {
+    context_menu_->Cancel();
+  }
   nudge_controller_.reset();
 }
 
@@ -875,6 +878,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
   ui::KeyEvent ctrl_release(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL, ui::EF_NONE);
   host->DeliverEventToSink(&ctrl_release);
 
+  clipboard_history_util::RecordClipboardHistoryItemPasted(item);
   base::UmaHistogramEnumeration("Ash.ClipboardHistory.PasteType", paste_type);
 
   for (auto& observer : observers_)

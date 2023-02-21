@@ -23,9 +23,10 @@ constexpr auto kIconMargin = gfx::Insets::TLBR(0, 0, 0, 12);
 namespace ash {
 
 ClipboardHistoryFileItemView::ClipboardHistoryFileItemView(
-    const ClipboardHistoryItem* clipboard_history_item,
+    const base::UnguessableToken& item_id,
+    const ClipboardHistory* clipboard_history,
     views::MenuItemView* container)
-    : ClipboardHistoryTextItemView(clipboard_history_item, container) {}
+    : ClipboardHistoryTextItemView(item_id, clipboard_history, container) {}
 ClipboardHistoryFileItemView::~ClipboardHistoryFileItemView() = default;
 
 std::unique_ptr<ClipboardHistoryFileItemView::ContentsView>
@@ -33,12 +34,14 @@ ClipboardHistoryFileItemView::CreateContentsView() {
   auto contents_view = ClipboardHistoryTextItemView::CreateContentsView();
 
   // `file_icon` should be `contents_view`'s first child.
-  views::ImageView* file_icon = contents_view->AddChildViewAt(
-      std::make_unique<views::ImageView>(), /*index=*/0);
-  file_icon->SetImageSize(kIconSize);
-  file_icon->SetProperty(views::kMarginsKey, kIconMargin);
-  file_icon->SetImage(clipboard_history_util::GetIconForFileClipboardItem(
-      clipboard_history_item(), base::UTF16ToUTF8(text())));
+  if (const auto* item = GetClipboardHistoryItem()) {
+    views::ImageView* file_icon = contents_view->AddChildViewAt(
+        std::make_unique<views::ImageView>(), /*index=*/0);
+    file_icon->SetImageSize(kIconSize);
+    file_icon->SetProperty(views::kMarginsKey, kIconMargin);
+    file_icon->SetImage(clipboard_history_util::GetIconForFileClipboardItem(
+        item, base::UTF16ToUTF8(text())));
+  }
 
   return contents_view;
 }

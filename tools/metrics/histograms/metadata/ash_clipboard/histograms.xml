@@ -67,6 +67,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     The data format of an item deleted from the clipboard history menu. Recorded
     when the user deletes an item.
+
+    Note: Prior to M112, this histogram erroneously recorded two samples when an
+    item was deleted by clicking the delete button. Deleting an item using the
+    Backspace key correctly recorded one sample.
   </summary>
 </histogram>
 
@@ -77,6 +81,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     The data format of an item pasted from the clipboard history menu. Recorded
     when the user pastes an item.
+
+    Note: Prior to M112, this histogram erroneously recorded samples only when
+    an item was pasted by clicking or pressing Enter with an item selected.
+    Other methods of pasting, such as toggling the menu closed or using the
+    virtual keyboard, were not counted at all.
   </summary>
 </histogram>
 
