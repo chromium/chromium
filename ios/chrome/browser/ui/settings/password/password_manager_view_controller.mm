@@ -386,6 +386,10 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 // Add button for the toolbar.
 @property(nonatomic, strong) UIBarButtonItem* addButtonInToolbar;
 
+// Indicates whether the check button should be shown or not. Used when
+// kIOSPasswordCheckup feature is enabled.
+@property(nonatomic, assign) BOOL shouldShowCheckButton;
+
 @end
 
 @implementation PasswordManagerViewController
@@ -551,10 +555,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   [self setSearchBarEnabled:self.shouldEnableSearchBar];
   [self updatePasswordCheckButtonWithState:self.passwordCheckState];
   [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
-  if (_checkForProblemsItem) {
-    [self reconfigureCellsForItems:@[ _checkForProblemsItem ]];
-  }
-  [self updatePasswordProblemsItem];
+  [self updatePasswordCheckSection];
   [self updateUIForEditState];
 }
 
@@ -629,8 +630,14 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   }
 
   [self updatePasswordCheckButtonWithState:_passwordCheckState];
-  [model addItem:_checkForProblemsItem
-      toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+
+  // Only add check button if kIOSPasswordCheckup is disabled, or if it is
+  // enabled and the current PasswordCheckUIState requires the button to be
+  // shown.
+  if (!IsPasswordCheckupEnabled() || self.shouldShowCheckButton) {
+    [model addItem:_checkForProblemsItem
+        toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+  }
 
   // When the Password Checkup feature is enabled, this timestamp only appears
   // in the detail text of the Password Checkup status cell. It is therefore
@@ -1248,9 +1255,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     return;
   }
 
-  if (_checkForProblemsItem)
-    [self reconfigureCellsForItems:@[ _checkForProblemsItem ]];
-  [self updatePasswordProblemsItem];
+  [self updatePasswordCheckSection];
 
   // When the Password Checkup feature is enabled, this timestamp only appears
   // in the detail text of the Password Checkup status cell. It is therefore
@@ -1520,12 +1525,18 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
             withRowAnimation:UITableViewRowAnimationTop];
         [model addItem:_passwordProblemsItem
             toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-        [model addItem:_checkForProblemsItem
-            toSectionWithIdentifier:SectionIdentifierPasswordCheck];
         [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:0
                                                      inSection:checkSection]];
-        [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:1
-                                                     inSection:checkSection]];
+        // Only add check button if kIOSPasswordCheckup is disabled, or if it is
+        // enabled and the current PasswordCheckUIState requires the button to
+        // be shown.
+        if (!IsPasswordCheckupEnabled() || self.shouldShowCheckButton) {
+          [model addItem:_checkForProblemsItem
+              toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+
+          [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:1
+                                                       inSection:checkSection]];
+        }
         sectionIndex++;
 
         // Add "Add Password" button.
@@ -1809,8 +1820,9 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 
 // Updates password check button according to provided state.
 - (void)updatePasswordCheckButtonWithState:(PasswordCheckUIState)state {
-  if (!_checkForProblemsItem)
+  if (!_checkForProblemsItem) {
     return;
+  }
 
   _checkForProblemsItem.text =
       l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
@@ -1821,26 +1833,54 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     return;
   }
 
-  switch (state) {
-    case PasswordCheckStateSafe:
-    case PasswordCheckStateUnmutedCompromisedPasswords:
-    case PasswordCheckStateReusedPasswords:
-    case PasswordCheckStateWeakPasswords:
-    case PasswordCheckStateDismissedWarnings:
-    case PasswordCheckStateDefault:
-    case PasswordCheckStateError:
-      _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
-      _checkForProblemsItem.accessibilityTraits &=
-          ~UIAccessibilityTraitNotEnabled;
-      break;
-    case PasswordCheckStateRunning:
-    // Fall through.
-    case PasswordCheckStateDisabled:
-      _checkForProblemsItem.textColor =
-          [UIColor colorNamed:kTextSecondaryColor];
-      _checkForProblemsItem.accessibilityTraits |=
-          UIAccessibilityTraitNotEnabled;
-      break;
+  if (IsPasswordCheckupEnabled()) {
+    switch (state) {
+      case PasswordCheckStateSafe:
+      case PasswordCheckStateUnmutedCompromisedPasswords:
+      case PasswordCheckStateReusedPasswords:
+      case PasswordCheckStateWeakPasswords:
+      case PasswordCheckStateDismissedWarnings:
+      case PasswordCheckStateRunning:
+        self.shouldShowCheckButton = NO;
+        break;
+      case PasswordCheckStateDefault:
+      case PasswordCheckStateError:
+        self.shouldShowCheckButton = YES;
+        _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
+        _checkForProblemsItem.accessibilityTraits &=
+            ~UIAccessibilityTraitNotEnabled;
+        break;
+      // Fall through.
+      case PasswordCheckStateDisabled:
+        self.shouldShowCheckButton = YES;
+        _checkForProblemsItem.textColor =
+            [UIColor colorNamed:kTextSecondaryColor];
+        _checkForProblemsItem.accessibilityTraits |=
+            UIAccessibilityTraitNotEnabled;
+        break;
+    }
+  } else {
+    switch (state) {
+      case PasswordCheckStateSafe:
+      case PasswordCheckStateUnmutedCompromisedPasswords:
+      case PasswordCheckStateReusedPasswords:
+      case PasswordCheckStateWeakPasswords:
+      case PasswordCheckStateDismissedWarnings:
+      case PasswordCheckStateDefault:
+      case PasswordCheckStateError:
+        _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
+        _checkForProblemsItem.accessibilityTraits &=
+            ~UIAccessibilityTraitNotEnabled;
+        break;
+      case PasswordCheckStateRunning:
+      // Fall through.
+      case PasswordCheckStateDisabled:
+        _checkForProblemsItem.textColor =
+            [UIColor colorNamed:kTextSecondaryColor];
+        _checkForProblemsItem.accessibilityTraits |=
+            UIAccessibilityTraitNotEnabled;
+        break;
+    }
   }
 }
 
@@ -2325,17 +2365,56 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   [self deleteItemAtIndexPaths:indexPaths];
 }
 
-// Updates the UI of the password checkup status cell.
-- (void)updatePasswordProblemsItem {
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:ItemTypePasswordCheckStatus];
-  if (_passwordProblemsItem &&
-      [self.tableView cellForRowAtIndexPath:indexPath]) {
-    [self reconfigureCellsForItems:@[ _passwordProblemsItem ]];
-    // Refresh the cells' height.
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
+- (void)updatePasswordCheckSection {
+  if (![self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierPasswordCheck]) {
+    return;
   }
+
+  [self.tableView
+      performBatchUpdates:^{
+        if (_passwordProblemsItem) {
+          [self reconfigureCellsForItems:@[ _passwordProblemsItem ]];
+        }
+        if (_checkForProblemsItem) {
+          // If kIOSPasswordCheckup feature is disabled, only reconfigure the
+          // check button cell.
+          if (!IsPasswordCheckupEnabled()) {
+            [self reconfigureCellsForItems:@[ _checkForProblemsItem ]];
+          } else {
+            BOOL checkForProblemsItemIsInModel = [self.tableViewModel
+                hasItemForItemType:ItemTypeCheckForProblemsButton
+                 sectionIdentifier:SectionIdentifierPasswordCheck];
+            // Check if the check button should be removed from the table view.
+            if (!self.shouldShowCheckButton && checkForProblemsItemIsInModel) {
+              [self.tableView
+                  deleteRowsAtIndexPaths:@[ [self checkButtonIndexPath] ]
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
+              [self.tableViewModel
+                         removeItemWithType:ItemTypeCheckForProblemsButton
+                  fromSectionWithIdentifier:SectionIdentifierPasswordCheck];
+            } else if (self.shouldShowCheckButton) {
+              [self reconfigureCellsForItems:@[ _checkForProblemsItem ]];
+              // Check if the check button should be added to the table view.
+              if (!checkForProblemsItemIsInModel) {
+                [self.tableViewModel addItem:_checkForProblemsItem
+                     toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+                [self.tableView
+                    insertRowsAtIndexPaths:@[ [self checkButtonIndexPath] ]
+                          withRowAnimation:UITableViewRowAnimationAutomatic];
+              }
+            }
+          }
+        }
+        [self.tableView layoutIfNeeded];
+      }
+               completion:nil];
+}
+
+- (NSIndexPath*)checkButtonIndexPath {
+  return
+      [self.tableViewModel indexPathForItemType:ItemTypeCheckForProblemsButton
+                              sectionIdentifier:SectionIdentifierPasswordCheck];
 }
 
 #pragma mark - UITableViewDelegate

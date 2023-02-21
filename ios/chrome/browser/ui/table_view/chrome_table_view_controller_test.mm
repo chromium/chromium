@@ -70,6 +70,13 @@ int ChromeTableViewControllerTest::NumberOfItemsInSection(int section) {
   return [[controller_ tableViewModel] numberOfItemsInSection:section];
 }
 
+bool ChromeTableViewControllerTest::HasTableViewItem(int section, int item) {
+  TableViewModel* model = [controller_ tableViewModel];
+  NSIndexPath* index_path = [NSIndexPath indexPathForItem:item
+                                                inSection:section];
+  return [model hasItemAtIndexPath:index_path];
+}
+
 id ChromeTableViewControllerTest::GetTableViewItem(int section, int item) {
   TableViewModel* model = [controller_ tableViewModel];
   NSIndexPath* index_path = [NSIndexPath indexPathForItem:item

@@ -791,6 +791,10 @@ TEST_F(PasswordManagerViewControllerTest,
       GetPasswordManagerViewController();
   AddSavedForm1();
 
+  // Switch to default state so that the button is present for when
+  // kIOSPasswordCheckup feature is enabled.
+  ChangePasswordCheckState(PasswordCheckStateDefault);
+
   TableViewDetailTextItem* checkPasswordButton =
       GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
@@ -883,6 +887,8 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateDisabled);
 
+  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
+                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
       IDS_IOS_CHECK_PASSWORDS, IDS_IOS_CHECK_PASSWORDS_DESCRIPTION,
       GetSectionIndex(SectionIdentifierPasswordCheck), 0);
@@ -916,6 +922,8 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateDisabled);
 
+  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
+                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
       IDS_IOS_PASSWORD_CHECKUP, IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION,
       GetSectionIndex(SectionIdentifierPasswordCheck), 0);
@@ -1054,8 +1062,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateSafe);
 
-  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
-                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  // Check button should be hidden.
+  EXPECT_FALSE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
 
   SettingsCheckItem* checkPassword =
       GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 0);
@@ -1134,8 +1143,10 @@ TEST_F(PasswordManagerViewControllerTest,
   AddSavedInsecureForm(InsecureType::kLeaked);
   ChangePasswordCheckState(PasswordCheckStateUnmutedCompromisedPasswords);
 
-  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
-                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  // Check button should be hidden.
+  EXPECT_FALSE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
+
   CheckDetailItemTextWithPluralIds(
       IDS_IOS_PASSWORD_CHECKUP, IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 1,
       GetSectionIndex(SectionIdentifierPasswordCheck), 0);
@@ -1172,8 +1183,10 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateReusedPasswords) {
                        /*username_value=*/u"test1@egmail.com");
   ChangePasswordCheckState(PasswordCheckStateReusedPasswords);
 
-  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
-                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  // Check button should be hidden.
+  EXPECT_FALSE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
+
   CheckDetailItemTextWithPlaceholder(
       IDS_IOS_PASSWORD_CHECKUP, IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT,
       base::NumberToString16(2),
@@ -1209,8 +1222,10 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateWeakPasswords) {
   AddSavedInsecureForm(InsecureType::kWeak);
   ChangePasswordCheckState(PasswordCheckStateWeakPasswords);
 
-  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
-                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  // Check button should be hidden.
+  EXPECT_FALSE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
+
   CheckDetailItemTextWithPluralIds(
       IDS_IOS_PASSWORD_CHECKUP, IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT, 1,
       GetSectionIndex(SectionIdentifierPasswordCheck), 0);
@@ -1246,8 +1261,10 @@ TEST_F(PasswordManagerViewControllerTest,
   AddSavedInsecureForm(InsecureType::kLeaked, /*is_muted=*/true);
   ChangePasswordCheckState(PasswordCheckStateDismissedWarnings);
 
-  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
-                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  // Check button should be hidden.
+  EXPECT_FALSE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
+
   CheckDetailItemTextWithPluralIds(
       IDS_IOS_PASSWORD_CHECKUP, IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT, 1,
       GetSectionIndex(SectionIdentifierPasswordCheck), 0);
@@ -1322,8 +1339,10 @@ TEST_F(PasswordManagerViewControllerTest,
   AddSavedForm1();
   ChangePasswordCheckState(PasswordCheckStateRunning);
 
-  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
-                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  // Check button should be hidden.
+  EXPECT_FALSE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
+
   CheckDetailItemTextWithPluralIds(
       IDS_IOS_PASSWORD_CHECKUP_ONGOING,
       IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT, 1,
@@ -1425,6 +1444,10 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest, StartPasswordCheck) {
   AddSavedForm1();
   RunUntilIdle();
+
+  // Switch to default state so that the button is present for when
+  // kIOSPasswordCheckup feature is enabled.
+  ChangePasswordCheckState(PasswordCheckStateDefault);
 
   PasswordManagerViewController* passwords_controller =
       GetPasswordManagerViewController();
