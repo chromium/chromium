@@ -82,5 +82,63 @@ TEST_F(ArcMemoryBridgeTest, DropCaches_NoInstance) {
   EXPECT_FALSE(*opt_result);
 }
 
+// Tests that ReclaimAll runs the callback with memory reclaimed from all
+// processes successfully.
+TEST_F(ArcMemoryBridgeTest, ReclaimAll_All_Success) {
+  memory_instance()->set_reclaim_all_result(100, 0);
+
+  absl::optional<uint32_t> reclaimed_result;
+  absl::optional<uint32_t> unreclaimed_result;
+  bridge()->ReclaimAll(
+      base::BindLambdaForTesting([&](uint32_t reclaimed, uint32_t unreclaimed) {
+        reclaimed_result = reclaimed;
+        unreclaimed_result = unreclaimed;
+      }));
+
+  ASSERT_TRUE(reclaimed_result);
+  EXPECT_EQ(*reclaimed_result, 100u);
+  ASSERT_TRUE(unreclaimed_result);
+  EXPECT_EQ(*unreclaimed_result, 0u);
+}
+
+// Tests that ReclaimAll runs the callback with memory reclaimed from some
+// processes successfully.
+TEST_F(ArcMemoryBridgeTest, ReclaimAll_Partial_Success) {
+  memory_instance()->set_reclaim_all_result(50, 50);
+
+  absl::optional<uint32_t> reclaimed_result;
+  absl::optional<uint32_t> unreclaimed_result;
+  bridge()->ReclaimAll(
+      base::BindLambdaForTesting([&](uint32_t reclaimed, uint32_t unreclaimed) {
+        reclaimed_result = reclaimed;
+        unreclaimed_result = unreclaimed;
+      }));
+
+  ASSERT_TRUE(reclaimed_result);
+  EXPECT_EQ(*reclaimed_result, 50u);
+  ASSERT_TRUE(unreclaimed_result);
+  EXPECT_EQ(*unreclaimed_result, 50u);
+}
+
+// Tests that ReclaimAll runs the callback with the instance not available.
+TEST_F(ArcMemoryBridgeTest, ReclaimAll_NoInstance) {
+  // Inject failure.
+  ArcServiceManager::Get()->arc_bridge_service()->memory()->CloseInstance(
+      memory_instance());
+
+  absl::optional<uint32_t> reclaimed_result;
+  absl::optional<uint32_t> unreclaimed_result;
+  bridge()->ReclaimAll(
+      base::BindLambdaForTesting([&](uint32_t reclaimed, uint32_t unreclaimed) {
+        reclaimed_result = reclaimed;
+        unreclaimed_result = unreclaimed;
+      }));
+
+  ASSERT_TRUE(reclaimed_result);
+  EXPECT_EQ(*reclaimed_result, 0u);
+  ASSERT_TRUE(unreclaimed_result);
+  EXPECT_EQ(*unreclaimed_result, 0u);
+}
+
 }  // namespace
 }  // namespace arc

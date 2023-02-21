@@ -67,4 +67,14 @@ void ArcMemoryBridge::DropCaches(DropCachesCallback callback) {
   memory_instance->DropCaches(std::move(callback));
 }
 
+void ArcMemoryBridge::ReclaimAll(ReclaimAllCallback callback) {
+  auto* const memory_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->memory(), ReclaimAll);
+  if (!memory_instance) {
+    std::move(callback).Run(0, 0);
+    return;
+  }
+  memory_instance->ReclaimAll(std::move(callback));
+}
+
 }  // namespace arc
