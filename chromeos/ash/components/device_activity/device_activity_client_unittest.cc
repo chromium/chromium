@@ -50,7 +50,7 @@ namespace {
 
 // Set the current time to the following string.
 // Note that we use midnight PST (UTC-8) for the unit tests.
-const char kFakeNowTimeString[] = "2000-01-01 08:00:00 GMT";
+const char kFakeNowTimeString[] = "2023-01-01 08:00:00 GMT";
 
 // This value represents the UTC based activate date of the device formatted
 // YYYY-WW to reduce privacy granularity.
@@ -1567,6 +1567,56 @@ TEST_F(DeviceActivityClientTest, UmaHistogramStateCountAfterFirstCheckIn) {
   histogram_tester_.ExpectBucketCount("Ash.DeviceActiveClient.StateCount",
                                       DeviceActivityClient::State::kCheckingIn,
                                       use_cases.size());
+}
+
+TEST_F(DeviceActivityClientTest,
+       UpdateChurnActiveStatusAfterChurnCohortCheckIn) {
+  // The decimal representation of the bit string `100010001000000000000001101`
+  // The first 10 bits represent the number of months since 2000 is 273, which
+  // represents the 2022-10.
+  // The right 18 bits represent the churn cohort active status for past 18
+  // months. The right most bit represents the status of previous active mont,
+  // in this case, it represent 2022-10. And the second right most bit
+  // represents 2022-09, etc.
+  int kFakeBeforeChurnActiveStatus = 71565325;
+  int kFakeAfterChurnActvieStatus = 72351849;
+
+  // Set the past ping month to 2022-10.
+  base::Time new_daily_ts = base::Time::Now() - base::Days(70);
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    use_case->SetLastKnownPingTimestamp(new_daily_ts);
+  }
+
+  // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
+  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+
+  // Last Churn Cohort month is: 2022-10, months is 273
+  // Current Churn Cohort month is: 2023-01, months is 276
+  // 273->276:   0100010001->0100010100
+  // 2022-10 active value: 71565325 -> 0100010001 000000000000001101
+  // 2023-01 active value: 72351849 -> 0100010100 000000000001101001
+
+  SetWifiNetworkState(shill::kStateOnline);
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_TRUE(use_case->IsLastKnownPingTimestampSet());
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+
+    SimulateImportResponse(std::string(), net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+
+    EXPECT_GE(use_case->GetLastKnownPingTimestamp(), new_daily_ts);
+  }
+
+  // Check the new churn active status after ping.
+  int updated_active_status_value = churn_active_status_->GetValueAsInt();
+  EXPECT_EQ(updated_active_status_value, kFakeAfterChurnActvieStatus);
 }
 
 }  // namespace ash::device_activity

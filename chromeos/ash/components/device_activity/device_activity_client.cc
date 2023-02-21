@@ -1157,6 +1157,17 @@ void DeviceActivityClient::OnCheckInDone(
     // Update local state pref to record reporting device active.
     current_use_case->SetLastKnownPingTimestamp(
         last_transition_out_of_idle_time_);
+
+    // Update the churn active status after churn cohort ping.
+    if (current_use_case->GetPsmUseCase() ==
+        private_membership::rlwe::RlweUseCase::
+            CROS_FRESNEL_CHURN_MONTHLY_COHORT) {
+      churn_active_status_ptr_->UpdateValue(last_transition_out_of_idle_time_);
+      // Update the active value in local_state_ as well.
+      int active_value = churn_active_status_ptr_->GetValueAsInt();
+      local_state_->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                               active_value);
+    }
   }
 
   RecordDurationStateMetric(state_, state_timer_.Elapsed());

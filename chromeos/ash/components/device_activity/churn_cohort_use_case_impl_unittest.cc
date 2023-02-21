@@ -36,14 +36,14 @@ constexpr char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
 // https://crsrc.org/o/src/third_party/chromiumos-overlay/chromeos-base/chromeos-activate-date/files/activate_date;l=67
 const char kFakeFirstActivateDate[] = "2022-50";
 
-// The decimal representation of the bit string `100010001100000000000001101`
+// The decimal representation of the bit string `0100010001 000000000000001101`
 // The first 10 bits represent the number of months since 2000 is 275, which
 // represents the 2022-12.
 // The right 18 bits represent the churn cohort active status for past 18
 // months. The right most bit represents the status of previous active mont,
 // in this case, it represent 2022-12. And the second right most bit
 // represents 2022-11, etc.
-const int kFakeChurnActiveStatus = 109450913;
+const int kFakeChurnActiveStatus = 71565325;
 
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
     version_info::Channel::STABLE /* chromeos_channel */,
