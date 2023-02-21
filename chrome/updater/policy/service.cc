@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/service.h"
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -108,7 +110,10 @@ PolicyService::PolicyService(
           external_constants,
           CreateDMPolicyManager()))),
       external_constants_(external_constants),
-      policy_fetcher_(base::MakeRefCounted<PolicyFetcher>(this)) {}
+      policy_fetcher_(base::MakeRefCounted<PolicyFetcher>(this)) {
+  VLOG(1) << "Current effective policies:" << std::endl
+          << GetAllPoliciesAsString();
+}
 
 PolicyService::~PolicyService() = default;
 
@@ -145,6 +150,8 @@ void PolicyService::FetchPoliciesDone(
              base::OnceCallback<void(int)> callback, int result,
              PolicyService::PolicyManagerVector managers) {
             self->policy_managers_ = SortManagers(std::move(managers));
+            VLOG(1) << "Policies after refresh:" << std::endl
+                    << self->GetAllPoliciesAsString();
             std::move(callback).Run(result);
           },
           base::WrapRefCounted(this), std::move(callback), result));
@@ -273,6 +280,133 @@ PolicyStatus<int> PolicyService::DeprecatedGetLastCheckPeriodMinutes() const {
             return period ? absl::optional<int>(period->InMinutes())
                           : absl::nullopt;
           })));
+}
+
+std::set<std::string> PolicyService::GetAppsWithPolicy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::set<std::string> apps_with_policy;
+
+  base::ranges::for_each(
+      policy_managers_.vector,
+      [&apps_with_policy](
+          const scoped_refptr<PolicyManagerInterface>& manager) {
+        auto apps = manager->GetAppsWithPolicy();
+        if (apps) {
+          apps_with_policy.insert(apps->begin(), apps->end());
+        }
+      });
+
+  return apps_with_policy;
+}
+
+std::string PolicyService::GetAllPoliciesAsString() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::string> policies;
+
+  PolicyStatus<base::TimeDelta> last_check_period = GetLastCheckPeriod();
+  if (last_check_period) {
+    policies.push_back(base::StringPrintf(
+        "LastCheckPeriod = %d (%s)", last_check_period.policy().InMinutes(),
+        last_check_period.effective_policy()->source.c_str()));
+  }
+
+  PolicyStatus<UpdatesSuppressedTimes> update_supressed_times =
+      GetUpdatesSuppressedTimes();
+  if (update_supressed_times) {
+    policies.push_back(base::StringPrintf(
+        "UpdatesSuppressed = {StartHour: %d, StartMinute: "
+        "%d, Duration: %d} (%s)",
+        update_supressed_times.policy().start_hour_,
+        update_supressed_times.policy().start_minute_,
+        update_supressed_times.policy().duration_minute_,
+        update_supressed_times.effective_policy()->source.c_str()));
+  }
+
+  PolicyStatus<std::string> download_preference =
+      GetDownloadPreferenceGroupPolicy();
+  if (download_preference) {
+    policies.push_back(base::StringPrintf(
+        "DownloadPreference = %s (%s)", download_preference.policy().c_str(),
+        download_preference.effective_policy()->source.c_str()));
+  }
+
+  PolicyStatus<int> cache_size_limit = GetPackageCacheSizeLimitMBytes();
+  if (cache_size_limit) {
+    policies.push_back(base::StringPrintf(
+        "CacheSizeLimit = %d MB (%s)", cache_size_limit.policy(),
+        cache_size_limit.effective_policy()->source.c_str()));
+  }
+
+  PolicyStatus<int> cache_expiration_time = GetPackageCacheExpirationTimeDays();
+  if (cache_expiration_time) {
+    policies.push_back(base::StringPrintf(
+        "CacheExpires = %d days (%s)", cache_expiration_time.policy(),
+        cache_expiration_time.effective_policy()->source.c_str()));
+  }
+
+  PolicyStatus<std::string> proxy_mode = GetProxyMode();
+  if (proxy_mode) {
+    policies.push_back(
+        base::StringPrintf("ProxyMode = %s (%s)", proxy_mode.policy().c_str(),
+                           proxy_mode.effective_policy()->source.c_str()));
+  }
+
+  PolicyStatus<std::string> proxy_pac_url = GetProxyPacUrl();
+  if (proxy_pac_url) {
+    policies.push_back(base::StringPrintf(
+        "ProxyPacURL = %s (%s)", proxy_pac_url.policy().c_str(),
+        proxy_pac_url.effective_policy()->source.c_str()));
+  }
+  PolicyStatus<std::string> proxy_server = GetProxyServer();
+  if (proxy_server) {
+    policies.push_back(base::StringPrintf(
+        "ProxyServer = %s (%s)", proxy_server.policy().c_str(),
+        proxy_server.effective_policy()->source.c_str()));
+  }
+
+  for (const std::string& app_id : GetAppsWithPolicy()) {
+    std::vector<std::string> app_policies;
+    PolicyStatus<int> app_install = GetPolicyForAppInstalls(app_id);
+    if (app_install) {
+      app_policies.push_back(
+          base::StringPrintf("Install = %d (%s)", app_install.policy(),
+                             app_install.effective_policy()->source.c_str()));
+    }
+
+    PolicyStatus<int> app_update = GetPolicyForAppUpdates(app_id);
+    if (app_update) {
+      app_policies.push_back(
+          base::StringPrintf("Update = %d (%s)", app_update.policy(),
+                             app_update.effective_policy()->source.c_str()));
+    }
+    PolicyStatus<std::string> target_channel = GetTargetChannel(app_id);
+    if (target_channel) {
+      app_policies.push_back(base::StringPrintf(
+          "TargetChannel = %s (%s)", target_channel.policy().c_str(),
+          target_channel.effective_policy()->source.c_str()));
+    }
+    PolicyStatus<std::string> target_version_prefix =
+        GetTargetVersionPrefix(app_id);
+    if (target_version_prefix) {
+      app_policies.push_back(base::StringPrintf(
+          "TargetVersionPrefix = %s (%s)",
+          target_version_prefix.policy().c_str(),
+          target_version_prefix.effective_policy()->source.c_str()));
+    }
+    PolicyStatus<bool> rollback_allowed =
+        IsRollbackToTargetVersionAllowed(app_id);
+    if (rollback_allowed) {
+      app_policies.push_back(base::StringPrintf(
+          "RollbackToTargetVersionAllowed = %d (%s)", rollback_allowed.policy(),
+          rollback_allowed.effective_policy()->source.c_str()));
+    }
+
+    policies.push_back(
+        base::StringPrintf("\"%s\": {\n    %s\n  }", app_id.c_str(),
+                           base::JoinString(app_policies, "\n    ").c_str()));
+  }
+  return base::StringPrintf("{\n  %s\n}\n",
+                            base::JoinString(policies, "\n  ").c_str());
 }
 
 template <typename T>

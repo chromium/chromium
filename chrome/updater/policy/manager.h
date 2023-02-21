@@ -115,6 +115,10 @@ class PolicyManagerInterface
   virtual absl::optional<std::vector<std::string>> GetForceInstallApps()
       const = 0;
 
+  // Returns all apps that have some policy set.
+  virtual absl::optional<std::vector<std::string>> GetAppsWithPolicy()
+      const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<PolicyManagerInterface>;
   virtual ~PolicyManagerInterface() = default;

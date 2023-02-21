@@ -301,4 +301,8 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
   return [_appPolicies objectForKey:appid].rollbackToTargetVersion;
 }
 
+- (NSArray<NSString*>*)appsWithPolicy {
+  return [_appPolicies allKeys];
+}
+
 @end

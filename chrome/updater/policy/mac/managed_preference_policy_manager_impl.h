@@ -65,6 +65,8 @@ using CRUUpdatePolicyDictionary =
 - (nullable NSString*)targetVersionPrefix:(nonnull NSString*)appid;
 - (int)rollbackToTargetVersion:(nonnull NSString*)appid;
 
+- (nullable NSArray<NSString*>*)appsWithPolicy;
+
 // |policies| should be the dictionary value read from managed preferences
 // under the key "updatePolicies".
 - (nullable instancetype)initWithDictionary:

@@ -16,6 +16,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -55,6 +56,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
   absl::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override;
   absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
+  absl::optional<std::vector<std::string>> GetAppsWithPolicy() const override;
 
  private:
   ~ManagedPreferencePolicyManager() override;
@@ -178,6 +180,21 @@ absl::optional<std::string> ManagedPreferencePolicyManager::GetTargetChannel(
 absl::optional<std::vector<std::string>>
 ManagedPreferencePolicyManager::GetForceInstallApps() const {
   return absl::nullopt;
+}
+
+absl::optional<std::vector<std::string>>
+ManagedPreferencePolicyManager::GetAppsWithPolicy() const {
+  NSArray<NSString*>* apps_with_policy = [impl_ appsWithPolicy];
+  if (!apps_with_policy) {
+    return absl::nullopt;
+  }
+
+  std::vector<std::string> app_ids;
+  for (NSString* app in apps_with_policy) {
+    app_ids.push_back(base::SysNSStringToUTF8(app));
+  }
+
+  return app_ids;
 }
 
 NSDictionary* ReadManagedPreferencePolicyDictionary() {

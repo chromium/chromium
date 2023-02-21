@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -101,6 +103,18 @@ class FakePolicyManager : public PolicyManagerInterface {
   absl::optional<std::vector<std::string>> GetForceInstallApps()
       const override {
     return absl::nullopt;
+  }
+  absl::optional<std::vector<std::string>> GetAppsWithPolicy() const override {
+    std::set<std::string> apps_with_policy;
+    for (const auto& policy_entry : update_policies_) {
+      apps_with_policy.insert(policy_entry.first);
+    }
+    for (const auto& policy_entry : channels_) {
+      apps_with_policy.insert(policy_entry.first);
+    }
+
+    return std::vector<std::string>(apps_with_policy.begin(),
+                                    apps_with_policy.end());
   }
 
  private:
@@ -275,6 +289,24 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(download_preference_status.conflict_policy(), absl::nullopt);
 
   EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
+  EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
+            "{\n"
+            "  LastCheckPeriod = 270 (default)\n"
+            "  UpdatesSuppressed = "
+            "{StartHour: 5, StartMinute: 10, Duration: 30} (group_policy)\n"
+            "  DownloadPreference = cacheable (imaginary)\n"
+            "  \"app1\": {\n"
+            "    Install = 1 (default)\n"
+            "    Update = 3 (device_management)\n"
+            "    TargetChannel = channel_gp (group_policy)\n"
+            "    RollbackToTargetVersionAllowed = 0 (default)\n"
+            "  }\n"
+            "  \"app2\": {\n"
+            "    Install = 1 (default)\n"
+            "    Update = 1 (group_policy)\n"
+            "    RollbackToTargetVersionAllowed = 0 (default)\n"
+            "  }\n"
+            "}\n");
 }
 
 TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
@@ -372,6 +404,26 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   EXPECT_EQ(download_preference_status.conflict_policy(), absl::nullopt);
 
   EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
+
+  EXPECT_EQ(
+      policy_service->GetAllPoliciesAsString(),
+      "{\n"
+      "  LastCheckPeriod = 270 (default)\n"
+      "  UpdatesSuppressed = "
+      "{StartHour: 5, StartMinute: 10, Duration: 30} (device_management)\n"
+      "  DownloadPreference = cacheable (imaginary)\n"
+      "  \"app1\": {\n"
+      "    Install = 1 (default)\n"
+      "    Update = 3 (device_management)\n"
+      "    TargetChannel = channel_dm (device_management)\n"
+      "    RollbackToTargetVersionAllowed = 0 (default)\n"
+      "  }\n"
+      "  \"app2\": {\n"
+      "    Install = 1 (default)\n"
+      "    Update = 1 (default)\n"
+      "    RollbackToTargetVersionAllowed = 0 (default)\n"
+      "  }\n"
+      "}\n");
 }
 
 }  // namespace updater
