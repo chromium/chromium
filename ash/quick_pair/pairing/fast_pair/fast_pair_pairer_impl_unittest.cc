@@ -42,6 +42,7 @@
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -617,6 +618,28 @@ TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Subsequent) {
 }
 
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  AddConnectedHandshake();
+  fake_fast_pair_handshake_->InvokeCallback();
+  CreatePairer();
+  fake_bluetooth_device_ptr_->TriggerPairCallback();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  ExpectStepMetrics(kProtocolPairingStepInitial,
+                    {FastPairProtocolPairingSteps::kPairingStarted,
+                     FastPairProtocolPairingSteps::kDeviceConnected});
+  histogram_tester().ExpectTotalCount(kCreateBondTime, 1);
+}
+
+TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_Floss) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {floss::features::kFlossEnabled},
+      /*disabled_features=*/{});
+
   Login(user_manager::UserType::USER_TYPE_REGULAR);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -1213,6 +1236,46 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial) {
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_TRUE(IsDevicePaired());
+  EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  ExpectStepMetrics(kProtocolPairingStepInitial,
+                    {FastPairProtocolPairingSteps::kPairingStarted,
+                     FastPairProtocolPairingSteps::kPairingComplete,
+                     FastPairProtocolPairingSteps::kPasskeyNegotiated,
+                     FastPairProtocolPairingSteps::kRecievedPasskeyResponse,
+                     FastPairProtocolPairingSteps::kPasskeyValidated,
+                     FastPairProtocolPairingSteps::kPasskeyConfirmed,
+                     FastPairProtocolPairingSteps::kDeviceConnected});
+}
+
+TEST_F(FastPairPairerImplTest, PairSuccess_Initial_Floss) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {floss::features::kFlossEnabled},
+      /*disabled_features=*/{});
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+
+  // When pairing starts, if the classic address can't be resolved to
+  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
+  // to return null when queried for the device to mock this behavior.
+  SetGetDeviceNullptr();
+  AddConnectedHandshake();
+  fake_fast_pair_handshake_->InvokeCallback();
+  CreatePairer();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  SetDecryptPasskeyForSuccess();
+  NotifyConfirmPasskey();
+  RunWritePasskeyCallback(kResponseBytes);
+  // Floss calls Pair instead of finishing after ConnectDevice.
+  fake_bluetooth_device_ptr_->TriggerPairCallback();
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());

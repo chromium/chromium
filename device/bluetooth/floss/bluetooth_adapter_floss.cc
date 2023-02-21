@@ -1062,7 +1062,9 @@ void BluetoothAdapterFloss::ConnectDevice(
   // createRfcommSocketToServiceRecord(UUID). This should be called after
   // ConnectDevice. Since all that is required on Floss for insecure connection
   // is an address, this function currently just creates a device pointer.
-  // TODO(b/259725491): This function should actually create an ACL connection.
+  // TODO(b/269500327): This behavior is actually a better design. We should
+  // rename this function to CreateDevice which does only device creation and
+  // let the caller decide what to do with it (Connect, Pair, etc).
   BluetoothDeviceFloss* device_ptr;
   std::string canonical_address = device::CanonicalizeBluetoothAddress(address);
 

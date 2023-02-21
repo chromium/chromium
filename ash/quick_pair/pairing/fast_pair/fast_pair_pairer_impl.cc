@@ -29,6 +29,7 @@
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
@@ -263,6 +264,18 @@ void FastPairPairerImpl::StartPairing() {
 
 void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
   QP_LOG(VERBOSE) << __func__;
+
+  if (floss::features::IsFlossEnabled()) {
+    // On Floss, ConnectDevice behaves like CreateDevice. It only creates
+    // a new device object so we have to follow up with actually Pair()-ing
+    // to it.
+    QP_LOG(INFO) << __func__ << " on Floss";
+    device->Pair(/*pairing_delegate=*/this,
+                 base::BindOnce(&FastPairPairerImpl::OnPairConnected,
+                                weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kDeviceConnected,
                             *device_);
   RecordConnectDeviceResult(/*success=*/true);
@@ -772,6 +785,14 @@ void FastPairPairerImpl::OnPairConnected(
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPairingDeviceLost);
     // |this| may be destroyed after this line.
+    return;
+  }
+
+  if (floss::features::IsFlossEnabled()) {
+    // On Floss, Pair is exactly the same as Connect. Therefore we skip calling
+    // Connect().
+    QP_LOG(VERBOSE) << __func__ << ": Skipping Connect on Floss";
+    OnConnected(absl::nullopt);
     return;
   }
 
