@@ -400,9 +400,10 @@ Node* ContainerNode::InsertBefore(Node* new_child,
   // 2. Let reference child be child.
   // 3. If reference child is node, set it to node’s next sibling.
   if (ref_child == new_child) {
-    ref_child = new_child->nextSibling();
-    if (!ref_child)
+    if (!new_child->HasNextSibling()) {
       return AppendChild(new_child, exception_state);
+    }
+    ref_child = new_child->nextSibling();
   }
 
   // 4. Adopt node into parent’s node document.
@@ -441,8 +442,8 @@ void ContainerNode::InsertBeforeCommon(Node& next_child, Node& new_child) {
   // Use insertBefore if you need to handle reparenting (and want DOM mutation
   // events).
   DCHECK(!new_child.parentNode());
-  DCHECK(!new_child.nextSibling());
-  DCHECK(!new_child.previousSibling());
+  DCHECK(!new_child.HasNextSibling());
+  DCHECK(!new_child.HasPreviousSibling());
   DCHECK(!new_child.IsShadowRoot());
 
   Node* prev = next_child.previousSibling();

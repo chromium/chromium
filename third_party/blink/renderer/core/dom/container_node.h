@@ -97,7 +97,7 @@ class CORE_EXPORT ContainerNode : public Node {
   bool HasChildren() const { return first_child_; }
 
   bool HasOneChild() const {
-    return first_child_ && !first_child_->nextSibling();
+    return first_child_ && !first_child_->HasNextSibling();
   }
   bool HasOneTextChild() const {
     return HasOneChild() && first_child_->IsTextNode();
@@ -525,21 +525,21 @@ inline bool ContainerNode::NeedsAdjacentStyleRecalc() const {
 }
 
 inline unsigned Node::CountChildren() const {
-  auto* this_node = DynamicTo<ContainerNode>(this);
+  auto* this_node = DynamicTo<ContainerNode>(*this);
   if (!this_node)
     return 0;
   return this_node->CountChildren();
 }
 
 inline Node* Node::firstChild() const {
-  auto* this_node = DynamicTo<ContainerNode>(this);
+  auto* this_node = DynamicTo<ContainerNode>(*this);
   if (!this_node)
     return nullptr;
   return this_node->firstChild();
 }
 
 inline Node* Node::lastChild() const {
-  auto* this_node = DynamicTo<ContainerNode>(this);
+  auto* this_node = DynamicTo<ContainerNode>(*this);
   if (!this_node)
     return nullptr;
   return this_node->lastChild();
