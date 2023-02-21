@@ -482,7 +482,7 @@ test("capture_unittests") {
       "video/fuchsia/video_capture_device_fuchsia_test.cc",
     ]
     additional_manifest_fragments =
-        [ "//media/fuchsia/test_support.shard.test-cml" ]
+        [ "//build/config/fuchsia/test/sysmem.shard.test-cml" ]
   }
 
   if (is_mac) {

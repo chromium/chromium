@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 // Used in tests which are hard-coded for the Scenic/GFX API-set.
-// Use test_ui_stack.shard.test-cml when tetsing for Flatland, or when the
+// Use test_ui_stack.shard.test-cml when testing for Flatland, or when the
 // choice of API-set is not important.
 {
+  include: [
+    "//build/config/fuchsia/test/sysmem.shard.test-cml",
+  ],
   children: [
     {
       name: "test_ui_stack",

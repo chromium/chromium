@@ -688,7 +688,7 @@ test("web_engine_unittests") {
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
-    "//media/fuchsia/test_support.shard.test-cml",
+    "//build/config/fuchsia/test/sysmem.shard.test-cml",
   ]
   additional_manifests = [
     # Required by ContextProvider unit-tests to launch the FakeContext process.

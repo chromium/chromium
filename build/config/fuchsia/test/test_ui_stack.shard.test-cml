@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 {
+  include: [
+    "//build/config/fuchsia/test/sysmem.shard.test-cml",
+  ],
   children: [
     {
       name: "test_ui_stack",
@@ -32,11 +35,6 @@
         "fuchsia.ui.scenic.Scenic",
       ],
       from: "#test_ui_stack",
-    },
-    {
-      protocol: [
-        "fuchsia.sysmem.Allocator",
-      ],
     },
   ],
   facets: {

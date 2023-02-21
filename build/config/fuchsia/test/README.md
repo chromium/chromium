@@ -39,6 +39,10 @@ approach is discussed in https://fxbug.dev/85845.
 #### logger.shard.test-cml
 For tests that test logging functionality by providing `fuchsia.logger.Log`.
 
+#### sysmem.shard.test-cml
+For tests that depend on the sysmem service (e.g. to allocate image buffers to
+share with Vulkan and Scenic).
+
 #### test_ui_stack.shard.test-cml
 For tests that need an isolated UI subsystem, that supports the Flatland
 API set.  This allows tests to e.g. run with view-focus unaffected by any
