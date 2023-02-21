@@ -732,6 +732,36 @@ TEST(CSSPropertyParserTest, ImageSetEmptyStrUrl) {
   TestImageSetParsing("image-set('' 1x)", "image-set(url(\"\") 1x)");
 }
 
+TEST(CSSPropertyParserTest, ImageSetLinearGradient) {
+  TestImageSetParsing("image-set(linear-gradient(red, blue) 1x)",
+                      "image-set(linear-gradient(red, blue) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetRepeatingLinearGradient) {
+  TestImageSetParsing("image-set(repeating-linear-gradient(red, blue 25%) 1x)",
+                      "image-set(repeating-linear-gradient(red, blue 25%) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetRadialGradient) {
+  TestImageSetParsing("image-set(radial-gradient(red, blue) 1x)",
+                      "image-set(radial-gradient(red, blue) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetRepeatingRadialGradient) {
+  TestImageSetParsing("image-set(repeating-radial-gradient(red, blue 25%) 1x)",
+                      "image-set(repeating-radial-gradient(red, blue 25%) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetConicGradient) {
+  TestImageSetParsing("image-set(conic-gradient(red, blue) 1x)",
+                      "image-set(conic-gradient(red, blue) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetRepeatingConicGradient) {
+  TestImageSetParsing("image-set(repeating-conic-gradient(red, blue 25%) 1x)",
+                      "image-set(repeating-conic-gradient(red, blue 25%) 1x)");
+}
+
 void TestImageSetParsingFailure(const String& testValue) {
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kBackgroundImage, testValue,
@@ -745,6 +775,10 @@ TEST(CSSPropertyParserTest, ImageSetEmpty) {
 
 TEST(CSSPropertyParserTest, ImageSetMissingUrl) {
   TestImageSetParsingFailure("image-set(1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetOnlyOneGradientColor) {
+  TestImageSetParsingFailure("image-set(linear-gradient(red) 1x)");
 }
 
 TEST(CSSPropertyParserTest, InternalLightDarkAuthor) {

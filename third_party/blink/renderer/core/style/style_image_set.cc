@@ -57,7 +57,7 @@ CSSValue* StyleImageSet::CssValue() const {
 
 CSSValue* StyleImageSet::ComputedCSSValue(const ComputedStyle& style,
                                           bool allow_visited_style) const {
-  return image_set_value_->ComputedCSSValue();
+  return image_set_value_->ComputedCSSValue(style, allow_visited_style);
 }
 
 bool StyleImageSet::CanRender() const {

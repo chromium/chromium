@@ -3480,8 +3480,11 @@ static CSSImageValue* CreateCSSImageValueWithReferrer(
       context.IsAdRelated());
 }
 
-static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
-                                 const CSSParserContext& context) {
+static CSSValue* ConsumeImageSet(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    ConsumeGeneratedImagePolicy generated_image_policy =
+        ConsumeGeneratedImagePolicy::kAllow) {
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
   auto* image_set = MakeGarbageCollected<CSSImageSetValue>();
@@ -3491,15 +3494,27 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
              ? ConsumeUrlOrStringAsStringView(args, context)
              : ConsumeUrlAsStringView(args, context))
             .ToAtomicString();
-    if (url_value.IsNull()) {
-      return nullptr;
-    }
+    if (!url_value.IsNull()) {
+      CSSImageValue* image =
+          CreateCSSImageValueWithReferrer(url_value, context);
 
-    CSSImageValue* image = CreateCSSImageValueWithReferrer(url_value, context);
-    if (context.Mode() == kUASheetMode) {
-      image->SetInitiator(fetch_initiator_type_names::kUacss);
+      if (context.Mode() == kUASheetMode) {
+        image->SetInitiator(fetch_initiator_type_names::kUacss);
+      }
+
+      image_set->Append(*image);
+    } else {
+      if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
+        return nullptr;
+      }
+
+      CSSValue* gen_image = ConsumeGeneratedImage(args, context);
+      if (gen_image == nullptr) {
+        return nullptr;
+      }
+
+      image_set->Append(*gen_image);
     }
-    image_set->Append(*image);
 
     if (args.Peek().GetType() != kDimensionToken &&
         RuntimeEnabledFeatures::CSSImageSetEnabled()) {
@@ -3554,7 +3569,7 @@ CSSValue* ConsumeImage(CSSParserTokenRange& range,
     if (id == CSSValueID::kWebkitImageSet ||
         (id == CSSValueID::kImageSet &&
          RuntimeEnabledFeatures::CSSImageSetEnabled())) {
-      return ConsumeImageSet(range, context);
+      return ConsumeImageSet(range, context, generated_image_policy);
     }
     if (generated_image_policy == ConsumeGeneratedImagePolicy::kAllow &&
         IsGeneratedImage(id)) {

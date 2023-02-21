@@ -131,7 +131,8 @@ StyleImage* StyleImageLoader::Load(
 
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
     return image_set_value->CacheImage(document_, device_scale_factor_,
-                                       image_request_behavior, cross_origin);
+                                       image_request_behavior, cross_origin,
+                                       container_sizes);
   }
 
   NOTREACHED();
