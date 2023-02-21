@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
@@ -301,10 +302,16 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
   // Click "Proceed anyway".
   test::OobeJS().ClickOnPath(kProceedAnyway);
 
-  // User session should start, and whole OOBE screen is expected to be hidden.
-  OobeWindowVisibilityWaiter(false).Wait();
+  if (features::IsCryptohomeRecoveryEnabled()) {
+    // With cryptohome recovery we re-create session and re-run onboarding.
+    OobeWindowVisibilityWaiter(true).Wait();
+  } else {
+    // User session should start, and whole OOBE screen is expected to be
+    // hidden.
+    OobeWindowVisibilityWaiter(false).Wait();
 
-  login_mixin_.WaitForActiveSession();
+    login_mixin_.WaitForActiveSession();
+  }
   EXPECT_FALSE(TestingFileExists());
 }
 

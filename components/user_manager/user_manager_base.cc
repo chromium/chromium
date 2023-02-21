@@ -380,6 +380,16 @@ void UserManagerBase::RemoveNonOwnerUserInternal(AccountId account_id,
 }
 
 void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
+  RemoveUserFromListImpl(account_id, /* notify=*/true);
+}
+
+void UserManagerBase::RemoveUserFromListForRecreation(
+    const AccountId& account_id) {
+  RemoveUserFromListImpl(account_id, /* notify=*/false);
+}
+
+void UserManagerBase::RemoveUserFromListImpl(const AccountId& account_id,
+                                             bool notify) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   RemoveNonCryptohomeData(account_id);
   KnownUser(GetLocalState()).RemovePrefs(account_id);
@@ -387,8 +397,7 @@ void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
     // After the User object is deleted from memory in DeleteUser() here,
     // the account_id reference will be invalid if the reference points
     // to the account_id in the User object.
-    DeleteUser(
-        RemoveRegularOrSupervisedUserFromList(account_id, true /* notify */));
+    DeleteUser(RemoveRegularOrSupervisedUserFromList(account_id, notify));
   } else {
     NOTREACHED() << "Users are not loaded yet.";
     return;

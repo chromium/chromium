@@ -211,7 +211,12 @@ void GaiaPasswordChangedScreen::OnRemovedUserDirectory(
   }
   // Force user to go through onboarding again, so that they have
   // consistent experience.
-  user_manager::UserManager::Get()->RemoveUserFromList(
+  // Do not notify about removal, as we are still inside the login
+  // flow. Otherwise, GAIA screen might be shown (if this user was
+  // the only user on the device).
+  // TODO(b/270040728): Use `RemoveUserFromList` once internal architecture
+  // allows better solution.
+  user_manager::UserManager::Get()->RemoveUserFromListForRecreation(
       context()->user_context->GetAccountId());
   // Now that user is deleted, reset everything in UserContext
   // related to cryptohome state.
