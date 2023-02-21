@@ -130,6 +130,15 @@ const base::FeatureParam<int> kExtensionTelemetryFileDataMaxFileSizeBytes{
     &kExtensionTelemetryFileData, "MaxFileSizeBytes",
     /*default_value=100KB*/ 100 * 1024};
 
+const base::FeatureParam<int>
+    kExtensionTelemetryFileDataCollectionIntervalSeconds{
+        &kExtensionTelemetryFileData, "CollectionIntervalSeconds",
+        /*default_value=*/7200};
+
+const base::FeatureParam<int> kExtensionTelemetryFileDataStartupDelaySeconds{
+    &kExtensionTelemetryFileData, "StartupDelaySeconds",
+    /*default_value=*/300};
+
 BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
              "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -115,6 +115,16 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<int>
     kExtensionTelemetryFileDataMaxFileSizeBytes;
 
+// Specifies the interval for extension telemetry to collect offstore extension
+// file data.
+extern const base::FeatureParam<int>
+    kExtensionTelemetryFileDataCollectionIntervalSeconds;
+
+// Specifies the initial delay for extension telemetry to start collecting
+// offstore extension file data.
+extern const base::FeatureParam<int>
+    kExtensionTelemetryFileDataStartupDelaySeconds;
+
 // Enables data collected by the kExtensionTelemetry to be written and read to
 // disk. This data will be uploaded for analysis.
 BASE_DECLARE_FEATURE(kExtensionTelemetryPersistence);

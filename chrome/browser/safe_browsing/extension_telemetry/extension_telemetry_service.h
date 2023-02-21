@@ -8,13 +8,15 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
+#include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/common/extension_id.h"
@@ -37,12 +39,13 @@ namespace safe_browsing {
 enum class ExtensionSignalType;
 class ExtensionSignal;
 class ExtensionSignalProcessor;
+class ExtensionTelemetryFileProcessor;
 class ExtensionTelemetryReportRequest;
 class ExtensionTelemetryReportRequest_ExtensionInfo;
 class ExtensionTelemetryUploader;
 class ExtensionTelemetryPersister;
-class SafeBrowsingTokenFetcher;
 class ExtensionTelemetryConfigManager;
+class SafeBrowsingTokenFetcher;
 
 // This class process extension signals and reports telemetry for a given
 // profile (regular profile only). It is used exclusively on the UI thread.
@@ -140,11 +143,63 @@ class ExtensionTelemetryService : public KeyedService {
   // uploads telemetry data. Runs on a delayed post task on startup.
   void StartUploadCheck();
 
+  // Searches for offstore extensions, collects file data such as
+  // hashes/manifest content, and saves the data to PrefService. Repeats every 2
+  // hours. This method is repeated periodically (default 2 hours) to check if
+  // the file data needs to be updated. File data is updated once every 24 hours
+  // by default.
+  void StartOffstoreFileDataCollection();
+
+  // Searches through the extension registry for offstore extensions and
+  // populates |offstore_extension_dirs_| with extension id and root directory.
+  // An off-store extension is defined as not from the webstore and not
+  // installed from components.
+  void GetOffstoreExtensionDirs();
+
+  // Remove any data in the PrefService that from uninstalled extensions.
+  void RemoveUninstalledExtensionsFileDataFromPref();
+
+  // Collect file data from an offstore extension by making a call to the
+  // FileProcessor.
+  void CollectOffstoreFileData();
+
+  // Stores information to identify file data collected for each offstore
+  // extension.
+  struct OffstoreExtensionFileDataContext {
+    OffstoreExtensionFileDataContext(
+        const extensions::ExtensionId& extension_id,
+        const base::FilePath& root_dir);
+    OffstoreExtensionFileDataContext(
+        const extensions::ExtensionId& extension_id,
+        const base::FilePath& root_dir,
+        const base::Time& last_processed_time);
+
+    extensions::ExtensionId extension_id;
+    base::FilePath root_dir;
+    base::Time last_processed_time;
+
+    bool operator<(const OffstoreExtensionFileDataContext& other) const;
+  };
+
+  // Callback invoked when file data for an extension is completed. The data is
+  // saved to Prefs and the next extension file data collection is initiated.
+  void OnOffstoreFileDataCollected(
+      base::flat_set<OffstoreExtensionFileDataContext>::iterator context,
+      base::Value::Dict file_data);
+
+  // Stops and clears any offstore file data collection objects/contexts.
+  void StopOffstoreFileDataCollection();
+
   // The persister object is bound to the threadpool. This prevents the
   // the read/write operations the `persister_` runs from blocking
   // the UI thread. It also allows the `persister_` object to be
   // destroyed cleanly while running tasks during Chrome shutdown.
   base::SequenceBound<ExtensionTelemetryPersister> persister_;
+
+  // The |file_processor_| object reads and hashes offstore extension files.
+  // Since these are blocking operations, it is bound to a different sequence
+  // task runner.
+  base::SequenceBound<ExtensionTelemetryFileProcessor> file_processor_;
 
   // The `config_manager_` manages all configurable variables of the
   // Extension Telemetry Service. Variables are stored in Chrome Prefs
@@ -185,6 +240,20 @@ class ExtensionTelemetryService : public KeyedService {
       extensions::ExtensionId,
       std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>>;
   ExtensionStore extension_store_;
+
+  // Maps offstore extension id to extension root path
+  using OffstoreExtensionDirs =
+      base::flat_map<extensions::ExtensionId, base::FilePath>;
+  OffstoreExtensionDirs offstore_extension_dirs_;
+  // Set of offstore extensions to process in order. Sorted by oldest last
+  // processing time.
+  base::flat_set<OffstoreExtensionFileDataContext>
+      offstore_extension_file_data_contexts_;
+  // Used to start the initial offstore extension file data collection based on
+  // |kExtensionTelemetryFileDataStartupDelaySeconds| - default: 5 mins.
+  // Then repeat the collection based on
+  // |kExtensionTelemetryFileDataProcessIntervalSeconds| - default: 2 hours.
+  base::OneShotTimer offstore_file_data_collection_timer_;
 
   using SignalProcessors =
       base::flat_map<ExtensionSignalType,

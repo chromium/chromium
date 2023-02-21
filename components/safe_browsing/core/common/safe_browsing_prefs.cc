@@ -116,6 +116,8 @@ const char kExtensionTelemetryLastUploadTime[] =
     "safebrowsing.extension_telemetry_last_upload_time";
 const char kExtensionTelemetryConfig[] =
     "safebrowsing.extension_telemetry_configuration";
+const char kExtensionTelemetryFileData[] =
+    "safebrowsing.extension_telemetry_file_data";
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -238,10 +240,17 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time::Now());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig,
                                    base::Value::Dict());
+  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData,
+                                   base::Value::Dict());
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {
   return prefs.GetDict(prefs::kExtensionTelemetryConfig);
+}
+
+const base::Value::Dict& GetExtensionTelemetryFileData(
+    const PrefService& prefs) {
+  return prefs.GetDict(prefs::kExtensionTelemetryFileData);
 }
 
 void SetExtensionTelemetryConfig(PrefService& prefs,
