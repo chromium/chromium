@@ -325,7 +325,7 @@ mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
 }
 
 # Fuzzer only supports linux. As we use a `V4L2CaptureDevice`, which is only
-# usable on linux through `VideoCaptureDeviceFactoryLinux`.
+# usable on linux through `VideoCaptureDeviceFactoryV4L2`.
 if (is_linux || is_chromeos_lacros) {
   mojolpm_fuzzer_test("video_capture_host_mojolpm_fuzzer") {
     sources = [ "video_capture_host_mojolpm_fuzzer.cc" ]

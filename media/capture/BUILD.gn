@@ -269,6 +269,8 @@ component("capture_lib") {
       "video/linux/v4l2_capture_device_impl.h",
       "video/linux/video_capture_device_factory_linux.cc",
       "video/linux/video_capture_device_factory_linux.h",
+      "video/linux/video_capture_device_factory_v4l2.cc",
+      "video/linux/video_capture_device_factory_v4l2.h",
       "video/linux/video_capture_device_linux.cc",
       "video/linux/video_capture_device_linux.h",
     ]
@@ -457,7 +459,7 @@ test("capture_unittests") {
   if (is_linux || is_chromeos_lacros) {
     sources += [
       "video/linux/v4l2_capture_delegate_unittest.cc",
-      "video/linux/video_capture_device_factory_linux_unittest.cc",
+      "video/linux/video_capture_device_factory_v4l2_unittest.cc",
     ]
   }
 

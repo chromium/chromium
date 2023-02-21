@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/linux/video_capture_device_factory_linux.h"
+#include "media/capture/video/linux/video_capture_device_factory_v4l2.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -20,14 +20,14 @@ using ::testing::InvokeWithoutArgs;
 
 namespace media {
 
-class VideoCaptureDeviceFactoryLinuxTest
+class VideoCaptureDeviceFactoryV4L2Test
     : public ::testing::TestWithParam<VideoCaptureDeviceDescriptor> {
  public:
-  VideoCaptureDeviceFactoryLinuxTest() {}
-  ~VideoCaptureDeviceFactoryLinuxTest() override = default;
+  VideoCaptureDeviceFactoryV4L2Test() {}
+  ~VideoCaptureDeviceFactoryV4L2Test() override = default;
 
   void SetUp() override {
-    factory_ = std::make_unique<VideoCaptureDeviceFactoryLinux>(
+    factory_ = std::make_unique<VideoCaptureDeviceFactoryV4L2>(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     scoped_refptr<FakeV4L2Impl> fake_v4l2(new FakeV4L2Impl());
     fake_v4l2_ = fake_v4l2.get();
@@ -40,12 +40,12 @@ class VideoCaptureDeviceFactoryLinuxTest
   void TearDown() override { task_environment_.RunUntilIdle(); }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<VideoCaptureDeviceFactoryLinux> factory_;
+  std::unique_ptr<VideoCaptureDeviceFactoryV4L2> factory_;
   raw_ptr<FakeV4L2Impl> fake_v4l2_;
   raw_ptr<FakeDeviceProvider> fake_device_provider_;
 };
 
-TEST_P(VideoCaptureDeviceFactoryLinuxTest, EnumerateSingleFakeV4L2DeviceUsing) {
+TEST_P(VideoCaptureDeviceFactoryV4L2Test, EnumerateSingleFakeV4L2DeviceUsing) {
   // Setup
   const VideoCaptureDeviceDescriptor& descriptor = GetParam();
   fake_device_provider_->AddDevice(descriptor);
@@ -77,7 +77,7 @@ TEST_P(VideoCaptureDeviceFactoryLinuxTest, EnumerateSingleFakeV4L2DeviceUsing) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    VideoCaptureDeviceFactoryLinuxTest,
+    VideoCaptureDeviceFactoryV4L2Test,
     ::testing::Values(
         VideoCaptureDeviceDescriptor("Fake Device 0",
                                      "/dev/video0",
@@ -92,7 +92,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      VideoCaptureApi::UNKNOWN,
                                      /*control_support=*/{true, true, true})));
 
-TEST_F(VideoCaptureDeviceFactoryLinuxTest,
+TEST_F(VideoCaptureDeviceFactoryV4L2Test,
        ReceiveFramesFromSinglePlaneFakeDevice) {
   // Setup
   const std::string stub_display_name = "Fake Device 0";
