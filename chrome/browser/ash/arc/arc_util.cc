@@ -146,6 +146,7 @@ bool IsUnaffiliatedArcAllowed() {
         break;
       case ArcSessionManager::State::CHECKING_REQUIREMENTS:
       case ArcSessionManager::State::REMOVING_DATA_DIR:
+      case ArcSessionManager::State::CHECKING_DATA_MIGRATION_NECESSITY:
       case ArcSessionManager::State::READY:
       case ArcSessionManager::State::ACTIVE:
       case ArcSessionManager::State::STOPPING:

@@ -36,7 +36,7 @@ void FakeArcVmDataMigratorClient::HasDataToMigrate(
     const arc::data_migrator::HasDataToMigrateRequest& request,
     chromeos::DBusMethodCallback<bool> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE, base::BindOnce(std::move(callback), has_data_to_migrate_));
 }
 
 void FakeArcVmDataMigratorClient::StartMigration(

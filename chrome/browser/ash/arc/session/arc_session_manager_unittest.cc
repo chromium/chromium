@@ -57,6 +57,8 @@
 #include "chrome/browser/ui/webui/ash/login/arc_terms_of_service_screen_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arcvm_data_migrator_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
@@ -286,6 +288,7 @@ class ArcSessionManagerTestBase : public testing::Test {
   }
 
   void SetUp() override {
+    ash::ArcVmDataMigratorClient::InitializeFake();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::PowerManagerClient::InitializeFake();
     ash::SessionManagerClient::InitializeFakeInMemory();
@@ -321,6 +324,7 @@ class ArcSessionManagerTestBase : public testing::Test {
     ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::ConciergeClient::Shutdown();
+    ash::ArcVmDataMigratorClient::Shutdown();
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -851,6 +855,70 @@ TEST_F(ArcSessionManagerTest, RemoveDataDir_Restart) {
       WaitForDataRemoved(ArcSessionManager::State::CHECKING_REQUIREMENTS));
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
+
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Necessary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  SetArcVmDataMigrationStatus(profile()->GetPrefs(),
+                              ArcVmDataMigrationStatus::kUnnotified);
+  ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(true);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(arc_session_manager()
+                   ->GetArcSessionRunnerForTesting()
+                   ->use_virtio_blk_data());
+  EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
+            ArcVmDataMigrationStatus::kUnnotified);
+
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Unnecessary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  SetArcVmDataMigrationStatus(profile()->GetPrefs(),
+                              ArcVmDataMigrationStatus::kUnnotified);
+  ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(false);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(arc_session_manager()
+                  ->GetArcSessionRunnerForTesting()
+                  ->use_virtio_blk_data());
+  EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
+            ArcVmDataMigrationStatus::kFinished);
+
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Undetermined) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  SetArcVmDataMigrationStatus(profile()->GetPrefs(),
+                              ArcVmDataMigrationStatus::kUnnotified);
+  ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(
+      absl::nullopt);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(arc_session_manager()
+                   ->GetArcSessionRunnerForTesting()
+                   ->use_virtio_blk_data());
+  EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
+            ArcVmDataMigrationStatus::kUnnotified);
 
   arc_session_manager()->Shutdown();
 }

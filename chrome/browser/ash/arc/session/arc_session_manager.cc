@@ -22,6 +22,7 @@
 #include "ash/components/arc/session/serial_number_util.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -769,8 +770,6 @@ void ArcSessionManager::Initialize() {
       multi_user_util::GetAccountIdFromProfile(profile_));
   data_remover_ = std::make_unique<ArcDataRemover>(prefs, cryptohome_id);
 
-  arc_session_runner_->set_use_virtio_blk_data(ShouldUseVirtioBlkData(prefs));
-
   // Chrome may be shut down before completing ARC data removal.
   // For such a case, start removing the data now, if necessary.
   MaybeStartArcDataRemoval();
@@ -810,6 +809,9 @@ void ArcSessionManager::ShutdownSession() {
     case State::REMOVING_DATA_DIR:
       // When data removing is done, |state_| will be set to STOPPED.
       // Do nothing here.
+    case State::CHECKING_DATA_MIGRATION_NECESSITY:
+      // Checking whether /data migration is necessary. |state_| will be set to
+      // STOPPED when the check is done. Do nothing.
     case State::STOPPING:
       // Now ARC is stopping. Do nothing here.
       VLOG(1) << "Skipping session shutdown because state is: " << state_;
@@ -973,7 +975,8 @@ bool ArcSessionManager::RequestEnableImpl() {
   DCHECK(profile_);
   DCHECK(enable_requested_);
   DCHECK(state_ == State::STOPPED || state_ == State::STOPPING ||
-         state_ == State::REMOVING_DATA_DIR)
+         state_ == State::REMOVING_DATA_DIR ||
+         state_ == State::CHECKING_DATA_MIGRATION_NECESSITY)
       << state_;
 
   if (state_ != State::STOPPED) {
@@ -1455,12 +1458,75 @@ void ArcSessionManager::OnArcDataRemoved(absl::optional<bool> result) {
     // We may have to avoid it.
   }
 
-  MaybeReenableArc();
+  if (!base::FeatureList::IsEnabled(kEnableArcVmDataMigration) ||
+      GetArcVmDataMigrationStatus(profile_->GetPrefs()) ==
+          ArcVmDataMigrationStatus::kFinished) {
+    // No need to check the necessity of ARCVM /data migration.
+    MaybeReenableArc();
+    return;
+  }
+
+  if (GetArcVmDataMigrationStatus(profile_->GetPrefs()) ==
+      ArcVmDataMigrationStatus::kStarted) {
+    VLOG(1) << "ARCVM /data migration is in progress. Restarting Chrome session"
+            << " to resume the migration";
+    chrome::AttemptRestart();
+    return;
+  }
+
+  CheckArcVmDataMigrationNecessity(base::BindOnce(
+      &ArcSessionManager::MaybeReenableArc, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcSessionManager::CheckArcVmDataMigrationNecessity(
+    base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DCHECK_EQ(state_, State::STOPPED);
+  state_ = State::CHECKING_DATA_MIGRATION_NECESSITY;
+
+  DCHECK(profile_);
+  DCHECK(!arc_vm_data_migration_necessity_checker_);
+  arc_vm_data_migration_necessity_checker_ =
+      std::make_unique<ArcVmDataMigrationNecessityChecker>(profile_);
+  arc_vm_data_migration_necessity_checker_->Check(
+      base::BindOnce(&ArcSessionManager::OnArcVmDataMigrationNecessityChecked,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcSessionManager::OnArcVmDataMigrationNecessityChecked(
+    base::OnceClosure callback,
+    absl::optional<bool> result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DCHECK_EQ(state_, State::CHECKING_DATA_MIGRATION_NECESSITY);
+  state_ = State::STOPPED;
+
+  DCHECK(profile_);
+  DCHECK(arc_vm_data_migration_necessity_checker_);
+  arc_vm_data_migration_necessity_checker_.reset();
+
+  // We assume that the migration is needed when |result| has no value, i.e.,
+  // when ArcVmDataMigrationNecessityChecker could not determine the necessity.
+  if (!result.value_or(true)) {
+    VLOG(1) << "No need to perform ARCVM /data migration. Marking the migration"
+            << " as finished";
+    SetArcVmDataMigrationStatus(profile_->GetPrefs(),
+                                ArcVmDataMigrationStatus::kFinished);
+  }
+  std::move(callback).Run();
 }
 
 void ArcSessionManager::MaybeReenableArc() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::STOPPED);
+  DCHECK(profile_);
+
+  // Whether to use virtio-blk for /data depends on the status of ARCVM /data
+  // migration, which can be updated between Initialize() and MaybeReenableArc()
+  // by CheckArcVmDataMigrationNecessity(). Hence it should be set here.
+  arc_session_runner_->set_use_virtio_blk_data(
+      ShouldUseVirtioBlkData(profile_->GetPrefs()));
 
   if (!reenable_arc_) {
     // Re-enabling is not triggered. Do nothing.
@@ -1706,6 +1772,7 @@ std::ostream& operator<<(std::ostream& os,
     MAP_STATE(NOT_INITIALIZED);
     MAP_STATE(STOPPED);
     MAP_STATE(CHECKING_REQUIREMENTS);
+    MAP_STATE(CHECKING_DATA_MIGRATION_NECESSITY);
     MAP_STATE(REMOVING_DATA_DIR);
     MAP_STATE(READY);
     MAP_STATE(ACTIVE);
