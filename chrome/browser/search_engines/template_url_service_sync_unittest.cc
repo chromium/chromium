@@ -732,6 +732,34 @@ TEST_F(TemplateURLServiceSyncTest, MergeAddFromNewerSyncData) {
             processor()->change_for_guid("localguid3").change_type());
 }
 
+TEST_F(TemplateURLServiceSyncTest, MergeIgnoresPolicyAndPlayAPIEngines) {
+  // Add a policy-created engine.
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "localguid1",
+                                     base::Time::FromTimeT(100),
+                                     /*safe_for_autoreplace=*/false,
+                                     /*created_by_policy=*/true));
+
+  {
+    auto play_api_engine = CreateTestTemplateURL(
+        u"key2", "http://key2.com", "localguid2", base::Time::FromTimeT(100));
+    TemplateURLData data(play_api_engine->data());
+    data.created_from_play_api = true;
+    play_api_engine = std::make_unique<TemplateURL>(data);
+    model()->Add(std::move(play_api_engine));
+  }
+
+  ASSERT_EQ(1U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  MergeAndExpectNotify(CreateInitialSyncData(), 1);
+
+  // The policy engine should be ignored when it comes to conflict resolution.
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid1"));
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid1"));
+
+  // The Play API engine should be ignored when it comes to conflict resolution.
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid2"));
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid2"));
+}
+
 TEST_F(TemplateURLServiceSyncTest, ProcessChangesEmptyModel) {
   // We initially have no data.
   MergeAndExpectNotify({}, 0);
