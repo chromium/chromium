@@ -68,6 +68,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -1868,6 +1869,70 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   ASSERT_TRUE(ExecJs(
       root, JsReplace("createAttributionSrcImg($1);", register_trigger_url2)));
   expected_report2.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
+                       AutomaticBeacon_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://a.test",
+      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*trigger_data=*/"7", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url =
+      https_server()->GetURL("a.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  TestFrameNavigationObserver root_observer(root);
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/page_with_impression_creator.html"));
+
+  GURL reporting_url = https_server()->GetURL(
+      "a.test", "/register_source_headers_trigger_same_origin.html");
+
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      CreateFencedFrameReporter();
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{blink::kFencedFrameTopNavigationBeaconType, reporting_url}});
+
+  FrameTreeNode* fenced_frame_root_node =
+      AddFencedFrame(root, fenced_frame_url, std::move(fenced_frame_reporter));
+
+  ASSERT_TRUE(ExecJs(fenced_frame_root_node,
+                     JsReplace(R"(
+    window.fence.setReportEventDataForAutomaticBeacons({
+      eventType: $1,
+      eventData: 'This is the event data!',
+      destination: ['buyer']
+    });
+    )",
+                               blink::kFencedFrameTopNavigationBeaconType)));
+
+  GURL navigation_url(
+      https_server()->GetURL("a.test", "/page_with_impression_creator.html"));
+
+  ASSERT_TRUE(
+      ExecJs(fenced_frame_root_node,
+             JsReplace("window.open($1, '_unfencedTop');", navigation_url)));
+
+  // The page must fully load before it can do anything involving attribution
+  // reporting.
+  root_observer.Wait();
+
+  ASSERT_TRUE(ExecJs(root, JsReplace("createAttributionSrcImg($1);",
+                                     https_server()->GetURL(
+                                         "a.test",
+                                         "/attribution_reporting/"
+                                         "register_trigger_headers.html"))));
+
+  expected_report.WaitForReport();
 }
 
 }  // namespace content

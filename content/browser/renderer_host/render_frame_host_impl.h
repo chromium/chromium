@@ -3755,7 +3755,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& event_data,
       const std::string& event_type,
       blink::FencedFrame::ReportingDestination destination,
-      bool from_renderer);
+      bool from_renderer,
+      absl::optional<int64_t> navigation_id = absl::nullopt);
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

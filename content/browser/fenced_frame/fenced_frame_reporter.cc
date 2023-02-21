@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "url/gurl.h"
@@ -219,7 +220,8 @@ bool FencedFrameReporter::SendReport(
     const std::string& event_data,
     blink::FencedFrame::ReportingDestination reporting_destination,
     RenderFrameHostImpl* request_initiator_frame,
-    std::string& error_message) {
+    std::string& error_message,
+    absl::optional<int64_t> navigation_id) {
   DCHECK(request_initiator_frame);
 
   auto it = reporting_metadata_.find(reporting_destination);
@@ -236,7 +238,16 @@ bool FencedFrameReporter::SendReport(
 
   static base::AtomicSequenceNumber unique_id_counter;
 
-  BeaconId beacon_id(EventBeaconId(unique_id_counter.GetNext()));
+  // The id will be a `NavigationBeaconId` only if this report is being sent as
+  // the result of a top navigation initiated by a fenced frame. This is used to
+  // track attributions that occur on a navigated page after the current page
+  // has been unloaded.
+  BeaconId beacon_id;
+  if (navigation_id.has_value()) {
+    beacon_id = NavigationBeaconId(navigation_id.value());
+  } else {
+    beacon_id = EventBeaconId(unique_id_counter.GetNext());
+  }
 
   auto* attribution_host = AttributionHost::FromWebContents(
       WebContents::FromRenderFrameHost(request_initiator_frame));
@@ -303,9 +314,10 @@ bool FencedFrameReporter::SendReportInternal(
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->trusted_params->isolation_info =
       net::IsolationInfo::CreateTransient();
-  // TODO(xiaochenzh): The eligible header for automatic beacon should be
-  // `navigation-source`, update the code below when it is enabled.
-  request->headers.SetHeader("Attribution-Reporting-Eligible", "event-source");
+  request->headers.SetHeader("Attribution-Reporting-Eligible",
+                             absl::holds_alternative<EventBeaconId>(beacon_id)
+                                 ? "event-source"
+                                 : "navigation-source");
   if (base::FeatureList::IsEnabled(
           blink::features::kAttributionReportingCrossAppWeb)) {
     request->headers.SetHeader("Attribution-Reporting-Support",

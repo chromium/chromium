@@ -8021,7 +8021,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
        info->destination) {
     initiator_rfh->SendFencedFrameReportingBeaconInternal(
         info->data, blink::kFencedFrameTopNavigationBeaconType, destination,
-        /*from_renderer=*/false);
+        /*from_renderer=*/false, navigation_request.GetNavigationId());
   }
 }
 
@@ -8029,7 +8029,8 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     const std::string& event_data,
     const std::string& event_type,
     blink::FencedFrame::ReportingDestination destination,
-    bool from_renderer) {
+    bool from_renderer,
+    absl::optional<int64_t> navigation_id) {
   // Get the reporting metadata associated with the fenced frame.
   const absl::optional<FencedFrameProperties>& fenced_frame_properties =
       frame_tree_node_->GetFencedFrameProperties();
@@ -8077,7 +8078,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   std::string error_message;
   if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
           event_type, event_data, destination,
-          /*request_initiator_frame=*/this, error_message)) {
+          /*request_initiator_frame=*/this, error_message, navigation_id)) {
     AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
                         error_message);
   }

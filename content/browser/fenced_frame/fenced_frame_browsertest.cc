@@ -6230,7 +6230,7 @@ class FencedFrameAutomaticBeaconBrowserTest
     // Verify the request contains the eligibility header.
     EXPECT_EQ(
         response.http_request()->headers.at("Attribution-Reporting-Eligible"),
-        "event-source");
+        "navigation-source");
     EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
     response.Done();

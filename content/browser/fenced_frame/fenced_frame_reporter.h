@@ -118,12 +118,20 @@ class CONTENT_EXPORT FencedFrameReporter
   // attempted, unless the reporting URL map for `reporting_destination` is
   // pending. In that case, errors are currently never reported, even if the
   // reporting URL map results in no request being sent.
+  //
+  // Note: `navigation_id` will only be non-null in the case of an automatic
+  // beacon `reserved.top_navigation` sent as a result of a top-level navigation
+  // from a fenced frame. It will be set to the ID of the navigation request
+  // initiated from the fenced frame and targeting the new top-level frame.
+  // In all other cases (including the fence.reportEvent() case), the navigation
+  // id will be null.
   bool SendReport(
       const std::string& event_type,
       const std::string& event_data,
       blink::FencedFrame::ReportingDestination reporting_destination,
       RenderFrameHostImpl* request_initiator_frame,
-      std::string& error_message);
+      std::string& error_message,
+      absl::optional<int64_t> navigation_id = absl::nullopt);
 
   // Stores the payload that will be sent as part of the
   // `reserved.top_navigation` automatic beacon.
