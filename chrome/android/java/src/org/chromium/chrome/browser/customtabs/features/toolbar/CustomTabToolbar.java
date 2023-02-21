@@ -266,10 +266,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /**
-     * Create maximize button for side sheet CCT.
+     * Initialize the maximize button for side sheet CCT. Create one if not instantiated.
+     * @param maximizedOnInit {@code true} if the side sheet is starting in maximized state.
      * @param onMaximizeClicked Callback to invoke when maximize button gets clicked.
      */
-    public void createSideSheetMaximizeButton(MaximizeButtonCallback callback) {
+    public void initSideSheetMaximizeButton(
+            boolean maximizedOnInit, MaximizeButtonCallback callback) {
         if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         boolean buttonExists = maximizeButton != null;
@@ -279,16 +281,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             ViewStub maximizeButtonStub = findViewById(R.id.maximize_button_stub);
             maximizeButtonStub.inflate();
             maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
-            setMaximizeButtonDrawable(R.drawable.ic_fullscreen_enter);
         }
-        maximizeButton.setOnClickListener((v) -> {
-            boolean maximized = callback.onClick();
-            setMaximizeButtonDrawable(
-                    maximized ? R.drawable.ic_fullscreen_exit : R.drawable.ic_fullscreen_enter);
-        });
+        setMaximizeButtonDrawable(maximizedOnInit);
+        maximizeButton.setOnClickListener((v) -> setMaximizeButtonDrawable(callback.onClick()));
     }
 
-    private void setMaximizeButtonDrawable(@DrawableRes int drawableId) {
+    private void setMaximizeButtonDrawable(boolean maximized) {
+        @DrawableRes
+        int drawableId = maximized ? R.drawable.ic_fullscreen_exit : R.drawable.ic_fullscreen_enter;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         var d = UiUtils.getTintedDrawable(getContext(), drawableId, mTint);
         updateCustomActionButtonVisuals(maximizeButton, d, null);

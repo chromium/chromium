@@ -92,7 +92,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
         PartialCustomTabHandleStrategy handleStrategy = mHandleStrategyFactory.create(
                 getStrategyType(), mActivity, this::isFullHeight, () -> 0, null);
-        if (mShowMaximizeButton) toolbar.createSideSheetMaximizeButton(this::toggleMaximize);
+        if (mShowMaximizeButton) {
+            toolbar.initSideSheetMaximizeButton(mIsMaximized, this::toggleMaximize);
+        }
         toolbar.setHandleStrategy(handleStrategy);
         updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
     }
