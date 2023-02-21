@@ -500,18 +500,6 @@
       <message name="IDS_ACCNAME_TAB_LIST" desc="The accessible name for the tab strip.">
         Tab list
       </message>
-      <message name="IDS_ACCNAME_PARTICLE_DISC" desc="The accessible name for the Account Consistency Disc on New Tab Page">
-        Google Account
-      </message>
-      <message name="IDS_IDENTITY_DISC_WITH_NAME_AND_EMAIL" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button navigates to 'Sync and Google services' page in settings">
-        Signed in as <ph name="USER_NAME">%1$s<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">%2$s<ex>peter.parker@gmail.com</ex></ph>. Opens settings.
-      </message>
-      <message name="IDS_IDENTITY_DISC_WITH_NAME" desc="The content description for a toolbar button displaying user profile picture, for users who don't have a readable email address. Tapping on this button navigates to 'Sync and Google services' page in settings">
-        Signed in as <ph name="USER_NAME">%s<ex>Bruce Wayne</ex></ph>. Opens settings.
-      </message>
-      <message name="IDS_SIGNED_OUT_IDENTITY_DISC" desc="The content description for a toolbar button displaying the signed-out avatar. Tapping on this button navigates to 'Turn on Sync' page in settings">
-        Signed out. Opens dialog to sign in and turn on sync.
-      </message>
 
       <message name="IDS_UTILITY_PROCESS_JSON_PARSER_NAME" desc="The name of the utility process used for parsing JSON files.">
         JSON Parser

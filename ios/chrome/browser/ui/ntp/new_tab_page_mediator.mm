@@ -346,16 +346,19 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // Fetches and update user's avatar on NTP, or use default avatar if user is
 // not signed in.
 - (void)updateAccountImage {
-  UIImage* image = nil;
   // Fetches user's identity from Authentication Service.
   id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     // Only show an avatar if the user is signed in.
-    image = self.accountManagerService->GetIdentityAvatarWithIdentity(
+    UIImage* image = self.accountManagerService->GetIdentityAvatarWithIdentity(
         identity, IdentityAvatarSize::SmallSize);
+    [self.imageUpdater updateAccountImage:image
+                                     name:identity.userFullName
+                                    email:identity.userEmail];
+  } else {
+    [self.imageUpdater setSignedOutAccountImage];
   }
-  [self.imageUpdater updateAccountImage:image];
 }
 
 @end
