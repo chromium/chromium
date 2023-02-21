@@ -155,18 +155,6 @@ absl::optional<IsolationInfo> IsolationInfo::Deserialize(
       std::move(party_context), nullptr);
 }
 
-IsolationInfo IsolationInfo::CreateDoubleKey(
-    RequestType request_type,
-    const url::Origin& top_frame_origin,
-    const SiteForCookies& site_for_cookies,
-    absl::optional<std::set<SchemefulSite>> party_context,
-    const base::UnguessableToken* nonce) {
-  // This should only be used when the frame site is disabled for double keying.
-  DCHECK(!IsFrameSiteEnabled());
-  return IsolationInfo(request_type, top_frame_origin, absl::nullopt,
-                       site_for_cookies, nonce, std::move(party_context));
-}
-
 IsolationInfo IsolationInfo::Create(
     RequestType request_type,
     const url::Origin& top_frame_origin,
@@ -305,8 +293,9 @@ std::string IsolationInfo::Serialize() const {
 }
 
 bool IsolationInfo::IsFrameSiteEnabled() {
-  return !base::FeatureList::IsEnabled(
-      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+  // NIKs, and thus IsolationInfo's, are currently always triple-keyed, but we
+  // will experiment with 2.5-keying in crbug.com/1414808.
+  return true;
 }
 
 std::string IsolationInfo::DebugString() const {

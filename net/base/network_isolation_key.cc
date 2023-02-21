@@ -215,8 +215,9 @@ bool NetworkIsolationKey::IsEmpty() const {
 }
 
 bool NetworkIsolationKey::IsFrameSiteEnabled() {
-  return !base::FeatureList::IsEnabled(
-      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+  // NIKs are currently always triple-keyed, but we will experiment with
+  // 2.5-keying in crbug.com/1414808.
+  return true;
 }
 
 bool NetworkIsolationKey::IsOpaque() const {

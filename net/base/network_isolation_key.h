@@ -121,9 +121,7 @@ class NET_EXPORT NetworkIsolationKey {
 
   const absl::optional<SchemefulSite>& GetFrameSite() const;
 
-  // Do not use outside of testing. Returns the `frame_site_` if
-  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is disabled. Else it
-  // returns nullopt.
+  // Do not use outside of testing. Returns the `frame_site_`.
   const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
     return frame_site_;
   }

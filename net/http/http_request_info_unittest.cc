@@ -25,27 +25,8 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
   // Triple key NIK and double key NAK.
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.Reset();
-  std::vector<base::test::FeatureRef> enabled_features_3 = {};
-  std::vector<base::test::FeatureRef> disabled_features_3 = {};
-  disabled_features_3.push_back(
-      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
-  disabled_features_3.push_back(
+  scoped_feature_list_.InitAndDisableFeature(
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-  scoped_feature_list_.InitWithFeatures(enabled_features_3,
-                                        disabled_features_3);
-
-  EXPECT_FALSE(triple_nik_double_nak_request_info.IsConsistent());
-
-  // Triple key NIK and double key with cross site flag NAK.
-  scoped_feature_list_.Reset();
-  std::vector<base::test::FeatureRef> enabled_features_4 = {};
-  std::vector<base::test::FeatureRef> disabled_features_4 = {};
-  disabled_features_3.push_back(
-      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
-  enabled_features_4.push_back(
-      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-  scoped_feature_list_.InitWithFeatures(enabled_features_4,
-                                        disabled_features_4);
 
   EXPECT_FALSE(triple_nik_double_nak_request_info.IsConsistent());
 

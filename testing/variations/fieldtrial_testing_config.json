@@ -8690,9 +8690,7 @@
                         "PartitionSSLSessionsByNetworkIsolationKey",
                         "SplitHostCacheByNetworkIsolationKey"
                     ],
-                    "disable_features": [
-                        "ForceIsolationInfoFrameOriginToTopLevelFrame"
-                    ]
+                    "disable_features": []
                 }
             ]
         }

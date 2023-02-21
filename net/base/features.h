@@ -114,11 +114,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitHostCacheByNetworkIsolationKey);
 // request.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 
-// Forces the `frame_origin` value in IsolationInfo to the `top_level_origin`
-// value when an IsolationInfo instance is created. This is to enable
-// expirimenting with double keyed network partitions.
-NET_EXPORT BASE_DECLARE_FEATURE(kForceIsolationInfoFrameOriginToTopLevelFrame);
-
 // Partitions HttpServerProperties based on the NetworkIsolationKey associated
 // with a request.
 NET_EXPORT BASE_DECLARE_FEATURE(

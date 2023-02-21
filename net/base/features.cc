@@ -93,10 +93,6 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              "PartitionConnectionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceIsolationInfoFrameOriginToTopLevelFrame,
-             "ForceIsolationInfoFrameOriginToTopLevelFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPartitionHttpServerPropertiesByNetworkIsolationKey,
              "PartitionHttpServerPropertiesByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);

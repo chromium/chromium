@@ -18,25 +18,20 @@
 
 namespace net {
 
+// `EnabledFeatureFlagsTestingParam ` allows enabling and disabling
+// the feature flags that control the key schemes for NetworkAnonymizationKey.
+// This allows us to test the possible combinations of flags that will be
+// allowed for experimentation.
 struct EnabledFeatureFlagsTestingParam {
   // True = 2.5-keyed NAK, false = double-keyed NAK.
   const bool enableCrossSiteFlagNetworkAnonymizationKey;
-  const bool enableDoubleKeyNetworkIsolationKey;
 };
 
-//    0. Double-keying is enabled for both IsolationInfo and
-//    NetworkAnonymizationKey.
-//    1. Triple-keying is enabled for IsolationInfo and double-keying is enabled
-//    for NetworkAnonymizationKey.
-//    2. Triple-keying is enabled for IsolationInfo and double-keying +
-//    cross-site-bit is enabled for NetworkAnonymizationKey.
 const EnabledFeatureFlagsTestingParam kFlagsParam[] = {
-    {/*enableCrossSiteFlagNetworkAnonymizationKey=*/false,
-     /*enableDoubleKeyNetworkIsolationKey=*/true},
-    {/*enableCrossSiteFlagNetworkAnonymizationKey=*/false,
-     /*enableDoubleKeyNetworkIsolationKey=*/false},
-    {/*enableCrossSiteFlagNetworkAnonymizationKey=*/true,
-     /*enableDoubleKeyNetworkIsolationKey=*/false}};
+    // 0. Double-keying is enabled for NetworkAnonymizationKey.
+    {/*enableCrossSiteFlagNetworkAnonymizationKey=*/false},
+    // 1. Double-keying + cross-site-bit is enabled for NetworkAnonymizationKey.
+    {/*enableCrossSiteFlagNetworkAnonymizationKey=*/true}};
 
 class NetworkAnonymizationKeyTest
     : public testing::Test,
@@ -45,14 +40,6 @@ class NetworkAnonymizationKeyTest
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-
-    if (IsDoubleKeyNetworkIsolationKeyEnabled()) {
-      enabled_features.push_back(
-          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
-    } else {
-      disabled_features.push_back(
-          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
-    }
 
     if (IsCrossSiteFlagEnabled()) {
       enabled_features.push_back(
@@ -63,10 +50,6 @@ class NetworkAnonymizationKeyTest
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  static bool IsDoubleKeyNetworkIsolationKeyEnabled() {
-    return GetParam().enableDoubleKeyNetworkIsolationKey;
   }
 
   bool IsCrossSiteFlagEnabled() {
@@ -128,25 +111,8 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
   // empty NAK.
   EXPECT_TRUE(nak_from_empty_nik.IsEmpty());
 
-  // Double-keyed NetworkIsolationKey + double-keyed NetworkAnonymizationKey
-  // case.
-  if (IsDoubleKeyNetworkIsolationKeyEnabled() && !IsCrossSiteFlagEnabled()) {
-    // Top site should be populated.
-    EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
-    EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
-
-    // Nonce should be populated.
-    EXPECT_EQ(nak_from_same_site_nik.GetNonce(), nik_nonce);
-    EXPECT_EQ(nak_from_cross_site_nik.GetNonce(), nik_nonce);
-
-    // Double-keyed NAKs created from different third party cross site contexts
-    // should be equal.
-    EXPECT_TRUE(nak_from_same_site_nik == nak_from_cross_site_nik);
-  }
-
-  // Triple-keyed NetworkIsolationKey + double-keyed NetworkAnonymizationKey
-  // case.
-  if (!IsDoubleKeyNetworkIsolationKeyEnabled() && !IsCrossSiteFlagEnabled()) {
+  // Double-keyed NetworkAnonymizationKey case.
+  if (!IsCrossSiteFlagEnabled()) {
     // Top site should be populated correctly.
     EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
     EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
@@ -160,9 +126,8 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
     EXPECT_TRUE(nak_from_same_site_nik == nak_from_cross_site_nik);
   }
 
-  // Triple-keyed NetworkIsolationKey + double-keyed + cross site bit
-  // NetworkAnonymizationKey case.
-  if (!IsDoubleKeyNetworkIsolationKeyEnabled() && IsCrossSiteFlagEnabled()) {
+  // Double-keyed + cross site bit NetworkAnonymizationKey case.
+  if (IsCrossSiteFlagEnabled()) {
     // Top site should be populated correctly.
     EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
     EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);

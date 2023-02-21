@@ -546,30 +546,18 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
          ]),
     ]
     for (name, first_load_page, cache_pages) in webgpu_xorigin_cache_miss_tests:
-      yield (
-          'WebGPUCachingTraceTest_' + name,
-          posixpath.join(gpu_data_relative_path, first_load_page),
-          [
-              _CacheTraceTestArguments(
-                  browser_args=webgpu_cache_test_browser_args + [
-                      # Currently it seems like this is not always the default
-                      # yet. We may be able to remove this once it is defaulted.
-                      # Without this flag, origin caching uses an isolation key
-                      # that depends only on the top-level page, and hence these
-                      # tests will fail. With the flag, the isolation key uses
-                      # both the top-level page and the subpage.
-                      # TODO(dawn:1568) Revisit whether this is necessary.
-                      '--disable-features=' +
-                      'ForceIsolationInfoFrameOriginToTopLevelFrame'
-                  ],
-                  category='gpu',
-                  test_harness_script=basic_test_harness_script,
-                  finish_js_condition='domAutomationController._finished',
-                  first_load_eval_func='CheckWebGPUFirstLoadCache',
-                  cache_eval_func='CheckNoWebGPUCacheHits',
-                  cache_pages=cache_pages,
-                  test_renavigation=False)
-          ])
+      yield ('WebGPUCachingTraceTest_' + name,
+             posixpath.join(gpu_data_relative_path, first_load_page), [
+                 _CacheTraceTestArguments(
+                     browser_args=webgpu_cache_test_browser_args,
+                     category='gpu',
+                     test_harness_script=basic_test_harness_script,
+                     finish_js_condition='domAutomationController._finished',
+                     first_load_eval_func='CheckWebGPUFirstLoadCache',
+                     cache_eval_func='CheckNoWebGPUCacheHits',
+                     cache_pages=cache_pages,
+                     test_renavigation=False)
+             ])
 
   def _RunActualGpuTraceTest(self,
                              test_path: str,
