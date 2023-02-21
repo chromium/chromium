@@ -486,7 +486,7 @@
   </event>
 </project>
 
-<project name="CrOSEvents">
+<project name="CrOSEvents" cros_events="true">
   <owner>jongahn@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
