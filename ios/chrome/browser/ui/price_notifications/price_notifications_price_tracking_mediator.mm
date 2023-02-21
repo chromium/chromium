@@ -100,6 +100,7 @@ using PriceNotificationItems =
   // tracking.
   const bookmarks::BookmarkNode* bookmark =
       self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.entryURL);
+  bool isNewBookmark = bookmark == nullptr;
   if (!bookmark) {
     const bookmarks::BookmarkNode* defaultFolder =
         self.bookmarkModel->mobile_node();
@@ -112,7 +113,8 @@ using PriceNotificationItems =
       self.shoppingService, self.bookmarkModel, bookmark, true,
       base::BindOnce(^(bool success) {
         [weakSelf didTrackItem:item successfully:success];
-      }));
+      }),
+      isNewBookmark);
 }
 
 - (void)stopTrackingItem:(PriceNotificationsTableViewItem*)item {

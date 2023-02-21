@@ -28,7 +28,8 @@ void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
     const JavaParamRef<jobject>& j_profile,
     jlong bookmark_id,
     jboolean enabled,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaParamRef<jobject>& j_callback,
+    jboolean bookmark_created_by_price_tracking) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   CHECK(profile);
 
@@ -49,7 +50,8 @@ void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
           [](const ScopedJavaGlobalRef<jobject>& callback, bool success) {
             base::android::RunBooleanCallbackAndroid(callback, success);
           },
-          ScopedJavaGlobalRef<jobject>(j_callback)));
+          ScopedJavaGlobalRef<jobject>(j_callback)),
+      bookmark_created_by_price_tracking);
 }
 
 jboolean JNI_PriceTrackingUtils_IsBookmarkPriceTracked(

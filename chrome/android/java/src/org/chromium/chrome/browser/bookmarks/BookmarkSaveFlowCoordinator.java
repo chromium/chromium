@@ -84,7 +84,8 @@ public class BookmarkSaveFlowCoordinator {
      * @param bookmarkId The {@link BookmarkId} which was saved.
      */
     public void show(BookmarkId bookmarkId) {
-        show(bookmarkId, /*fromExplicitTrackUi=*/false, /*wasBookmarkMoved=*/false);
+        show(bookmarkId, /*fromExplicitTrackUi=*/false, /*wasBookmarkMoved=*/false,
+                /*isNewBookmark=*/false);
     }
 
     /**
@@ -95,21 +96,23 @@ public class BookmarkSaveFlowCoordinator {
      *         text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
      *         bookmark. This will be false when adding a normal bookmark.
      * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
+     * @param isNewBookmark Whether the bookmark is newly created.
      */
-    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved) {
+    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved,
+            boolean isNewBookmark) {
         mBookmarkModel.finishLoadingBookmarkModel(() -> {
-            show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved,
+            show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark,
                     mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
         });
     }
 
     void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved,
-            @Nullable PowerBookmarkMeta meta) {
+            boolean isNewBookmark, @Nullable PowerBookmarkMeta meta) {
         mDestroyChecker.checkNotDestroyed();
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
         // Order matters here: Calling show on the mediator first allows the height to be fully
         // determined before the sheet is shown.
-        mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved);
+        mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark);
         boolean shown =
                 mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
 

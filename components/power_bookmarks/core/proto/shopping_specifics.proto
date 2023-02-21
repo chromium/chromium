@@ -42,6 +42,10 @@ message ShoppingSpecifics {
   // Last time the product is successfully tracked or untracked by the user,
   // represented as microseconds since the Windows epoch.
   optional int64 last_subscription_change_time = 9;
+
+  // Whether the bookmark was created from an explicit price tracking UI rather
+  // than from bookmark UI.
+  optional bool bookmark_created_by_price_tracking = 10;
 }
 
 message ProductPrice {

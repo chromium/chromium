@@ -59,11 +59,13 @@ void SetPriceTrackingStateForClusterId(ShoppingService* service,
 // |callback| will be called with a bool representing whether the operation was
 // successful iff all of |service|, |model|, and |node| are non-null and the
 // bookmark has been determined to be a product.
-void SetPriceTrackingStateForBookmark(ShoppingService* service,
-                                      bookmarks::BookmarkModel* model,
-                                      const bookmarks::BookmarkNode* node,
-                                      bool enabled,
-                                      base::OnceCallback<void(bool)> callback);
+void SetPriceTrackingStateForBookmark(
+    ShoppingService* service,
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node,
+    bool enabled,
+    base::OnceCallback<void(bool)> callback,
+    bool was_bookmark_created_by_price_tracking = false);
 
 // Get all bookmarks with the specified product cluster ID. If |max_count| is
 // specified, this function will return that number of bookmarks at most,

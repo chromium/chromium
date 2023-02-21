@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -56,8 +57,22 @@ void UpdateBookmarksForSubscriptionsResult(
       specifics->set_last_subscription_change_time(
           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
+      // If being untracked and the bookmark was created by price tracking
+      // rather than by explicitly bookmarking, delete the bookmark.
+      bool should_delete_node = false;
+      if (!enabled && specifics->bookmark_created_by_price_tracking()) {
+        // Clear the shopping specifics so other observers don't fire on
+        // deletion.
+        meta->clear_shopping_specifics();
+        should_delete_node = true;
+      }
+
       power_bookmarks::SetNodePowerBookmarkMeta(model.get(), node,
                                                 std::move(meta));
+
+      if (should_delete_node) {
+        model->Remove(node);
+      }
     }
   }
 
@@ -113,11 +128,13 @@ void SetPriceTrackingStateForClusterId(
   }
 }
 
-void SetPriceTrackingStateForBookmark(ShoppingService* service,
-                                      bookmarks::BookmarkModel* model,
-                                      const bookmarks::BookmarkNode* node,
-                                      bool enabled,
-                                      base::OnceCallback<void(bool)> callback) {
+void SetPriceTrackingStateForBookmark(
+    ShoppingService* service,
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node,
+    bool enabled,
+    base::OnceCallback<void(bool)> callback,
+    bool was_bookmark_created_by_price_tracking) {
   if (!service || !model || !node)
     return;
 
@@ -176,6 +193,13 @@ void SetPriceTrackingStateForBookmark(ShoppingService* service,
       std::move(callback), enabled, specifics->product_cluster_id());
 
   if (enabled) {
+    // If the bookmark was created through the price tracking flow, make sure
+    // that is recorded. If untracked, this bookmark will be deleted.
+    if (was_bookmark_created_by_price_tracking) {
+      specifics->set_bookmark_created_by_price_tracking(true);
+      power_bookmarks::SetNodePowerBookmarkMeta(model, node, std::move(meta));
+    }
+
     service->Subscribe(std::move(subs), std::move(update_bookmarks_callback));
   } else {
     service->Unsubscribe(std::move(subs), std::move(update_bookmarks_callback));

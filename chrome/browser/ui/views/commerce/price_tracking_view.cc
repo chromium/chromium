@@ -153,6 +153,7 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
     commerce::SetPriceTrackingStateForBookmark(
         service, model, node, is_price_track_enabled_, std::move(callback));
   } else {
+    DCHECK(!is_price_track_enabled_);
     absl::optional<commerce::ProductInfo> info =
         service->GetAvailableProductInfoForUrl(url);
     if (info.has_value()) {

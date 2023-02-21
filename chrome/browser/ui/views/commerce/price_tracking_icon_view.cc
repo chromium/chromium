@@ -189,6 +189,11 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
 
+  const bookmarks::BookmarkNode* existing_node =
+      model->GetMostRecentlyAddedUserNodeForURL(
+          GetWebContents()->GetLastCommittedURL());
+  bool is_new_bookmark = existing_node == nullptr;
+
   if (enable) {
     GURL url;
     std::u16string title;
@@ -217,8 +222,9 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
   }
 
   const bookmarks::BookmarkNode* node =
-      model->GetMostRecentlyAddedUserNodeForURL(
-          GetWebContents()->GetLastCommittedURL());
+      existing_node ? existing_node
+                    : model->GetMostRecentlyAddedUserNodeForURL(
+                          GetWebContents()->GetLastCommittedURL());
 
   commerce::ShoppingService* service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
@@ -229,8 +235,9 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
   if (node) {
     commerce::SetPriceTrackingStateForBookmark(
         commerce::ShoppingServiceFactory::GetForBrowserContext(profile_), model,
-        node, enable, std::move(callback));
+        node, enable, std::move(callback), enable && is_new_bookmark);
   } else {
+    DCHECK(!enable);
     absl::optional<commerce::ProductInfo> info =
         service->GetAvailableProductInfoForUrl(
             GetWebContents()->GetLastCommittedURL());

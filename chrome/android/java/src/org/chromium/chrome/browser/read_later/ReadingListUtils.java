@@ -99,7 +99,7 @@ public final class ReadingListUtils {
         if (Boolean.TRUE.equals(sSkipShowSaveFlowForTesting)) return true;
         BookmarkUtils.showSaveFlow(activity, bottomsheetController,
                 /*fromExplicitTrackUi=*/false, newBookmark,
-                /*wasBookmarkMoved=*/true);
+                /*wasBookmarkMoved=*/true, /*isNewBookmark=*/false);
         return true;
     }
 
