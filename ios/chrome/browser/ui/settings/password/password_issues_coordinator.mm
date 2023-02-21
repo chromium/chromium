@@ -138,14 +138,4 @@
   self.passwordDetails = nil;
 }
 
-- (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
-                  deleteCredential:
-                      (const password_manager::CredentialUIEntry&)credential
-                 shouldDismissView:(BOOL)shouldDismiss {
-  if (![self.delegate willHandlePasswordDeletion:credential]) {
-    [self.mediator deleteCredential:credential];
-  }
-  [self.baseNavigationController popViewControllerAnimated:YES];
-}
-
 @end

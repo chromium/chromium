@@ -326,15 +326,6 @@
   [self.viewController showEditViewWithoutAuthentication];
 }
 
-- (void)removeCredentialFromCacheAndRefreshTableView:
-    (const password_manager::CredentialUIEntry&)credential {
-  // Remove credential from the credentials cache of the password details
-  // manager.
-  [self.mediator removeCredential:credential];
-
-  [self.mediator didFinishEditingPasswordDetails];
-}
-
 - (void)onPasswordCopiedByUser {
   if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
     DCHECK(_credentialProviderPromoHandler);
@@ -342,6 +333,12 @@
         showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                    PasswordCopied];
   }
+}
+
+- (void)onAllPasswordsDeleted {
+  DCHECK_EQ(self.baseNavigationController.topViewController,
+            self.viewController);
+  [self.baseNavigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - Private
@@ -369,9 +366,7 @@
     return;
   }
 
-  [self.delegate passwordDetailsCoordinator:self
-                           deleteCredential:*it
-                          shouldDismissView:(credentials.size() - 1 == 0)];
+  [self.mediator removeCredential:*it];
   if (compromised) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BulkCheck.UserAction",

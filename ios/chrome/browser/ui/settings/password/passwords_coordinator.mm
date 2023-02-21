@@ -315,12 +315,6 @@
   self.passwordIssuesCoordinator = nil;
 }
 
-- (BOOL)willHandlePasswordDeletion:
-    (const password_manager::CredentialUIEntry&)credential {
-  [self.mediator deleteCredential:credential];
-  return YES;
-}
-
 #pragma mark - PasswordCheckupCoordinatorDelegate
 
 - (void)passwordCheckupCoordinatorDidRemove:
@@ -339,21 +333,6 @@
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
-}
-
-- (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
-                  deleteCredential:
-                      (const password_manager::CredentialUIEntry&)credential
-                 shouldDismissView:(BOOL)shouldDismiss {
-  DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
-  [self.mediator deleteCredential:credential];
-
-  if (shouldDismiss) {
-    [self.baseNavigationController popViewControllerAnimated:YES];
-  } else {
-    [self.passwordDetailsCoordinator
-        removeCredentialFromCacheAndRefreshTableView:credential];
-  }
 }
 
 #pragma mark AddPasswordDetailsCoordinatorDelegate

@@ -159,19 +159,6 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesChanged) {
   EXPECT_NSEQ(@"example.com", password.website);
 }
 
-// Tests that mediator deletes password from the store.
-TEST_F(PasswordIssuesMediatorTest, TestPasswordDeletion) {
-  MakeTestPasswordIssue();
-  RunUntilIdle();
-
-  EXPECT_EQ(1u, [[consumer() passwords] count]);
-
-  auto password = store()->stored_passwords().at(kExampleCom).at(0);
-  [mediator() deleteCredential:password_manager::CredentialUIEntry(password)];
-  RunUntilIdle();
-  EXPECT_EQ(0u, [[consumer() passwords] count]);
-}
-
 // Tests that passwords are sorted properly.
 TEST_F(PasswordIssuesMediatorTest, TestPasswordSorting) {
   EXPECT_EQ(0u, [[consumer() passwords] count]);

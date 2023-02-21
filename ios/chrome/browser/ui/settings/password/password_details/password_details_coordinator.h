@@ -48,11 +48,6 @@ class IOSChromePasswordCheckManager;
 // Displays the password data in edit mode without requiring any authentication.
 - (void)showPasswordDetailsInEditModeWithoutAuthentication;
 
-// Remove the credential from the cache and reload password details view
-// controller after a change was made.
-- (void)removeCredentialFromCacheAndRefreshTableView:
-    (const password_manager::CredentialUIEntry&)credential;
-
 // Delegate.
 @property(nonatomic, weak) id<PasswordDetailsCoordinatorDelegate> delegate;
 

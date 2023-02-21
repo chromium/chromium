@@ -9,6 +9,7 @@
 #import <vector>
 
 #import "base/containers/contains.h"
+#import "base/containers/cxx20_erase.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/move_password_to_account_store_helper.h"
@@ -127,10 +128,16 @@ using base::SysNSStringToUTF16;
 
 - (void)removeCredential:
     (const password_manager::CredentialUIEntry&)credential {
-  auto it = base::ranges::find(_credentials, credential);
-  if (it != _credentials.end()) {
-    _credentials.erase(it);
-  }
+  // TODO(crbug.com/1359392). Once kPasswordsGrouping launches, the mediator
+  // should update the passwords model and receive the updates via
+  // SavedPasswordsPresenterObserver, instead of replicating the updates to its
+  // own copy and calling [self providePasswordsToConsumer:]. Today when the
+  // flag is disabled and the password is edited, it's impossible to identify
+  // the new object to show (sign-on realm can't be used as an id, there might
+  // be multiple credentials; nor username/password since the values changed).
+  base::Erase(_credentials, credential);
+  _manager->GetSavedPasswordsPresenter()->RemoveCredential(credential);
+  [self providePasswordsToConsumer];
 }
 
 - (void)moveCredentialToAccountStore:

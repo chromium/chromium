@@ -570,14 +570,17 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 - (void)setPasswords:(NSArray<PasswordDetails*>*)passwords
             andTitle:(NSString*)title {
-  if (IsPasswordGroupingEnabled()) {
-    DCHECK(passwords.count > 0);
-  } else {
-    DCHECK(passwords.count == 1);
-  }
-
+  BOOL hadPasswords = [_passwords count];
   _passwords = passwords;
   _pageTitle = title;
+
+  if (![passwords count]) {
+    // onAllPasswordsDeleted() mustn't be called twice.
+    if (hadPasswords) {
+      [self.handler onAllPasswordsDeleted];
+    }
+    return;
+  }
 
   [self updateNavigationTitle];
 

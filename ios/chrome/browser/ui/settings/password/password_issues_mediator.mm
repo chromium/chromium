@@ -9,22 +9,29 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/password_manager_util_ios.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface PasswordIssuesMediator () <PasswordCheckObserver> {
+@interface PasswordIssuesMediator () <PasswordCheckObserver,
+                                      SavedPasswordsPresenterObserver> {
   raw_ptr<IOSChromePasswordCheckManager> _manager;
 
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
+
+  std::unique_ptr<SavedPasswordsPresenterObserverBridge>
+      _passwordsPresenterObserver;
 
   std::vector<password_manager::CredentialUIEntry> _insecureCredentials;
 
@@ -57,12 +64,16 @@
     _manager = manager;
     _passwordCheckObserver =
         std::make_unique<PasswordCheckObserverBridge>(self, manager);
+    _passwordsPresenterObserver =
+        std::make_unique<SavedPasswordsPresenterObserverBridge>(
+            self, _manager->GetSavedPasswordsPresenter());
   }
   return self;
 }
 
 - (void)disconnect {
   _passwordCheckObserver.reset();
+  _passwordsPresenterObserver.reset();
 
   _manager = nullptr;
   _faviconLoader = nullptr;
@@ -76,13 +87,6 @@
   [self providePasswordsToConsumer];
 }
 
-- (void)deleteCredential:
-    (const password_manager::CredentialUIEntry&)credential {
-  _manager->GetSavedPasswordsPresenter()->RemoveCredential(credential);
-  // TODO:(crbug.com/1075494) - Update list of compromised passwords without
-  // awaiting insecureCredentialsDidChange.
-}
-
 #pragma mark - PasswordCheckObserver
 
 - (void)passwordCheckStateDidChange:(PasswordCheckState)state {
@@ -90,6 +94,12 @@
 }
 
 - (void)insecureCredentialsDidChange {
+  [self providePasswordsToConsumer];
+}
+
+#pragma mark - SavedPasswordsPresenterObserver
+
+- (void)savedPasswordsDidChange {
   [self providePasswordsToConsumer];
 }
 

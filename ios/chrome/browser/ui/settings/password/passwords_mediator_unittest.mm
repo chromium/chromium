@@ -209,23 +209,6 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
   EXPECT_THAT([consumer() passwords], testing::IsEmpty());
 }
 
-// Duplicates of a form should be removed as well.
-TEST_F(PasswordsMediatorTest, DeleteFormWithDuplicates) {
-  PasswordForm form = CreatePasswordForm();
-  PasswordForm duplicate = form;
-  duplicate.username_element = u"element";
-
-  store()->AddLogin(form);
-  store()->AddLogin(duplicate);
-  RunUntilIdle();
-  ASSERT_THAT([consumer() passwords],
-              testing::ElementsAre(password_manager::CredentialUIEntry(form)));
-
-  [mediator() deleteCredential:password_manager::CredentialUIEntry(form)];
-  RunUntilIdle();
-  EXPECT_THAT([consumer() passwords], testing::IsEmpty());
-}
-
 // Mediator should update consumer password autofill state.
 TEST_F(PasswordsMediatorTest, TestPasswordAutoFillDidChangeToStatusMethod) {
   ASSERT_EQ([consumer() detailedText], nil);

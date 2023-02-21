@@ -93,6 +93,9 @@ constexpr char kNote[] = "note";
   self.passwordCopiedByUserCalled = YES;
 }
 
+- (void)onAllPasswordsDeleted {
+}
+
 @end
 
 // Test class that conforms to PasswordDetailsViewControllerDelegate in order

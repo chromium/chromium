@@ -143,11 +143,6 @@ bool IsPasswordCheckupEnabled() {
   [self updateConsumerPasswordCheckState:_currentState];
 }
 
-- (void)deleteCredential:
-    (const password_manager::CredentialUIEntry&)credential {
-  _savedPasswordsPresenter->RemoveCredential(credential);
-}
-
 - (void)disconnect {
   _identityManagerObserver.reset();
   _syncObserver.reset();

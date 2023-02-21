@@ -41,9 +41,6 @@ struct CredentialUIEntry;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Deletes 'form' and its duplicates.
-- (void)deleteCredential:(const password_manager::CredentialUIEntry&)credential;
-
 // Disconnect the observers.
 - (void)disconnect;
 

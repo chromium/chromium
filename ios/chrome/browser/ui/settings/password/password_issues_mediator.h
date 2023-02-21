@@ -36,9 +36,6 @@ class IOSChromePasswordCheckManager;
 
 @property(nonatomic, weak) id<PasswordIssuesConsumer> consumer;
 
-// Deletes password from the password store.
-- (void)deleteCredential:(const password_manager::CredentialUIEntry&)credential;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUES_MEDIATOR_H_

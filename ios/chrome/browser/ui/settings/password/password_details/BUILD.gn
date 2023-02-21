@@ -35,6 +35,7 @@ source_set("password_details") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/settings/password:common",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/util",

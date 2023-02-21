@@ -252,11 +252,6 @@
   self.passwordIssuesCoordinator = nil;
 }
 
-- (BOOL)willHandlePasswordDeletion:
-    (const password_manager::CredentialUIEntry&)credential {
-  return NO;
-}
-
 #pragma mark - PrivacySafeBrowsingCoordinatorDelegate
 
 - (void)privacySafeBrowsingCoordinatorDidRemove:
