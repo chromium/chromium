@@ -5,6 +5,8 @@
 #ifndef CC_TEST_TEST_UKM_RECORDER_FACTORY_H_
 #define CC_TEST_TEST_UKM_RECORDER_FACTORY_H_
 
+#include <memory>
+
 #include "cc/trees/ukm_manager.h"
 
 namespace cc {

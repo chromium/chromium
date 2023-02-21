@@ -4,6 +4,7 @@
 
 #include "cc/resources/cross_thread_shared_bitmap.h"
 
+#include <utility>
 namespace cc {
 
 CrossThreadSharedBitmap::CrossThreadSharedBitmap(const viz::SharedBitmapId& id,

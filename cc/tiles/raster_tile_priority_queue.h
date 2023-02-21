@@ -5,6 +5,7 @@
 #ifndef CC_TILES_RASTER_TILE_PRIORITY_QUEUE_H_
 #define CC_TILES_RASTER_TILE_PRIORITY_QUEUE_H_
 
+#include <memory>
 #include <vector>
 
 #include "cc/cc_export.h"

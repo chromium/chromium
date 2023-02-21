@@ -5,6 +5,8 @@
 #ifndef CC_TEST_TEST_PAINT_WORKLET_LAYER_PAINTER_H_
 #define CC_TEST_TEST_PAINT_WORKLET_LAYER_PAINTER_H_
 
+#include <utility>
+
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

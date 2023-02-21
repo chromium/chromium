@@ -5,6 +5,7 @@
 #ifndef CC_TILES_RASTER_TILE_PRIORITY_QUEUE_REQUIRED_H_
 #define CC_TILES_RASTER_TILE_PRIORITY_QUEUE_REQUIRED_H_
 
+#include <memory>
 #include <vector>
 
 #include "cc/layers/picture_layer_impl.h"

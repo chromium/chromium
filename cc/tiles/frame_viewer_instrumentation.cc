@@ -4,6 +4,9 @@
 
 #include "cc/tiles/frame_viewer_instrumentation.h"
 
+#include <memory>
+#include <utility>
+
 #include "components/viz/common/traced_value.h"
 
 namespace cc {

@@ -4,6 +4,8 @@
 
 #include "cc/paint/decode_stashing_image_provider.h"
 
+#include <utility>
+
 namespace cc {
 DecodeStashingImageProvider::DecodeStashingImageProvider(
     ImageProvider* source_provider)

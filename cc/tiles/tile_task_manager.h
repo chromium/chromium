@@ -6,6 +6,7 @@
 #define CC_TILES_TILE_TASK_MANAGER_H_
 
 #include <stddef.h>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "cc/raster/raster_buffer_provider.h"

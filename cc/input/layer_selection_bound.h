@@ -5,6 +5,8 @@
 #ifndef CC_INPUT_LAYER_SELECTION_BOUND_H_
 #define CC_INPUT_LAYER_SELECTION_BOUND_H_
 
+#include <string>
+
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/selection.h"
 #include "ui/gfx/geometry/point.h"

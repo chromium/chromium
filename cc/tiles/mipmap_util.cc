@@ -4,6 +4,9 @@
 
 #include "cc/tiles/mipmap_util.h"
 
+#include <algorithm>
+#include <limits>
+
 #include "base/numerics/safe_math.h"
 
 namespace cc {
