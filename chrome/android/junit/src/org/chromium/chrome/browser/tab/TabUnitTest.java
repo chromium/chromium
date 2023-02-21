@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -160,7 +159,7 @@ public class TabUnitTest {
                 .createWebContentsDelegate(any(Tab.class));
         doReturn(mNativePage)
                 .when(mDelegateFactory)
-                .createNativePage(any(String.class), anyObject(), any(Tab.class));
+                .createNativePage(any(String.class), any(), any(Tab.class));
         doReturn(false).when(mNativePage).isFrozen();
         doReturn(mNativePageView).when(mNativePage).getView();
         doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();

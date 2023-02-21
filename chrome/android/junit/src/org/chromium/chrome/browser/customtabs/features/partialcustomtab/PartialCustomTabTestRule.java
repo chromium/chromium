@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -169,7 +168,7 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mNavbar.animate()).thenReturn(mViewAnimator);
         when(mViewAnimator.alpha(anyFloat())).thenReturn(mViewAnimator);
         when(mViewAnimator.setDuration(anyLong())).thenReturn(mViewAnimator);
-        when(mViewAnimator.setListener(anyObject())).thenReturn(mViewAnimator);
+        when(mViewAnimator.setListener(any())).thenReturn(mViewAnimator);
         when(mSpinnerView.getLayoutParams()).thenReturn(mLayoutParams);
         when(mSpinnerView.getParent()).thenReturn(mContentFrame);
         when(mSpinnerView.animate()).thenReturn(mViewAnimator);

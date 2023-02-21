@@ -20,7 +20,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
@@ -414,7 +413,7 @@ public class TabListMediatorUnitTest {
                 .getFaviconFromBitmapFetcher(any(Bitmap.class), any(GURL.class));
         doReturn(mTabFaviconFetcher)
                 .when(mTabListFaviconProvider)
-                .getComposedFaviconImageFetcher(anyObject(), anyBoolean());
+                .getComposedFaviconImageFetcher(any(), anyBoolean());
         doReturn(mTab1).when(mTabModelSelector).getTabById(TAB1_ID);
         doReturn(mTab2).when(mTabModelSelector).getTabById(TAB2_ID);
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);

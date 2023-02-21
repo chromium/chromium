@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -674,7 +673,7 @@ public class LocationBarMediatorTest {
     public void testUpdateAssistantVoiceSearchDrawablesAndColors() {
         AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
         ColorStateList csl = Mockito.mock(ColorStateList.class);
-        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), anyObject());
+        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), any());
         mMediator.setAssistantVoiceSearchServiceForTesting(avs);
 
         verify(mLocationBarLayout).setMicButtonTint(csl);
@@ -684,7 +683,7 @@ public class LocationBarMediatorTest {
     public void testUpdateLensButtonColors() {
         AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
         ColorStateList csl = Mockito.mock(ColorStateList.class);
-        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), anyObject());
+        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), any());
         mMediator.setAssistantVoiceSearchServiceForTesting(avs);
 
         verify(mLocationBarLayout).setLensButtonTint(csl);
@@ -760,7 +759,7 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mUrlCoordinator).setBrandedColorScheme(anyInt());
 
         mMediator.updateBrandedColorScheme();
-        verify(mLocationBarLayout).setDeleteButtonTint(anyObject());
+        verify(mLocationBarLayout).setDeleteButtonTint(any());
         verify(mUrlCoordinator)
                 .setUrlBarData(
                         urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);

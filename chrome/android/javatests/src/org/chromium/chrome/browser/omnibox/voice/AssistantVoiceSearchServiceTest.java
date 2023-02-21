@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
@@ -63,7 +63,7 @@ public class AssistantVoiceSearchServiceTest {
         SharedPreferencesManager.getInstance().writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
 
         doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(anyString(), anyString());
-        doReturn(true).when(mGsaState).canAgsaHandleIntent(anyObject());
+        doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
         doReturn(true).when(mGsaState).isGsaInstalled();
         GSAState.setInstanceForTesting(mGsaState);
 
