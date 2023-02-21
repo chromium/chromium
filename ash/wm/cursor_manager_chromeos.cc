@@ -15,7 +15,11 @@
 #include "ui/aura/env.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager.h"
@@ -34,13 +38,16 @@ void CursorManager::Init() {
     gfx::NativeCursor cursor(ui::mojom::CursorType::kCustom);
     const gfx::ImageSkia custom_icon =
         gfx::CreateVectorIcon(kTouchIndicatorIcon, SK_ColorBLACK);
-    SkBitmap bitmap = *custom_icon.bitmap();
+    const float dsf =
+        display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+    SkBitmap bitmap = custom_icon.GetRepresentation(dsf).GetBitmap();
     gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
     auto* cursor_factory = ui::CursorFactory::GetInstance();
     cursor.SetPlatformCursor(
         cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot));
     cursor.set_custom_bitmap(bitmap);
     cursor.set_custom_hotspot(hotspot);
+    cursor.set_image_scale_factor(dsf);
 
     SetCursor(cursor);
     LockCursor();
