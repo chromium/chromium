@@ -10,7 +10,14 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kForYouFre);
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const base::FeatureParam<bool> kForYouFreCloseShouldProceed;
+
+enum class SigninPromoVariant { kSignIn, kMakeYourOwn, kDoMore };
+extern const base::FeatureParam<SigninPromoVariant>
+    kForYouFreSignInPromoVariant;
+#endif
 #endif
 
 BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);

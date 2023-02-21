@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -101,10 +102,34 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       source, base::make_span(kIntroResources, kIntroResourcesSize),
       IDR_INTRO_INTRO_HTML);
 
-  constexpr webui::LocalizedString kLocalizedStrings[] = {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"pageTitle", IDS_FRE_SIGN_IN_TITLE_0},
-    {"pageSubtitle", IDS_FRE_SIGN_IN_SUBTITLE_0},
+  int title_id = 0;
+  int subtitle_id = 0;
+  switch (kForYouFreSignInPromoVariant.Get()) {
+    case SigninPromoVariant::kSignIn: {
+      title_id = IDS_FRE_SIGN_IN_TITLE_0;
+      subtitle_id = IDS_FRE_SIGN_IN_SUBTITLE_0;
+      break;
+    }
+    case SigninPromoVariant::kMakeYourOwn: {
+      title_id = IDS_FRE_SIGN_IN_TITLE_1;
+      subtitle_id = IDS_FRE_SIGN_IN_SUBTITLE_1;
+      break;
+    }
+    case SigninPromoVariant::kDoMore: {
+      title_id = IDS_FRE_SIGN_IN_TITLE_2;
+      subtitle_id = IDS_FRE_SIGN_IN_SUBTITLE_1;
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+#endif
+
+  webui::LocalizedString localized_strings[] = {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    {"pageTitle", title_id},
+    {"pageSubtitle", subtitle_id},
     {"devicesCardTitle", IDS_FRE_DEVICES_CARD_TITLE},
     {"devicesCardDescription", IDS_FRE_DEVICES_CARD_DESCRIPTION},
     {"securityCardTitle", IDS_FRE_SECURITY_CARD_TITLE},
@@ -118,7 +143,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
     {"proceedLabel", IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL},
 #endif
   };
-  source->AddLocalizedStrings(kLocalizedStrings);
+  source->AddLocalizedStrings(localized_strings);
 
   // TODO(crbug.com/1409028): Replace this function by a call to
   // chrome::GetDeviceManagerIdentity()
