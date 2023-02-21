@@ -131,6 +131,7 @@ build_webui("build") {
     "people_page/sync_controls.ts",
     "people_page/sync_encryption_options.ts",
     "people_page/sync_page.ts",
+    "privacy_page/anti_abuse_page.ts",
     "privacy_page/collapse_radio_button.ts",
     "privacy_page/cookies_page.ts",
     "privacy_page/disable_safebrowsing_dialog.ts",

@@ -1,0 +1,56 @@
+<style include="settings-shared">
+  .info-container {
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    padding: 10px;
+  }
+
+  .info-section {
+    flex: 1;
+  }
+
+  .info-header {
+    color: var(--google-blue-500);
+    font-weight: 500;
+    padding-inline-start: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .info-header {
+      color: var(--google-blue-300);
+    }
+  }
+
+  .info-text-container {
+    display: flex;
+    gap: 18px;
+    padding: 10px;
+  }
+</style>
+<settings-toggle-button
+    pref="{{pref_}}"
+    no-set-pref
+    label="$i18n{siteSettingsAntiAbuse}"
+    sub-label="$i18n{siteSettingsAntiAbuseDescription}"
+    on-settings-boolean-control-change="onToggleChange_">
+</settings-toggle-button>
+<div class="info-container">
+  <div class="info-section">
+    <div class="info-header">$i18n{antiAbuseWhenOnHeader}</div>
+    <div class="info-text-container">
+      <iron-icon icon="settings20:dashboard"></iron-icon>
+      <div>$i18n{antiAbuseWhenOnSectionOne}</div>
+    </div>
+    <div class="info-text-container">
+      <iron-icon icon="settings20:background-replace"></iron-icon>
+      <div>$i18n{antiAbuseWhenOnSectionTwo}</div>
+    </div>
+  </div>
+  <div class="info-section">
+    <div class="info-header">$i18n{antiAbuseThingsToConsiderHeader}</div>
+    <div class="info-text-container">
+      <iron-icon icon="settings20:account-attention"></iron-icon>
+      <div>$i18n{antiAbuseThingsToConsiderSectionOne}</div>
+    </div>
+  </div>
+</div>

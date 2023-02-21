@@ -88,11 +88,6 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      prefs::kPrivacySandboxApisEnabledV2,
-      base::BindRepeating(
-          &PrivacySandboxSettingsImpl::OnPrivacySandboxPrefChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
       prefs::kPrivacySandboxFirstPartySetsEnabled,
       base::BindRepeating(
           &PrivacySandboxSettingsImpl::OnFirstPartySetsEnabledPrefChanged,
@@ -511,22 +506,12 @@ void PrivacySandboxSettingsImpl::SetPrivacySandboxEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
 }
 
-bool PrivacySandboxSettingsImpl::IsTrustTokensAllowed() {
-  return IsPrivacySandboxEnabled();
-}
-
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
   return delegate_->IsPrivacySandboxRestricted();
 }
 
 void PrivacySandboxSettingsImpl::OnCookiesCleared() {
   SetTopicsDataAccessibleFromNow();
-}
-
-void PrivacySandboxSettingsImpl::OnPrivacySandboxPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnTrustTokenBlockingChanged(!IsTrustTokensAllowed());
-  }
 }
 
 void PrivacySandboxSettingsImpl::OnFirstPartySetsEnabledPrefChanged() {

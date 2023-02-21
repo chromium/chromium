@@ -43,6 +43,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -195,6 +197,19 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   NOTREACHED();
 
   return false;
+}
+
+void UpdateAntiAbuseSettings(Profile* profile) {
+  ContentSetting content_setting =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetDefaultContentSetting(ContentSettingsType::ANTI_ABUSE, nullptr);
+  profile->ForEachLoadedStoragePartition(base::BindRepeating(
+      [](ContentSetting content_setting,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetBlockTrustTokens(
+            content_setting == CONTENT_SETTING_BLOCK);
+      },
+      content_setting));
 }
 
 void UpdateCookieSettings(Profile* profile) {
@@ -437,17 +452,6 @@ void ProfileNetworkContextService::OnExtensionInstalled(
   UpdatePreconnect();
 }
 #endif
-
-void ProfileNetworkContextService::OnTrustTokenBlockingChanged(
-    bool block_trust_tokens) {
-  profile_->ForEachLoadedStoragePartition(base::BindRepeating(
-      [](bool block_trust_tokens,
-         content::StoragePartition* storage_partition) {
-        storage_partition->GetNetworkContext()->SetBlockTrustTokens(
-            block_trust_tokens);
-      },
-      block_trust_tokens));
-}
 
 void ProfileNetworkContextService::OnFirstPartySetsEnabledChanged(
     bool enabled) {
@@ -1038,9 +1042,11 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // / IsolationInfos, so storage can be isolated on a per-site basis.
   network_context_params->require_network_isolation_key = true;
 
+  ContentSetting anti_abuse_content_setting =
+      HostContentSettingsMapFactory::GetForProfile(profile_)
+          ->GetDefaultContentSetting(ContentSettingsType::ANTI_ABUSE, nullptr);
   network_context_params->block_trust_tokens =
-      !PrivacySandboxSettingsFactory::GetForProfile(profile_)
-           ->IsTrustTokensAllowed();
+      anti_abuse_content_setting == CONTENT_SETTING_BLOCK;
 
   network_context_params->first_party_sets_access_delegate_params =
       network::mojom::FirstPartySetsAccessDelegateParams::New();
@@ -1077,6 +1083,9 @@ void ProfileNetworkContextService::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   switch (content_type) {
+    case ContentSettingsType::ANTI_ABUSE:
+      UpdateAntiAbuseSettings(profile_);
+      break;
     case ContentSettingsType::COOKIES:
       UpdateCookieSettings(profile_);
       break;

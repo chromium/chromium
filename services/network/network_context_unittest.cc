@@ -7358,7 +7358,7 @@ TEST_F(NetworkContextTest,
 }
 
 TEST_F(NetworkContextTest,
-       RejectsTrustTokenBearingRequestWhenThirdPartyCookiesAreDisabled) {
+       RejectsTrustTokenBearingRequestWhenTrustTokensAreBlocked) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
@@ -7372,7 +7372,7 @@ TEST_F(NetworkContextTest,
           [&run_loop](TrustTokenStore* unused) { run_loop.Quit(); }));
   run_loop.Run();
 
-  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  network_context->SetBlockTrustTokens(true);
 
   ResourceRequest my_request;
   my_request.trust_token_params =

@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service_test_utils.h"
@@ -44,6 +45,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -694,9 +698,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
   privacy_sandbox_settings->SetDelegateForTesting(
       std::move(privacy_sandbox_delegate));
   privacy_sandbox_settings->SetAllPrivacySandboxAllowedForTesting();
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kOff));
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   Flush();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -720,26 +723,16 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
 
   EXPECT_EQ(true, EvalJs(GetActiveWebContents(), command));
 
-  privacy_sandbox_settings->SetPrivacySandboxEnabled(false);
+  host_content_settings_map->SetDefaultContentSetting(
+      ContentSettingsType::ANTI_ABUSE, CONTENT_SETTING_BLOCK);
   Flush();
 
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   EXPECT_EQ(false, EvalJs(GetActiveWebContents(), command));
 
-  privacy_sandbox_settings->SetPrivacySandboxEnabled(true);
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  Flush();
-
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
-  EXPECT_EQ(false, EvalJs(GetActiveWebContents(), command));
-
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kOff));
+  host_content_settings_map->SetDefaultContentSetting(
+      ContentSettingsType::ANTI_ABUSE, CONTENT_SETTING_ALLOW);
   Flush();
 
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);

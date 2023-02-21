@@ -59,6 +59,7 @@ export interface SettingsRoutes {
   SIGN_OUT: Route;
   SITE_SETTINGS: Route;
   SITE_SETTINGS_ADS: Route;
+  SITE_SETTINGS_ANTI_ABUSE: Route;
   SITE_SETTINGS_ALL: Route;
   SITE_SETTINGS_AR: Route;
   SITE_SETTINGS_AUTOMATIC_DOWNLOADS: Route;

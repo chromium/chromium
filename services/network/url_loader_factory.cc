@@ -280,13 +280,9 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
         // the NetworkContext.
         base::BindRepeating(
             [](NetworkContext* context) {
-              // Trust tokens will be blocked if the user has either disabled
-              // the Trust Token Privacy Sandbox setting, or if the user has
-              // disabled third party cookies.
-              return !(context->cookie_manager()
-                           ->cookie_settings()
-                           .are_third_party_cookies_blocked() ||
-                       context->are_trust_tokens_blocked());
+              // Trust tokens will be blocked if the user has disabled the
+              // Anti-abuse setting.
+              return !context->are_trust_tokens_blocked();
             },
             base::Unretained(context_)));
   }

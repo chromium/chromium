@@ -66,6 +66,15 @@ suite('SiteSettingsPage', function() {
         defaultSettingLabel(ContentSetting.IMPORTANT_CONTENT, 'a', 'b', 'c'));
   });
 
+  test('AntiAbuseLinkRowHidden', async function() {
+    loadTimeData.overrideValues({
+      privateStateTokensEnabled: false,
+    });
+    setupPage();
+    assertFalse(isChildVisible(
+        page.$.advancedContentList, `#${ContentSettingsTypes.ANTI_ABUSE}`));
+  });
+
   // TODO(crbug.com/1378703): Remove the test once PrivacySandboxSettings4
   // has been rolled out.
   test('CookiesLinkRowLabel', function() {

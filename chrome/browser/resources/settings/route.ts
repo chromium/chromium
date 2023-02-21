@@ -64,6 +64,9 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   // TODO(tommycli): Find a way to refactor these repetitive category
   // routes.
   r.SITE_SETTINGS_ADS = r.SITE_SETTINGS.createChild('ads');
+  if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
+    r.SITE_SETTINGS_ANTI_ABUSE = r.SITE_SETTINGS.createChild('antiAbuse');
+  }
   r.SITE_SETTINGS_AR = r.SITE_SETTINGS.createChild('ar');
   r.SITE_SETTINGS_AUTOMATIC_DOWNLOADS =
       r.SITE_SETTINGS.createChild('automaticDownloads');

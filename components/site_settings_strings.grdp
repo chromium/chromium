@@ -7,6 +7,9 @@
   <message name="IDS_SITE_SETTINGS_TYPE_ADS_MID_SENTENCE" desc="This string is the name of the intrusive ads setting (visit chrome://settings/content and click 'Additional content settings') when used mid-sentence.">
     intrusive ads
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_ANTI_ABUSE" desc="The label used for the anti-abuse site settings controls.">
+    Spam &amp; fraud reduction
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_AR" desc="The label used for the AR site settings controls.">
     Augmented reality
   </message>
