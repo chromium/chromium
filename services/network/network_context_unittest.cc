@@ -7387,6 +7387,37 @@ TEST_F(NetworkContextTest,
             mojom::TrustTokenOperationStatus::kUnauthorized);
 }
 
+TEST_F(NetworkContextTest,
+       RejectsTrustTokenBearingRequestWhenStorageIsBlocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  // Allow the store time to initialize asynchronously.
+  base::RunLoop run_loop;
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting(
+          [&run_loop](TrustTokenStore* unused) { run_loop.Quit(); }));
+  run_loop.Run();
+
+  network_context->SetBlockTrustTokens(false);
+  SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
+
+  ResourceRequest my_request;
+  my_request.trust_token_params =
+      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+
+  std::unique_ptr<TestURLLoaderClient> client = FetchRequest(
+      my_request, network_context.get(), mojom::kURLLoadOptionNone,
+      mojom::kBrowserProcessId, mojom::URLLoaderFactoryParams::New());
+  EXPECT_EQ(client->completion_status().error_code,
+            net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+  EXPECT_EQ(client->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kUnauthorized);
+}
+
 TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);

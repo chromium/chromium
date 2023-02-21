@@ -738,4 +738,15 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   EXPECT_EQ(true, EvalJs(GetActiveWebContents(), command));
+
+  // Trust Tokens are blocked when the top level origin cookie content setting
+  // is blocked
+  GURL top_level_origin = https_test_server()->GetURL("a.test", "/");
+  host_content_settings_map->SetContentSettingDefaultScope(
+      top_level_origin, top_level_origin, ContentSettingsType::COOKIES,
+      CONTENT_SETTING_BLOCK);
+
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  EXPECT_EQ(false, EvalJs(GetActiveWebContents(), command));
 }

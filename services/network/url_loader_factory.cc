@@ -12,8 +12,11 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/isolation_info.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/cookie_manager.h"
@@ -279,12 +282,25 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
         // NetworkContext::CookieManager outlives the URLLoaders associated with
         // the NetworkContext.
         base::BindRepeating(
-            [](NetworkContext* context) {
-              // Trust tokens will be blocked if the user has disabled the
-              // Anti-abuse setting.
-              return !context->are_trust_tokens_blocked();
+            [](NetworkContext* context,
+               net::CookieSettingOverrides cookie_setting_overrides,
+               net::IsolationInfo isolation_info) {
+              // Trust tokens will be blocked if the user has either disabled
+              // the anti-abuse content setting or blocked the top level site
+              // from storing data (i.e. the cookie content setting for that
+              // site is blocked).
+              GURL top_frame_origin = isolation_info.top_frame_origin()
+                                          .value_or(url::Origin())
+                                          .GetURL();
+              ContentSetting cookie_setting =
+                  context->cookie_manager()->cookie_settings().GetCookieSetting(
+                      top_frame_origin, top_frame_origin,
+                      cookie_setting_overrides, nullptr);
+              return !(context->are_trust_tokens_blocked() ||
+                       cookie_setting == CONTENT_SETTING_BLOCK);
             },
-            base::Unretained(context_)));
+            base::Unretained(context_), params_->cookie_setting_overrides,
+            params_->isolation_info));
   }
 
   mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
