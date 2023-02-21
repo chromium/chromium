@@ -322,10 +322,9 @@ const base::Value::Dict* GetGlobalConfigFromPolicy(bool for_active_user) {
     }
     username_hash = user->username_hash();
   }
-  return &NetworkHandler::Get()
-              ->managed_network_configuration_handler()
-              ->GetGlobalConfigFromPolicy(username_hash)
-              ->GetDict();
+  return NetworkHandler::Get()
+      ->managed_network_configuration_handler()
+      ->GetGlobalConfigFromPolicy(username_hash);
 }
 
 // Replaces user-specific string placeholders in |network_configs|, which must

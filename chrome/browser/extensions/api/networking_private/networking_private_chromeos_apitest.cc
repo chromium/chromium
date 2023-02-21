@@ -1120,9 +1120,8 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, GetGlobalPolicy) {
   ash::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
-                  std::string() /* no username hash */,
-                  base::Value(base::Value::List()),
-                  base::Value(std::move(global_config)));
+                  /*userhash=*/std::string(),
+                  /*network_configs_onc=*/base::Value::List(), global_config);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(RunNetworkingSubtest("getGlobalPolicy")) << message_;

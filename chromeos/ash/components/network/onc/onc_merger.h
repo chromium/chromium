@@ -40,8 +40,8 @@ base::Value::Dict MergeSettingsAndPoliciesToEffective(
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value::Dict MergeSettingsAndPoliciesToAugmented(
     const chromeos::onc::OncValueSignature& signature,
-    const base::Value* user_policy,
-    const base::Value* device_policy,
+    const base::Value::Dict* user_policy,
+    const base::Value::Dict* device_policy,
     const base::Value* user_settings,
     const base::Value* shared_settings,
     const base::Value::Dict* active_settings);

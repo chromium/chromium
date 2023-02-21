@@ -27,8 +27,8 @@ extern COMPONENT_EXPORT(CHROMEOS_NETWORK) const char kFakeCredential[];
 // Each of the arguments can be null.
 // TODO(pneubeck): Add documentation of the returned format, see
 //   https://crbug.com/408990 .
-base::Value::Dict CreateManagedONC(const base::Value* global_policy,
-                                   const base::Value* network_policy,
+base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
+                                   const base::Value::Dict* network_policy,
                                    const base::Value* user_settings,
                                    const base::Value::Dict* active_settings,
                                    const NetworkProfile* profile);
@@ -49,7 +49,7 @@ void SetShillPropertiesForGlobalPolicy(
 base::Value::Dict CreateShillConfiguration(
     const NetworkProfile& profile,
     const std::string& guid,
-    const base::Value* global_policy,
+    const base::Value::Dict* global_policy,
     const base::Value::Dict* network_policy,
     const base::Value* user_settings);
 

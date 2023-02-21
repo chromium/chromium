@@ -164,10 +164,9 @@ void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
       ash::UserSessionManager::PasswordConsumingService::kNetwork,
       save_password);
 
-  network_config_handler_->SetPolicy(
-      onc_source_, user_->username_hash(),
-      base::Value(network_configs_onc.Clone()),
-      base::Value(global_network_config.Clone()));
+  network_config_handler_->SetPolicy(onc_source_, user_->username_hash(),
+                                     network_configs_onc,
+                                     global_network_config);
 }
 
 void UserNetworkConfigurationUpdaterAsh::OnProfileInitializationComplete(

@@ -730,15 +730,15 @@ void NetworkingPrivateChromeOS::GetDeviceStateList(
 
 void NetworkingPrivateChromeOS::GetGlobalPolicy(
     GetGlobalPolicyCallback callback) {
-  base::Value result(base::Value::Type::DICT);
-  const base::Value* global_network_config =
+  base::Value::Dict result;
+  const base::Value::Dict* global_network_config =
       GetManagedConfigurationHandler()->GetGlobalConfigFromPolicy(
           std::string() /* no username hash, device policy */);
 
   if (global_network_config) {
-    result.MergeDictionary(global_network_config);
+    result.Merge(global_network_config->Clone());
   }
-  std::move(callback).Run(std::move(result.GetDict()));
+  std::move(callback).Run(std::move(result));
 }
 
 void NetworkingPrivateChromeOS::GetCertificateLists(

@@ -143,8 +143,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // again with this function. For device policies, |userhash| must be empty.
   virtual void SetPolicy(::onc::ONCSource onc_source,
                          const std::string& userhash,
-                         const base::Value& network_configs_onc,
-                         const base::Value& global_network_config) = 0;
+                         const base::Value::List& network_configs_onc,
+                         const base::Value::Dict& global_network_config) = 0;
 
   // Returns true if any policy application is currently running or pending.
   // NetworkPolicyObservers are notified about applications finishing.
@@ -170,7 +170,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // Returns the user policy for user |userhash| or device policy, which has
   // |guid|. If |userhash| is empty, only looks for a device policy. If such
   // doesn't exist, returns NULL. Sets |onc_source| accordingly.
-  virtual const base::Value* FindPolicyByGUID(
+  virtual const base::Value::Dict* FindPolicyByGUID(
       const std::string userhash,
       const std::string& guid,
       ::onc::ONCSource* onc_source) const = 0;
@@ -182,13 +182,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
 
   // Returns the global configuration of the policy of user |userhash| or device
   // policy if |userhash| is empty.
-  virtual const base::Value* GetGlobalConfigFromPolicy(
+  virtual const base::Value::Dict* GetGlobalConfigFromPolicy(
       const std::string& userhash) const = 0;
 
   // Returns the policy with |guid| for profile |profile_path|. If such
   // doesn't exist, returns nullptr. Sets |onc_source| and |userhash|
   // accordingly if it is not nullptr.
-  virtual const base::Value* FindPolicyByGuidAndProfile(
+  virtual const base::Value::Dict* FindPolicyByGuidAndProfile(
       const std::string& guid,
       const std::string& profile_path,
       PolicyType policy_type,

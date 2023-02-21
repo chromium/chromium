@@ -54,8 +54,8 @@ bool GetInt(const base::Value& dict, const char* key, int* result) {
 // |onc_object|.
 void ExpandField(const std::string& fieldname,
                  const VariableExpander& variable_expander,
-                 base::Value* onc_object) {
-  std::string* field_value = onc_object->FindStringKey(fieldname);
+                 base::Value::Dict* onc_object) {
+  std::string* field_value = onc_object->FindString(fieldname);
   if (!field_value)
     return;
   variable_expander.ExpandString(field_value);
@@ -486,8 +486,7 @@ std::string GetSourceAsString(::onc::ONCSource source) {
 
 void ExpandStringsInOncObject(const OncValueSignature& signature,
                               const VariableExpander& variable_expander,
-                              base::Value* onc_object) {
-  DCHECK(onc_object->is_dict());
+                              base::Value::Dict* onc_object) {
   if (&signature == &kEAPSignature) {
     ExpandField(::onc::eap::kAnonymousIdentity, variable_expander, onc_object);
     ExpandField(::onc::eap::kIdentity, variable_expander, onc_object);
@@ -497,7 +496,7 @@ void ExpandStringsInOncObject(const OncValueSignature& signature,
   }
 
   // Recurse into nested objects.
-  for (auto it : onc_object->DictItems()) {
+  for (auto it : *onc_object) {
     if (!it.second.is_dict())
       continue;
 
@@ -507,16 +506,15 @@ void ExpandStringsInOncObject(const OncValueSignature& signature,
       continue;
 
     ExpandStringsInOncObject(*field_signature->value_signature,
-                             variable_expander, &it.second);
+                             variable_expander, &it.second.GetDict());
   }
 }
 
 void ExpandStringsInNetworks(const VariableExpander& variable_expander,
                              base::Value::List& network_configs) {
   for (auto& network : network_configs) {
-    DCHECK(network.is_dict());
     ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
-                             &network);
+                             &network.GetDict());
   }
 }
 

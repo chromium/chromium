@@ -107,13 +107,11 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
     if (user_policy) {
       managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_USER_POLICY,
                                          helper_.UserHash(),
-                                         base::Value(base::Value::Type::LIST),
-                                         base::Value(global_config.Clone()));
+                                         base::Value::List(), global_config);
     } else {
       managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          std::string(),  // no username hash
-                                         base::Value(base::Value::Type::LIST),
-                                         base::Value(global_config.Clone()));
+                                         base::Value::List(), global_config);
     }
     base::RunLoop().RunUntilIdle();
   }

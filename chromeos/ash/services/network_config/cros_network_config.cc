@@ -702,19 +702,28 @@ const base::Value* GetDictionary(const base::Value::Dict* dict,
   return v;
 }
 
-absl::optional<std::vector<std::string>> GetStringList(const base::Value* dict,
-                                                       const char* key) {
-  const base::Value* v = dict->GetDict().Find(key);
-  if (!v)
+absl::optional<std::vector<std::string>> GetStringList(
+    const base::Value::Dict* dict,
+    const char* key) {
+  const base::Value* v = dict->Find(key);
+  if (!v) {
     return absl::nullopt;
+  }
   if (!v->is_list()) {
     NET_LOG(ERROR) << "Expected list, found: " << *v;
     return absl::nullopt;
   }
   std::vector<std::string> result;
-  for (const base::Value& e : v->GetList())
+  for (const base::Value& e : v->GetList()) {
     result.push_back(e.GetString());
+  }
   return result;
+}
+
+// TODO(crbug.com/1412465): Remove.
+absl::optional<std::vector<std::string>> GetStringList(const base::Value* dict,
+                                                       const char* key) {
+  return GetStringList(&dict->GetDict(), key);
 }
 
 std::vector<std::string> GetRequiredStringList(const base::Value* dict,
@@ -3115,7 +3124,7 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
   }
 
   // Global network configuration policy values come from the device policy.
-  const base::Value* global_policy_dict =
+  const base::Value::Dict* global_policy_dict =
       network_configuration_handler_->GetGlobalConfigFromPolicy(
           /*userhash=*/std::string());
   if (!global_policy_dict) {
@@ -3152,8 +3161,9 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
       result->allow_only_policy_wifi_networks_to_connect_if_available);
   absl::optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
       global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
-  if (blocked_hex_ssids)
+  if (blocked_hex_ssids) {
     result->blocked_hex_ssids = std::move(*blocked_hex_ssids);
+  }
 
   std::move(callback).Run(std::move(result));
 }

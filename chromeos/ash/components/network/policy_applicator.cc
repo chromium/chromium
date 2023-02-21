@@ -105,7 +105,7 @@ void CopyRequiredCellularProperties(
 PolicyApplicator::PolicyApplicator(
     const NetworkProfile& profile,
     base::flat_map<std::string, base::Value::Dict> all_policies,
-    base::Value global_network_config,
+    base::Value::Dict global_network_config,
     ConfigurationHandler* handler,
     ManagedCellularPrefHandler* managed_cellular_pref_handler,
     base::flat_set<std::string> modified_policy_guids)
@@ -341,8 +341,7 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
   // network settings have to be applied.
   base::Value::Dict shill_properties_to_update;
   policy_util::SetShillPropertiesForGlobalPolicy(
-      entry_properties, global_network_config_.GetDict(),
-      &shill_properties_to_update);
+      entry_properties, global_network_config_, &shill_properties_to_update);
   if (shill_properties_to_update.empty()) {
     VLOG(2) << "Ignore unmanaged entry.";
     // Calling a SetProperties of Shill with an empty dictionary is a no op.

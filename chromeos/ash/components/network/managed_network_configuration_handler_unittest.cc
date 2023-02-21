@@ -330,8 +330,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     }
 
     managed_network_configuration_handler_->SetPolicy(
-        onc_source, userhash, base::Value(std::move(network_configs)),
-        base::Value(std::move(global_config)));
+        onc_source, userhash, network_configs, global_config);
   }
 
   void SetUpEntry(const std::string& path_to_shill_json,
@@ -793,11 +792,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, PolicyApplicationRunning) {
   EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
 
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
-  managed_handler()->SetPolicy(
-      ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),                          // no userhash
-      base::Value(base::Value::Type::LIST),   // no device network policy
-      base::Value(base::Value::Type::DICT));  // no device global config
+  managed_handler()->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
+                               /*userhash=*/std::string(),
+                               /*network_configs_onc=*/base::Value::List(),
+                               /*global_network_config=*/base::Value::Dict());
 
   EXPECT_TRUE(managed_handler()->IsAnyPolicyApplicationRunning());
   base::RunLoop().RunUntilIdle();
@@ -1222,11 +1220,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
   // global config from the user policy.
   // GetManagedProperties requires the device policy to be set or explicitly
   // unset.
-  managed_handler()->SetPolicy(
-      ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),                          // no userhash
-      base::Value(base::Value::Type::LIST),   // no device network policy
-      base::Value(base::Value::Type::DICT));  // no device global config
+  managed_handler()->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
+                               /*userhash=*/std::string(),
+                               /*network_configs_onc=*/base::Value::List(),
+                               /*global_network_config=*/base::Value::Dict());
 
   base::RunLoop get_properties_run_loop;
   absl::optional<base::Value::Dict> dictionary;
@@ -1529,11 +1526,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
       GetShillServiceClient()->GetServiceProperties(wifi_service_path);
   ASSERT_TRUE(properties);
 
-  managed_handler()->SetPolicy(
-      ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),                          // no userhash
-      base::Value(base::Value::Type::LIST),   // no device network policy
-      base::Value(base::Value::Type::DICT));  // no device global config
+  managed_handler()->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
+                               /*userhash=*/std::string(),
+                               /*network_configs_onc=*/base::Value::List(),
+                               /*global_network_config=*/base::Value::Dict());
 
   absl::optional<base::Value::Dict> dictionary_before_pref;
   absl::optional<base::Value::Dict> dictionary_after_pref;

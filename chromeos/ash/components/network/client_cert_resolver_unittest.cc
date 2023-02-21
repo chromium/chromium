@@ -385,8 +385,8 @@ class ClientCertResolverTest : public testing::Test,
     std::string user_hash =
         onc_source == ::onc::ONC_SOURCE_USER_POLICY ? kUserHash : "";
     managed_config_handler_->SetPolicy(
-        onc_source, user_hash, *parsed_json,
-        /*global_network_config=*/base::Value(base::Value::Type::DICT));
+        onc_source, user_hash, parsed_json->GetList(),
+        /*global_network_config=*/base::Value::Dict());
   }
 
   void SetWifiState(const std::string& state) {

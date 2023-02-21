@@ -151,13 +151,13 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
 
 }  // namespace
 
-base::Value::Dict CreateManagedONC(const base::Value* global_policy,
-                                   const base::Value* network_policy,
+base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
+                                   const base::Value::Dict* network_policy,
                                    const base::Value* user_settings,
                                    const base::Value::Dict* active_settings,
                                    const NetworkProfile* profile) {
-  const base::Value* user_policy = nullptr;
-  const base::Value* device_policy = nullptr;
+  const base::Value::Dict* user_policy = nullptr;
+  const base::Value::Dict* device_policy = nullptr;
   const base::Value* nonshared_user_settings = nullptr;
   const base::Value* shared_user_settings = nullptr;
 
@@ -184,11 +184,10 @@ base::Value::Dict CreateManagedONC(const base::Value* global_policy,
   // If present, apply the Autoconnect policy only to networks that are not
   // managed by policy.
   if (!network_policy && global_policy && profile) {
-    DCHECK(global_policy->is_dict());
     bool allow_only_policy_autoconnect =
-        global_policy->GetDict()
-            .FindBool(::onc::global_network_config::
-                          kAllowOnlyPolicyNetworksToAutoconnect)
+        global_policy
+            ->FindBool(::onc::global_network_config::
+                           kAllowOnlyPolicyNetworksToAutoconnect)
             .value_or(false);
     if (allow_only_policy_autoconnect) {
       ApplyGlobalAutoconnectPolicy(profile->type(), &augmented_onc_network);
@@ -257,7 +256,7 @@ void SetShillPropertiesForGlobalPolicy(
 base::Value::Dict CreateShillConfiguration(
     const NetworkProfile& profile,
     const std::string& guid,
-    const base::Value* global_policy,
+    const base::Value::Dict* global_policy,
     const base::Value::Dict* network_policy,
     const base::Value* user_settings) {
   base::Value::Dict effective;
@@ -321,8 +320,8 @@ base::Value::Dict CreateShillConfiguration(
 
   if (!network_policy && global_policy) {
     // The network isn't managed. Global network policies have to be applied.
-    SetShillPropertiesForGlobalPolicy(
-        shill_dictionary, global_policy->GetDict(), &shill_dictionary);
+    SetShillPropertiesForGlobalPolicy(shill_dictionary, *global_policy,
+                                      &shill_dictionary);
   }
 
   std::unique_ptr<NetworkUIData> ui_data(

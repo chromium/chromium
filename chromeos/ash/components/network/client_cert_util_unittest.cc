@@ -43,14 +43,14 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_OpenVPN) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "OpenVPN.Pkcs11.ID": "abcd1234"
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kOpenVpn);
   EXPECT_EQ(pkcs11_id, "abcd1234");
   EXPECT_EQ(tpm_slot, -1);
@@ -61,15 +61,15 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_L2TPIPsec) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "L2TPIPsec.ClientCertID": "abcd1234",
            "L2TPIPsec.ClientCertSlot": "2"
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kL2tpIpsec);
   EXPECT_EQ(pkcs11_id, "abcd1234");
   EXPECT_EQ(tpm_slot, 2);
@@ -81,14 +81,14 @@ TEST(ClientCertUtilTest,
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "L2TPIPsec.ClientCertID": "abcd1234"
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kL2tpIpsec);
   EXPECT_EQ(pkcs11_id, "abcd1234");
   EXPECT_EQ(tpm_slot, -1);
@@ -99,15 +99,15 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_L2TPIPsec_EmptySlot) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "L2TPIPsec.ClientCertID": "abcd1234",
            "L2TPIPsec.ClientCertSlot": ""
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kL2tpIpsec);
   EXPECT_EQ(pkcs11_id, "abcd1234");
   EXPECT_EQ(tpm_slot, -1);
@@ -118,15 +118,15 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_L2TPIPsec_BadSlot) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "L2TPIPsec.ClientCertID": "abcd1234",
            "L2TPIPsec.ClientCertSlot": "not_an_integer"
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kNone);
 }
 
@@ -135,15 +135,15 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_IKEv2) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "IKEv2.ClientCertID": "abcd1234",
            "IKEv2.ClientCertSlot": "2"
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kIkev2);
   EXPECT_EQ(pkcs11_id, "abcd1234");
   EXPECT_EQ(tpm_slot, 2);
@@ -154,14 +154,14 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_IKEv2_MissingSlot) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "IKEv2.ClientCertID": "abcd1234"
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kIkev2);
   EXPECT_EQ(pkcs11_id, "abcd1234");
   EXPECT_EQ(tpm_slot, -1);
@@ -172,15 +172,15 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_IKEv2_EmptySlot) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "IKEv2.ClientCertID": "abcd1234",
            "IKEv2.ClientCertSlot": ""
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kIkev2);
   EXPECT_EQ(pkcs11_id, "abcd1234");
   EXPECT_EQ(tpm_slot, -1);
@@ -191,15 +191,15 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_IKEv2_BadSlot) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "Provider": {
            "IKEv2.ClientCertID": "abcd1234",
            "IKEv2.ClientCertSlot": "not_an_integer"
          }
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kNone);
 }
 
@@ -208,13 +208,13 @@ TEST(ClientCertUtilTest, GetClientCertFromShillProperties_EAP) {
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "EAP.CertID": "2:abcd1234",
          "EAP.KeyID": "2:abcd1234"
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kEap);
   EXPECT_EQ(pkcs11_id, "abcd1234");
   EXPECT_EQ(tpm_slot, 2);
@@ -226,13 +226,13 @@ TEST(ClientCertUtilTest,
   int tpm_slot = -1;
   std::string pkcs11_id;
 
-  base::Value shill_properties = base::test::ParseJson(
+  base::Value::Dict shill_properties = base::test::ParseJsonDict(
       R"({
          "EAP.CertID": "2:abcd1234",
          "EAP.KeyID": "3:edfg5678"
        })");
-  GetClientCertFromShillProperties(shill_properties.GetDict(),
-                                   &cert_config_type, &tpm_slot, &pkcs11_id);
+  GetClientCertFromShillProperties(shill_properties, &cert_config_type,
+                                   &tpm_slot, &pkcs11_id);
   EXPECT_EQ(cert_config_type, ConfigType::kNone);
 }
 
@@ -341,7 +341,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Empty) {
 // Ethernet, OpenVPN, ...) because the client cert config fields are the same.
 
 TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Pattern) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "WiFi",
          "WiFi": {
@@ -357,7 +357,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Pattern) {
          }
        })");
   ClientCertConfig cert_config;
-  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config.GetDict(),
+  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config,
                         &cert_config);
 
   EXPECT_EQ(cert_config.location, ConfigType::kEap);
@@ -369,7 +369,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Pattern) {
 }
 
 TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Ref) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "WiFi",
          "WiFi": {
@@ -381,7 +381,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Ref) {
          }
        })");
   ClientCertConfig cert_config;
-  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config.GetDict(),
+  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config,
                         &cert_config);
 
   EXPECT_EQ(cert_config.location, ConfigType::kEap);
@@ -393,7 +393,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Ref) {
 }
 
 TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_ProvisioningProfileId) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "WiFi",
          "WiFi": {
@@ -405,7 +405,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_ProvisioningProfileId) {
          }
        })");
   ClientCertConfig cert_config;
-  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config.GetDict(),
+  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config,
                         &cert_config);
 
   EXPECT_EQ(cert_config.location, ConfigType::kEap);
@@ -421,7 +421,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_ProvisioningProfileId) {
 // just for provisioning profile id as an example.
 
 TEST(ClientCertUtilTest, OncToClientCertConfig_Ethernet_ProvisioningProfileId) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "Ethernet",
          "Ethernet": {
@@ -433,7 +433,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Ethernet_ProvisioningProfileId) {
          }
        })");
   ClientCertConfig cert_config;
-  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config.GetDict(),
+  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config,
                         &cert_config);
 
   EXPECT_EQ(cert_config.location, ConfigType::kEap);
@@ -446,7 +446,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Ethernet_ProvisioningProfileId) {
 }
 
 TEST(ClientCertUtilTest, OncToClientCertConfig_OpenVPN_ProvisioningProfileId) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "VPN",
          "VPN": {
@@ -458,7 +458,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_OpenVPN_ProvisioningProfileId) {
          }
        })");
   ClientCertConfig cert_config;
-  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config.GetDict(),
+  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config,
                         &cert_config);
 
   EXPECT_EQ(cert_config.location, ConfigType::kOpenVpn);
@@ -472,7 +472,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_OpenVPN_ProvisioningProfileId) {
 
 TEST(ClientCertUtilTest,
      OncToClientCertConfig_L2TPIPsec_ProvisioningProfileId) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "VPN",
          "VPN": {
@@ -485,7 +485,7 @@ TEST(ClientCertUtilTest,
          }
        })");
   ClientCertConfig cert_config;
-  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config.GetDict(),
+  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config,
                         &cert_config);
 
   EXPECT_EQ(cert_config.location, ConfigType::kL2tpIpsec);
@@ -498,7 +498,7 @@ TEST(ClientCertUtilTest,
 }
 
 TEST(ClientCertUtilTest, OncToClientCertConfig_IKEv2_ProvisioningProfileId) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "VPN",
          "VPN": {
@@ -510,7 +510,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_IKEv2_ProvisioningProfileId) {
          }
        })");
   ClientCertConfig cert_config;
-  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config.GetDict(),
+  OncToClientCertConfig(::onc::ONC_SOURCE_USER_POLICY, network_config,
                         &cert_config);
 
   EXPECT_EQ(cert_config.location, ConfigType::kIkev2);
@@ -523,7 +523,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_IKEv2_ProvisioningProfileId) {
 }
 
 TEST(ClientCertUtilTest, SetResolvedCertForEthernetEap) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "Ethernet",
          "Ethernet": {
@@ -554,7 +554,7 @@ TEST(ClientCertUtilTest, SetResolvedCertForEthernetEap) {
 }
 
 TEST(ClientCertUtilTest, SetResolvedCertForWifiEap) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "WiFi",
          "WiFi": {
@@ -585,7 +585,7 @@ TEST(ClientCertUtilTest, SetResolvedCertForWifiEap) {
 }
 
 TEST(ClientCertUtilTest, SetResolvedCertForOpenVpn) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "VPN",
          "VPN": {
@@ -616,7 +616,7 @@ TEST(ClientCertUtilTest, SetResolvedCertForOpenVpn) {
 }
 
 TEST(ClientCertUtilTest, SetResolvedCertForLt2pIpsecVpn) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "VPN",
          "VPN": {
@@ -648,7 +648,7 @@ TEST(ClientCertUtilTest, SetResolvedCertForLt2pIpsecVpn) {
 
 // Tests that the NotKnownYet state doesn't change the ONC value.
 TEST(ClientCertUtilTest, NotKnownYet) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "Ethernet",
          "Ethernet": {
@@ -663,13 +663,13 @@ TEST(ClientCertUtilTest, NotKnownYet) {
            }
          }
        })");
-  base::Value network_config_orig = network_config.Clone();
+  base::Value::Dict network_config_orig = network_config.Clone();
   SetResolvedCertInOnc(ResolvedCert::NotKnownYet(), network_config);
   EXPECT_THAT(network_config, base::test::IsJson(network_config_orig));
 }
 
 TEST(ClientCertUtilTest, NoCert) {
-  base::Value network_config = base::test::ParseJson(
+  base::Value::Dict network_config = base::test::ParseJsonDict(
       R"({
          "Type": "Ethernet",
          "Ethernet": {

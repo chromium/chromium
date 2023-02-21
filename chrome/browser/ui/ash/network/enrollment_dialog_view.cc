@@ -242,28 +242,32 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
     return false;
   }
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!EnrollmentDialogAllowed(profile))
+  if (!EnrollmentDialogAllowed(profile)) {
     return false;
+  }
   std::string username_hash = ProfileHelper::GetUserIdHashFromProfile(profile);
 
   onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
-  const base::Value* policy =
+  const base::Value::Dict* policy =
       NetworkHandler::Get()
           ->managed_network_configuration_handler()
           ->FindPolicyByGUID(username_hash, network_id, &onc_source);
 
-  if (!policy)
+  if (!policy) {
     return false;
+  }
 
   client_cert::ClientCertConfig cert_config;
-  OncToClientCertConfig(onc_source, policy->GetDict(), &cert_config);
+  OncToClientCertConfig(onc_source, *policy, &cert_config);
 
-  if (cert_config.client_cert_type != onc::client_cert::kPattern)
+  if (cert_config.client_cert_type != onc::client_cert::kPattern) {
     return false;
+  }
 
-  if (cert_config.pattern.Empty())
+  if (cert_config.pattern.Empty()) {
     NET_LOG(ERROR) << "Certificate pattern is empty for: "
                    << NetworkGuidId(network_id);
+  }
 
   if (cert_config.pattern.enrollment_uri_list().empty()) {
     NET_LOG(EVENT) << "No enrollment URIs for: " << NetworkGuidId(network_id);

@@ -45,7 +45,7 @@ std::string GetSourceAsString(::onc::ONCSource source);
 COMPONENT_EXPORT(CHROMEOS_ONC)
 void ExpandStringsInOncObject(const OncValueSignature& signature,
                               const VariableExpander& variable_expander,
-                              base::Value* onc_object);
+                              base::Value::Dict* onc_object);
 
 // Replaces expandable fields in the networks of |network_configs|, which must
 // be a list of ONC NetworkConfigurations. See ExpandStringsInOncObject above.

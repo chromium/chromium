@@ -46,8 +46,8 @@ NetworkTestHelper::NetworkTestHelper()
   managed_network_configuration_handler_->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
       /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value(base::Value::List()),
-      /*global_network_config=*/base::Value(base::Value::Dict()));
+      /*network_configs_onc=*/base::Value::List(),
+      /*global_network_config=*/base::Value::Dict());
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto primary_account_id = AccountId::FromUserEmail("primary@test.com");

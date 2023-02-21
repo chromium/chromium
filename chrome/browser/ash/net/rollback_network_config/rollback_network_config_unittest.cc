@@ -293,8 +293,8 @@ class RollbackNetworkConfigTest : public testing::Test {
   void SetEmptyDevicePolicy() {
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash,
-        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
-        /*global_network_config=*/base::Value(base::Value::Type::DICT));
+        /*network_configs_onc=*/base::Value::List(),
+        /*global_network_config=*/base::Value::Dict());
     task_environment_.RunUntilIdle();
   }
 
@@ -303,9 +303,8 @@ class RollbackNetworkConfigTest : public testing::Test {
     base::Value::Dict global_network_config;
     network_configs_onc.Append(network_config.Clone());
     managed_network_configuration_handler()->SetPolicy(
-        onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash,
-        base::Value(std::move(network_configs_onc)),
-        base::Value(std::move(global_network_config)));
+        onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash, network_configs_onc,
+        global_network_config);
     task_environment_.RunUntilIdle();
   }
 

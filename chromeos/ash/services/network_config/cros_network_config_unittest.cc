@@ -290,8 +290,8 @@ class CrosNetworkConfigTest : public testing::Test {
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
-        /*global_network_config=*/base::Value(base::Value::Type::DICT));
+        /*network_configs_onc=*/base::Value::List(),
+        /*global_network_config=*/base::Value::Dict());
 
     const std::string user_policy_ssid = "wifi2";
     base::Value wifi2_onc =
@@ -340,9 +340,8 @@ class CrosNetworkConfigTest : public testing::Test {
     user_policy_onc.Append(std::move(wifi_eap_onc));
     user_policy_onc.Append(std::move(openvpn_onc));
     managed_network_configuration_handler->SetPolicy(
-        ::onc::ONC_SOURCE_USER_POLICY, helper()->UserHash(),
-        base::Value(std::move(user_policy_onc)),
-        /*global_network_config=*/base::Value(base::Value::Type::DICT));
+        ::onc::ONC_SOURCE_USER_POLICY, helper()->UserHash(), user_policy_onc,
+        /*global_network_config=*/base::Value::Dict());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -3327,8 +3326,7 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
                     std::move(blocked));
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      base::Value(base::Value::Type::LIST),
-      base::Value(std::move(global_config)));
+      /*network_configs_onc=*/base::Value::List(), global_config);
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
@@ -3355,8 +3353,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
                     false);
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      base::Value(base::Value::Type::LIST),
-      base::Value(std::move(global_config)));
+      /*network_configs_onc=*/base::Value::List(), global_config);
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);

@@ -237,8 +237,8 @@ class WifiLanMediumTest : public ::testing::Test {
       managed_network_config_handler_->SetPolicy(
           ::onc::ONC_SOURCE_DEVICE_POLICY,
           /*userhash=*/std::string(),
-          /*network_configs_onc=*/base::Value(base::Value::List()),
-          /*global_network_config=*/base::Value(base::Value::Dict()));
+          /*network_configs_onc=*/base::Value::List(),
+          /*global_network_config=*/base::Value::Dict());
 
       base::RunLoop().RunUntilIdle();
     }

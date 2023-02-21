@@ -86,8 +86,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
   void SetPolicy(::onc::ONCSource onc_source,
                  const std::string& userhash,
-                 const base::Value& network_configs_onc,
-                 const base::Value& global_network_config) override;
+                 const base::Value::List& network_configs_onc,
+                 const base::Value::Dict& global_network_config) override;
 
   bool IsAnyPolicyApplicationRunning() const override;
 
@@ -100,17 +100,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const std::string& guid,
       client_cert::ResolvedCert resolved_cert) override;
 
-  const base::Value* FindPolicyByGUID(
+  const base::Value::Dict* FindPolicyByGUID(
       const std::string userhash,
       const std::string& guid,
       ::onc::ONCSource* onc_source) const override;
 
   bool HasAnyPolicyNetwork(const std::string& userhash) const override;
 
-  const base::Value* GetGlobalConfigFromPolicy(
+  const base::Value::Dict* GetGlobalConfigFromPolicy(
       const std::string& userhash) const override;
 
-  const base::Value* FindPolicyByGuidAndProfile(
+  const base::Value::Dict* FindPolicyByGuidAndProfile(
       const std::string& guid,
       const std::string& profile_path,
       PolicyType policy_type,

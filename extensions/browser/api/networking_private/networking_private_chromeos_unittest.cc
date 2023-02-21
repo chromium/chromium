@@ -155,8 +155,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
             .Build();
 
     config_handler->SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUserHash,
-                              base::Value(std::move(user_policy_onc)),
-                              base::Value(base::Value::Type::DICT));
+                              user_policy_onc,
+                              /*global_network_config=*/base::Value::Dict());
 
     const std::string device_policy_ssid = kManagedDeviceWifiSsid;
     base::Value::List device_policy_onc =
@@ -175,8 +175,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                         .Build())
             .Build();
     config_handler->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, "",
-                              base::Value(std::move(device_policy_onc)),
-                              base::Value(base::Value::Type::DICT));
+                              device_policy_onc,
+                              /*global_network_config=*/base::Value::Dict());
   }
 
   void SetDeviceProperty(const std::string& device_path,
