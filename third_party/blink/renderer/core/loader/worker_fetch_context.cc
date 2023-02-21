@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/worker_resource_timing_notifier.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -183,10 +184,11 @@ ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicy() const {
   return content_security_policy_;
 }
 
-void WorkerFetchContext::PrepareRequest(ResourceRequest& request,
-                                        ResourceLoaderOptions& options,
-                                        WebScopedVirtualTimePauser&,
-                                        ResourceType resource_type) {
+void WorkerFetchContext::PrepareRequest(
+    ResourceRequest& request,
+    ResourceLoaderOptions& options,
+    WebScopedVirtualTimePauser& virtual_time_pauser,
+    ResourceType resource_type) {
   request.SetUkmSourceId(GetExecutionContext()->UkmSourceID());
 
   String user_agent = global_scope_->UserAgent();
@@ -196,6 +198,14 @@ void WorkerFetchContext::PrepareRequest(ResourceRequest& request,
 
   WrappedResourceRequest webreq(request);
   web_context_->WillSendRequest(webreq);
+  if (auto* worker_scope = DynamicTo<WorkerGlobalScope>(*global_scope_)) {
+    virtual_time_pauser =
+        worker_scope->GetScheduler()
+            ->GetVirtualTimeController()
+            ->CreateWebScopedVirtualTimePauser(
+                request.Url().GetString(),
+                WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant);
+  }
 
   probe::PrepareRequest(Probe(), nullptr, request, options, resource_type);
 }

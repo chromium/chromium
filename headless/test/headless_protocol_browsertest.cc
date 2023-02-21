@@ -271,6 +271,8 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerBasic,
                        "emulation/virtual-time-worker-basic.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerLockstep,
                        "emulation/virtual-time-worker-lockstep.js")
+HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerFetch,
+                       "emulation/virtual-time-worker-fetch.js")
 
 // Flaky on Mac. TODO(crbug.com/1164173): Re-enable.
 #if BUILDFLAG(IS_MAC)

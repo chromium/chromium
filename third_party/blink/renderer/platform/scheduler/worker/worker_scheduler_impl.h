@@ -79,6 +79,9 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
       const String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration) override;
 
+  void PauseVirtualTime();
+  void UnpauseVirtualTime();
+
  protected:
   scoped_refptr<NonMainThreadTaskQueue> ThrottleableTaskQueue();
   scoped_refptr<NonMainThreadTaskQueue> UnpausableTaskQueue();
@@ -101,12 +104,20 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   // - pausable task queue. Default queue for high-priority javascript tasks.
   //   They can be paused according to the spec during devtools debugging.
   //   Otherwise scheduler does not tamper with their execution.
+  // - pausable non-virtual time task queue: a pauseable task queue that is
+  //   an exempt from virtual time control. Used for the tasks that pause
+  //   virtual time for the duration of a pending request, so that responses
+  //   don't deadlock against paused VT.
+  //   They can be paused according to the spec during devtools debugging.
+  //   Otherwise scheduler does not tamper with their execution.
+
   // - unpausable task queue. Should be used for control tasks which should
   //   run when the context is paused. Usage should be extremely rare.
   //   Please consult scheduler-dev@ before using it. Running javascript
   //   on it is strictly verboten and can lead to hard-to-diagnose errors.
   scoped_refptr<NonMainThreadTaskQueue> throttleable_task_queue_;
   scoped_refptr<NonMainThreadTaskQueue> pausable_task_queue_;
+  scoped_refptr<NonMainThreadTaskQueue> pausable_non_vt_task_queue_;
   scoped_refptr<NonMainThreadTaskQueue> unpausable_task_queue_;
 
   using TaskQueueVoterMap ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)") =

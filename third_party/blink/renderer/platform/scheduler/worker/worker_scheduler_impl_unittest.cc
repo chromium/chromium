@@ -95,7 +95,7 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
                                WorkerSchedulerProxy* proxy)
       : WorkerThreadScheduler(thread_type, manager, proxy) {}
 
-  const HashSet<WorkerScheduler*>& worker_schedulers() {
+  const HashSet<WorkerSchedulerImpl*>& worker_schedulers() {
     return GetWorkerSchedulersForTesting();
   }
 

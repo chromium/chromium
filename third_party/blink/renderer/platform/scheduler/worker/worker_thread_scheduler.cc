@@ -27,8 +27,8 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/wake_up_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
-#include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 
@@ -241,13 +241,13 @@ void WorkerThreadScheduler::OnLifecycleStateChanged(
 }
 
 void WorkerThreadScheduler::RegisterWorkerScheduler(
-    WorkerScheduler* worker_scheduler) {
+    WorkerSchedulerImpl* worker_scheduler) {
   worker_schedulers_.insert(worker_scheduler);
   worker_scheduler->OnLifecycleStateChanged(lifecycle_state_);
 }
 
 void WorkerThreadScheduler::UnregisterWorkerScheduler(
-    WorkerScheduler* worker_scheduler) {
+    WorkerSchedulerImpl* worker_scheduler) {
   DCHECK(worker_schedulers_.find(worker_scheduler) != worker_schedulers_.end());
   worker_schedulers_.erase(worker_scheduler);
 }
@@ -313,7 +313,7 @@ void WorkerThreadScheduler::SetCPUTimeBudgetPoolForTesting(
   cpu_time_budget_pool_ = std::move(cpu_time_budget_pool);
 }
 
-HashSet<WorkerScheduler*>&
+HashSet<WorkerSchedulerImpl*>&
 WorkerThreadScheduler::GetWorkerSchedulersForTesting() {
   return worker_schedulers_;
 }
@@ -332,14 +332,16 @@ base::SequencedTaskRunner* WorkerThreadScheduler::GetVirtualTimeTaskRunner() {
 void WorkerThreadScheduler::OnVirtualTimeDisabled() {}
 
 void WorkerThreadScheduler::OnVirtualTimePaused() {
-  DefaultTaskQueue()->GetTaskQueue()->InsertFence(
-      TaskQueue::InsertFencePosition::kNow);
+  for (auto* worker_scheduler : worker_schedulers_) {
+    worker_scheduler->PauseVirtualTime();
+  }
 }
 
 void WorkerThreadScheduler::OnVirtualTimeResumed() {
-  TaskQueue* queue = DefaultTaskQueue()->GetTaskQueue();
-  DCHECK(queue->HasActiveFence());
-  queue->RemoveFence();
+  for (WorkerScheduler* worker_scheduler : worker_schedulers_) {
+    auto* scheduler = static_cast<WorkerSchedulerImpl*>(worker_scheduler);
+    scheduler->UnpauseVirtualTime();
+  }
 }
 
 void WorkerThreadScheduler::PostIdleTask(const base::Location& location,
