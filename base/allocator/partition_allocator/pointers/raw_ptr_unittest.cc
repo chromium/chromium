@@ -1352,7 +1352,7 @@ TEST_F(RawPtrTest, WorksWithVariant) {
   EXPECT_EQ(&x, absl::get<raw_ptr<int>>(vary));
 }
 
-TEST_F(RawPtrTest, CrossKindConversion) {
+TEST_F(RawPtrTest, CrossKindConversions) {
   int x = 123;
   CountingRawPtr<int> ptr1 = &x;
 
@@ -1369,24 +1369,18 @@ TEST_F(RawPtrTest, CrossKindConversion) {
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
                   .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 1}),
               CountersMatch());
-}
-
-TEST_F(RawPtrTest, CrossKindAssignment) {
-  int x = 123;
-  CountingRawPtr<int> ptr1 = &x;
 
   RawPtrCountingImpl::ClearCounters();
   RawPtrCountingMayDangleImpl::ClearCounters();
 
-  CountingRawPtrMayDangle<int> ptr2;
-  ptr2 = ptr1;
+  CountingRawPtr<int> ptr3(ptr2);
 
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
                   .get_for_dereference_cnt = 0,
                   .get_for_extraction_cnt = 0,
                   .get_for_duplication_cnt = 1}),
               CountersMatch());
-  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
                   .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 1}),
               CountersMatch());
 }
@@ -1847,36 +1841,48 @@ TEST_F(BackupRefPtrTest, DanglingPtrComparison) {
 }
 
 // Check the assignment operator works, even across raw_ptr with different
-// dangling policies (only `not dangling` -> `dangling` direction is supported).
+// dangling policies.
 TEST_F(BackupRefPtrTest, DanglingPtrAssignment) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
   void* ptr = allocator_.root()->Alloc(16, "");
 
-  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr;
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_1;
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_2;
   raw_ptr<void> not_dangling_ptr;
 
-  not_dangling_ptr = ptr;
-  dangling_ptr = not_dangling_ptr;
+  dangling_ptr_1 = ptr;
+
+  not_dangling_ptr = dangling_ptr_1;
+  dangling_ptr_1 = nullptr;
+
+  dangling_ptr_2 = not_dangling_ptr;
   not_dangling_ptr = nullptr;
 
   allocator_.root()->Free(ptr);
 
-  dangling_ptr = nullptr;
+  dangling_ptr_1 = dangling_ptr_2;
+  dangling_ptr_2 = nullptr;
+
+  not_dangling_ptr = dangling_ptr_1;
+  dangling_ptr_1 = nullptr;
 }
 
 // Check the copy constructor works, even across raw_ptr with different dangling
-// policies (only `not dangling` -> `dangling` direction is supported).
+// policies.
 TEST_F(BackupRefPtrTest, DanglingPtrCopyContructor) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
   void* ptr = allocator_.root()->Alloc(16, "");
 
-  raw_ptr<void> not_dangling_ptr(ptr);
-  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr(not_dangling_ptr);
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_1(ptr);
+  raw_ptr<void> not_dangling_ptr_1(ptr);
 
-  not_dangling_ptr = nullptr;
-  dangling_ptr = nullptr;
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_2(not_dangling_ptr_1);
+  raw_ptr<void> not_dangling_ptr_2(dangling_ptr_1);
+
+  not_dangling_ptr_1 = nullptr;
+  not_dangling_ptr_2 = nullptr;
 
   allocator_.root()->Free(ptr);
 }

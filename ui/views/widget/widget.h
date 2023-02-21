@@ -369,9 +369,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // of the default one.
     // TODO(beng): Figure out if there's a better way to expose this, e.g. get
     // rid of NW subclasses and do this all via message handling.
-    // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
-    raw_ptr<DesktopWindowTreeHost, DanglingUntriaged> desktop_window_tree_host =
-        nullptr;
+    raw_ptr<DesktopWindowTreeHost> desktop_window_tree_host = nullptr;
 
     // Only used by NativeWidgetAura. Specifies the type of layer for the
     // aura::Window.
