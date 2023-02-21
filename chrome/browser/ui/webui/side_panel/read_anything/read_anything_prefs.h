@@ -8,13 +8,13 @@
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
 namespace prefs {
-
-#if !BUILDFLAG(IS_ANDROID)
 
 extern const char kAccessibilityReadAnythingFontName[];
 extern const char kAccessibilityReadAnythingFontScale[];

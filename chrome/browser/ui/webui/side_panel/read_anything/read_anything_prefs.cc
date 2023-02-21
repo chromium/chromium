@@ -8,9 +8,9 @@
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace prefs {
-
 #if !BUILDFLAG(IS_ANDROID)
+
+namespace prefs {
 // String to represent the user's preferred font name for the read anything UI.
 const char kAccessibilityReadAnythingFontName[] =
     "settings.a11y.read_anything.font_name";
