@@ -956,12 +956,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     IdentityProviderData idp{*auto_reauthn_idp};
     idp.accounts = {account};
     idp_data_for_display = {idp};
-
-    // Embargo auto re-authn to mitigate a deadloop where an auto
-    // re-authenticated user gets auto re-authenticated again soon after logging
-    // out of the active session.
-    auto_reauthn_permission_delegate_->RecordDisplayAndEmbargo(
-        GetEmbeddingOrigin());
   }
 
   // TODO(crbug.com/1408520): opt-out affordance is not included in the origin
@@ -976,7 +970,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       auto_reauthn ? SignInMode::kAuto : SignInMode::kExplicit,
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), auto_reauthn),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -1182,7 +1176,8 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
   });
 }
 
-void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
+void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
+                                                 const GURL& idp_config_url,
                                                  const std::string& account_id,
                                                  bool is_sign_in) {
   DCHECK(!account_id.empty());
@@ -1200,6 +1195,14 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
         TokenStatus::kDisabledInSettings,
         /*should_delay_callback=*/true);
     return;
+  }
+
+  if (auto_reauthn) {
+    // Embargo auto re-authn to mitigate a deadloop where an auto
+    // re-authenticated user gets auto re-authenticated again soon after logging
+    // out of the active session.
+    auto_reauthn_permission_delegate_->RecordDisplayAndEmbargo(
+        GetEmbeddingOrigin());
   }
 
   fedcm_metrics_->RecordIsSignInUser(is_sign_in);

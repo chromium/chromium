@@ -188,7 +188,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdentityProviderInfo> idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts);
-  void OnAccountSelected(const GURL& idp_config_url,
+  void OnAccountSelected(bool auto_reauthn,
+                         const GURL& idp_config_url,
                          const std::string& account_id,
                          bool is_sign_in);
   void OnDismissFailureDialog(
