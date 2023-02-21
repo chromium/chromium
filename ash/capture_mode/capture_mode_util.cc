@@ -504,15 +504,26 @@ std::string GetScreenCaptureNotificationIdForPath(const base::FilePath& path) {
 
 void MaybeUpdateCameraPrivacyIndicator(bool camera_on) {
   if (features::IsPrivacyIndicatorsEnabled()) {
-    UpdatePrivacyIndicatorsView(kCameraPrivacyIndicatorId, camera_on,
-                                /*is_microphone_used=*/false);
+    UpdatePrivacyIndicators(
+        /*app_id=*/kCameraPrivacyIndicatorId,
+        /*app_name=*/
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
+        camera_on,
+        /*is_microphone_used=*/false, /*delegate=*/
+        base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>());
   }
 }
 
 void MaybeUpdateMicrophonePrivacyIndicator(bool mic_on) {
   if (features::IsPrivacyIndicatorsEnabled()) {
-    UpdatePrivacyIndicatorsView(kMicrophonePrivacyIndicatorId,
-                                /*is_camera_used=*/false, mic_on);
+    UpdatePrivacyIndicators(
+        /*app_id=*/kMicrophonePrivacyIndicatorId,
+        /*app_name=*/
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
+        /*is_camera_used=*/false, mic_on, /*delegate=*/
+        base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>());
   }
 }
 

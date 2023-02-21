@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -32,6 +33,7 @@
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
 
@@ -42,9 +44,10 @@ constexpr char kPrivacyIndicatorsAppTypeHistogramName[] =
 constexpr char kPrivacyIndicatorsLaunchSettingsHistogramName[] =
     "Ash.PrivacyIndicators.LaunchSettings";
 
-// Check the visibility of privacy indicators in all displays.
+// Check the visibility of privacy indicators and their camera/microphone icons
+// in all displays.
 void ExpectPrivacyIndicatorsVisible(bool visible) {
-  for (ash::RootWindowController* root_window_controller :
+  for (auto* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
     EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
                   ->unified_system_tray()
@@ -54,9 +57,31 @@ void ExpectPrivacyIndicatorsVisible(bool visible) {
   }
 }
 
-}  // namespace
+void ExpectPrivacyIndicatorsCameraIconVisible(bool visible) {
+  for (auto* root_window_controller :
+       ash::Shell::Get()->GetAllRootWindowControllers()) {
+    EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
+                  ->unified_system_tray()
+                  ->privacy_indicators_view()
+                  ->camera_icon()
+                  ->GetVisible(),
+              visible);
+  }
+}
 
-const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
+void ExpectPrivacyIndicatorsMicrophoneIconVisible(bool visible) {
+  for (auto* root_window_controller :
+       ash::Shell::Get()->GetAllRootWindowControllers()) {
+    EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
+                  ->unified_system_tray()
+                  ->privacy_indicators_view()
+                  ->microphone_icon()
+                  ->GetVisible(),
+              visible);
+  }
+}
+
+}  // namespace
 
 class TestAppAccessNotifier : public AppAccessNotifier {
  public:
@@ -529,32 +554,41 @@ TEST_F(AppAccessNotifierPrivacyIndicatorTest, AppAccessNotification) {
   // or microphone.
   const std::string id1 = "test_app_id_1";
   const std::string id2 = "test_app_id_2";
+  const std::string notification_id1 =
+      ash::GetPrivacyIndicatorsNotificationId(id1);
+  const std::string notification_id2 =
+      ash::GetPrivacyIndicatorsNotificationId(id2);
 
   LaunchAppUsingCameraOrMicrophone(id1, "test_app_name", /*use_camera=*/false,
                                    /*use_microphone=*/true);
   LaunchAppUsingCameraOrMicrophone(id2, "test_app_name", /*use_camera=*/true,
                                    /*use_microphone=*/false);
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
-      kPrivacyIndicatorsNotificationIdPrefix + id1));
+      notification_id1));
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
-      kPrivacyIndicatorsNotificationIdPrefix + id2));
+      notification_id2));
 
   LaunchAppUsingCameraOrMicrophone(id1, "test_app_name", /*use_camera=*/false,
                                    /*use_microphone=*/false);
   LaunchAppUsingCameraOrMicrophone(id2, "test_app_name", /*use_camera=*/false,
                                    /*use_microphone=*/false);
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
-      kPrivacyIndicatorsNotificationIdPrefix + id1));
+      notification_id1));
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
-      kPrivacyIndicatorsNotificationIdPrefix + id2));
+      notification_id2));
 
   LaunchAppUsingCameraOrMicrophone(id1, "test_app_name", /*use_camera=*/true,
                                    /*use_microphone=*/true);
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
-      kPrivacyIndicatorsNotificationIdPrefix + id1));
+      notification_id1));
 }
 
 TEST_F(AppAccessNotifierPrivacyIndicatorTest, PrivacyIndicatorsVisibility) {
+  // Uses normal animation duration so that the icons would not be immediately
+  // hidden after the animation.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
   // Make sure privacy indicators work on multiple displays.
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("800x800,801+0-800x800");
@@ -562,11 +596,14 @@ TEST_F(AppAccessNotifierPrivacyIndicatorTest, PrivacyIndicatorsVisibility) {
   ExpectPrivacyIndicatorsVisible(/*visible=*/false);
 
   // Privacy indicators should show up if at least camera or microphone is being
-  // accessed.
+  // accessed. The icons should show up accordingly (only at the start of the
+  // animation).
   LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
                                    /*use_camera=*/true,
                                    /*use_microphone=*/true);
   ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+  ExpectPrivacyIndicatorsCameraIconVisible(/*visible=*/true);
+  ExpectPrivacyIndicatorsMicrophoneIconVisible(/*visible=*/true);
 
   LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
                                    /*use_camera=*/false,
@@ -577,11 +614,15 @@ TEST_F(AppAccessNotifierPrivacyIndicatorTest, PrivacyIndicatorsVisibility) {
                                    /*use_camera=*/true,
                                    /*use_microphone=*/false);
   ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+  ExpectPrivacyIndicatorsCameraIconVisible(/*visible=*/true);
+  ExpectPrivacyIndicatorsMicrophoneIconVisible(/*visible=*/false);
 
   LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
                                    /*use_camera=*/false,
                                    /*use_microphone=*/true);
   ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+  ExpectPrivacyIndicatorsCameraIconVisible(/*visible=*/false);
+  ExpectPrivacyIndicatorsMicrophoneIconVisible(/*visible=*/true);
 }
 
 TEST_F(AppAccessNotifierPrivacyIndicatorTest, RecordAppType) {

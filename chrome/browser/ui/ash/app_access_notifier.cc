@@ -184,14 +184,12 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     auto launch_app = absl::nullopt;
     auto launch_settings =
         base::BindRepeating(&AppAccessNotifier::LaunchAppSettings, app_id);
-    ash::ModifyPrivacyIndicatorsNotification(
-        app_id, GetAppShortNameFromAppId(app_id), is_camera_used,
-        is_microphone_used,
+
+    ash::UpdatePrivacyIndicators(
+        app_id, /*app_name=*/GetAppShortNameFromAppId(app_id), is_camera_used,
+        is_microphone_used, /*delegate=*/
         base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(
             launch_app, launch_settings));
-
-    ash::UpdatePrivacyIndicatorsView(app_id, is_camera_used,
-                                     is_microphone_used);
 
     auto* registry_cache = GetActiveUserAppRegistryCache();
     if (registry_cache) {

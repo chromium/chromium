@@ -74,6 +74,9 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
 
   ~PrivacyIndicatorsTrayItemView() override;
 
+  views::ImageView* camera_icon() { return camera_icon_; }
+  views::ImageView* microphone_icon() { return microphone_icon_; }
+
   // Update the view according to the state of camara/microphone access.
   void Update(const std::string& app_id,
               bool is_camera_used,

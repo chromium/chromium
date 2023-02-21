@@ -19,7 +19,11 @@ class Notification;
 namespace ash {
 
 // An interface for the delegate of the privacy indicators notification,
-// handling launching the app and its settings.
+// handling launching the app and its settings. Clients that use privacy
+// indicators should provide this delegate when calling the privacy indicators
+// controller API so that the API can add correct buttons to the notification
+// based on the callbacks provided and appropriate actions are performed when
+// clicking the buttons.
 class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
     : public message_center::NotificationDelegate {
  public:
@@ -68,6 +72,15 @@ class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
   absl::optional<int> launch_app_button_index_;
   absl::optional<int> launch_settings_button_index_;
 };
+
+// Updates privacy indicators, including the privacy indicators view and the
+// privacy indicator notification(s).
+void ASH_EXPORT UpdatePrivacyIndicators(
+    const std::string& app_id,
+    absl::optional<std::u16string> app_name,
+    bool is_camera_used,
+    bool is_microphone_used,
+    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate);
 
 // Get the id of the privacy indicators notification associated with `app_id`.
 std::string ASH_EXPORT
