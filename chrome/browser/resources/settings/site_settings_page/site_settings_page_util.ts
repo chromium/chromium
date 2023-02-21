@@ -78,6 +78,7 @@ export function getLocalizationStringForContentType(
     case ContentSettingsTypes.ZOOM_LEVELS:
       return 'siteSettingsZoomLevelsMidSentence';
     // The following members do not have a mid-sentence localization.
+    case ContentSettingsTypes.ANTI_ABUSE:
     case ContentSettingsTypes.PDF_DOCUMENTS:
     case ContentSettingsTypes.PRIVATE_NETWORK_DEVICES:
     case ContentSettingsTypes.SITE_DATA:

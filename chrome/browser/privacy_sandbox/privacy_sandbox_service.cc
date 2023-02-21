@@ -22,6 +22,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -194,6 +196,7 @@ PrivacySandboxService::PrivacySandboxService(
     content::InterestGroupManager* interest_group_manager,
     profile_metrics::BrowserProfileType profile_type,
     content::BrowsingDataRemover* browsing_data_remover,
+    HostContentSettingsMap* host_content_settings_map,
 #if !BUILDFLAG(IS_ANDROID)
     TrustSafetySentimentService* sentiment_service,
 #endif
@@ -205,6 +208,7 @@ PrivacySandboxService::PrivacySandboxService(
       interest_group_manager_(interest_group_manager),
       profile_type_(profile_type),
       browsing_data_remover_(browsing_data_remover),
+      host_content_settings_map_(host_content_settings_map),
 #if !BUILDFLAG(IS_ANDROID)
       sentiment_service_(sentiment_service),
 #endif
@@ -259,6 +263,10 @@ PrivacySandboxService::PrivacySandboxService(
   // Check for FPS pref init at each startup.
   // TODO(crbug.com/1351327): Remove this logic when most users have run init.
   MaybeInitializeFirstPartySetsPref();
+
+  // Check for anti-abuse content setting init at each startup.
+  // TODO(crbug.com/1408778): Remove this logic when most users have run init.
+  MaybeInitializeAntiAbuseContentSetting();
 
   // Record preference state for UMA at each startup.
   LogPrivacySandboxState();
@@ -1372,6 +1380,26 @@ void PrivacySandboxService::MaybeInitializeFirstPartySetsPref() {
 
   pref_service_->SetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized, true);
+}
+
+void PrivacySandboxService::MaybeInitializeAntiAbuseContentSetting() {
+  // If initialization has already run, it is not required.
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxAntiAbuseInitialized)) {
+    return;
+  }
+
+  // If the user blocks 3P cookies, disable the anti-abuse content setting.
+  // As this logic relies on checking synced preference state, it is possible
+  // that synced state is available when this decision is made. To err on the
+  // side of privacy, this init logic is run per-device (the pref recording that
+  // init has been run is not synced). If any of the user's devices local state
+  // would disable the setting, it is disabled across all devices.
+  if (AreThirdPartyCookiesBlocked(cookie_settings_)) {
+    host_content_settings_map_->SetDefaultContentSetting(
+        ContentSettingsType::ANTI_ABUSE, ContentSetting::CONTENT_SETTING_BLOCK);
+  }
+
+  pref_service_->SetBoolean(prefs::kPrivacySandboxAntiAbuseInitialized, true);
 }
 
 void PrivacySandboxService::RecordUpdatedTopicsConsent(

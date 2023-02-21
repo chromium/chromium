@@ -7,11 +7,13 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/storage_partition.h"
@@ -38,6 +40,7 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
           ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(CookieSettingsFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(browsing_topics::BrowsingTopicsServiceFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
@@ -57,6 +60,7 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
       (!profile->IsGuestSession() || profile->IsOffTheRecord())
           ? profile->GetBrowsingDataRemover()
           : nullptr,
+      HostContentSettingsMapFactory::GetForProfile(profile),
 #if !BUILDFLAG(IS_ANDROID)
       TrustSafetySentimentServiceFactory::GetForProfile(profile),
 #endif

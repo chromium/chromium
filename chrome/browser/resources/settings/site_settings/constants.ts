@@ -13,6 +13,7 @@
  */
 export enum ContentSettingsTypes {
   ADS = 'ads',
+  ANTI_ABUSE = 'anti-abuse',
   AR = 'ar',
   AUTOMATIC_DOWNLOADS = 'multiple-automatic-downloads',
   BACKGROUND_SYNC = 'background-sync',

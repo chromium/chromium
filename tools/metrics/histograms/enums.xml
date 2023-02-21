@@ -18772,6 +18772,7 @@ Called by update_net_error_codes.py.-->
   <int value="93" label="Top-level Storage Access"/>
   <int value="94" label="Federated identity auto re-authn"/>
   <int value="95" label="Federated identity IdP Registration API"/>
+  <int value="96" label="Anti-abuse"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">

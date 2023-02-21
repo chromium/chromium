@@ -25,6 +25,8 @@
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -767,6 +769,16 @@ void ClearFpsUserPrefs(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
 }
 
+// Remove any user preference settings for Anti-abuse related preferences,
+// returning them to their default value.
+void ResetAntiAbuseSettings(
+    sync_preferences::TestingPrefServiceSyncable* pref_service,
+    HostContentSettingsMap* host_content_settings_map) {
+  pref_service->RemoveUserPref(prefs::kPrivacySandboxAntiAbuseInitialized);
+  host_content_settings_map->SetDefaultContentSetting(
+      ContentSettingsType::ANTI_ABUSE, CONTENT_SETTING_ALLOW);
+}
+
 std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
                                                     bool has_current_topics,
                                                     bool has_blocked_topics) {
@@ -918,7 +930,7 @@ class PrivacySandboxServiceTest : public testing::Test {
     privacy_sandbox_service_ = std::make_unique<PrivacySandboxService>(
         privacy_sandbox_settings(), cookie_settings(), profile()->GetPrefs(),
         test_interest_group_manager(), GetProfileType(),
-        browsing_data_remover(),
+        browsing_data_remover(), host_content_settings_map(),
 #if !BUILDFLAG(IS_ANDROID)
         mock_sentiment_service(),
 #endif
@@ -2832,6 +2844,60 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       net::SchemefulSite(GURL("https://googlesource.com"))));
   EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
       net::SchemefulSite(GURL("https://google.de"))));
+}
+
+TEST_F(PrivacySandboxServiceTest, AntiAbuseContentSettingInit) {
+  // Check that the init of the Anti-abuse pref occurs correctly.
+  ResetAntiAbuseSettings(prefs(), host_content_settings_map());
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+
+  // If the user blocks 3PC, and the pref has not been previously init, it
+  // should be.
+  ResetAntiAbuseSettings(prefs(), host_content_settings_map());
+  CreateService();
+  EXPECT_EQ(host_content_settings_map()->GetDefaultContentSetting(
+                ContentSettingsType::ANTI_ABUSE, nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxAntiAbuseInitialized));
+
+  // Once the setting has been init, it should not be re-init, and updated user
+  // cookie settings should not impact it.
+  ResetAntiAbuseSettings(prefs(), host_content_settings_map());
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+
+  CreateService();
+  EXPECT_EQ(host_content_settings_map()->GetDefaultContentSetting(
+                ContentSettingsType::ANTI_ABUSE, nullptr),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxAntiAbuseInitialized));
+
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  CreateService();
+  EXPECT_EQ(host_content_settings_map()->GetDefaultContentSetting(
+                ContentSettingsType::ANTI_ABUSE, nullptr),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxAntiAbuseInitialized));
+
+  // Blocking all cookies should also init the Anti-abuse setting to blocked.
+  ResetAntiAbuseSettings(prefs(), host_content_settings_map());
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  CreateService();
+  EXPECT_EQ(host_content_settings_map()->GetDefaultContentSetting(
+                ContentSettingsType::ANTI_ABUSE, nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxAntiAbuseInitialized));
 }
 
 class PrivacySandboxServiceTestNonRegularProfile

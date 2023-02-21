@@ -128,6 +128,10 @@ extern const char kPrivacySandboxTopicsConsentLastUpdateReason[];
 // resulted in the current Topics consent state.
 extern const char kPrivacySandboxTopicsConsentTextAtLastUpdate[];
 
+// Boolean that indicates whether the user's anti-abuse preference has been
+// initialized.
+extern const char kPrivacySandboxAntiAbuseInitialized[];
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

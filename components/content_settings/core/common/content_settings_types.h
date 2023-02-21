@@ -319,6 +319,10 @@ enum class ContentSettingsType : int32_t {
   // a website as an identity-provider.
   FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
 
+  // Content setting which is used to indicate whether anti-abuse functionality
+  // should be enabled.
+  ANTI_ABUSE,
+
   NUM_TYPES,
 };
 

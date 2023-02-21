@@ -124,6 +124,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::PRIVATE_NETWORK_GUARD, "private-network-devices"},
     {ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA,
      "private-network-devices-data"},
+    {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
