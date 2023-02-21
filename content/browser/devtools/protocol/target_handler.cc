@@ -241,8 +241,7 @@ class BrowserToPageConnector {
     base::StringPiece message_sp(reinterpret_cast<const char*>(message.data()),
                                  message.size());
     if (agent_host == page_host_.get()) {
-      std::unique_ptr<base::Value> value =
-          base::JSONReader::ReadDeprecated(message_sp);
+      absl::optional<base::Value> value = base::JSONReader::Read(message_sp);
       if (!value || !value->is_dict()) {
         return;
       }
