@@ -1340,10 +1340,12 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   // Explicitly clear any opt-ins to the account-scoped password storage
   // when cookies are being cleared. This needs to happen after passwords
   // have been deleted, so it is performed when all other tasks are completed.
-  // TODO(crbug.com/1052005, crbug.com/1078762): These *should* get cleared
-  // automatically when the Google cookies are deleted, but currently this
-  // doesn't always work reliably. When these bugs get resolved, the
-  // following line and associated code can be removed.
+  // Note: These usually get cleared automatically when the Google cookies are
+  // deleted, but there is one edge case where that doesn't work: If the user
+  // clears cookies via CBD while they are already signed out (but their
+  // account is still present in the account chooser). In that case, without the
+  // code below, the settings-clearing would only happen when the Google cookies
+  // are refreshed the next time, typically on the next browser restart.
   if (should_clear_password_account_storage_settings_) {
     should_clear_password_account_storage_settings_ = false;
     password_manager::features_util::ClearAccountStorageSettingsForAllUsers(
