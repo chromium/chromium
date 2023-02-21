@@ -67,7 +67,6 @@ resource_sizes_trichrome_google,"agrieve@chromium.org, jbudorick@chromium.org",B
 speedometer,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
 speedometer-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
 speedometer2,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
-speedometer2-chrome-health,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
 speedometer2-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
 speedometer2-minormc,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
 speedometer2-pcscan,tmrts@chromium.org,Blink>JavaScript,,all
