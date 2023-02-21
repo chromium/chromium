@@ -11,6 +11,8 @@ source_set("credential_provider_promo") {
     "credential_provider_promo_display_handler.mm",
     "credential_provider_promo_mediator.h",
     "credential_provider_promo_mediator.mm",
+    "credential_provider_promo_metrics.h",
+    "credential_provider_promo_metrics.mm",
   ]
   deps = [
     ":credential_provider_promo_ui",

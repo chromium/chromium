@@ -403,6 +403,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.CredentialProviderExtension.Promo.{Impression}"
+    enum="IOSCredentialProviderPromoSource" expires_after="2023-09-01">
+  <owner>huitingyu@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <summary>
+    The impression count for the credential provider extention promo
+    corresponding to a source of the promo.
+  </summary>
+  <token key="Impression">
+    <variant name="Impression" summary="impression of promo"/>
+    <variant name="Impression.IsReminder"
+        summary="impression of promo shown as reminder"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.CredentialProviderExtension.Promo.{PromoSource}"
+    enum="IOSCredentialProviderPromoAction" expires_after="2023-09-01">
+  <owner>huitingyu@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <summary>
+    The action taken in the credential provider extention promo displayed from
+    the user event as PromoSource specifies.
+  </summary>
+  <token key="PromoSource">
+    <variant name="OnPasswordCopied" summary="the user copies the password"/>
+    <variant name="OnPasswordCopied.IsReminder"
+        summary="the user copies the password, the promo is displayed as
+                 reminder"/>
+    <variant name="OnPasswordSaved" summary="the user saves the password"/>
+    <variant name="OnPasswordSaved.IsReminder"
+        summary="the user saves the password, the promo is displayed as
+                 reminder"/>
+    <variant name="OnSuccessfulLoginWithAutofilledPassword"
+        summary="the user logs in with autofilled password"/>
+    <variant name="OnSuccessfulLoginWithAutofilledPassword.IsReminder"
+        summary="the user logs in with autofilled password, the promo is
+                 displayed as reminder"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.CRWWKNavigationStatesRemoveOldPending" enum="Boolean"
     expires_after="2023-07-09">
   <owner>justincohen@chromium.org</owner>

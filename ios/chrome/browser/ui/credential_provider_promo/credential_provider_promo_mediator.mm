@@ -8,6 +8,7 @@
 #import "base/path_service.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
@@ -75,34 +76,39 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 - (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger
                              context:(CredentialProviderPromoContext)context {
-  CredentialProviderPromoSource source;
+  IOSCredentialProviderPromoSource source;
   self.promoContext = context;
   switch (trigger) {
     case CredentialProviderPromoTrigger::PasswordCopied:
-      source = CredentialProviderPromoSource::kPasswordCopied;
+      source = IOSCredentialProviderPromoSource::kPasswordCopied;
       [self setAnimation];
       break;
     case CredentialProviderPromoTrigger::PasswordSaved:
-      source = CredentialProviderPromoSource::kPasswordSaved;
+      source = IOSCredentialProviderPromoSource::kPasswordSaved;
       if (self.promoContext == CredentialProviderPromoContext::kLearnMore) {
         [self setAnimation];
       }
       break;
     case CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword:
-      source = CredentialProviderPromoSource::kAutofillUsed;
+      source = IOSCredentialProviderPromoSource::kAutofillUsed;
       if (self.promoContext == CredentialProviderPromoContext::kLearnMore) {
         [self setAnimation];
       }
       break;
     case CredentialProviderPromoTrigger::RemindMeLater:
-      // TODO(crbug.com/1392116): show the same promo that was shown when
-      // 'remind me later' was selected
-      source = CredentialProviderPromoSource::kRemindLaterSelected;
+      source = [self promoOriginalSource];
       [self setAnimation];
       break;
   }
 
   [self setTextAndImageWithSource:source];
+
+  // Set the promo source in the Prefs. Skip for 'RemindMeLater' triggers as
+  // source is already present.
+  if (trigger != CredentialProviderPromoTrigger::RemindMeLater) {
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kIosCredentialProviderPromoSource, static_cast<int>(source));
+  }
 }
 
 - (void)registerPromoWithPromosManager {
@@ -112,6 +118,14 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   // TODO(crbug.com/1392116): register the promo with a 24 hour delay.
   self.promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::CredentialProviderExtension);
+}
+
+- (IOSCredentialProviderPromoSource)promoOriginalSource {
+  int sourceAsInteger = GetApplicationContext()->GetLocalState()->GetInteger(
+      prefs::kIosCredentialProviderPromoSource);
+  DCHECK(sourceAsInteger <=
+         static_cast<int>(IOSCredentialProviderPromoSource::kMaxValue));
+  return static_cast<IOSCredentialProviderPromoSource>(sourceAsInteger);
 }
 
 #pragma mark - Private
@@ -134,7 +148,7 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 // Sets the text and image to the consumer. The text set depends on the value of
 // promoContext. When `source` is kPasswordCopied, no image is set.
-- (void)setTextAndImageWithSource:(CredentialProviderPromoSource)source {
+- (void)setTextAndImageWithSource:(IOSCredentialProviderPromoSource)source {
   DCHECK(self.consumer);
   NSString* titleString;
   NSString* subtitleString;
@@ -154,8 +168,7 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
     image = ios::provider::GetBrandedImage(
         ios::provider::BrandedImage::kPasswordSuggestionKey);
-    if (source == CredentialProviderPromoSource::kPasswordCopied ||
-        source == CredentialProviderPromoSource::kRemindLaterSelected) {
+    if (source == IOSCredentialProviderPromoSource::kPasswordCopied) {
       image = nil;
     }
   } else {

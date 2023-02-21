@@ -46,6 +46,11 @@ class PromosManager;
 // Registers the promo for single display.
 - (void)registerPromoWithPromosManager;
 
+// Returns the source for the last time the promo was displayed. ::kUnknown is
+// returned by default. This is persisted so subsequent resurfacing of the promo
+// can access it.
+- (IOSCredentialProviderPromoSource)promoOriginalSource;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_MEDIATOR_H_

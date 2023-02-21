@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_mediator.h"
+#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -43,6 +44,8 @@
 @property(nonatomic, assign) BOOL promoSeenInCurrentSession;
 
 @end
+
+using credential_provider_promo::IOSCredentialProviderPromoAction;
 
 @implementation CredentialProviderPromoCoordinator
 
@@ -94,6 +97,10 @@
                                   animated:YES
                                 completion:nil];
   self.promoSeenInCurrentSession = YES;
+
+  credential_provider_promo::RecordImpression(
+      [self.mediator promoOriginalSource],
+      self.trigger == CredentialProviderPromoTrigger::RemindMeLater);
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -102,6 +109,7 @@
   [self hidePromo];
   if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
     [self presentLearnMore];
+    [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
   } else {
     // Open iOS settings.
     [[UIApplication sharedApplication]
@@ -109,18 +117,23 @@
                               URLWithString:UIApplicationOpenSettingsURLString]
                   options:{}
         completionHandler:nil];
+    [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
   }
 }
 
 - (void)confirmationAlertSecondaryAction {
   [self hidePromo];
+
   GetApplicationContext()->GetLocalState()->SetBoolean(
       prefs::kIosCredentialProviderPromoStopPromo, true);
+
+  [self recordAction:IOSCredentialProviderPromoAction::kNo];
 }
 
 - (void)confirmationAlertTertiaryAction {
   [self hidePromo];
   [self.mediator registerPromoWithPromosManager];
+  [self recordAction:IOSCredentialProviderPromoAction::kRemindMeLater];
 }
 
 #pragma mark - Private
@@ -146,6 +159,13 @@
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
+}
+
+// Help function for metrics.
+- (void)recordAction:(IOSCredentialProviderPromoAction)action {
+  credential_provider_promo::RecordAction(
+      [self.mediator promoOriginalSource],
+      self.trigger == CredentialProviderPromoTrigger::RemindMeLater, action);
 }
 
 @end
