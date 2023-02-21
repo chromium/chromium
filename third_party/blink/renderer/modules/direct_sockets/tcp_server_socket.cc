@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket_options.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_server_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -116,7 +117,25 @@ void TCPServerSocket::OnTCPServerSocketOpened(
         tcp_server_remote,
     int32_t result,
     const absl::optional<net::IPEndPoint>& local_addr) {
-  NOTIMPLEMENTED();
+  if (result == net::OK) {
+    DCHECK(local_addr);
+    readable_stream_wrapper_ =
+        MakeGarbageCollected<TCPServerReadableStreamWrapper>(
+            GetScriptState(), base::DoNothing(), std::move(tcp_server_remote));
+
+    auto* open_info = TCPServerSocketOpenInfo::Create();
+    open_info->setReadable(readable_stream_wrapper_->Readable());
+    open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
+    open_info->setLocalPort(local_addr->port());
+
+    GetOpenedPromiseResolver()->Resolve(open_info);
+
+    SetState(State::kOpen);
+  } else {
+    NOTIMPLEMENTED();
+  }
+
+  DCHECK_NE(GetState(), State::kOpening);
 }
 
 void TCPServerSocket::Trace(Visitor* visitor) const {

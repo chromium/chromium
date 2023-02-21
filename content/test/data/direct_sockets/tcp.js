@@ -1,5 +1,11 @@
 'use strict';
 
+const assertEq = (actual, expected) => {
+  if (actual !== expected) {
+    throw `Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`;
+  }
+};
+
 async function writeLoop(writer, requiredBytes) {
   if (!(writer instanceof WritableStreamDefaultWriter))
     return 'write failed: writer is not a WritableStreamDefaultWriter';
@@ -211,5 +217,67 @@ async function waitForClosedPromise(socket, expected_closed_result, cancel_reade
     }
   } catch (error) {
     return 'waitForClosedPromise failed: ' + error;
+  }
+}
+
+async function exchangeSingleTcpPacketBetweenClientAndServer() {
+  const kPacket = "I'm a TCP packet. Meow-meow!";
+
+  try {
+    // |localPort| is intentionally omitted so that the OS will pick one itself.
+    const serverSocket = new TCPServerSocket('127.0.0.1');
+    const { localPort: serverSocketPort } = await serverSocket.opened;
+
+    // Connect a client to the server.
+    const clientSocket = new TCPSocket('127.0.0.1', serverSocketPort);
+
+    async function acceptOnce() {
+      const { readable } = await serverSocket.opened;
+      const reader = readable.getReader();
+      const { value: acceptedSocket, done } = await reader.read();
+      assertEq(done, false);
+      reader.releaseLock();
+      return acceptedSocket;
+    };
+
+    const acceptedSocket = await acceptOnce();
+    await clientSocket.opened;
+
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    async function acceptedSocketSend() {
+      const { writable } = await acceptedSocket.opened;
+      const writer = writable.getWriter();
+
+      await writer.ready;
+      await writer.write(encoder.encode(kPacket));
+
+      writer.releaseLock();
+    }
+
+    async function clientSocketReceive() {
+      const { readable } = await clientSocket.opened;
+      const reader = readable.getReader();
+      let result = "";
+      while (result.length < kPacket.length) {
+        const { value, done } = await reader.read();
+        assertEq(done, false);
+        result += decoder.decode(value);
+      }
+      reader.releaseLock();
+      assertEq(result, kPacket);
+    }
+
+    acceptedSocketSend();
+    await clientSocketReceive();
+
+    await clientSocket.close();
+    await acceptedSocket.close();
+    // TODO(crbug.com/1408140): await serverSocket.close();
+
+    return "exchangeSingleTcpPacketBetweenClientAndServer succeeded.";
+  } catch (error) {
+    return "exchangeSingleTcpPacketBetweenClientAndServer failed: " + error;
   }
 }

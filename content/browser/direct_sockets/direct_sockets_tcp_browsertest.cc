@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -277,6 +278,13 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
         std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
 
     ASSERT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // For TCPServerSocket support.
+    // TODO(crbug.com/1408140): remove after TCPServerSocket is fully supported.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "DirectSocketsExperimental");
   }
 
   void SetUp() override {
@@ -608,6 +616,12 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
 
   EXPECT_THAT(future->Get(),
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ExchangeTcpServer) {
+  ASSERT_THAT(EvalJs(shell(), "exchangeSingleTcpPacketBetweenClientAndServer()")
+                  .ExtractString(),
+              testing::HasSubstr("succeeded"));
 }
 
 }  // namespace content

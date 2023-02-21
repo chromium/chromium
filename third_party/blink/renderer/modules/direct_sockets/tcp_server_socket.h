@@ -31,7 +31,6 @@ class MODULES_EXPORT TCPServerSocket final : public ScriptWrappable,
   // Socket:
   ScriptPromise close(ScriptState*, ExceptionState&) override;
 
- public:
   explicit TCPServerSocket(ScriptState*);
   ~TCPServerSocket() override;
 

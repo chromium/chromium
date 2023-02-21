@@ -62,9 +62,17 @@ TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
 
   auto [consumer_complement, consumer] = CreateDataPipe();
   auto [producer, producer_complement] = CreateDataPipe();
-  tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   std::move(consumer), std::move(producer));
+
+  mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
+      socket_receiver;
+  mojo::PendingRemote<network::mojom::blink::SocketObserver> observer_remote;
+
+  tcp_socket->OnTCPSocketOpened(
+      socket_receiver.InitWithNewPipeAndPassRemote(),
+      observer_remote.InitWithNewPipeAndPassReceiver(), net::OK,
+      net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+      net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0}, std::move(consumer),
+      std::move(producer));
 
   opened_tester.WaitUntilSettled();
   ASSERT_TRUE(opened_tester.IsFulfilled());
@@ -86,9 +94,17 @@ TEST(TCPSocketTest, OnSocketObserverConnectionError) {
 
   auto [consumer_complement, consumer] = CreateDataPipe();
   auto [producer, producer_complement] = CreateDataPipe();
-  tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   std::move(consumer), std::move(producer));
+
+  mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
+      socket_receiver;
+  mojo::PendingRemote<network::mojom::blink::SocketObserver> observer_remote;
+
+  tcp_socket->OnTCPSocketOpened(
+      socket_receiver.InitWithNewPipeAndPassRemote(),
+      observer_remote.InitWithNewPipeAndPassReceiver(), net::OK,
+      net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+      net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0}, std::move(consumer),
+      std::move(producer));
 
   opened_tester.WaitUntilSettled();
   ASSERT_TRUE(opened_tester.IsFulfilled());
@@ -97,8 +113,7 @@ TEST(TCPSocketTest, OnSocketObserverConnectionError) {
                                     tcp_socket->closed(script_state));
 
   // Trigger OnSocketObserverConnectionError().
-  auto observer = tcp_socket->GetTCPSocketObserver();
-  observer.reset();
+  observer_remote.reset();
   consumer_complement.reset();
   producer_complement.reset();
 
@@ -122,9 +137,17 @@ TEST_P(TCPSocketCloseTest, OnErrorOrClose) {
 
   auto [consumer_complement, consumer] = CreateDataPipe();
   auto [producer, producer_complement] = CreateDataPipe();
-  tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   std::move(consumer), std::move(producer));
+
+  mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
+      socket_receiver;
+  mojo::PendingRemote<network::mojom::blink::SocketObserver> observer_remote;
+
+  tcp_socket->OnTCPSocketOpened(
+      socket_receiver.InitWithNewPipeAndPassRemote(),
+      observer_remote.InitWithNewPipeAndPassReceiver(), net::OK,
+      net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+      net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0}, std::move(consumer),
+      std::move(producer));
 
   opened_tester.WaitUntilSettled();
   ASSERT_TRUE(opened_tester.IsFulfilled());
