@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -17,12 +18,16 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_edit_menu_handler.h"
+#import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_consumer.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
+#import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
@@ -37,7 +42,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface BrowserContainerCoordinator () <LinkToTextConsumer>
+@interface BrowserContainerCoordinator () <LinkToTextConsumer,
+                                           EditMenuAlertDelegate>
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
 // Redefine property as readwrite.
@@ -47,6 +53,8 @@
 @property(nonatomic, strong) BrowserContainerMediator* mediator;
 // The mediator used for the Link to Text feature.
 @property(nonatomic, strong) LinkToTextMediator* linkToTextMediator;
+// The mediator used for the Partial Translate feature.
+@property(nonatomic, strong) PartialTranslateMediator* partialTranslateMediator;
 // The handler for the edit menu.
 @property(nonatomic, strong) BrowserEditMenuHandler* browserEditMenuHandler;
 // The overlay container coordinator for OverlayModality::kWebContentArea.
@@ -70,31 +78,46 @@
   self.started = YES;
   DCHECK(self.browser);
   DCHECK(!_viewController);
+  Browser* browser = self.browser;
+  WebStateList* webStateList = browser->GetWebStateList();
+  BOOL incognito = browser->GetBrowserState()->IsOffTheRecord();
   self.viewController = [[BrowserContainerViewController alloc] init];
   self.webContentAreaOverlayContainerCoordinator =
       [[OverlayContainerCoordinator alloc]
           initWithBaseViewController:self.viewController
-                             browser:self.browser
+                             browser:browser
                             modality:OverlayModality::kWebContentArea];
 
-  self.linkToTextMediator = [[LinkToTextMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()
-                  consumer:self];
+  self.linkToTextMediator =
+      [[LinkToTextMediator alloc] initWithWebStateList:webStateList
+                                              consumer:self];
 
   self.browserEditMenuHandler = [[BrowserEditMenuHandler alloc] init];
   self.viewController.browserEditMenuHandler = self.browserEditMenuHandler;
   self.browserEditMenuHandler.linkToTextDelegate = self.linkToTextMediator;
 
+  if (base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+    self.partialTranslateMediator = [[PartialTranslateMediator alloc]
+          initWithWebStateList:webStateList
+        withBaseViewController:self.viewController
+                     incognito:incognito];
+    self.partialTranslateMediator.alertDelegate = self;
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+    id<BrowserCoordinatorCommands> handler =
+        HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+    self.partialTranslateMediator.browserHandler = handler;
+  }
+
   [self.webContentAreaOverlayContainerCoordinator start];
   self.viewController.webContentsOverlayContainerViewController =
       self.webContentAreaOverlayContainerCoordinator.viewController;
-  OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kWebContentArea);
-  self.mediator = [[BrowserContainerMediator alloc]
-                initWithWebStateList:self.browser->GetWebStateList()
-      webContentAreaOverlayPresenter:overlayPresenter];
+  OverlayPresenter* overlayPresenter =
+      OverlayPresenter::FromBrowser(browser, OverlayModality::kWebContentArea);
+  self.mediator =
+      [[BrowserContainerMediator alloc] initWithWebStateList:webStateList
+                              webContentAreaOverlayPresenter:overlayPresenter];
   self.activityServiceHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ActivityServiceCommands);
+      browser->GetCommandDispatcher(), ActivityServiceCommands);
 
   self.mediator.consumer = self.viewController;
 
@@ -109,6 +132,7 @@
   self.started = NO;
   [self.webContentAreaOverlayContainerCoordinator stop];
   [self.screenTimeCoordinator stop];
+  [self.partialTranslateMediator shutdown];
   self.viewController = nil;
   self.mediator = nil;
   self.linkToTextMediator = nil;
@@ -153,6 +177,24 @@
                   [weakSelf.activityServiceHandler sharePage];
                 }
                  style:UIAlertActionStyleDefault];
+  [self.alertCoordinator start];
+}
+
+#pragma mark - EditMenuAlertDelegate
+
+- (void)showAlertWithTitle:(NSString*)title
+                   message:(NSString*)message
+                   actions:(NSArray<EditMenuAlertDelegateAction*>*)actions {
+  self.alertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
+                                                   browser:self.browser
+                                                     title:title
+                                                   message:message];
+  for (EditMenuAlertDelegateAction* action in actions) {
+    [self.alertCoordinator addItemWithTitle:action.title
+                                     action:action.action
+                                      style:action.style];
+  }
   [self.alertCoordinator start];
 }
 

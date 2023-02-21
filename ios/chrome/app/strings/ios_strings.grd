@@ -1774,6 +1774,21 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Sync and Google Services settings.">
         For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">BEGIN_LINK</ph>Sync and Google Services<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_PARTIAL_TRANSLATE_ACTION_TRANSLATE_FULL_PAGE" desc="The action button to translate the full page (Title Case).">
+        Translate Full Page
+      </message>
+      <message name="IDS_IOS_PARTIAL_TRANSLATE_ERROR_GENERIC" desc="Error message when when the process failed (unknown reason).">
+        Partial translation failed.
+      </message>
+      <message name="IDS_IOS_PARTIAL_TRANSLATE_ERROR_STRING_EMPTY" desc="Error message when the string is empty.">
+        The selected text is empty.
+      </message>
+      <message name="IDS_IOS_PARTIAL_TRANSLATE_ERROR_STRING_TOO_LONG_ERROR" desc="Error message when the string is too long.">
+        The selected text is too large for partial translation.
+      </message>
+      <message name="IDS_IOS_PARTIAL_TRANSLATE_SWITCH_FULL_PAGE_TRANSLATION" desc="Title of the alert proposing to switch to full page translation if partial translate fails.">
+        Switch to Full Page Translation
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL" desc="The label for the alert's cancel button">
           Cancel
       </message>
