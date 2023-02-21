@@ -6,10 +6,16 @@
 
 #import "base/notreached.h"
 #import "base/scoped_multi_source_observation.h"
+#import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/snapshot_cache.h"
+#import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
+#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state.h"
@@ -25,6 +31,7 @@ using ScopedWebStateObservation =
     base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>;
 
 @interface InactiveTabsMediator () <CRWWebStateObserver,
+                                    SnapshotCacheObserver,
                                     WebStateListObserving> {
   // Observers for WebStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
@@ -38,6 +45,11 @@ using ScopedWebStateObservation =
 @property(nonatomic, weak, readonly) id<TabCollectionConsumer> consumer;
 // The list of inactive tabs.
 @property(nonatomic, assign, readonly) WebStateList* webStateList;
+// The snapshot cache of `webStateList`.
+@property(nonatomic, weak, readonly) SnapshotCache* snapshotCache;
+// The short-term cache for grid thumbnails.
+@property(nonatomic, strong, readonly)
+    NSMutableDictionary<NSString*, UIImage*>* appearanceCache;
 
 @end
 
@@ -56,19 +68,26 @@ using ScopedWebStateObservation =
         std::make_unique<web::WebStateObserverBridge>(self);
     _scopedWebStateObservation = std::make_unique<ScopedWebStateObservation>(
         _webStateObserverBridge.get());
+    _appearanceCache = [[NSMutableDictionary alloc] init];
   }
   return self;
+}
+
+- (void)dealloc {
+  [_snapshotCache removeObserver:self];
 }
 
 #pragma mark - Public properties
 
 - (void)setInactiveBrowser:(Browser*)inactiveBrowser {
+  [_snapshotCache removeObserver:self];
   _scopedWebStateListObservation->RemoveAllObservations();
   _scopedWebStateObservation->RemoveAllObservations();
 
   _inactiveBrowser = inactiveBrowser;
   _webStateList = inactiveBrowser->GetWebStateList();
 
+  [_snapshotCache addObserver:self];
   if (_webStateList) {
     _scopedWebStateListObservation->AddObservation(_webStateList);
     [self addWebStateObservations];
@@ -93,6 +112,86 @@ using ScopedWebStateObservation =
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
   [_consumer replaceItemID:webState->GetStableIdentifier()
                   withItem:GetTabSwitcherItem(webState)];
+}
+
+#pragma mark - GridImageDataSource
+
+- (void)snapshotForIdentifier:(NSString*)identifier
+                   completion:(void (^)(UIImage*))completion {
+  if (_appearanceCache[identifier]) {
+    completion(_appearanceCache[identifier]);
+    return;
+  }
+  web::WebState* webState =
+      GetWebState(_webStateList, identifier, /*pinned=*/NO);
+  if (webState) {
+    SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
+        ^(UIImage* image) {
+          completion(image);
+        });
+  }
+}
+
+- (void)faviconForIdentifier:(NSString*)identifier
+                  completion:(void (^)(UIImage*))completion {
+  web::WebState* webState =
+      GetWebState(_webStateList, identifier, /*pinned=*/NO);
+  if (!webState) {
+    return;
+  }
+  // NTP tabs get no favicon.
+  if (IsURLNtp(webState->GetVisibleURL())) {
+    return;
+  }
+  completion([UIImage imageNamed:@"default_world_favicon_regular"]);
+
+  favicon::FaviconDriver* faviconDriver =
+      favicon::WebFaviconDriver::FromWebState(webState);
+  if (faviconDriver) {
+    gfx::Image favicon = faviconDriver->GetFavicon();
+    if (!favicon.IsEmpty()) {
+      completion(favicon.ToUIImage());
+    }
+  }
+}
+
+- (void)preloadSnapshotsForVisibleGridItems:
+    (NSSet<NSString*>*)visibleGridItems {
+  for (int i = 0; i <= self.webStateList->count() - 1; i++) {
+    web::WebState* web_state = _webStateList->GetWebStateAt(i);
+    NSString* identifier = web_state->GetStableIdentifier();
+
+    BOOL isWebStateHidden = ![visibleGridItems containsObject:identifier];
+    if (isWebStateHidden) {
+      continue;
+    }
+
+    __weak __typeof(self) weakSelf = self;
+    auto cacheImage = ^(UIImage* image) {
+      weakSelf.appearanceCache[identifier] = image;
+    };
+
+    [self snapshotForIdentifier:identifier completion:cacheImage];
+  }
+}
+
+- (void)clearPreloadedSnapshots {
+  [_appearanceCache removeAllObjects];
+}
+
+#pragma mark - SnapshotCacheObserver
+
+- (void)snapshotCache:(SnapshotCache*)snapshotCache
+    didUpdateSnapshotForIdentifier:(NSString*)identifier {
+  [_appearanceCache removeObjectForKey:identifier];
+  web::WebState* webState =
+      GetWebState(_webStateList, identifier, /*pinned=*/NO);
+  if (webState) {
+    // It is possible to observe an updated snapshot for a WebState before
+    // observing that the WebState has been added to the WebStateList. It is the
+    // consumer's responsibility to ignore any updates before inserts.
+    [_consumer replaceItemID:identifier withItem:GetTabSwitcherItem(webState)];
+  }
 }
 
 #pragma mark - WebStateListObserving

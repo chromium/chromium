@@ -7,10 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
+
 class Browser;
 @protocol TabCollectionConsumer;
 
-@interface InactiveTabsMediator : NSObject
+@interface InactiveTabsMediator : NSObject <GridImageDataSource>
 
 // The inactive browser reference.
 @property(nonatomic, assign) Browser* inactiveBrowser;

@@ -59,6 +59,7 @@ const NSTimeInterval kDuration = 0.2;
   self.mediator = [[InactiveTabsMediator alloc]
       initWithConsumer:self.viewController.gridViewController];
   self.mediator.inactiveBrowser = self.browser;
+  self.viewController.gridViewController.imageDataSource = self.mediator;
 
   // Add the view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;
