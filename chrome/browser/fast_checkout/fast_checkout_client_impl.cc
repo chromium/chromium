@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/signatures.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -171,11 +172,34 @@ void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
 
 void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
                                            bool allow_further_runs) {
-  ukm::builders::Autofill_FastCheckoutRunOutcome builder(
+  ukm::builders::Autofill_FastCheckoutRunOutcome run_outcome_builder(
       GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId());
-  builder.SetRunOutcome(static_cast<int64_t>(run_outcome));
-  builder.SetRunId(run_id_);
-  builder.Record(ukm::UkmRecorder::Get());
+  run_outcome_builder.SetRunOutcome(static_cast<int64_t>(run_outcome));
+  run_outcome_builder.SetRunId(run_id_);
+  run_outcome_builder.Record(ukm::UkmRecorder::Get());
+
+  if (autofill_manager_) {
+    for (auto [form_id, filling_state] : form_filling_states_) {
+      autofill::FormSignature form_signature = form_id.first;
+      autofill::DenseSet<autofill::FormType> form_types;
+      for (auto& [_, form] : autofill_manager_->form_structures()) {
+        if (form->form_signature() == form_signature) {
+          form_types = form->GetFormTypes();
+          break;
+        }
+      }
+      ukm::builders::Autofill_FastCheckoutFormStatus form_status_builder(
+          GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId());
+      form_status_builder.SetFilled(filling_state == FillingState::kFilled);
+      form_status_builder.SetFormSignature(
+          autofill::HashFormSignature(form_signature));
+      form_status_builder.SetRunId(run_id_);
+      form_status_builder.SetFormTypes(
+          autofill::AutofillMetrics::FormTypesToBitVector(form_types));
+      form_status_builder.Record(ukm::UkmRecorder::Get());
+    }
+  }
+
   Stop(allow_further_runs);
 }
 

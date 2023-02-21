@@ -2070,6 +2070,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.FastCheckoutFormStatus">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Recorded at the end of a Fast Checkout run.
+  </summary>
+  <metric name="Filled" enum="Boolean">
+    <summary>
+      1 if the form was filled by Fast Checkout, 0 otherwise.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      An approximately 10-bit hash of the form's actual signature.
+    </summary>
+  </metric>
+  <metric name="FormTypes">
+    <summary>
+      Type of form. Stored as bitvector. A set i-th bit implies enum FormType's
+      i-th type was detected. Multiple types are possible.
+    </summary>
+  </metric>
+  <metric name="RunId">
+    <summary>
+      Unique run ID for linking to other UKM events.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.FastCheckoutRunOutcome">
   <owner>bwolfgang@google.com</owner>
   <owner>jkeitel@google.com</owner>

@@ -46,6 +46,7 @@ using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
+using ::ukm::builders::Autofill_FastCheckoutFormStatus;
 using ::ukm::builders::Autofill_FastCheckoutRunOutcome;
 
 namespace {
@@ -686,6 +687,7 @@ TEST_F(FastCheckoutClientImplTest,
       {address_form->form_signature(), credit_card_form->form_signature()});
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
+  int64_t run_id = fast_checkout_client()->run_id_;
 
   autofill::payments::FullCardRequest* full_card_request =
       autofill_client()->GetCvcAuthenticator()->GetFullCardRequest();
@@ -716,6 +718,32 @@ TEST_F(FastCheckoutClientImplTest,
 
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
   ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kSuccess);
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      Autofill_FastCheckoutFormStatus::kEntryName,
+      {Autofill_FastCheckoutFormStatus::kRunIdName,
+       Autofill_FastCheckoutFormStatus::kFilledName,
+       Autofill_FastCheckoutFormStatus::kFormSignatureName,
+       Autofill_FastCheckoutFormStatus::kFormTypesName});
+  EXPECT_EQ(ukm_entries.size(), 2UL);
+  base::flat_set<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics> metrics;
+  metrics.emplace(ukm_entries[0].metrics);
+  metrics.emplace(ukm_entries[1].metrics);
+  EXPECT_THAT(
+      metrics,
+      UnorderedElementsAre(
+          UnorderedElementsAre(
+              Pair(Autofill_FastCheckoutFormStatus::kRunIdName, run_id),
+              Pair(Autofill_FastCheckoutFormStatus::kFilledName, 1),
+              Pair(Autofill_FastCheckoutFormStatus::kFormSignatureName,
+                   autofill::HashFormSignature(address_form->form_signature())),
+              Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 3)),
+          UnorderedElementsAre(
+              Pair(Autofill_FastCheckoutFormStatus::kRunIdName, run_id),
+              Pair(Autofill_FastCheckoutFormStatus::kFilledName, 1),
+              Pair(Autofill_FastCheckoutFormStatus::kFormSignatureName,
+                   autofill::HashFormSignature(
+                       credit_card_form->form_signature())),
+              Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 5))));
 }
 
 TEST_F(FastCheckoutClientImplTest, OnAutofillManagerReset_ResetsState) {
