@@ -192,7 +192,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void OnError(const mojom::DriveError& error) override;
 
   base::WeakPtr<PinManager> GetWeakPtr() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -376,8 +375,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // cached yet.
   Files files_to_track_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<PinManager> weak_ptr_factory_
-      GUARDED_BY_CONTEXT(sequence_checker_){this};
+  base::WeakPtrFactory<PinManager> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Update);

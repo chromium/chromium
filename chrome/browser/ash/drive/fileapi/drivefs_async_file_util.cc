@@ -146,6 +146,9 @@ class CopyOperation {
 // Drive cloud Trash.
 class DeleteOperation {
  public:
+  using PinManager = drivefs::pinning::PinManager;
+  using Id = PinManager::Id;
+
   DeleteOperation(Profile* profile,
                   const base::FilePath& path,
                   storage::AsyncFileUtil::StatusCallback callback,
@@ -165,19 +168,16 @@ class DeleteOperation {
   void Start() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    auto* drive_integration_service =
-        drive::util::GetIntegrationServiceByProfile(profile_);
+    DCHECK(!drive_);
+    drive_ = drive::util::GetIntegrationServiceByProfile(profile_);
     base::FilePath relative_path;
-    if (!drive_integration_service ||
-        !drive_integration_service->GetMountPointPath().IsParent(path_)) {
+    if (!drive_ || !drive_->GetMountPointPath().IsParent(path_)) {
       origin_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback_), base::File::FILE_ERROR_FAILED));
       origin_task_runner_->DeleteSoon(FROM_HERE, this);
       return;
     }
-
-    drive_ = drive_integration_service;
 
     if (ash::features::IsDriveFsBulkPinningEnabled()) {
       if (drive_->GetRelativeDrivePath(path_, &drive_path_)) {
@@ -197,20 +197,22 @@ class DeleteOperation {
         base::BindOnce(&DeleteOperation::Delete, base::Unretained(this)));
   }
 
-  void OnGotMetadata(drive::FileError error,
-                     drivefs::mojom::FileMetadataPtr metadata) {
-    LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
-        << "Failed to get metadata: " << drive::FileErrorToString(error);
-
-    if (metadata) {
-      stable_id_ = metadata->stable_id;
-      if (error == drive::FILE_ERROR_OK && metadata->pinned && drive_) {
+  void OnGotMetadata(const drive::FileError error,
+                     const drivefs::mojom::FileMetadataPtr metadata) {
+    if (error == drive::FILE_ERROR_OK) {
+      DCHECK(metadata);
+      id_ = Id(metadata->stable_id);
+      VLOG(1) << "Got metadata of " << id_ << " '" << drive_path_ << "'";
+      if (metadata->pinned) {
+        DCHECK(drive_);
         drive_->GetDriveFsInterface()->SetPinnedByStableId(
             metadata->stable_id, /*pinned=*/false,
             base::BindOnce(&DeleteOperation::OnUnpinFile,
                            base::Unretained(this)));
         return;
       }
+    } else {
+      LOG(ERROR) << "Cannot get metadata of '" << drive_path_ << "': " << error;
     }
 
     blocking_task_runner_->PostTask(
@@ -218,46 +220,50 @@ class DeleteOperation {
         base::BindOnce(&DeleteOperation::Delete, base::Unretained(this)));
   }
 
-  void OnUnpinFile(drive::FileError error) {
+  void OnUnpinFile(const drive::FileError error) {
     LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
-        << "Failed to unpin file before deleting it: "
-        << drive::FileErrorToString(error);
+        << "Cannot unpin " << id_ << " '" << drive_path_
+        << "' before deleting it: " << error;
     blocking_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&DeleteOperation::Delete, base::Unretained(this)));
   }
 
   void Delete() {
-    base::File::Error error = base::DeletePathRecursively(path_)
-                                  ? base::File::FILE_OK
-                                  : base::File::FILE_ERROR_FAILED;
-    if (error == base::File::FILE_OK && drive_) {
-      using drivefs::pinning::PinManager;
+    VLOG(1) << "Deleting '" << path_ << "'...";
+    const bool deleted = base::DeletePathRecursively(path_);
+
+    if (deleted) {
+      VLOG(1) << "Deleted '" << path_ << "'";
+      DCHECK(drive_);
       if (PinManager* const pin_manager = drive_->GetPinManager()) {
         // TODO(b/267225898): Local delete events are currently not sent via
         // DriveFS, so for now notify the `PinManager` for local deletes.
         content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(&PinManager::NotifyDelete,
-                                      base::Unretained(pin_manager),
-                                      PinManager::Id(stable_id_), drive_path_));
+            FROM_HERE,
+            base::BindOnce(&PinManager::NotifyDelete, pin_manager->GetWeakPtr(),
+                           id_, drive_path_));
       }
+    } else {
+      LOG(ERROR) << "Cannot delete '" << path_ << "'";
     }
-    origin_task_runner_->PostTask(FROM_HERE,
-                                  base::BindOnce(std::move(callback_), error));
+
+    origin_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_),
+                                  deleted ? base::File::FILE_OK
+                                          : base::File::FILE_ERROR_FAILED));
     origin_task_runner_->DeleteSoon(FROM_HERE, this);
   }
 
   Profile* const profile_;
   const base::FilePath path_;
   base::FilePath drive_path_;
-  int64_t stable_id_ = -1;
+  Id id_ = Id::kNone;
   storage::AsyncFileUtil::StatusCallback callback_;
-  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   raw_ptr<drive::DriveIntegrationService> drive_ = nullptr;
-
-  base::FilePath path_in_trash_;
 };
 
 }  // namespace
