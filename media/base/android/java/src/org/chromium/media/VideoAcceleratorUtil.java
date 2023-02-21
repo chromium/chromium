@@ -21,13 +21,13 @@ import java.util.HashSet;
 import java.util.Locale;
 
 /**
- * A collection of SDK based helper functions for the NDK VideoEncoder that
- * unfortunately don't have NDK equivalents. Only called from the GPU process,
- * so doesn't need to be tagged with MainDex.
+ * A collection of SDK based helper functions for retrieving supported profiles
+ * for accelerated encoders and decoders from MediaCodecInfo. Only called from
+ * the GPU process, so doesn't need to be tagged with MainDex.
  */
 @JNINamespace("media")
-class VideoEncodeAcceleratorUtil {
-    private static final String TAG = "VEAUtil";
+class VideoAcceleratorUtil {
+    private static final String TAG = "VAUtil";
 
     private static final String[] SUPPORTED_ENCODER_TYPES = {
             MediaCodecUtil.MimeTypes.VIDEO_VP8,

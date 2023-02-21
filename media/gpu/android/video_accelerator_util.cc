@@ -8,7 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "media/base/android/media_jni_headers/VideoEncodeAcceleratorUtil_jni.h"
+#include "media/base/android/media_jni_headers/VideoAcceleratorUtil_jni.h"
 
 namespace media {
 
@@ -19,7 +19,7 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
     JNIEnv* env = base::android::AttachCurrentThread();
     CHECK(env);
     auto java_profiles =
-        Java_VideoEncodeAcceleratorUtil_getSupportedEncoderProfiles(env);
+        Java_VideoAcceleratorUtil_getSupportedEncoderProfiles(env);
 
     constexpr char kHasMediaCodecEncoderInfo[] =
         "Media.Android.MediaCodecInfo.HasEncoderInfo";
@@ -76,7 +76,7 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
     JNIEnv* env = base::android::AttachCurrentThread();
     CHECK(env);
     auto java_profiles =
-        Java_VideoEncodeAcceleratorUtil_getSupportedDecoderProfiles(env);
+        Java_VideoAcceleratorUtil_getSupportedDecoderProfiles(env);
     constexpr char kHasMediaCodecDecoderInfo[] =
         "Media.Android.MediaCodecInfo.HasDecoderInfo";
     if (!java_profiles) {
