@@ -3421,8 +3421,11 @@ bool AutofillTable::MigrateToVersion109AddVirtualCardUsageDataTable() {
 }
 
 bool AutofillTable::MigrateToVersion110AddInitialCreatorIdAndLastModifierId() {
+  if (!db_->DoesTableExist(kContactInfoTable)) {
+    return false;
+  }
   sql::Transaction transaction(db_);
-  return db_->DoesTableExist(kContactInfoTable) && transaction.Begin() &&
+  return transaction.Begin() &&
          AddColumnIfNotExists(db_, kContactInfoTable, kInitialCreatorId,
                               "INTEGER DEFAULT 0") &&
          AddColumnIfNotExists(db_, kContactInfoTable, kLastModifierId,
