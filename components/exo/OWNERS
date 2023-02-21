@@ -2,6 +2,9 @@ oshima@chromium.org
 
 # For Graphics
 fangzhoug@chromium.org
+petermcneeley@chromium.org
+# For Graphics, SurfaceId embedding, CC implementation
+jonross@chromium.org
 
 # For Input (keyboard, mouse, touch, data_device)
 yhanada@chromium.org
