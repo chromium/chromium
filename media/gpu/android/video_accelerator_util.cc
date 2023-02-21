@@ -77,8 +77,6 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
     CHECK(env);
     auto java_profiles =
         Java_VideoEncodeAcceleratorUtil_getSupportedDecoderProfiles(env);
-    std::vector<MediaCodecDecoderInfo> cpp_infos;
-
     constexpr char kHasMediaCodecDecoderInfo[] =
         "Media.Android.MediaCodecInfo.HasDecoderInfo";
     if (!java_profiles) {
@@ -93,27 +91,19 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
       constexpr auto kDefaultSize = gfx::Size(4096, 4096);
       constexpr auto kSoftwareCodec = true;
       constexpr auto kHardwareCodec = false;
-      cpp_infos.insert(
-          cpp_infos.end(),
-          {
-              {H264PROFILE_BASELINE, gfx::Size(), kDefaultSize, kHardwareCodec},
-              {H264PROFILE_MAIN, gfx::Size(), kDefaultSize, kHardwareCodec},
-              {H264PROFILE_HIGH, gfx::Size(), kDefaultSize, kHardwareCodec},
-              {HEVCPROFILE_MAIN, gfx::Size(), kDefaultSize, kHardwareCodec},
+      return std::vector<MediaCodecDecoderInfo>({
+          {H264PROFILE_BASELINE, gfx::Size(), kDefaultSize, kHardwareCodec},
+          {H264PROFILE_MAIN, gfx::Size(), kDefaultSize, kHardwareCodec},
+          {H264PROFILE_HIGH, gfx::Size(), kDefaultSize, kHardwareCodec},
+          {HEVCPROFILE_MAIN, gfx::Size(), kDefaultSize, kHardwareCodec},
 
-              // Report codecs as software where we have a bundled decoder.
-              {VP8PROFILE_ANY, gfx::Size(), kDefaultSize, kSoftwareCodec},
-              {VP9PROFILE_PROFILE0, gfx::Size(), kDefaultSize, kSoftwareCodec},
-          });
-
-      if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_Q) {
-        cpp_infos.emplace_back(AV1PROFILE_PROFILE_MAIN, gfx::Size(),
-                               kDefaultSize, kSoftwareCodec);
-      }
-      return cpp_infos;
+          // Report codecs as software where we have a bundled decoder.
+          {VP8PROFILE_ANY, gfx::Size(), kDefaultSize, kSoftwareCodec},
+          {VP9PROFILE_PROFILE0, gfx::Size(), kDefaultSize, kSoftwareCodec},
+      });
     }
 
+    std::vector<MediaCodecDecoderInfo> cpp_infos;
     for (auto java_profile : java_profiles.ReadElements<jobject>()) {
       MediaCodecDecoderInfo info;
       info.profile = static_cast<VideoCodecProfile>(

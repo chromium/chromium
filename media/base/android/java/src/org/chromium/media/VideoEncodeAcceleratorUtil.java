@@ -351,9 +351,7 @@ class VideoEncodeAcceleratorUtil {
                             supportedProfiles.add(VideoCodecProfile.H264PROFILE_MAIN);
                             break;
                         case VideoCodec.AV1:
-                            if (isAtLeastQ) {
-                                supportedProfiles.add(VideoCodecProfile.AV1PROFILE_PROFILE_MAIN);
-                            }
+                            supportedProfiles.add(VideoCodecProfile.AV1PROFILE_PROFILE_MAIN);
                             break;
                     }
                 }
