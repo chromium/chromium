@@ -65,8 +65,9 @@ class CppConverterWriter(writer.CodeWriter):
       # Nothing to write for enums.
 
       self.Output(
-          'static bool ReadFromValue(const base::Value& dict, {generated_class_name}* message) {{\n'
-          '  if (!dict.is_dict()) goto error;\n'
+          'static bool ReadFromValue(const base::Value& dict_value, {generated_class_name}* message) {{\n'
+          '  const base::Value::Dict* dict = dict_value.GetIfDict();\n'
+          '  if (!dict) goto error;\n'
           '',
           generated_class_name=generated_class_name)
 
@@ -82,7 +83,7 @@ class CppConverterWriter(writer.CodeWriter):
           '}}\n'
           '\n'
           'static base::Value WriteToValue(const {generated_class_name}& message) {{\n'
-          '  base::Value dict(base::Value::Type::DICT);\n'
+          '  base::Value::Dict dict;\n'
           '',
           generated_class_name=generated_class_name)
 
@@ -91,7 +92,7 @@ class CppConverterWriter(writer.CodeWriter):
           self.FieldWriteToValue(field_proto)
 
       self.Output(
-          '  return dict;\n'
+          '  return base::Value(std::move(dict));\n'
           '',
           generated_class_name=generated_class_name)
       self.Output('}}')
@@ -123,8 +124,7 @@ class CppConverterWriter(writer.CodeWriter):
           '  field_list.Append(\n'
           '      {inner_class_converter}::WriteToValue(element));\n'
           '}}\n'
-          'dict.SetKey("{field_number}",\n'
-          '            base::Value(std::move(field_list)));\n',
+          'dict.Set("{field_number}", std::move(field_list));\n',
           field_number=field.JavascriptIndex(),
           field_name=field.name,
           inner_class_converter=field.CppConverterType()
@@ -137,8 +137,7 @@ class CppConverterWriter(writer.CodeWriter):
           'for (const auto& element : repeated_field) {{\n'
           '  field_list.Append(element);\n'
           '}}\n'
-          'dict.SetKey("{field_number}",\n'
-          '            base::Value(std::move(field_list)));\n',
+          'dict.Set("{field_number}", std::move(field_list));\n',
           field_number=field.JavascriptIndex(),
           field_name=field.name
       )
@@ -146,23 +145,23 @@ class CppConverterWriter(writer.CodeWriter):
   def OptionalMemberFieldWriteToValue(self, field):
     if field.IsClassType():
       self.Output(
-          'dict.SetKey("{field_number}",\n'
-          '            {inner_class_converter}::WriteToValue(\n'
-          '                message.{field_name}()));\n',
+          'dict.Set("{field_number}",\n'
+          '         {inner_class_converter}::WriteToValue(\n'
+          '             message.{field_name}()));\n',
           field_number=field.JavascriptIndex(),
           field_name=field.name,
           inner_class_converter=field.CppConverterType()
       )
     else:
       self.Output(
-          'dict.Set{value_type}Key("{field_number}", message.{field_name}());\n',
+          'dict.Set("{field_number}", message.{field_name}());\n',
           field_number=field.JavascriptIndex(),
           field_name=field.name,
           value_type=field.CppValueType()
       )
 
   def WriteFieldRead(self, field):
-    self.Output('if (const auto* value = dict.FindKey("{field_number}")) {{',
+    self.Output('if (const auto* value = dict->Find("{field_number}")) {{',
                 field_number=field.JavascriptIndex())
 
     with self.AddIndent():
