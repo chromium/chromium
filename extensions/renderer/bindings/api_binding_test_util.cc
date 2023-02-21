@@ -91,13 +91,6 @@ base::Value::Dict DictValueFromString(base::StringPiece str) {
   return std::move(value).TakeDict();
 }
 
-std::unique_ptr<base::Value> DeprecatedValueFromString(base::StringPiece str) {
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(ReplaceSingleQuotes(str));
-  EXPECT_TRUE(value) << str;
-  return value;
-}
-
 std::string ValueToString(const base::ValueView& value_view) {
   std::string json;
   EXPECT_TRUE(base::JSONWriter::Write(value_view, &json));
