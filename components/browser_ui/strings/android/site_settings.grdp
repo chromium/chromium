@@ -19,6 +19,9 @@
   <message name="IDS_ADS_PERMISSION_TITLE" desc="Title for the ads permission [CHAR_LIMIT=32]">
     Ads
   </message>
+  <message name="IDS_ANTI_ABUSE_PERMISSION_TITLE" desc="Title for the anti-abuse permission [CHAR_LIMIT=32]">
+    Spam &amp; fraud reduction
+  </message>
   <message name="IDS_AR_PERMISSION_TITLE" desc="Title of the permission to use Augmented Reality [CHAR_LIMIT=32]">
     Augmented reality
   </message>
@@ -342,6 +345,32 @@
   </message>
   <message name="IDS_SITE_SETTINGS_PAGE_INTRUSIVE_BLOCKED_SUB_LABEL" desc="2 of 2 states for the 'intrusive ads' setting.">
     Ads are blocked on sites known to show intrusive or misleading ads
+  </message>
+
+  <!-- Anti-abuse -->
+
+  <message name="IDS_ANTI_ABUSE_DESCRIPTION" desc="A setting that, if turned on, will enable anti-abuse functionality.">
+    Sites you visit can validate that you're a real user and not a bot
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_HEADER" desc="Header text for the section which describes functionality when the 'anti-abuse' setting is enabled.">
+    When on
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="Summary text explaining that browsing is smoother when the 'anti-abuse' setting is enabled.">
+    Browsing is smoother, as you're more likely trusted from one site to the next.
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_TWO" desc="Summary text explaining that the anti-abuse features do not reveal your browsing history.">
+    This setting works without identifying you or allowing sites to see your browsing history.
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER" desc="Header text for the section explaining additional things to consider when the 'anti-abuse' setting is enabled.">
+    Things to consider
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="Summary text explaining that sites can save info with Chrome when the 'anti-abuse' setting is enabled.">
+    A site you visit can save info with Chrome that validates that you're a real user. As you keep browsing, sites can check with Chrome and verify from the first site that you're likely a trusted user.
   </message>
 
   <!-- Augmented reality -->

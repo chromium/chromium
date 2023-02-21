@@ -109,6 +109,12 @@ public class ContentSettingsResources {
                                 ? R.string.site_settings_page_intrusive_blocked_sub_label
                                 : R.string.website_settings_category_ads_blocked);
 
+            case ContentSettingsType.ANTI_ABUSE:
+                return new ResourceItem(R.drawable.ic_account_attention,
+                        R.string.anti_abuse_permission_title, ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK, R.string.anti_abuse_description,
+                        R.string.anti_abuse_description);
+
             case ContentSettingsType.AR:
                 return new ResourceItem(R.drawable.gm_filled_cardboard_24,
                         R.string.ar_permission_title, ContentSettingValues.ASK,

@@ -816,6 +816,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
         value = CONTENT_SETTING_ASK;
         break;
       case ContentSettingsType::ADS:
+      case ContentSettingsType::ANTI_ABUSE:
       case ContentSettingsType::AUTO_DARK_WEB_CONTENT:
       case ContentSettingsType::BACKGROUND_SYNC:
       case ContentSettingsType::COOKIES:

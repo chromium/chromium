@@ -553,6 +553,9 @@ public class WebsitePermissionsFetcherTest {
         websitePreferenceBridge.addContentSettingException(new ContentSettingException(
                 ContentSettingsType.FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION, googleOrigin,
                 ContentSettingValues.DEFAULT, preferenceSource, /*isEmbargoed=*/false));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(ContentSettingsType.ANTI_ABUSE, googleOrigin,
+                        ContentSettingValues.DEFAULT, preferenceSource, /*isEmbargoed=*/false));
 
         // Add storage info.
         int storageSize = 256;
@@ -622,6 +625,9 @@ public class WebsitePermissionsFetcherTest {
             Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
                     site.getContentSetting(UNUSED_BROWSER_CONTEXT_HANDLE,
                             ContentSettingsType.FEDERATED_IDENTITY_API));
+            Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
+                    site.getContentSetting(
+                            UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.ANTI_ABUSE));
 
             // Check storage info.
             ArrayList<StorageInfo> storageInfos = new ArrayList<>(site.getStorageInfo());

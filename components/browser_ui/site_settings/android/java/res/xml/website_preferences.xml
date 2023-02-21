@@ -70,4 +70,28 @@ found in the LICENSE file.
         android:key="blocked_group" />
     <org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup
         android:key="allowed_group" />
+
+    <!-- Text messages describing the anti abuse features.
+         Only shown for the AntiAbuse category. -->
+    <PreferenceCategory
+        android:key="anti_abuse_when_on_header"
+        android:title="@string/anti_abuse_when_on_header"/>
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="anti_abuse_when_on_section_one"
+        android:summary="@string/anti_abuse_when_on_section_one"
+        android:icon="@drawable/ic_dashboard"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="anti_abuse_when_on_section_two"
+        android:summary="@string/anti_abuse_when_on_section_two"
+        android:icon="@drawable/ic_background_replace"
+        app:allowDividerBelow="false" />
+    <PreferenceCategory
+        android:key="anti_abuse_things_to_consider_header"
+        android:title="@string/anti_abuse_things_to_consider_header"/>
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="anti_abuse_things_to_consider_section_one"
+        android:summary="@string/anti_abuse_things_to_consider_section_one"
+        android:icon="@drawable/ic_account_attention"
+        app:allowDividerBelow="false" />
 </PreferenceScreen>
