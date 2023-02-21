@@ -12,6 +12,7 @@
 #include "ipcz/ipcz.h"
 #include "reference_drivers/async_reference_driver.h"
 #include "reference_drivers/sync_reference_driver.h"
+#include "test_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -19,7 +20,6 @@
 #include "third_party/abseil-cpp/absl/strings/str_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/ipcz/src/test_buildflags.h"
 
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
 #include "reference_drivers/file_descriptor.h"

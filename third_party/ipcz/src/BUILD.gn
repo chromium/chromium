@@ -323,7 +323,10 @@ config("ipcz_include_dir") {
 }
 
 config("ipcz_include_src_dir") {
-  include_dirs = [ "${ipcz_src_root}" ]
+  include_dirs = [
+    "${ipcz_src_root}",
+    get_path_info("${ipcz_src_root}/", "gen_dir"),
+  ]
 }
 
 ipcz_source_set("ipcz_test_support") {

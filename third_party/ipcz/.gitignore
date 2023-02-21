@@ -1,0 +1,16 @@
+.cipd
+.gclient
+.gclient_entries
+.gclient_previous_sync_commits
+*.swp
+/build
+/buildtools
+/out*
+/testing
+/third_party/abseil-cpp
+/third_party/catapult
+/third_party/llvm-build
+/third_party/depot_tools
+/third_party/googletest
+/third_party/ninja
+/tools
