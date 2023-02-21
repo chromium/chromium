@@ -25,3 +25,9 @@ void TrustedVaultClientBackend::ClearLocalData(
     base::OnceCallback<void(bool)> callback) {
   NOTREACHED();
 }
+
+void TrustedVaultClientBackend::GetPublicKeyForIdentity(
+    id<SystemIdentity> identity,
+    GetPublicKeyCallback callback) {
+  NOTREACHED();
+}

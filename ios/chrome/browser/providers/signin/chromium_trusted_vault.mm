@@ -42,6 +42,8 @@ class ChromiumTrustedVaultClientBackend final
   void CancelDialog(BOOL animated, ProceduralBlock callback) final;
   void ClearLocalData(id<SystemIdentity> identity,
                       base::OnceCallback<void(bool)> callback) final;
+  void GetPublicKeyForIdentity(id<SystemIdentity> identity,
+                               GetPublicKeyCallback callback) final;
 };
 
 void ChromiumTrustedVaultClientBackend::AddObserver(Observer* observer) {
@@ -96,6 +98,12 @@ void ChromiumTrustedVaultClientBackend::CancelDialog(BOOL animated,
 void ChromiumTrustedVaultClientBackend::ClearLocalData(
     id<SystemIdentity> identity,
     base::OnceCallback<void(bool)> callback) {
+  NOTREACHED();
+}
+
+void ChromiumTrustedVaultClientBackend::GetPublicKeyForIdentity(
+    id<SystemIdentity> identity,
+    GetPublicKeyCallback callback) {
   NOTREACHED();
 }
 

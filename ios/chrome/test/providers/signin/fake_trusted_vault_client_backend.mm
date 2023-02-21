@@ -113,12 +113,6 @@ void FakeTrustedVaultClientBackend::FixDegradedRecoverability(
   // Do nothing.
 }
 
-void FakeTrustedVaultClientBackend::ClearLocalData(
-    id<SystemIdentity> identity,
-    base::OnceCallback<void(bool)> callback) {
-  // Do nothing.
-}
-
 void FakeTrustedVaultClientBackend::CancelDialog(BOOL animated,
                                                  ProceduralBlock callback) {
   DCHECK(view_controller_);
@@ -126,6 +120,18 @@ void FakeTrustedVaultClientBackend::CancelDialog(BOOL animated,
       dismissViewControllerAnimated:animated
                          completion:callback];
   view_controller_ = nil;
+}
+
+void FakeTrustedVaultClientBackend::ClearLocalData(
+    id<SystemIdentity> identity,
+    base::OnceCallback<void(bool)> callback) {
+  // Do nothing.
+}
+
+void FakeTrustedVaultClientBackend::GetPublicKeyForIdentity(
+    id<SystemIdentity> identity,
+    GetPublicKeyCallback callback) {
+  // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::SimulateUserCancel() {
