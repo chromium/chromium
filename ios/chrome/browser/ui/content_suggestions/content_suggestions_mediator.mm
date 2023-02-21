@@ -222,6 +222,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)reloadAllData {
+  BOOL isTileAblationComplete = [self isTileAblationComplete];
   if (!self.consumer) {
     return;
   }
@@ -229,10 +230,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count] && !ShouldHideMostVisited()) {
+  if ([self.mostVisitedItems count] &&
+      (!ShouldHideMostVisited() || isTileAblationComplete)) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
-  if (!ShouldHideShortcutsForTrendingQueries() && !ShouldHideShortcuts()) {
+  if (!ShouldHideShortcutsForTrendingQueries() &&
+      (!ShouldHideShortcuts() || isTileAblationComplete)) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
   if (IsTrendingQueriesModuleEnabled()) {
@@ -479,7 +482,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
-  if (ShouldHideMostVisited()) {
+  if (ShouldHideMostVisited() && ![self isTileAblationComplete]) {
     return;
   }
 
@@ -529,7 +532,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if (ShouldHideMostVisited()) {
+  if (ShouldHideMostVisited() && ![self isTileAblationComplete]) {
     return;
   }
   self.mostVisitedItems = self.freshMostVisitedItems;
@@ -639,6 +642,52 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 
   return !isSignedIn;
+}
+
+// Checks if users have met conditions to drop from the experiment to hide the
+// Most Visited Tiles and Shortcuts from the NTP.
+- (BOOL)isTileAblationComplete {
+  // Conditions:
+  // MVT/Shortcuts Should be shown again if:
+  // 1. User has used Bling < `kTileAblationMinimumUseThresholdInDays` days AND
+  // NTP Impressions > `kMinimumImpressionThresholdTileAblation`; or
+  // 2. User has used Bling >= `kTileAblationMaximumUseThresholdInDays` days
+  // or
+  // 3. NTP Impressions > `kMaximumImpressionThresholdTileAblation`;
+  // NTP impression time threshold is >=
+  // `kTileAblationImpressionThresholdMinutes` minutes per impression.
+  // (eg. 2 NTP impressions within <5 minutes of each other will count as 1 NTP
+  // impression for the purposes of this test.
+
+  // Return early if ablation was already complete.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  if ([defaults boolForKey:kDoneWithTileAblationKey]) {
+    return YES;
+  }
+
+  int impressions = [defaults integerForKey:kNumberOfNTPImpressionsRecordedKey];
+  NSDate* firstImpressionDate = base::mac::ObjCCast<NSDate>(
+      [defaults objectForKey:kFirstImpressionRecordedTileAblationKey]);
+  // Return early if no NTP impression has been recorded.
+  if (firstImpressionDate == nil) {
+    return NO;
+  }
+  base::Time firstImpressionTime = base::Time::FromNSDate(firstImpressionDate);
+
+  if (  // User has used Bling < `kTileAblationMinimumUseThresholdInDays` days
+        // AND NTP Impressions > `kMinimumImpressionThresholdTileAblation`; or
+      (base::Time::Now() - firstImpressionTime >=
+           base::Days(kTileAblationMinimumUseThresholdInDays) &&
+       impressions >= kMinimumImpressionThresholdTileAblation) ||
+      // User has used Bling >= `kTileAblationMaximumUseThresholdInDays` days
+      (base::Time::Now() - firstImpressionTime >=
+       base::Days(kTileAblationMaximumUseThresholdInDays)) ||
+      // NTP Impressions >= `kMaximumImpressionThresholdTileAblation`;
+      (impressions >= kMaximumImpressionThresholdTileAblation)) {
+    [defaults setBool:YES forKey:kDoneWithTileAblationKey];
+    return YES;
+  }
+  return NO;
 }
 
 #pragma mark - Properties

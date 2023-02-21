@@ -37,4 +37,25 @@ extern const CGFloat kMostVisitedBottomMargin;
 // TrendingQueryIndex enum so it can capture a higher max value.
 const int kMaxTrendingQueries = 4;
 
+// Tile Ablation constants.
+// The amount of time between two tile ablation NTP impressions. (User opens
+// NTP, 1 impression. If user goes back to NTP within
+// `kTileAblationImpressionThresholdMinutes` don't count that as an NTP
+// impression.
+extern const int kTileAblationImpressionThresholdMinutes;
+// Minimum and Maximum amount of days the Tile Ablation experiment can run for.
+extern const int kTileAblationMinimumUseThresholdInDays;
+extern const int kTileAblationMaximumUseThresholdInDays;
+// Minimum an Maximum number of impressions until the Tile Ablation experiment
+// ends before the NTP goes back to the normal state.
+extern const int kMinimumImpressionThresholdTileAblation;
+extern const int kMaximumImpressionThresholdTileAblation;
+// Stores the last time an NTP impression was recorded.
+extern NSString* const kLastNTPImpressionRecordedKey;
+// Stores the number of NTP impressions over a period of time.
+extern NSString* const kNumberOfNTPImpressionsRecordedKey;
+// Stores the first NTP impression for the MVT experiment.
+extern NSString* const kFirstImpressionRecordedTileAblationKey;
+extern NSString* const kDoneWithTileAblationKey;
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSTANTS_H_
