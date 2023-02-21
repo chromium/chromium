@@ -702,6 +702,24 @@ public class PartialCustomTabHeightStrategyTest {
     }
 
     @Test
+    public void moveUpFixedHeightWithFling() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertEquals(1, mPCCTTestRule.mAttributeResults.size());
+        assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
+
+        PartialCustomTabHandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
+
+        long timestamp = SystemClock.uptimeMillis();
+
+        // Drag down and then fling up hard, verify that the tab doesn't go up to the top.
+        actionDown(handleStrategy, timestamp, INITIAL_HEIGHT + 100);
+        strategy.onDragEnd(-FULL_HEIGHT * 2); // Mighty up-flinging
+        assertTabIsAtInitialPos(getWindowAttributes());
+    }
+
+    @Test
     public void moveDownFixedHeight() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
         mPCCTTestRule.verifyWindowFlagsSet();
