@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records whether the FedCM auto re-authn call is blocked because the auto
-    re-auth content settings permission is disabled. Records at most one sample
+    re-authn content settings permission is disabled. Records at most one sample
     per FedCM API with auto re-authn enabled: some failures could occur before
     this metric is recorded.
   </summary>
@@ -961,6 +961,21 @@ chromium-metrics-reviews@google.com.
     blocked for some non-network related reason. Records at most one sample per
     FedCM API with auto re-authn enabled: some failures could occur before this
     metric is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.AutoReauthn.TimeFromEmbargoWhenBlocked" units="ms"
+    expires_after="2023-08-09">
+  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the amount of time that has passed from the time the FedCM auto
+    re-authn API was embargoed to the time in which the next call occurs. Only
+    records a sample when there is an auto re-authn FedCM API call which is
+    blocked due to embargo. Samples are exponentially bucketed, with a max
+    bucket of 10 minutes, the embargo duration (see
+    `kFederatedIdentityAutoReauthnEmbargoDuration`).
   </summary>
 </histogram>
 

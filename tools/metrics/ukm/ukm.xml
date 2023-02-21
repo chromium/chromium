@@ -3258,6 +3258,22 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for FedCM(Federated Credential Management) API.
   </summary>
+  <metric name="AutoReauthn.BlockedByContentSettings" enum="Boolean">
+    <summary>
+      Records whether the FedCM auto re-authn call is blocked because the auto
+      re-authn content settings permission is disabled. Records at most one
+      sample per FedCM API with auto re-authn enabled: some failures could occur
+      before this metric is recorded.
+    </summary>
+  </metric>
+  <metric name="AutoReauthn.BlockedByEmbargo" enum="Boolean">
+    <summary>
+      Records whether the FedCM auto re-authn call is blocked because the auto
+      re-authn is under embargo, i.e. due to cooldown. Records at most one
+      sample per FedCM API with auto re-authn enabled: some failures could occur
+      before this metric is recorded.
+    </summary>
+  </metric>
   <metric name="AutoReauthn.ReturningAccounts" enum="FedCmReturningAccounts">
     <summary>
       Records whether there was zero, one, or multiple returning accounts when a
@@ -3275,6 +3291,16 @@ be describing additional metrics about the same event.
       re-authn was blocked for some non-network related reason. Records at most
       one sample per FedCM API with auto re-authn enabled: some failures could
       occur before this metric is recorded.
+    </summary>
+  </metric>
+  <metric name="AutoReauthn.TimeFromEmbargoWhenBlocked">
+    <summary>
+      Records the amount of time that has passed from the time the FedCM auto
+      re-authn API was embargoed to the time in which the next call occurs. Only
+      records a sample when there is an auto re-authn FedCM API call which is
+      blocked due to embargo. Samples are exponentially bucketed, with a max
+      bucket of 10 minutes, the embargo duration (see
+      `kFederatedIdentityAutoReauthnEmbargoDuration`).
     </summary>
   </metric>
   <metric name="FedCmSessionID">

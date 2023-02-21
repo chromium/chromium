@@ -921,12 +921,23 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       idp_enabled_auto_reauthn && IsFedCmAutoReauthnEnabled();
 
   bool auto_reauthn = auto_reauthn_enabled;
-  if (auto_reauthn_enabled &&
-      !auto_reauthn_permission_delegate_->HasAutoReauthnPermission(
-          GetEmbeddingOrigin())) {
-    // `auto_reauthn_permission_delegate_` will log the failure reason, so no
-    // need to log it here.
-    auto_reauthn = false;
+  bool has_auto_reauthn_content_setting = false;
+  bool is_auto_reauthn_embargoed = false;
+  absl::optional<base::TimeDelta> time_from_embargo;
+  if (auto_reauthn_enabled) {
+    has_auto_reauthn_content_setting =
+        auto_reauthn_permission_delegate_->HasAutoReauthnContentSetting();
+    auto_reauthn &= has_auto_reauthn_content_setting;
+    is_auto_reauthn_embargoed =
+        auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
+            GetEmbeddingOrigin());
+    if (is_auto_reauthn_embargoed) {
+      time_from_embargo =
+          base::Time::Now() -
+          auto_reauthn_permission_delegate_->GetAutoReauthnEmbargoStartTime(
+              GetEmbeddingOrigin());
+    }
+    auto_reauthn &= !is_auto_reauthn_embargoed;
   }
 
   const IdentityProviderData* auto_reauthn_idp = nullptr;
@@ -971,7 +982,9 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(
-        has_single_returning_account, auto_reauthn_account, auto_reauthn);
+        has_single_returning_account, auto_reauthn_account, auto_reauthn,
+        !has_auto_reauthn_content_setting, is_auto_reauthn_embargoed,
+        time_from_embargo);
   }
 }
 

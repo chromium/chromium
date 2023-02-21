@@ -34,9 +34,18 @@ bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
 }
 
 // FederatedIdentityAutoReauthnPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasAutoReauthnPermission(
-    const url::Origin& relying_party_embedder) {
+bool ShellFederatedPermissionContext::HasAutoReauthnContentSetting() {
   return auto_reauthn_permission_;
+}
+
+bool ShellFederatedPermissionContext::IsAutoReauthnEmbargoed(
+    const url::Origin& relying_party_embedder) {
+  return false;
+}
+
+base::Time ShellFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(
+    const url::Origin& relying_party_embedder) {
+  return base::Time();
 }
 
 void ShellFederatedPermissionContext::RecordDisplayAndEmbargo(

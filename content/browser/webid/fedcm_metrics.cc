@@ -214,7 +214,10 @@ void FedCmMetrics::RecordWebContentsVisibilityUponReadyToShowDialog(
 void FedCmMetrics::RecordAutoReauthnMetrics(
     bool has_single_returning_account,
     const IdentityRequestAccount* auto_signin_account,
-    bool auto_reauthn_success) {
+    bool auto_reauthn_success,
+    bool is_auto_reauthn_setting_blocked,
+    bool is_auto_reauthn_embargoed,
+    absl::optional<base::TimeDelta> time_from_embargo) {
   NumReturningAccounts num_returning_accounts = NumReturningAccounts::kZero;
   if (has_single_returning_account) {
     num_returning_accounts = NumReturningAccounts::kOne;
@@ -226,11 +229,30 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
                                 num_returning_accounts);
   base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.Succeeded",
                             auto_reauthn_success);
-
+  base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.BlockedByContentSettings",
+                            is_auto_reauthn_setting_blocked);
+  base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.BlockedByEmbargo",
+                            is_auto_reauthn_embargoed);
   ukm::builders::Blink_FedCm ukm_builder(page_source_id_);
+  if (time_from_embargo) {
+    // Use a custom histogram with the default number of buckets so that we set
+    // the maximum to the permission embargo duration: 10 minutes. See
+    // `kFederatedIdentityAutoReauthnEmbargoDuration`.
+    base::UmaHistogramCustomTimes(
+        "Blink.FedCm.AutoReauthn.TimeFromEmbargoWhenBlocked",
+        *time_from_embargo, base::Milliseconds(10), base::Minutes(10),
+        /*buckets=*/50);
+    ukm_builder.SetAutoReauthn_TimeFromEmbargoWhenBlocked(
+        ukm::GetExponentialBucketMinForUserTiming(
+            time_from_embargo->InMilliseconds()));
+  }
+
   ukm_builder.SetAutoReauthn_ReturningAccounts(
       static_cast<int>(num_returning_accounts));
   ukm_builder.SetAutoReauthn_Succeeded(auto_reauthn_success);
+  ukm_builder.SetAutoReauthn_BlockedByContentSettings(
+      is_auto_reauthn_setting_blocked);
+  ukm_builder.SetAutoReauthn_BlockedByEmbargo(is_auto_reauthn_embargoed);
   ukm_builder.SetFedCmSessionID(session_id_);
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }
