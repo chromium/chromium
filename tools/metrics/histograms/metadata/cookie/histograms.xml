@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.DaysSinceRefreshForRetrieval" units="days"
-    expires_after="2023-07-02">
+    expires_after="2024-02-20">
   <owner>arichiv@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ExpirationDuration400DaysGT" units="days"
-    expires_after="M114">
+    expires_after="2024-02-20">
   <owner>arichiv@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ExpirationDuration400DaysLTE" units="days"
-    expires_after="M114">
+    expires_after="2024-02-20">
   <owner>arichiv@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -321,14 +321,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesNonSecure" units="minutes"
-    expires_after="M114">
+    expires_after="2024-02-20">
+  <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>Number of minutes until non-Secure cookie expires when set.</summary>
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesSecure" units="minutes"
-    expires_after="M114">
+    expires_after="2024-02-20">
+  <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>Number of minutes until Secure cookie expires when set.</summary>
