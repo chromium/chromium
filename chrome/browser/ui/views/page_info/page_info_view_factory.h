@@ -125,8 +125,8 @@ class PageInfoViewFactory {
   // Returns the icon for 'About this site' button.
   static const ui::ImageModel GetAboutThisSiteIcon();
 
-  // Returns the icon for 'About this page' button.
-  static const ui::ImageModel GetAboutThisPageIcon();
+  // Returns a reference to the vector icon for 'About this site' button.
+  static const gfx::VectorIcon& GetAboutThisSiteVectorIcon();
 
   // Returns the icon for the history button.
   static const ui::ImageModel GetHistoryIcon();

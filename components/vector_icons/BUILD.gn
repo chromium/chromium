@@ -155,6 +155,7 @@ aggregate_vector_icons("components_vector_icons") {
       "google_chrome/google_sites.icon",
       "google_chrome/google_slides.icon",
       "google_chrome/google_super_g.icon",
+      "google_chrome/page_insights.icon",
     ]
   }
 }

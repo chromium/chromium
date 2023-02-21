@@ -608,7 +608,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
                   view->GetWidget()->Close();
                 },
                 this, GURL(info.more_about().url()), info.has_description()),
-            PageInfoViewFactory::GetAboutThisPageIcon(),
+            PageInfoViewFactory::GetAboutThisSiteIcon(),
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
             std::u16string(),
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),

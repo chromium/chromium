@@ -27,6 +27,11 @@ bool IsDescriptionPlaceholderFeatureEnabled() {
              page_info::kPageInfoAboutThisSiteDescriptionPlaceholder);
 }
 
+bool IsAboutThisSiteNewIconFeatureEnabled() {
+  return IsMoreAboutThisSiteFeatureEnabled() &&
+         base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteNewIcon);
+}
+
 bool IsAboutThisSiteForNonMsbbFeatureEnabled() {
   return IsMoreAboutThisSiteFeatureEnabled() &&
          IsDescriptionPlaceholderFeatureEnabled() &&

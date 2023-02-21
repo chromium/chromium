@@ -10,9 +10,11 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -440,16 +442,20 @@ const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
-  return ui::ImageModel::FromVectorIcon(views::kInfoIcon, ui::kColorIcon,
-                                        GetIconSize());
+  return ui::ImageModel::FromVectorIcon(GetAboutThisSiteVectorIcon(),
+                                        ui::kColorIcon, GetIconSize());
 }
 
 // static
-const ui::ImageModel PageInfoViewFactory::GetAboutThisPageIcon() {
-  return ui::ImageModel::FromVectorIcon(views::kInfoIcon, ui::kColorIcon,
-                                        GetIconSize());
-}
+const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteVectorIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (page_info::IsAboutThisSiteNewIconFeatureEnabled()) {
+    return vector_icons::kPageInsightsIcon;
+  }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  return views::kInfoIcon;
+}
 // static
 const ui::ImageModel PageInfoViewFactory::GetHistoryIcon() {
   return ui::ImageModel::FromVectorIcon(vector_icons::kHistoryIcon,
