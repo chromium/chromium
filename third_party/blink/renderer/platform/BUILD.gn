@@ -2650,6 +2650,15 @@ fuzzer_test("blink_http_parsers_fuzzer") {
   dict = "network/HTTPParsersFuzzer.dict"
 }
 
+fuzzer_test("blink_storage_key_fuzzer") {
+  sources = [ "storage/blink_storage_key_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    "//third_party/blink/public/common",
+  ]
+  seed_corpus = "//third_party/blink/common/storage_key/storage_key_corpus"
+}
+
 # Fuzzer template for WTF::TextCodec.
 template("blink_text_codec_fuzzer") {
   forward_variables_from(invoker, "*")
