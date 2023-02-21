@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 
@@ -35,6 +36,12 @@ const NSTimeInterval kDuration = 0.2;
 @implementation InactiveTabsCoordinator
 
 #pragma mark - ChromeCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  DCHECK(IsInactiveTabsEnabled());
+  return [super initWithBaseViewController:viewController browser:browser];
+}
 
 - (void)start {
   [super start];

@@ -11,6 +11,7 @@ source_set("inactive_tabs") {
   deps = [
     ":inactive_tabs_ui",
     "//base",
+    "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
   ]
@@ -24,6 +25,7 @@ source_set("inactive_tabs_ui") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ui/base",
