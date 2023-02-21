@@ -17,6 +17,8 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 
 using ::testing::IsNull;
 using ::testing::NotNull;
@@ -38,6 +40,10 @@ struct RowStrategyTestdata {
   int line_number;
   // The type of strategy to be tested.
   StrategyType strategy_type;
+  // The number of (non-separator) entries and the 1-indexed position of the
+  // entry with `line_number` inside them.
+  int set_size;
+  int set_index;
 };
 
 const RowStrategyTestdata kTestcases[] = {
@@ -46,6 +52,8 @@ const RowStrategyTestdata kTestcases[] = {
                          POPUP_ITEM_ID_AUTOFILL_OPTIONS},
         .line_number = 1,
         .strategy_type = StrategyType::kSuggestion,
+        .set_size = 3,
+        .set_index = 2,
     },
     RowStrategyTestdata{
         .frontend_ids = {POPUP_ITEM_ID_PASSWORD_ENTRY,
@@ -54,12 +62,16 @@ const RowStrategyTestdata kTestcases[] = {
                          POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY},
         .line_number = 0,
         .strategy_type = StrategyType::kPasswordSuggestion,
+        .set_size = 3,
+        .set_index = 1,
     },
     RowStrategyTestdata{
         .frontend_ids = {1, 2, POPUP_ITEM_ID_SEPARATOR,
                          POPUP_ITEM_ID_AUTOFILL_OPTIONS},
         .line_number = 3,
         .strategy_type = StrategyType::kFooter,
+        .set_size = 3,
+        .set_index = 3,
     }};
 
 }  // namespace
@@ -76,7 +88,7 @@ class PopupRowStrategyTest
     suggestions.reserve(frontend_ids.size());
     for (int frontend_id : frontend_ids) {
       // Create a suggestion with empty labels.
-      suggestions.emplace_back("", "", "", frontend_id);
+      suggestions.emplace_back("Main text", "", "", frontend_id);
     }
     controller().set_suggestions(std::move(suggestions));
   }
@@ -163,6 +175,28 @@ TEST_P(PopupRowStrategyTest, DeletedControllerIsHandledGracefully) {
   controller().InvalidateWeakPtrs();
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   callback.Run();
+}
+
+TEST_P(PopupRowStrategyTest, SetsAccessibilityAttributesForContentArea) {
+  const RowStrategyTestdata kTestdata = GetParam();
+
+  SetSuggestions(kTestdata.frontend_ids);
+  std::unique_ptr<PopupRowStrategy> strategy =
+      CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
+
+  std::unique_ptr<PopupCellView> content_cell = strategy->CreateContent();
+  ASSERT_THAT(content_cell, NotNull());
+
+  ui::AXNodeData node_data;
+  content_cell->GetAccessibleNodeData(&node_data);
+
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBoxOption);
+  EXPECT_EQ(u"Main text",
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            kTestdata.set_size);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            kTestdata.set_index);
 }
 
 TEST_P(PopupRowStrategyTest, HasNoControlArea) {

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,32 +79,22 @@ class PopupCellViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PopupCellViewTest, AccessibleNodeData) {
-  constexpr char16_t kVoiceOverName[] = u"Sample voice over name";
-  constexpr absl::optional<int> kSetSize{5};
-  constexpr absl::optional<int> kSetIndex{3};
   ShowView(views::Builder<PopupCellView>()
-               .SetVoiceOverString(kVoiceOverName)
-               .SetSetSizeForAccessibility(kSetSize)
-               .SetSetIndexForAccessibility(kSetIndex)
+               .SetAccessibilityDelegate(
+                   std::make_unique<TestAccessibilityDelegate>())
                .Build());
 
   ui::AXNodeData node_data;
   view().GetAccessibleNodeData(&node_data);
 
-  EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data.role);
-  EXPECT_FALSE(view().GetSelected());
-  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-  EXPECT_EQ(kVoiceOverName,
+  EXPECT_EQ(TestAccessibilityDelegate::kVoiceOverName,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ(kSetSize,
-            node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
-  EXPECT_EQ(kSetIndex,
-            node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
 }
 
 TEST_F(PopupCellViewTest, SetSelectedUpdatesBackground) {
   ShowView(views::Builder<PopupCellView>()
-               .SetVoiceOverString(u"Dummy name")
+               .SetAccessibilityDelegate(
+                   std::make_unique<TestAccessibilityDelegate>())
                .Build());
 
   // The unselected background.
@@ -123,7 +114,10 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesBackground) {
 
 TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
   std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>().SetVoiceOverString(u"Dummy name").Build();
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<TestAccessibilityDelegate>())
+          .Build();
   views::Label* tracked_label =
       cell->AddChildView(std::make_unique<views::Label>(
           u"Label text 1", views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -163,7 +157,10 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
 
 TEST_F(PopupCellViewTest, MouseEvents) {
   std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>().SetVoiceOverString(u"Dummy name").Build();
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<TestAccessibilityDelegate>())
+          .Build();
   views::Label* label =
       cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
   ShowView(std::move(cell));
@@ -196,7 +193,10 @@ TEST_F(PopupCellViewTest, MouseEvents) {
 #if !BUILDFLAG(IS_MAC)
 TEST_F(PopupCellViewTest, GestureEvents) {
   std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>().SetVoiceOverString(u"Dummy name").Build();
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<TestAccessibilityDelegate>())
+          .Build();
   views::Label* label =
       cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
   ShowView(std::move(cell));
@@ -217,7 +217,10 @@ TEST_F(PopupCellViewTest, GestureEvents) {
 
 TEST_F(PopupCellViewTest, IgnoreClickIfMouseWasNotOutsideBefore) {
   std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>().SetVoiceOverString(u"Dummy name").Build();
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<TestAccessibilityDelegate>())
+          .Build();
   views::Label* label =
       cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
   ShowView(std::move(cell));

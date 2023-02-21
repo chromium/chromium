@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 
-#include <string>
+#include <memory>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -42,16 +43,9 @@ void PopupCellView::SetSelected(bool selected) {
   }
 }
 
-void PopupCellView::SetVoiceOverString(std::u16string voice_over) {
-  voice_over_ = std::move(voice_over);
-}
-
-void PopupCellView::SetSetSizeForAccessibility(absl::optional<int> set_size) {
-  set_size_ = set_size;
-}
-
-void PopupCellView::SetSetIndexForAccessibility(absl::optional<int> set_index) {
-  set_index_ = set_index;
+void PopupCellView::SetAccessibilityDelegate(
+    std::unique_ptr<AccessibilityDelegate> a11y_delegate) {
+  a11y_delegate_ = std::move(a11y_delegate);
 }
 
 void PopupCellView::SetOnEnteredCallback(base::RepeatingClosure callback) {
@@ -157,17 +151,8 @@ bool PopupCellView::HandleAccessibleAction(
 }
 
 void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Options are selectable.
-  node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                              GetSelected());
-  node_data->SetNameChecked(GetVoiceOverString());
-
-  if (set_size_) {
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, *set_size_);
-  }
-  if (set_index_) {
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, *set_index_);
+  if (a11y_delegate_) {
+    a11y_delegate_->GetAccessibleNodeData(GetSelected(), node_data);
   }
 }
 
@@ -203,9 +188,6 @@ void PopupCellView::RefreshStyle() {
 
 BEGIN_METADATA(PopupCellView, views::View)
 ADD_PROPERTY_METADATA(bool, Selected)
-ADD_PROPERTY_METADATA(std::u16string, VoiceOverString)
-ADD_PROPERTY_METADATA(absl::optional<int>, SetSizeForAccessibility)
-ADD_PROPERTY_METADATA(absl::optional<int>, SetIndexForAccessibility)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnEnteredCallback)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnExitedCallback)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnAcceptedCallback)

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
+#include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,38 +45,6 @@ class MockSelectionDelegate : public PopupRowView::SelectionDelegate {
   MOCK_METHOD(void, SetSelectedCell, (absl::optional<CellIndex>), (override));
 };
 
-class PopupTestStrategy : public PopupRowStrategy {
- public:
-  explicit PopupTestStrategy(int line_number, bool has_control)
-      : line_number_(line_number), has_control_(has_control) {}
-  ~PopupTestStrategy() override = default;
-
-  std::unique_ptr<PopupCellView> CreateContent() override {
-    auto cell = std::make_unique<PopupCellView>();
-    cell->SetUseDefaultFillLayout(true);
-    cell->SetVoiceOverString(u"Test content cell");
-    cell->AddChildView(std::make_unique<views::Label>(u"Test content"));
-    return cell;
-  }
-
-  std::unique_ptr<PopupCellView> CreateControl() override {
-    if (!has_control_) {
-      return nullptr;
-    }
-    auto cell = std::make_unique<PopupCellView>();
-    cell->SetUseDefaultFillLayout(true);
-    cell->SetVoiceOverString(u"Test control cell");
-    cell->AddChildView(std::make_unique<views::Label>(u"Test control"));
-    return cell;
-  }
-
-  int GetLineNumber() const override { return line_number_; }
-
- private:
-  const int line_number_;
-  const bool has_control_;
-};
-
 }  // namespace
 
 class PopupRowViewTest : public ChromeViewsTestBase {
@@ -92,7 +61,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
     row_view_ = widget_->SetContentsView(std::make_unique<PopupRowView>(
         mock_a11y_selection_delegate_, mock_selection_delegate_,
         /*controller=*/nullptr,
-        std::make_unique<PopupTestStrategy>(line_number, has_control)));
+        std::make_unique<TestPopupRowStrategy>(line_number, has_control)));
     widget_->Show();
   }
 

@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -435,30 +436,6 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   return base::JoinString(text, u" ");
 }
 
-// Adds all relevant accessibility information to a content view.
-void AddAccessibilityInformationToContentView(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number,
-    PopupCellView& content_view) {
-  DCHECK(controller);
-  content_view.SetVoiceOverString(GetVoiceOverStringFromSuggestion(
-      controller->GetSuggestionAt(line_number)));
-
-  int set_size = 0;
-  int set_index = line_number + 1;
-  for (int i = 0; i < controller->GetLineCount(); ++i) {
-    if (controller->GetSuggestionAt(i).frontend_id == POPUP_ITEM_ID_SEPARATOR) {
-      if (i < line_number) {
-        --set_index;
-      }
-    } else {
-      ++set_size;
-    }
-  }
-  content_view.SetSetIndexForAccessibility(set_index);
-  content_view.SetSetSizeForAccessibility(set_size);
-}
-
 // Adds the callbacks for the content area to `content_view`.
 void AddCallbacksToContentView(
     base::WeakPtr<AutofillPopupController> controller,
@@ -472,6 +449,66 @@ void AddCallbacksToContentView(
       &AutofillPopupController::AcceptSuggestion, controller, line_number,
       /*show_threshold=*/kIgnoreEarlyClicksOnPopupDuration));
 }
+
+// ********************* AccessibilityDelegate implementations *****************
+
+class ContentItemAccessibilityDelegate
+    : public PopupCellView::AccessibilityDelegate {
+ public:
+  // Creates an a11y delegate for the `line_number`. `controller` must not be
+  // null.
+  ContentItemAccessibilityDelegate(
+      base::WeakPtr<AutofillPopupController> controller,
+      int line_number);
+  ~ContentItemAccessibilityDelegate() override = default;
+
+  void GetAccessibleNodeData(bool is_selected,
+                             ui::AXNodeData* node_data) const override;
+
+ private:
+  // The string announced via VoiceOver.
+  std::u16string voice_over_string_;
+  // The number of suggestions in the popup and the (1-based) index of the
+  // suggestion this delegate belongs to.
+  int set_index_ = 0;
+  int set_size_ = 0;
+};
+
+ContentItemAccessibilityDelegate::ContentItemAccessibilityDelegate(
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number) {
+  DCHECK(controller);
+
+  voice_over_string_ = GetVoiceOverStringFromSuggestion(
+      controller->GetSuggestionAt(line_number));
+
+  set_size_ = 0;
+  set_index_ = line_number + 1;
+  for (int i = 0; i < controller->GetLineCount(); ++i) {
+    if (controller->GetSuggestionAt(i).frontend_id == POPUP_ITEM_ID_SEPARATOR) {
+      if (i < line_number) {
+        --set_index_;
+      }
+    } else {
+      ++set_size_;
+    }
+  }
+}
+
+void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
+    bool is_selected,
+    ui::AXNodeData* node_data) const {
+  DCHECK(node_data);
+  // Options are selectable.
+  node_data->role = ax::mojom::Role::kListBoxOption;
+  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
+  node_data->SetNameChecked(voice_over_string_);
+
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, set_index_);
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size_);
+}
+
+// TODO(crbug.com/1417187): Add an a11y delegate for control buttons.
 
 }  // namespace
 
@@ -506,11 +543,12 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
   }
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupCellView>();
-
-  // Prepare the a11y information.
-  AddAccessibilityInformationToContentView(GetController(), GetLineNumber(),
-                                           *view);
+  std::unique_ptr<PopupCellView> view =
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<ContentItemAccessibilityDelegate>(
+                  GetController(), GetLineNumber()))
+          .Build();
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
@@ -606,10 +644,12 @@ PopupPasswordSuggestionStrategy::CreateContent() {
 
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupCellView>();
-
-  AddAccessibilityInformationToContentView(GetController(), GetLineNumber(),
-                                           *view);
+  std::unique_ptr<PopupCellView> view =
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<ContentItemAccessibilityDelegate>(
+                  GetController(), GetLineNumber()))
+          .Build();
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
@@ -682,9 +722,12 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
 
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupCellView>();
-  AddAccessibilityInformationToContentView(GetController(), GetLineNumber(),
-                                           *view);
+  std::unique_ptr<PopupCellView> view =
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<ContentItemAccessibilityDelegate>(
+                  GetController(), GetLineNumber()))
+          .Build();
 
   views::BoxLayout* layout_manager =
       view->SetLayoutManager(std::make_unique<views::BoxLayout>(
