@@ -414,8 +414,6 @@ void WebFrameWidgetImpl::DragTargetDragOver(
 void WebFrameWidgetImpl::DragTargetDragLeave(
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point) {
-  DCHECK(current_drag_data_);
-
   // TODO(paulmeyer): It shouldn't be possible for |current_drag_data_| to be
   // null here, but this is somehow happening (rarely). This suggests that in
   // some cases drag-leave is happening before drag-enter, which should be
