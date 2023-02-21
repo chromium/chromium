@@ -1813,8 +1813,6 @@ component("base") {
       "win/event_trace_controller.h",
       "win/event_trace_provider.cc",
       "win/event_trace_provider.h",
-      "win/hstring_compare.cc",
-      "win/hstring_compare.h",
       "win/hstring_reference.cc",
       "win/hstring_reference.h",
       "win/i18n.cc",
@@ -3421,7 +3419,6 @@ test("base_unittests") {
       "win/event_trace_consumer_unittest.cc",
       "win/event_trace_controller_unittest.cc",
       "win/event_trace_provider_unittest.cc",
-      "win/hstring_compare_unittest.cc",
       "win/hstring_reference_unittest.cc",
       "win/i18n_unittest.cc",
       "win/map_unittest.cc",
@@ -3460,7 +3457,10 @@ test("base_unittests") {
       sources += [ "win/cet_shadow_stack_unittest.cc" ]
     }
 
-    libs = [ "ntdll.lib" ]
+    libs = [
+      "ntdll.lib",
+      "onecore.lib",
+    ]
   }
 
   if (is_linux || is_chromeos) {
