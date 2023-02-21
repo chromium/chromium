@@ -651,6 +651,11 @@ extern const char kPromosManagerUsesFETDescription[];
 extern const char kIPHPriceNotificationsWhileBrowsingName[];
 extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 
+// Title and description for the flag to enable the notification menu item in
+// the settings menu.
+extern const char kNotificationSettingsMenuItemName[];
+extern const char kNotificationSettingsMenuItemDescription[];
+
 // Title and description for the flag to native restore web states.
 extern const char kRestoreSessionFromCacheName[];
 extern const char kRestoreSessionFromCacheDescription[];

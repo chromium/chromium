@@ -4935,6 +4935,11 @@
     "expiry_milestone": 106
   },
   {
+      "name": "notification-settings-menu-item",
+      "owners": ["danieltwhite", "ajuma" ],
+      "expiry_milestone": 116
+  },
+  {
     "name": "ntp-cache-one-google-bar",
     "owners": [ "aee", "mahmadi", "tiborg" ],
     "expiry_milestone": 100

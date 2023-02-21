@@ -124,6 +124,9 @@ bool IsTabGridSortedByRecency();
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 
+// Flag to enable push notification settings menu item.
+BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
+
 // Enables indexing Reading List items in Spotlight.
 BASE_DECLARE_FEATURE(kSpotlightReadingListSource);
 

@@ -140,6 +140,10 @@ BASE_FEATURE(kMultilineFadeTruncatingLabel,
              "MultilineFadeTruncatingLabel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNotificationSettingsMenuItem,
+             "NotificationSettingsMenuItem",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSpotlightReadingListSource,
              "SpotlightReadingListSource",
              base::FEATURE_DISABLED_BY_DEFAULT);

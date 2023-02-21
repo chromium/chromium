@@ -737,6 +737,12 @@ const char kIPHPriceNotificationsWhileBrowsingDescription[] =
     "product "
     "webpage that supports price tracking.";
 
+const char kNotificationSettingsMenuItemName[] =
+    "Notification Settings Menu Item";
+const char kNotificationSettingsMenuItemDescription[] =
+    "Displays the menu item for the notification controls inside the chrome "
+    "settings UI.";
+
 const char kRecordSnapshotSizeName[] =
     "Record the size of image and PDF snapshots in UMA histograms";
 const char kRecordSnapshotSizeDescription[] =
