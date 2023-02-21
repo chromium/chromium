@@ -368,8 +368,11 @@ class SitePermissionsHelperWithUserHostControlsUnitTest
     : public SitePermissionsHelperUnitTest {
  public:
   SitePermissionsHelperWithUserHostControlsUnitTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsMenuAccessControl);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        extensions_features::kExtensionsMenuAccessControl,
+        extensions_features::kExtensionsMenuAccessControlWithPermittedSites};
+    std::vector<base::test::FeatureRef> disabled_features;
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~SitePermissionsHelperWithUserHostControlsUnitTest() override = default;
 

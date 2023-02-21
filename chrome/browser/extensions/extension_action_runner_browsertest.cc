@@ -771,9 +771,134 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
             SiteAccess::kOnAllSites);
   EXPECT_TRUE(DidInjectScript(web_contents()));
 
+  // "customize by extension (on site)" -> "block all extensions":
+  // not accepting the page reload bubble maintains the same user site
+  // setting and keeps the script injected.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, false);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "customize by extension (on site)" -> "block all extensions":
+  // accepting the page reload bubble revokes site access, refreshes the page
+  // and does not inject the script. (Note: we will accept all the next reload
+  // page bubbles since we previously checked the behavior of not accepting the
+  // dialog).
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kBlockAllExtensions);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "block all extensions" -> "customize by extension (on site)":
+  // grants site access, refreshes the page and injects the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kCustomizeByExtension, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+}
+
+// Tests changing user site settings when the extension does not have site
+// access ('on click'). Note that we don't check if extension
+// `WantsToRun` because on user-restricted sites, actions are blocked rather
+// than withheld.
+IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
+                       HandleUserSiteSettingModified_ExtensionHasNoAccess) {
+  // Load an extension that wants to run on every page at document start.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
+  ASSERT_TRUE(extension);
+
+  // Withheld extension's host permission, so extension has "on click" site
+  // access.
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  // Navigate to a page where the extension wants to run.
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  const url::Origin url_origin = url::Origin::Create(url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // The page should have "customize by extension" user site setting and "on
+  // click" site access. The extension should not have injected.
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(SitePermissionsHelper(profile()).GetSiteAccess(*extension, url),
+            SiteAccess::kOnClick);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "customize by extension (on click)" -> "block all extensions":
+  // maintains current site access, and script is still not injected. No refresh
+  // is required.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, false);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kBlockAllExtensions);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "block all extensions" -> "customize by extension (on click)":
+  // maintains current site access, refreshes the page and still does not inject
+  // the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kCustomizeByExtension, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+}
+
+class ExtensionActionRunnerWithUserHostControlsAndPermittedSitesBrowserTest
+    : public ExtensionActionRunnerWithUserHostControlsBrowserTest {
+ public:
+  ExtensionActionRunnerWithUserHostControlsAndPermittedSitesBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsMenuAccessControlWithPermittedSites);
+  }
+  ~ExtensionActionRunnerWithUserHostControlsAndPermittedSitesBrowserTest()
+      override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests changing user site settings when the extension has site access (which
+// is either 'on all sites' or 'on site'). Note that we don't check if extension
+// `WantsToRun` because on user-restricted sites, actions are blocked rather
+// than withheld.
+// TODO(crbug.com/1363781): Flaky on Win 7 and Mac 12.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_HandleUserSiteSettingModified_ExtensionHasAccess \
+  DISABLED_HandleUserSiteSettingModified_ExtensionHasAccess
+#else
+#define MAYBE_HandleUserSiteSettingModified_ExtensionHasAccess \
+  HandleUserSiteSettingModified_ExtensionHasAccess
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ExtensionActionRunnerWithUserHostControlsAndPermittedSitesBrowserTest,
+    MAYBE_HandleUserSiteSettingModified_ExtensionHasAccess) {
+  // Load an extension that wants to run on every page at document start.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to a page where the extension can run.
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  const url::Origin url_origin = url::Origin::Create(url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // By default, the page should have "customize by extension" user site
+  // setting and the extensions should have "on all sites" site access. The
+  // extension should have injected.
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(SitePermissionsHelper(profile()).GetSiteAccess(*extension, url),
+            SiteAccess::kOnAllSites);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
   // "customize by extension (on site) -> "grant all extensions":
-  // maintains current site access and keeps the script injected. No refresh is
-  // required.
+  // maintains current site access and keeps the script injected. No refresh
+  // is required.
   HandleUserSiteSettingModified(extension->id(), url_origin,
                                 UserSiteSetting::kGrantAllExtensions, false);
   EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
@@ -792,8 +917,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
   // "grant all extensions" -> "block all extensions":
   // accepting the page reload bubble revokes site access, refreshes the page
   // and does not inject the script. (Note: we will accept all the next reload
-  // page bubbles since we previously checked the behavior of not accepting the
-  // dialog).
+  // page bubbles since we previously checked the behavior of not accepting
+  // the dialog).
   HandleUserSiteSettingModified(extension->id(), url_origin,
                                 UserSiteSetting::kBlockAllExtensions, true);
   EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
@@ -839,8 +964,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
 // access ('on click'). Note that we don't check if extension
 // `WantsToRun` because on user-restricted sites, actions are blocked rather
 // than withheld.
-IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
-                       HandleUserSiteSettingModified_ExtensionHasNoAccess) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionActionRunnerWithUserHostControlsAndPermittedSitesBrowserTest,
+    HandleUserSiteSettingModified_ExtensionHasNoAccess) {
   // Load an extension that wants to run on every page at document start.
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("blocked_actions/content_scripts"));

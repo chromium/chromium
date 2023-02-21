@@ -156,4 +156,11 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
              "TelemetryExtensionPendingApprovalApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, user permitted sites are granted access. This should only happen
+// if kExtensionsMenuAccessControl is enabled, since it's the only entry point
+// where user could set permitted sites.
+BASE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites,
+             "ExtensionsMenuAccessControlWithPermittedSitesName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

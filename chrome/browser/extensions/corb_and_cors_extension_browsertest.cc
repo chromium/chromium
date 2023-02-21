@@ -881,8 +881,10 @@ class CorbAndCorsUserHostRestrictionsBrowserTest
     : public CorbAndCorsExtensionBrowserTest {
  public:
   CorbAndCorsUserHostRestrictionsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsMenuAccessControl);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        extensions_features::kExtensionsMenuAccessControl,
+        extensions_features::kExtensionsMenuAccessControlWithPermittedSites};
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
 
  private:
@@ -909,12 +911,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsUserHostRestrictionsBrowserTest,
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   {
+    // Sites can be set as restricted iff the `host controls` flag is enabled.
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->AddUserRestrictedSite(
         url::Origin::Create(policy_allowed_resource));
     waiter.WaitForUserPermissionsSettingsChange();
   }
   {
+    // Sites can be set as permitted iff the `host controls` and `permitted
+    // sites` flags are enabled.
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->AddUserPermittedSite(
         url::Origin::Create(policy_restricted_resource));

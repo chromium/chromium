@@ -54,6 +54,8 @@ BASE_DECLARE_FEATURE(kMinimumMV3CSPWithInlineSpeculationRules);
 
 BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
 
+BASE_DECLARE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

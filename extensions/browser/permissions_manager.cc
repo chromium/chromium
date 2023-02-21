@@ -201,8 +201,12 @@ PermissionsManager::PermissionsManager(content::BrowserContext* browser_context)
       extension_prefs_(ExtensionPrefs::Get(browser_context)) {
   user_permissions_.restricted_sites =
       GetSitesFromPrefs(extension_prefs_, kRestrictedSites);
-  user_permissions_.permitted_sites =
-      GetSitesFromPrefs(extension_prefs_, kPermittedSites);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::
+              kExtensionsMenuAccessControlWithPermittedSites)) {
+    user_permissions_.permitted_sites =
+        GetSitesFromPrefs(extension_prefs_, kPermittedSites);
+  }
 }
 
 PermissionsManager::~PermissionsManager() {
@@ -234,13 +238,21 @@ void PermissionsManager::UpdateUserSiteSetting(
     PermissionsManager::UserSiteSetting site_setting) {
   switch (site_setting) {
     case UserSiteSetting::kGrantAllExtensions:
+      // Granting access to all extensions is allowed iff feature is
+      // enabled.
+      DCHECK(base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
       AddUserPermittedSite(origin);
       break;
     case UserSiteSetting::kBlockAllExtensions:
       AddUserRestrictedSite(origin);
       break;
     case UserSiteSetting::kCustomizeByExtension:
-      RemoveUserPermittedSite(origin);
+      if (base::FeatureList::IsEnabled(
+              extensions_features::
+                  kExtensionsMenuAccessControlWithPermittedSites)) {
+        RemoveUserPermittedSite(origin);
+      }
       RemoveUserRestrictedSite(origin);
       break;
   }
@@ -264,8 +276,12 @@ void PermissionsManager::RemoveUserRestrictedSite(const url::Origin& origin) {
 }
 
 void PermissionsManager::AddUserPermittedSite(const url::Origin& origin) {
-  if (base::Contains(user_permissions_.permitted_sites, origin))
+  DCHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
+
+  if (base::Contains(user_permissions_.permitted_sites, origin)) {
     return;
+  }
 
   // Origin cannot be both restricted and permitted.
   RemoveRestrictedSiteAndUpdatePrefs(origin);
@@ -306,6 +322,9 @@ void PermissionsManager::UpdatePermissionsWithUserSettings(
 }
 
 void PermissionsManager::RemoveUserPermittedSite(const url::Origin& origin) {
+  DCHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
+
   if (RemovePermittedSiteAndUpdatePrefs(origin))
     OnUserPermissionsSettingsChanged();
 }

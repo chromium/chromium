@@ -238,15 +238,6 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_TRUE(IsRequestAccessButtonVisible());
 
   auto* manager = extensions::PermissionsManager::Get(profile());
-  {
-    // Request access button is not visible in permitted sites.
-    extensions::PermissionsManagerWaiter manager_waiter(
-        extensions::PermissionsManager::Get(profile()));
-    manager->AddUserPermittedSite(url_origin);
-    manager_waiter.WaitForUserPermissionsSettingsChange();
-    WaitForAnimation();
-    EXPECT_FALSE(IsRequestAccessButtonVisible());
-  }
 
   {
     // Request access button is not visible in restricted sites.
@@ -259,7 +250,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   }
 
   {
-    // Request acesss button is visible if site is not permitted or restricted,
+    // Request acesss button is visible if site is not restricted,
     // and at least one extension is requesting access.
     extensions::PermissionsManagerWaiter manager_waiter(
         extensions::PermissionsManager::Get(profile()));
@@ -308,4 +299,60 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
   EXPECT_EQ(permissions.GetSiteAccess(*extension, url),
             extensions::SitePermissionsHelper::SiteAccess::kOnClick);
+}
+
+class ExtensionsToolbarControlsWithPermittedSitesUnitTest
+    : public ExtensionsToolbarControlsUnitTest {
+ public:
+  ExtensionsToolbarControlsWithPermittedSitesUnitTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        extensions_features::kExtensionsMenuAccessControl,
+        extensions_features::kExtensionsMenuAccessControlWithPermittedSites};
+    std::vector<base::test::FeatureRef> disabled_features;
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+  ExtensionsToolbarControlsWithPermittedSitesUnitTest(
+      const ExtensionsToolbarControlsWithPermittedSitesUnitTest&) = delete;
+  const ExtensionsToolbarControlsWithPermittedSitesUnitTest& operator=(
+      const ExtensionsToolbarControlsWithPermittedSitesUnitTest&) = delete;
+  ~ExtensionsToolbarControlsWithPermittedSitesUnitTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that request access button is visible based on the user site setting
+// selected.
+TEST_F(ExtensionsToolbarControlsWithPermittedSitesUnitTest,
+       RequestAccessButtonVisibilityOnPermittedSites) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+  const GURL url("http://www.url.com");
+  auto url_origin = url::Origin::Create(url);
+
+  // Install an extension and withhold permissions so request access button can
+  // be visible.
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  web_contents_tester->NavigateAndCommit(url);
+  WaitForAnimation();
+
+  // A site has "customize by extensions" site setting by default,
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+
+  // Request access button is not visible in permitted sites.
+  auto* manager = extensions::PermissionsManager::Get(profile());
+  extensions::PermissionsManagerWaiter waiter(manager);
+  manager->AddUserPermittedSite(url_origin);
+  waiter.WaitForUserPermissionsSettingsChange();
+  WaitForAnimation();
+
+  // Request access button visibility is the same for other site settings, which
+  // is already tested, regardless of whether permitted sites are supported or
+  // not.
 }
