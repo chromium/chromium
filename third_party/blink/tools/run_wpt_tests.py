@@ -15,6 +15,7 @@ import os
 import re
 import shutil
 import sys
+import warnings
 from typing import List, Optional, Tuple
 
 from blinkpy.common import exit_codes
@@ -32,9 +33,9 @@ path_finder.bootstrap_wpt_imports()
 
 import mozlog
 from scripts import common
-from wptrunner import wptcommandline
+from wptrunner import wptcommandline, wptlogging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('run_wpt_tests')
 
 UPSTREAM_GIT_URL = 'https://github.com/web-platform-tests/wpt.git'
 
@@ -50,8 +51,42 @@ try:
     from pylib.local.emulator import avd
     _ANDROID_ENABLED = True
 except ImportError:
-    logger.warning('Android tools not found')
     _ANDROID_ENABLED = False
+
+
+def _make_log_enabled_grouping_formatter():
+    # Make a grouping log formatter that shows regular log messages:
+    #   WARNING Unsupported test type wdspec for product content_shell
+    #
+    # Activating logs dynamically with:
+    #   StructuredLogger.send_message('show_logs', 'on')
+    # appears buggy. This factory exists as a workaround.
+    grouping_formatter = mozlog.formatters.GroupingFormatter()
+    grouping_formatter.message_handler.handle_message('show_logs', 'on')
+    return grouping_formatter
+
+
+mozlog.commandline.log_formatters['grouped'] = (
+    _make_log_enabled_grouping_formatter,
+    mozlog.commandline.log_formatters['grouped'][1],
+)
+
+
+class StructuredLogAdapter(logging.Handler):
+    def __init__(self, logger, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._logger = logger
+        self._fallback_handler = logging.StreamHandler()
+        self._fallback_handler.setFormatter(
+            logging.Formatter('%(name)s %(levelname)s %(message)s'))
+
+    def emit(self, record):
+        log = getattr(self._logger, record.levelname.lower(),
+                      self._logger.debug)
+        try:
+            log(record.getMessage(), component=record.name)
+        except mozlog.structuredlog.LoggerShutdownError:
+            self._fallback_handler.emit(record)
 
 
 PARAMETER_DENYLIST = {
@@ -184,6 +219,8 @@ class WPTAdapter:
         self.add_configuration_arguments(parser)
         if _ANDROID_ENABLED:
             self.add_android_arguments(parser)
+        else:
+            warnings.warn('Android tools not found')
         # Nightly installation is not supported, so just add defaults.
         parser.set_defaults(
             prompt=False,
@@ -196,8 +233,9 @@ class WPTAdapter:
 
     def _check_and_update_options(self, options):
         """Postprocess options, some of which can depend on each other."""
-        self._check_and_update_upstream_options(options)
+        # Set up logging as early as possible.
         self._check_and_update_output_options(options)
+        self._check_and_update_upstream_options(options)
         self._check_and_update_config_options(options)
         self._check_and_update_sharding_options(options)
         # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary' and
@@ -213,25 +251,17 @@ class WPTAdapter:
         options.manifest_download = False
 
     def _check_and_update_output_options(self, options):
-        if options.verbose >= 2:
+        if options.verbose >= 1:
             options.log_mach = '-'
             options.log_mach_level = 'info'
             options.log_mach_verbose = True
-        if options.verbose >= 3:
+        if options.verbose >= 2:
             options.log_mach_level = 'debug'
-        if options.verbose >= 4:
+        if options.verbose >= 3:
             options.webdriver_args.extend([
                 '--verbose',
                 '--log-path=-',
             ])
-        # Set up logging within `run_wpt_tests` as soon as possible.
-        # TODO(crbug.com/1356318): Pipe stdlib `logging` records into `mozlog`
-        # for a unified output format.
-        logging.basicConfig(
-            level=self.log_level(options),
-            # Align level name for easier reading.
-            format='%(asctime)s [%(levelname)-8s] %(name)s: %(message)s',
-            force=True)
 
         output_dir = self.path_from_output_dir(options.target)
         if not self.fs.isdir(output_dir):
@@ -252,6 +282,11 @@ class WPTAdapter:
                 filename = self.fs.abspath(filename)
                 setattr(options, dest, [mozlog.commandline.log_file(filename)])
 
+        options.log = wptlogging.setup(dict(vars(options)),
+                                       {'grouped': sys.stdout})
+        logging.root.handlers.clear()
+        logging.root.addHandler(StructuredLogAdapter(options.log))
+
     def _check_and_update_config_options(self, options: argparse.Namespace):
         options.webdriver_args.extend([
             '--enable-chrome-logs',
@@ -269,8 +304,15 @@ class WPTAdapter:
             '--force-fieldtrial-params='
             'DownloadServiceStudy.Enabled:start_up_delay_ms/0',
         ])
-        if _has_explicit_tests(options):
-            options.retry_unexpected = 0
+        if options.retry_unexpected is None:
+            if _has_explicit_tests(options):
+                options.retry_unexpected = 0
+                logger.warning('Tests explicitly specified; disabling retries')
+            else:
+                options.retry_unexpected = 3
+                logger.warning(
+                    'Tests not explicitly specified; '
+                    'using %d retries', options.retry_unexpected)
         if not options.mojojs_path:
             options.mojojs_path = self.path_from_output_dir(
                 options.target, 'gen')
@@ -280,10 +322,19 @@ class WPTAdapter:
         if options.flag_specific:
             configs = self.port.flag_specific_configs()
             args, smoke_file_name = configs[options.flag_specific]
+            logger.info('Running with flag-specific arguments: "%s"',
+                        ' '.join(args))
             options.binary_args.extend(args)
             if smoke_file_name and not _has_explicit_tests(options):
                 options.include_file = self.path_finder.path_from_web_tests(
                     smoke_file_name)
+                logger.info(
+                    'Tests not explicitly specified; '
+                    'running tests from web_tests/%s', smoke_file_name)
+            elif smoke_file_name:
+                logger.warning(
+                    'Tests explicitly specified; '
+                    'not running tests from web_tests/%s', smoke_file_name)
 
     def _check_and_update_upstream_options(self, options: argparse.Namespace):
         if options.use_upstream_wpt:
@@ -312,9 +363,8 @@ class WPTAdapter:
             options.this_chunk = self._shard_index + 1
         if self._total_shards is not None:
             options.total_chunks = self._total_shards
-        if options.this_chunk and options.total_chunks:
-            logger.info('Selecting tests for shard %d/%d', options.this_chunk,
-                        options.total_chunks)
+        logger.info('Selecting tests for shard %d/%d', options.this_chunk,
+                    options.total_chunks)
         # The default sharding strategy is to shard by directory. But
         # we want to hash each test to determine which shard runs it.
         # This allows running individual directories that have few
@@ -323,13 +373,6 @@ class WPTAdapter:
 
     def path_from_output_dir(self, *parts):
         return self.path_finder.path_from_chromium_base('out', *parts)
-
-    def log_level(self, options):
-        if options.verbose >= 2:
-            return logging.DEBUG
-        if options.verbose >= 1:
-            return logging.INFO
-        return logging.WARNING
 
     def run_tests(self, options: argparse.Namespace) -> int:
         with contextlib.ExitStack() as stack:
@@ -500,7 +543,7 @@ class WPTAdapter:
             '--isolated-script-test-launcher-retry-limit',
             metavar='RETRIES',
             type=lambda value: max(0, int(value)),
-            default=3,
+            default=None,
             help=(
                 'Maximum number of times to rerun unexpectedly failed tests. '
                 'Defaults to 3 unless given an explicit list of tests to run.'
