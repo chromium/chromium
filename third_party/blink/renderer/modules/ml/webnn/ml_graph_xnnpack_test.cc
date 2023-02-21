@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -366,6 +367,72 @@ TEST_P(MLGraphXnnpackTest, ReluTest) {
                                 .values = {-10.0, -0.5, 0.5, 10.0}},
                       .expected = {0.0, 0.0, 0.5, 10.0}}
         .Test(scope);
+  }
+}
+
+template <typename T>
+struct Resample2dTester {
+  MLGraphXnnpackTest* helper;
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(V8TestingScope& scope,
+            MLResample2dOptions* options = MLResample2dOptions::Create()) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        BuildResample2d(scope, builder, input_operand, options);
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, Resample2dTest) {
+  V8TestingScope scope;
+  {
+    // Test resample2d operator with axes = {1, 2}, sizes = {4, 4}.
+    auto* options = MLResample2dOptions::Create();
+    options->setSizes({4, 4});
+    options->setAxes({1, 2});
+    options->setMode(V8MLInterpolationMode::Enum::kLinear);
+    Resample2dTester<float>{
+        .helper = this,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {1, 2, 3, 4}},
+        .expected = {1., 1.25, 1.75, 2., 1.5, 1.75, 2.25, 2.5, 2.5, 2.75, 3.25,
+                     3.5, 3., 3.25, 3.75, 4.}}
+        .Test(scope, options);
+  }
+  {
+    // Test resample2d operator with axes = {1, 2}, scales = {2.0, 2.0}.
+    auto* options = MLResample2dOptions::Create();
+    options->setScales({2.0, 2.0});
+    options->setAxes({1, 2});
+    options->setMode(V8MLInterpolationMode::Enum::kLinear);
+    Resample2dTester<float>{
+        .helper = this,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {1, 2, 3, 4}},
+        .expected = {1., 1.25, 1.75, 2., 1.5, 1.75, 2.25, 2.5, 2.5, 2.75, 3.25,
+                     3.5, 3., 3.25, 3.75, 4.}}
+        .Test(scope, options);
   }
 }
 

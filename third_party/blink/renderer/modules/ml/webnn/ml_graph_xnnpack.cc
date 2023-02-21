@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
@@ -880,6 +881,46 @@ xnn_status DefineXnnNodeForSoftmax(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForResample2d(
+    xnn_subgraph_t subgraph,
+    const MLOperator* resample2d,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(resample2d, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(resample2d, operand_value_id_map);
+  const MLResample2dOptions* options =
+      static_cast<const MLResample2dOptions*>(resample2d->Options());
+
+  if (options->mode() != V8MLInterpolationMode::Enum::kLinear) {
+    error_message = "Resample2d only supports Linear mode.";
+    return xnn_status_unsupported_parameter;
+  }
+
+  const Vector<int32_t> default_axes({2, 3});
+  // XNNPACK resize bilinear node only supports axes = {1, 2}.
+  // TODO(crbug.com/1273291): Support axes = {2, 3} by transposing the
+  // input tensor.
+  if (!(options->getAxesOr(default_axes)[0] == 1 &&
+        options->getAxesOr(default_axes)[1] == 2)) {
+    error_message = "Resample2d only supports axes = {1, 2}.";
+    return xnn_status_unsupported_parameter;
+  }
+
+  DCHECK_EQ(resample2d->Outputs()[0]->Dimensions().size(), 4U);
+  size_t output_height = resample2d->Outputs()[0]->Dimensions()[1];
+  size_t output_width = resample2d->Outputs()[0]->Dimensions()[2];
+  // Set flags = 0 and it means align_corner = false and half_pixel_center =
+  // true. For WebNN, we plan to support coordinate transformation modes for
+  // Resample2d and it's tracked by an issue -
+  // https://github.com/webmachinelearning/webnn/issues/270.
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_resize_bilinear_2d(
+      subgraph, output_height, output_width, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 // Define an XNNPACK Node given an MLOperator object and add it into the
 // Subgraph object. The operand_value_id_map is used to find the corresponding
 // input and output XNNPACK Values of this MLOperator object. This method calls
@@ -936,6 +977,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       XNN_CHECK_STATUS(DefineXnnNodeForSoftmax(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
+    case MLOperator::OperatorKind::kResample2d: {
+      XNN_CHECK_STATUS(DefineXnnNodeForResample2d(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
     default: {
       error_message = "The operator (" +
                       MLOperator::OperatorKindToString(ml_operator->Kind()) +
