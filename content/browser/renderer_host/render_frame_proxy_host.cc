@@ -631,7 +631,7 @@ void RenderFrameProxyHost::RouteCloseEvent() {
   // the window containing the active RenderFrameHost.
   if (site_instance_group()->IsRelatedSiteInstanceGroup(
           rfh->GetSiteInstance()->group())) {
-    rfh->ClosePage();
+    rfh->ClosePage(RenderFrameHostImpl::ClosePageSource::kRenderer);
   }
 }
 

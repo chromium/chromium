@@ -11,6 +11,7 @@
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_session.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
@@ -205,20 +206,30 @@ DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
 void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
     DidStartNavigation(NavigationHandle* navigation_handle) {
   // If we've already tried to close the window, then there's nothing to do.
-  if (!force_close_cb_)
+  if (!force_close_cb_) {
     return;
+  }
 
   // Only care if it's the root of the pip window.
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // History / etc. navigations are okay.
-  if (navigation_handle->IsSameDocument())
+  if (navigation_handle->IsSameDocument()) {
     return;
+  }
 
-  // about::blank is okay, since that's what it starts with.
-  if (navigation_handle->GetURL().IsAboutBlank())
+  // We allow the synchronous about:blank commit to succeed, since that is part
+  // of most initial navigations. Subsequent navigations to about:blank are
+  // treated like other navigations and close the window.
+  // `is_synchronous_renderer_commit()` will only be true for the initial
+  // about:blank navigation.
+  if (navigation_handle->GetURL().IsAboutBlank() &&
+      NavigationRequest::From(navigation_handle)
+          ->is_synchronous_renderer_commit()) {
     return;
+  }
 
   // Don't run `force_close_cb` from within the observer, since closing
   // `web_contents` is not allowed during an observer callback.

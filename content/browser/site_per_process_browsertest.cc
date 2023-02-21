@@ -10968,7 +10968,8 @@ class ClosePageBeforeCommitHelper : public DidCommitNavigationInterceptor {
     RenderFrameHostImpl* rfh =
         static_cast<RenderFrameHostImpl*>(render_frame_host);
     EXPECT_TRUE(rfh->render_view_host()->is_active());
-    rfh->GetMainFrame()->ClosePage();
+    rfh->GetMainFrame()->ClosePage(
+        RenderFrameHostImpl::ClosePageSource::kBrowser);
     if (run_loop_)
       run_loop_->Quit();
     return true;
