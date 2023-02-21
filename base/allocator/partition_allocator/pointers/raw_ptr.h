@@ -839,9 +839,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
-  // Cross-kind copy constructor.
-  // Move is not supported as different traits may use different ref-counts, so
-  // let move operations degrade to copy, which handles it well.
   template <RawPtrTraits PassedTraits,
             typename Unused = std::enable_if_t<Traits != PassedTraits>>
   PA_ALWAYS_INLINE explicit raw_ptr(const raw_ptr<T, PassedTraits>& p) noexcept
@@ -856,9 +853,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     static_assert(Traits == (PassedTraits | RawPtrTraits::kMayDangle));
   }
 
-  // Cross-kind assignment.
-  // Move is not supported as different traits may use different ref-counts, so
-  // let move operations degrade to copy, which handles it well.
   template <RawPtrTraits PassedTraits,
             typename Unused = std::enable_if_t<Traits != PassedTraits>>
   PA_ALWAYS_INLINE raw_ptr& operator=(

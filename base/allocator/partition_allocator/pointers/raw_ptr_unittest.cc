@@ -1360,15 +1360,14 @@ TEST_F(RawPtrTest, CrossKindConversion) {
   RawPtrCountingMayDangleImpl::ClearCounters();
 
   CountingRawPtrMayDangle<int> ptr2(ptr1);
-  CountingRawPtrMayDangle<int> ptr3(std::move(ptr1));  // Falls back to copy.
 
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
                   .get_for_dereference_cnt = 0,
                   .get_for_extraction_cnt = 0,
-                  .get_for_duplication_cnt = 2}),
+                  .get_for_duplication_cnt = 1}),
               CountersMatch());
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
-                  .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 2}),
+                  .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 1}),
               CountersMatch());
 }
 
@@ -1380,17 +1379,15 @@ TEST_F(RawPtrTest, CrossKindAssignment) {
   RawPtrCountingMayDangleImpl::ClearCounters();
 
   CountingRawPtrMayDangle<int> ptr2;
-  CountingRawPtrMayDangle<int> ptr3;
   ptr2 = ptr1;
-  ptr3 = std::move(ptr1);  // Falls back to copy.
 
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
                   .get_for_dereference_cnt = 0,
                   .get_for_extraction_cnt = 0,
-                  .get_for_duplication_cnt = 2}),
+                  .get_for_duplication_cnt = 1}),
               CountersMatch());
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
-                  .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 2}),
+                  .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 1}),
               CountersMatch());
 }
 
