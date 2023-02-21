@@ -22,6 +22,10 @@ CryptohomeMixin::CryptohomeMixin(InProcessBrowserTestMixinHost* host)
 
 CryptohomeMixin::~CryptohomeMixin() = default;
 
+void CryptohomeMixin::SetUpOnMainThread() {
+  FakeUserDataAuthClient::TestApi::Get()->CreatePostponedDirectories();
+}
+
 void CryptohomeMixin::MarkUserAsExisting(const AccountId& user) {
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(user);
   FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(

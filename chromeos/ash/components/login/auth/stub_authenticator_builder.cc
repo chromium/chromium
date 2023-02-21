@@ -17,24 +17,11 @@ scoped_refptr<Authenticator> StubAuthenticatorBuilder::Create(
   scoped_refptr<StubAuthenticator> authenticator =
       new StubAuthenticator(consumer, expected_user_context_);
   authenticator->auth_action_ = auth_action_;
-  if (auth_action_ == StubAuthenticator::AuthAction::kPasswordChange)
-    authenticator->old_password_ = old_password_;
-  if (data_recovery_notifier_)
-    authenticator->data_recovery_notifier_ = data_recovery_notifier_;
   authenticator->has_incomplete_encryption_migration_ =
       has_incomplete_encryption_migration_;
   if (auth_action_ == StubAuthenticator::AuthAction::kAuthFailure)
     authenticator->failure_reason_ = failure_reason_;
   return authenticator;
-}
-
-void StubAuthenticatorBuilder::SetUpPasswordChange(
-    const std::string& old_password,
-    const StubAuthenticator::DataRecoveryNotifier& notifier) {
-  DCHECK_EQ(auth_action_, StubAuthenticator::AuthAction::kAuthSuccess);
-  auth_action_ = StubAuthenticator::AuthAction::kPasswordChange;
-  old_password_ = old_password;
-  data_recovery_notifier_ = notifier;
 }
 
 void StubAuthenticatorBuilder::SetUpOldEncryption(

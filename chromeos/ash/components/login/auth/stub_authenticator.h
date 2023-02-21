@@ -25,15 +25,6 @@ class StubAuthenticatorBuilder;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) StubAuthenticator
     : public Authenticator {
  public:
-  enum class DataRecoveryStatus {
-    kNone,
-    kRecovered,
-    kRecoveryFailed,
-    kResynced
-  };
-  using DataRecoveryNotifier =
-      base::RepeatingCallback<void(DataRecoveryStatus status)>;
-
   StubAuthenticator(AuthStatusConsumer* consumer,
                     const UserContext& expected_user_context);
 
@@ -64,12 +55,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) StubAuthenticator
  private:
   friend class StubAuthenticatorBuilder;
 
-  enum class AuthAction {
-    kAuthSuccess,
-    kAuthFailure,
-    kPasswordChange,
-    kOldEncryption
-  };
+  enum class AuthAction { kAuthSuccess, kAuthFailure, kOldEncryption };
 
   // Returns a copy of expected_user_context_ with a transformed key.
   UserContext ExpectedUserContextWithTransformedKey() const;
@@ -85,10 +71,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) StubAuthenticator
 
   // For password change requests - the old user password.
   std::string old_password_;
-
-  // If set, the callback that will be called as authenticator handles user
-  // encrypted data recovery during password change flow.
-  DataRecoveryNotifier data_recovery_notifier_;
 
   // For requests that detect old encryption -  whether there is an incomplete
   // encryption migration attempt.

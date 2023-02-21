@@ -223,7 +223,6 @@ DeviceActivityController::~DeviceActivityController() {
   DeviceActivityClient::RecordDeviceActivityMethodCalled(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerDestructor);
-
   DCHECK_EQ(this, g_ash_device_activity_controller);
   Stop();
   g_ash_device_activity_controller = nullptr;
