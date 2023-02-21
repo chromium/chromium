@@ -695,6 +695,8 @@ bool ServiceWorkerGlobalScope::AddEventListenerInternal(
           this,
           WebFeature::kServiceWorkerFetchHandlerUpdateAfterInitialization);
     }
+    UseCounter::Count(this,
+                      WebFeature::kServiceWorkerAddHandlerAfterInitialization);
   }
   return WorkerGlobalScope::AddEventListenerInternal(event_type, listener,
                                                      options);
@@ -2645,10 +2647,14 @@ bool ServiceWorkerGlobalScope::SetAttributeEventListener(
     const AtomicString& event_type,
     EventListener* listener) {
   // Count the modification of fetch handlers after the initial evaluation.
-  if (did_evaluate_script_ && event_type == event_type_names::kFetch) {
+  if (did_evaluate_script_) {
+    if (event_type == event_type_names::kFetch) {
+      UseCounter::Count(
+          this,
+          WebFeature::kServiceWorkerFetchHandlerModifiedAfterInitialization);
+    }
     UseCounter::Count(
-        this,
-        WebFeature::kServiceWorkerFetchHandlerModifiedAfterInitialization);
+        this, WebFeature::kServiceWorkerSetAttributeHandlerAfterInitialization);
   }
   return WorkerGlobalScope::SetAttributeEventListener(event_type, listener);
 }

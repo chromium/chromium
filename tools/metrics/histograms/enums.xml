@@ -41969,6 +41969,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4452" label="SameDocumentCrossOriginInitiator"/>
   <int value="4453"
       label="ServiceWorkerFetchHandlerModifiedAfterInitialization"/>
+  <int value="4468" label="ServiceWorkerAddHandlerAfterInitialization"/>
+  <int value="4469"
+      label="ServiceWorkerSetAttributeHandlerAfterInitialization"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
