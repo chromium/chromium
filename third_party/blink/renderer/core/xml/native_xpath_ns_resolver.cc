@@ -38,8 +38,9 @@ namespace blink {
 namespace {
 
 void CountNonElementResolver(const Node* node) {
-  if (!node || !node->IsElementNode())
+  if (!node || node->IsElementNode()) {
     return;
+  }
   if (const auto* attr = DynamicTo<Attr>(node)) {
     if (attr->ownerElement())
       return;
@@ -47,7 +48,7 @@ void CountNonElementResolver(const Node* node) {
     if (char_data->parentElement())
       return;
   }
-  node->GetDocument().CountUse(WebFeature::kCreateNSResolverWithNonElements);
+  node->GetDocument().CountUse(WebFeature::kCreateNSResolverWithNonElements2);
 }
 
 }  // namespace

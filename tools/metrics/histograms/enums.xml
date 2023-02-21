@@ -42223,7 +42223,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4412" label="ServiceWorkerSkippedForEmptyFetchHandler"/>
   <int value="4413" label="ImageSet"/>
   <int value="4414" label="WindowCloseHistoryLengthOne"/>
-  <int value="4415" label="CreateNSResolverWithNonElements"/>
+  <int value="4415" label="OBSOLETE_CreateNSResolverWithNonElements"/>
   <int value="4416" label="CSSValueAppearanceNonStandard"/>
   <int value="4417" label="CSSGetComputedAnimationDelayZero"/>
   <int value="4418" label="GetEffectTimingDelayZero"/>
@@ -42289,6 +42289,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4472" label="CSSColorColorSpecifiedSpace"/>
   <int value="4473" label="CSSColorLabOklab"/>
   <int value="4474" label="CSSColorLchOklch"/>
+  <int value="4475" label="CreateNSResolverWithNonElements2"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
