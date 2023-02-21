@@ -191,4 +191,27 @@ public class WebsiteParentApprovalNativesTest {
                 mHistogramTester.getHistogramValueCount(
                         "FamilyLinkUser.LocalWebApprovalResult", /*Cancelled=*/2));
     }
+
+    @Test
+    @MediumTest
+    public void cancelApprovalRequestIfOneAlreadyInProgress() {
+        mockParentAuthDelegateRequestLocalAuthResponse(true);
+        mTabbedActivityTestRule.loadUrl(mBlockedUrl);
+
+        WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
+        WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
+
+        WebsiteParentApprovalTestUtils.clickApprove(mBottomSheetTestSupport);
+
+        // Delay to ensure the asynchronous code that records the histograms is executed.
+        verify(mParentAuthDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .requestLocalAuth(any(WindowAndroid.class), any(GURL.class), any(Callback.class));
+
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "FamilyLinkUser.LocalWebApprovalResult", /*Approved=*/0));
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "FamilyLinkUser.LocalWebApprovalResult", /*Cancelled=*/2));
+    }
 }
