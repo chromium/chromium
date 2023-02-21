@@ -1011,7 +1011,7 @@ Status GetAXNodeByElementId(Session* session,
   if (status.IsError())
     return status;
 
-  absl::optional<base::Value> nodes = result->ExtractKey("nodes");
+  absl::optional<base::Value> nodes = result->GetDict().Extract("nodes");
   if (!nodes)
     return Status(kUnknownError, "No `nodes` found in CDP response");
 
