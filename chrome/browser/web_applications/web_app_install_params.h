@@ -107,9 +107,6 @@ struct WebAppInstallParams {
 
   bool oem_installed = false;
 
-  // Set for SUB_APP API installs.
-  absl::optional<AppId> parent_app_id;
-
   // The install URL for the app. This does not always need to be
   // populated (especially for user installed or sync installed apps)
   // in which case the URL will not be written to the web_app DB.

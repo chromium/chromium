@@ -77,7 +77,6 @@ class WebAppInstallFinalizer {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     absl::optional<ash::SystemWebAppData> system_web_app_data;
 #endif
-    absl::optional<AppId> parent_app_id;
     absl::optional<web_app::IsolatedWebAppLocation> isolated_web_app_location;
 
     // If true, OsIntegrationManager::InstallOsHooks won't be called at all,

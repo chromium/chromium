@@ -501,7 +501,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   // case we proceed with the installation which adds the SUB_APP install source
   // as well.
   if (install_surface_ == webapps::WebappInstallSource::SUB_APP) {
-    DCHECK(install_params_ && install_params_->parent_app_id.has_value());
+    DCHECK(web_app_info->parent_app_id.has_value());
     if (registrar_->WasInstalledBySubApp(app_id)) {
       CallInstallCallback(std::move(app_id),
                           webapps::InstallResultCode::kSuccessAlreadyInstalled);
@@ -704,7 +704,6 @@ void WebAppInstallTask::OnDialogCompleted(
     finalize_options.locally_installed = install_params_->locally_installed;
     finalize_options.overwrite_existing_manifest_fields =
         install_params_->force_reinstall;
-    finalize_options.parent_app_id = install_params_->parent_app_id;
 
     ApplyParamsToFinalizeOptions(*install_params_, finalize_options);
 

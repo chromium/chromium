@@ -200,10 +200,10 @@ void WebAppInstallFinalizer::FinalizeInstall(
         WebApp::IsolationData(*options.isolated_web_app_location));
   }
 
+  web_app->SetParentAppId(web_app_info.parent_app_id);
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(options.source);
   web_app->SetIsFromSyncAndPendingInstallation(false);
-  web_app->SetParentAppId(options.parent_app_id);
   web_app->SetInstallSourceForMetrics(options.install_surface);
 
   WriteExternalConfigMapInfo(*web_app, options.source,

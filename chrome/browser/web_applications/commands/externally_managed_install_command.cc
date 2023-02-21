@@ -259,7 +259,6 @@ void ExternallyManagedInstallCommand::OnLockUpgradedFinalizeInstall(
   finalize_options.locally_installed = install_params_.locally_installed;
   finalize_options.overwrite_existing_manifest_fields =
       install_params_.force_reinstall;
-  finalize_options.parent_app_id = install_params_.parent_app_id;
 
   ApplyParamsToFinalizeOptions(install_params_, finalize_options);
 

@@ -73,7 +73,6 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionsForSubApps(
 
   finalize_options.locally_installed = true;
   finalize_options.overwrite_existing_manifest_fields = false;
-  finalize_options.parent_app_id = parent_app_id;
   if (IsChromeOsDataMandatory()) {
     // Default values for ChromeOS installation.
     finalize_options.chromeos_data.emplace();
@@ -263,6 +262,7 @@ void SubAppInstallCommand::OnGetWebAppInstallInfo(
                        webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
     return;
   }
+  install_info->parent_app_id = parent_app_id_;
 
   DCHECK(base::Contains(pending_installs_map_, unhashed_app_id));
   const GURL& install_url = pending_installs_map_[unhashed_app_id];
