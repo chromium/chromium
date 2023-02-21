@@ -45,7 +45,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   auto handlers = std::make_unique<ConfigurationPolicyHandlerList>(
       base::BindRepeating(&PopulatePolicyHandlerParameters),
       base::BindRepeating(&GetChromePolicyDetails),
-      /*allow_future_policies=*/false);
+      /*are_future_policies_allowed_by_default=*/false);
 
 // TODO(kvitekp): remove #ifdef when ChromeOS is supported by //headless.
 #if !BUILDFLAG(IS_CHROMEOS)

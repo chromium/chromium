@@ -1870,7 +1870,7 @@ void GetExtensionAllowedTypesMap(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Future policies are not supported on Stable and Beta by default.
-bool AreFuturePoliciesSupported() {
+bool AreFuturePoliciesEnabledByDefault() {
   // Enable future policies for branded browser tests.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType))
     return true;
@@ -1898,11 +1898,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       new ConfigurationPolicyHandlerList(
           base::BindRepeating(&PopulatePolicyHandlerParameters),
           base::BindRepeating(&GetChromePolicyDetails),
-          AreFuturePoliciesSupported()));
-  for (size_t i = 0; i < std::size(kSimplePolicyMap); ++i) {
+          AreFuturePoliciesEnabledByDefault()));
+  for (PolicyToPreferenceMapEntry entry : kSimplePolicyMap) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-        kSimplePolicyMap[i].policy_name, kSimplePolicyMap[i].preference_path,
-        kSimplePolicyMap[i].value_type));
+        entry.policy_name, entry.preference_path, entry.value_type));
   }
 
   // Policies for all platforms - Start

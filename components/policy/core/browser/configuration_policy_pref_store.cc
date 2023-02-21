@@ -44,8 +44,8 @@ void LogErrors(std::unique_ptr<PolicyErrorMap> errors,
   }
 }
 
-bool IsLevel(PolicyLevel level, const PolicyMap::const_iterator iter) {
-  return iter->second.level == level;
+bool IsLevel(PolicyLevel level, PolicyMap::const_reference iter) {
+  return iter.second.level == level;
 }
 
 }  // namespace
@@ -137,8 +137,7 @@ PrefValueMap* ConfigurationPolicyPrefStore::CreatePreferencesFromPolicies() {
   PolicyMap filtered_policies =
       policy_service_
           ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-          .Clone();
-  filtered_policies.EraseNonmatching(base::BindRepeating(&IsLevel, level_));
+          .CloneIf(base::BindRepeating(&IsLevel, level_));
 
   std::unique_ptr<PolicyErrorMap> errors = std::make_unique<PolicyErrorMap>();
 

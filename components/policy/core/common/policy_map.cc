@@ -108,6 +108,12 @@ PolicyPriorityBrowser GetPriority(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Helper function used in the invocation of `PolicyMap::CloneIf` from
+// `PolicyMap::Clone`.
+bool AllowAllPolicies(PolicyMap::const_reference unused) {
+  return true;
+}
+
 }  // namespace
 
 PolicyMap::Entry::Entry() = default;
@@ -420,24 +426,22 @@ PolicyMap::iterator PolicyMap::EraseIt(const_iterator it) {
   return map_.erase(it);
 }
 
-void PolicyMap::EraseMatching(
-    const base::RepeatingCallback<bool(const const_iterator)>& filter) {
-  FilterErase(filter, true);
-}
-
-void PolicyMap::EraseNonmatching(
-    const base::RepeatingCallback<bool(const const_iterator)>& filter) {
-  FilterErase(filter, false);
-}
-
 void PolicyMap::Swap(PolicyMap* other) {
   map_.swap(other->map_);
 }
 
 PolicyMap PolicyMap::Clone() const {
+  return CloneIf(base::BindRepeating(&AllowAllPolicies));
+}
+
+PolicyMap PolicyMap::CloneIf(
+    const base::RepeatingCallback<bool(const_reference)>& filter) const {
   PolicyMap clone;
-  for (const auto& it : map_)
-    clone.Set(it.first, it.second.DeepCopy());
+  for (const_reference it : map_) {
+    if (filter.Run(it)) {
+      clone.Set(it.first, it.second.DeepCopy());
+    }
+  }
 
   clone.cloud_policy_overrides_platform_policy_ =
       cloud_policy_overrides_platform_policy_;
@@ -592,23 +596,9 @@ void PolicyMap::Clear() {
 }
 
 // static
-bool PolicyMap::MapEntryEquals(const PolicyMap::PolicyMapType::value_type& a,
-                               const PolicyMap::PolicyMapType::value_type& b) {
+bool PolicyMap::MapEntryEquals(const_reference a, const_reference b) {
   bool equals = a.first == b.first && a.second.Equals(b.second);
   return equals;
-}
-
-void PolicyMap::FilterErase(
-    const base::RepeatingCallback<bool(const const_iterator)>& filter,
-    bool deletion_value) {
-  auto iter(map_.begin());
-  while (iter != map_.end()) {
-    if (filter.Run(iter) == deletion_value) {
-      map_.erase(iter++);
-    } else {
-      ++iter;
-    }
-  }
 }
 
 bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,

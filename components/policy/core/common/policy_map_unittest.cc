@@ -1522,23 +1522,23 @@ TEST_F(PolicyMapTest, LoadFromCheckForExternalPolicy) {
   EXPECT_FALSE(loaded.empty());
 }
 
-bool IsMandatory(const PolicyMap::PolicyMapType::const_iterator iter) {
-  return iter->second.level == POLICY_LEVEL_MANDATORY;
+bool IsMandatory(PolicyMap::const_reference entry) {
+  return entry.second.level == POLICY_LEVEL_MANDATORY;
 }
 
-TEST_F(PolicyMapTest, EraseNonmatching) {
+TEST_F(PolicyMapTest, CloneIf) {
   PolicyMap a;
   a.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
         POLICY_SOURCE_CLOUD, base::Value("google.com"), nullptr);
   a.Set(kTestPolicyName2, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
         POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
 
-  a.EraseNonmatching(base::BindRepeating(&IsMandatory));
+  PolicyMap clone = a.CloneIf(base::BindRepeating(&IsMandatory));
 
   PolicyMap b;
   b.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
         POLICY_SOURCE_CLOUD, base::Value("google.com"), nullptr);
-  EXPECT_TRUE(a.Equals(b));
+  EXPECT_TRUE(clone.Equals(b));
 }
 
 TEST_F(PolicyMapTest, EntryAddConflict) {

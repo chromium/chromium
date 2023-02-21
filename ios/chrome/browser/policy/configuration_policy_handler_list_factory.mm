@@ -131,13 +131,13 @@ void PopulatePolicyHandlerParameters(
 }  // namespace
 
 std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
-    bool allow_future_policies,
+    bool are_future_policies_allowed_by_default,
     const policy::Schema& chrome_schema) {
   std::unique_ptr<policy::ConfigurationPolicyHandlerList> handlers =
       std::make_unique<policy::ConfigurationPolicyHandlerList>(
           base::BindRepeating(&PopulatePolicyHandlerParameters),
           base::BindRepeating(&policy::GetChromePolicyDetails),
-          allow_future_policies);
+          are_future_policies_allowed_by_default);
 
   for (size_t i = 0; i < std::size(kSimplePolicyMap); ++i) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(

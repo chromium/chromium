@@ -27,10 +27,11 @@ const char kPolicyCommentPrefix[] = "_comment";
 ConfigurationPolicyHandlerList::ConfigurationPolicyHandlerList(
     const PopulatePolicyHandlerParametersCallback& parameters_callback,
     const GetChromePolicyDetailsCallback& details_callback,
-    bool allow_future_policies)
+    bool are_future_policies_allowed_by_default)
     : parameters_callback_(parameters_callback),
       details_callback_(details_callback),
-      allow_future_policies_(allow_future_policies) {}
+      are_future_policies_allowed_by_default_(
+          are_future_policies_allowed_by_default) {}
 
 ConfigurationPolicyHandlerList::~ConfigurationPolicyHandlerList() {
 }
@@ -45,23 +46,24 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
     PrefValueMap* prefs,
     PolicyErrorMap* errors,
     PoliciesSet* deprecated_policies,
-    PoliciesSet* future_policies) const {
+    PoliciesSet* future_policies_blocked) const {
   if (deprecated_policies)
     deprecated_policies->clear();
-  if (future_policies)
-    future_policies->clear();
+  if (future_policies_blocked) {
+    future_policies_blocked->clear();
+  }
   // This function is used both to apply the policy settings, and to check them
   // and list errors. As such it must get all the errors even if it isn't
   // applying the policies.
-  PolicyMap filtered_policies = policies.Clone();
-  base::flat_set<std::string> enabled_future_policies =
-      allow_future_policies_
+  base::flat_set<std::string> future_policies_allowed =
+      are_future_policies_allowed_by_default_
           ? base::flat_set<std::string>()
           : ValueToStringSet(policies.GetValue(key::kEnableExperimentalPolicies,
                                                base::Value::Type::LIST));
-  filtered_policies.EraseMatching(base::BindRepeating(
-      &ConfigurationPolicyHandlerList::FilterOutUnsupportedPolicies,
-      base::Unretained(this), enabled_future_policies, future_policies));
+  PolicyMap filtered_policies = policies.CloneIf(
+      base::BindRepeating(&ConfigurationPolicyHandlerList::IsPolicySupported,
+                          base::Unretained(this), future_policies_allowed,
+                          future_policies_blocked));
 
   PolicyErrorMap scoped_errors;
   if (!errors)
@@ -93,53 +95,54 @@ void ConfigurationPolicyHandlerList::PrepareForDisplaying(
     handler->PrepareForDisplaying(policies);
 }
 
-bool ConfigurationPolicyHandlerList::FilterOutUnsupportedPolicies(
-    const base::flat_set<std::string>& enabled_future_policies,
-    PoliciesSet* future_policies,
-    const PolicyMap::const_iterator iter) const {
+bool ConfigurationPolicyHandlerList::IsPolicySupported(
+    const base::flat_set<std::string>& future_policies_allowed,
+    PoliciesSet* future_policies_blocked,
+    PolicyMap::const_reference entry) const {
   // Callback might be missing in tests.
   if (!details_callback_) {
     CHECK_IS_TEST();
-    return false;
+    return true;
   }
 
-  const PolicyDetails* policy_details = details_callback_.Run(iter->first);
+  const PolicyDetails* policy_details = details_callback_.Run(entry.first);
   if (!policy_details) {
     const std::string prefix(kPolicyCommentPrefix);
-    if (iter->first.compare(0, prefix.length(), prefix) != 0) {
-      DVLOG_POLICY(1, POLICY_PROCESSING) << "Unknown policy: " << iter->first;
+    if (entry.first.compare(0, prefix.length(), prefix) != 0) {
+      DVLOG_POLICY(1, POLICY_PROCESSING) << "Unknown policy: " << entry.first;
+    }
+    return true;
+  }
+
+  if (IsBlockedFuturePolicy(future_policies_allowed, *policy_details, entry)) {
+    if (future_policies_blocked) {
+      future_policies_blocked->insert(entry.first);
     }
     return false;
   }
 
-  if (IsFuturePolicy(enabled_future_policies, *policy_details, iter)) {
-    if (future_policies)
-      future_policies->insert(iter->first);
-    return true;
-  }
-
-  return IsPlatformDevicePolicy(*policy_details, iter);
+  return !IsBlockedPlatformDevicePolicy(*policy_details, entry);
 }
 
-bool ConfigurationPolicyHandlerList::IsPlatformDevicePolicy(
+bool ConfigurationPolicyHandlerList::IsBlockedPlatformDevicePolicy(
     const PolicyDetails& policy_details,
-    const PolicyMap::const_iterator iter) const {
-  if (iter->second.source == POLICY_SOURCE_PLATFORM &&
+    PolicyMap::const_reference entry) const {
+  if (entry.second.source == POLICY_SOURCE_PLATFORM &&
       policy_details.is_device_policy) {
     // Device Policy is only implemented as Cloud Policy (not Platform Policy).
     LOG_POLICY(WARNING, POLICY_PROCESSING)
-        << "Ignoring device platform policy: " << iter->first;
+        << "Ignoring device platform policy: " << entry.first;
     return true;
   }
   return false;
 }
 
-bool ConfigurationPolicyHandlerList::IsFuturePolicy(
-    const base::flat_set<std::string>& enabled_future_policies,
+bool ConfigurationPolicyHandlerList::IsBlockedFuturePolicy(
+    const base::flat_set<std::string>& future_policies_allowed,
     const PolicyDetails& policy_details,
-    const PolicyMap::const_iterator iter) const {
-  return !allow_future_policies_ && policy_details.is_future &&
-         !enabled_future_policies.contains(iter->first);
+    PolicyMap::const_reference entry) const {
+  return !are_future_policies_allowed_by_default_ && policy_details.is_future &&
+         !future_policies_allowed.contains(entry.first);
 }
 
 }  // namespace policy
