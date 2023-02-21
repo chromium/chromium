@@ -16,6 +16,7 @@
 #import "base/hash/hash.h"
 #import "base/i18n/string_compare.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -106,6 +107,19 @@ NSString* TitleForBookmarkNode(const BookmarkNode* node) {
   }
 
   return title;
+}
+
+BookmarkModelType GetBookmarkModelType(
+    const bookmarks::BookmarkNode* bookmark_node,
+    bookmarks::BookmarkModel* profile_model,
+    bookmarks::BookmarkModel* account_model) {
+  DCHECK(profile_model);
+  if (bookmark_node->HasAncestor(profile_model->root_node())) {
+    return BookmarkModelType::kProfile;
+  }
+  DCHECK(account_model &&
+         bookmark_node->HasAncestor(account_model->root_node()));
+  return BookmarkModelType::kAccount;
 }
 
 #pragma mark - Updating Bookmarks
