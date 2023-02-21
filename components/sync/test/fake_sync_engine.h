@@ -111,7 +111,8 @@ class FakeSyncEngine : public SyncEngine,
   const bool allow_init_completion_;
   const bool is_first_time_sync_configure_;
   const base::RepeatingClosure sync_transport_data_cleared_cb_;
-  raw_ptr<SyncEngineHost> host_ = nullptr;
+  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
+  raw_ptr<SyncEngineHost, DanglingUntriaged> host_ = nullptr;
   bool initialized_ = false;
   const SyncStatus default_sync_status_;
   CoreAccountId authenticated_account_id_;

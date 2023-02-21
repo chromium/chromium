@@ -134,6 +134,11 @@ enum class RawPtrTraits : unsigned {
   //
   // Test only.
   kUseCountingWrapperForTest = (1 << 4),
+
+  // Helper trait that can be used to test raw_ptr's behaviour or conversions.
+  //
+  // Test only.
+  kDummyForTest = (1 << 5),
 };
 
 // Used to combine RawPtrTraits:
@@ -160,12 +165,12 @@ constexpr RawPtrTraits Remove(RawPtrTraits a, RawPtrTraits b) {
 }
 
 constexpr bool AreValid(RawPtrTraits traits) {
-  return Remove(traits, RawPtrTraits::kMayDangle |
-                            RawPtrTraits::kDisableMTECheckedPtr |
-                            RawPtrTraits::kDisableHooks |
-                            RawPtrTraits::kAllowPtrArithmetic |
-                            RawPtrTraits::kUseCountingWrapperForTest) ==
-         RawPtrTraits::kEmpty;
+  return Remove(traits,
+                RawPtrTraits::kMayDangle | RawPtrTraits::kDisableMTECheckedPtr |
+                    RawPtrTraits::kDisableHooks |
+                    RawPtrTraits::kAllowPtrArithmetic |
+                    RawPtrTraits::kUseCountingWrapperForTest |
+                    RawPtrTraits::kDummyForTest) == RawPtrTraits::kEmpty;
 }
 
 template <RawPtrTraits Traits>
@@ -839,12 +844,26 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE explicit raw_ptr(const raw_ptr<T, PassedTraits>& p) noexcept
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
             raw_ptr_traits::TraitsToImpl<PassedTraits>::Impl::
-                UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {}
+                UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {
+    // Limit cross-kind conversions only to cases where kMayDangle gets added,
+    // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
+    // instead of disabling via SFINAE, so that the compiler catches other
+    // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
+    // be taken.
+    static_assert(Traits == (PassedTraits | RawPtrTraits::kMayDangle));
+  }
 
   template <RawPtrTraits PassedTraits,
             typename Unused = std::enable_if_t<Traits != PassedTraits>>
   PA_ALWAYS_INLINE raw_ptr& operator=(
       const raw_ptr<T, PassedTraits>& p) noexcept {
+    // Limit cross-kind assignments only to cases where kMayDangle gets added,
+    // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
+    // instead of disabling via SFINAE, so that the compiler catches other
+    // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
+    // be taken.
+    static_assert(Traits == (PassedTraits | RawPtrTraits::kMayDangle));
+
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::WrapRawPtrForDuplication(
         raw_ptr_traits::TraitsToImpl<PassedTraits>::Impl::

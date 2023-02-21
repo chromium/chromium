@@ -283,7 +283,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
                    ui::mojom::DragOperation& output_drag_op);
 
   std::unique_ptr<aura::WindowTreeHost> host_;
-  raw_ptr<DesktopWindowTreeHost> desktop_window_tree_host_;
+  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
+  raw_ptr<DesktopWindowTreeHost, DanglingUntriaged> desktop_window_tree_host_;
 
   // See class documentation for Widget in widget.h for a note about ownership.
   Widget::InitParams::Ownership ownership_ =

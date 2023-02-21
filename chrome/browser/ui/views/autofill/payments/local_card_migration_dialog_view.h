@@ -63,7 +63,8 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
 
   // The view containing a list of cards. It is the content of the scroll bar.
   // Owned by the LocalCardMigrationOfferView.
-  raw_ptr<views::View> card_list_view_;
+  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
+  raw_ptr<views::View, DanglingUntriaged> card_list_view_;
 };
 
 }  // namespace autofill
