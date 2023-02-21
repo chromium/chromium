@@ -51,7 +51,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
