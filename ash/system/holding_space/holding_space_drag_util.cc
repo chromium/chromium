@@ -255,7 +255,7 @@ class DragImageItemScreenCaptureView : public DragImageItemView {
   DragImageItemScreenCaptureView(const HoldingSpaceItem* item,
                                  const ui::ColorProvider* color_provider)
       : DragImageItemView(color_provider) {
-    DCHECK(item->IsScreenCapture());
+    DCHECK(HoldingSpaceItem::IsScreenCapture(item->type()));
     InitLayout(item);
   }
 
@@ -445,9 +445,10 @@ class DragImageView : public views::View {
     container->SetLayoutManager(
         std::make_unique<DragImageLayoutManager>(kDragImageViewChildOffset));
 
-    const bool contains_only_screen_captures = base::ranges::all_of(
-        items,
-        [](const HoldingSpaceItem* item) { return item->IsScreenCapture(); });
+    const bool contains_only_screen_captures =
+        base::ranges::all_of(items, [](const HoldingSpaceItem* item) {
+          return HoldingSpaceItem::IsScreenCapture(item->type());
+        });
 
     // Show at most `kDragImageViewMaxItemsToPaint` items in the drag image. If
     // more items exist, `drag_image_overflow_badge_` will be added to indicate

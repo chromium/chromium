@@ -28,12 +28,8 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               (const base::FilePath& file_path),
               (override));
   MOCK_METHOD(void,
-              AddScreenshot,
-              (const base::FilePath& file_path),
-              (override));
-  MOCK_METHOD(void,
-              AddScreenRecording,
-              (const base::FilePath& file_path),
+              AddScreenCapture,
+              (HoldingSpaceItem::Type, const base::FilePath& file_path),
               (override));
   MOCK_METHOD(void,
               CopyImageToClipboard,

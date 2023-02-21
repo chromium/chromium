@@ -65,6 +65,7 @@ void ExpectSection(const HoldingSpaceSection* section,
       EXPECT_THAT(section->supported_types,
                   testing::UnorderedElementsAre(
                       HoldingSpaceItem::Type::kScreenRecording,
+                      HoldingSpaceItem::Type::kScreenRecordingGif,
                       HoldingSpaceItem::Type::kScreenshot));
       EXPECT_EQ(section->max_item_count, 50u);
       EXPECT_EQ(section->max_visible_item_count, 3u);
@@ -119,6 +120,7 @@ TEST_F(HoldingSpaceSectionTest, GetHoldingSpaceSectionByType) {
         id = HoldingSpaceSectionId::kPinnedFiles;
         break;
       case HoldingSpaceItem::Type::kScreenRecording:
+      case HoldingSpaceItem::Type::kScreenRecordingGif:
       case HoldingSpaceItem::Type::kScreenshot:
         id = HoldingSpaceSectionId::kScreenCaptures;
         break;

@@ -1277,9 +1277,11 @@ void CaptureModeController::OnImageFileSaved(
   ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage);
   if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
     RecordSaveToLocation(GetSaveToOption(file_saved_path));
-  HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
-  if (client)  // May be `nullptr` in tests.
-    client->AddScreenshot(file_saved_path);
+  // NOTE: Holding space `client` may be `nullptr` in tests.
+  if (auto* client = HoldingSpaceController::Get()->client()) {
+    client->AddScreenCapture(HoldingSpaceItem::Type::kScreenshot,
+                             file_saved_path);
+  }
 }
 
 void CaptureModeController::OnVideoFileSaved(
@@ -1296,9 +1298,14 @@ void CaptureModeController::OnVideoFileSaved(
       ShowPreviewNotification(saved_video_file_path,
                               gfx::Image(video_thumbnail),
                               CaptureModeType::kVideo);
-      HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
-      if (client)  // May be `nullptr` in tests.
-        client->AddScreenRecording(saved_video_file_path);
+      // NOTE: Holding space `client` may be `nullptr` in tests.
+      if (auto* client = HoldingSpaceController::Get()->client()) {
+        client->AddScreenCapture(
+            recording_type_ == RecordingType::kGif
+                ? HoldingSpaceItem::Type::kScreenRecordingGif
+                : HoldingSpaceItem::Type::kScreenRecording,
+            saved_video_file_path);
+      }
     }
     DCHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordTime(

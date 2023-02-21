@@ -52,6 +52,9 @@ class ASH_EXPORT CaptureModeTestApi {
   // API to set the capture mode source with given `source`.
   void SetCaptureModeSource(CaptureModeSource source);
 
+  // Sets the `recording_type` to use for video captures.
+  void SetRecordingType(RecordingType recording_type);
+
   // Returns true if a capture mode session is currently active.
   bool IsSessionActive() const;
 

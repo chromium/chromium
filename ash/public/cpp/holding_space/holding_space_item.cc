@@ -124,7 +124,30 @@ bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
     case Type::kPrintedPdf:
     case Type::kScan:
     case Type::kScreenRecording:
+    case Type::kScreenRecordingGif:
     case Type::kScreenshot:
+      return false;
+  }
+}
+
+// static
+bool HoldingSpaceItem::IsScreenCapture(HoldingSpaceItem::Type type) {
+  switch (type) {
+    case Type::kScreenRecording:
+    case Type::kScreenRecordingGif:
+    case Type::kScreenshot:
+      return true;
+    case Type::kArcDownload:
+    case Type::kDiagnosticsLog:
+    case Type::kDownload:
+    case Type::kDriveSuggestion:
+    case Type::kLacrosDownload:
+    case Type::kLocalSuggestion:
+    case Type::kNearbyShare:
+    case Type::kPhoneHubCameraRoll:
+    case Type::kPinnedFile:
+    case Type::kPrintedPdf:
+    case Type::kScan:
       return false;
   }
 }
@@ -145,6 +168,7 @@ bool HoldingSpaceItem::IsSuggestion(HoldingSpaceItem::Type type) {
     case Type::kPrintedPdf:
     case Type::kScan:
     case Type::kScreenRecording:
+    case Type::kScreenRecordingGif:
     case Type::kScreenshot:
       return false;
   }
@@ -332,26 +356,6 @@ bool HoldingSpaceItem::SetInProgressCommands(
 void HoldingSpaceItem::InvalidateImage() {
   if (image_)
     image_->Invalidate();
-}
-
-bool HoldingSpaceItem::IsScreenCapture() const {
-  switch (type_) {
-    case Type::kScreenRecording:
-    case Type::kScreenshot:
-      return true;
-    case Type::kArcDownload:
-    case Type::kDiagnosticsLog:
-    case Type::kDownload:
-    case Type::kDriveSuggestion:
-    case Type::kLacrosDownload:
-    case Type::kLocalSuggestion:
-    case Type::kNearbyShare:
-    case Type::kPhoneHubCameraRoll:
-    case Type::kPinnedFile:
-    case Type::kPrintedPdf:
-    case Type::kScan:
-      return false;
-  }
 }
 
 HoldingSpaceItem::HoldingSpaceItem(Type type,

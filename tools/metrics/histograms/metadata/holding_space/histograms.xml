@@ -57,7 +57,9 @@ chromium-metrics-reviews@google.com.
   <variant name="PrintedPdf" summary="Items backed by a printed PDF file."/>
   <variant name="Scan" summary="Items backed by a scanned file."/>
   <variant name="ScreenRecording"
-      summary="Items backed by a screen recording file."/>
+      summary="Items backed by a WebM screen recording file."/>
+  <variant name="ScreenRecordingGif"
+      summary="Items backed by a GIF screen recording file."/>
   <variant name="Screenshot" summary="Items backed by a screenshot file."/>
 </variants>
 

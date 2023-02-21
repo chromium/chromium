@@ -85,7 +85,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kPhoneHubCameraRoll = 10,
     kDriveSuggestion = 11,
     kLocalSuggestion = 12,
-    kMaxValue = kLocalSuggestion,
+    kScreenRecordingGif = 13,
+    kMaxValue = kScreenRecordingGif,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;
@@ -117,6 +118,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   // Returns `true` if `type` is a download type, `false` otherwise.
   static bool IsDownload(HoldingSpaceItem::Type type);
+
+  // Returns `true` if `type` is a screen capture type, `false` otherwise.
+  static bool IsScreenCapture(HoldingSpaceItem::Type type);
 
   // Returns `true` if `type` is a suggestion type, `false` otherwise.
   static bool IsSuggestion(HoldingSpaceItem::Type type);
@@ -201,9 +205,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Invalidates the current holding space image, so fresh image representations
   // are loaded when the image is next needed.
   void InvalidateImage();
-
-  // Returns true if this item is a screen capture.
-  bool IsScreenCapture() const;
 
   const std::string& id() const { return id_; }
 

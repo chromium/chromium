@@ -2929,9 +2929,24 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, AddScreenshot) {
   EXPECT_EQ(1u, test_api().GetScreenCaptureViews().size());
 }
 
+// Base class for tests of holding space's integration with the capture mode
+// screen recording feature, parameterized by the type of recording.
+class HoldingSpaceScreenRecordingUiBrowserTest
+    : public HoldingSpaceUiBrowserTest,
+      public testing::WithParamInterface<RecordingType> {
+ public:
+  RecordingType recording_type() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceScreenRecordingUiBrowserTest,
+                         testing::Values(RecordingType::kGif,
+                                         RecordingType::kWebM));
+
 // Verifies that taking a screen recording adds a screen recording holding space
-// item.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, AddScreenRecording) {
+// item. The type of holding space item depends on the type of screen recording.
+IN_PROC_BROWSER_TEST_P(HoldingSpaceScreenRecordingUiBrowserTest,
+                       AddScreenRecording) {
   // Verify that no screen recordings exist in holding space UI.
   test_api().Show();
   ASSERT_TRUE(test_api().IsShowing());
@@ -2940,6 +2955,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, AddScreenRecording) {
   test_api().Close();
   ASSERT_FALSE(test_api().IsShowing());
   ash::CaptureModeTestApi capture_mode_test_api;
+  capture_mode_test_api.SetRecordingType(recording_type());
   capture_mode_test_api.StartForFullscreen(/*for_video=*/true);
   capture_mode_test_api.PerformCapture();
   // Record a 100 ms long video.
@@ -2960,7 +2976,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, AddScreenRecording) {
   EXPECT_CALL(mock, OnHoldingSpaceItemsAdded)
       .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
         ASSERT_EQ(items.size(), 1u);
-        ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kScreenRecording);
+        ASSERT_EQ(items[0]->type(),
+                  recording_type() == RecordingType::kGif
+                      ? HoldingSpaceItem::Type::kScreenRecordingGif
+                      : HoldingSpaceItem::Type::kScreenRecording);
         wait_for_item.Quit();
       });
   wait_for_item.Run();

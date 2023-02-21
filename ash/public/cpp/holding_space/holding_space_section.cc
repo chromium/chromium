@@ -74,8 +74,9 @@ std::map<HoldingSpaceSectionId, HoldingSpaceSection> CreateSectionsById() {
           /*id=*/HoldingSpaceSectionId::kScreenCaptures,
           /*supported_types=*/
           std::set<HoldingSpaceItem::Type>({
-              HoldingSpaceItem::Type::kScreenshot,
               HoldingSpaceItem::Type::kScreenRecording,
+              HoldingSpaceItem::Type::kScreenRecordingGif,
+              HoldingSpaceItem::Type::kScreenshot,
           }),
           /*max_item_count=*/absl::make_optional<size_t>(50u),
           /*max_visible_item_count=*/

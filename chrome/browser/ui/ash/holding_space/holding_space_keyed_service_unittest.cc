@@ -1889,7 +1889,8 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
       holding_space_service->model_for_testing();
 
   const base::FilePath file_path_1 = test_mount_1->CreateArbitraryFile();
-  holding_space_service->AddScreenshot(file_path_1);
+  holding_space_service->AddScreenCapture(HoldingSpaceItem::Type::kScreenshot,
+                                          file_path_1);
 
   const base::FilePath file_path_2 = test_mount_2->CreateArbitraryFile();
   holding_space_service->AddDownload(HoldingSpaceItem::Type::kDownload,
@@ -2618,10 +2619,9 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
         holding_space_service->AddScan(file_path);
         break;
       case HoldingSpaceItem::Type::kScreenRecording:
-        holding_space_service->AddScreenRecording(file_path);
-        break;
+      case HoldingSpaceItem::Type::kScreenRecordingGif:
       case HoldingSpaceItem::Type::kScreenshot:
-        holding_space_service->AddScreenshot(file_path);
+        holding_space_service->AddScreenCapture(type, file_path);
         break;
     }
 
