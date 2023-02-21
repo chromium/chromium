@@ -668,7 +668,12 @@ FeatureList::OverrideState FeatureList::GetOverrideState(
     const Feature& feature) const {
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
-  DCHECK(CheckFeatureIdentity(feature)) << feature.name;
+  DCHECK(CheckFeatureIdentity(feature))
+      << feature.name
+      << " has multiple definitions. Either it is defined more than once in "
+         "code or (for component builds) the code is built into multiple "
+         "components (shared libraries) without a corresponding export "
+         "statement";
 
   // If caching is disabled, always perform the full lookup.
   if (!g_cache_override_state)
