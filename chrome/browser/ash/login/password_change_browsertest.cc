@@ -79,6 +79,7 @@ const test::UIPath kForgotPassword = {"gaia-password-changed",
 const test::UIPath kForgotPasswordButton = {"gaia-password-changed",
                                             "forgotPasswordButton"};
 const test::UIPath kTryAgain = {"gaia-password-changed", "tryAgain"};
+const test::UIPath kTryAgainRecovery = {"gaia-password-changed", "backButton"};
 const test::UIPath kProceedAnyway = {"gaia-password-changed", "proceedAnyway"};
 const test::UIPath kCancel = {"gaia-password-changed", "cancel"};
 const test::UIPath kForgotCancel = {"gaia-password-changed", "cancelForgot"};
@@ -270,7 +271,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
 
   test::OobeJS().CreateDisplayedWaiter(false, kPasswordStep)->Wait();
 
-  test::OobeJS().ExpectVisiblePath(kTryAgain);
+  if (features::IsCryptohomeRecoveryEnabled()) {
+    test::OobeJS().ExpectVisiblePath(kTryAgainRecovery);
+  } else {
+    test::OobeJS().ExpectVisiblePath(kTryAgain);
+  }
   test::OobeJS().ExpectVisiblePath(kProceedAnyway);
 
   // Click "Proceed anyway".
@@ -302,12 +307,22 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, TryAgainAfterForgetLinkClick) {
   test::OobeJS().ClickOnPath(kForgotPassword);
 
   test::OobeJS().CreateDisplayedWaiter(false, kPasswordStep)->Wait();
+  test::UIPath featureTryAgainPath;
+  test::UIPath nonFeatureTryAgainPath;
+  if (features::IsCryptohomeRecoveryEnabled()) {
+    featureTryAgainPath = kTryAgainRecovery;
+    nonFeatureTryAgainPath = kTryAgain;
+  } else {
+    featureTryAgainPath = kTryAgain;
+    nonFeatureTryAgainPath = kTryAgainRecovery;
+  }
 
-  test::OobeJS().ExpectVisiblePath(kTryAgain);
+  test::OobeJS().ExpectVisiblePath(featureTryAgainPath);
+  test::OobeJS().ExpectHiddenPath(nonFeatureTryAgainPath);
   test::OobeJS().ExpectVisiblePath(kProceedAnyway);
 
   // Go back to old password input by clicking Try Again.
-  test::OobeJS().ClickOnPath(kTryAgain);
+  test::OobeJS().ClickOnPath(featureTryAgainPath);
 
   test::OobeJS().CreateDisplayedWaiter(true, kPasswordStep)->Wait();
 

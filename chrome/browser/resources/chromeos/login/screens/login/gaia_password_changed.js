@@ -215,6 +215,11 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   }
 
   /** @private */
+  onBackButtonClicked_() {
+    this.setUIStep(GaiaPasswordChangedUIState.PASSWORD);
+  }
+
+  /** @private */
   onAnimationFinish_() {
     this.focus();
   }
