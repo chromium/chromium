@@ -806,8 +806,10 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   // Divergence is between a call to ParseSheet and a call to
   // CreateInline within this method. Assert the values that
   // introduce the codepath divergence.
-  recordreplay::Assert("[RUN-1065] StyleEngine::CreateSheet is_new_entry=%d contents=%d isCacheable=%d",
-    result.is_new_entry, !!contents, contents && contents->IsCacheableForStyleElement());
+  recordreplay::Assert("[RUN-1065-1390] StyleEngine::CreateSheet %d %d %d %lu",
+                       result.is_new_entry, !!contents,
+                       contents && contents->IsCacheableForStyleElement(),
+                       AtomicStringHash::GetHash(text_content));
 
   if (result.is_new_entry || !contents ||
       !contents->IsCacheableForStyleElement()) {
