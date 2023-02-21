@@ -130,6 +130,15 @@ config("skia_library_config") {
   if (use_blink && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
   }
+  if (use_blink) {
+    defines += [ "SK_TYPEFACE_FACTORY_FREETYPE" ]
+  }
+  if (is_win) {
+    defines += [ "SK_TYPEFACE_FACTORY_DIRECTWRITE" ]
+  }
+  if (is_apple) {
+    defines += [ "SK_TYPEFACE_FACTORY_CORETEXT" ]
+  }
 
   if (current_cpu == "arm") {
     if (arm_use_neon) {
@@ -371,6 +380,7 @@ component("skia") {
   # FreeType is needed everywhere where blink is used, on Linux and Android as main
   # font backend, on Windows and Mac as fallback backend for Variations.
   if (use_blink) {
+    # See SK_TYPEFACE_FACTORY_FREETYPE
     sources += [
       "//third_party/skia/src/ports/SkFontHost_FreeType.cpp",
       "//third_party/skia/src/ports/SkFontHost_FreeType_common.cpp",
@@ -378,6 +388,7 @@ component("skia") {
   }
 
   if (is_win) {
+    # See SK_TYPEFACE_FACTORY_DIRECTWRITE
     sources += [
       "//third_party/skia/src/ports/SkFontHost_win.cpp",
       "//third_party/skia/src/ports/SkFontMgr_win_dw.cpp",
@@ -391,6 +402,7 @@ component("skia") {
   }
 
   if (is_apple) {
+    # See SK_TYPEFACE_FACTORY_CORETEXT
     sources += [
       "//third_party/skia/include/ports/SkFontMgr_mac_ct.h",
       "//third_party/skia/src/ports/SkFontMgr_mac_ct.cpp",
