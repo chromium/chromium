@@ -9672,6 +9672,13 @@ const CSSValue* WhiteSpace::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.WhiteSpace());
 }
 
+const CSSValue* TextWrap::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.TextWrap());
+}
+
 const CSSValue* Widows::ParseSingleValue(CSSParserTokenRange& range,
                                          const CSSParserContext& context,
                                          const CSSParserLocalContext&) const {

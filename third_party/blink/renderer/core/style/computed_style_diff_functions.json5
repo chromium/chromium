@@ -231,7 +231,7 @@
                 "content-visibility", "aspect-ratio", "overflow-clip-margin",
                 "-internal-align-self-block", "orphans", "widows",
                 "scrollbar-gutter", "break-after", "break-before",
-                "break-inside", "baseline-source"],
+                "break-inside", "baseline-source", "text-wrap"],
         methods_to_diff: [
           {
             method: "VerticalAlign()",
