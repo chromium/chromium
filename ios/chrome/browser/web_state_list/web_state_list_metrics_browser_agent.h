@@ -15,7 +15,7 @@ class AllWebStateObservationForwarder;
 class SessionMetrics;
 
 class WebStateListMetricsBrowserAgent
-    : BrowserObserver,
+    : public BrowserObserver,
       public WebStateListObserver,
       public SessionRestorationObserver,
       public web::WebStateObserver,

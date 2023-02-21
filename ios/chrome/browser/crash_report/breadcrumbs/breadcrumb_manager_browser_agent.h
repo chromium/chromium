@@ -46,10 +46,10 @@ extern const char kBreadcrumbOverlayJsPrompt[];
 
 class BreadcrumbManagerBrowserAgent
     : public breadcrumbs::BreadcrumbManagerBrowserAgent,
-      BrowserObserver,
+      public BrowserObserver,
       public OverlayPresenterObserver,
       public BrowserUserData<BreadcrumbManagerBrowserAgent>,
-      WebStateListObserver {
+      public WebStateListObserver {
  public:
   BreadcrumbManagerBrowserAgent(const BreadcrumbManagerBrowserAgent&) = delete;
   BreadcrumbManagerBrowserAgent& operator=(

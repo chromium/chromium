@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 class TabParentingBrowserAgent
-    : BrowserObserver,
+    : public BrowserObserver,
       public BrowserUserData<TabParentingBrowserAgent>,
-      WebStateListObserver {
+      public WebStateListObserver {
  public:
   ~TabParentingBrowserAgent() override;
   TabParentingBrowserAgent(const TabParentingBrowserAgent&) = delete;

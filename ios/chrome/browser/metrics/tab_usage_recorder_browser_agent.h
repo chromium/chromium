@@ -28,9 +28,9 @@ class WebState;
 
 // Reports usage about the lifecycle of a single Browser's tabs.
 class TabUsageRecorderBrowserAgent
-    : BrowserObserver,
+    : public BrowserObserver,
       public BrowserUserData<TabUsageRecorderBrowserAgent>,
-      web::WebStateObserver,
+      public web::WebStateObserver,
       public WebStateListObserver,
       public SessionRestorationObserver {
  public:

@@ -24,7 +24,7 @@ class DefaultOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
   void Cancel();
 
   // Helper object that intercepts navigation events to trigger cancellation.
-  class NavigationHelper : web::WebStateObserver {
+  class NavigationHelper : public web::WebStateObserver {
    public:
     NavigationHelper(DefaultOverlayRequestCancelHandler* cancel_handler,
                      web::WebState* web_state);

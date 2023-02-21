@@ -14,7 +14,7 @@
 // Tracks the time spent on pages visible on the screen and logs them as UKMs.
 class PageloadForegroundDurationTabHelper
     : public web::WebStateUserData<PageloadForegroundDurationTabHelper>,
-      web::WebStateObserver {
+      public web::WebStateObserver {
  public:
   ~PageloadForegroundDurationTabHelper() override;
 

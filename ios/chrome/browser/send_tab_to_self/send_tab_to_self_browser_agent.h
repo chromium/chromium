@@ -32,7 +32,7 @@ class SendTabToSelfBrowserAgent
       public send_tab_to_self::SendTabToSelfModelObserver,
       public WebStateListObserver,
       public web::WebStateObserver,
-      BrowserObserver {
+      public BrowserObserver {
  public:
   ~SendTabToSelfBrowserAgent() override;
 

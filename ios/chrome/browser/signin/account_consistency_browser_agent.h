@@ -23,7 +23,7 @@ class AccountConsistencyBrowserAgent
     : public BrowserUserData<AccountConsistencyBrowserAgent>,
       public DependencyInstaller,
       public ManageAccountsDelegate,
-      BrowserObserver {
+      public BrowserObserver {
  public:
   // Not copyable or moveable
   AccountConsistencyBrowserAgent(const AccountConsistencyBrowserAgent&) =
