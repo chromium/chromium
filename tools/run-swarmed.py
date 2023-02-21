@@ -285,9 +285,7 @@ def main():
     elif args.target_os == 'android':
       args.arch = gn_args.get('target_cpu', 'detect')
 
-  # TODO(crbug.com/1268955): Use sys.executable and remove os-specific logic
-  # once mb.py is in python3
-  mb_cmd = ['tools/mb/mb', 'isolate']
+  mb_cmd = [sys.executable, 'tools/mb/mb.py', 'isolate']
   if not args.build:
     mb_cmd.append('--no-build')
   if args.isolate_map_file:
@@ -310,9 +308,9 @@ def main():
   with open(archive_json) as f:
     cas_digest = json.load(f).get(args.target_name)
 
-  # TODO(crbug.com/1268955): Use sys.executable and remove os-specific logic
-  # once mb.py is in python3
-  mb_cmd = ['tools/mb/mb', 'get-swarming-command', '--as-list']
+  mb_cmd = [
+      sys.executable, 'tools/mb/mb.py', 'get-swarming-command', '--as-list'
+  ]
   if not args.build:
     mb_cmd.append('--no-build')
   if args.isolate_map_file:
