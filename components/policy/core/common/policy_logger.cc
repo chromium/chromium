@@ -193,7 +193,7 @@ bool PolicyLogger::IsPolicyLoggingEnabled() const {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-int PolicyLogger::GetPolicyLogsSizeForTesting() const {
+size_t PolicyLogger::GetPolicyLogsSizeForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
   return logs_.size();
 }

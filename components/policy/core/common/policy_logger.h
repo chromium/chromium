@@ -155,7 +155,7 @@ class POLICY_EXPORT PolicyLogger {
   bool IsPolicyLoggingEnabled() const;
 
   // Returns the logs size for testing purposes.
-  int GetPolicyLogsSizeForTesting() const;
+  size_t GetPolicyLogsSizeForTesting() const;
 
   // TODO(b/251799119): delete logs after an expiry period of ~30 minutes.
 

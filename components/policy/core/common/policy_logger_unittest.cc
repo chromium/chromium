@@ -30,10 +30,14 @@ TEST(PolicyLoggerTest, PolicyLoggingEnabled) {
 
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
-  int logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
+  size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
   AddLogs("when the feature is enabled.", policy_logger);
-  EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
-            logs_size_before_adding + 1);
+  // Check that logger is enabled by feature and that `GetAsList` returns an
+  // updated list of logs.
+  EXPECT_EQ(policy_logger->GetAsList().size(), logs_size_before_adding + 1);
+  EXPECT_EQ(*(policy_logger->GetAsList()[logs_size_before_adding].FindStringKey(
+                "message")),
+            "Element added when the feature is enabled.");
 }
 
 TEST(PolicyLoggerTest, PolicyLoggingDisabled) {
@@ -43,7 +47,7 @@ TEST(PolicyLoggerTest, PolicyLoggingDisabled) {
 
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
-  int logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
+  size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
   AddLogs("when the feature is disabled.", policy_logger);
   EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
             logs_size_before_adding);
