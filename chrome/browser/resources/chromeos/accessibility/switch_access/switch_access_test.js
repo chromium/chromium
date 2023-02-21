@@ -26,9 +26,11 @@ AX_TEST_F(
     'SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', async function() {
       // Build a new SwitchAccess instance with hooks.
       let initCount = 0;
-      SwitchAccess.finishInit_ = () => {
+      const oldInit = SwitchAccess.initialize;
+      SwitchAccess.initialize = async () => {
+        await oldInit();
         initCount++;
-        assertTrue(Boolean(this.promiseCallback));
+        assertNotNullNorUndefined(this.promiseCallback);
         this.promiseCallback();
         delete this.promiseCallback();
       };
@@ -36,7 +38,7 @@ AX_TEST_F(
       // Stub this out so that focus is undefined.
       chrome.automation.getFocus = callback => {
         callback();
-        assertTrue(Boolean(this.promiseCallback));
+        assertNotNullNorUndefined(this.promiseCallback);
         this.promiseCallback();
         delete this.promiseCallback;
       };
@@ -44,7 +46,7 @@ AX_TEST_F(
       // Reset state so there are no re-initialization errors.
       resetState();
 
-      // Initialize; we should not have called finishInit_ since there's no
+      // Initialize; we should not have incremented initCount since there's no
       // focus.
       SwitchAccess.initialize();
       await this.waitForCallback();
