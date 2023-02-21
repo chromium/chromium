@@ -99,9 +99,9 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
 
     context_->GetTaskRunner(TaskType::kInternalMediaRealTime)
         ->PostDelayedTask(FROM_HERE,
-                          base::BindOnce(&FakeWebMediaPlayer::AutoTimeIncrement,
-                                         base::Unretained(this),
-                                         auto_time_increment_delta_.value()),
+                          WTF::BindOnce(&FakeWebMediaPlayer::AutoTimeIncrement,
+                                        WTF::Unretained(this),
+                                        auto_time_increment_delta_.value()),
                           auto_time_increment_delta_.value());
     scheduled_time_increment_ = true;
   }

@@ -2254,11 +2254,12 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
   ScrollableArea* scrollable_area =
       GetDocument().GetLayoutView()->GetScrollableArea();
   bool finished = false;
-  scrollable_area->SetScrollOffset(
-      ScrollOffset(0, 1000), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(
-          base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 1000),
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   mojom::blink::ScrollBehavior::kSmooth,
+                                   ScrollableArea::ScrollCallback(WTF::BindOnce(
+                                       [](bool* finished) { *finished = true; },
+                                       WTF::Unretained(&finished))));
   Compositor().BeginFrame();
   LocalFrameView* frame_view = GetDocument().View();
   ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().y());

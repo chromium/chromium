@@ -93,8 +93,8 @@ class TestLocalFrameExternalPopupClient : public FakeLocalFrameHost {
     selected_item_ = selected_item;
     menu_items_ = std::move(menu_items);
     popup_client_.Bind(std::move(popup_client));
-    popup_client_.set_disconnect_handler(base::BindOnce(
-        &TestLocalFrameExternalPopupClient::Reset, base::Unretained(this)));
+    popup_client_.set_disconnect_handler(WTF::BindOnce(
+        &TestLocalFrameExternalPopupClient::Reset, WTF::Unretained(this)));
     std::move(showed_callback_).Run();
   }
 
