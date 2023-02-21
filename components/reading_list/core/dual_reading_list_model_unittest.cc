@@ -183,6 +183,65 @@ TEST_F(DualReadingListModelTest, ReturnKeysSize) {
   EXPECT_EQ(2ul, dual_model_->size());
 }
 
+TEST_F(DualReadingListModelTest, BatchUpdates) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(dual_model_.get()));
+  std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate> batch =
+      dual_model_->BeginBatchUpdates();
+  EXPECT_TRUE(dual_model_->IsPerformingBatchUpdates());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  EXPECT_CALL(observer_,
+              ReadingListModelCompletedBatchUpdates(dual_model_.get()));
+  batch.reset();
+  EXPECT_FALSE(dual_model_->IsPerformingBatchUpdates());
+}
+
+// Tests batch updates are reentrant.
+TEST_F(DualReadingListModelTest, BatchUpdatesReentrant) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
+  // ReadingListModelCompletedBatchUpdates() should be invoked at the very end
+  // only, and once.
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates(_)).Times(0);
+
+  EXPECT_FALSE(dual_model_->IsPerformingBatchUpdates());
+
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(dual_model_.get()));
+  std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate> batch =
+      dual_model_->BeginBatchUpdates();
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // When two updates happen at the same time, the notification is only sent
+  // for beginning of first update and completion of last update.
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(_)).Times(0);
+
+  EXPECT_TRUE(dual_model_->IsPerformingBatchUpdates());
+
+  std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate> second_batch =
+      dual_model_->BeginBatchUpdates();
+  EXPECT_TRUE(dual_model_->IsPerformingBatchUpdates());
+
+  batch.reset();
+  EXPECT_TRUE(dual_model_->IsPerformingBatchUpdates());
+
+  EXPECT_CALL(observer_,
+              ReadingListModelCompletedBatchUpdates(dual_model_.get()));
+  second_batch.reset();
+  EXPECT_FALSE(dual_model_->IsPerformingBatchUpdates());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // Consequent updates send notifications.
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(dual_model_.get()));
+  std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate> third_batch =
+      dual_model_->BeginBatchUpdates();
+  EXPECT_TRUE(dual_model_->IsPerformingBatchUpdates());
+
+  EXPECT_CALL(observer_,
+              ReadingListModelCompletedBatchUpdates(dual_model_.get()));
+  third_batch.reset();
+  EXPECT_FALSE(dual_model_->IsPerformingBatchUpdates());
+}
+
 TEST_F(DualReadingListModelTest, GetEntryByURL) {
   std::vector<scoped_refptr<ReadingListEntry>> local_entries;
   local_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
