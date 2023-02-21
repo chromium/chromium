@@ -32,7 +32,13 @@ const base::FeatureParam<UnretainedDanglingPtrMode>
 
 BASE_FEATURE(kPartitionAllocDanglingPtr,
              "PartitionAllocDanglingPtr",
-             FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAGS_FOR_BOTS)
+             FEATURE_ENABLED_BY_DEFAULT
+#else
+             FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 constexpr FeatureParam<DanglingPtrMode>::Option kDanglingPtrModeOption[] = {
     {DanglingPtrMode::kCrash, "crash"},
     {DanglingPtrMode::kLogOnly, "log_only"},
@@ -98,7 +104,8 @@ BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,
              "PartitionAllocBackupRefPtr",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||                \
+    BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAGS_FOR_BOTS) || \
     (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
              FEATURE_ENABLED_BY_DEFAULT
 #else
