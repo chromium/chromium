@@ -53,7 +53,7 @@ const int kPrivacyIndicatorsViewSize = 8;
 
 constexpr auto kRepeatedShowTimerInterval = base::Milliseconds(100);
 
-constexpr auto kDwellInExpandDuration = base::Milliseconds(1000);
+constexpr auto kDwellInExpandDuration = base::Milliseconds(3000);
 constexpr auto kShorterSizeShrinkAnimationDelay =
     kDwellInExpandDuration + base::Milliseconds(133);
 constexpr auto kSizeChangeAnimationDuration = base::Milliseconds(333);
