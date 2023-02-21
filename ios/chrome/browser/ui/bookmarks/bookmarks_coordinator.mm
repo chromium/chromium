@@ -588,6 +588,7 @@ enum class PresentedState {
         (NSArray<ChromeTableViewController*>*)replacementViewControllers {
   TableViewNavigationController* navController =
       [[TableViewNavigationController alloc] initWithTable:viewController];
+  [navController setModalPresentationStyle:UIModalPresentationFormSheet];
   self.bookmarkNavigationController = navController;
   if (replacementViewControllers) {
     [navController setViewControllers:replacementViewControllers];
@@ -595,8 +596,6 @@ enum class PresentedState {
 
   navController.toolbarHidden = YES;
   navController.presentationController.delegate = self;
-
-  [navController setModalPresentationStyle:UIModalPresentationFormSheet];
 
   [self.baseViewController presentViewController:navController
                                         animated:YES
