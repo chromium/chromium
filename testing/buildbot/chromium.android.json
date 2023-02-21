@@ -9356,7 +9356,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/"
@@ -28906,7 +28907,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 3
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/"

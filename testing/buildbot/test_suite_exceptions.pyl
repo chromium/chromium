@@ -3391,6 +3391,9 @@
           # TODO(crbug.com/1264654): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
+        'swarming': {
+          'shards': 2,
+        },
       },
       'android-nougat-x86-rel': {
         'args': [
@@ -3398,7 +3401,7 @@
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
         'swarming': {
-          'shards': 2,
+          'shards': 3,
           'inverse_quickrun_shards': 4,
         },
       },
