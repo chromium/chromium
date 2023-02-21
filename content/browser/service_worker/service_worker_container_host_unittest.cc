@@ -292,11 +292,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   bool CanFindClientContainerHost(ServiceWorkerContainerHost* container_host) {
     for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
              context_->GetClientContainerHostIterator(
-                 // TODO(crbug.com/1199077): Update this when
-                 // ServiceWorkerContainerHost implements StorageKey.
-                 blink::StorageKey::CreateFirstParty(
-                     url::Origin::Create(container_host->url())),
-                 false /* include_reserved_clients */,
+                 container_host->key(), false /* include_reserved_clients */,
                  false /* include_back_forward_cached_clients */);
          !it->IsAtEnd(); it->Advance()) {
       if (container_host == it->GetContainerHost())
