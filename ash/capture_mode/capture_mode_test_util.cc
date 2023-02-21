@@ -4,6 +4,9 @@
 
 #include "ash/capture_mode/capture_mode_test_util.h"
 
+#include "ash/accessibility/a11y_feature_type.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
@@ -16,7 +19,7 @@
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
-#include "ash/wm/cursor_manager_chromeos.h"
+#include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -190,6 +193,21 @@ void SetDeviceScaleFactor(float dsf) {
     // proceeding.
     test_delegate->RequestAndWaitForVideoFrame();
   }
+}
+
+views::Widget* EnableAndGetAutoClickBubbleWidget() {
+  auto* autoclick_controller = Shell::Get()->autoclick_controller();
+  autoclick_controller->SetEnabled(true, /*show_confirmation_dialog=*/false);
+  Shell::Get()
+      ->accessibility_controller()
+      ->GetFeature(A11yFeatureType::kAutoclick)
+      .SetEnabled(true);
+
+  views::Widget* autoclick_bubble_widget =
+      autoclick_controller->GetMenuBubbleControllerForTesting()
+          ->GetBubbleWidgetForTesting();
+  EXPECT_TRUE(autoclick_bubble_widget->IsVisible());
+  return autoclick_bubble_widget;
 }
 
 // -----------------------------------------------------------------------------

@@ -3872,17 +3872,8 @@ TEST_P(CaptureModeCameraPreviewTest,
   // Update display size big enough to make sure when capture source is
   // `kWindow`, the selected window is not system tray.
   UpdateDisplay("1366x768");
-  // Enable autoclick bar.
-  auto* autoclick_controller = Shell::Get()->autoclick_controller();
-  autoclick_controller->SetEnabled(true, /*show_confirmation_dialog=*/false);
-  Shell::Get()
-      ->accessibility_controller()
-      ->GetFeature(A11yFeatureType::kAutoclick)
-      .SetEnabled(true);
 
-  views::Widget* autoclick_bubble_widget =
-      autoclick_controller->GetMenuBubbleControllerForTesting()
-          ->GetBubbleWidgetForTesting();
+  views::Widget* autoclick_bubble_widget = EnableAndGetAutoClickBubbleWidget();
   EXPECT_TRUE(autoclick_bubble_widget->IsVisible());
   const gfx::Rect origin_autoclick_bar_bounds =
       autoclick_bubble_widget->GetWindowBoundsInScreen();

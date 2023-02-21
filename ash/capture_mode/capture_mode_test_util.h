@@ -110,6 +110,10 @@ bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling);
 // Sets the device scale factor for only the first available display.
 void SetDeviceScaleFactor(float dsf);
 
+// Enables the auto click accessibility feature, and returns the auto click
+// bubble widget.
+views::Widget* EnableAndGetAutoClickBubbleWidget();
+
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
 // related features in its constructor, so test fixtures that use this should

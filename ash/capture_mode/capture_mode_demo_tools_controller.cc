@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/capture_mode/capture_mode_constants.h"
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/key_combo_view.h"
 #include "ash/capture_mode/pointer_highlight_layer.h"
@@ -47,6 +50,7 @@ constexpr float kTouchHighlightLayerTouchDownScale = 56.f / 72;
 constexpr base::TimeDelta kMouseScaleUpDuration = base::Milliseconds(1500);
 constexpr base::TimeDelta kTouchDownScaleUpDuration = base::Milliseconds(200);
 constexpr base::TimeDelta kTouchUpScaleUpDuration = base::Milliseconds(1000);
+constexpr int kSpaceBetweenKeyComboAndCaptureBar = 8;
 
 int GetModifierFlagForKeyCode(ui::KeyboardCode key_code) {
   switch (key_code) {
@@ -173,6 +177,12 @@ void CaptureModeDemoToolsController::PerformMousePressAnimation(
 void CaptureModeDemoToolsController::RefreshBounds() {
   if (key_combo_widget_) {
     key_combo_widget_->SetBounds(CalculateKeyComboWidgetBounds());
+
+    // Update the autoclick menu bounds and sticky overlay bounds if it collides
+    // with the bounds of the `key_combo_widget_`.
+    Shell::Get()
+        ->accessibility_controller()
+        ->UpdateFloatingPanelBoundsIfNeeded();
   }
 }
 
@@ -297,9 +307,26 @@ gfx::Rect CaptureModeDemoToolsController::CalculateKeyComboWidgetBounds()
           ? confine_bounds.right() - preferred_size.width() -
                 capture_mode::kKeyWidgetBorderPadding
           : confine_bounds.CenterPoint().x() - preferred_size.width() / 2;
-  const int key_combo_y = confine_bounds.bottom() -
-                          capture_mode::kKeyWidgetDistanceFromBottom -
-                          preferred_size.height();
+
+  int key_combo_y = confine_bounds.bottom() -
+                    capture_mode::kKeyWidgetDistanceFromBottom -
+                    preferred_size.height();
+
+  // Check the existence of capture mode bar and re-calculate `key_combo_y` to
+  // avoid collision.
+  auto* capture_mode_controller = CaptureModeController::Get();
+  if (capture_mode_controller->IsActive() &&
+      video_recording_watcher_->recording_source() !=
+          CaptureModeSource::kWindow) {
+    auto* capture_bar_widget = capture_mode_controller->capture_mode_session()
+                                   ->capture_mode_bar_widget();
+    DCHECK(capture_bar_widget);
+    key_combo_y = std::min(key_combo_y,
+                           capture_bar_widget->GetWindowBoundsInScreen().y() -
+                               kSpaceBetweenKeyComboAndCaptureBar -
+                               preferred_size.height());
+  }
+
   return gfx::Rect(gfx::Point(key_combo_x, key_combo_y), preferred_size);
 }
 

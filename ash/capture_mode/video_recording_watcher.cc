@@ -42,6 +42,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -327,6 +328,27 @@ gfx::Rect VideoRecordingWatcher::GetCaptureSurfaceConfineBounds() const {
   }
 }
 
+gfx::Rect VideoRecordingWatcher::GetEffectivePartialRegionBounds() const {
+  DCHECK_EQ(recording_source_, CaptureModeSource::kRegion);
+  // TODO(afakhry): Consider having the region to anchor to the nearest corner,
+  // so that screen rotation doesn't result in the apparent change of the region
+  // position. Discussion with PM/UX determined that this is a low priority for
+  // now.
+  gfx::Rect result = partial_region_bounds_;
+  result.AdjustToFit(current_root_->bounds());
+  return result;
+}
+
+const views::Widget* VideoRecordingWatcher::GetKeyComboWidgetIfVisible() const {
+  if (demo_tools_controller_) {
+    const auto* key_combo_widget = demo_tools_controller_->key_combo_widget();
+    if (key_combo_widget && key_combo_widget->IsVisible()) {
+      return key_combo_widget;
+    }
+  }
+  return nullptr;
+}
+
 void VideoRecordingWatcher::OnWindowParentChanged(aura::Window* window,
                                                   aura::Window* parent) {
   DCHECK_EQ(window, window_being_recorded_);
@@ -586,17 +608,6 @@ void VideoRecordingWatcher::OnCursorCompositingStateChanged(bool enabled) {
       force_cursor_overlay_hidden_
           ? gfx::PointF()
           : GetCursorLocationInWindow(window_being_recorded_));
-}
-
-gfx::Rect VideoRecordingWatcher::GetEffectivePartialRegionBounds() const {
-  DCHECK_EQ(recording_source_, CaptureModeSource::kRegion);
-  // TODO(afakhry): Consider having the region to anchor to the nearest corner,
-  // so that screen rotation doesn't result in the apparent change of the region
-  // position. Discussion with PM/UX determined that this is a low priority for
-  // now.
-  gfx::Rect result = partial_region_bounds_;
-  result.AdjustToFit(current_root_->bounds());
-  return result;
 }
 
 bool VideoRecordingWatcher::IsWindowDimmedForTesting(

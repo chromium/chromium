@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
@@ -61,6 +62,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/snapshot/snapshot.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -795,6 +797,33 @@ gfx::Rect CaptureModeController::GetCaptureSurfaceConfineBounds() const {
     return capture_mode_session_->GetCaptureSurfaceConfineBounds();
 
   return gfx::Rect();
+}
+
+std::vector<aura::Window*>
+CaptureModeController::GetWindowsForCollisionAvoidance() const {
+  std::vector<aura::Window*> windows_to_be_avoided;
+  if (IsActive()) {
+    aura::Window* capture_bar_window =
+        capture_mode_session_->capture_mode_bar_widget()->GetNativeWindow();
+    windows_to_be_avoided.push_back(capture_bar_window);
+  }
+
+  auto* camera_preview_widget = camera_controller_->camera_preview_widget();
+  if (camera_preview_widget && camera_preview_widget->IsVisible()) {
+    windows_to_be_avoided.push_back(camera_preview_widget->GetNativeView());
+  }
+
+  if (video_recording_watcher_ &&
+      !video_recording_watcher_->is_shutting_down() &&
+      video_recording_watcher_->recording_source() !=
+          CaptureModeSource::kWindow) {
+    if (auto* key_combo_widget =
+            video_recording_watcher_->GetKeyComboWidgetIfVisible()) {
+      windows_to_be_avoided.push_back(key_combo_widget->GetNativeWindow());
+    }
+  }
+
+  return windows_to_be_avoided;
 }
 
 void CaptureModeController::OnRecordingEnded(

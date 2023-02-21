@@ -71,6 +71,7 @@ class ASH_EXPORT VideoRecordingWatcher
   bool is_in_projector_mode() const { return is_in_projector_mode_; }
   bool should_paint_layer() const { return should_paint_layer_; }
   bool is_shutting_down() const { return is_shutting_down_; }
+  CaptureModeSource recording_source() const { return recording_source_; }
 
   // Toggles the Projector mode's overlay widget on or off. Can only be called
   // if |is_in_projector_mode()| is true.
@@ -89,6 +90,14 @@ class ASH_EXPORT VideoRecordingWatcher
   // capture mode camera preview widget and key combo widget) will be confined
   // when recording is in progress.
   gfx::Rect GetCaptureSurfaceConfineBounds() const;
+
+  // Returns the `partial_region_bounds_` clamped to the bounds of the
+  // `current_root_`. It should only be called if `recording_source_` is
+  // `kRegion`.
+  gfx::Rect GetEffectivePartialRegionBounds() const;
+
+  // Returns the `key_combo_widget_` if it is visible.
+  const views::Widget* GetKeyComboWidgetIfVisible() const;
 
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
@@ -135,11 +144,6 @@ class ASH_EXPORT VideoRecordingWatcher
 
   // CursorWindowController::Observer:
   void OnCursorCompositingStateChanged(bool enabled) override;
-
-  // Returns the `partial_region_bounds_` clamped to the bounds of the
-  // `current_root_`. It should only be called if `recording_source_` is
-  // `kRegion`.
-  gfx::Rect GetEffectivePartialRegionBounds() const;
 
   bool IsWindowDimmedForTesting(aura::Window* window) const;
 
