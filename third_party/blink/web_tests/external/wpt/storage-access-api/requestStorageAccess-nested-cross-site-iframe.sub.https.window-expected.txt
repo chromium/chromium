@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS [nested-cross-site-frame] document.requestStorageAccess() should exist on the document interface
+PASS [nested-cross-site-frame] document.requestStorageAccess() should resolve in top-level frame or otherwise reject with a NotAllowedError with no user gesture
+FAIL [nested-cross-site-frame] document.requestStorageAccess() should be resolved when called properly with a user gesture, and should allow cookie access assert_true: After obtaining storage access, subresource requests from the frame should send and set cookies. expected true got false
+FAIL [nested-cross-site-frame] document.requestStorageAccess() should be rejected with a NotAllowedError without permission grant assert_unreached: Should have rejected: document.requestStorageAccess() call without permission Reached unreachable code
+PASS [nested-cross-site-frame] document.requestStorageAccess() should be rejected with a NotAllowedError with denied permission
+Harness: the test ran to completion.
+
