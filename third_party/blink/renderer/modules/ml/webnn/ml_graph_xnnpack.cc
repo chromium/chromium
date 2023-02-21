@@ -16,6 +16,7 @@
 #include "build/buildflag.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
@@ -964,7 +965,14 @@ MLGraph* MLGraphXnnpack::ValidateAndBuildSync(
       named_outputs, exception_state);
 }
 
-MLGraphXnnpack::MLGraphXnnpack(MLContext* context) : MLGraph(context) {}
+MLGraphXnnpack::MLGraphXnnpack(MLContext* context) : MLGraph(context) {
+  auto* execution_context = context->GetML()->GetExecutionContext();
+  DCHECK(execution_context);
+  // TODO(crbug.com/1273291): Get a dedicated queue when the specification
+  // matures.
+  resolver_task_runner_ =
+      execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI);
+}
 
 MLGraphXnnpack::~MLGraphXnnpack() {
   // Explicitly destroy XNNPACK Runtime before releasing static data buffers. It
@@ -1058,11 +1066,6 @@ void MLGraphXnnpack::BuildAsyncImpl(const MLNamedOperands& named_outputs,
   // TODO(crbug.com/1273291): Revisit whether the topological sorting should run
   // in the worker thread.
   auto* toposorted_operators = GetOperatorsInTopologicalOrder(named_outputs);
-  // TODO(crbug.com/1273291): Get a dedicated queue when the specification
-  // matures.
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      ExecutionContext::From(resolver->GetScriptState())
-          ->GetTaskRunner(TaskType::kMiscPlatformAPI);
   worker_pool::PostTask(
       FROM_HERE,
       CrossThreadBindOnce(
@@ -1070,7 +1073,7 @@ void MLGraphXnnpack::BuildAsyncImpl(const MLNamedOperands& named_outputs,
           WrapCrossThreadPersistent(
               MakeGarbageCollected<MLNamedOperands>(named_outputs)),
           WrapCrossThreadPersistent(toposorted_operators),
-          WrapCrossThreadPersistent(resolver), std::move(task_runner)));
+          WrapCrossThreadPersistent(resolver), resolver_task_runner_));
 }
 
 // static
@@ -1139,14 +1142,53 @@ MLGraph* MLGraphXnnpack::BuildSyncImpl(const MLNamedOperands& named_outputs,
 void MLGraphXnnpack::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                       const MLNamedArrayBufferViews& outputs,
                                       ScriptPromiseResolver* resolver) {
-  // TODO(crbug.com/1273291): There is an issue of current WebNN asynchronous
-  // execution design: https://github.com/webmachinelearning/webnn/issues/318.
-  // After the spec issue is fixed, implement this method by posting the inputs
-  // and outputs to a background thread and invoking XNNPACK Runtime object in
-  // the background thread.
+  worker_pool::PostTask(
+      FROM_HERE,
+      CrossThreadBindOnce(
+          &ComputeOnBackgroundThread, WrapCrossThreadPersistent(this),
+          WrapCrossThreadPersistent(
+              MakeGarbageCollected<MLNamedArrayBufferViews>(inputs)),
+          WrapCrossThreadPersistent(
+              MakeGarbageCollected<MLNamedArrayBufferViews>(outputs)),
+          WrapCrossThreadPersistent(resolver), resolver_task_runner_));
+}
 
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Not implemented."));
+// static
+void MLGraphXnnpack::ComputeOnBackgroundThread(
+    CrossThreadPersistent<MLGraphXnnpack> graph,
+    CrossThreadPersistent<MLNamedArrayBufferViews> inputs,
+    CrossThreadPersistent<MLNamedArrayBufferViews> outputs,
+    CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
+  DCHECK(!IsMainThread());
+  DCHECK(graph->xnn_context_);
+
+  String error_message;
+  xnn_status status = graph->InvokeXnnRuntime(*inputs, *outputs, error_message);
+
+  PostCrossThreadTask(
+      *resolver_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&MLGraphXnnpack::OnComputeFinished, std::move(graph),
+                          std::move(inputs), std::move(outputs),
+                          std::move(resolver), status,
+                          std::move(error_message)));
+}
+
+void MLGraphXnnpack::OnComputeFinished(
+    CrossThreadPersistent<MLNamedArrayBufferViews> inputs,
+    CrossThreadPersistent<MLNamedArrayBufferViews> outputs,
+    CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    xnn_status status,
+    String error_message) {
+  if (status != xnn_status_success) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        XnnStatusToDOMExceptionCode(status), error_message));
+    return;
+  }
+  auto* result = MLComputeResult::Create();
+  result->setInputs(*inputs);
+  result->setOutputs(*outputs);
+  resolver->Resolve(result);
 }
 
 void MLGraphXnnpack::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,

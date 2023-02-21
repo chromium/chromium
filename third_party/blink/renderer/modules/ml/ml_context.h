@@ -43,6 +43,12 @@ class MODULES_EXPORT MLContext final : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   // IDL interface:
+  ScriptPromise compute(ScriptState* script_state,
+                        MLGraph* graph,
+                        const MLNamedArrayBufferViews& inputs,
+                        const MLNamedArrayBufferViews& outputs,
+                        ExceptionState& exception_state);
+
   void computeSync(MLGraph* graph,
                    const MLNamedArrayBufferViews& inputs,
                    const MLNamedArrayBufferViews& outputs,

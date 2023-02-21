@@ -314,13 +314,15 @@ struct ReluTester {
     EXPECT_NE(graph, nullptr);
 
     // Compute the graph.
-    auto input_buffer =
-        CreateArrayBufferViewForOperand(input_operand, input.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    auto results = GetArrayBufferViewValues<T>(output_buffer);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
 };
@@ -433,12 +435,12 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({6.0, 8.0, 10.0, 12.0}));
     compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    results = GetArrayBufferViewValues<float>(output_buffer);
+    results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({6.0, 8.0, 10.0, 12.0}));
   }
   {
@@ -455,14 +457,14 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({6.0, 8.0, 10.0, 12.0}));
-    SetArrayBufferViewValues<float>(input0_buffer, {2.0, 3.0, 4.0, 5.0});
-    SetArrayBufferViewValues<float>(input1_buffer, {6.0, 7.0, 8.0, 9.0});
+    SetArrayBufferViewValues<float>(inputs[0].second, {2.0, 3.0, 4.0, 5.0});
+    SetArrayBufferViewValues<float>(inputs[1].second, {6.0, 7.0, 8.0, 9.0});
     compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    results = GetArrayBufferViewValues<float>(output_buffer);
+    results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({8.0, 10.0, 12.0, 14.0}));
   }
   {
@@ -478,7 +480,7 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({6.0, 8.0, 10.0, 12.0}));
     auto new_input0_buffer =
         CreateArrayBufferViewForOperand<float>(input0, {2.0, 3.0, 4.0, 5.0});
@@ -488,7 +490,7 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
     compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    results = GetArrayBufferViewValues<float>(output_buffer);
+    results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({8.0, 10.0, 12.0, 14.0}));
   }
   {
@@ -504,14 +506,14 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({6.0, 8.0, 10.0, 12.0}));
     auto new_output_buffer = CreateArrayBufferViewForOperand(output);
     outputs = {{"output", new_output_buffer}};
     compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    results = GetArrayBufferViewValues<float>(new_output_buffer);
+    results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({6.0, 8.0, 10.0, 12.0}));
   }
 }
@@ -544,7 +546,7 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({0.0, 0.0, 0.5, 10.0}));
   }
   {
@@ -576,8 +578,199 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
     CheckExternalValues(xnnpack_graph, inputs, outputs);
-    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results, Vector<float>({6.0, 8.0, 10.0, 12.0}));
+  }
+}
+
+TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  // Build an MLGraphXnnpack with the following topology:
+  //        [a]     [b]
+  //           \    /
+  //            add
+  //             |
+  //          [output]
+  auto* a_operand =
+      BuildInput(builder, "a", {1, 2, 2, 1}, V8MLOperandType::Enum::kFloat32,
+                 scope.GetExceptionState());
+  auto* b_operand =
+      BuildInput(builder, "b", {1, 2, 2, 1}, V8MLOperandType::Enum::kFloat32,
+                 scope.GetExceptionState());
+  auto* output_operand =
+      builder->add(a_operand, b_operand, scope.GetExceptionState());
+  ScriptPromiseTester graph_build_tester(
+      scope.GetScriptState(),
+      builder->build(scope.GetScriptState(), {{"output", output_operand}},
+                     scope.GetExceptionState()));
+  graph_build_tester.WaitUntilSettled();
+  ASSERT_EQ(graph_build_tester.IsFulfilled(), true);
+  auto* graph = NativeValueTraits<MLGraph>::NativeValue(
+      scope.GetIsolate(), graph_build_tester.Value().V8Value(),
+      scope.GetExceptionState());
+  ASSERT_NE(graph, nullptr);
+  {
+    // Test throwing exception if the first input ArrayBufferView is detached.
+    auto a_buffer_view = CreateArrayBufferViewForOperand(a_operand);
+    a_buffer_view->DetachForTesting();
+    ASSERT_EQ(a_buffer_view->IsDetached(), true);
+    auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
+    auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
+    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
+    tester.WaitUntilSettled();
+    EXPECT_NE(tester.IsFulfilled(), true);
+    auto* exception = V8DOMException::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
+    EXPECT_NE(exception, nullptr);
+    EXPECT_EQ(exception->name(),
+              DOMException::GetErrorName(DOMExceptionCode::kDataError));
+    EXPECT_EQ(
+        exception->message(),
+        "Invalid inputs: The array buffer view with name \"a\" is detached.");
+    // Other ArrayBufferViews should not be detached.
+    EXPECT_EQ(b_buffer_view->IsDetached(), false);
+    EXPECT_EQ(output_buffer_view->IsDetached(), false);
+  }
+  {
+    // Test throwing exception if the second input ArrayBufferView is detached.
+    auto a_buffer_view = CreateArrayBufferViewForOperand(a_operand);
+    auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
+    b_buffer_view->DetachForTesting();
+    ASSERT_EQ(b_buffer_view->IsDetached(), true);
+    auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
+    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
+    tester.WaitUntilSettled();
+    EXPECT_NE(tester.IsFulfilled(), true);
+    auto* exception = V8DOMException::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
+    EXPECT_NE(exception, nullptr);
+    EXPECT_EQ(exception->name(),
+              DOMException::GetErrorName(DOMExceptionCode::kDataError));
+    EXPECT_EQ(
+        exception->message(),
+        "Invalid inputs: The array buffer view with name \"b\" is detached.");
+    // Other ArrayBufferViews should not be detached.
+    EXPECT_EQ(a_buffer_view->IsDetached(), false);
+    EXPECT_EQ(output_buffer_view->IsDetached(), false);
+  }
+  {
+    // Test throwing exception if the output ArrayBufferView is detached.
+    auto a_buffer_view = CreateArrayBufferViewForOperand(a_operand);
+    auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
+    auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
+    output_buffer_view->DetachForTesting();
+    ASSERT_EQ(output_buffer_view->IsDetached(), true);
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
+    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
+    tester.WaitUntilSettled();
+    EXPECT_NE(tester.IsFulfilled(), true);
+    auto* exception = V8DOMException::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
+    EXPECT_NE(exception, nullptr);
+    EXPECT_EQ(exception->name(),
+              DOMException::GetErrorName(DOMExceptionCode::kDataError));
+    EXPECT_EQ(exception->message(),
+              "Invalid outputs: The array buffer view with name \"output\" is "
+              "detached.");
+    // Other ArrayBufferViews should not be detached.
+    EXPECT_EQ(a_buffer_view->IsDetached(), false);
+    EXPECT_EQ(b_buffer_view->IsDetached(), false);
+  }
+  {
+    // Test the input and output ArrayBufferViews are detached if
+    // ComputeAsync() call succeeds.
+    auto a_buffer_view = CreateArrayBufferViewForOperand(a_operand);
+    auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
+    auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
+    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
+    EXPECT_EQ(a_buffer_view->IsDetached(), true);
+    EXPECT_EQ(b_buffer_view->IsDetached(), true);
+    EXPECT_EQ(output_buffer_view->IsDetached(), true);
+    tester.WaitUntilSettled();
+    EXPECT_EQ(tester.IsFulfilled(), true);
+  }
+  {
+    // Test the input and output ArrayBufferViews of MLComputeResult have the
+    // same type, byte offset, byte length and base address of those passed to
+    // ComputeAsync().
+    auto a_buffer_view = CreateArrayBufferViewForOperand(a_operand);
+    auto a_buffer_view_type = a_buffer_view->GetType();
+    size_t a_buffer_view_byte_offset = a_buffer_view->byteOffset();
+    size_t a_buffer_view_byte_length = a_buffer_view->byteLength();
+    void* a_buffer_view_base_address = a_buffer_view->BaseAddress();
+    auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
+    auto b_buffer_view_type = b_buffer_view->GetType();
+    size_t b_buffer_view_byte_offset = b_buffer_view->byteOffset();
+    size_t b_buffer_view_byte_length = b_buffer_view->byteLength();
+    void* b_buffer_view_base_address = b_buffer_view->BaseAddress();
+    // Create a double-sized ArrayBuffer for output operand.
+    auto* array_buffer = DOMArrayBuffer::Create(
+        output_operand->NumberOfElements() * 2, sizeof(float));
+    // Create an ArrayBufferView that views the second half of the output
+    // ArrayBuffer.
+    const size_t expected_byte_offset =
+        output_operand->NumberOfElements() * sizeof(float);
+    auto output_buffer_view = NotShared<DOMArrayBufferView>(
+        blink::DOMFloat32Array::Create(array_buffer, expected_byte_offset,
+                                       output_operand->NumberOfElements()));
+    auto output_buffer_view_type = output_buffer_view->GetType();
+    size_t output_buffer_view_byte_offset = output_buffer_view->byteOffset();
+    ASSERT_EQ(output_buffer_view_byte_offset, expected_byte_offset);
+    size_t output_buffer_view_byte_length = output_buffer_view->byteLength();
+    void* output_buffer_view_base_address = output_buffer_view->BaseAddress();
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+    ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
+    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
+    tester.WaitUntilSettled();
+    EXPECT_EQ(tester.IsFulfilled(), true);
+    auto* compute_result = NativeValueTraits<MLComputeResult>::NativeValue(
+        scope.GetIsolate(), tester.Value().V8Value(),
+        scope.GetExceptionState());
+    EXPECT_EQ(compute_result->inputs().size(), 2u);
+    EXPECT_EQ(compute_result->inputs()[0].first, "a");
+    auto result_a_buffer_view = compute_result->inputs()[0].second;
+    EXPECT_EQ(result_a_buffer_view->GetType(), a_buffer_view_type);
+    EXPECT_EQ(result_a_buffer_view->byteOffset(), a_buffer_view_byte_offset);
+    EXPECT_EQ(result_a_buffer_view->byteLength(), a_buffer_view_byte_length);
+    EXPECT_EQ(result_a_buffer_view->BaseAddress(), a_buffer_view_base_address);
+    EXPECT_EQ(compute_result->inputs()[1].first, "b");
+    auto result_b_buffer_view = compute_result->inputs()[1].second;
+    EXPECT_EQ(result_b_buffer_view->GetType(), b_buffer_view_type);
+    EXPECT_EQ(result_b_buffer_view->byteOffset(), b_buffer_view_byte_offset);
+    EXPECT_EQ(result_b_buffer_view->byteLength(), b_buffer_view_byte_length);
+    EXPECT_EQ(result_b_buffer_view->BaseAddress(), b_buffer_view_base_address);
+    EXPECT_EQ(compute_result->outputs()[0].first, "output");
+    auto result_output_buffer_view = compute_result->outputs()[0].second;
+    EXPECT_EQ(result_output_buffer_view->GetType(), output_buffer_view_type);
+    EXPECT_EQ(result_output_buffer_view->byteOffset(),
+              output_buffer_view_byte_offset);
+    EXPECT_EQ(result_output_buffer_view->byteLength(),
+              output_buffer_view_byte_length);
+    EXPECT_EQ(result_output_buffer_view->BaseAddress(),
+              output_buffer_view_base_address);
   }
 }
 
@@ -600,13 +793,15 @@ struct ClampTester {
     EXPECT_NE(graph, nullptr);
 
     // Compute the graph.
-    auto input_buffer =
-        CreateArrayBufferViewForOperand(input_operand, input.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    auto results = GetArrayBufferViewValues<T>(output_buffer);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
 };
@@ -702,13 +897,15 @@ struct Conv2dTester {
     EXPECT_NE(graph, nullptr);
 
     // Compute the graph.
-    auto input_buffer =
-        CreateArrayBufferViewForOperand(input_operand, input.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    Vector<float> results = GetArrayBufferViewValues<T>(output_buffer);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
 };
@@ -858,13 +1055,14 @@ struct GemmTester {
     EXPECT_NE(graph, nullptr);
 
     // Compute the graph.
-    auto input_buffer = CreateArrayBufferViewForOperand(a_operand, a.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"input", CreateArrayBufferViewForOperand(a_operand, a.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    Vector<float> results = GetArrayBufferViewValues<T>(output_buffer);
-    EXPECT_EQ(results, expected);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
   }
 };
 
@@ -933,13 +1131,15 @@ struct HardSwishTester {
     EXPECT_NE(graph, nullptr);
 
     // Compute the graph.
-    auto input_buffer =
-        CreateArrayBufferViewForOperand(input_operand, input.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
     EXPECT_EQ(results.size(), expected.size());
     for (wtf_size_t i = 0; i < expected.size(); ++i) {
       EXPECT_FLOAT_EQ(results[i], expected[i]);
@@ -1008,13 +1208,15 @@ struct Pool2dTester {
         helper->BuildGraph(scope, builder, {{"output", output_operand}});
     EXPECT_NE(graph, nullptr);
 
-    auto input_buffer =
-        CreateArrayBufferViewForOperand(input_operand, input.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    Vector<float> results = GetArrayBufferViewValues<T>(output_buffer);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
 };
@@ -1086,13 +1288,15 @@ struct ReshapeTester {
     EXPECT_NE(graph, nullptr);
 
     // Compute the graph.
-    auto input_buffer =
-        CreateArrayBufferViewForOperand(input_operand, input.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    auto results = GetArrayBufferViewValues<T>(output_buffer);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, input.values);
   }
 };
@@ -1200,13 +1404,15 @@ struct SoftmaxTester {
     EXPECT_NE(graph, nullptr);
 
     // Compute WebNN graph.
-    auto input_buffer =
-        CreateArrayBufferViewForOperand(input_operand, input.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    auto results = GetArrayBufferViewValues<float>(output_buffer);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
 
     // Compare the results of WebNN graph and XNNPACK operator.
     EXPECT_EQ(results, xnnpack_output);
@@ -1240,7 +1446,8 @@ TEST_P(MLGraphXnnpackTest, SoftmaxTest) {
 // MLGraphXnnpack implements it.
 INSTANTIATE_TEST_SUITE_P(All,
                          MLGraphXnnpackTest,
-                         ::testing::Values(ExecutionMode::kSync),
+                         ::testing::Values(ExecutionMode::kSync,
+                                           ExecutionMode::kAsync),
                          ExecutionModeParamToString);
 
 }  // namespace blink

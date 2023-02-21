@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 68 tests; 0 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 tests; 6 PASS, 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL averagePool2d float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.windowDimensions / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
@@ -11,12 +11,12 @@ FAIL averagePool2d float32 4D tensor options.autoPad=same-lower / cpu / async pr
 FAIL averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.layout=nchw / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL averagePool2d float32 4D tensor options.layout=nhwc / cpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+PASS averagePool2d float32 4D tensor options.layout=nhwc / cpu / async
 FAIL averagePool2d float32 4D tensor options.roundingType=floor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.roundingType=ceil / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL averagePool2d float32 4D tensor options.dilations with options.strides / cpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+FAIL averagePool2d float32 4D tensor options.dilations with options.strides / cpu / async assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual -0.2304840087890625 should be close enough to expected -0.23048464953899384 by the acceptable 11 ULP distance, but they have 43 ULP distance expected true got false
 FAIL averagePool2d float32 4D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.windowDimensions / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
@@ -28,12 +28,12 @@ FAIL averagePool2d float32 4D tensor options.autoPad=same-lower / gpu / async pr
 FAIL averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.layout=nchw / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL averagePool2d float32 4D tensor options.layout=nhwc / gpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+PASS averagePool2d float32 4D tensor options.layout=nhwc / gpu / async
 FAIL averagePool2d float32 4D tensor options.roundingType=floor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.roundingType=ceil / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL averagePool2d float32 4D tensor options.dilations with options.strides / gpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+FAIL averagePool2d float32 4D tensor options.dilations with options.strides / gpu / async assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual -0.2304840087890625 should be close enough to expected -0.23048464953899384 by the acceptable 11 ULP distance, but they have 43 ULP distance expected true got false
 FAIL maxPool2d float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.windowDimensions / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
@@ -45,12 +45,12 @@ FAIL maxPool2d float32 4D tensor options.autoPad=same-lower / cpu / async promis
 FAIL maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.layout=nchw / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL maxPool2d float32 4D tensor options.layout=nhwc / cpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+PASS maxPool2d float32 4D tensor options.layout=nhwc / cpu / async
 FAIL maxPool2d float32 4D tensor options.roundingType=floor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.roundingType=ceil / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL maxPool2d float32 4D tensor options.dilations with options.strides / cpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+PASS maxPool2d float32 4D tensor options.dilations with options.strides / cpu / async
 FAIL maxPool2d float32 4D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.windowDimensions / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
@@ -62,11 +62,11 @@ FAIL maxPool2d float32 4D tensor options.autoPad=same-lower / gpu / async promis
 FAIL maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.layout=nchw / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL maxPool2d float32 4D tensor options.layout=nhwc / gpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+PASS maxPool2d float32 4D tensor options.layout=nhwc / gpu / async
 FAIL maxPool2d float32 4D tensor options.roundingType=floor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.roundingType=ceil / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL maxPool2d float32 4D tensor options.dilations with options.strides / gpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+PASS maxPool2d float32 4D tensor options.dilations with options.strides / gpu / async
 Harness: the test ran to completion.
 

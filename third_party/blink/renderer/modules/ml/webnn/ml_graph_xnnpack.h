@@ -92,6 +92,23 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
                         const MLNamedArrayBufferViews& outputs,
                         ScriptPromiseResolver* resolver) override;
 
+  // Invoke the XNNPACK Runtime object off the main thread.
+  static void ComputeOnBackgroundThread(
+      CrossThreadPersistent<MLGraphXnnpack> graph,
+      CrossThreadPersistent<MLNamedArrayBufferViews> inputs,
+      CrossThreadPersistent<MLNamedArrayBufferViews> outputs,
+      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      scoped_refptr<base::SequencedTaskRunner> resolver_task_runner);
+
+  // Resolve the promise with an MLComputeResult that contains input and output
+  // ArrayBufferViews on the main thread after finish invoking the XNNPACK
+  // Runtime object.
+  void OnComputeFinished(CrossThreadPersistent<MLNamedArrayBufferViews> inputs,
+                         CrossThreadPersistent<MLNamedArrayBufferViews> outputs,
+                         CrossThreadPersistent<ScriptPromiseResolver> resolver,
+                         xnn_status status,
+                         String error_message = String());
+
   // Invoke the XNNPACK Runtime object in the caller's thread.
   void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
                        const MLNamedArrayBufferViews& outputs,
@@ -139,6 +156,9 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   xnn_status InvokeXnnRuntime(const MLNamedArrayBufferViews& inputs,
                               const MLNamedArrayBufferViews& outputs,
                               String& error_message);
+
+  // Schedules resolving promises of asynchronous MLGraph build and compute.
+  scoped_refptr<base::SequencedTaskRunner> resolver_task_runner_;
 
   // The SharedXnnpackContext is shared and reference-counted by all instances
   // of MLGraphXnnpack. It initializes (and also deinitializes) the XNNPACK

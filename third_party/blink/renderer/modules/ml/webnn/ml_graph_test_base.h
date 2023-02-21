@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_BASE_H_
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
@@ -42,15 +43,15 @@ class MLGraphTestBase : public ::testing::Test,
                          MLGraphBuilder* builder,
                          const MLNamedOperands& named_operands);
 
-  // Helper method for testinh both ComputeAsync() and ComputeSync() with the
+  // Helper method for testing both ComputeAsync() and ComputeSync() with the
   // same input/output buffers and expected results. If the graph computes
   // successfully, it returns nullptr and the results are produced into the
   // output buffers. Otherwise, it returns the pointer to the DOMException
   // thrown by the graph computing.
   DOMException* ComputeGraph(V8TestingScope& scope,
                              MLGraph* graph,
-                             const MLNamedArrayBufferViews& inputs,
-                             const MLNamedArrayBufferViews& outputs);
+                             MLNamedArrayBufferViews& inputs,
+                             MLNamedArrayBufferViews& outputs);
 
   // Test operations with different parameters such as tensor dimensions, data
   // layout. Each test case will builds a graph and computes it with input data

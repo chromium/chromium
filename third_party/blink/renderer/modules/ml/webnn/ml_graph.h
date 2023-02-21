@@ -52,12 +52,14 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   // This method validates the input and output MLNamedArrayBufferViews against
   // the graph's input and output resources info. If there are no errors, it
-  // calls ComputeAsyncImpl() implemented by an MLGraph backend that binds the
+  // transfers the input and output ArrayBufferViews to new ones and passes them
+  // ones to ComputeAsyncImpl() implemented by an MLGraph backend that binds the
   // array buffer views and executes the compiled platform graph. This method is
   // called by MLContext to implement MLContext.compute() method.
   void ComputeAsync(const MLNamedArrayBufferViews& inputs,
                     const MLNamedArrayBufferViews& outputs,
-                    ScriptPromiseResolver* resolver);
+                    ScriptPromiseResolver* resolver,
+                    ExceptionState& exception_state);
 
   // ComputeSync() has the similar function as ComputeAsync(). The difference is
   // if there are no validation errors, it calls ComputeSyncImpl() implemented
@@ -108,9 +110,10 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // An MLGraph backend should implement this method to execute the compiled
   // platform graph asynchronously. The actual graph execution work should be
   // handled by a worker thread without blocking the main thread. If no errors
-  // occurred, the resolver will be resolved and results will be stored in
-  // output buffers. Otherwise, the resolver will be rejected with a
-  // DOMException accordingly.
+  // occurred, the results will be stored in output buffers and the resolver
+  // will be resolved with an MLComputeResult that contains the input and output
+  // buffers. Otherwise, the resolver will be rejected with a DOMException
+  // accordingly.
   virtual void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                 const MLNamedArrayBufferViews& outputs,
                                 ScriptPromiseResolver* resolver) = 0;

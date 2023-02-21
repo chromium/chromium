@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 tests; 0 PASS, 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 tests; 2 PASS, 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL conv2d float32 4D input and filter(non-constant) tensors default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 FAIL conv2d float32 4D input and filter tensors default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 FAIL conv2d float32 4D input and filter tensors options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
@@ -19,7 +19,7 @@ FAIL conv2d float32 4D input and filter tensors options.filterLayout='ohwi' / cp
 FAIL conv2d float32 4D input and filter tensors options.filterLayout='ihwo' / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 FAIL conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='oihw' / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout oihw is not supported."
 FAIL conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='hwio' / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout hwio is not supported."
-FAIL conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ohwi' / cpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+PASS conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ohwi' / cpu / async
 FAIL conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ihwo' / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout ihwo is not supported."
 FAIL conv2d float32 4D input and filter tensors 1D options.bias / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 FAIL conv2d float32 4D input and filter tensors options.activation=relu / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
@@ -45,7 +45,7 @@ FAIL conv2d float32 4D input and filter tensors options.filterLayout='ohwi' / gp
 FAIL conv2d float32 4D input and filter tensors options.filterLayout='ihwo' / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 FAIL conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='oihw' / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout oihw is not supported."
 FAIL conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='hwio' / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout hwio is not supported."
-FAIL conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ohwi' / gpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
+PASS conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ohwi' / gpu / async
 FAIL conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ihwo' / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout ihwo is not supported."
 FAIL conv2d float32 4D input and filter tensors 1D options.bias / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 FAIL conv2d float32 4D input and filter tensors options.activation=relu / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."

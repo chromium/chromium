@@ -5174,6 +5174,7 @@ interface ML
     method createContext
 interface MLContext
     attribute @@toStringTag
+    method compute
     method constructor
 interface MLGraph
     attribute @@toStringTag

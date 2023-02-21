@@ -67,19 +67,31 @@ MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(
   }
 }
 
-DOMException* MLGraphTestBase::ComputeGraph(
-    V8TestingScope& scope,
-    MLGraph* graph,
-    const MLNamedArrayBufferViews& inputs,
-    const MLNamedArrayBufferViews& outputs) {
+MLComputeResult* ToMLComputeResult(V8TestingScope* scope, ScriptValue value) {
+  return NativeValueTraits<MLComputeResult>::NativeValue(
+      scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
+}
+
+DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
+                                            MLGraph* graph,
+                                            MLNamedArrayBufferViews& inputs,
+                                            MLNamedArrayBufferViews& outputs) {
   switch (GetParam()) {
     case ExecutionMode::kAsync: {
       auto* resolver =
           MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
       ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-      graph->ComputeAsync(inputs, outputs, resolver);
+      graph->ComputeAsync(inputs, outputs, resolver, scope.GetExceptionState());
       tester.WaitUntilSettled();
       if (tester.IsFulfilled()) {
+        // For `MLGraph::ComputeAsync()`, the input and output ArrayBufferViews
+        // are transferred. The new ArrayBufferViews are returned via the
+        // MLComputeResult. Set the inputs and outputs to the returned ones, so
+        // the user code could check the outputs in the same way as for
+        // `MLGraph::ComputeSync()`.
+        auto* results = ToMLComputeResult(&scope, tester.Value());
+        inputs = results->inputs();
+        outputs = results->outputs();
         return nullptr;
       } else {
         return V8DOMException::ToImplWithTypeCheck(scope.GetIsolate(),
@@ -123,14 +135,15 @@ struct ElementWiseBinaryTester {
     EXPECT_NE(graph, nullptr);
 
     // Compute the graph.
-    auto lhs_buffer = CreateArrayBufferViewForOperand(lhs_operand, lhs.values);
-    auto rhs_buffer = CreateArrayBufferViewForOperand(rhs_operand, rhs.values);
-    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
-    auto* compute_exception = helper->ComputeGraph(
-        scope, graph, {{"lhs", lhs_buffer}, {"rhs", rhs_buffer}},
-        {{"output", output_buffer}});
+    MLNamedArrayBufferViews inputs(
+        {{"lhs", CreateArrayBufferViewForOperand(lhs_operand, lhs.values)},
+         {"rhs", CreateArrayBufferViewForOperand(rhs_operand, rhs.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
-    auto results = GetArrayBufferViewValues<T>(output_buffer);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected);
   }
 };

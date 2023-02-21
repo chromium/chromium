@@ -7,9 +7,14 @@
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -37,6 +42,12 @@ bool ValidateNamedArrayBufferViews(
                                      name.Utf8().c_str());
       return false;
     }
+    if (array_buffer_view->IsDetached()) {
+      error_message =
+          String::Format("The array buffer view with name \"%s\" is detached.",
+                         name.Utf8().c_str());
+      return false;
+    }
     const auto& info = resources_info.at(name);
     if (array_buffer_view->GetType() != GetArrayBufferViewType(info.type)) {
       error_message = String::Format(
@@ -56,6 +67,101 @@ bool ValidateNamedArrayBufferViews(
     }
   }
   return true;
+}
+
+DOMArrayBufferView* TransferArrayBufferView(
+    v8::Isolate* isolate,
+    NotShared<DOMArrayBufferView> source_view,
+    ExceptionState& exception_state) {
+  // A detached ArrayBufferView should be caught by
+  // `ValidateNamedArrayBufferViews()`.
+  DCHECK(!source_view->IsDetached());
+
+  // Avoid transferring a non-detachable ArrayBuffer.
+  // `DOMArrayBuffer::Transfer()` would make a copy if the ArrayBuffer is not
+  // detachable. This behavior doesn't follow the algorithm to transfer an
+  // ArrayBuffer of WebIDL spec:
+  // https://webidl.spec.whatwg.org/#arraybuffer-transfer
+  if (!source_view->buffer()->IsDetachable(isolate)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The ArrayBuffer is not detachable.");
+    return nullptr;
+  }
+
+  // Get the offset and length of the source view before transferring it.
+  const auto offset = source_view->byteOffset();
+  const auto length = source_view->byteLength() / source_view->TypeSize();
+
+  ArrayBufferContents target_contents;
+  // The following `DOMArrayBuffer::Transfer()` call would fail if the
+  // detach key of the ArrayBuffer is not `undefined`.
+  if (!source_view->buffer()->Transfer(isolate, target_contents,
+                                       exception_state)) {
+    return nullptr;
+  }
+
+  auto* target_buffer = DOMArrayBuffer::Create(std::move(target_contents));
+
+  // Align with the ArrayBufferView types supported by WebNN MLOperandType:
+  // https://www.w3.org/TR/webnn/#appendices-mloperandtype-arraybufferview-compatibility
+  DOMArrayBufferView* target_view = nullptr;
+  switch (source_view->GetType()) {
+    case DOMArrayBufferView::kTypeFloat32:
+      // Float32Array is used for MLOperandType::float32.
+      target_view = DOMFloat32Array::Create(target_buffer, offset, length);
+      break;
+    case DOMArrayBufferView::kTypeUint16:
+      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
+      // https://github.com/webmachinelearning/webnn/issues/127
+      target_view = DOMUint16Array::Create(target_buffer, offset, length);
+      break;
+    case DOMArrayBufferView::kTypeInt32:
+      // Int32Array is used for MLOperandType::int32.
+      target_view = DOMInt32Array::Create(target_buffer, offset, length);
+      break;
+    case DOMArrayBufferView::kTypeUint32:
+      // Uint32Array is used for MLOperandType::uint32.
+      target_view = DOMUint32Array::Create(target_buffer, offset, length);
+      break;
+    case DOMArrayBufferView::kTypeInt8:
+      // Int8Array is used for MLOperandType::int8.
+      target_view = DOMInt8Array::Create(target_buffer, offset, length);
+      break;
+    case DOMArrayBufferView::kTypeUint8:
+      // Uint8Array is used for MLOperandType::uint8.
+      target_view = DOMUint8Array::Create(target_buffer, offset, length);
+      break;
+    default:
+      // Other ArrayBufferView types should not pass the
+      // `ValidateNamedArrayBufferViews()` and reach here.
+      NOTREACHED();
+  }
+  return target_view;
+}
+
+// Implement the MLNamedArrayBufferViews transfer algorithm of WebNN spec:
+// https://www.w3.org/TR/webnn/#mlnamedarraybufferviews-transfer
+//
+// If it fails to transfer an ArrayBufferView of the MLNamedArrayBufferViews,
+// the current implementation leaves the already-transferred views detached, the
+// failing one and remaining others unchanged.
+//
+// TODO(crbug.com/1273291): Revisit the error handling once the WebNN spec issue
+// is resolved: https://github.com/webmachinelearning/webnn/issues/351
+MLNamedArrayBufferViews* TransferNamedArrayBufferViews(
+    v8::Isolate* isolate,
+    const MLNamedArrayBufferViews& source_views,
+    ExceptionState& exception_state) {
+  auto* target_views = MakeGarbageCollected<MLNamedArrayBufferViews>();
+  for (const auto& [name, source_view] : source_views) {
+    NotShared<DOMArrayBufferView> target_view(
+        TransferArrayBufferView(isolate, source_view, exception_state));
+    if (!target_view.Get()) {
+      return nullptr;
+    }
+    target_views->push_back(std::make_pair(name, target_view));
+  }
+  return target_views;
 }
 
 }  // namespace
@@ -83,11 +189,12 @@ const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetOutputResourcesInfo()
 
 void MLGraph::ComputeAsync(const MLNamedArrayBufferViews& inputs,
                            const MLNamedArrayBufferViews& outputs,
-                           ScriptPromiseResolver* resolver) {
+                           ScriptPromiseResolver* resolver,
+                           ExceptionState& exception_state) {
   // The MLGraph object should be initialized before computing.
   DCHECK(resources_info_initialized_);
 
-  // Validate the input and output MLNamedArrayBufferViews.
+  // Validate the MLNamedArrayBufferViews.
   String error_message;
   if (!ValidateNamedArrayBufferViews(inputs, input_resources_info_,
                                      error_message)) {
@@ -101,9 +208,26 @@ void MLGraph::ComputeAsync(const MLNamedArrayBufferViews& inputs,
         DOMExceptionCode::kDataError, "Invalid outputs: " + error_message));
     return;
   }
+  // Transfer the MLNamedArrayBufferViews.
+  auto* transferred_inputs = TransferNamedArrayBufferViews(
+      resolver->GetScriptState()->GetIsolate(), inputs, exception_state);
+  if (!transferred_inputs) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError,
+        "Invalid inputs: " + exception_state.Message()));
+    return;
+  }
+  auto* transferred_outputs = TransferNamedArrayBufferViews(
+      resolver->GetScriptState()->GetIsolate(), outputs, exception_state);
+  if (!transferred_outputs) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError,
+        "Invalid outputs: " + exception_state.Message()));
+    return;
+  }
 
   // Call ComputeAsyncImpl() implemented by an MLGraph backend.
-  ComputeAsyncImpl(inputs, outputs, resolver);
+  ComputeAsyncImpl(*transferred_inputs, *transferred_outputs, resolver);
 }
 
 void MLGraph::ComputeSync(const MLNamedArrayBufferViews& inputs,
