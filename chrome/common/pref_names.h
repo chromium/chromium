@@ -402,10 +402,6 @@ extern const char kExtensionCommands[];
 extern const char kPluginsLastInternalDirectory[];
 extern const char kPluginsPluginsList[];
 extern const char kPluginsAlwaysOpenPdfExternally[];
-#if BUILDFLAG(ENABLE_PLUGINS)
-extern const char kPluginsShowDetails[];
-#endif
-extern const char kPluginsAllowOutdated[];
 extern const char kDefaultBrowserLastDeclined[];
 extern const char kResetCheckDefaultBrowser[];
 extern const char kDefaultBrowserSettingEnabled[];

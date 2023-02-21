@@ -18,7 +18,6 @@
 #include "chrome/common/plugin.mojom.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
-#include "components/prefs/pref_member.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
@@ -34,10 +33,6 @@ struct WebPluginInfo;
 
 namespace extensions {
 class ExtensionRegistry;
-}
-
-namespace user_prefs {
-class PrefRegistrySyncable;
 }
 
 namespace url {
@@ -75,8 +70,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
                           const base::FilePath& path) const;
     bool IsPluginEnabled(const content::WebPluginInfo& plugin) const;
 
-    void ShutdownOnUIThread();
-
    private:
     int render_process_id_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -86,8 +79,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
     raw_ptr<const HostContentSettingsMap, DanglingUntriaged>
         host_content_settings_map_;
     scoped_refptr<PluginPrefs> plugin_prefs_;
-
-    BooleanPrefMember allow_outdated_plugins_;
   };
 
   PluginInfoHostImpl(int render_process_id, Profile* profile);
@@ -96,8 +87,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
   PluginInfoHostImpl& operator=(const PluginInfoHostImpl&) = delete;
 
   ~PluginInfoHostImpl() override;
-
-  static void RegisterUserPrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // chrome::mojom::PluginInfoHost
   void GetPluginInfo(const GURL& url,

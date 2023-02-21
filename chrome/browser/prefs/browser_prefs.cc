@@ -219,10 +219,6 @@
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/plugin_info_host_impl.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "components/services/screen_ai/public/cpp/pref_names.h"  // nogncheck
 #endif
@@ -782,6 +778,10 @@ const char kArcTermsShownInOobe[] = "arc.terms.shown_in_oobe";
 const char kSyncInvalidationVersions[] = "sync.invalidation_versions";
 const char kSyncInvalidationVersions2[] = "sync.invalidation_versions2";
 
+// Deprecated 02/2023.
+const char kPluginsAllowOutdated[] = "plugins.allow_outdated";
+const char kPluginsShowDetails[] = "plugins.show_details";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1034,7 +1034,12 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 02/2023.
   registry->RegisterDictionaryPref(kSyncInvalidationVersions);
   registry->RegisterDictionaryPref(kSyncInvalidationVersions2);
+
+  // Deprecated 02/2023.
+  registry->RegisterBooleanPref(kPluginsAllowOutdated, false);
+  registry->RegisterBooleanPref(kPluginsShowDetails, false);
 }
+
 }  // namespace
 
 void RegisterLocalState(PrefRegistrySimple* registry) {
@@ -1403,10 +1408,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterListPref(prefs::kPdfLocalFileAccessAllowedForDomains,
                              base::Value::List());
 #endif  // BUILDFLAG(ENABLE_PDF)
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  PluginInfoHostImpl::RegisterUserPrefs(registry);
-#endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   printing::PolicySettings::RegisterProfilePrefs(registry);
@@ -2053,6 +2054,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 02/2023.
   profile_prefs->ClearPref(kSyncInvalidationVersions);
   profile_prefs->ClearPref(kSyncInvalidationVersions2);
+
+  // Added 02/2023.
+  profile_prefs->ClearPref(kPluginsAllowOutdated);
+  profile_prefs->ClearPref(kPluginsShowDetails);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

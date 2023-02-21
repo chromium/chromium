@@ -1240,14 +1240,6 @@ const char kPluginsPluginsList[] = "plugins.plugins_list";
 const char kPluginsAlwaysOpenPdfExternally[] =
     "plugins.always_open_pdf_externally";
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Whether about:plugins is shown in the details mode or not.
-const char kPluginsShowDetails[] = "plugins.show_details";
-#endif
-
-// Boolean that indicates whether outdated plugins are allowed or not.
-const char kPluginsAllowOutdated[] = "plugins.allow_outdated";
-
 // Int64 containing the internal value of the time at which the default browser
 // infobar was last dismissed by the user.
 const char kDefaultBrowserLastDeclined[] =
@@ -1675,7 +1667,7 @@ const char kManagedAccountsSigninRestrictionScopeMachine[] =
 #if !BUILDFLAG(IS_CHROMEOS)
 // Whether or not the option to keep existing browsing data is checked by
 // default.
-extern const char kEnterpriseProfileCreationKeepBrowsingData[] =
+const char kEnterpriseProfileCreationKeepBrowsingData[] =
     "profile.enterprise_profile_creation.keep_existing_data_by_default";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif
