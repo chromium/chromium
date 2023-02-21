@@ -38,6 +38,10 @@ namespace apps {
 struct ShareTarget;
 }  // namespace apps
 
+namespace content {
+class StoragePartitionConfig;
+}  // namespace content
+
 namespace webapps {
 enum class WebappInstallSource;
 }
@@ -337,6 +341,13 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns the current WebAppOsIntegrationState stored in the web_app DB.
   absl::optional<proto::WebAppOsIntegrationState>
   GetAppCurrentOsIntegrationState(const AppId& app_id) const;
+
+  // Returns the StoragePartitionConfig of all StoragePartitions used by
+  // |isolated_web_app_id|. Both the primary and any <controlledframe>
+  // StoragePartitions will be returned.
+  std::vector<content::StoragePartitionConfig>
+  GetIsolatedWebAppStoragePartitionConfigs(
+      const AppId& isolated_web_app_id) const;
 
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const AppId& app_id) const;
