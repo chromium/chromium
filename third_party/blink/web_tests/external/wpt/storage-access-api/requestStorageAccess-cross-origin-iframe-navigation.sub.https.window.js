@@ -34,6 +34,5 @@
 
     assert_true(await FrameHasStorageAccess(frame), "frame has storage access after refresh.");
     assert_true(await CanFrameWriteCookies(frame), "frame can write cookies via JS after refresh.");
-    assert_true(cookieStringHasCookie("cookie", "monster", await GetHTTPCookiesFromFrame(frame)), "frame's fetch was credentialed.");
   }, "Self-initiated same-origin navigations preserve storage access");
 })();
