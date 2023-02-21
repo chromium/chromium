@@ -16,9 +16,11 @@
 // res_nclose(3), which requires __RES >= 19991006 (most libcs at this point,
 // but not all).
 //
-// Historically, this code was also not used on Apple platforms - /etc/hosts
-// can't change on iOS, but on macOS the situation is less clear.
-// TODO(https://crbug.com/1414923): Why is this not used on macOS?
+// This code is also not used on either macOS or iOS, even though both platforms
+// have res_ninit(3). On iOS, /etc/hosts is immutable so there's no reason for
+// us to watch it; on macOS, there is a system mechanism for listening to DNS
+// changes which does not require use to do this kind of reloading. See
+// //net/dns/dns_config_watcher_mac.cc.
 //
 // It *also* is not used on Android, because Android handles nameserver changes
 // for us and has no /etc/resolv.conf. Despite that, Bionic does export these
