@@ -5841,6 +5841,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ChromeOS.Settings.InputMethod.Autocorrect.Open">
+  <owner>zacpartridge@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the link to open the Auto-correction section in
+    Chrome OS Inputs methods setting page. This can happen when a user clicks on
+    the Learn More button from the Autocorrection undo window.
+  </description>
+</action>
+
 <action name="ChromeOS.Settings.Languages">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>

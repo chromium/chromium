@@ -1039,6 +1039,14 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
             ProfileManager::GetActiveUserProfile(),
             chromeos::settings::mojom::kSmartInputsSubpagePath);
       }
+      if (button.window_type == ash::ime::AssistiveWindowType::kLearnMore) {
+        autocorrect_manager_->HideUndoWindow();
+        base::RecordAction(base::UserMetricsAction(
+            "ChromeOS.Settings.InputMethod.Autocorrect.Open"));
+        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+            ProfileManager::GetActiveUserProfile(),
+            chromeos::settings::mojom::kInputMethodOptionsSubpagePath);
+      }
       break;
     case ui::ime::ButtonId::kSuggestion:
       if (assistive_suggester_->IsAssistiveFeatureEnabled()) {

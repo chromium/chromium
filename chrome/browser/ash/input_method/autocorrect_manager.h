@@ -182,6 +182,9 @@ class AutocorrectManager {
   void OnSurroundingTextChanged(const std::u16string& text,
                                 gfx::Range selection_range);
 
+  // Hides undo window if there is any visible.
+  void HideUndoWindow();
+
   void UndoAutocorrect();
 
   // Whether auto correction is disabled by some rule.
@@ -211,15 +214,13 @@ class AutocorrectManager {
   // set to empty.
   void AcceptOrClearPendingAutocorrect();
 
-  // Hides undo window if there is any visible.
-  void HideUndoWindow();
-
   // Shows undo window and record the relevant metric if undo window is
   // not already visible.
   void ShowUndoWindow(gfx::Range range, const std::u16string& text);
 
-  // Highlights undo button of undo window if it is visible.
-  void HighlightUndoButton();
+  // Highlights the appropriate undo or learn more buttons in the undo window
+  void HighlightButtons(bool should_highlight_undo,
+                        bool should_highlight_learn_more);
 
   // Processes the result of a set autocorrect range call. An unsuccessful
   // result could mean that autocorrect was not supported by the text input
@@ -269,6 +270,13 @@ class AutocorrectManager {
 
     // Specifies if undo button is highlighted or not.
     bool undo_button_highlighted = false;
+
+    // Specifies if learn more button is visible or not.
+    // TODO(b/259856275): Calculate when to activate learn_more_button_visible
+    bool learn_more_button_visible = false;
+
+    // Specifies if learn more button is highlighted or not.
+    bool learn_more_button_highlighted = false;
 
     // Specifies if window_shown metric is already incremented for the pending
     // autocorrect or not.
@@ -334,6 +342,9 @@ class AutocorrectManager {
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;
   bool in_diacritical_autocorrect_session_ = false;
+
+  ui::ime::AssistiveWindowButton undo_button_;
+  ui::ime::AssistiveWindowButton learn_more_button_;
 
   bool disabled_by_rule_ = false;
 

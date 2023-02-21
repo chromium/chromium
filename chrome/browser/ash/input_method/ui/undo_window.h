@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_UI_UNDO_WINDOW_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_UI_UNDO_WINDOW_H_
 
+#include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace ui {
@@ -26,7 +29,7 @@ class UI_CHROMEOS_EXPORT UndoWindow : public views::BubbleDialogDelegateView {
 
   views::Widget* InitWidget();
   void Hide();
-  void Show();
+  void Show(bool show_setting_link);
 
   // Set the position of the undo window at the start of the autocorrected word.
   void SetBounds(const gfx::Rect& word_bounds);
@@ -45,6 +48,7 @@ class UI_CHROMEOS_EXPORT UndoWindow : public views::BubbleDialogDelegateView {
 
   AssistiveDelegate* delegate_;
   views::LabelButton* undo_button_;
+  views::ImageButton* learn_more_button_;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,

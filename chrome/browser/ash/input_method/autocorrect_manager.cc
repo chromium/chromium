@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -374,7 +375,14 @@ bool IsAutocorrectSuggestionInSurroundingText(
 AutocorrectManager::AutocorrectManager(
     SuggestionHandlerInterface* suggestion_handler,
     Profile* profile)
-    : suggestion_handler_(suggestion_handler), profile_(profile) {}
+    : suggestion_handler_(suggestion_handler), profile_(profile) {
+  undo_button_.id = ui::ime::ButtonId::kUndo;
+  undo_button_.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
+  learn_more_button_.id = ui::ime::ButtonId::kLearnMore;
+  learn_more_button_.announce_string =
+      l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+  learn_more_button_.window_type = ash::ime::AssistiveWindowType::kLearnMore;
+}
 
 AutocorrectManager::~AutocorrectManager() = default;
 
@@ -736,17 +744,34 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     return false;
   }
 
-  if (event.code() == ui::DomCode::ARROW_UP ||
-      event.code() == ui::DomCode::TAB) {
-    HighlightUndoButton();
+  if (event.code() == ui::DomCode::ARROW_UP) {
+    HighlightButtons(/*should_highlight_undo=*/true,
+                     /*should_highlight_learn_more=*/false);
     return true;
   }
-  if (event.code() == ui::DomCode::ENTER &&
-      pending_autocorrect_->undo_button_highlighted) {
-    UndoAutocorrect();
-    return true;
+  if (event.code() == ui::DomCode::TAB) {
+    if (!pending_autocorrect_->undo_button_highlighted) {
+      HighlightButtons(/*should_highlight_undo=*/true,
+                       /*should_highlight_learn_more=*/false);
+      return true;
+    }
+    if (pending_autocorrect_->learn_more_button_visible) {
+      HighlightButtons(/*should_highlight_undo=*/false,
+                       /*should_highlight_learn_more=*/true);
+      return true;
+    }
   }
-
+  if (event.code() == ui::DomCode::ENTER) {
+    if (pending_autocorrect_->undo_button_highlighted) {
+      UndoAutocorrect();
+      return true;
+    }
+    if (pending_autocorrect_->learn_more_button_highlighted) {
+      HideUndoWindow();
+      suggestion_handler_->ClickButton(learn_more_button_);
+      return true;
+    }
+  }
   return false;
 }
 
@@ -979,6 +1004,8 @@ void AutocorrectManager::ShowUndoWindow(
   AssistiveWindowProperties properties;
   properties.type = ash::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = true;
+  properties.show_setting_link =
+      pending_autocorrect_->learn_more_button_visible;
   properties.announce_string = l10n_util::GetStringFUTF16(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
       pending_autocorrect_->original_text,
@@ -1039,36 +1066,39 @@ void AutocorrectManager::HideUndoWindow() {
 
   if (pending_autocorrect_.has_value()) {
     pending_autocorrect_->undo_button_highlighted = false;
+    pending_autocorrect_->learn_more_button_highlighted = false;
     pending_autocorrect_->undo_window_visible = false;
   }
 }
 
-void AutocorrectManager::HighlightUndoButton() {
+void AutocorrectManager::HighlightButtons(
+    const bool should_highlight_undo,
+    const bool should_highlight_learn_more) {
   if (!pending_autocorrect_.has_value() ||
-      !pending_autocorrect_->undo_window_visible ||
-      pending_autocorrect_->undo_button_highlighted) {
+      !pending_autocorrect_->undo_window_visible) {
     return;
   }
 
   std::string error;
-  ui::ime::AssistiveWindowButton button = ui::ime::AssistiveWindowButton();
-  button.id = ui::ime::ButtonId::kUndo;
-  button.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
-  button.announce_string = l10n_util::GetStringFUTF16(
-      IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON,
-      pending_autocorrect_->original_text);
-  suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
-                                            &error);
-
-  LogAssistiveAutocorrectInternalState(
-      AutocorrectInternalStates::kHighlightUndoWindow);
-
+  undo_button_.announce_string =
+      l10n_util::GetStringFUTF16(IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON,
+                                 pending_autocorrect_->original_text);
+  suggestion_handler_->SetButtonHighlighted(context_id_, undo_button_,
+                                            should_highlight_undo, &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to highlight undo button.";
     return;
   }
+  suggestion_handler_->SetButtonHighlighted(
+      context_id_, learn_more_button_, should_highlight_learn_more, &error);
+  if (!error.empty()) {
+    LOG(ERROR) << "Failed to highlight learn more button.";
+    return;
+  }
 
-  pending_autocorrect_->undo_button_highlighted = true;
+  pending_autocorrect_->undo_button_highlighted = should_highlight_undo;
+  pending_autocorrect_->learn_more_button_highlighted =
+      should_highlight_learn_more;
 }
 
 void AutocorrectManager::AcceptOrClearPendingAutocorrect() {

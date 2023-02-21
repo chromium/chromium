@@ -16,6 +16,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -367,6 +368,15 @@ ui::ime::AssistiveWindowButton CreateHighlightedUndoButton(
   button.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
   button.announce_string = l10n_util::GetStringFUTF16(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON, original_text);
+  return button;
+}
+
+// A helper to create highlighted learn more button in assistive window.
+ui::ime::AssistiveWindowButton CreateHighlightedLearnMoreButton() {
+  ui::ime::AssistiveWindowButton button = ui::ime::AssistiveWindowButton();
+  button.id = ui::ime::ButtonId::kLearnMore;
+  button.announce_string = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+  button.window_type = ash::ime::AssistiveWindowType::kLearnMore;
   return button;
 }
 
@@ -892,10 +902,15 @@ TEST_F(AutocorrectManagerTest,
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
 
-    ui::ime::AssistiveWindowButton button =
-          CreateHighlightedUndoButton(u"teh");
+    ui::ime::AssistiveWindowButton undo_button =
+        CreateHighlightedUndoButton(u"teh");
     EXPECT_CALL(mock_suggestion_handler_,
-                SetButtonHighlighted(_, button, true, _));
+                SetButtonHighlighted(_, undo_button, true, _));
+
+    ui::ime::AssistiveWindowButton learn_more_button =
+        CreateHighlightedLearnMoreButton();
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, learn_more_button, false, _));
   }
 
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
@@ -916,9 +931,15 @@ TEST_F(AutocorrectManagerTest,
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
 
-    ui::ime::AssistiveWindowButton button = CreateHighlightedUndoButton(u"teh");
+    ui::ime::AssistiveWindowButton undo_button =
+        CreateHighlightedUndoButton(u"teh");
     EXPECT_CALL(mock_suggestion_handler_,
-                SetButtonHighlighted(_, button, true, _));
+                SetButtonHighlighted(_, undo_button, true, _));
+
+    ui::ime::AssistiveWindowButton learn_more_button =
+        CreateHighlightedLearnMoreButton();
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, learn_more_button, false, _));
   }
 
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
@@ -939,10 +960,15 @@ TEST_F(AutocorrectManagerTest,
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
 
-    ui::ime::AssistiveWindowButton button =
+    ui::ime::AssistiveWindowButton undo_button =
         CreateHighlightedUndoButton(u"teh");
     EXPECT_CALL(mock_suggestion_handler_,
-                SetButtonHighlighted(_, button, true, _));
+                SetButtonHighlighted(_, undo_button, true, _));
+
+    ui::ime::AssistiveWindowButton learn_more_button =
+        CreateHighlightedLearnMoreButton();
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, learn_more_button, false, _));
 
     AssistiveWindowProperties hidden_properties =
         CreateHiddenUndoWindowProperties();
@@ -2487,9 +2513,15 @@ TEST_F(AutocorrectManagerTest, RecordRejectionForPkUndoWithKeyboard) {
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
 
-    ui::ime::AssistiveWindowButton button = CreateHighlightedUndoButton(u"teh");
+    ui::ime::AssistiveWindowButton undo_button =
+        CreateHighlightedUndoButton(u"teh");
     EXPECT_CALL(mock_suggestion_handler_,
-                SetButtonHighlighted(_, button, true, _));
+                SetButtonHighlighted(_, undo_button, true, _));
+
+    ui::ime::AssistiveWindowButton learn_more_button =
+        CreateHighlightedLearnMoreButton();
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, learn_more_button, false, _));
 
     AssistiveWindowProperties hidden_properties =
         CreateHiddenUndoWindowProperties();
