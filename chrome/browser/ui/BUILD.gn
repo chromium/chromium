@@ -4585,7 +4585,6 @@ static_library("ui") {
       "views/extensions/extensions_menu_main_page_view.cc",
       "views/extensions/extensions_menu_main_page_view.h",
       "views/extensions/extensions_menu_navigation_handler.h",
-      "views/extensions/extensions_menu_page_view.h",
       "views/extensions/extensions_menu_site_permissions_page_view.cc",
       "views/extensions/extensions_menu_site_permissions_page_view.h",
       "views/extensions/extensions_menu_view.cc",

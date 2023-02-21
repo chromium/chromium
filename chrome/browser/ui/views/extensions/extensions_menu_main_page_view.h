@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
+#include "ui/views/view.h"
 
 namespace content {
 class WebContents;
@@ -25,7 +25,7 @@ class InstalledExtensionMenuItemView;
 class ExtensionActionViewController;
 
 // The main view of the extensions menu.
-class ExtensionsMenuMainPageView : public ExtensionsMenuPageView {
+class ExtensionsMenuMainPageView : public views::View {
  public:
   explicit ExtensionsMenuMainPageView(
       Browser* browser,
@@ -43,10 +43,10 @@ class ExtensionsMenuMainPageView : public ExtensionsMenuPageView {
       bool allow_pinning,
       int index);
 
-  void OnToggleButtonPressed();
+  // Updates the view based on `web_contents`.
+  void Update(content::WebContents* web_contents);
 
-  // ExtensionsMenuPageView:
-  void Update(content::WebContents* web_contents) override;
+  void OnToggleButtonPressed();
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
@@ -72,9 +72,7 @@ class ExtensionsMenuMainPageView : public ExtensionsMenuPageView {
   RAW_PTR_EXCLUSION views::View* menu_items_ = nullptr;
 };
 
-BEGIN_VIEW_BUILDER(/* no export */,
-                   ExtensionsMenuMainPageView,
-                   ExtensionsMenuPageView)
+BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuMainPageView, views::View)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* no export */, ExtensionsMenuMainPageView)

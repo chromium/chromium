@@ -111,5 +111,3 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
 }
 
 // TODO(crbug.com/1390952): Update content once content is added to this page.
-void ExtensionsMenuSitePermissionsPageView::Update(
-    content::WebContents* web_contents) {}

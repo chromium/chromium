@@ -17,7 +17,6 @@ class View;
 
 class Browser;
 class ExtensionsContainer;
-class ExtensionsMenuPageView;
 class ExtensionsMenuMainPageView;
 class ExtensionsMenuSitePermissionsPageView;
 class ToolbarActionsModel;
@@ -59,7 +58,10 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
 
  private:
   // Switches the current page to `page`.
-  void SwitchToPage(std::unique_ptr<ExtensionsMenuPageView> page);
+  void SwitchToPage(std::unique_ptr<views::View> page);
+
+  // Updates current_page for the given `web_contents`.
+  void UpdatePage(content::WebContents* web_contents);
 
   // Returns the currently active web contents.
   content::WebContents* GetActiveWebContents() const;
@@ -72,7 +74,7 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
 
   // The current page visible in `bubble_contents_`.
-  raw_ptr<ExtensionsMenuPageView> current_page_ = nullptr;
+  raw_ptr<views::View> current_page_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_

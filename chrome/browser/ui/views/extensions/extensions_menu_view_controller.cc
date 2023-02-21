@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -32,6 +31,17 @@ std::vector<std::string> SortExtensionsByName(
                                       toolbar_model->action_ids().end());
   std::sort(sorted_ids.begin(), sorted_ids.end(), sort_by_name);
   return sorted_ids;
+}
+
+// Returns the main page, if it is the correct type.
+ExtensionsMenuMainPageView* GetMainPage(views::View* page) {
+  return views::AsViewClass<ExtensionsMenuMainPageView>(page);
+}
+
+// Returns the site permissions page, if it is the correct type.
+ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPage(
+    views::View* page) {
+  return views::AsViewClass<ExtensionsMenuSitePermissionsPageView>(page);
 }
 
 }  // namespace
@@ -96,8 +106,7 @@ void ExtensionsMenuViewController::CloseBubble() {
 void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
                                                 int index,
                                                 TabChangeType change_type) {
-  DCHECK(current_page_);
-  current_page_->Update(contents);
+  UpdatePage(contents);
 }
 
 void ExtensionsMenuViewController::OnTabStripModelChanged(
@@ -109,7 +118,17 @@ void ExtensionsMenuViewController::OnTabStripModelChanged(
     return;
   }
 
-  current_page_->Update(GetActiveWebContents());
+  UpdatePage(GetActiveWebContents());
+}
+
+void ExtensionsMenuViewController::UpdatePage(
+    content::WebContents* web_contents) {
+  DCHECK(current_page_);
+
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_);
+  if (main_page) {
+    main_page->Update(web_contents);
+  }
 }
 
 // TODO(crbug.com/1390952): Listen for "toolbar pinned actions changed" to
@@ -119,18 +138,17 @@ void ExtensionsMenuViewController::OnTabStripModelChanged(
 ExtensionsMenuMainPageView*
 ExtensionsMenuViewController::GetMainPageViewForTesting() {
   DCHECK(current_page_);
-  return views::AsViewClass<ExtensionsMenuMainPageView>(current_page_);
+  return GetMainPage(current_page_);
 }
 
 ExtensionsMenuSitePermissionsPageView*
 ExtensionsMenuViewController::GetSitePermissionsPageForTesting() {
   DCHECK(current_page_);
-  return views::AsViewClass<ExtensionsMenuSitePermissionsPageView>(
-      current_page_);
+  return GetSitePermissionsPage(current_page_);
 }
 
 void ExtensionsMenuViewController::SwitchToPage(
-    std::unique_ptr<ExtensionsMenuPageView> page) {
+    std::unique_ptr<views::View> page) {
   if (current_page_) {
     bubble_contents_->RemoveChildViewT(current_page_.get());
   }

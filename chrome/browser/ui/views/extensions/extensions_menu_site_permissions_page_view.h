@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_VIEW_H_
 
-#include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
 #include "extensions/common/extension_id.h"
+#include "ui/views/view.h"
 
 namespace ui {
 class ImageModel;
@@ -15,7 +15,7 @@ class ImageModel;
 class Browser;
 class ExtensionsMenuNavigationHandler;
 
-class ExtensionsMenuSitePermissionsPageView : public ExtensionsMenuPageView {
+class ExtensionsMenuSitePermissionsPageView : public views::View {
  public:
   explicit ExtensionsMenuSitePermissionsPageView(
       Browser* browser,
@@ -29,9 +29,6 @@ class ExtensionsMenuSitePermissionsPageView : public ExtensionsMenuPageView {
       const ExtensionsMenuSitePermissionsPageView&) = delete;
   ~ExtensionsMenuSitePermissionsPageView() override = default;
 
-  // ExtensionsMenuPageView:
-  void Update(content::WebContents* web_contents) override;
-
   // Accessors used by tests:
   extensions::ExtensionId GetExtensionIdForTesting() { return extension_id_; }
 
@@ -41,7 +38,7 @@ class ExtensionsMenuSitePermissionsPageView : public ExtensionsMenuPageView {
 
 BEGIN_VIEW_BUILDER(/* no export */,
                    ExtensionsMenuSitePermissionsPageView,
-                   ExtensionsMenuPageView)
+                   views::View)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* no export */, ExtensionsMenuSitePermissionsPageView)
