@@ -1036,10 +1036,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
 // Regression test for crbug.com/1272781. Previously, performing back/forward
 // navigations around the HTTPS-First Mode interstitial could cause history
 // entries to dropped.
-// TODO(crbug.com/1272781): Broken when BFCache is disabled (like on the
-// linux-bfcache-rel bots).
-IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
-                       DISABLED_InterstitialFallbackMaintainsHistory) {
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       InterstitialFallbackMaintainsHistory) {
   // This test only applies to HTTPS-First Mode.
   if (!IsHttpInterstitialEnabled()) {
     return;
@@ -1088,18 +1086,16 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
   // upgraded to HTTPS and fail, triggering the HTTPS-First Mode
   // interstitial.
   content::NavigateToURLBlockUntilNavigationsComplete(contents,
-                                                      downgrading_http_url, 2);
+                                                      downgrading_http_url, 1);
   EXPECT_EQ(downgrading_http_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
       contents));
 
   // Simulate clicking the browser "back" button.
-  // TODO(crbug.com/1394910): The incorrect WARNING security state is retained
-  // from the interstitial page.
   EXPECT_TRUE(content::HistoryGoBack(contents));
   EXPECT_EQ(good_https_url, contents->GetLastCommittedURL());
   auto* helper = SecurityStateTabHelper::FromWebContents(contents);
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::SECURE, helper->GetSecurityLevel());
 
   // Simulate clicking the browser "forward" button. The HistoryGoForward()
   // call returns `false` because it is an error page.

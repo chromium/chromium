@@ -23,6 +23,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
+#include "ui/base/page_transition_types.h"
 
 using security_interstitials::https_only_mode::Event;
 
@@ -91,6 +92,42 @@ HttpsUpgradesNavigationThrottle::~HttpsUpgradesNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 HttpsUpgradesNavigationThrottle::WillStartRequest() {
+  // If the navigation is fallback to HTTP, trigger the HTTP interstitial (if
+  // enabled). The interceptor creates a redirect for the fallback navigation,
+  // which will trigger MaybeCreateLoader() in the interceptor for the redirect
+  // but *doesn't* trigger WillStartRequest() because it's all part of the same
+  // request. Here, we skip directly to showing the HTTP interstitial if this
+  // is:
+  //   (1) a back/forward navigation, and
+  //   (2) the URL already failed upgrades before.
+  // This lets us avoid triggering the Interceptor during a back/forward
+  // navigation (which breaks history state) and acts like the browser
+  // "remembering" the state of the tab as being on the interstitial for that
+  // URL.
+  //
+  // Other cases for starting a navigation to a URL that previously failed
+  // to be upgraded should go through the full upgrade flow -- better to assume
+  // that something may have changed in the time since. For example: a user
+  // reloading the tab showing the interstitial should re-try the upgrade.
+  auto* handle = navigation_handle();
+  auto* contents = handle->GetWebContents();
+  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
+  if ((handle->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK &&
+       tab_helper->has_failed_upgrade(handle->GetURL())) &&
+      !handle->GetURL().SchemeIsCryptographic() && http_interstitial_enabled_) {
+    // Mark this as a fallback HTTP navigation and trigger the interstitial.
+    tab_helper->set_is_navigation_fallback(true);
+    std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+        blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
+            contents, handle->GetURL());
+    std::string interstitial_html = blocking_page->GetHTMLContents();
+    security_interstitials::SecurityInterstitialTabHelper::
+        AssociateBlockingPage(handle, std::move(blocking_page));
+    return content::NavigationThrottle::ThrottleCheckResult(
+        content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+        interstitial_html);
+  }
+
   // Navigation is HTTPS or an initial HTTP navigation (which will get
   // upgraded by the interceptor). Fallback HTTP navigations are handled in
   // WillRedirectRequest().
@@ -106,11 +143,11 @@ HttpsUpgradesNavigationThrottle::WillFailRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
-  // If the navigation is fallback to HTTP, trigger the HTTP interstitial (if
-  // enabled). The interceptor creates a redirect for the fallback navigation,
-  // which will trigger MaybeCreateLoader() in the interceptor for the redirect
-  // but *doesn't* trigger WillStartRequest() because it's all part of the same
-  // request.
+  // If the navigation is doing a fallback redirect to HTTP, trigger the HTTP
+  // interstitial (if enabled). The interceptor creates a redirect for the
+  // fallback navigation, which will trigger MaybeCreateLoader() in the
+  // interceptor for the redirect but *doesn't* trigger WillStartRequest()
+  // because it's all part of the same request.
   auto* handle = navigation_handle();
   auto* contents = handle->GetWebContents();
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);

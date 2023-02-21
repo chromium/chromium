@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_TAB_HELPER_H_
 #define CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_TAB_HELPER_H_
 
-#include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -15,8 +14,7 @@ class WebContents;
 }  // namespace content
 
 // A short-lived, per-tab helper for tracking HTTPS-Only Mode data about the
-// navigation and for creating the blocking page for the early-timeout code
-// path.
+// navigation.
 class HttpsOnlyModeTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<HttpsOnlyModeTabHelper> {
@@ -26,7 +24,7 @@ class HttpsOnlyModeTabHelper
   ~HttpsOnlyModeTabHelper() override;
 
   // content::WebContentsObserver:
-  void ReadyToCommitNavigation(
+  void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
   // HTTPS-Only Mode metadata getters and setters:
@@ -40,21 +38,19 @@ class HttpsOnlyModeTabHelper
   }
   bool is_navigation_fallback() const { return is_navigation_fallback_; }
 
-  void set_is_timer_interstitial(bool fallback) {
-    is_timer_interstitial_ = fallback;
-  }
-  bool is_timer_interstitial() const { return is_timer_interstitial_; }
-
   void set_fallback_url(const GURL& fallback_url) {
     fallback_url_ = fallback_url;
   }
   GURL fallback_url() const { return fallback_url_; }
 
+  bool has_failed_upgrade(const GURL& url) {
+    return failed_upgrade_urls_.contains(url);
+  }
+  void add_failed_upgrade(const GURL& url) { failed_upgrade_urls_.insert(url); }
+
  private:
   explicit HttpsOnlyModeTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HttpsOnlyModeTabHelper>;
-
-  std::unique_ptr<ChromeSecurityBlockingPageFactory> factory_;
 
   // TODO(crbug.com/1218526): Track upgrade status per-navigation rather than
   // per-WebContents, in case multiple navigations occur in the WebContents and
@@ -67,12 +63,18 @@ class HttpsOnlyModeTabHelper
   // Set to true if the current navigation is a fallback to HTTP.
   bool is_navigation_fallback_ = false;
 
-  // Set to true if an interstitial triggered due to an HTTPS timeout is about
-  // to be shown.
-  bool is_timer_interstitial_ = false;
-
   // HTTP URL that the current navigation should fall back to on failure.
   GURL fallback_url_;
+
+  // Holds the set of URLs that have failed to be upgraded to HTTPS in this
+  // WebContents. This is used to immediately show the HTTP interstitial without
+  // re-trying to upgrade the navigation -- currently this is only applied to
+  // back/forward navigations as they interact badly with interceptors, and this
+  // acts as the browser "remembering" the navigation state.
+  //
+  // In the case of HTTPS Upgrades, without HTTPS-First Mode enabled, these
+  // hostnames will also be on the HTTP allowlist, bypassing upgrade attempts.
+  std::set<GURL> failed_upgrade_urls_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
