@@ -1834,11 +1834,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-browsing-data-lifetime-manager",
-    "owners": ["ydago"],
-    "expiry_milestone": 106
-  },
-  {
     "name": "enable-cardboard",
     "owners": [ "alcooper", "chrome-xr-eng@google.com"],
     "expiry_milestone": 120

@@ -499,9 +499,6 @@ extern const char kEnableDelegatedCompositingDescription[];
 extern const char kEnableRemovingAllThirdPartyCookiesName[];
 extern const char kEnableRemovingAllThirdPartyCookiesDescription[];
 
-extern const char kEnableBrowsingDataLifetimeManagerName[];
-extern const char kEnableBrowsingDataLifetimeManagerDescription[];
-
 extern const char kDesktopPWAsAdditionalWindowingControlsName[];
 extern const char kDesktopPWAsAdditionalWindowingControlsDescription[];
 
