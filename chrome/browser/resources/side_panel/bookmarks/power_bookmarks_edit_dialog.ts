@@ -54,6 +54,11 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
+
+      newFolders_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -61,6 +66,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
   private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
   private selectedFolder_: chrome.bookmarks.BookmarkTreeNode|undefined;
   private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
+  private newFolders_: chrome.bookmarks.BookmarkTreeNode[];
 
   showDialog(
       activeFolderPath: chrome.bookmarks.BookmarkTreeNode[],
@@ -69,6 +75,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     this.activeFolderPath_ = activeFolderPath.slice();
     this.topLevelBookmarks_ = topLevelBookmarks;
     this.selectedBookmarks_ = selectedBookmarks;
+    this.newFolders_ = [];
     this.$.dialog.showModal();
   }
 
@@ -124,7 +131,26 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
   }
 
   private onNewFolder_() {
-    // TODO
+    const parent =
+        this.selectedFolder_ ? this.selectedFolder_ : this.getActiveFolder_();
+    const parentId =
+        parent ? parent.id : loadTimeData.getString('otherBookmarksId');
+    const newFolder: chrome.bookmarks.BookmarkTreeNode = {
+      id: 'tmp_new_folder_' + this.newFolders_.length,
+      title: loadTimeData.getString('newFolderTitle'),
+      children: [],
+      parentId: parentId,
+    };
+    if (parent) {
+      parent.children!.unshift(newFolder);
+    } else {
+      this.topLevelBookmarks_.unshift(newFolder);
+    }
+    this.push('newFolders_', newFolder);
+    if (parent !== this.getActiveFolder_()) {
+      this.push('activeFolderPath_', parent);
+    }
+    this.selectedFolder_ = newFolder;
   }
 
   private onCancel_() {
@@ -146,6 +172,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
       composed: true,
       detail: {
         folderId: folderId,
+        newFolders: this.newFolders_,
       },
     }));
     this.close_();
@@ -153,6 +180,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
 
   private close_() {
     this.selectedFolder_ = undefined;
+    this.newFolders_ = [];
     this.$.dialog.close();
   }
 }

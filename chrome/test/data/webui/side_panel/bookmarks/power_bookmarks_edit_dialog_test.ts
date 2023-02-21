@@ -72,7 +72,6 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
 
     loadTimeData.overrideValues({
       allBookmarks: 'All Bookmarks',
-      otherBookmarksId: 'Other Bookmarks',
     });
 
     powerBookmarksEditDialog =
@@ -116,10 +115,14 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
   test('SavesChanges', async () => {
     let saveCount = 0;
     let savedParent;
+    let savedNewFolderCount = 0;
     powerBookmarksEditDialog.addEventListener('save', ((e: CustomEvent) => {
                                                         saveCount++;
                                                         savedParent =
                                                             e.detail.folderId;
+                                                        savedNewFolderCount =
+                                                            e.detail.newFolders
+                                                                .length;
                                                       }) as EventListener);
 
     const topLevelBookmarks = service.getTopLevelBookmarks();
@@ -129,11 +132,17 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         [topLevelBookmarks[0]!],
     );
 
+    const newFolderButton: HTMLElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+    newFolderButton.click();
+
     const saveButton: HTMLElement =
         powerBookmarksEditDialog.shadowRoot!.querySelector('.action-button')!;
     saveButton.click();
 
     assertEquals(saveCount, 1);
-    assertEquals(savedParent, loadTimeData.getString('otherBookmarksId'));
+    // Adding a new folder should automatically select that folder.
+    assertEquals(savedParent, 'tmp_new_folder_0');
+    assertEquals(savedNewFolderCount, 1);
   });
 });

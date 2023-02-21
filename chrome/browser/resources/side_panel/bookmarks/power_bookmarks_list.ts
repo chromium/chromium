@@ -125,11 +125,6 @@ export class PowerBookmarksListElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      renamingParentId_: {
-        type: String,
-        value: '',
-      },
-
       renamingId_: {
         type: String,
         value: '',
@@ -171,7 +166,6 @@ export class PowerBookmarksListElement extends PolymerElement {
   private editing_: boolean;
   private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
   private guestMode_: boolean;
-  private renamingParentId_: string;
   private renamingId_: string;
   private deletionDescription_: string;
 
@@ -253,10 +247,6 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.shownBookmarks_ = this.shownBookmarks_.slice();
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkCreated', getBookmarkName(bookmark)));
-    }
-    if (parent.id === this.renamingParentId_) {
-      this.renamingParentId_ = '';
-      this.renamingId_ = bookmark.id;
     }
     this.updateShoppingData_();
   }
@@ -468,12 +458,23 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
-  private onBookmarksEdited_(event: CustomEvent<{folderId: string}>) {
+  private async onBookmarksEdited_(event: CustomEvent<{
+    folderId: string,
+    newFolders: chrome.bookmarks.BookmarkTreeNode[],
+  }>) {
     event.preventDefault();
     event.stopPropagation();
+    let parentId = event.detail.folderId;
+    for (const folder of event.detail.newFolders) {
+      const newFolder =
+          await this.bookmarksApi_.createFolder(folder.parentId!, folder.title);
+      folder.children!.forEach(child => child.parentId = newFolder.id);
+      if (folder.id === parentId) {
+        parentId = newFolder.id;
+      }
+    }
     this.bookmarksApi_.editBookmarks(
-        this.selectedBookmarks_.map(bookmark => bookmark.id),
-        event.detail.folderId);
+        this.selectedBookmarks_.map(bookmark => bookmark.id), parentId);
     this.selectedBookmarks_ = [];
     this.editing_ = false;
   }
@@ -563,9 +564,11 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     const newParent = this.getParentFolder_();
-    this.renamingParentId_ = newParent.id;
-    this.bookmarksApi_.createFolder(
-        newParent.id, loadTimeData.getString('newFolderTitle'));
+    this.bookmarksApi_
+        .createFolder(newParent.id, loadTimeData.getString('newFolderTitle'))
+        .then((newFolder) => {
+          this.renamingId_ = newFolder.id;
+        });
   }
 
   private onBulkEditClicked_(event: MouseEvent) {

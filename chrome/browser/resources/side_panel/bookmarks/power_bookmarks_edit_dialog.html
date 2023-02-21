@@ -37,6 +37,7 @@
     border: 1px solid var(--scrollable-border-color);
     border-radius: 2px;
     height: 160px;
+    overflow: auto;
   }
 
   .folder-title {
@@ -54,7 +55,8 @@
     </sp-heading>
     <div id="folder-selector" class="folder-selector">
       <iron-list scroll-target="folder-selector"
-          items="[[getShownFolders_(activeFolderPath_.*, topLevelBookmarks_)]]">
+          items="[[getShownFolders_(activeFolderPath_.*, topLevelBookmarks_,
+                   newFolders_.*)]]">
         <template>
           <div class="folder-row"
               selected$="[[isSelected_(item, selectedFolder_)]]"
@@ -64,7 +66,8 @@
             <div class="folder-title">
               [[item.title]]
             </div>
-            <template is="dom-if" if="[[hasChildFolders_(item)]]" restamp>
+            <template is="dom-if"
+                if="[[hasChildFolders_(item, newFolders_.*)]]" restamp>
               <cr-icon-button class="subpage-arrow"
                   aria-label="TODO"
                   on-click="onForward_">
@@ -76,7 +79,9 @@
     </div>
   </div>
   <div class="button-row" slot="button-container">
-    <cr-button on-click="onNewFolder_">$i18n{editNewFolder}</cr-button>
+    <cr-button id="newFolderButton" on-click="onNewFolder_">
+      $i18n{editNewFolder}
+    </cr-button>
     <div>
       <cr-button on-click="onCancel_">$i18n{editCancel}</cr-button>
       <cr-button class="action-button cr-button-gap" on-click="onSave_">
