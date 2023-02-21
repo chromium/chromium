@@ -649,8 +649,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
           std::make_unique<CrOSNextDeskIconButton>(
               this, &kDesksTemplatesIcon,
               l10n_util::GetStringUTF16(button_text_id),
-              cros_tokens::kCrosSysOnPrimaryContainer,
-              cros_tokens::kCrosSysSystemPrimaryContainer,
+              cros_tokens::kCrosSysOnSecondaryContainer,
+              cros_tokens::kCrosSysInversePrimary,
               /*initially_enabled=*/true,
               base::BindRepeating(&DesksBarView::OnLibraryButtonPressed,
                                   base::Unretained(this))));
