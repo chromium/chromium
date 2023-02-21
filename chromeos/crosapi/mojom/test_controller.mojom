@@ -49,8 +49,8 @@ enum OptionalBoolean {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 4
-// Next method id: 4
+// Next version: 6
+// Next method id: 6
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -75,6 +75,12 @@ interface StandaloneBrowserTestController {
   [MinVersion=4]
   TtsSpeak@4(TtsUtterance utterance,
              pending_remote<TtsUtteranceClient> utterance_client);
+
+  // Installs an app with the given start url as a sub app of the given parent
+  // app in Lacros.
+  [MinVersion=5]
+  InstallSubApp@5(string parent_app_id, string sub_app_start_url)
+    => (string sub_app_id);
 };
 
 // Allows callers running in lacros to trigger test events that are passed to

@@ -3755,6 +3755,7 @@ if (!is_android) {
         "../browser/ash/child_accounts/parent_access_code/parent_access_service_browsertest.cc",
         "../browser/ash/child_accounts/screen_time_controller_browsertest.cc",
         "../browser/ash/child_accounts/time_limits/app_time_browsertest.cc",
+        "../browser/ash/crosapi/web_app_provider_bridge_browsertest.cc",
         "../browser/ash/crostini/crostini_browser_test_util.cc",
         "../browser/ash/crostini/crostini_browser_test_util.h",
         "../browser/ash/crostini/crostini_browsertest.cc",

@@ -173,6 +173,24 @@ void StandaloneBrowserTestController::TtsSpeak(
   tts_crosapi_util::SpeakForTesting(std::move(lacros_utterance));
 }
 
+void StandaloneBrowserTestController::InstallSubApp(
+    const web_app::AppId& parent_app_id,
+    const std::string& sub_app_start_url,
+    InstallSubAppCallback callback) {
+  auto info = std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL(sub_app_start_url);
+  info->parent_app_id = parent_app_id;
+
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  provider->scheduler().InstallFromInfo(
+      std::move(info),
+      /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::SUB_APP,
+      base::BindOnce(&StandaloneBrowserTestController::WebAppInstallationDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void StandaloneBrowserTestController::OnUtteranceFinished(int utterance_id) {
   // Delete the utterace event delegate object when the utterance is finished.
   lacros_utterance_event_delegates_.erase(utterance_id);
