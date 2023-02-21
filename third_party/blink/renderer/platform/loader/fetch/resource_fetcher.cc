@@ -32,7 +32,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
