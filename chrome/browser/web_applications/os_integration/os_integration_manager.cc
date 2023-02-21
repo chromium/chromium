@@ -234,6 +234,11 @@ void OsIntegrationManager::Synchronize(
     return;
   }
 
+  if (sub_managers_.empty()) {
+    std::move(callback).Run();
+    return;
+  }
+
   if (!registrar_->GetAppById(app_id)) {
     std::move(callback).Run();
     return;
