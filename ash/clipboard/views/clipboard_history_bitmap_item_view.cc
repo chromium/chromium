@@ -6,7 +6,6 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
-#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "base/containers/contains.h"
@@ -314,8 +313,7 @@ ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
     views::MenuItemView* container)
     : ClipboardHistoryItemView(item_id, clipboard_history, container),
       resource_manager_(resource_manager),
-      data_format_(*clipboard_history_util::CalculateMainFormat(
-          GetClipboardHistoryItem()->data())) {
+      data_format_(GetClipboardHistoryItem()->main_format()) {
   switch (data_format_) {
     case ui::ClipboardInternalFormat::kHtml:
       SetAccessibleName(
