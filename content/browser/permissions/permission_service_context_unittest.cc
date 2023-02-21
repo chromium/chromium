@@ -233,6 +233,37 @@ TEST_F(PermissionServiceContextTest,
   EXPECT_EQ(observer->change_event_count(), 1U);
 }
 
+TEST_F(PermissionServiceContextTest, CreateSubscriptionInBackForwardCache) {
+  EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kActive));
+  render_frame_host()->DidEnterBackForwardCache();
+  EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kInBackForwardCache));
+
+  // Create a subscription in BFCache
+  auto observer = CreateSubscription(PermissionType::GEOLOCATION,
+                                     blink::mojom::PermissionStatus::ASK,
+                                     blink::mojom::PermissionStatus::ASK);
+  SimulatePermissionChangedEvent(blink::PermissionType::GEOLOCATION,
+                                 blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ(observer->change_event_count(), 0U);
+  SimulatePermissionChangedEvent(blink::PermissionType::GEOLOCATION,
+                                 blink::mojom::PermissionStatus::ASK);
+  EXPECT_EQ(observer->change_event_count(), 0U);
+  SimulatePermissionChangedEvent(blink::PermissionType::GEOLOCATION,
+                                 blink::mojom::PermissionStatus::GRANTED);
+  EXPECT_EQ(observer->change_event_count(), 0U);
+
+  // Simulate the render frame host is back to active state by setting the
+  // lifecycle state. The last event should be dispatched.
+  render_frame_host()->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kActive);
+  EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kActive));
+  WaitForAsyncTasksToComplete();
+  EXPECT_EQ(observer->change_event_count(), 1U);
+}
+
 TEST_F(PermissionServiceContextTest,
        DispatchSameStatusAfterLeaveBackForwardCache) {
   EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
