@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
-import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_LIST_HEIGHT_IN_PX;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE;
@@ -82,9 +81,6 @@ public class DetailScreenViewBinder {
             adapter.registerType(DetailItemType.PROFILE, AutofillProfileItemViewBinder::create,
                     AutofillProfileItemViewBinder::bind);
             view.setAdapter(adapter);
-        } else if (propertyKey == DETAIL_SCREEN_LIST_HEIGHT_IN_PX) {
-            view.mSheetItemListContainer.getLayoutParams().height =
-                    model.get(DETAIL_SCREEN_LIST_HEIGHT_IN_PX);
         }
     }
 }

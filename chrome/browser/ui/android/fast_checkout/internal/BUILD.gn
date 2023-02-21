@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutMediator.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutProperties.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutSheetState.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutUserActions.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/AutofillProfileItemProperties.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/AutofillProfileItemViewBinder.java",
@@ -100,6 +101,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutDetailScreenViewTest.java",
     "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutHomeScreenViewTest.java",
     "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutSheetContentTest.java",
   ]
   deps = [
     ":java",
