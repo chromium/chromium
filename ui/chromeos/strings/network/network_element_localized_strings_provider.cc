@@ -29,6 +29,8 @@ namespace {
 constexpr webui::LocalizedString kElementLocalizedStrings[] = {
     {"invalidDomainSuffixMatchEntry", IDS_NETWORK_INVALID_DSM_VALUE},
     {"invalidSubjectAlternativeNameMatchEntry", IDS_NETWORK_INVALID_SAN_ENTRY},
+    {"missingEapDefaultServerCaSubjectVerification",
+     IDS_NETWORK_EAP_DEFAULT_SERVER_CA_WITHOUT_SUBJECT_VERIFICATION},
     {"OncType", IDS_NETWORK_TYPE},
     {"OncTypeCellular", IDS_NETWORK_TYPE_CELLULAR},
     {"OncTypeEthernet", IDS_NETWORK_TYPE_ETHERNET},
@@ -538,6 +540,10 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
   // Only authenticated users can toggle the share state.
   html_source->AddBoolean("shareNetworkAllowEnable",
                           ash::LoginState::Get()->IsUserAuthenticated());
+
+  html_source->AddBoolean(
+      "eapDefaultCasWithoutSubjectVerificationAllowed",
+      ash::features::IsEapDefaultCasWithoutSubjectVerificationAllowed());
 }
 
 void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {

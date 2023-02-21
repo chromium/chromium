@@ -1416,5 +1416,44 @@ suite('network-config', function() {
       // user certificate is not needed for PEAP
       assertEquals('no-user-cert', networkConfig.selectedUserCertHash_);
     });
+
+    [true, false].forEach(eapDefaultCasWithoutSubjectVerificationAllowed => {
+      test('WiFi EAP-TLS Default CA Cert Flag', async function() {
+        loadTimeData.overrideValues({
+          'eapDefaultCasWithoutSubjectVerificationAllowed':
+              eapDefaultCasWithoutSubjectVerificationAllowed,
+        });
+
+        setNetworkType(NetworkType.kWiFi, SecurityType.kWpaEap);
+        setAuthenticated();
+        initNetworkConfigWithCerts(
+            /* hasServerCa= */ false, /* hasUserCert= */ true);
+        networkConfig.shareNetwork_ = true;
+        networkConfig.set('eapProperties_.outer', 'EAP-TLS');
+
+        await mojoApi_.whenCalled('getNetworkCertificates');
+        networkConfig.setEapProperties_(networkConfig.eapProperties_);
+        networkConfig.save();
+        await flushAsync();
+
+        // 'default' Server CA should be selected in case of no certificates
+        assertEquals('default', networkConfig.selectedServerCaHash_);
+
+        if (eapDefaultCasWithoutSubjectVerificationAllowed) {
+          assertEquals('', networkConfig.error);
+        } else {
+          assertEquals(
+              'missingEapDefaultServerCaSubjectVerification',
+              networkConfig.error);
+        }
+
+        // Setting a domain suffix match clear the error.
+        networkConfig.serializedDomainSuffixMatch_ = 'test.com';
+        networkConfig.save();
+        await flushAsync();
+
+        assertEquals('', networkConfig.error);
+      });
+    });
   });
 });

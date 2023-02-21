@@ -1903,6 +1903,9 @@
       <message name="IDS_NETWORK_INVALID_SAN_ENTRY" desc="Network error message shown when the Subject Alternative Name Match list configured for an EAP network contains a malformed entry">
         Invalid subject alternative name match entry
       </message>
+      <message name="IDS_NETWORK_EAP_DEFAULT_SERVER_CA_WITHOUT_SUBJECT_VERIFICATION" desc="Network error message shown when the EAP configuration uses the default server CA cert without configuring subject alt name or domain matches to validate the servers identity">
+        Missing 'Subject alternative name match' or 'Domain suffix match' to validate the authentication server identity
+      </message>
 
       <!-- Settings strings -->
       <message name="IDS_SETTINGS_INTERNET_MOBILE_SEARCH" desc="Settings > Internet > Message in Mobile section when searching for mobile networks.">
