@@ -12,7 +12,7 @@ namespace web_app {
 struct ShortcutInfo;
 }
 
-class GlassAppWindowFrameViewWin;
+class AppWindowFrameViewWin;
 
 // Windows-specific parts of the views-backed native shell window implementation
 // for packaged apps.
@@ -26,9 +26,7 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
 
   ~ChromeNativeAppWindowViewsWin() override;
 
-  GlassAppWindowFrameViewWin* glass_frame_view() {
-    return glass_frame_view_;
-  }
+  AppWindowFrameViewWin* frame_view() { return frame_view_; }
 
  private:
   void OnShortcutInfoLoaded(
@@ -53,7 +51,7 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
   // Populated if there is a standard desktop app frame, which provides special
   // information to the native widget implementation. This will be NULL if the
   // frame is a non-standard app frame created by CreateNonStandardAppFrame.
-  raw_ptr<GlassAppWindowFrameViewWin> glass_frame_view_ = nullptr;
+  raw_ptr<AppWindowFrameViewWin> frame_view_ = nullptr;
 
   // The Windows Application User Model ID identifying the app.
   std::wstring app_model_id_;

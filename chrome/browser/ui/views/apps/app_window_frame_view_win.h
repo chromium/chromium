@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_APPS_GLASS_APP_WINDOW_FRAME_VIEW_WIN_H_
-#define CHROME_BROWSER_UI_VIEWS_APPS_GLASS_APP_WINDOW_FRAME_VIEW_WIN_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_FRAME_VIEW_WIN_H_
+#define CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_FRAME_VIEW_WIN_H_
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -11,18 +11,17 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/non_client_view.h"
 
-// A glass style app window frame view.
-class GlassAppWindowFrameViewWin : public views::NonClientFrameView {
+// A Windows app window frame view.
+class AppWindowFrameViewWin : public views::NonClientFrameView {
  public:
-  METADATA_HEADER(GlassAppWindowFrameViewWin);
-  explicit GlassAppWindowFrameViewWin(views::Widget* widget);
-  GlassAppWindowFrameViewWin(const GlassAppWindowFrameViewWin&) = delete;
-  GlassAppWindowFrameViewWin& operator=(const GlassAppWindowFrameViewWin&) =
-      delete;
-  ~GlassAppWindowFrameViewWin() override;
+  METADATA_HEADER(AppWindowFrameViewWin);
+  explicit AppWindowFrameViewWin(views::Widget* widget);
+  AppWindowFrameViewWin(const AppWindowFrameViewWin&) = delete;
+  AppWindowFrameViewWin& operator=(const AppWindowFrameViewWin&) = delete;
+  ~AppWindowFrameViewWin() override;
 
-  // The insets to the client area due to the glass frame.
-  gfx::Insets GetGlassInsets() const;
+  // The insets to the client area due to the frame.
+  gfx::Insets GetFrameInsets() const;
 
   // Additional insets to the client area.  |monitor| is the monitor this
   // window is on.  Normally that would be determined from the HWND, but
@@ -51,10 +50,10 @@ class GlassAppWindowFrameViewWin : public views::NonClientFrameView {
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
-                   GlassAppWindowFrameViewWin,
+                   AppWindowFrameViewWin,
                    views::NonClientFrameView)
 END_VIEW_BUILDER
 
-DEFINE_VIEW_BUILDER(/* no export */, GlassAppWindowFrameViewWin)
+DEFINE_VIEW_BUILDER(/* no export */, AppWindowFrameViewWin)
 
-#endif  // CHROME_BROWSER_UI_VIEWS_APPS_GLASS_APP_WINDOW_FRAME_VIEW_WIN_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_FRAME_VIEW_WIN_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/apps/glass_app_window_frame_view_win.h"
+#include "chrome/browser/ui/views/apps/app_window_frame_view_win.h"
 
 #include <windows.h>
 
@@ -23,13 +23,12 @@ const int kResizeAreaCornerSize = 16;
 
 }  // namespace
 
-GlassAppWindowFrameViewWin::GlassAppWindowFrameViewWin(views::Widget* widget)
+AppWindowFrameViewWin::AppWindowFrameViewWin(views::Widget* widget)
     : widget_(widget) {}
 
-GlassAppWindowFrameViewWin::~GlassAppWindowFrameViewWin() {
-}
+AppWindowFrameViewWin::~AppWindowFrameViewWin() {}
 
-gfx::Insets GlassAppWindowFrameViewWin::GetGlassInsets() const {
+gfx::Insets AppWindowFrameViewWin::GetFrameInsets() const {
   int caption_height =
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSIZEFRAME) +
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYCAPTION);
@@ -37,30 +36,30 @@ gfx::Insets GlassAppWindowFrameViewWin::GetGlassInsets() const {
   return gfx::Insets::TLBR(caption_height, 0, 0, 0);
 }
 
-gfx::Insets GlassAppWindowFrameViewWin::GetClientAreaInsets(
-    HMONITOR monitor) const {
+gfx::Insets AppWindowFrameViewWin::GetClientAreaInsets(HMONITOR monitor) const {
   const int frame_thickness = ui::GetFrameThickness(monitor);
   return gfx::Insets::TLBR(0, frame_thickness, frame_thickness,
                            frame_thickness);
 }
 
-gfx::Rect GlassAppWindowFrameViewWin::GetBoundsForClientView() const {
-  if (widget_->IsFullscreen())
+gfx::Rect AppWindowFrameViewWin::GetBoundsForClientView() const {
+  if (widget_->IsFullscreen()) {
     return bounds();
+  }
 
-  gfx::Insets insets = GetGlassInsets();
-  return gfx::Rect(insets.left(),
-                   insets.top(),
+  gfx::Insets insets = GetFrameInsets();
+  return gfx::Rect(insets.left(), insets.top(),
                    std::max(0, width() - insets.left() - insets.right()),
                    std::max(0, height() - insets.top() - insets.bottom()));
 }
 
-gfx::Rect GlassAppWindowFrameViewWin::GetWindowBoundsForClientBounds(
+gfx::Rect AppWindowFrameViewWin::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
-  if (widget_->IsFullscreen())
+  if (widget_->IsFullscreen()) {
     return bounds();
+  }
 
-  gfx::Insets insets = GetGlassInsets();
+  gfx::Insets insets = GetFrameInsets();
   insets += GetClientAreaInsets(
       MonitorFromWindow(HWNDForView(this), MONITOR_DEFAULTTONEAREST));
   gfx::Rect window_bounds(
@@ -73,12 +72,14 @@ gfx::Rect GlassAppWindowFrameViewWin::GetWindowBoundsForClientBounds(
   return window_bounds;
 }
 
-int GlassAppWindowFrameViewWin::NonClientHitTest(const gfx::Point& point) {
-  if (widget_->IsFullscreen())
+int AppWindowFrameViewWin::NonClientHitTest(const gfx::Point& point) {
+  if (widget_->IsFullscreen()) {
     return HTCLIENT;
+  }
 
-  if (!bounds().Contains(point))
+  if (!bounds().Contains(point)) {
     return HTNOWHERE;
+  }
 
   // Check the frame first, as we allow a small area overlapping the contents
   // to be used for resize handles.
@@ -92,23 +93,25 @@ int GlassAppWindowFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   int frame_component = GetHTComponentForFrame(
       point, gfx::Insets(resize_border), kResizeAreaCornerSize - resize_border,
       kResizeAreaCornerSize - resize_border, can_ever_resize);
-  if (frame_component != HTNOWHERE)
+  if (frame_component != HTNOWHERE) {
     return frame_component;
+  }
 
   int client_component = widget_->client_view()->NonClientHitTest(point);
-  if (client_component != HTNOWHERE)
+  if (client_component != HTNOWHERE) {
     return client_component;
+  }
 
   // Caption is a safe default.
   return HTCAPTION;
 }
 
-void GlassAppWindowFrameViewWin::GetWindowMask(const gfx::Size& size,
-                                               SkPath* window_mask) {
+void AppWindowFrameViewWin::GetWindowMask(const gfx::Size& size,
+                                          SkPath* window_mask) {
   // We got nothing to say about no window mask.
 }
 
-gfx::Size GlassAppWindowFrameViewWin::CalculatePreferredSize() const {
+gfx::Size AppWindowFrameViewWin::CalculatePreferredSize() const {
   gfx::Size pref = widget_->client_view()->GetPreferredSize();
   gfx::Rect bounds(0, 0, pref.width(), pref.height());
   return widget_->non_client_view()
@@ -116,27 +119,29 @@ gfx::Size GlassAppWindowFrameViewWin::CalculatePreferredSize() const {
       .size();
 }
 
-gfx::Size GlassAppWindowFrameViewWin::GetMinimumSize() const {
+gfx::Size AppWindowFrameViewWin::GetMinimumSize() const {
   gfx::Size min_size = widget_->client_view()->GetMinimumSize();
 
-  gfx::Insets insets = GetGlassInsets();
+  gfx::Insets insets = GetFrameInsets();
   min_size.Enlarge(insets.left() + insets.right(),
                    insets.top() + insets.bottom());
 
   return min_size;
 }
 
-gfx::Size GlassAppWindowFrameViewWin::GetMaximumSize() const {
+gfx::Size AppWindowFrameViewWin::GetMaximumSize() const {
   gfx::Size max_size = widget_->client_view()->GetMaximumSize();
 
-  gfx::Insets insets = GetGlassInsets();
-  if (max_size.width())
+  gfx::Insets insets = GetFrameInsets();
+  if (max_size.width()) {
     max_size.Enlarge(insets.left() + insets.right(), 0);
-  if (max_size.height())
+  }
+  if (max_size.height()) {
     max_size.Enlarge(0, insets.top() + insets.bottom());
+  }
 
   return max_size;
 }
 
-BEGIN_METADATA(GlassAppWindowFrameViewWin, views::NonClientFrameView)
+BEGIN_METADATA(AppWindowFrameViewWin, views::NonClientFrameView)
 END_METADATA
