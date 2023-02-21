@@ -29,6 +29,14 @@
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <winsock2.h>
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_POSIX)
+#include <sys/socket.h>
+#endif  // BUILDFLAG(IS_POSIX)
+
 namespace content {
 
 namespace {
@@ -251,6 +259,22 @@ void DirectSocketsServiceImpl::OpenUDPSocket(
             },
             std::move(callback)));
   }
+}
+
+void DirectSocketsServiceImpl::OpenTCPServerSocket(
+    blink::mojom::DirectTCPServerSocketOptionsPtr options,
+    mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
+    OpenTCPServerSocketCallback callback) {
+  // Default if |options->backlog| is 0.
+  uint32_t backlog = SOMAXCONN;
+  if (options->backlog > 0) {
+    // Truncate the provided value if it is larger than allowed by the platform.
+    backlog = std::min<uint32_t>(options->backlog, SOMAXCONN);
+  }
+  GetNetworkContext()->CreateTCPServerSocket(
+      options->local_addr, backlog,
+      net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
+      std::move(socket), std::move(callback));
 }
 
 // static

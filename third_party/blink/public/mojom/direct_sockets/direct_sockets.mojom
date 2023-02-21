@@ -62,6 +62,14 @@ struct DirectUDPSocketOptions {
       network.mojom.DnsQueryType.UNSPECIFIED;
 };
 
+struct DirectTCPServerSocketOptions {
+  network.mojom.IPEndPoint local_addr;
+
+  // |backlog| defines the size of the OS accept queue. |backlog| = 0 represents
+  // an optional value that will be substituted by a reasonable default.
+  uint32 backlog = 0;
+};
+
 // This wraps network.mojom.NetworkContext and handles extra work such as
 // permission checking, chooser showing, etc.
 // The browser process implements the interface, and the renderer process
@@ -107,4 +115,15 @@ interface DirectSocketsService {
       => (int32 result,
           network.mojom.IPEndPoint? local_addr,
           network.mojom.IPEndPoint? peer_addr);
+
+  // Creates a listening (server) TCP socket configured with |options|.
+  //
+  // On success, |result| is net::OK and |local_addr| is set to the real local
+  // address used.
+  // On failure, |result| is a negative network error code. |local_addr| is
+  // null.
+  OpenTCPServerSocket(
+      DirectTCPServerSocketOptions options,
+      pending_receiver<network.mojom.TCPServerSocket> receiver)
+      => (int32 result, network.mojom.IPEndPoint? local_addr);
 };

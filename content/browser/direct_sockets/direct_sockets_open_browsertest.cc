@@ -18,6 +18,7 @@
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -180,6 +181,13 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
         url::Origin::Create(GetTestOpenPageURL()));
 
     ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // For TCPServerSocket support.
+    // TODO(crbug.com/1408140): remove after TCPServerSocket is fully supported.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "DirectSocketsExperimental");
   }
 
   void SetUp() override {
@@ -568,6 +576,48 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, Open_DnsQueryType) {
               .ExtractString(),
           testing::HasSubstr("openTcp succeeded"));
     }
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcpServerOptions) {
+  {
+    const std::string script = R"(
+      openTcpServer('direct-sockets.com');
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("localAddress must be a valid IP address"));
+  }
+
+  {
+    const std::string script = R"(
+      openTcpServer('127.0.0.1', {
+        localPort: 0,
+      });
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("localPort must be greater than zero"));
+  }
+
+  {
+    const std::string script = R"(
+      openTcpServer('127.0.0.1', {
+        backlog: 0,
+      });
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("backlog must be greater than zero"));
+  }
+
+  {
+    const std::string script = R"(
+      openTcpServer('127.0.0.1', {
+        ipv6Only: true,
+      });
+    )";
+    EXPECT_THAT(
+        EvalJs(shell(), script).ExtractString(),
+        testing::HasSubstr(
+            "ipv6Only can only be specified when localAddress is [::]"));
   }
 }
 

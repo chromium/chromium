@@ -46,6 +46,10 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
       OpenUDPSocketCallback callback) override;
+  void OpenTCPServerSocket(
+      blink::mojom::DirectTCPServerSocketOptionsPtr options,
+      mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
+      OpenTCPServerSocketCallback callback) override;
 
   // Testing:
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);

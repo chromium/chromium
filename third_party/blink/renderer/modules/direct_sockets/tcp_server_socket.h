@@ -35,6 +35,18 @@ class MODULES_EXPORT TCPServerSocket final : public ScriptWrappable,
   explicit TCPServerSocket(ScriptState*);
   ~TCPServerSocket() override;
 
+  // Validates options and calls OpenTCPServerSocket(...).
+  bool Open(const String& local_address,
+            const TCPServerSocketOptions*,
+            ExceptionState&);
+
+  // On net::OK initializes readable stream and resolves opened promise.
+  // Otherwise rejects the opened promise.
+  void OnTCPServerSocketOpened(
+      mojo::PendingRemote<network::mojom::blink::TCPServerSocket>,
+      int32_t result,
+      const absl::optional<net::IPEndPoint>& local_addr);
+
   void Trace(Visitor*) const override;
 
   // Socket:
